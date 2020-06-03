@@ -34,7 +34,7 @@ PLANT_GROUP( bcore_plant_builder, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /// returns index of target
-feature 'a' sz_t build( const );
+feature 'a' er_t build( const, sz_t* target_index );
 
 stamp :target = aware :
 {
@@ -69,8 +69,8 @@ stamp :target_adl = aware bcore_array { :target_s => []; };
 /**********************************************************************************************************************/
 // bcore_plant_builder interface functions
 
-/// build plant from configuration file (thread safe)
-void bcore_plant_builder_build_from_file( sc_t path );
+/// build plant from configuration file
+er_t bcore_plant_builder_build_from_file( sc_t path );
 
 /** Builds from configuration file given in path.
  *  If path is relative, the root folder is take from root_path
@@ -79,15 +79,15 @@ void bcore_plant_builder_build_from_file( sc_t path );
  *     bcore_plant_builder_build_from_rel_file( __FILE__, "beth_plant.cfg" );
  *     --> beth_plant.cfg is assumed to be in the folder of beth_plant.cfg
  */
-void bcore_plant_builder_build_from_rel_file( sc_t root_path, sc_t path );
+er_t bcore_plant_builder_build_from_rel_file( sc_t root_path, sc_t path );
 
-/// Checks if compiled plants require an update of the corresponding panted files (thread safe)
+/// Checks if compiled plants require an update of the corresponding panted files
 bl_t bcore_plant_builder_update_required( void );
 
-/// Updates all planted files that require an update; returns true if any file was modified. (thread safe)
-bl_t bcore_plant_builder_update( void );
+/// Updates all planted files that require an update; sets modified=true if any file was modified.
+er_t bcore_plant_builder_update( bl_t* modified );
 
-#endif // BETH_EXPAND_GROUP_bcore_plant
+#endif // BETH_EXPAND_GROUP_bcore_plant_builder
 
 //---------------------------------------------------------------------------------------------------------------------
 

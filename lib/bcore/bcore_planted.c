@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-27T11:03:10Z
+ *  Last File Update: 2020-06-03T13:15:48Z
  *
  *  Copyright and License of this File:
  *
@@ -17,6 +17,7 @@
  *  bcore_hmap_name.h
  *  bcore_cday.h
  *  bcore_rand.h
+ *  bcore_error_manager.h
  *
  */
 
@@ -301,6 +302,33 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_rand )
 "}";
 
 /**********************************************************************************************************************/
+// source: bcore_error_manager.h
+#include "bcore_error_manager.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_error_manager
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_error_manager_error_s )
+"aware bcore_error_manager"
+"{"
+    "er_t id;"
+    "st_s msg;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_error_manager_error_adl_s )
+"aware bcore_array"
+"{"
+    "bcore_error_manager_error_s => [];"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_error_manager_context_s )
+"aware bcore_error_manager"
+"{"
+    "bcore_error_manager_error_adl_s adl;"
+    "bcore_mutex_s mutex;"
+"}";
+
+/**********************************************************************************************************************/
 
 
 vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
@@ -309,7 +337,6 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
-            bcore_const_x_set_d( typeof( "bcore_planted_hash" ), sr_tp( HKEYOF_bcore_planted ) );
 
             // --------------------------------------------------------------------
             // source: bcore_file.h
@@ -431,9 +458,22 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bcore_rand_xsg_s );
             BCORE_REGISTER_OBJECT( bcore_rand_lxm_s );
             BCORE_REGISTER_SPECT( bcore_rand );
+
+            // --------------------------------------------------------------------
+            // source: bcore_error_manager.h
+
+            // group: bcore_error_manager
+            BCORE_REGISTER_OBJECT( bcore_error_manager_error_s );
+            BCORE_REGISTER_OBJECT( bcore_error_manager_error_adl_s );
+            BCORE_REGISTER_OBJECT( bcore_error_manager_context_s );
+            BCORE_REGISTER_NAME( parse_error );
+            BCORE_REGISTER_NAME( plant_error );
+            BCORE_REGISTER_NAME( error_stack );
+            BCORE_REGISTER_TRAIT( bcore_error_manager, bcore_inst );
         }
         break;
         default: break;
     }
     return NULL;
 }
+// BETH_PLANT_SIGNATURE 3231288126

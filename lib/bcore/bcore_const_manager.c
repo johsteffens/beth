@@ -21,7 +21,6 @@ static bcore_hmap_tp_sr_s* hmap_sr_g = NULL; // for general objects
 static bcore_hmap_tp_sr_s* hmap_st_g = NULL; // for dedicated strings
 static bcore_mutex_s*     mutex_st_g = NULL; // for dedicated strings
 
-
 /**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -253,7 +252,8 @@ vd_t bcore_const_manager_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_down0:
         {
-            if( o->object && ( *( bl_t* )o->object ) )
+            s2_t verbosity = o->object ? *( s2_t* )o->object : 0;
+            if( verbosity > 0 )
             {
                 uz_t count = bcore_const_size();
                 uz_t space = bcore_tbman_total_granted_space();

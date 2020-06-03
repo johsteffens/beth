@@ -18,16 +18,16 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void beth_plant_build_from_file( sc_t path )
+er_t beth_plant_build_from_file( sc_t path )
 {
-    bcore_plant_builder_build_from_file( path );
+    return bcore_plant_builder_build_from_file( path );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void beth_plant_build_from_rel_file( sc_t root_path, sc_t path )
+er_t beth_plant_build_from_rel_file( sc_t root_path, sc_t path )
 {
-    bcore_plant_builder_build_from_rel_file( root_path, path );
+    return bcore_plant_builder_build_from_rel_file( root_path, path );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -39,9 +39,9 @@ bl_t beth_plant_update_required( void )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t beth_plant_update( void )
+er_t beth_plant_update( bl_t* modified )
 {
-    return bcore_plant_builder_update();
+    return bcore_plant_builder_update( modified );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

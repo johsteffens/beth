@@ -24,7 +24,7 @@
 /// Beth-Plant Interface Functions
 
 /// build plant from configuration file (thread safe)
-void beth_plant_build_from_file( sc_t path );
+er_t beth_plant_build_from_file( sc_t path );
 
 /** Builds from configuration file given in path.
  *  If path is relative, the root folder is take from root_path
@@ -33,13 +33,13 @@ void beth_plant_build_from_file( sc_t path );
  *     beth_plant_build_from_rel_file( __FILE__, "beth_plant.cfg" );
  *     --> beth_plant.cfg is assumed to be in the folder of beth_plant.cfg
  */
-void beth_plant_build_from_rel_file( sc_t root_path, sc_t path );
+er_t beth_plant_build_from_rel_file( sc_t root_path, sc_t path );
 
 /// Checks if compiled plants require an update of the corresponding panted files (thread safe)
 bl_t beth_plant_update_required( void );
 
 /// Updates all planted files that require an update; returns true if any file was modified. (thread safe)
-bl_t beth_plant_update( void );
+er_t beth_plant_update( bl_t* modified );
 
 /**********************************************************************************************************************/
 

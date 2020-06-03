@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-27T11:03:10Z
+ *  Last File Update: 2020-06-03T13:15:48Z
  *
  *  Copyright and License of this File:
  *
@@ -17,6 +17,7 @@
  *  bcore_hmap_name.h
  *  bcore_cday.h
  *  bcore_rand.h
+ *  bcore_error_manager.h
  *
  */
 
@@ -26,7 +27,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.
-#define HKEYOF_bcore_planted 2378888293
+#define HKEYOF_bcore_planted 284472848
 
 #define TYPEOF_bcore_planted 3660391305
 
@@ -63,7 +64,7 @@
   BCORE_DECLARE_OBJECT( bcore_plant_builder_target_s ) \
     {aware_t _;st_s* name;st_s* root;bcore_arr_st_s dependencies;bcore_arr_st_s sources;st_s* signal_handler;}; \
   void bcore_plant_builder_target_s_source( bcore_plant_builder_target_s* o, bcore_source* source ); \
-  sz_t bcore_plant_builder_target_s_build( const bcore_plant_builder_target_s* o );
+  er_t bcore_plant_builder_target_s_build( const bcore_plant_builder_target_s* o, sz_t* target_index );
 #define TYPEOF_bcore_plant_builder_target_adl_s 2526634006
 #define BETH_EXPAND_ITEM_bcore_plant_builder_target_adl_s \
   BCORE_DECLARE_OBJECT( bcore_plant_builder_target_adl_s ) \
@@ -82,7 +83,7 @@
   BCORE_FORWARD_OBJECT( bcore_plant_builder ); \
   BCORE_FORWARD_OBJECT( bcore_plant_builder_target_s ); \
   BCORE_FORWARD_OBJECT( bcore_plant_builder_target_adl_s ); \
-  typedef sz_t (*bcore_plant_builder_build)( const bcore_plant_builder* o ); \
+  typedef er_t (*bcore_plant_builder_build)( const bcore_plant_builder* o, sz_t* target_index ); \
   BCORE_DECLARE_SPECT( bcore_plant_builder ) \
   { \
       bcore_spect_header_s header; \
@@ -92,7 +93,7 @@
   static inline bl_t bcore_plant_builder_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_plant_builder ); } \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_plant_builder ) \
   static inline bl_t bcore_plant_builder_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bcore_plant_builder ); } \
-  static inline sz_t bcore_plant_builder_a_build( const bcore_plant_builder* o ) { const bcore_plant_builder_s* p = bcore_plant_builder_s_get_aware( o ); assert( p->build ); return p->build( o ); } \
+  static inline er_t bcore_plant_builder_a_build( const bcore_plant_builder* o, sz_t* target_index ) { const bcore_plant_builder_s* p = bcore_plant_builder_s_get_aware( o ); assert( p->build ); return p->build( o, target_index ); } \
   static inline bl_t bcore_plant_builder_a_defines_build( const bcore_plant_builder* o ) { return bcore_plant_builder_s_get_aware( o )->build != NULL; } \
   BETH_EXPAND_ITEM_bcore_plant_builder_target_s \
   BETH_EXPAND_ITEM_bcore_plant_builder_target_adl_s
@@ -435,7 +436,50 @@
   BETH_EXPAND_ITEM_bcore_rand_lxm_s
 
 /**********************************************************************************************************************/
+// source: bcore_error_manager.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_error_manager
+
+#define TYPEOF_bcore_error_manager 1847905235
+#define TYPEOF_bcore_error_manager_s 3358571317
+#define TYPEOF_bcore_error_manager_error_s 2883695404
+#define BETH_EXPAND_ITEM_bcore_error_manager_error_s \
+  BCORE_DECLARE_OBJECT( bcore_error_manager_error_s ) \
+    {aware_t _;er_t id;st_s msg;};
+#define TYPEOF_bcore_error_manager_error_adl_s 2167477956
+#define BETH_EXPAND_ITEM_bcore_error_manager_error_adl_s \
+  BCORE_DECLARE_OBJECT( bcore_error_manager_error_adl_s ) \
+    {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( bcore_error_manager_error_s, );}; \
+  static inline bcore_error_manager_error_adl_s* bcore_error_manager_error_adl_s_set_space( bcore_error_manager_error_adl_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bcore_error_manager_error_adl_s, ( bcore_array* )o, size ); return o; } \
+  static inline bcore_error_manager_error_adl_s* bcore_error_manager_error_adl_s_set_size( bcore_error_manager_error_adl_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bcore_error_manager_error_adl_s, ( bcore_array* )o, size ); return o; } \
+  static inline bcore_error_manager_error_adl_s* bcore_error_manager_error_adl_s_clear( bcore_error_manager_error_adl_s* o ) { bcore_array_t_set_space( TYPEOF_bcore_error_manager_error_adl_s, ( bcore_array* )o, 0 ); return o; } \
+  static inline bcore_error_manager_error_s* bcore_error_manager_error_adl_s_push_c( bcore_error_manager_error_adl_s* o, const bcore_error_manager_error_s* v ) { bcore_array_t_push( TYPEOF_bcore_error_manager_error_adl_s, ( bcore_array* )o, sr_twc( TYPEOF_bcore_error_manager_error_s, v ) ); return o->data[ o->size - 1 ]; } \
+  static inline bcore_error_manager_error_s* bcore_error_manager_error_adl_s_push_d( bcore_error_manager_error_adl_s* o,       bcore_error_manager_error_s* v ) { bcore_array_t_push( TYPEOF_bcore_error_manager_error_adl_s, ( bcore_array* )o, sr_tsd( TYPEOF_bcore_error_manager_error_s, v ) ); return o->data[ o->size - 1 ]; } \
+  static inline bcore_error_manager_error_s* bcore_error_manager_error_adl_s_push( bcore_error_manager_error_adl_s* o ) \
+  { \
+      bcore_array_t_push( TYPEOF_bcore_error_manager_error_adl_s, ( bcore_array* )o, sr_t_create( TYPEOF_bcore_error_manager_error_s ) ); \
+      return o->data[ o->size - 1 ]; \
+  }
+#define TYPEOF_bcore_error_manager_context_s 269699777
+#define BETH_EXPAND_ITEM_bcore_error_manager_context_s \
+  BCORE_DECLARE_OBJECT( bcore_error_manager_context_s ) \
+    {aware_t _;bcore_error_manager_error_adl_s adl;bcore_mutex_s mutex;};
+#define TYPEOF_parse_error 1107704077
+#define TYPEOF_plant_error 742081543
+#define TYPEOF_error_stack 2991660346
+#define BETH_EXPAND_GROUP_bcore_error_manager \
+  BCORE_FORWARD_OBJECT( bcore_error_manager ); \
+  BCORE_FORWARD_OBJECT( bcore_error_manager_error_s ); \
+  BCORE_FORWARD_OBJECT( bcore_error_manager_error_adl_s ); \
+  BCORE_FORWARD_OBJECT( bcore_error_manager_context_s ); \
+  BETH_EXPAND_ITEM_bcore_error_manager_error_s \
+  BETH_EXPAND_ITEM_bcore_error_manager_error_adl_s \
+  BETH_EXPAND_ITEM_bcore_error_manager_context_s
+
+/**********************************************************************************************************************/
 
 vd_t bcore_planted_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_PLANTED_H
+// BETH_PLANT_SIGNATURE 3056625961

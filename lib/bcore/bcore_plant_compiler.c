@@ -48,20 +48,43 @@ BCORE_FORWARD_OBJECT( bcore_plant_compiler_s );
 static const bcore_plant* bcore_plant_compiler_s_item_get( const bcore_plant_compiler_s* o, tp_t item_id );
 
 static bl_t bcore_plant_compiler_s_item_exists( const bcore_plant_compiler_s* o, tp_t item_id );
-static tp_t bcore_plant_compiler_s_item_register(     bcore_plant_compiler_s* o, const bcore_plant* item,          bcore_source* source );
-static tp_t bcore_plant_compiler_s_group_register(    bcore_plant_compiler_s* o, const bcore_plant_group_s* group, bcore_source* source );
-static void bcore_plant_compiler_s_life_a_push(       bcore_plant_compiler_s* o, vd_t object );
-static void bcore_plant_group_s_parse_name( bcore_plant_group_s* o, st_s* name, bcore_source* source );
-static void bcore_plant_group_s_parse_name_recursive( bcore_plant_group_s* o, st_s* name, bcore_source* source );
-static void bcore_plant_source_s_push_group( bcore_plant_source_s* o, bcore_plant_group_s* group );
+static er_t bcore_plant_compiler_s_item_register(     bcore_plant_compiler_s* o, const bcore_plant* item,          bcore_source* source );
+static er_t bcore_plant_compiler_s_group_register(    bcore_plant_compiler_s* o, const bcore_plant_group_s* group, bcore_source* source );
+static er_t bcore_plant_compiler_s_life_a_push(       bcore_plant_compiler_s* o, vd_t object );
+static er_t bcore_plant_group_s_parse_name( bcore_plant_group_s* o, st_s* name, bcore_source* source );
+static er_t bcore_plant_group_s_parse_name_recursive( bcore_plant_group_s* o, st_s* name, bcore_source* source );
+static er_t bcore_plant_source_s_push_group( bcore_plant_source_s* o, bcore_plant_group_s* group );
 static sc_t bcore_plant_stamp_s_get_rel_name_sc( const bcore_plant_stamp_s* o );
 
-static st_s* stamp_s_resolve_chars( const bcore_plant_stamp_s* o, st_s* string );
+static er_t stamp_s_resolve_chars( const bcore_plant_stamp_s* o, st_s* string );
 
 //----------------------------------------------------------------------------------------------------------------------
 // globals
 
 static bcore_plant_compiler_s* plant_compiler_g = NULL;
+
+//----------------------------------------------------------------------------------------------------------------------
+// macros
+
+#define BLM_RETURN_ER0() \
+    BLM_RETURNV( er_t, 0 )
+
+#define BLM_TRY( expression ) \
+{ \
+    er_t blm_err__ = expression; \
+    if( blm_err__ ) BLM_RETURNV( er_t, blm_err__ ) \
+}
+
+#define BLM_SOURCE_PARSE_ERR_FA( source, ... ) \
+{ \
+    BLM_RETURNV( er_t, bcore_source_a_parse_err_to_em_fa( source, TYPEOF_parse_error, __VA_ARGS__ ) ); \
+}
+
+#define BLM_SOURCE_POINT_PARSE_ERR_FA( source_point, ... ) \
+{ \
+    bcore_source_point_s_parse_err_fa( source_point, __VA_ARGS__ ); \
+    BLM_RETURNV( er_t, 1 ); \
+}
 
 /**********************************************************************************************************************/
 /// plant perspective
@@ -69,19 +92,19 @@ static bcore_plant_compiler_s* plant_compiler_g = NULL;
 BCORE_FORWARD_OBJECT( bcore_plant );
 
 /// features
-typedef void (*bcore_plant_fp_parse                     )(       bcore_plant* o, bcore_source* source );
+typedef er_t (*bcore_plant_fp_parse                     )(       bcore_plant* o, bcore_source* source );
 typedef tp_t (*bcore_plant_fp_get_hash                  )( const bcore_plant* o );
 typedef sc_t (*bcore_plant_fp_get_global_name_sc        )( const bcore_plant* o );
-typedef void (*bcore_plant_fp_finalize                  )(       bcore_plant* o );
+typedef er_t (*bcore_plant_fp_finalize                  )(       bcore_plant* o );
 
-typedef void (*bcore_plant_fp_expand_forward            )( const bcore_plant* o, sz_t indent, bcore_sink* sink );
-typedef void (*bcore_plant_fp_expand_indef_typedef      )( const bcore_plant* o, sz_t indent, bcore_sink* sink );
-typedef void (*bcore_plant_fp_expand_spect_declaration  )( const bcore_plant* o, sz_t indent, bcore_sink* sink );
-typedef void (*bcore_plant_fp_expand_spect_definition   )( const bcore_plant* o, sz_t indent, bcore_sink* sink );
-typedef void (*bcore_plant_fp_expand_declaration        )( const bcore_plant* o, sz_t indent, bcore_sink* sink );
-typedef void (*bcore_plant_fp_expand_indef_declaration  )( const bcore_plant* o, sz_t indent, bcore_sink* sink );
-typedef void (*bcore_plant_fp_expand_definition         )( const bcore_plant* o, sz_t indent, bcore_sink* sink );
-typedef void (*bcore_plant_fp_expand_init1              )( const bcore_plant* o, sz_t indent, bcore_sink* sink );
+typedef er_t (*bcore_plant_fp_expand_forward            )( const bcore_plant* o, sz_t indent, bcore_sink* sink );
+typedef er_t (*bcore_plant_fp_expand_indef_typedef      )( const bcore_plant* o, sz_t indent, bcore_sink* sink );
+typedef er_t (*bcore_plant_fp_expand_spect_declaration  )( const bcore_plant* o, sz_t indent, bcore_sink* sink );
+typedef er_t (*bcore_plant_fp_expand_spect_definition   )( const bcore_plant* o, sz_t indent, bcore_sink* sink );
+typedef er_t (*bcore_plant_fp_expand_declaration        )( const bcore_plant* o, sz_t indent, bcore_sink* sink );
+typedef er_t (*bcore_plant_fp_expand_indef_declaration  )( const bcore_plant* o, sz_t indent, bcore_sink* sink );
+typedef er_t (*bcore_plant_fp_expand_definition         )( const bcore_plant* o, sz_t indent, bcore_sink* sink );
+typedef er_t (*bcore_plant_fp_expand_init1              )( const bcore_plant* o, sz_t indent, bcore_sink* sink );
 
 BCORE_DECLARE_SPECT( bcore_plant )
 {
@@ -103,19 +126,19 @@ BCORE_DECLARE_SPECT( bcore_plant )
     bcore_plant_fp_expand_init1             expand_init1;
 };
 
-BCORE_FUNC_SPECT_CONST1_RET0_ARG1_MAPX( bcore_plant, parse,         bcore_source*, source )
-BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP1( bcore_plant, get_hash, tp_t                       )
-BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP1( bcore_plant, get_global_name_sc, sc_t             )
-BCORE_FUNC_SPECT_CONST1_RET0_ARG0_MAPX( bcore_plant, finalize                             )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAPX( bcore_plant, parse, er_t, bcore_source*, source )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP1( bcore_plant, get_hash, tp_t                     )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP1( bcore_plant, get_global_name_sc, sc_t           )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAPX( bcore_plant, finalize, er_t                     )
 
-BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bcore_plant, expand_forward,           sz_t, indent, bcore_sink*, sink )
-BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bcore_plant, expand_indef_typedef,     sz_t, indent, bcore_sink*, sink )
-BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bcore_plant, expand_spect_declaration, sz_t, indent, bcore_sink*, sink )
-BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bcore_plant, expand_spect_definition,  sz_t, indent, bcore_sink*, sink )
-BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bcore_plant, expand_declaration,       sz_t, indent, bcore_sink*, sink )
-BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bcore_plant, expand_indef_declaration, sz_t, indent, bcore_sink*, sink )
-BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bcore_plant, expand_definition,        sz_t, indent, bcore_sink*, sink )
-BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAPX( bcore_plant, expand_init1,             sz_t, indent, bcore_sink*, sink )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAPX( bcore_plant, expand_forward,           er_t, sz_t, indent, bcore_sink*, sink )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAPX( bcore_plant, expand_indef_typedef,     er_t, sz_t, indent, bcore_sink*, sink )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAPX( bcore_plant, expand_spect_declaration, er_t, sz_t, indent, bcore_sink*, sink )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAPX( bcore_plant, expand_spect_definition,  er_t, sz_t, indent, bcore_sink*, sink )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAPX( bcore_plant, expand_declaration,       er_t, sz_t, indent, bcore_sink*, sink )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAPX( bcore_plant, expand_indef_declaration, er_t, sz_t, indent, bcore_sink*, sink )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAPX( bcore_plant, expand_definition,        er_t, sz_t, indent, bcore_sink*, sink )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAPX( bcore_plant, expand_init1,             er_t, sz_t, indent, bcore_sink*, sink )
 
 BCORE_DEFINE_SPECT( bcore_inst, bcore_plant )
 "{"
@@ -137,15 +160,15 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_plant )
     "feature        bcore_plant_fp: expand_init1;"
 "}";
 
-void bcore_plant_default_finalize                 ( const bcore_plant_s* p, const bcore_plant* o                                ) {}
-void bcore_plant_default_expand_forward           ( const bcore_plant_s* p, const bcore_plant* o, sz_t indent, bcore_sink* sink ) {}
-void bcore_plant_default_expand_indef_typedef     ( const bcore_plant_s* p, const bcore_plant* o, sz_t indent, bcore_sink* sink ) {}
-void bcore_plant_default_expand_spect_declaration ( const bcore_plant_s* p, const bcore_plant* o, sz_t indent, bcore_sink* sink ) {}
-void bcore_plant_default_expand_spect_definition  ( const bcore_plant_s* p, const bcore_plant* o, sz_t indent, bcore_sink* sink ) {}
-void bcore_plant_default_expand_declaration       ( const bcore_plant_s* p, const bcore_plant* o, sz_t indent, bcore_sink* sink ) {}
-void bcore_plant_default_expand_indef_declaration ( const bcore_plant_s* p, const bcore_plant* o, sz_t indent, bcore_sink* sink ) {}
-void bcore_plant_default_expand_definition        ( const bcore_plant_s* p, const bcore_plant* o, sz_t indent, bcore_sink* sink ) {}
-void bcore_plant_default_expand_init1             ( const bcore_plant_s* p, const bcore_plant* o, sz_t indent, bcore_sink* sink ) {}
+er_t bcore_plant_default_finalize                 ( const bcore_plant_s* p, const bcore_plant* o                                ) { return 0; }
+er_t bcore_plant_default_expand_forward           ( const bcore_plant_s* p, const bcore_plant* o, sz_t indent, bcore_sink* sink ) { return 0; }
+er_t bcore_plant_default_expand_indef_typedef     ( const bcore_plant_s* p, const bcore_plant* o, sz_t indent, bcore_sink* sink ) { return 0; }
+er_t bcore_plant_default_expand_spect_declaration ( const bcore_plant_s* p, const bcore_plant* o, sz_t indent, bcore_sink* sink ) { return 0; }
+er_t bcore_plant_default_expand_spect_definition  ( const bcore_plant_s* p, const bcore_plant* o, sz_t indent, bcore_sink* sink ) { return 0; }
+er_t bcore_plant_default_expand_declaration       ( const bcore_plant_s* p, const bcore_plant* o, sz_t indent, bcore_sink* sink ) { return 0; }
+er_t bcore_plant_default_expand_indef_declaration ( const bcore_plant_s* p, const bcore_plant* o, sz_t indent, bcore_sink* sink ) { return 0; }
+er_t bcore_plant_default_expand_definition        ( const bcore_plant_s* p, const bcore_plant* o, sz_t indent, bcore_sink* sink ) { return 0; }
+er_t bcore_plant_default_expand_init1             ( const bcore_plant_s* p, const bcore_plant* o, sz_t indent, bcore_sink* sink ) { return 0; }
 
 /**********************************************************************************************************************/
 // plant objects
@@ -547,6 +570,10 @@ BCORE_DECLARE_OBJECT( bcore_plant_target_s )
     BCORE_ARRAY_DYN_LINK_STATIC_S( bcore_plant_source_s, );
     st_s signal_handler_name;    // name of governing signal handler
     bcore_arr_sz_s dependencies; // index array to dependent targets
+
+    bl_t modified;  // target is to be modified
+    st_s* planted_h; // planted header file
+    st_s* planted_c; // planted c file
 };
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_target_s )
@@ -559,6 +586,10 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_target_s )
     "func bcore_plant_fp : finalize;"
     "st_s signal_handler_name;"    // name of governing signal handler
     "bcore_arr_sz_s dependencies;" // index array to dependent targets
+
+    "bl_t modified;"     // target is to be modified
+    "st_s => planted_h;" // planted header file
+    "st_s => planted_c;" // planted c file
 "}";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -746,10 +777,11 @@ static st_s* create_structured_multiline_string( const sc_t s, sz_t indent )
 /**********************************************************************************************************************/
 /// arg
 
-static void bcore_plant_arg_s_parse( bcore_plant_arg_s* o, bcore_source* source )
+static er_t bcore_plant_arg_s_parse( bcore_plant_arg_s* o, bcore_source* source )
 {
+    BLM_INIT();
     bcore_source_point_s_set( &o->source_point, source );
-    st_s* s = st_s_create();
+    st_s* s = BLM_CREATE( st_s );
     if( bcore_source_a_parse_bl_fa( source, "#?'const' " ) ) st_s_push_sc( &o->type, "const " );
 
     if( bcore_source_a_parse_bl_fa( source, "#?':' " ) )
@@ -763,18 +795,17 @@ static void bcore_plant_arg_s_parse( bcore_plant_arg_s* o, bcore_source* source 
     else
     {
         bcore_source_a_parse_fa( source, "#name ", s );
-        if( s->size == 0 ) bcore_source_a_parse_err_fa( source, "Argument: Type expected." );
+        if( s->size == 0 ) BLM_SOURCE_PARSE_ERR_FA( source, "Argument: Type expected." );
     }
     st_s_push_st( &o->type, s );
-
 
     while( bcore_source_a_parse_bl_fa( source, "#?'*' " ) ) st_s_push_sc( &o->type, "*" );
 
     bcore_source_a_parse_fa( source, "#name ", s );
-    if( s->size == 0 ) bcore_source_a_parse_err_fa( source, "Argument: Name expected." );
+    if( s->size == 0 ) BLM_SOURCE_PARSE_ERR_FA( source, "Argument: Name expected." );
     st_s_push_st( &o->name, s );
 
-    st_s_discard( s );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -801,70 +832,80 @@ static void bcore_plant_args_s_clear( bcore_plant_args_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_args_s_parse( bcore_plant_args_s* o, bcore_source* source )
+static er_t bcore_plant_args_s_parse( bcore_plant_args_s* o, bcore_source* source )
 {
+    BLM_INIT();
     bcore_plant_args_s_clear( o );
     while( bcore_source_a_parse_bl_fa( source, " #?',' " ) ) // args follow
     {
-        bcore_plant_arg_s* arg = bcore_plant_arg_s_create();
+        bcore_plant_arg_s* arg = BLM_A_PUSH( bcore_plant_arg_s_create() );
         arg->group = o->group;
-        bcore_plant_arg_s_parse( arg, source );
-        bcore_array_a_push( ( bcore_array* ) o, sr_asd( arg ) );
+        BLM_TRY( bcore_plant_arg_s_parse( arg, source ) );
+        bcore_array_a_push( ( bcore_array* ) o, sr_awc( arg ) );
     }
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_args_s_append( bcore_plant_args_s* o, bcore_source* source )
+static er_t bcore_plant_args_s_append( bcore_plant_args_s* o, bcore_source* source )
 {
+    BLM_INIT();
     bl_t first = true;
     while( !bcore_source_a_parse_bl_fa( source, " #=?')' " ) ) // args follow
     {
         if( !first ) bcore_source_a_parse_fa( source, " , " );
-        bcore_plant_arg_s* arg = bcore_plant_arg_s_create();
+        bcore_plant_arg_s* arg = BLM_A_PUSH( bcore_plant_arg_s_create() );
         arg->group = o->group;
-        bcore_plant_arg_s_parse( arg, source );
-        bcore_array_a_push( ( bcore_array* ) o, sr_asd( arg ) );
+        BLM_TRY( bcore_plant_arg_s_parse( arg, source ) );
+        bcore_array_a_push( ( bcore_array* ) o, sr_awc( arg ) );
         first = false;
     }
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_arg_s_expand( const bcore_plant_arg_s* o, bcore_sink* sink )
+static er_t bcore_plant_arg_s_expand( const bcore_plant_arg_s* o, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, "#<sc_t> #<sc_t>", o->type.sc, o->name.sc );
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_arg_s_expand_name( const bcore_plant_arg_s* o, bcore_sink* sink )
+static er_t bcore_plant_arg_s_expand_name( const bcore_plant_arg_s* o, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, "#<sc_t>", o->name.sc );
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_args_s_expand( const bcore_plant_args_s* o, bl_t first, bcore_sink* sink )
+static er_t bcore_plant_args_s_expand( const bcore_plant_args_s* o, bl_t first, bcore_sink* sink )
 {
-    for( sz_t i = 0; i < o->size; i++ )
+    er_t er = 0;
+    for( sz_t i = 0; i < o->size && !er; i++ )
     {
         if( !first ) bcore_sink_a_push_fa( sink, ", " );
         first = false;
-        bcore_plant_arg_s_expand( &o->data[ i ], sink );
+        er = bcore_plant_arg_s_expand( &o->data[ i ], sink );
     }
+    return er;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_args_s_expand_name( const bcore_plant_args_s* o, bl_t first, bcore_sink* sink )
+static er_t bcore_plant_args_s_expand_name( const bcore_plant_args_s* o, bl_t first, bcore_sink* sink )
 {
-    for( sz_t i = 0; i < o->size; i++ )
+    er_t er = 0;
+    for( sz_t i = 0; i < o->size && !er; i++ )
     {
         if( !first ) bcore_sink_a_push_fa( sink, ", " );
         first = false;
-        bcore_plant_arg_s_expand_name( &o->data[ i ], sink );
+        er = bcore_plant_arg_s_expand_name( &o->data[ i ], sink );
     }
+    return er;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -903,7 +944,7 @@ static tp_t bcore_plant_signature_s_get_hash( const bcore_plant_signature_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_signature_s_parse( bcore_plant_signature_s* o, bcore_source* source )
+static er_t bcore_plant_signature_s_parse( bcore_plant_signature_s* o, bcore_source* source )
 {
     BLM_INIT();
 
@@ -913,7 +954,7 @@ static void bcore_plant_signature_s_parse( bcore_plant_signature_s* o, bcore_sou
 
     bcore_source_point_s_set( &o->source_point, source );
 
-    bcore_plant_group_s_parse_name( o->group, name_buf, source );
+    BLM_TRY( bcore_plant_group_s_parse_name( o->group, name_buf, source ) );
 
     bl_t predefined = false;
 
@@ -941,7 +982,7 @@ static void bcore_plant_signature_s_parse( bcore_plant_signature_s* o, bcore_sou
             }
             else
             {
-                bcore_source_a_parse_err_fa( source, "Misplaced '@'." );
+                BLM_SOURCE_PARSE_ERR_FA( source, "Misplaced '@'." );
             }
         }
 
@@ -963,19 +1004,19 @@ static void bcore_plant_signature_s_parse( bcore_plant_signature_s* o, bcore_sou
         }
         else if( predefined )
         {
-            bcore_source_a_parse_err_fa( source, "Syntax error." );
+            BLM_SOURCE_PARSE_ERR_FA( source, "Syntax error." );
         }
     }
 
     if( !predefined )
     {
         // get return type
-        if( name_buf->size == 0 ) bcore_source_a_parse_err_fa( source, "Return type missing." );
+        if( name_buf->size == 0 ) BLM_SOURCE_PARSE_ERR_FA( source, "Return type missing." );
         st_s_push_fa( &o->ret_type, "#<sc_t>", name_buf->sc );
         if( st_s_equal_sc( name_buf, "const" ) )
         {
             bcore_source_a_parse_fa( source, " #name", name_buf );
-            if( name_buf->size == 0 ) bcore_source_a_parse_err_fa( source, "Return type missing." );
+            if( name_buf->size == 0 ) BLM_SOURCE_PARSE_ERR_FA( source, "Return type missing." );
             st_s_push_fa( &o->ret_type, " #<sc_t>", name_buf->sc );
         }
         while( bcore_source_a_parse_bl_fa( source, " #?'*'" ) ) st_s_push_char( &o->ret_type, '*' );
@@ -991,7 +1032,7 @@ static void bcore_plant_signature_s_parse( bcore_plant_signature_s* o, bcore_sou
         }
         else
         {
-            bcore_source_a_parse_err_fa( source, "Name missing." );
+            BLM_SOURCE_PARSE_ERR_FA( source, "Name missing." );
         }
     }
 
@@ -1005,19 +1046,20 @@ static void bcore_plant_signature_s_parse( bcore_plant_signature_s* o, bcore_sou
         if(      bcore_source_a_parse_bl_fa(  source, " #?'mutable' " ) ) o->arg_o = TYPEOF_mutable;
         else if( bcore_source_a_parse_bl_fa(  source, " #?'const' "   ) ) o->arg_o = TYPEOF_const;
         else if( bcore_source_a_parse_bl_fa(  source, " #?'plain' "   ) ) o->arg_o = 0;
-        else     bcore_source_a_parse_err_fa( source, "'plain', mutable' or 'const' expected." );
+        else     BLM_SOURCE_PARSE_ERR_FA( source, "'plain', mutable' or 'const' expected." );
 
-        bcore_plant_args_s_parse( &o->args, source );
+        BLM_TRY( bcore_plant_args_s_parse( &o->args, source ) );
         bcore_source_a_parse_fa( source, " ) " );
     }
     else if( bcore_source_a_parse_bl_fa( source, " #?'('" ) )
     {
-        bcore_plant_args_s_append( &o->args, source );
+        BLM_TRY( bcore_plant_args_s_append( &o->args, source ) );
         bcore_source_a_parse_fa( source, " ) " );
     }
 
     st_s_copy_fa( &o->global_name, "#<sc_t>_#<sc_t>", o->group->name.sc, o->name.sc );
-    BLM_DOWN();
+
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1045,31 +1087,31 @@ static tp_t bcore_plant_body_s_get_hash( const bcore_plant_body_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_body_s_parse_expression( bcore_plant_body_s* o, bcore_plant_stamp_s* stamp, bcore_source* source );
+static er_t bcore_plant_body_s_parse_expression( bcore_plant_body_s* o, bcore_plant_stamp_s* stamp, bcore_source* source );
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_body_s_append( bcore_plant_body_s* o, sz_t indent, const bcore_plant_body_s* body )
+static er_t bcore_plant_body_s_append( bcore_plant_body_s* o, sz_t indent, const bcore_plant_body_s* body )
 {
+    BLM_INIT();
     if( body->go_inline )
     {
         st_s_push_fa( &o->code, "#<st_s*>", &body->code );
     }
     else
     {
-        BLM_INIT();
         st_s* body_code = BLM_A_PUSH( st_s_clone( &body->code ) );
         st_s* newline = BLM_A_PUSH( st_s_create_fa( "\n#rn{ }", indent ) );
         st_s_replace_sc_sc( body_code, "\n", newline->sc );
         st_s_push_fa( &o->code, "#<st_s*>", body_code );
         o->go_inline = false;
-        BLM_DOWN();
     }
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_body_s_parse_code( bcore_plant_body_s* o, bcore_plant_stamp_s* stamp, bcore_source* source )
+static er_t bcore_plant_body_s_parse_code( bcore_plant_body_s* o, bcore_plant_stamp_s* stamp, bcore_source* source )
 {
     BLM_INIT();
 
@@ -1120,7 +1162,7 @@ static void bcore_plant_body_s_parse_code( bcore_plant_body_s* o, bcore_plant_st
                     st_s_push_char( &o->code, c );
                     if( !esc && c == '"' ) break;
                     esc = ( c == '\\' );
-                    if( c == '\n' ) bcore_source_a_parse_err_fa( source, "Newline in string literal." );
+                    if( c == '\n' ) BLM_SOURCE_PARSE_ERR_FA( source, "Newline in string literal." );
                 }
                 c = 0;
             }
@@ -1139,9 +1181,9 @@ static void bcore_plant_body_s_parse_code( bcore_plant_body_s* o, bcore_plant_st
                     }
                     bcore_plant_body_s* body = BLM_CREATE( bcore_plant_body_s );
                     body->group = o->group;
-                    bcore_plant_body_s_parse_expression( body, stamp, source );
+                    BLM_TRY( bcore_plant_body_s_parse_expression( body, stamp, source ) );
                     bcore_source_a_parse_fa( source, " ;" ); // embedded body expression must close with a semicolon
-                    bcore_plant_body_s_append( o, indent, body );
+                    BLM_TRY( bcore_plant_body_s_append( o, indent, body ) );
                     BLM_DOWN();
                 }
                 else
@@ -1166,11 +1208,12 @@ static void bcore_plant_body_s_parse_code( bcore_plant_body_s* o, bcore_plant_st
             {
                 if( bcore_source_a_parse_bl_fa( source, "#?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z')||[0]==':'||[0]=='*'||[0]=='@'||[0]=='$')" ) )
                 {
-                    st_s* name = st_s_create();
-                    bcore_plant_group_s_parse_name_recursive( o->group, name, source );
+                    BLM_INIT();
+                    st_s* name = BLM_CREATE( st_s );
+                    BLM_TRY( bcore_plant_group_s_parse_name_recursive( o->group, name, source ) );
                     st_s_push_sc( &o->code, name->sc );
-                    st_s_discard( name );
                     c = 0;
+                    BLM_DOWN();
                 }
             }
             break;
@@ -1194,28 +1237,25 @@ static void bcore_plant_body_s_parse_code( bcore_plant_body_s* o, bcore_plant_st
         }
     }
 
-    BLM_DOWN();
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_body_s_parse_expression( bcore_plant_body_s* o, bcore_plant_stamp_s* stamp, bcore_source* source )
+static er_t bcore_plant_body_s_parse_expression( bcore_plant_body_s* o, bcore_plant_stamp_s* stamp, bcore_source* source )
 {
     BLM_INIT();
     if( bcore_source_a_parse_bl_fa( source, " #=?'{'" ) )
     {
-        bcore_plant_body_s_parse_code( o, stamp, source );
+        BLM_TRY( bcore_plant_body_s_parse_code( o, stamp, source ) );
     }
     else
     {
         st_s* name = BLM_CREATE( st_s );
-        bcore_plant_group_s_parse_name( o->group, name, source );
-        if( name->size == 0 ) bcore_source_a_parse_err_fa( source, "Body name expected." );
+        BLM_TRY( bcore_plant_group_s_parse_name( o->group, name, source ) );
+        if( name->size == 0 ) BLM_SOURCE_PARSE_ERR_FA( source, "Body name expected." );
 
-        if( stamp )
-        {
-            stamp_s_resolve_chars( stamp, name );
-        }
+        if( stamp ) BLM_TRY( stamp_s_resolve_chars( stamp, name ) );
 
         tp_t tp_name = typeof( name->sc );
         // if name_buf refers to another body
@@ -1231,7 +1271,7 @@ static void bcore_plant_body_s_parse_expression( bcore_plant_body_s* o, bcore_pl
         }
         else
         {
-            bcore_source_a_parse_err_fa( source, "Cannot resolve body name '#<sc_t>'\n", name->sc );
+            BLM_SOURCE_PARSE_ERR_FA( source, "Cannot resolve body name '#<sc_t>'\n", name->sc );
         }
     }
 
@@ -1239,22 +1279,22 @@ static void bcore_plant_body_s_parse_expression( bcore_plant_body_s* o, bcore_pl
     {
         if( bcore_source_a_parse_bl_fa( source, "#?(([0]!=' ')&&([0]!='\t')&&([0]!='\n'))" ) )
         {
-            bcore_source_a_parse_err_fa( source, "Whitespace after ':' expected." );
+            BLM_SOURCE_PARSE_ERR_FA( source, "Whitespace after ':' expected." );
         }
         bcore_plant_body_s* body = BLM_CREATE( bcore_plant_body_s );
         body->group = o->group;
-        bcore_plant_body_s_parse_expression( body, stamp, source );
+        BLM_TRY( bcore_plant_body_s_parse_expression( body, stamp, source ) );
         st_s_push_char( &o->code, '\n' );
         o->go_inline = false;
-        bcore_plant_body_s_append( o, 0, body );
+        BLM_TRY( bcore_plant_body_s_append( o, 0, body ) );
     }
-    BLM_DOWN();
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// stamp should be NULL when body is not parsed inside a stamp
-static void bcore_plant_body_s_parse( bcore_plant_body_s* o, bcore_plant_stamp_s* stamp, bcore_source* source )
+static er_t bcore_plant_body_s_parse( bcore_plant_body_s* o, bcore_plant_stamp_s* stamp, bcore_source* source )
 {
     BLM_INIT();
 
@@ -1265,21 +1305,21 @@ static void bcore_plant_body_s_parse( bcore_plant_body_s* o, bcore_plant_stamp_s
     if( !bcore_source_a_parse_bl_fa( source, " #=?'='" ) )
     {
         bcore_source_a_parse_fa( source, " #name", string );
-        if( string->size == 0 ) bcore_source_a_parse_err_fa( source, "Body name expected." );
+        if( string->size == 0 ) BLM_SOURCE_PARSE_ERR_FA( source, "Body name expected." );
         st_s_push_fa( &o->name, "#<sc_t>", string->sc );
     }
 
     bcore_source_a_parse_fa( source, " =" );
 
-    bcore_plant_body_s_parse_expression( o, stamp, source );
+    BLM_TRY( bcore_plant_body_s_parse_expression( o, stamp, source ) );
 
     st_s_copy_fa( &o->global_name, "#<sc_t>_#<sc_t>", o->group->name.sc, o->name.sc );
-    BLM_DOWN();
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_plant_body_s_expand( const bcore_plant_body_s* body, sz_t indent, bcore_sink* sink )
+er_t bcore_plant_body_s_expand( const bcore_plant_body_s* body, sz_t indent, bcore_sink* sink )
 {
     if( body->go_inline )
     {
@@ -1296,6 +1336,7 @@ void bcore_plant_body_s_expand( const bcore_plant_body_s* body, sz_t indent, bco
         }
         bcore_sink_a_push_fa( sink, "\n#rn{ }}", indent );
     }
+    return 0;
 }
 
 
@@ -1336,7 +1377,7 @@ static tp_t bcore_plant_feature_s_get_hash( const bcore_plant_feature_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_feature_s_parse( bcore_plant_feature_s* o, bcore_source* source )
+static er_t bcore_plant_feature_s_parse( bcore_plant_feature_s* o, bcore_source* source )
 {
     BLM_INIT();
 
@@ -1346,7 +1387,8 @@ static void bcore_plant_feature_s_parse( bcore_plant_feature_s* o, bcore_source*
 
     if( bcore_source_a_parse_bl_fa( source, " #?|'|" ) )
     {
-        st_s* flags = st_s_create();
+        BLM_INIT();
+        st_s* flags = BLM_CREATE( st_s );
         bcore_source_a_parse_fa(  source, " #until'''", flags );
         for( sz_t i = 0; i < flags->size; i++ )
         {
@@ -1356,21 +1398,21 @@ static void bcore_plant_feature_s_parse( bcore_plant_feature_s* o, bcore_source*
                 case 't': o->flag_t = true; break;
                 case 'a': o->flag_a = true; break;
                 case 'r': o->flag_r = true; break;
-                default: bcore_source_a_parse_err_fa( source, "Feature: Flag '#<char>' not handled. Choose from 'ptar'.", flags->data[ i ] ); break;
+                default: BLM_SOURCE_PARSE_ERR_FA( source, "Feature: Flag '#<char>' not handled. Choose from 'ptar'.", flags->data[ i ] ); break;
             }
         }
-        st_s_discard( flags );
         bcore_source_a_parse_fa( source, "' " );
+        BLM_DOWN();
     }
     else
     {
-        bcore_source_a_parse_err_fa( source, "Feature: '<flags>' expected. Example: 'ptar'" );
+        BLM_SOURCE_PARSE_ERR_FA( source, "Feature: '<flags>' expected. Example: 'ptar'" );
     }
 
     bcore_plant_signature_s* signature = BLM_CREATE( bcore_plant_signature_s );
 
     signature->group = o->group;
-    bcore_plant_signature_s_parse( signature, source );
+    BLM_TRY( bcore_plant_signature_s_parse( signature, source ) );
     st_s_copy( &o->name, &signature->name );
     o->has_ret = signature->has_ret;
     st_s_copy( &o->ret_type, &signature->ret_type );
@@ -1378,7 +1420,7 @@ static void bcore_plant_feature_s_parse( bcore_plant_feature_s* o, bcore_source*
 
     if( !signature->arg_o )
     {
-        bcore_source_a_parse_err_fa( source, "Feature: The first argument must be 'mutable' or 'const'." );
+        BLM_SOURCE_PARSE_ERR_FA( source, "Feature: The first argument must be 'mutable' or 'const'." );
     }
 
     o->mutable = ( signature->arg_o == TYPEOF_mutable );
@@ -1387,20 +1429,20 @@ static void bcore_plant_feature_s_parse( bcore_plant_feature_s* o, bcore_source*
     {
         if( bcore_source_a_parse_bl_fa( source, " #=?'{' " ) )
         {
-            if( o->strict )  bcore_source_a_parse_err_fa( source, "Feature is 'strict'. Default function would have no effect." );
+            if( o->strict ) BLM_SOURCE_PARSE_ERR_FA( source, "Feature is 'strict'. Default function would have no effect." );
             o->default_body = bcore_plant_body_s_create();
             o->default_body->group = o->group;
-            bcore_plant_body_s_parse_code( o->default_body, NULL, source );
+            BLM_TRY( bcore_plant_body_s_parse_code( o->default_body, NULL, source ) );
             st_s_copy_fa( &o->default_name, "#<sc_t>__", o->name.sc );
         }
         else
         {
-            if( o->strict )  bcore_source_a_parse_err_fa( source, "Feature is 'strict'. Default function would have no effect." );
+            if( o->strict )  BLM_SOURCE_PARSE_ERR_FA( source, "Feature is 'strict'. Default function would have no effect." );
             bcore_source_a_parse_fa( source, " #name ", &o->default_name );
-            if( o->default_name.size == 0 ) bcore_source_a_parse_err_fa( source, "Feature: Default function name expected." );
+            if( o->default_name.size == 0 ) BLM_SOURCE_PARSE_ERR_FA( source, "Feature: Default function name expected." );
             if( st_s_equal_st( &o->default_name, &o->name ) )
             {
-                bcore_source_a_parse_err_fa( source, "Feature: Default function name must differ from feature name." );
+                BLM_SOURCE_PARSE_ERR_FA( source, "Feature: Default function name must differ from feature name." );
             }
         }
     }
@@ -1408,31 +1450,33 @@ static void bcore_plant_feature_s_parse( bcore_plant_feature_s* o, bcore_source*
     bcore_source_a_parse_fa( source, " ; " );
 
     st_s_copy_fa( &o->global_name, "#<sc_t>_#<sc_t>", o->group->name.sc, o->name.sc );
-    BLM_DOWN();
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_feature_s_expand_indef_typedef( const bcore_plant_feature_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_feature_s_expand_indef_typedef( const bcore_plant_feature_s* o, sz_t indent, bcore_sink* sink )
 {
-    //typedef ret_t (*feature_func)( feature* o, arg_t arg1 );
+    BLM_INIT();
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }  typedef #<sc_t> (*#<sc_t>_#<sc_t>)(", indent, o->ret_type.sc, o->group->name.sc, o->name.sc );
     if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
     bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group->name.sc );
-    bcore_plant_args_s_expand( &o->args, false, sink );
+    BLM_TRY( bcore_plant_args_s_expand( &o->args, false, sink ) );
     bcore_sink_a_push_fa( sink, " );" );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_feature_s_expand_spect_declaration( const bcore_plant_feature_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_feature_s_expand_spect_declaration( const bcore_plant_feature_s* o, sz_t indent, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }#<sc_t> #<sc_t>;", indent, o->global_name.sc, o->name.sc );
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_feature_s_expand_spect_definition( const bcore_plant_feature_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_feature_s_expand_spect_definition( const bcore_plant_feature_s* o, sz_t indent, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, "#rn{ }\"feature ", indent );
     if( o->strict ) bcore_sink_a_push_fa( sink, "strict " );
@@ -1444,24 +1488,26 @@ static void bcore_plant_feature_s_expand_spect_definition( const bcore_plant_fea
         bcore_sink_a_push_fa( sink, " = #<sc_t>_#<sc_t>", o->group->name.sc, o->default_name.sc );
     }
     bcore_sink_a_push_fa( sink, ";\"\n" );
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_feature_s_expand_indef_declaration( const bcore_plant_feature_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_feature_s_expand_indef_declaration( const bcore_plant_feature_s* o, sz_t indent, bcore_sink* sink )
 {
+    BLM_INIT();
     if( o->flag_p )
     {
         // static inline ret_t feature_p_func( const spect* __p, feature* o, arg_t arg1 ) { assert( __p->func ); return __p->func( o, arg1 ); }
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t> #<sc_t>_p_#<sc_t>( const #<sc_t>_s* __p,", indent, o->ret_type.sc, o->group->name.sc, o->name.sc, o->group->name.sc );
         if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
         bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group->name.sc );
-        bcore_plant_args_s_expand( &o->args, false, sink );
+        BLM_TRY( bcore_plant_args_s_expand( &o->args, false, sink ) );
         bcore_sink_a_push_fa( sink, " ) { " );
         bcore_sink_a_push_fa( sink, "assert( __p->#<sc_t> ); ", o->name.sc );
         if( o->has_ret ) bcore_sink_a_push_fa( sink, "return " );
         bcore_sink_a_push_fa( sink, "__p->#<sc_t>( o", o->name.sc );
-        bcore_plant_args_s_expand_name( &o->args, false, sink );
+        BLM_TRY( bcore_plant_args_s_expand_name( &o->args, false, sink ) );
         bcore_sink_a_push_fa( sink, " ); }" );
     }
 
@@ -1471,13 +1517,13 @@ static void bcore_plant_feature_s_expand_indef_declaration( const bcore_plant_fe
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t> #<sc_t>_t_#<sc_t>( tp_t __t,", indent, o->ret_type.sc, o->group->name.sc, o->name.sc, o->group->name.sc );
         if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
         bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group->name.sc );
-        bcore_plant_args_s_expand( &o->args, false, sink );
+        BLM_TRY( bcore_plant_args_s_expand( &o->args, false, sink ) );
         bcore_sink_a_push_fa( sink, " ) { " );
         bcore_sink_a_push_fa( sink, "const #<sc_t>_s* p = #<sc_t>_s_get_typed( __t ); ", o->group->name.sc, o->group->name.sc );
         bcore_sink_a_push_fa( sink, "assert( p->#<sc_t> ); ", o->name.sc );
         if( o->has_ret ) bcore_sink_a_push_fa( sink, "return " );
         bcore_sink_a_push_fa( sink, "p->#<sc_t>( o", o->name.sc );
-        bcore_plant_args_s_expand_name( &o->args, false, sink );
+        BLM_TRY( bcore_plant_args_s_expand_name( &o->args, false, sink ) );
         bcore_sink_a_push_fa( sink, " ); }" );
     }
 
@@ -1487,13 +1533,13 @@ static void bcore_plant_feature_s_expand_indef_declaration( const bcore_plant_fe
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t> #<sc_t>_a_#<sc_t>(", indent, o->ret_type.sc, o->group->name.sc, o->name.sc );
         if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
         bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group->name.sc );
-        bcore_plant_args_s_expand( &o->args, false, sink );
+        BLM_TRY( bcore_plant_args_s_expand( &o->args, false, sink ) );
         bcore_sink_a_push_fa( sink, " ) { " );
         bcore_sink_a_push_fa( sink, "const #<sc_t>_s* p = #<sc_t>_s_get_aware( o ); ", o->group->name.sc, o->group->name.sc );
         bcore_sink_a_push_fa( sink, "assert( p->#<sc_t> ); ", o->name.sc );
         if( o->has_ret ) bcore_sink_a_push_fa( sink, "return " );
         bcore_sink_a_push_fa( sink, "p->#<sc_t>( o", o->name.sc );
-        bcore_plant_args_s_expand_name( &o->args, false, sink );
+        BLM_TRY( bcore_plant_args_s_expand_name( &o->args, false, sink ) );
         bcore_sink_a_push_fa( sink, " ); }" );
     }
 
@@ -1502,14 +1548,14 @@ static void bcore_plant_feature_s_expand_indef_declaration( const bcore_plant_fe
         // static inline ret_t feature_r_func( const sr_s* o, arg_t arg1 ) { const features_s* p = (const features_s*)ch_spect_p( o->p, TYPEOF_feature_s ) ); assert( p->func ); return p->func( o->o, arg1 ); }
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t> #<sc_t>_r_#<sc_t>(", indent, o->ret_type.sc, o->group->name.sc, o->name.sc );
         bcore_sink_a_push_fa( sink, " const sr_s* o" );
-        bcore_plant_args_s_expand( &o->args, false, sink );
+        BLM_TRY( bcore_plant_args_s_expand( &o->args, false, sink ) );
         bcore_sink_a_push_fa( sink, " ) { " );
         if( o->mutable ) bcore_sink_a_push_fa( sink, "ASSERT( !sr_s_is_const( o ) ); ", indent );
         bcore_sink_a_push_fa( sink, "const #<sc_t>_s* p = (const #<sc_t>_s*)ch_spect_p( o->p, TYPEOF_#<sc_t>_s ); ", o->group->name.sc, o->group->name.sc, o->group->name.sc );
         bcore_sink_a_push_fa( sink, "assert( p->#<sc_t> ); ", o->name.sc );
         if( o->has_ret ) bcore_sink_a_push_fa( sink, "return " );
         bcore_sink_a_push_fa( sink, "p->#<sc_t>( o->o", o->name.sc );
-        bcore_plant_args_s_expand_name( &o->args, false, sink );
+        BLM_TRY( bcore_plant_args_s_expand_name( &o->args, false, sink ) );
         bcore_sink_a_push_fa( sink, " ); }" );
     }
 
@@ -1577,9 +1623,9 @@ static void bcore_plant_feature_s_expand_indef_declaration( const bcore_plant_fe
             bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t> #<sc_t>_#<sc_t>(", indent, o->ret_type.sc, o->group->name.sc, o->default_name.sc );
             if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
             bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group->name.sc );
-            bcore_plant_args_s_expand( &o->args, false, sink );
+            BLM_TRY( bcore_plant_args_s_expand( &o->args, false, sink ) );
             bcore_sink_a_push_fa( sink, " )" );
-            bcore_plant_body_s_expand( o->default_body, indent, sink );
+            BLM_TRY( bcore_plant_body_s_expand( o->default_body, indent, sink ) );
         }
         else
         {
@@ -1587,16 +1633,18 @@ static void bcore_plant_feature_s_expand_indef_declaration( const bcore_plant_fe
             bcore_sink_a_push_fa( sink, " \\\n#rn{ }  #<sc_t> #<sc_t>_#<sc_t>(", indent, o->ret_type.sc, o->group->name.sc, o->default_name.sc );
             if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
             bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group->name.sc );
-            bcore_plant_args_s_expand( &o->args, false, sink );
+            BLM_TRY( bcore_plant_args_s_expand( &o->args, false, sink ) );
             bcore_sink_a_push_fa( sink, " );" );
         }
     }
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_feature_s_expand_definition( const bcore_plant_feature_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_feature_s_expand_definition( const bcore_plant_feature_s* o, sz_t indent, bcore_sink* sink )
 {
+    BLM_INIT();
     if( o->default_body && !o->default_body->go_inline )
     {
         // ret_t feature_default( feature* o, arg_t arg1 );
@@ -1604,21 +1652,23 @@ static void bcore_plant_feature_s_expand_definition( const bcore_plant_feature_s
         bcore_sink_a_push_fa( sink, "\n#<sc_t> #<sc_t>_#<sc_t>(", o->ret_type.sc, o->group->name.sc, o->default_name.sc );
         if( !o->mutable ) bcore_sink_a_push_fa( sink, " const" );
         bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group->name.sc );
-        bcore_plant_args_s_expand( &o->args, false, sink );
+        BLM_TRY( bcore_plant_args_s_expand( &o->args, false, sink ) );
         bcore_sink_a_push_fa( sink, " )\n" );
-        bcore_plant_body_s_expand( o->default_body, indent, sink );
+        BLM_TRY( bcore_plant_body_s_expand( o->default_body, indent, sink ) );
     }
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_feature_s_expand_init1( const bcore_plant_feature_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_feature_s_expand_init1( const bcore_plant_feature_s* o, sz_t indent, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_FEATURE( #<sc_t> );\n", indent, o->global_name.sc );
     if( o->default_name.size > 0 )
     {
         bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_FFUNC( #<sc_t>, #<sc_t>_#<sc_t> );\n", indent, o->global_name.sc, o->group->name.sc, o->default_name.sc );
     }
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1641,7 +1691,7 @@ static tp_t bcore_plant_func_s_get_hash( const bcore_plant_func_s* o )
 //----------------------------------------------------------------------------------------------------------------------
 
 /// stamp should be NULL func is not parsed inside a stamp
-static void bcore_plant_func_s_parse( bcore_plant_func_s* o, bcore_plant_group_s* group, bcore_plant_stamp_s* stamp, bcore_source* source )
+static er_t bcore_plant_func_s_parse( bcore_plant_func_s* o, bcore_plant_group_s* group, bcore_plant_stamp_s* stamp, bcore_source* source )
 {
     BLM_INIT();
 
@@ -1654,13 +1704,13 @@ static void bcore_plant_func_s_parse( bcore_plant_func_s* o, bcore_plant_group_s
 
     if( bcore_source_a_parse_bl_fa( source, " #?'^'" ) )
     {
-        if( !stamp ) bcore_source_a_parse_err_fa( source, "'^' is only inside a stamp allowed." );
+        if( !stamp ) BLM_SOURCE_PARSE_ERR_FA( source, "'^' is only inside a stamp allowed." );
         st_s_copy( type_name, &stamp->trait_name );
         st_s_push_fa( &o->decl, "^" );
     }
     else
     {
-        bcore_plant_group_s_parse_name( group, type_name, source );
+        BLM_TRY( bcore_plant_group_s_parse_name( group, type_name, source ) );
 
         if( stamp && st_s_equal_st( type_name, &stamp->trait_name ) )
         {
@@ -1676,7 +1726,7 @@ static void bcore_plant_func_s_parse( bcore_plant_func_s* o, bcore_plant_group_s
     st_s_push_sc( &o->decl, ":" );
 
     bcore_source_a_parse_fa( source, " #name", &o->name );
-    if( o->name.size == 0 ) bcore_source_a_parse_err_fa( source, "Function name expected." );
+    if( o->name.size == 0 ) BLM_SOURCE_PARSE_ERR_FA( source, "Function name expected." );
     st_s_push_sc( &o->decl, o->name.sc );
 
     st_s_push_fa( type_name, "_#<sc_t>", o->name.sc );
@@ -1686,12 +1736,12 @@ static void bcore_plant_func_s_parse( bcore_plant_func_s* o, bcore_plant_group_s
     {
         o->body = bcore_plant_body_s_create();
         o->body->group = group;
-        bcore_plant_body_s_parse( o->body, stamp, source );
+        BLM_TRY( bcore_plant_body_s_parse( o->body, stamp, source ) );
     }
 
     bcore_source_a_parse_fa( source, " ; " );
     st_s_push_sc( &o->decl, ";" );
-    BLM_DOWN();
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1743,12 +1793,13 @@ static sz_t bcore_plant_funcs_s_get_index( bcore_plant_funcs_s* o, tp_t type )
 //----------------------------------------------------------------------------------------------------------------------
 
 /// replacing by removing old function and appending new function keeping order
-static void bcore_plant_funcs_s_replace_d( bcore_plant_funcs_s* o, sz_t idx, bcore_plant_func_s* func )
+static er_t bcore_plant_funcs_s_replace_fork( bcore_plant_funcs_s* o, sz_t idx, bcore_plant_func_s* func )
 {
     ASSERT( idx >= 0 && idx < o->size );
     bcore_plant_func_s_detach( &o->data[ idx ] );
     for( sz_t i = idx + 1; i < o->size; i++ ) o->data[ i - 1 ] = o->data[ i ];
-    o->data[ o->size - 1 ] = func;
+    o->data[ o->size - 1 ] = bcore_fork( func );
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1794,9 +1845,10 @@ static tp_t bcore_plant_stamp_s_get_hash( const bcore_plant_stamp_s* o )
 //----------------------------------------------------------------------------------------------------------------------
 
 /// resolve special characters in a string
-static st_s* stamp_s_resolve_chars( const bcore_plant_stamp_s* o, st_s* string )
+static er_t stamp_s_resolve_chars( const bcore_plant_stamp_s* o, st_s* string )
 {
-    st_s* buf = st_s_create();
+    BLM_INIT();
+    st_s* buf = BLM_CREATE( st_s );
     for( sz_t i = 0; i < string->size; i++ )
     {
         char c = string->data[ i ];
@@ -1808,15 +1860,14 @@ static st_s* stamp_s_resolve_chars( const bcore_plant_stamp_s* o, st_s* string )
                 char next = string->data[ i + 1 ];
 
                 /// TODO: Remove this check when all old code has been corrected
-                if( ( next >= 'A' && next <= 'Z' ) || ( next >= 'a' && next <= 'z' )|| ( next >= '0' && next <= '9' ) /*|| ( next == '_' )*/ )
+                if( ( next >= 'A' && next <= 'Z' ) || ( next >= 'a' && next <= 'z' )|| ( next >= '0' && next <= '9' ) )
                 {
-                    bcore_source_point_s_parse_err_fa
+                    BLM_SOURCE_POINT_PARSE_ERR_FA
                     (
                         &o->source_point,
                         "'#<sc_t>':\nCharacter '@': Automatic underscoring is deprecated. Place manual '_' please.",
                         string->sc
                     );
-                    //st_s_push_char( buf, '_' );
                 }
             }
             break;
@@ -1844,7 +1895,7 @@ static st_s* stamp_s_resolve_chars( const bcore_plant_stamp_s* o, st_s* string )
 
                     default :
                     {
-                        bcore_source_point_s_parse_err_fa
+                        BLM_SOURCE_POINT_PARSE_ERR_FA
                         (
                             &o->source_point,
                             "'#<sc_t>':\nInvalid character following '$'.",
@@ -1863,13 +1914,12 @@ static st_s* stamp_s_resolve_chars( const bcore_plant_stamp_s* o, st_s* string )
         }
     }
     st_s_copy( string, buf );
-    st_s_discard( buf );
-    return string;
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_stamp_s_extend( bcore_plant_stamp_s* o, bcore_plant_group_s* group, bcore_source* source, bl_t verbatim )
+static er_t bcore_plant_stamp_s_extend( bcore_plant_stamp_s* o, bcore_plant_group_s* group, bcore_source* source, bl_t verbatim )
 {
     BLM_INIT();
     ASSERT( o->self_source );
@@ -1889,8 +1939,9 @@ static void bcore_plant_stamp_s_extend( bcore_plant_stamp_s* o, bcore_plant_grou
     {
         if( bcore_source_a_parse_bl_fa( source, " #?w'func'" ) )
         {
-            bcore_plant_func_s* func = bcore_plant_func_s_create();
-            bcore_plant_func_s_parse( func, group, o, source );
+            BLM_INIT();
+            bcore_plant_func_s* func = BLM_CREATE( bcore_plant_func_s );
+            BLM_TRY( bcore_plant_func_s_parse( func, group, o, source ) );
 
             bl_t register_func = bcore_plant_func_s_registerable( func );
             sz_t idx = bcore_plant_funcs_s_get_index( &o->funcs, func->type );
@@ -1900,20 +1951,21 @@ static void bcore_plant_stamp_s_extend( bcore_plant_stamp_s* o, bcore_plant_grou
                 bcore_plant_func_s* prex_func = o->funcs.data[ idx ];
                 if( prex_func->overloadable )
                 {
-                    bcore_plant_funcs_s_replace_d( &o->funcs, idx, func );
+                    BLM_TRY( bcore_plant_funcs_s_replace_fork( &o->funcs, idx, func ) );
                     st_s_replace_sc_sc( o->self_source, prex_func->decl.sc, "" );
                     if( register_func ) st_s_push_st( o->self_source, &func->decl );
                 }
                 else
                 {
-                    bcore_source_a_parse_err_fa( source, "Function '#<sc_t>' has already been defined and is not overloadable.", func->name.sc );
+                    BLM_SOURCE_PARSE_ERR_FA( source, "Function '#<sc_t>' has already been defined and is not overloadable.", func->name.sc );
                 }
             }
             else
             {
-                bcore_array_a_push( ( bcore_array* )&o->funcs, sr_asd( func ) );
+                bcore_array_a_push( ( bcore_array* )&o->funcs, sr_asd( bcore_fork( func ) ) );
                 if( register_func ) st_s_push_st( o->self_source, &func->decl );
             }
+            BLM_DOWN();
         }
         else
         {
@@ -1925,10 +1977,11 @@ static void bcore_plant_stamp_s_extend( bcore_plant_stamp_s* o, bcore_plant_grou
                 {
                     case ':':
                     {
-                        st_s* name = st_s_create();
-                        bcore_plant_group_s_parse_name_recursive( group, name, source );
+                        BLM_INIT();
+                        st_s* name = BLM_CREATE( st_s );
+                        BLM_TRY( bcore_plant_group_s_parse_name_recursive( group, name, source ) );
                         st_s_push_st( o->self_source, name );
-                        st_s_discard( name );
+                        BLM_DOWN();
                     }
                     break;
 
@@ -1969,18 +2022,18 @@ static void bcore_plant_stamp_s_extend( bcore_plant_stamp_s* o, bcore_plant_grou
 
     st_s_push_sc( o->self_source, "}" );
 
-    BLM_DOWN();
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group_s* group, bcore_source* source )
+static er_t bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group_s* group, bcore_source* source )
 {
     BLM_INIT();
 
     bl_t verbatim = bcore_source_a_parse_bl_fa( source, " #?w'verbatim'" );
 
-    o->self_source = st_s_create();
+    st_s_attach( &o->self_source, st_s_create() );
 
     st_s* stamp_name = BLM_CREATE( st_s );
     st_s* trait_name = BLM_CREATE( st_s );
@@ -1989,7 +2042,7 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
 
     o->group = group;
 
-    bcore_plant_group_s_parse_name( group, stamp_name, source );
+    BLM_TRY( bcore_plant_group_s_parse_name( group, stamp_name, source ) );
 
     if( stamp_name->size >= 2 && sc_t_equ( stamp_name->sc + stamp_name->size - 2, "_s" ) )
     {
@@ -2003,11 +2056,11 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
     if( bcore_source_a_parse_bl_fa( source, " #?w'extending'" ) )
     {
         st_s* templ_name = BLM_CREATE( st_s );
-        bcore_plant_group_s_parse_name( group, templ_name, source );
+        BLM_TRY( bcore_plant_group_s_parse_name( group, templ_name, source ) );
         st_s_push_fa( templ_name, "_s" );
         const bcore_plant* item = bcore_plant_compiler_s_item_get( plant_compiler_g, typeof( templ_name->sc ) );
-        if( !item ) bcore_source_a_parse_err_fa( source, "Template #<sc_t> not found.", templ_name->sc );
-        if( *(aware_t*)item != TYPEOF_bcore_plant_stamp_s ) bcore_source_a_parse_err_fa( source, "Template #<sc_t> is no stamp.", templ_name->sc );
+        if( !item ) BLM_SOURCE_PARSE_ERR_FA( source, "Template #<sc_t> not found.", templ_name->sc );
+        if( *(aware_t*)item != TYPEOF_bcore_plant_stamp_s ) BLM_SOURCE_PARSE_ERR_FA( source, "Template #<sc_t> is no stamp.", templ_name->sc );
         bcore_plant_stamp_s_copy( o, ( bcore_plant_stamp_s* )item );
     }
     else if( !verbatim && group->extending )
@@ -2026,8 +2079,8 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
         }
         else
         {
-            bcore_plant_group_s_parse_name( o->group, trait_name, source );
-            if( trait_name->size == 0 ) bcore_source_a_parse_err_fa( source, "Trait name expected." );
+            BLM_TRY( bcore_plant_group_s_parse_name( o->group, trait_name, source ) );
+            if( trait_name->size == 0 ) BLM_SOURCE_PARSE_ERR_FA( source, "Trait name expected." );
         }
 
         st_s_copy( &o->trait_name, trait_name );
@@ -2036,73 +2089,82 @@ static void bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
 
     st_s_copy( &o->name, stamp_name );
 
-    bcore_plant_stamp_s_extend( o, group, source, verbatim );
+    BLM_TRY( bcore_plant_stamp_s_extend( o, group, source, verbatim ) );
 
-    BLM_DOWN();
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_stamp_s_finalize( bcore_plant_stamp_s* o )
+static er_t bcore_plant_stamp_s_finalize( bcore_plant_stamp_s* o )
 {
+    BLM_INIT();
     // resolve special characters in self string and function bodies
-    stamp_s_resolve_chars( o, o->self_source );
+    BLM_TRY( stamp_s_resolve_chars( o, o->self_source ) );
     for( sz_t i = 0; i < o->funcs.size; i++ )
     {
         bcore_plant_func_s* func = o->funcs.data[ i ];
-        if( func->body ) stamp_s_resolve_chars( o, &func->body->code );
+        if( func->body ) BLM_TRY( stamp_s_resolve_chars( o, &func->body->code ) );
     }
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_stamp_s_make_funcs_overloadable( bcore_plant_stamp_s* o )
+static er_t bcore_plant_stamp_s_make_funcs_overloadable( bcore_plant_stamp_s* o )
 {
     for( sz_t i = 0; i < o->funcs.size; i++ )
     {
         bcore_plant_func_s* func = o->funcs.data[ i ];
         func->overloadable = true;
     }
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_stamp_s_expand_forward( const bcore_plant_stamp_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_stamp_s_expand_forward( const bcore_plant_stamp_s* o, sz_t indent, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }BCORE_FORWARD_OBJECT( #<sc_t> );", indent, o->name.sc );
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_stamp_s_expand_indef_declaration( const bcore_plant_stamp_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_stamp_s_expand_indef_declaration( const bcore_plant_stamp_s* o, sz_t indent, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }  BETH_EXPAND_ITEM_#<sc_t>", indent, o->name.sc );
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_stamp_s_arg_s_expand( const bcore_plant_stamp_s* o, const bcore_plant_arg_s* arg, bcore_sink* sink )
+static er_t bcore_plant_stamp_s_arg_s_expand( const bcore_plant_stamp_s* o, const bcore_plant_arg_s* arg, bcore_sink* sink )
 {
     BLM_INIT();
-    bcore_sink_a_push_fa( sink, "#<sc_t> #<sc_t>", stamp_s_resolve_chars( o, BLM_CLONE( st_s, &arg->type ) )->sc, arg->name.sc );
-    BLM_DOWN();
+    st_s* arg_type = BLM_CLONE( st_s, &arg->type );
+    BLM_TRY( stamp_s_resolve_chars( o, arg_type ) );
+    bcore_sink_a_push_fa( sink, "#<sc_t> #<sc_t>", arg_type->sc, arg->name.sc );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_stamp_s_args_s_expand( const bcore_plant_stamp_s* o, const bcore_plant_args_s* args, bl_t first, bcore_sink* sink )
+static er_t bcore_plant_stamp_s_args_s_expand( const bcore_plant_stamp_s* o, const bcore_plant_args_s* args, bl_t first, bcore_sink* sink )
 {
+    BLM_INIT();
     for( sz_t i = 0; i < args->size; i++ )
     {
         if( !first ) bcore_sink_a_push_fa( sink, ", " );
         first = false;
-        bcore_plant_stamp_s_arg_s_expand( o, &args->data[ i ], sink );
+        BLM_TRY( bcore_plant_stamp_s_arg_s_expand( o, &args->data[ i ], sink ) );
     }
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o, sz_t indent, bcore_sink* sink )
 {
     BLM_INIT();
     bcore_sink_a_push_fa( sink, "#rn{ }##define TYPEOF_#<sc_t> #<tp_t>\n", indent, o->name.sc, typeof( o->name.sc ) );
@@ -2145,7 +2207,7 @@ static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
                 bcore_sink_a_push_fa( sink, "#<sc_t> #<sc_t>_#<sc_t>( ", feature->ret_type.sc, o->name.sc, func->name.sc );
                 bcore_sink_a_push_fa( sink, "#<sc_t>", feature->mutable ? "" : "const " );
                 bcore_sink_a_push_fa( sink, "#<sc_t>* o", o->name.sc );
-                bcore_plant_args_s_expand( &feature->args, false, sink );
+                BLM_TRY( bcore_plant_args_s_expand( &feature->args, false, sink ) );
                 bcore_sink_a_push_fa( sink, " )" );
 
                 if( go_inline )
@@ -2166,19 +2228,22 @@ static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
 
                 if( go_inline ) bcore_sink_a_push_fa( sink, "static inline " );
 
-                bcore_sink_a_push_fa( sink, "#<sc_t> #<sc_t>_#<sc_t>( ", stamp_s_resolve_chars( o, BLM_CLONE( st_s, &signature->ret_type ) )->sc, o->name.sc, func->name.sc );
+                st_s* ret_type = BLM_CLONE( st_s, &signature->ret_type );
+                BLM_TRY( stamp_s_resolve_chars( o, ret_type ) );
+
+                bcore_sink_a_push_fa( sink, "#<sc_t> #<sc_t>_#<sc_t>( ", ret_type->sc, o->name.sc, func->name.sc );
 
                 if( signature->arg_o )
                 {
                     bcore_sink_a_push_fa( sink, "#<sc_t>", ( signature->arg_o == TYPEOF_mutable ) ? "" : "const " );
                     bcore_sink_a_push_fa( sink, "#<sc_t>* o", o->name.sc );
-                    bcore_plant_stamp_s_args_s_expand( o, &signature->args, false, sink );
+                    BLM_TRY( bcore_plant_stamp_s_args_s_expand( o, &signature->args, false, sink ) );
                 }
                 else
                 {
                     if( signature->args.size > 0 )
                     {
-                        bcore_plant_stamp_s_args_s_expand( o, &signature->args, true, sink );
+                        BLM_TRY( bcore_plant_stamp_s_args_s_expand( o, &signature->args, true, sink ) );
                     }
                     else
                     {
@@ -2190,7 +2255,7 @@ static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
 
                 if( go_inline )
                 {
-                    bcore_plant_body_s_expand( func->body, indent, sink );
+                    BLM_TRY( bcore_plant_body_s_expand( func->body, indent, sink ) );
                 }
                 else
                 {
@@ -2199,12 +2264,12 @@ static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
             }
             else
             {
-                bcore_source_point_s_parse_err_fa( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
+                BLM_SOURCE_POINT_PARSE_ERR_FA( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
             }
         }
         else
         {
-            bcore_source_point_s_parse_err_fa( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
+            BLM_SOURCE_POINT_PARSE_ERR_FA( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
         }
         BLM_DOWN();
     }
@@ -2226,7 +2291,7 @@ static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
 
         if( !array_item )
         {
-            bcore_source_point_s_parse_err_fa( &o->source_point, "Expanding object #<sc_t>: Object is of trait array but contains no array.", o->name.sc );
+            BLM_SOURCE_POINT_PARSE_ERR_FA( &o->source_point, "Expanding object #<sc_t>: Object is of trait array but contains no array.", o->name.sc );
         }
 
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t>* #<sc_t>_set_space( #<sc_t>* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_#<sc_t>, ( bcore_array* )o, size ); return o; }", indent, o->name.sc, o->name.sc, o->name.sc, o->name.sc );
@@ -2234,11 +2299,11 @@ static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t>* #<sc_t>_clear( #<sc_t>* o ) { bcore_array_t_set_space( TYPEOF_#<sc_t>, ( bcore_array* )o, 0 ); return o; }",                   indent, o->name.sc, o->name.sc, o->name.sc, o->name.sc );
 
         sc_t  sc_name = ifnameof( array_item->name );
-        st_s* st_last = st_s_create_fa( "o->#<sc_t>#<sc_t>data[ o->#<sc_t>#<sc_t>size - 1 ]", sc_name, sc_name[ 0 ] ? "_" : "", sc_name, sc_name[ 0 ] ? "_" : ""  );
+        st_s* st_last = BLM_A_PUSH( st_s_create_fa( "o->#<sc_t>#<sc_t>data[ o->#<sc_t>#<sc_t>size - 1 ]", sc_name, sc_name[ 0 ] ? "_" : "", sc_name, sc_name[ 0 ] ? "_" : ""  ) );
         sc_t  sc_last = st_last->sc;
         if( array_item->type != 0 && nameof( array_item->type ) != NULL )
         {
-            sc_t  sc_type = ifnameof( array_item->type );
+            sc_t sc_type = ifnameof( array_item->type );
             if( array_item->caps == BCORE_CAPS_ARRAY_DYN_LINK_AWARE )
             {
                 bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline #<sc_t>* #<sc_t>_push_c( #<sc_t>* o, const #<sc_t>* v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_awc( v ) ); return #<sc_t>; }", indent, sc_type, o->name.sc, o->name.sc, sc_type, o->name.sc, sc_last );
@@ -2279,16 +2344,15 @@ static void bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
                 bcore_sink_a_push_fa( sink, " \\\n#rn{ }  static inline void #<sc_t>_push_d( #<sc_t>* o, vd_t v ) { bcore_array_t_push( TYPEOF_#<sc_t>, ( bcore_array* )o, sr_asd( v ) ); }", indent, o->name.sc, o->name.sc, o->name.sc );
             }
         }
-        st_s_detach( &st_last );
     }
 
     bcore_sink_a_push_fa( sink, "\n" );
-    BLM_DOWN();
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_stamp_s_expand_definition( const bcore_plant_stamp_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_stamp_s_expand_definition( const bcore_plant_stamp_s* o, sz_t indent, bcore_sink* sink )
 {
     BLM_INIT();
     st_s* embedded_string = BLM_A_PUSH( create_embedded_string( o->self_source ) );
@@ -2296,7 +2360,7 @@ static void bcore_plant_stamp_s_expand_definition( const bcore_plant_stamp_s* o,
     // 4095 is the C99-limit for string literals
     if( embedded_string->size > 4095 )
     {
-        bcore_source_point_s_parse_err_fa
+        BLM_SOURCE_POINT_PARSE_ERR_FA
         (
             &o->source_point,
             "Plant Compiler: Reflection embedding failed.\n"
@@ -2315,7 +2379,7 @@ static void bcore_plant_stamp_s_expand_definition( const bcore_plant_stamp_s* o,
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }BCORE_DEFINE_OBJECT_INST_P( #<sc_t> )\n", indent, o->name.sc );
 
-    st_s* multiline_string = create_structured_multiline_string( self_def, indent );
+    st_s* multiline_string = BLM_A_PUSH( create_structured_multiline_string( self_def, indent ) );
     bcore_sink_a_push_fa( sink, "#<sc_t>;\n", multiline_string->sc );
 
     for( sz_t i = 0; i < o->funcs.size; i++ )
@@ -2335,9 +2399,9 @@ static void bcore_plant_stamp_s_expand_definition( const bcore_plant_stamp_s* o,
                     bcore_sink_a_push_fa( sink, "#rn{ }#<sc_t> #<sc_t>_#<sc_t>( ", indent, feature->ret_type.sc, o->name.sc, func->name.sc );
                     bcore_sink_a_push_fa( sink, "#<sc_t>", feature->mutable ? "" : "const " );
                     bcore_sink_a_push_fa( sink, "#<sc_t>* o", o->name.sc );
-                    bcore_plant_args_s_expand( &feature->args, false, sink );
+                    BLM_TRY( bcore_plant_args_s_expand( &feature->args, false, sink ) );
                     bcore_sink_a_push_fa( sink, " )\n" );
-                    bcore_plant_body_s_expand( func->body, indent, sink );
+                    BLM_TRY( bcore_plant_body_s_expand( func->body, indent, sink ) );
                     bcore_sink_a_push_fa( sink, "\n" );
                 }
             }
@@ -2348,18 +2412,20 @@ static void bcore_plant_stamp_s_expand_definition( const bcore_plant_stamp_s* o,
                 if( func->body && !func->body->go_inline )
                 {
                     bcore_sink_a_push_fa( sink, "\n" );
-                    bcore_sink_a_push_fa( sink, "#rn{ }#<sc_t> #<sc_t>_#<sc_t>( ", indent, stamp_s_resolve_chars( o, BLM_CLONE( st_s, &signature->ret_type ) )->sc, o->name.sc, func->name.sc );
+                    st_s* ret_type = BLM_CLONE( st_s, &signature->ret_type );
+                    BLM_TRY( stamp_s_resolve_chars( o, ret_type ) );
+                    bcore_sink_a_push_fa( sink, "#rn{ }#<sc_t> #<sc_t>_#<sc_t>( ", indent, ret_type->sc, o->name.sc, func->name.sc );
                     if( signature->arg_o )
                     {
                         bcore_sink_a_push_fa( sink, "#<sc_t>", ( signature->arg_o == TYPEOF_mutable ) ? "" : "const " );
                         bcore_sink_a_push_fa( sink, "#<sc_t>* o", o->name.sc );
-                        bcore_plant_stamp_s_args_s_expand( o, &signature->args, false, sink );
+                        BLM_TRY( bcore_plant_stamp_s_args_s_expand( o, &signature->args, false, sink ) );
                     }
                     else
                     {
                         if( signature->args.size > 0 )
                         {
-                            bcore_plant_stamp_s_args_s_expand( o, &signature->args, true, sink );
+                            BLM_TRY( bcore_plant_stamp_s_args_s_expand( o, &signature->args, true, sink ) );
                         }
                         else
                         {
@@ -2368,30 +2434,30 @@ static void bcore_plant_stamp_s_expand_definition( const bcore_plant_stamp_s* o,
                     }
 
                     bcore_sink_a_push_fa( sink, " )\n" );
-                    bcore_plant_body_s_expand( func->body, indent, sink );
+                    BLM_TRY( bcore_plant_body_s_expand( func->body, indent, sink ) );
                     bcore_sink_a_push_fa( sink, "\n" );
                 }
             }
             else
             {
-                bcore_source_point_s_parse_err_fa( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
+                BLM_SOURCE_POINT_PARSE_ERR_FA( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
             }
         }
         else
         {
-            bcore_source_point_s_parse_err_fa( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
+            BLM_SOURCE_POINT_PARSE_ERR_FA( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
         }
         BLM_DOWN();
     }
 
-    st_s_discard( multiline_string );
-    BLM_DOWN();
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_stamp_s_expand_init1( const bcore_plant_stamp_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_stamp_s_expand_init1( const bcore_plant_stamp_s* o, sz_t indent, bcore_sink* sink )
 {
+    BLM_INIT();
     for( sz_t i = 0; i < o->funcs.size; i++ )
     {
         bcore_plant_func_s* func = o->funcs.data[ i ];
@@ -2413,15 +2479,16 @@ static void bcore_plant_stamp_s_expand_init1( const bcore_plant_stamp_s* o, sz_t
             }
             else
             {
-                bcore_source_point_s_parse_err_fa( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
+                BLM_SOURCE_POINT_PARSE_ERR_FA( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
             }
         }
         else
         {
-            bcore_source_point_s_parse_err_fa( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
+            BLM_SOURCE_POINT_PARSE_ERR_FA( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
         }
     }
     bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_OBJECT( #<sc_t> );\n", indent, o->name.sc );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2447,37 +2514,40 @@ static tp_t bcore_plant_name_s_get_hash( const bcore_plant_name_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_name_s_parse( bcore_plant_name_s* o, bcore_source* source )
+static er_t bcore_plant_name_s_parse( bcore_plant_name_s* o, bcore_source* source )
 {
+    BLM_INIT();
     bcore_source_point_s_set( &o->source_point, source );
 
     if( bcore_source_a_parse_bl_fa( source, " #?':'" ) )
     {
-        st_s* name = st_s_create();
+        st_s* name = BLM_CREATE( st_s );
         bcore_source_a_parse_fa( source, " #name", name );
         st_s_push_fa( &o->name, "#<sc_t>#<sc_t>#<sc_t>", o->group->name.sc, name->sc[ 0 ] ? "_" : "", name->sc );
-        st_s_discard( name );
     }
     else
     {
         bcore_source_a_parse_fa( source, " #name", &o->name );
     }
-    if( o->name.size == 0 ) bcore_source_a_parse_err_fa( source, "Feature: Name missing." );
+    if( o->name.size == 0 ) BLM_SOURCE_PARSE_ERR_FA( source, "Feature: Name missing." );
     bcore_source_a_parse_fa( source, " ; " );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_name_s_expand_declaration( const bcore_plant_name_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_name_s_expand_declaration( const bcore_plant_name_s* o, sz_t indent, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, "#rn{ }##define TYPEOF_#<sc_t> #<tp_t>\n", indent, o->name.sc, typeof( o->name.sc ) );
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_name_s_expand_init1( const bcore_plant_name_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_name_s_expand_init1( const bcore_plant_name_s* o, sz_t indent, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_NAME( #<sc_t> );\n", indent, o->name.sc );
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2503,44 +2573,48 @@ static tp_t bcore_plant_forward_s_get_hash( const bcore_plant_forward_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_forward_s_parse( bcore_plant_forward_s* o, bcore_source* source )
+static er_t bcore_plant_forward_s_parse( bcore_plant_forward_s* o, bcore_source* source )
 {
+    BLM_INIT();
     bcore_source_point_s_set( &o->source_point, source );
 
     if( bcore_source_a_parse_bl_fa( source, " #?':'" ) )
     {
-        st_s* name = st_s_create();
+        st_s* name = BLM_CREATE( st_s );
         bcore_source_a_parse_fa( source, " #name", name );
         st_s_push_fa( &o->name, "#<sc_t>#<sc_t>#<sc_t>", o->group->name.sc, name->sc[ 0 ] ? "_" : "", name->sc );
-        st_s_discard( name );
     }
     else
     {
         bcore_source_a_parse_fa( source, " #name", &o->name );
     }
-    if( o->name.size == 0 ) bcore_source_a_parse_err_fa( source, "Feature: Name missing." );
+    if( o->name.size == 0 ) BLM_SOURCE_PARSE_ERR_FA( source, "Feature: Name missing." );
     bcore_source_a_parse_fa( source, " ; " );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_forward_s_expand_declaration( const bcore_plant_forward_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_forward_s_expand_declaration( const bcore_plant_forward_s* o, sz_t indent, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, "#rn{ }##define TYPEOF_#<sc_t> #<tp_t>\n",  indent, o->name.sc, typeof( o->name.sc ) );
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_forward_s_expand_forward( const bcore_plant_forward_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_forward_s_expand_forward( const bcore_plant_forward_s* o, sz_t indent, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }BCORE_FORWARD_OBJECT( #<sc_t> );", indent, o->name.sc );
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_forward_s_expand_init1( const bcore_plant_forward_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_forward_s_expand_init1( const bcore_plant_forward_s* o, sz_t indent, bcore_sink* sink )
 {
 //    bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_NAME( #<sc_t> );\n", indent, o->name.sc );
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2564,23 +2638,24 @@ static tp_t bcore_plant_group_s_get_hash( const bcore_plant_group_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_group_s_parse_name_recursive( bcore_plant_group_s* o, st_s* name, bcore_source* source )
+static er_t bcore_plant_group_s_parse_name_recursive( bcore_plant_group_s* o, st_s* name, bcore_source* source )
 {
+    BLM_INIT();
     if( bcore_source_a_parse_bl_fa( source, "#?':'" ) )
     {
         if( o->group )
         {
-            bcore_plant_group_s_parse_name_recursive( o->group, name, source );
+            BLM_TRY( bcore_plant_group_s_parse_name_recursive( o->group, name, source ) );
         }
         else
         {
-            bcore_source_a_parse_err_fa( source, "Too many colons: Namespace depth exceeded." );
+            BLM_SOURCE_PARSE_ERR_FA( source, "Too many colons: Namespace depth exceeded." );
         }
     }
     else
     {
         st_s_copy( name, &o->name );
-        st_s* s = st_s_create();
+        st_s* s = BLM_CREATE( st_s );
         bcore_source_a_parse_fa( source, " #name", s );
 
         // include certain key-characters in name
@@ -2594,27 +2669,29 @@ static void bcore_plant_group_s_parse_name_recursive( bcore_plant_group_s* o, st
         {
             st_s_push_fa( name, "_#<sc_t>", s->sc );
         }
-        st_s_discard( s );
     }
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_group_s_parse_name( bcore_plant_group_s* o, st_s* name, bcore_source* source )
+static er_t bcore_plant_group_s_parse_name( bcore_plant_group_s* o, st_s* name, bcore_source* source )
 {
+    BLM_INIT();
     if( bcore_source_a_parse_bl_fa( source, " #?':'" ) )
     {
-        bcore_plant_group_s_parse_name_recursive( o, name, source );
+        BLM_TRY( bcore_plant_group_s_parse_name_recursive( o, name, source ) );
     }
     else
     {
         bcore_source_a_parse_fa( source, " #name", name );
     }
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* source )
+static er_t bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* source )
 {
     BLM_INIT();
     sc_t precode_termination = NULL;
@@ -2646,7 +2723,7 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
             }
 
             char c = bcore_source_a_get_u0( source );
-            if( c != ' ' && c != '\t' && c != '\n' ) bcore_source_a_parse_err_fa( source, "Opening c-style comment '/*' or '#<sc_t>' expected.", "#ifdef PLANT_SECTION" );
+            if( c != ' ' && c != '\t' && c != '\n' ) BLM_SOURCE_PARSE_ERR_FA( source, "Opening c-style comment '/*' or '#<sc_t>' expected.", "#ifdef PLANT_SECTION" );
         }
     }
 
@@ -2654,74 +2731,88 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
 
     while( !bcore_source_a_parse_bl_fa( source, precode_termination ) )
     {
-        if( bcore_source_a_eos( source ) )  bcore_source_a_parse_err_fa( source, "Closing c-style comment '*/' expected." );
+        if( bcore_source_a_eos( source ) ) BLM_SOURCE_PARSE_ERR_FA( source, "Closing c-style comment '*/' expected." );
 
         bcore_plant* item = NULL;
 
         if( bcore_source_a_parse_bl_fa( source, " #?w'stamp' " ) )
         {
-            bcore_plant_stamp_s* stamp = bcore_plant_stamp_s_create();
-            bcore_plant_stamp_s_parse( stamp, o, source );
-            bcore_plant_compiler_s_item_register( plant_compiler_g, ( bcore_plant* )stamp, source );
-            item = ( bcore_plant* )stamp;
+            BLM_INIT();
+            bcore_plant_stamp_s* stamp = BLM_CREATE( bcore_plant_stamp_s );
+            BLM_TRY( bcore_plant_stamp_s_parse( stamp, o, source ) );
+            BLM_TRY( bcore_plant_compiler_s_item_register( plant_compiler_g, ( bcore_plant* )stamp, source ) );
+            item = ( bcore_plant* )bcore_fork( stamp );
+            BLM_DOWN();
         }
 
         /// stumps are 'hidden' stamps (not expanded into final code), but they can be used as template
         else if( bcore_source_a_parse_bl_fa( source, " #?w'stump' " ) )
         {
-            bcore_plant_stamp_s* stump = bcore_plant_stamp_s_create();
-            bcore_plant_stamp_s_parse( stump, o, source );
-            bcore_plant_stamp_s_make_funcs_overloadable( stump );
-            bcore_plant_compiler_s_item_register( plant_compiler_g, ( bcore_plant* )stump, source );
-            bcore_plant_compiler_s_life_a_push( plant_compiler_g, stump );
+            BLM_INIT();
+            bcore_plant_stamp_s* stump = BLM_CREATE( bcore_plant_stamp_s );
+            BLM_TRY( bcore_plant_stamp_s_parse( stump, o, source ) );
+            BLM_TRY( bcore_plant_stamp_s_make_funcs_overloadable( stump ) );
+            BLM_TRY( bcore_plant_compiler_s_item_register( plant_compiler_g, ( bcore_plant* )stump, source ) );
+            BLM_TRY( bcore_plant_compiler_s_life_a_push( plant_compiler_g, bcore_fork( stump ) ) );
             if( extend_stump )
             {
                 o->extending = stump;
                 extend_stump = false;
             }
             item = NULL;
+            BLM_DOWN();
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'signature' " ) )
         {
-            bcore_plant_signature_s* signature = bcore_plant_signature_s_create();
+            BLM_INIT();
+            bcore_plant_signature_s* signature = BLM_CREATE( bcore_plant_signature_s );
             signature->group = o;
-            bcore_plant_signature_s_parse( signature, source );
+            BLM_TRY( bcore_plant_signature_s_parse( signature, source ) );
             bcore_source_a_parse_fa( source, " ; " );
-            bcore_plant_compiler_s_item_register( plant_compiler_g, ( bcore_plant* )signature, source );
-            item = ( bcore_plant* )signature;
+            BLM_TRY( bcore_plant_compiler_s_item_register( plant_compiler_g, ( bcore_plant* )signature, source ) );
+            item = ( bcore_plant* )bcore_fork( signature );
+            BLM_DOWN();
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'body' " ) )
         {
-            bcore_plant_body_s* body = bcore_plant_body_s_create();
+            BLM_INIT();
+            bcore_plant_body_s* body = BLM_CREATE( bcore_plant_body_s );
             body->group = o;
-            bcore_plant_body_s_parse( body, NULL, source );
+            BLM_TRY( bcore_plant_body_s_parse( body, NULL, source ) );
             bcore_source_a_parse_fa( source, " ; " );
-            bcore_plant_compiler_s_item_register( plant_compiler_g, ( bcore_plant* )body, source );
-            item = ( bcore_plant* )body;
+            BLM_TRY( bcore_plant_compiler_s_item_register( plant_compiler_g, ( bcore_plant* )body, source ) );
+            item = ( bcore_plant* )bcore_fork( body );
+            BLM_DOWN();
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'feature' " ) )
         {
-            bcore_plant_feature_s* feature = bcore_plant_feature_s_create();
+            BLM_INIT();
+            bcore_plant_feature_s* feature = BLM_CREATE( bcore_plant_feature_s );
             feature->group = o;
-            bcore_plant_feature_s_parse( feature, source );
-            bcore_plant_compiler_s_item_register( plant_compiler_g, ( bcore_plant* )feature, source );
+            BLM_TRY( bcore_plant_feature_s_parse( feature, source ) );
+            BLM_TRY( bcore_plant_compiler_s_item_register( plant_compiler_g, ( bcore_plant* )feature, source ) );
             o->has_features = true;
             if( feature->flag_a ) o->is_aware = true;
-            item = ( bcore_plant* )feature;
+            item = ( bcore_plant* )bcore_fork( feature );
+            BLM_DOWN();
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'name' " ) )
         {
-            bcore_plant_name_s* name = bcore_plant_name_s_create();
+            BLM_INIT();
+            bcore_plant_name_s* name = BLM_CREATE( bcore_plant_name_s );
             name->group = o;
-            bcore_plant_name_s_parse( name, source );
-            item = ( bcore_plant* )name;
+            BLM_TRY( bcore_plant_name_s_parse( name, source ) );
+            item = ( bcore_plant* )bcore_fork( name );
+            BLM_DOWN();
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'forward' " ) )
         {
-            bcore_plant_forward_s* forward = bcore_plant_forward_s_create();
+            BLM_INIT();
+            bcore_plant_forward_s* forward = BLM_CREATE( bcore_plant_forward_s );
             forward->group = o;
-            bcore_plant_forward_s_parse( forward, source );
-            item = ( bcore_plant* )forward;
+            BLM_TRY( bcore_plant_forward_s_parse( forward, source ) );
+            item = ( bcore_plant* )bcore_fork( forward );
+            BLM_DOWN();
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'expandable'" ) )
         {
@@ -2730,7 +2821,7 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
             else if( bcore_source_a_parse_bl_fa( source, " #?'false'" ) ) o->expandable = false;
             else
             {
-                bcore_source_a_parse_err_fa( source, "'true' or 'false' expected." );
+                BLM_SOURCE_PARSE_ERR_FA( source, "'true' or 'false' expected." );
             }
             bcore_source_a_parse_fa( source, " ; " );
         }
@@ -2748,53 +2839,57 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
             else
             {
                 st_s* templ_name = BLM_CREATE( st_s );
-                bcore_plant_group_s_parse_name( o, templ_name, source );
+                BLM_TRY( bcore_plant_group_s_parse_name( o, templ_name, source ) );
                 st_s_push_fa( templ_name, "_s" );
                 const bcore_plant* item = bcore_plant_compiler_s_item_get( plant_compiler_g, typeof( templ_name->sc ) );
-                if( !item ) bcore_source_a_parse_err_fa( source, "Template #<sc_t> not found.", templ_name->sc );
-                if( *(aware_t*)item != TYPEOF_bcore_plant_stamp_s ) bcore_source_a_parse_err_fa( source, "Template #<sc_t> is no stamp.", templ_name->sc );
+                if( !item ) BLM_SOURCE_PARSE_ERR_FA( source, "Template #<sc_t> not found.", templ_name->sc );
+                if( *(aware_t*)item != TYPEOF_bcore_plant_stamp_s ) BLM_SOURCE_PARSE_ERR_FA( source, "Template #<sc_t> is no stamp.", templ_name->sc );
                 o->extending = ( bcore_plant_stamp_s* )item;
                 bcore_source_a_parse_fa( source, " ;" );
             }
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'func'" ) )
         {
-            bcore_plant_func_s* func = bcore_plant_func_s_create();
+            BLM_INIT();
+            bcore_plant_func_s* func = BLM_CREATE( bcore_plant_func_s );
             bcore_plant_func_s_parse( func, o, NULL, source );
             func->overloadable = true;
             o->hash = bcore_tp_fold_tp( o->hash, bcore_plant_func_s_get_hash( func ) );
 
             if( bcore_plant_funcs_s_exists( &o->funcs, func->type ) )
             {
-                bcore_plant_funcs_s_replace_d( &o->funcs, bcore_plant_funcs_s_get_index( &o->funcs, func->type ), func );
+                BLM_TRY( bcore_plant_funcs_s_replace_fork( &o->funcs, bcore_plant_funcs_s_get_index( &o->funcs, func->type ), func ) );
             }
             else
             {
-                bcore_array_a_push( ( bcore_array* )&o->funcs, sr_asd( func ) );
+                bcore_array_a_push( ( bcore_array* )&o->funcs, sr_asd( bcore_fork( func ) ) );
             }
+            BLM_DOWN();
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'group' " ) )
         {
-            bcore_plant_group_s* group = bcore_plant_group_s_create();
-            bcore_plant_source_s_push_group( o->source, group );
+            BLM_INIT();
+            bcore_plant_group_s* group = BLM_CREATE( bcore_plant_group_s );
+            BLM_TRY( bcore_plant_source_s_push_group( o->source, bcore_fork( group ) ) );
             group->group       = o;
             group->source      = o->source;
             group->extending   = o->extending;
-            bcore_plant_group_s_parse_name( o, &group->name, source );
+            BLM_TRY( bcore_plant_group_s_parse_name( o, &group->name, source ) );
             bcore_source_a_parse_fa( source, " =" );
 
             // flags
             if( bcore_source_a_parse_bl_fa( source, " #?w'retrievable' " ) ) group->retrievable = true;
 
-            bcore_plant_group_s_parse_name( o, &group->trait_name, source );
+            BLM_TRY( bcore_plant_group_s_parse_name( o, &group->trait_name, source ) );
             if( group->trait_name.size == 0 ) st_s_copy( &group->trait_name, &o->name );
-            bcore_plant_group_s_parse( group, source );
+            BLM_TRY( bcore_plant_group_s_parse( group, source ) );
             bcore_source_a_parse_fa( source, " ; " );
             o->source->hash = bcore_tp_fold_tp( o->source->hash, group->hash );
-            bcore_plant_compiler_s_group_register( plant_compiler_g, group, source );
-            bcore_plant_nested_group_s* nested_group = bcore_plant_nested_group_s_create();
+            BLM_TRY( bcore_plant_compiler_s_group_register( plant_compiler_g, group, source ) );
+            bcore_plant_nested_group_s* nested_group = BLM_CREATE( bcore_plant_nested_group_s );
             nested_group->group = group;
-            item = ( bcore_plant* )nested_group;
+            item = ( bcore_plant* )bcore_fork( nested_group );
+            BLM_DOWN();
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'set' " ) )
         {
@@ -2804,14 +2899,14 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
             }
             else
             {
-                bcore_source_a_parse_err_fa( source, "Invalid flag." );
+                BLM_SOURCE_PARSE_ERR_FA( source, "Invalid flag." );
             }
 
             bcore_source_a_parse_fa( source, " ;" );
         }
         else
         {
-            bcore_source_a_parse_err_fa( source, "Plant: syntax error." );
+            BLM_SOURCE_PARSE_ERR_FA( source, "Plant: syntax error." );
         }
 
         // hash group parameters
@@ -2823,34 +2918,39 @@ static void bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
             bcore_array_a_push( ( bcore_array* )o, sr_asd( item ) );
         }
     }
-    BLM_DOWN();
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_group_s_finalize( bcore_plant_group_s* o )
+static er_t bcore_plant_group_s_finalize( bcore_plant_group_s* o )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bcore_plant_a_finalize( o->data[ i ] );
+    BLM_INIT();
+    for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_a_finalize( o->data[ i ] ) );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_group_s_expand_forward( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_group_s_expand_forward( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
 {
-    if( !o->expandable ) return;
+    BLM_INIT();
+    if( !o->expandable ) BLM_RETURN_ER0();
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }BCORE_FORWARD_OBJECT( #<sc_t> );", indent, o->name.sc );
-    for( sz_t i = 0; i < o->size; i++ ) bcore_plant_a_expand_forward( o->data[ i ], indent, sink );
+    for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_a_expand_forward( o->data[ i ], indent, sink ) );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_group_s_expand_spect_declaration( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_group_s_expand_spect_declaration( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
 {
-    if( !o->expandable ) return;
+    BLM_INIT();
+    if( !o->expandable ) BLM_RETURN_ER0();
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }BCORE_DECLARE_SPECT( #<sc_t> )", indent, o->name.sc );
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }{", indent );
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }    bcore_spect_header_s header;", indent );
-    for( sz_t i = 0; i < o->size; i++ ) bcore_plant_a_expand_spect_declaration( o->data[ i ], indent + 4, sink );
+    for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_a_expand_spect_declaration( o->data[ i ], indent + 4, sink ) );
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }};", indent );
 
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }static inline #<sc_t>* #<sc_t>_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_#<sc_t>, t ); return ( #<sc_t>* )bcore_inst_t_create( t ); }", indent, o->name.sc, o->name.sc, o->name.sc, o->name.sc );
@@ -2862,14 +2962,17 @@ static void bcore_plant_group_s_expand_spect_declaration( const bcore_plant_grou
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( #<sc_t> )", indent, o->name.sc );
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }static inline bl_t #<sc_t>_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_#<sc_t> ); }", indent, o->name.sc, o->name.sc );
     }
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_group_s_expand_declaration( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_group_s_expand_declaration( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
 {
-    if( !o->expandable ) return;
     BLM_INIT();
+
+    if( !o->expandable ) BLM_RETURN_ER0();
+
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }//#rn{-}\n", indent, sz_max( 0, 118 - indent ) );
     bcore_sink_a_push_fa( sink, "#rn{ }// group: #<sc_t>\n", indent, o->name.sc );
@@ -2882,41 +2985,44 @@ static void bcore_plant_group_s_expand_declaration( const bcore_plant_group_s* o
         bcore_sink_a_push_fa( sink, "#rn{ }##define TYPEOF_#<sc_t> #<tp_t>\n", indent, spect_name->sc, typeof( spect_name->sc ) );
     }
 
-    for( sz_t i = 0; i < o->size; i++ ) bcore_plant_a_expand_declaration( o->data[ i ], indent, sink );
+    for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_a_expand_declaration( o->data[ i ], indent, sink ) );
     bcore_sink_a_push_fa( sink, "#rn{ }##define BETH_EXPAND_GROUP_#<sc_t>", indent, o->name.sc );
 
-    bcore_plant_group_s_expand_forward( o, indent + 2, sink );
+    BLM_TRY( bcore_plant_group_s_expand_forward( o, indent + 2, sink ) );
 
     if( o->has_features )
     {
-        for( sz_t i = 0; i < o->size; i++ ) bcore_plant_a_expand_indef_typedef( o->data[ i ], indent, sink );
-        bcore_plant_group_s_expand_spect_declaration( o, indent + 2, sink );
+        for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_a_expand_indef_typedef( o->data[ i ], indent, sink ) );
+        BLM_TRY( bcore_plant_group_s_expand_spect_declaration( o, indent + 2, sink ) );
     }
 
-    for( sz_t i = 0; i < o->size; i++ ) bcore_plant_a_expand_indef_declaration( o->data[ i ], indent, sink );
+    for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_a_expand_indef_declaration( o->data[ i ], indent, sink ) );
 
     bcore_sink_a_push_fa( sink, "\n" );
-    BLM_DOWN();
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_group_s_expand_spect_definition( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_group_s_expand_spect_definition( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
 {
-    if( !o->expandable ) return;
+    BLM_INIT();
+    if( !o->expandable ) BLM_RETURN_ER0();
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }BCORE_DEFINE_SPECT( #<sc_t>, #<sc_t> )\n", indent, o->trait_name.sc, o->name.sc );
     bcore_sink_a_push_fa( sink, "#rn{ }\"{\"\n", indent );
     bcore_sink_a_push_fa( sink, "#rn{ }    \"bcore_spect_header_s header;\"\n", indent );
-    for( sz_t i = 0; i < o->size; i++ ) bcore_plant_a_expand_spect_definition( o->data[ i ], indent + 4, sink );
+    for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_a_expand_spect_definition( o->data[ i ], indent + 4, sink ) );
     bcore_sink_a_push_fa( sink, "#rn{ }\"}\";\n", indent );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_group_s_expand_definition( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_group_s_expand_definition( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
 {
-    if( !o->expandable ) return;
+    BLM_INIT();
+    if( !o->expandable ) BLM_RETURN_ER0();
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }//#rn{-}\n", indent, sz_max( 0, 118 - indent ) );
     bcore_sink_a_push_fa( sink, "#rn{ }// group: #<sc_t>\n", indent, o->name.sc );
@@ -2925,32 +3031,34 @@ static void bcore_plant_group_s_expand_definition( const bcore_plant_group_s* o,
         // non-features
         if( *(aware_t*)o->data[ i ] != TYPEOF_bcore_plant_feature_s )
         {
-            bcore_plant_a_expand_definition( o->data[ i ], indent, sink );
+            BLM_TRY( bcore_plant_a_expand_definition( o->data[ i ], indent, sink ) );
         }
     }
 
     if( o->has_features )
     {
-        bcore_plant_group_s_expand_spect_definition( o, indent, sink );
+        BLM_TRY( bcore_plant_group_s_expand_spect_definition( o, indent, sink ) );
         for( sz_t i = 0; i < o->size; i++ )
         {
             // just-features
             if( *(aware_t*)o->data[ i ] == TYPEOF_bcore_plant_feature_s )
             {
-                bcore_plant_a_expand_definition( o->data[ i ], indent, sink );
+                BLM_TRY( bcore_plant_a_expand_definition( o->data[ i ], indent, sink ) );
             }
         }
     }
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_group_s_expand_init1( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_group_s_expand_init1( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
 {
-    if( !o->expandable ) return;
+    BLM_INIT();
+    if( !o->expandable ) BLM_RETURN_ER0();
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }// group: #<sc_t>\n", indent, o->name.sc );
-    for( sz_t i = 0; i < o->size; i++ ) bcore_plant_a_expand_init1( o->data[ i ], indent, sink );
+    for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_a_expand_init1( o->data[ i ], indent, sink ) );
 
     if( o->has_features )
     {
@@ -2972,6 +3080,7 @@ static void bcore_plant_group_s_expand_init1( const bcore_plant_group_s* o, sz_t
             }
         }
     }
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2988,16 +3097,18 @@ static tp_t bcore_plant_nested_group_s_get_hash( const bcore_plant_nested_group_
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_nested_group_s_expand_forward( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_nested_group_s_expand_forward( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }BCORE_FORWARD_OBJECT( #<sc_t> );", indent, o->group->name.sc );
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_nested_group_s_expand_indef_declaration( const bcore_plant_nested_group_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_nested_group_s_expand_indef_declaration( const bcore_plant_nested_group_s* o, sz_t indent, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }  BETH_EXPAND_GROUP_#<sc_t>", indent, o->group->name.sc );
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3007,94 +3118,111 @@ static void bcore_plant_nested_group_s_expand_indef_declaration( const bcore_pla
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_source_s_push_group( bcore_plant_source_s* o, bcore_plant_group_s* group )
+static er_t bcore_plant_source_s_push_group( bcore_plant_source_s* o, bcore_plant_group_s* group )
 {
     bcore_array_a_push( ( bcore_array* )o, sr_asd( group ) );
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_source_s_parse( bcore_plant_source_s* o, bcore_source* source )
+static er_t bcore_plant_source_s_parse( bcore_plant_source_s* o, bcore_source* source )
 {
+    BLM_INIT();
     while( !bcore_source_a_eos( source ) )
     {
         bcore_plant_group_s* group = NULL;
 
         if( bcore_source_a_parse_bl_fa( source, "#?w'PLANT_GROUP'" ) )
         {
-            group = bcore_plant_group_s_create();
-            bcore_plant_source_s_push_group( o, group );
+            BLM_INIT();
+            group = BLM_CREATE( bcore_plant_group_s );
+            BLM_TRY( bcore_plant_source_s_push_group( o, bcore_fork( group ) ) );
             group->source = o;
             bcore_source_a_parse_fa( source, " ( #name, #name )", &group->name, &group->trait_name );
+            BLM_DOWN();
         }
 
         /* deprecated */
         else if( bcore_source_a_parse_bl_fa( source, "#?w'BETH_PLANT_GROUP_H'" ) )
         {
-            group = bcore_plant_group_s_create();
-            bcore_plant_source_s_push_group( o, group );
+            BLM_INIT();
+            group = BLM_CREATE( bcore_plant_group_s );
+            BLM_TRY( bcore_plant_source_s_push_group( o, bcore_fork( group ) ) );
             group->source = o;
             bcore_source_a_parse_fa( source, " ( #name, #name, #name )", NULL, &group->name, &group->trait_name );
+            BLM_DOWN();
         }
 
         else if( bcore_source_a_parse_bl_fa( source, "#?w'BETH_PLANT_DEFINE_GROUP'" ) )
         {
-            group = bcore_plant_group_s_create();
-            bcore_plant_source_s_push_group( o, group );
+            BLM_INIT();
+            group = BLM_CREATE( bcore_plant_group_s );
+            BLM_TRY( bcore_plant_source_s_push_group( o, bcore_fork( group ) ) );
             group->source = o;
             bcore_source_a_parse_fa( source, " ( #name, #name )", &group->name, &group->trait_name );
+            BLM_DOWN();
         }
 
         if( group )
         {
             if( group->trait_name.size == 0 ) st_s_copy_sc( &group->trait_name, "bcore_inst" );
-            bcore_plant_group_s_parse( group, source );
+            BLM_TRY( bcore_plant_group_s_parse( group, source ) );
             o->hash = bcore_tp_fold_tp( o->hash, group->hash );
-            bcore_plant_compiler_s_group_register( plant_compiler_g, group, source );
+            BLM_TRY( bcore_plant_compiler_s_group_register( plant_compiler_g, group, source ) );
         }
         else
         {
             bcore_source_a_get_u0( source );
         }
     }
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_source_s_finalize( bcore_plant_source_s* o )
+static er_t bcore_plant_source_s_finalize( bcore_plant_source_s* o )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bcore_plant_group_s_finalize( o->data[ i ] );
+    BLM_INIT();
+    for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_group_s_finalize( o->data[ i ] ) );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_source_s_expand_declaration( const bcore_plant_source_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_source_s_expand_declaration( const bcore_plant_source_s* o, sz_t indent, bcore_sink* sink )
 {
+    BLM_INIT();
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }/*#rn{*}*/\n", indent, sz_max( 0, 116 - indent ) );
     bcore_sink_a_push_fa( sink, "#rn{ }// source: #<sc_t>.h\n", indent, o->name.sc );
-    for( sz_t i = 0; i < o->size; i++ ) bcore_plant_group_s_expand_declaration( o->data[ i ], indent, sink );
+    for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_group_s_expand_declaration( o->data[ i ], indent, sink ) );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_source_s_expand_definition( const bcore_plant_source_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_source_s_expand_definition( const bcore_plant_source_s* o, sz_t indent, bcore_sink* sink )
 {
+    BLM_INIT();
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }/*#rn{*}*/\n", indent, sz_max( 0, 116 - indent ) );
     bcore_sink_a_push_fa( sink, "#rn{ }// source: #<sc_t>.h\n", indent, o->name.sc );
     bcore_sink_a_push_fa( sink, "#rn{ }##include \"#<sc_t>.h\"\n", indent, o->name.sc );
-    for( sz_t i = 0; i < o->size; i++ ) bcore_plant_group_s_expand_definition( o->data[ i ], indent, sink );
+    for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_group_s_expand_definition( o->data[ i ], indent, sink ) );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_source_s_expand_init1( const bcore_plant_source_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_source_s_expand_init1( const bcore_plant_source_s* o, sz_t indent, bcore_sink* sink )
 {
+    BLM_INIT();
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }// #rn{-}\n", indent, sz_max( 0, 80 - indent ) );
     bcore_sink_a_push_fa( sink, "#rn{ }// source: #<sc_t>.h\n", indent, o->name.sc );
-    for( sz_t i = 0; i < o->size; i++ ) bcore_plant_group_s_expand_init1( o->data[ i ], indent, sink );
+    for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_group_s_expand_init1( o->data[ i ], indent, sink ) );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3104,7 +3232,7 @@ static void bcore_plant_source_s_expand_init1( const bcore_plant_source_s* o, sz
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_target_s_parse( bcore_plant_target_s* o, sc_t source_path )
+static er_t bcore_plant_target_s_parse( bcore_plant_target_s* o, sc_t source_path )
 {
     BLM_INIT();
 
@@ -3125,7 +3253,8 @@ static void bcore_plant_target_s_parse( bcore_plant_target_s* o, sc_t source_pat
 
     if( !source_exists )
     {
-        bcore_plant_source_s* plant_source = bcore_plant_source_s_create();
+        BLM_INIT();
+        bcore_plant_source_s* plant_source = BLM_CREATE( bcore_plant_source_s );
         plant_source->target = o;
         st_s_copy_sc( &plant_source->name, source_name->sc );
         st_s_copy   ( &plant_source->path, source_path_n );
@@ -3134,38 +3263,41 @@ static void bcore_plant_target_s_parse( bcore_plant_target_s* o, sc_t source_pat
 
         if( bcore_file_exists( source_path_h->sc ) )
         {
-            bcore_plant_source_s_parse( plant_source, BLM_A_PUSH( bcore_file_open_source( source_path_h->sc ) ) );
+            BLM_TRY( bcore_plant_source_s_parse( plant_source, BLM_A_PUSH( bcore_file_open_source( source_path_h->sc ) ) ) );
         }
 
         // parsing *.c files is generally not helpful  (currently plant code can only reside in header files)
         // if( bcore_file_exists( source_path_c->sc ) ) bcore_plant_source_s_parse( plant_source, BLM_A_PUSH( bcore_file_open_source( source_path_c->sc ) ) );
 
         o->hash = bcore_tp_fold_tp( o->hash, plant_source->hash );
-        bcore_array_a_push( ( bcore_array* )o, sr_asd( plant_source ) );
+        bcore_array_a_push( ( bcore_array* )o, sr_asd( bcore_fork( plant_source ) ) );
+        BLM_DOWN();
     }
 
-    BLM_DOWN();
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_target_s_finalize( bcore_plant_target_s* o )
+static er_t bcore_plant_target_s_finalize( bcore_plant_target_s* o )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bcore_plant_source_s_finalize( o->data[ i ] );
+    BLM_INIT();
+    for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_source_s_finalize( o->data[ i ] ) );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_target_s_expand_heading( const bcore_plant_target_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_target_s_expand_heading( const bcore_plant_target_s* o, sz_t indent, bcore_sink* sink )
 {
+    BLM_INIT();
     bcore_sink_a_push_fa( sink, "/** This file was generated from beth-plant source code.\n" );
     bcore_sink_a_push_fa( sink, " *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens\n" );
     bcore_sink_a_push_fa( sink, " *  Last File Update: " );
     {
-        bcore_cday_utc_s* time = bcore_cday_utc_s_create();
+        bcore_cday_utc_s* time = BLM_CREATE( bcore_cday_utc_s );
         bcore_cday_utc_s_from_system( time );
         bcore_cday_utc_s_to_sink( time, sink );
-        bcore_cday_utc_s_discard( time );
         bcore_sink_a_push_fa( sink, "\n" );
     }
 
@@ -3183,15 +3315,17 @@ static void bcore_plant_target_s_expand_heading( const bcore_plant_target_s* o, 
     }
     bcore_sink_a_push_fa( sink, " *\n" );
     bcore_sink_a_push_fa( sink, " */\n" );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_target_s_expand_h( const bcore_plant_target_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_target_s_expand_h( const bcore_plant_target_s* o, sz_t indent, bcore_sink* sink )
 {
+    BLM_INIT();
     bcore_plant_target_s_expand_heading( o, indent, sink );
 
-    st_s* name_upper = st_s_clone( &o->name );
+    st_s* name_upper = BLM_CLONE( st_s, &o->name );
     st_s_set_uppercase( name_upper );
 
     bcore_sink_a_push_fa( sink, "\n" );
@@ -3220,21 +3354,23 @@ static void bcore_plant_target_s_expand_h( const bcore_plant_target_s* o, sz_t i
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }##endif // #<sc_t>_H\n", indent, name_upper->sc );
 
-    st_s_discard( name_upper );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_target_s_expand_init1( const bcore_plant_target_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_target_s_expand_init1( const bcore_plant_target_s* o, sz_t indent, bcore_sink* sink )
 {
 //    bcore_sink_a_push_fa( sink, "#rn{ }bcore_const_x_set_d( typeof( \"#<sc_t>_hash\" ), sr_tp( HKEYOF_#<sc_t> ) );\n", indent, o->name.sc, o->name.sc );
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_target_s_expand_c( const bcore_plant_target_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_target_s_expand_c( const bcore_plant_target_s* o, sz_t indent, bcore_sink* sink )
 {
-    bcore_plant_target_s_expand_heading( o, indent, sink );
+    BLM_INIT();
+    BLM_TRY( bcore_plant_target_s_expand_heading( o, indent, sink ) );
 
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }##include \"#<sc_t>.h\"\n", indent, o->name.sc );
@@ -3245,7 +3381,7 @@ static void bcore_plant_target_s_expand_c( const bcore_plant_target_s* o, sz_t i
 
     /// definition section
     bcore_sink_a_push_fa( sink, "\n" );
-    for( sz_t i = 0; i < o->size; i++ ) bcore_plant_source_s_expand_definition( o->data[ i ], indent, sink );
+    for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_source_s_expand_definition( o->data[ i ], indent, sink ) );
 
     /// signal section
     bcore_sink_a_push_fa( sink, "\n" );
@@ -3268,8 +3404,8 @@ static void bcore_plant_target_s_expand_c( const bcore_plant_target_s* o, sz_t i
 
     bcore_sink_a_push_fa( sink, "#rn{ }        case TYPEOF_init1:\n", indent );
     bcore_sink_a_push_fa( sink, "#rn{ }        {\n", indent );
-    bcore_plant_target_s_expand_init1( o, indent + 12, sink );
-    for( sz_t i = 0; i < o->size; i++ ) bcore_plant_source_s_expand_init1( o->data[ i ], indent + 12, sink );
+    BLM_TRY( bcore_plant_target_s_expand_init1( o, indent + 12, sink ) );
+    for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_source_s_expand_init1( o->data[ i ], indent + 12, sink ) );
     bcore_sink_a_push_fa( sink, "#rn{ }        }\n", indent );
     bcore_sink_a_push_fa( sink, "#rn{ }        break;\n", indent );
 
@@ -3293,6 +3429,7 @@ static void bcore_plant_target_s_expand_c( const bcore_plant_target_s* o, sz_t i
     bcore_sink_a_push_fa( sink, "#rn{ }    }\n", indent );
     bcore_sink_a_push_fa( sink, "#rn{ }    return NULL;\n", indent );
     bcore_sink_a_push_fa( sink, "#rn{ }}\n", indent );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3302,30 +3439,22 @@ static bl_t bcore_plant_target_s_to_be_modified( const bcore_plant_target_s* o )
     BLM_INIT();
     bl_t to_be_modified = true;
 
-//    tp_t key = typeof( ( ( st_s* )BLM_A_PUSH( st_s_create_fa( "#<sc_t>_hash", o->name.sc ) ) )->sc );
-//    if( bcore_const_exists( key ) )
-//    {
-//        to_be_modified = ( *( tp_t* )bcore_const_get_o( key ) != o->hash );
-//    }
-//    else
+    st_s* file_h = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.h", o->path.sc ) );
+    if( bcore_file_exists( file_h->sc ) )
     {
-        st_s* file_h = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.h", o->path.sc ) );
-        if( bcore_file_exists( file_h->sc ) )
+        st_s* key_defined = BLM_A_PUSH( st_s_create_fa( "##?'define HKEYOF_#<sc_t>'", o->name.sc ) );
+        bcore_source* source = BLM_A_PUSH( bcore_file_open_source( file_h->sc ) );
+        while( !bcore_source_a_eos( source ) )
         {
-            st_s* key_defined = BLM_A_PUSH( st_s_create_fa( "##?'define HKEYOF_#<sc_t>'", o->name.sc ) );
-            bcore_source* source = BLM_A_PUSH( bcore_file_open_source( file_h->sc ) );
-            while( !bcore_source_a_eos( source ) )
+            char c = bcore_source_a_get_u0( source );
+            if( c == '#' )
             {
-                char c = bcore_source_a_get_u0( source );
-                if( c == '#' )
+                if( bcore_source_a_parse_bl_fa( source, key_defined->sc ) )
                 {
-                    if( bcore_source_a_parse_bl_fa( source, key_defined->sc ) )
-                    {
-                        tp_t key_val = 0;
-                        bcore_source_a_parse_fa( source, " #<tp_t*>", &key_val );
-                        to_be_modified = ( key_val != o->hash );
-                        break;
-                    }
+                    tp_t key_val = 0;
+                    bcore_source_a_parse_fa( source, " #<tp_t*>", &key_val );
+                    to_be_modified = ( key_val != o->hash );
+                    break;
                 }
             }
         }
@@ -3337,13 +3466,14 @@ static bl_t bcore_plant_target_s_to_be_modified( const bcore_plant_target_s* o )
 //----------------------------------------------------------------------------------------------------------------------
 
 /// returns true if a file was modified
-static void bcore_plant_compiler_write_with_signature( sc_t file, const st_s* data )
+static er_t bcore_plant_compiler_write_with_signature( sc_t file, const st_s* data )
 {
+    BLM_INIT();
     tp_t hash = bcore_tp_fold_sc( bcore_tp_init(), data->sc );
-    bcore_sink* sink = bcore_file_open_sink( file );
+    bcore_sink* sink = BLM_A_PUSH( bcore_file_open_sink( file ) );
     bcore_sink_a_push_data( sink, data->data, data->size );
     bcore_sink_a_push_fa( sink, "// BETH_PLANT_SIGNATURE #pl10 {#<tp_t>}\n", hash );
-    bcore_sink_a_discard( sink );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3376,39 +3506,44 @@ static bl_t bcore_plant_compiler_check_signature( sc_t file )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// returns true if a file was modified
-static bl_t bcore_plant_target_s_expand( bcore_plant_target_s* o )
+/// expands all text files in memory
+static er_t bcore_plant_target_s_expand_phase1( bcore_plant_target_s* o, bl_t* p_modified )
 {
-    if( !bcore_plant_target_s_to_be_modified( o ) ) return false;
-
     BLM_INIT();
+    st_s_detach( &o->planted_h );
+    st_s_detach( &o->planted_c );
+    o->modified = false;
+
+    if( bcore_plant_target_s_to_be_modified( o ) )
+    {
+        o->planted_h = st_s_create();
+        o->planted_c = st_s_create();
+        BLM_TRY( bcore_plant_target_s_expand_h( o, 0, ( bcore_sink* )o->planted_h ) );
+        BLM_TRY( bcore_plant_target_s_expand_c( o, 0, ( bcore_sink* )o->planted_c ) );
+        o->modified = true;
+    }
+
+    if( p_modified ) *p_modified = o->modified;
+
+    BLM_RETURN_ER0();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// returns true if a file was modified
+static er_t bcore_plant_target_s_expand_phase2( bcore_plant_target_s* o, bl_t* p_modified )
+{
+    BLM_INIT();
+    if( !o->modified ) BLM_RETURN_ER0();
+
+    ASSERT( o->planted_h );
+    ASSERT( o->planted_c );
 
     st_s*           undo_expand_actions = &plant_compiler_g->undo_expand_actions;
     bcore_arr_st_s* undo_expand_files   = &plant_compiler_g->undo_expand_files;
 
-    st_s* txt_h = BLM_CREATE( st_s );
-    st_s* txt_c = BLM_CREATE( st_s );
-    bcore_plant_target_s_expand_h( o, 0, ( bcore_sink* )txt_h );
-    bcore_plant_target_s_expand_c( o, 0, ( bcore_sink* )txt_c );
-
     st_s* file_h = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.h", o->path.sc ) );
     st_s* file_c = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.c", o->path.sc ) );
-
-    #ifdef BCORE_PLANT_DRY_RUN
-
-    bcore_msg_fa( "\nPlant compiler is in mode 'dry-run'\n" );
-
-    bcore_msg_fa( "#r80{+}\n" );
-    bcore_msg_fa( "File #<sc_t>:\n", file_h->sc );
-    bcore_msg_fa( "#r80{+}\n" );
-    st_s_to_stdout( txt_h );
-
-    bcore_msg_fa( "#r80{+}\n" );
-    bcore_msg_fa( "File #<sc_t>:\n", file_c->sc );
-    bcore_msg_fa( "#r80{+}\n" );
-    st_s_to_stdout( txt_c );
-
-    #else
 
     if( bcore_file_exists( file_h->sc ) )
     {
@@ -3417,9 +3552,8 @@ static bl_t bcore_plant_target_s_expand( bcore_plant_target_s* o )
             bcore_wrn_fa( "\nWARNING: #<sc_t> - Signature check failed.\n", file_h->sc );
         }
 
-        st_s* backup_name = st_s_create_fa( "#<sc_t>.backup", file_h->sc );
+        st_s* backup_name = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.backup", file_h->sc ) );
         bcore_file_rename( file_h->sc, backup_name->sc );
-        st_s_discard( backup_name );
         st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>.backup #<sc_t>.swap\n",   file_h->sc, file_h->sc );
         st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>        #<sc_t>.backup\n", file_h->sc, file_h->sc );
         st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>.swap   #<sc_t>\n",        file_h->sc, file_h->sc );
@@ -3436,9 +3570,8 @@ static bl_t bcore_plant_target_s_expand( bcore_plant_target_s* o )
             bcore_wrn_fa( "\nWARNING: #<sc_t> - Signature check failed.\n", file_c->sc );
         }
 
-        st_s* backup_name = st_s_create_fa( "#<sc_t>.backup", file_c->sc );
+        st_s* backup_name = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.backup", file_c->sc ) );
         bcore_file_rename( file_c->sc, backup_name->sc );
-        st_s_discard( backup_name );
         st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>.backup #<sc_t>.swap\n",   file_c->sc, file_c->sc );
         st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>        #<sc_t>.backup\n", file_c->sc, file_c->sc );
         st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>.swap   #<sc_t>\n",        file_c->sc, file_c->sc );
@@ -3449,14 +3582,13 @@ static bl_t bcore_plant_target_s_expand( bcore_plant_target_s* o )
     }
 
     bcore_msg_fa( "writing '#<sc_t>'\n", file_h->sc );
-    bcore_plant_compiler_write_with_signature( file_h->sc, txt_h );
+    bcore_plant_compiler_write_with_signature( file_h->sc, o->planted_h );
 
     bcore_msg_fa( "writing '#<sc_t>'\n", file_c->sc );
-    bcore_plant_compiler_write_with_signature( file_c->sc, txt_c );
+    bcore_plant_compiler_write_with_signature( file_c->sc, o->planted_c );
 
-    #endif // BCORE_PLANT_DRY_RUN
-
-    BLM_RETURNV( bl_t, true );
+    if( p_modified ) *p_modified = o->modified;
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3465,8 +3597,9 @@ static bl_t bcore_plant_target_s_expand( bcore_plant_target_s* o )
 /// plant_compiler
 
 /// returns false if already registered; checks for collision
-static tp_t bcore_plant_compiler_s_group_register( bcore_plant_compiler_s* o, const bcore_plant_group_s* group, bcore_source* source )
+static er_t bcore_plant_compiler_s_group_register( bcore_plant_compiler_s* o, const bcore_plant_group_s* group, bcore_source* source )
 {
+    BLM_INIT();
     sc_t global_name = group->name.sc;
     tp_t global_id = typeof( global_name );
     if( bcore_hmap_tpvd_s_exists( &o->hmap_group, global_id ) )
@@ -3477,22 +3610,23 @@ static tp_t bcore_plant_compiler_s_group_register( bcore_plant_compiler_s* o, co
 
         if( !sc_t_equal( global_name, global_name2 ) )
         {
-            bcore_source_a_parse_err_fa( source, "Collision detected: '#<sc_t>' and '#<sc_t>' produce same hash\n", global_name, global_name2 );
+            BLM_SOURCE_PARSE_ERR_FA( source, "Collision detected: '#<sc_t>' and '#<sc_t>' produce same hash\n", global_name, global_name2 );
         }
         else
         {
-            bcore_source_a_parse_err_fa( source, "'#<sc_t>' was already registered\n", global_name );
+            BLM_SOURCE_PARSE_ERR_FA( source, "'#<sc_t>' was already registered\n", global_name );
         }
     }
     bcore_hmap_tpvd_s_set( &o->hmap_group, global_id, ( vd_t )group );
-    return global_id;
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// returns false if already registered; checks for collision
-static tp_t bcore_plant_compiler_s_item_register( bcore_plant_compiler_s* o, const bcore_plant* item, bcore_source* source )
+static er_t bcore_plant_compiler_s_item_register( bcore_plant_compiler_s* o, const bcore_plant* item, bcore_source* source )
 {
+    BLM_INIT();
     sc_t global_name = bcore_plant_a_get_global_name_sc( item );
     tp_t global_id = typeof( global_name );
     if( bcore_hmap_tpvd_s_exists( &o->hmap_item, global_id ) )
@@ -3502,16 +3636,16 @@ static tp_t bcore_plant_compiler_s_item_register( bcore_plant_compiler_s* o, con
         sc_t global_name2 = bcore_plant_a_get_global_name_sc( item2 );
         if( !sc_t_equal( global_name, global_name2 ) )
         {
-            bcore_source_a_parse_err_fa( source, "Collision detected: '#<sc_t>' and '#<sc_t>' produce same hash\n", global_name, global_name2 );
+            BLM_SOURCE_PARSE_ERR_FA( source, "Collision detected: '#<sc_t>' and '#<sc_t>' produce same hash\n", global_name, global_name2 );
         }
         else
         {
-            bcore_source_a_parse_err_fa( source, "'#<sc_t>' was already registered\n", global_name );
+            BLM_SOURCE_PARSE_ERR_FA( source, "'#<sc_t>' was already registered\n", global_name );
         }
     }
 
     bcore_hmap_tpvd_s_set( &o->hmap_item, global_id, ( vd_t )item );
-    return global_id;
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3532,7 +3666,7 @@ static const bcore_plant* bcore_plant_compiler_s_item_get( const bcore_plant_com
 //----------------------------------------------------------------------------------------------------------------------
 
 /** returns target index */
-static sz_t bcore_plant_compiler_s_parse( bcore_plant_compiler_s* o, sc_t target_name, sc_t source_path )
+static er_t bcore_plant_compiler_s_parse( bcore_plant_compiler_s* o, sc_t target_name, sc_t source_path, sz_t* p_target_index )
 {
     BLM_INIT();
 
@@ -3551,55 +3685,49 @@ static sz_t bcore_plant_compiler_s_parse( bcore_plant_compiler_s* o, sc_t target
 
     if( target_index == -1 )
     {
-        bcore_plant_target_s* target = bcore_plant_target_s_create();
+        BLM_INIT();
+        bcore_plant_target_s* target = BLM_CREATE( bcore_plant_target_s );
         target->hash = bcore_tp_init();
         st_s_copy_sc( &target->name, target_name );
         st_s_copy(    &target->path, target_path );
-        bcore_array_a_push( ( bcore_array* )o, sr_asd( target ) );
+        bcore_array_a_push( ( bcore_array* )o, sr_asd( bcore_fork( target ) ) );
         target_index = o->size - 1;
+        BLM_DOWN();
     }
 
     bcore_plant_target_s* target = o->data[ target_index ];
-    bcore_plant_target_s_parse( target, source_path );
+    BLM_TRY( bcore_plant_target_s_parse( target, source_path ) );
 
-    BLM_RETURNV( sz_t, target_index );
+    if( p_target_index ) *p_target_index = target_index;
+
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_plant_compiler_s_finalize( bcore_plant_compiler_s* o )
+static er_t bcore_plant_compiler_s_finalize( bcore_plant_compiler_s* o )
 {
-    for( sz_t i = 0; i < o->size; i++ ) bcore_plant_target_s_finalize( o->data[ i ] );
+    BLM_INIT();
+    for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_target_s_finalize( o->data[ i ] ) );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// returns true if a file will be modified in function bcore_plant_compiler_s_expand
-static bl_t bcore_plant_compiler_s_to_be_modified( const bcore_plant_compiler_s* o, st_s* affected_list )
+static bl_t bcore_plant_compiler_s_to_be_modified( const bcore_plant_compiler_s* o )
 {
-    if( affected_list ) st_s_clear( affected_list );
-    bl_t modified = false;
     for( sz_t i = 0; i < o->size; i++ )
     {
-        if( bcore_plant_target_s_to_be_modified( o->data[ i ] ) )
-        {
-            if( affected_list )
-            {
-                // if not the first entry
-                if( modified ) st_s_push_fa( affected_list, ", " );
-                st_s_push_fa( affected_list, "#<sc_t>", o->data[ i ]->name.sc );
-            }
-            modified = true;
-            if( !affected_list ) break;
-        }
+        if( bcore_plant_target_s_to_be_modified( o->data[ i ] ) ) return true;
     }
-    return modified;
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// returns true if a file was modified
-static bl_t bcore_plant_compiler_s_expand( bcore_plant_compiler_s* o )
+static er_t bcore_plant_compiler_s_expand( bcore_plant_compiler_s* o, bl_t* p_modified )
 {
     BLM_INIT();
     bl_t modified = false;
@@ -3607,14 +3735,12 @@ static bl_t bcore_plant_compiler_s_expand( bcore_plant_compiler_s* o )
     st_s_clear( &o->undo_expand_actions );
     bcore_arr_st_s_clear( &o->undo_expand_files );
 
-    for( sz_t i = 0; i < o->size; i++ )
-    {
-        if( bcore_plant_target_s_expand( o->data[ i ] ) ) modified = true;
-    }
+    for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_target_s_expand_phase1( o->data[ i ], &modified ) );
+    for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_target_s_expand_phase2( o->data[ i ], &modified ) );
 
     if( o->sh_file_undo_expand && modified )
     {
-        bcore_sink* sink = bcore_file_open_sink( o->sh_file_undo_expand->sc );
+        bcore_sink* sink = BLM_A_PUSH( bcore_file_open_sink( o->sh_file_undo_expand->sc ) );
         bcore_sink_a_push_fa( sink, "##! /bin/bash\n" );
         bcore_sink_a_push_fa( sink, "echo \"This will swap each of the following files with its respective backup:\"\n" );
         BFOR_EACH( i, &o->undo_expand_files )
@@ -3639,18 +3765,19 @@ static bl_t bcore_plant_compiler_s_expand( bcore_plant_compiler_s* o )
         bcore_sink_a_push_fa( sink, "else\n" );
         bcore_sink_a_push_fa( sink, "  swap_files\n" );
         bcore_sink_a_push_fa( sink, "fi\n" );
-        bcore_sink_a_discard( sink );
     }
 
-    BLM_RETURNV( bl_t, modified );
+    if( p_modified ) *p_modified = modified;
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// adds an item to lifetime manager
-static void bcore_plant_compiler_s_life_a_push( bcore_plant_compiler_s* o, vd_t object )
+static er_t bcore_plant_compiler_s_life_a_push( bcore_plant_compiler_s* o, vd_t object )
 {
     bcore_life_s_push_aware( &o->life, object );
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3660,8 +3787,9 @@ static void bcore_plant_compiler_s_life_a_push( bcore_plant_compiler_s* o, vd_t 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_plant_compiler_setup( void )
+er_t bcore_plant_compiler_setup( void )
 {
+    BLM_INIT();
     if( !plant_compiler_g )
     {
         BLM_INIT();
@@ -3677,49 +3805,54 @@ void bcore_plant_compiler_setup( void )
         }
         BLM_DOWN();
     }
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// returns target index
-sz_t bcore_plant_compiler_compile( sc_t target_name, sc_t source_path )
+er_t bcore_plant_compiler_compile( sc_t target_name, sc_t source_path, sz_t* p_target_index )
 {
-    if( !plant_compiler_g ) bcore_plant_compiler_setup();
-    sz_t target_index = bcore_plant_compiler_s_parse( plant_compiler_g, target_name, source_path );
-    bcore_plant_compiler_s_finalize( plant_compiler_g );
-    return target_index;
+    BLM_INIT();
+    if( !plant_compiler_g ) BLM_TRY( bcore_plant_compiler_setup() );
+    BLM_TRY( bcore_plant_compiler_s_parse( plant_compiler_g, target_name, source_path, p_target_index ) );
+    BLM_TRY( bcore_plant_compiler_s_finalize( plant_compiler_g ) );
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_plant_compiler_set_target_signal_handler_name( sz_t target_index, sc_t name )
+er_t bcore_plant_compiler_set_target_signal_handler_name( sz_t target_index, sc_t name )
 {
     ASSERT( plant_compiler_g );
     ASSERT( target_index >= 0 && target_index < plant_compiler_g->size );
     bcore_plant_target_s* target = plant_compiler_g->data[ target_index ];
     st_s_copy_sc( &target->signal_handler_name, name );
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_plant_compiler_set_target_dependencies( sz_t target_index, const bcore_arr_sz_s* dependencies )
+er_t bcore_plant_compiler_set_target_dependencies( sz_t target_index, const bcore_arr_sz_s* dependencies )
 {
     ASSERT( plant_compiler_g );
     ASSERT( target_index >= 0 && target_index < plant_compiler_g->size );
     bcore_plant_target_s* target = plant_compiler_g->data[ target_index ];
     bcore_arr_sz_s_copy( &target->dependencies, dependencies );
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t bcore_plant_compiler_update_planted_files( void )
+er_t bcore_plant_compiler_update_planted_files( bl_t* p_modified )
 {
+    BLM_INIT();
     ASSERT( plant_compiler_g );
     bl_t modified = false;
     bl_t verbosity = plant_compiler_g->verbosity;
     f3_t time = 0;
 
-    ABS_TIME_OF( modified = bcore_plant_compiler_s_expand( plant_compiler_g ), time );
+    ABS_TIME_OF( BLM_TRY( bcore_plant_compiler_s_expand( plant_compiler_g, &modified ) ), time );
     if( modified )
     {
         if( verbosity > 0 ) bcore_msg_fa( "BETH_PLANT: Expanded in #<f3_t> sec.\n", time );
@@ -3731,14 +3864,16 @@ bl_t bcore_plant_compiler_update_planted_files( void )
     }
     bcore_plant_compiler_s_discard( plant_compiler_g );
     plant_compiler_g = NULL;
-    return modified;
+    if( p_modified ) *p_modified = modified;
+
+    BLM_RETURN_ER0();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 bl_t bcore_plant_compiler_update_required( void )
 {
-    return bcore_plant_compiler_s_to_be_modified( plant_compiler_g, NULL );
+    return bcore_plant_compiler_s_to_be_modified( plant_compiler_g );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3751,34 +3886,11 @@ sz_t bcore_plant_compiler_get_verbosity( void )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_plant_compiler_set_verbosity( sz_t verbosity )
+er_t bcore_plant_compiler_set_verbosity( sz_t verbosity )
 {
     if( !plant_compiler_g ) bcore_plant_compiler_setup();
     plant_compiler_g->verbosity = verbosity;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-bcore_plant_builder_target_adl_s* bcore_plant_compiler_create_builder_targets()
-{
-    bcore_plant_builder_target_adl_s* adl = bcore_plant_builder_target_adl_s_create();
-
-    BFOR_EACH( i, plant_compiler_g )
-    {
-        bcore_plant_target_s* target = plant_compiler_g->data[ i ];
-        bcore_plant_builder_target_s* builder_target = bcore_plant_builder_target_s_create();
-        bcore_plant_builder_target_adl_s_push_d( adl, builder_target );
-
-        builder_target->name = st_s_clone( &target->name );
-
-        BFOR_EACH( j, target )
-        {
-            bcore_plant_source_s* source = target->data[ j ];
-            bcore_arr_st_s_push_st_d( &builder_target->sources, st_s_create_fa( "#<sc_t>.h", source->path.sc ) );
-        }
-    }
-
-    return adl;
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

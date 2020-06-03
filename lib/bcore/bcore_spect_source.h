@@ -71,7 +71,7 @@ BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_source, inspect_data, uz_t, vd_t, 
 BCORE_FUNC_SPECT_CONST0_RET1_ARG0_MAP0( bcore_source, inspect_u0, u0_t )
 
 /// Reads and consumes data using formatted parsing according to st_s_parse_fv fromat rules.
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP1( bcore_source, parse_fv,           sc_t, format, va_list, args )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP1( bcore_source, parse_fv, sc_t, format, va_list, args )
 
 /// Writes context info about current read position to sink (used to create descriptive parse messages)
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_source, context_to_sink, bcore_sink*, sink )
@@ -127,6 +127,10 @@ void bcore_source_x_parse_err_fa( sr_s o, sc_t format, ... );
 void bcore_source_r_parse_fa    ( const sr_s* o, sc_t format, ... );
 void bcore_source_r_parse_errf  ( const sr_s* o, sc_t format, ... );
 void bcore_source_r_parse_err_fa( const sr_s* o, sc_t format, ... );
+
+/// generates a parse error message and pushes it to the error stack (see bcore_error_manager.h); returns err_id
+er_t bcore_source_a_parse_err_to_em_fv( bcore_source* o, er_t err_id, sc_t format, va_list args );
+er_t bcore_source_a_parse_err_to_em_fa( bcore_source* o, er_t err_id, sc_t format, ... );
 
 bcore_source* bcore_source_t_clone( tp_t type );
 void bcore_source_a_discard( bcore_source* o );

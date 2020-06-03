@@ -62,7 +62,6 @@ static void init()
     bcore_once_s_run( &flag, init_once );
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 
 void bcore_register_signal_handler( bcore_fp_signal_handler signal_handler )
@@ -176,15 +175,15 @@ vd_t bcore_run_signal_selftest( tp_t target, vd_t object )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_down( bl_t verbose )
+void bcore_down( s2_t verbosity )
 {
     if( !signal_handler_arr_fp_g ) return;
 
     bcore_mutex_s_lock( &mutex );
-    if( !signal_handler_arr_fp_g ) ERR( "Shutdown race condition: Do not call bcore_down from multiple threads." );
+    if( !signal_handler_arr_fp_g ) ERR( "Shutdown race condition detected: Do not call bcore_down from multiple threads." );
 
-    bcore_signal_s signal_down1 = bcore_signal_init( TYPEOF_all, TYPEOF_down1, &verbose );
-    bcore_signal_s signal_down0 = bcore_signal_init( TYPEOF_all, TYPEOF_down0, &verbose );
+    bcore_signal_s signal_down1 = bcore_signal_init( TYPEOF_all, TYPEOF_down1, &verbosity );
+    bcore_signal_s signal_down0 = bcore_signal_init( TYPEOF_all, TYPEOF_down0, &verbosity );
 
     // shut down all but first library in reverse order
     for( uz_t i = signal_handler_arr_fp_g->size - 1; i > 0; i-- )
@@ -201,7 +200,7 @@ void bcore_down( bl_t verbose )
 
     bcore_general_signal_handler( &signal_down1 );
 
-    if( verbose )
+    if( verbosity > 0 )
     {
         bcore_msg( "\nBeth global system's memory usage (bytes):\n");
         uz_t space = bcore_tbman_total_granted_space();
@@ -210,4 +209,15 @@ void bcore_down( bl_t verbose )
 
     bcore_general_signal_handler( &signal_down0 );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_down_exit( s2_t verbosity, s2_t return_value )
+{
+    bcore_down( verbosity );
+    bcore_exit( return_value );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 

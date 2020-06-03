@@ -155,6 +155,20 @@ void bcore_tbman_release_arg_arr( fp_down_arg down, vc_t arg, vd_t ptr, uz_t siz
 uz_t bcore_tbman_references     (                             vc_t ptr );
 
 /**********************************************************************************************************************/
+/// Instance management
+
+/** Applies a function to all instances.
+ *  The callback function may change the state of memory manager. (E.g. free memory)
+ *  Eligible instances and their order are determined before calling the first callback.
+ */
+void bcore_tbman_s_for_each_instance( bcore_tbman_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg );
+void bcore_tbman_for_each_instance( void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg );
+
+/// Frees all open instances. (global garbage collection)
+void bcore_tbman_s_free_all( bcore_tbman_s* o );
+void bcore_tbman_free_all( void );
+
+/**********************************************************************************************************************/
 /// Diagnostics
 
 /// Current allocations (thread-safe)
@@ -163,12 +177,6 @@ uz_t bcore_tbman_s_total_granted_space( bcore_tbman_s* o );
 uz_t bcore_tbman_s_total_instances(     bcore_tbman_s* o );
 uz_t bcore_tbman_s_total_references(    bcore_tbman_s* o );
 
-/** Applies a function to all instances.
- *  The callback function may change the state of memory manager. (E.g. free memory)
- *  Eligible instances and their order are determined before calling the first callback.
- */
-void bcore_tbman_s_for_each_instance( bcore_tbman_s* o, void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg );
-
 /// runs instance diagnostics (e.g. to determine the cause of memory leaks)
 void bcore_tbman_s_instance_disgnostics( bcore_tbman_s* o );
 
@@ -176,8 +184,7 @@ uz_t bcore_tbman_granted_space( vc_t ptr ); // space of memory instance indicate
 uz_t bcore_tbman_total_granted_space( void );
 uz_t bcore_tbman_total_instances( void );
 uz_t bcore_tbman_total_references( void );
-void bcore_tbman_for_each_instance( void (*fp)( vd_t arg, vd_t ptr, uz_t space ), vd_t arg );
-void bcore_tbman_s_instance_disgnostics();
+void bcore_tbman_instance_disgnostics( void );
 
 /**********************************************************************************************************************/
 /// Signal

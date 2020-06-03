@@ -17,6 +17,7 @@
 #define TYPEOF_char                  2823553821
 #define TYPEOF_copy                  3848464964
 #define TYPEOF_down                  1035581717
+#define TYPEOF_er_t                  1344780045
 #define TYPEOF_f2_t                  1418046714
 #define TYPEOF_f3_t                  3646813157
 #define TYPEOF_fp_t                  2940508440

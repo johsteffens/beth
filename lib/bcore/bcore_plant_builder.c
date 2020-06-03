@@ -16,24 +16,37 @@
 #include "bcore_plant_builder.h"
 #include "bcore_plant_compiler.h"
 #include "bcore_file.h"
+#include "bcore_error_manager.h"
 
 /**********************************************************************************************************************/
 
 #ifdef TYPEOF_bcore_plant_builder
 
 //----------------------------------------------------------------------------------------------------------------------
+// macros
+
+#define BLM_ER_INIT() \
+    BLM_INIT(); \
+    er_t er = 0
+
+#define BLM_ER_RETURN() \
+    BLM_RETURNV( er_t, er )
+
+#define BLM_ER_TRY( expression ) \
+    if( ( er = expression ) ) BLM_ER_RETURN()
+
+//----------------------------------------------------------------------------------------------------------------------
 // globals
 
 static bcore_arr_st_s* arr_path_g = NULL;
-static bcore_mutex_s* mutex_g = NULL;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static sz_t build_from_file( sc_t path );
+static er_t build_from_file( sc_t path, sz_t* target_index );
 
-sz_t bcore_plant_builder_target_s_build( const bcore_plant_builder_target_s* o )
+er_t bcore_plant_builder_target_s_build( const bcore_plant_builder_target_s* o, sz_t* p_target_index )
 {
-    BLM_INIT();
+    BLM_ER_INIT();
     bcore_arr_sz_s* dependencies = BLM_CREATE( bcore_arr_sz_s );
     BFOR_EACH( i, &o->dependencies )
     {
@@ -44,11 +57,9 @@ sz_t bcore_plant_builder_target_s_build( const bcore_plant_builder_target_s* o )
             if( o->root ) st_s_push_fa( file_path, "#<sc_t>/", o->root->sc );
         }
         st_s_push_fa( file_path, "#<sc_t>", o->dependencies.data[ i ]->sc );
-        sz_t target_index = build_from_file( file_path->sc );
-        if( target_index >= 0 )
-        {
-            bcore_arr_sz_s_push( dependencies, target_index );
-        }
+        sz_t target_index = -1;
+        BLM_ER_TRY( build_from_file( file_path->sc, &target_index ) );
+        if( target_index >= 0 ) bcore_arr_sz_s_push( dependencies, target_index );
         BLM_DOWN();
     }
 
@@ -79,7 +90,8 @@ sz_t bcore_plant_builder_target_s_build( const bcore_plant_builder_target_s* o )
 
         st_s* planted_name = BLM_A_PUSH( st_s_create_fa( "#<sc_t>_planted", o->name->sc ) );
 
-        sz_t index = bcore_plant_compiler_compile( planted_name->sc, file_path->sc );
+        sz_t index = -1;
+        BLM_ER_TRY( bcore_plant_compiler_compile( planted_name->sc, file_path->sc, &index ) );
         target_index = ( target_index == -1 ) ? index : target_index;
         if( index != target_index )
         {
@@ -98,20 +110,20 @@ sz_t bcore_plant_builder_target_s_build( const bcore_plant_builder_target_s* o )
 
     if( target_index >= 0 )
     {
-        bcore_plant_compiler_set_target_dependencies( target_index, dependencies );
+        BLM_ER_TRY( bcore_plant_compiler_set_target_dependencies( target_index, dependencies ) );
         st_s* signal_handler = BLM_A_PUSH( st_s_create_fa( "#<sc_t>_general_signal_handler", o->name->sc ) );
         if( o->signal_handler ) st_s_copy( signal_handler, o->signal_handler );
-        bcore_plant_compiler_set_target_signal_handler_name( target_index, signal_handler->sc );
+        BLM_ER_TRY( bcore_plant_compiler_set_target_signal_handler_name( target_index, signal_handler->sc ) );
     }
 
-    BLM_RETURNV( sz_t, target_index );
+    BLM_ER_RETURN();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static sz_t build_from_file( sc_t path )
+static er_t build_from_file( sc_t path, sz_t* p_target_index )
 {
-    BLM_INIT();
+    BLM_ER_INIT();
     st_s* st_path = BLM_A_PUSH( bcore_file_path_minimized( path ) );
 
     if( !arr_path_g ) arr_path_g = bcore_arr_st_s_create();
@@ -139,10 +151,12 @@ static sz_t build_from_file( sc_t path )
         }
 
         bcore_plant_builder* builder = BLM_A_PUSH( bcore_txt_ml_from_file( st_path->sc ).o );
-        target_index = bcore_plant_builder_a_build( builder );
+        BLM_ER_TRY( bcore_plant_builder_a_build( builder, &target_index ) );
     }
 
-    BLM_RETURNV( sz_t, target_index );
+    if( p_target_index ) *p_target_index = target_index;
+
+    BLM_ER_RETURN();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -152,41 +166,37 @@ static sz_t build_from_file( sc_t path )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_plant_builder_build_from_file( sc_t path )
+er_t bcore_plant_builder_build_from_file( sc_t path )
 {
-    bcore_mutex_s_lock( mutex_g );
-    build_from_file( path );
-    bcore_mutex_s_unlock( mutex_g );
+    return build_from_file( path, NULL );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_plant_builder_build_from_rel_file( sc_t root_path, sc_t path )
+er_t bcore_plant_builder_build_from_rel_file( sc_t root_path, sc_t path )
 {
-    BLM_INIT();
-    bcore_plant_builder_build_from_file( st_s_push_fa( BLM_A_PUSH( bcore_file_folder_path( root_path ) ), "/#<sc_t>", path )->sc );
-    BLM_DOWN();
+    BLM_ER_INIT();
+    BLM_ER_TRY( bcore_plant_builder_build_from_file( st_s_push_fa( BLM_A_PUSH( bcore_file_folder_path( root_path ) ), "/#<sc_t>", path )->sc ) );
+    BLM_ER_RETURN();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 bl_t bcore_plant_builder_update_required( void )
 {
-    bcore_mutex_s_lock( mutex_g );
     bl_t retv = bcore_plant_compiler_update_required();
-    bcore_mutex_s_unlock( mutex_g );
     return retv;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t bcore_plant_builder_update( void )
+er_t bcore_plant_builder_update( bl_t* modified )
 {
-    bcore_mutex_s_lock( mutex_g );
+    if( bcore_error_stack_size() > 0 ) return TYPEOF_error_stack;
+    BLM_ER_INIT();
     bcore_arr_st_s_detach( &arr_path_g );
-    bl_t retv = bcore_plant_compiler_update_planted_files();
-    bcore_mutex_s_unlock( mutex_g );
-    return retv;
+    BLM_ER_TRY( bcore_plant_compiler_update_planted_files( modified ) );
+    BLM_ER_RETURN();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -203,14 +213,12 @@ vd_t bcore_plant_builder_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
-            mutex_g = bcore_mutex_s_create();
         }
         break;
 
         case TYPEOF_down1:
         {
             bcore_arr_st_s_detach( &arr_path_g );
-            bcore_mutex_s_detach( &mutex_g );
         }
         break;
 

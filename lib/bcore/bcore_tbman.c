@@ -36,7 +36,7 @@ static const uz_t default_min_block_size  = 8;
 static const uz_t default_max_block_size  = 1024 * 16;
 
 static const uz_t default_stepping_method = 1;
-static const bool   default_full_align      = true;
+static const bool default_full_align      = true;
 
 /// Minimum alignment of memory blocks
 #define TBMAN_ALIGN 0x100
@@ -2576,6 +2576,18 @@ void bcore_tbman_s_for_each_instance( bcore_tbman_s* o, void (*cb)( vd_t arg, vd
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+static void tbman_s_free_all_callback( vd_t o, vd_t ptr, uz_t space )
+{
+    bcore_tbman_s_b_alloc( o, ptr, 0, NULL );
+}
+
+void bcore_tbman_s_free_all( bcore_tbman_s* o )
+{
+    bcore_tbman_s_for_each_instance( o, tbman_s_free_all_callback, o );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_tbman_granted_space( vc_t ptr )
 {
     assert( tbman_s_g != NULL );
@@ -2612,6 +2624,14 @@ void bcore_tbman_for_each_instance( void (*cb)( vd_t arg, vd_t ptr, uz_t space )
 {
     assert( tbman_s_g != NULL );
     bcore_tbman_s_for_each_instance( tbman_s_g, cb, arg );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_tbman_free_all( void )
+{
+    assert( tbman_s_g != NULL );
+    bcore_tbman_s_free_all( tbman_s_g );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -2712,7 +2732,7 @@ void bcore_tbman_s_instance_disgnostics( bcore_tbman_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bcore_tbman_instance_disgnostics()
+void bcore_tbman_instance_disgnostics( void )
 {
     bcore_tbman_for_each_instance( instance_diagnostics, NULL );
 }
@@ -3219,21 +3239,25 @@ vd_t bcore_tbman_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_down0:
         {
-            uz_t space = bcore_tbman_total_granted_space();
-            if( space > 0 )
+            s2_t verbosity = o->object ? *( s2_t* )o->object : 0;
+            if( verbosity >= 0 )
             {
-                uz_t instances = bcore_tbman_total_instances();
-                uz_t references = bcore_tbman_total_references();
-                st_s_print_d( bcore_tbman_s_status( tbman_s_g, 1 ) );
-                ERR
-                (
-                    "Leaking memory .... %zu bytes\n"
-                    "     instances .... %zu\n"
-                    "     references ... %zu\n",
-                    space,
-                    instances,
-                    references
-                );
+                uz_t space = bcore_tbman_total_granted_space();
+                if( space > 0 )
+                {
+                    uz_t instances = bcore_tbman_total_instances();
+                    uz_t references = bcore_tbman_total_references();
+                    st_s_print_d( bcore_tbman_s_status( tbman_s_g, 1 ) );
+                    WRN
+                    (
+                        "Leaking memory .... %zu bytes\n"
+                        "     instances .... %zu\n"
+                        "     references ... %zu\n",
+                        space,
+                        instances,
+                        references
+                    );
+                }
             }
             tbman_close();
         }

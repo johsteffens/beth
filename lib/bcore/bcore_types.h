@@ -64,6 +64,8 @@ typedef u2_t tp_t;    // object type identifier
 typedef tp_t aware_t;  // self-awareness type (first element in self-aware object)
 typedef uz_t offset_t; // used as address offsets into an object
 
+typedef tp_t er_t; // error state return value (used by functions to communicate the error state; 0: no error)
+
 // types used for atomic operations
 typedef _Atomic tp_t atomic_tp_t;
 typedef _Atomic vc_t atomic_vc_t;
@@ -88,6 +90,35 @@ typedef _Atomic fp_t atomic_fp_t;
 #define PRIuz_t "zu"
 #define PRIoffset_t "zu"
 #define PRItp_t PRIu32
+#define PRIer_t PRItp_t
+
+
+
+
+
+
+
+
+#define SCNs0_t SCNi8
+#define SCNs1_t SCNi16
+#define SCNs2_t SCNi32
+#define SCNs3_t SCNi64
+#define SCNsmax_t SCNiMAX
+
+#define SCNu0_t SCNu8
+#define SCNu1_t SCNu16
+#define SCNu2_t SCNu32
+#define SCNu3_t SCNu64
+#define SCNumax_t SCNuMAX
+
+#define SCNf3_t "lg"
+#define SCNf2_t "g"
+#define SCNsz_t "ti" // t ~ ptrdiff_t
+#define SCNuz_t "zu"
+#define SCNoffset_t "zu"
+#define SCNtp_t SCNu32
+#define SCNer_t SCNtp_t
+
 
 /// special purpose specifiers (do not use for other purposes)
 // NPX  - used locally as name prefix in *.c files (e.g. #define NPX(name) bcore_translator_##name  ... #undef NPX)

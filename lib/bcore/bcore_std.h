@@ -52,5 +52,6 @@
 #include "bcore_plant_builder.h"
 #include "bcore_plant.h"
 #include "bcore_main.h"
+#include "bcore_error_manager.h"
 
 #endif // BCORE_STD_H

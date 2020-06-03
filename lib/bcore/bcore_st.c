@@ -19,10 +19,13 @@
 #include "bcore_control.h"
 #include "bcore_tbman.h"
 #include "bcore_name_manager.h"
+#include "bcore_error_manager.h"
 #include "bcore_flect.h"
 #include "bcore_signal.h"
 #include "bcore_life.h"
 #include "bcore_signal.h"
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_init( st_s* o )
 {
@@ -30,6 +33,8 @@ void st_s_init( st_s* o )
     o->sc = "";
     o->size = o->space = 0;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_initvf( st_s* o, sc_t format, va_list args )
 {
@@ -45,6 +50,8 @@ void st_s_initvf( st_s* o, sc_t format, va_list args )
     vsnprintf( o->data, o->space, format, args );
     o->size = bcore_strlen( o->sc );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_init_fv( st_s* o, sc_t format, va_list args )
 {
@@ -72,6 +79,8 @@ void st_s_init_fv( st_s* o, sc_t format, va_list args )
     o->size = bcore_strlen( o->sc );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void st_s_initf( st_s* o, sc_t format, ... )
 {
     va_list args;
@@ -80,6 +89,8 @@ void st_s_initf( st_s* o, sc_t format, ... )
     va_end( args );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void st_s_init_fa( st_s* o, sc_t format, ... )
 {
     va_list args;
@@ -87,6 +98,8 @@ void st_s_init_fa( st_s* o, sc_t format, ... )
     st_s_init_fv( o, format, args );
     va_end( args );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_init_sc_n( st_s* o, sc_t sc, uz_t sc_size )
 {
@@ -97,6 +110,8 @@ void st_s_init_sc_n( st_s* o, sc_t sc, uz_t sc_size )
     o->size = sc_size;
     o->data[ o->size ] = 0;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_init_sd_d( st_s* o, sd_t sd )
 {
@@ -109,10 +124,14 @@ void st_s_init_sd_d( st_s* o, sd_t sd )
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void st_s_init_sc( st_s* o, sc_t sc )
 {
     st_s_init_sc_n( o, sc, bcore_strlen( sc ) );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void  st_s_init_weak_st( st_s* o, const st_s* st )
 {
@@ -121,6 +140,8 @@ void  st_s_init_weak_st( st_s* o, const st_s* st )
     o->size  = st->size;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void st_s_init_weak_sc( st_s* o, sc_t sc )
 {
     st_s_init( o );
@@ -128,11 +149,15 @@ void st_s_init_weak_sc( st_s* o, sc_t sc )
     o->size  = bcore_strlen( sc );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void st_s_down( st_s* o )
 {
     if( o->space ) bcore_bn_alloc( o->data, o->space, 0, &o->space );
     o->size = 0;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void  st_s_set_size( st_s* o, u0_t fill_char, uz_t size )
 {
@@ -146,6 +171,8 @@ void  st_s_set_size( st_s* o, u0_t fill_char, uz_t size )
     o->size = size;
     o->data[ o->size ] = 0;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_copy( st_s* o, const st_s* src )
 {
@@ -161,6 +188,8 @@ void st_s_copy( st_s* o, const st_s* src )
     o->data[ o->size ] = 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void st_s_copy_sc_n( st_s* o, sc_t sc, uz_t sc_size )
 {
     if( o->space <= sc_size )
@@ -174,10 +203,14 @@ void st_s_copy_sc_n( st_s* o, sc_t sc, uz_t sc_size )
     o->data[ o->size ] = 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void st_s_copy_sc( st_s* o, sc_t sc )
 {
     st_s_copy_sc_n( o, sc, bcore_strlen( sc ) );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_assign_sc( st_s* o, sc_t sc )
 {
@@ -187,11 +220,15 @@ void st_s_assign_sc( st_s* o, sc_t sc )
     o->size = src_size;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void st_s_copyvf( st_s* o, sc_t format, va_list args  )
 {
     st_s_down( o );
     st_s_initvf( o, format, args );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_copyf( st_s* o, sc_t format, ...  )
 {
@@ -201,11 +238,15 @@ void st_s_copyf( st_s* o, sc_t format, ...  )
     va_end( args );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void st_s_copy_fv( st_s* o, sc_t format, va_list args  )
 {
     st_s_down( o );
     st_s_init_fv( o, format, args );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_copy_fa( st_s* o, sc_t format, ...  )
 {
@@ -214,6 +255,8 @@ void st_s_copy_fa( st_s* o, sc_t format, ...  )
     st_s_copy_fv( o, format, args );
     va_end( args );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_copy_typed( st_s* o, tp_t type, vc_t src )
 {
@@ -241,6 +284,7 @@ void st_s_copy_typed( st_s* o, tp_t type, vc_t src )
         case TYPEOF_umax_t:   st_s_copyf( o, "%"PRIuMAX, *(const umax_t*)src ); break;
         case TYPEOF_offset_t: st_s_copyf( o, "%zu",      *(const offset_t*)src ); break;
 
+        case TYPEOF_er_t: st_s_copyf( o, "%"PRIi32, *(const er_t*)src ); break;
         case TYPEOF_bl_t: st_s_copy_sc( o, *(const bl_t*)src ? "true" : "false" ); break;
         case TYPEOF_tp_t:
         case TYPEOF_aware_t:
@@ -258,10 +302,14 @@ void st_s_copy_typed( st_s* o, tp_t type, vc_t src )
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void st_s_copy_aware( st_s* o, vc_t src )
 {
     st_s_copy_typed( o, *( aware_t* )src, src );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_move( st_s* o, st_s* src )
 {
@@ -270,6 +318,8 @@ void st_s_move( st_s* o, st_s* src )
     st_s_down( src );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_create()
 {
     st_s* o = bcore_b_alloc( NULL, sizeof( st_s ), NULL );
@@ -277,12 +327,16 @@ st_s* st_s_create()
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_createvf( sc_t format, va_list args )
 {
     st_s* o = bcore_b_alloc( NULL, sizeof( st_s ), NULL );
     st_s_initvf( o, format, args );
     return o;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_createf( sc_t format, ... )
 {
@@ -293,12 +347,16 @@ st_s* st_s_createf( sc_t format, ... )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_create_fv( sc_t format, va_list args )
 {
     st_s* o = bcore_b_alloc( NULL, sizeof( st_s ), NULL );
     st_s_init_fv( o, format, args );
     return o;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_create_fa( sc_t format, ... )
 {
@@ -309,12 +367,16 @@ st_s* st_s_create_fa( sc_t format, ... )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_create_sc_n( sc_t sc, uz_t sc_size )
 {
     st_s* o = bcore_b_alloc( NULL, sizeof( st_s ), NULL );
     st_s_init_sc_n( o, sc, sc_size );
     return o;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_create_sd_d( sd_t sd )
 {
@@ -323,10 +385,14 @@ st_s* st_s_create_sd_d( sd_t sd )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_create_sc( sc_t sc )
 {
     return st_s_create_sc_n( sc, bcore_strlen( sc ) );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_create_weak_sc( sc_t sc )
 {
@@ -335,10 +401,14 @@ st_s* st_s_create_weak_sc( sc_t sc )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_create_l( bcore_life_s* life )
 {
     return bcore_life_s_push( life, ( bcore_fp_discard )st_s_discard, st_s_create() );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_createf_l( bcore_life_s* life, sc_t format, ... )
 {
@@ -350,15 +420,21 @@ st_s* st_s_createf_l( bcore_life_s* life, sc_t format, ... )
     return bcore_life_s_push( life, ( bcore_fp_discard )st_s_discard, o );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_create_l_sc_n( bcore_life_s* life, sc_t sc, uz_t sc_size )
 {
     return bcore_life_s_push( life, ( bcore_fp_discard )st_s_discard, st_s_create_sc_n( sc, sc_size ) );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_create_l_sc( bcore_life_s* life, sc_t sc )
 {
     return bcore_life_s_push( life, ( bcore_fp_discard )st_s_discard, st_s_create_sc( sc ) );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_create_typed( tp_t type, vc_t src )
 {
@@ -368,15 +444,21 @@ st_s* st_s_create_typed( tp_t type, vc_t src )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_create_aware( vc_t src )
 {
     return st_s_create_typed( *( aware_t* )src, src );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bl_t st_s_is_weak( const st_s* o )
 {
     return ( o->size > 0 ) && ( o->space == 0 );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_make_strong( st_s* o )
 {
@@ -385,6 +467,8 @@ void st_s_make_strong( st_s* o )
     o->size = 0;
     st_s_copy_sc( o, src );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_set_min_space( st_s* o, uz_t min_space )
 {
@@ -403,11 +487,15 @@ void st_s_set_min_space( st_s* o, uz_t min_space )
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void st_s_discard( st_s* o )
 {
     if( !o ) return;
     bcore_release_obj( ( fp_t )st_s_down, o );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_clone( const st_s* o )
 {
@@ -415,6 +503,8 @@ st_s* st_s_clone( const st_s* o )
     st_s_copy( o_l, o );
     return o_l;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_crop( const st_s* o, uz_t start, uz_t end )
 {
@@ -431,12 +521,16 @@ st_s* st_s_crop( const st_s* o, uz_t start, uz_t end )
     return s;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_crop_d( st_s* o, uz_t start, uz_t end )
 {
     st_s* s = st_s_crop( o, start, end );
     st_s_discard( o );
     return s;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_clear( st_s* o )
 {
@@ -454,6 +548,8 @@ st_s* st_s_clear( st_s* o )
     }
     return o;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_push_char( st_s* o, char c )
 {
@@ -473,6 +569,8 @@ st_s* st_s_push_char( st_s* o, char c )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_push_char_n( st_s* o, char c, uz_t n )
 {
     st_s_set_min_space( o, o->size + n + 1 );
@@ -481,6 +579,8 @@ st_s* st_s_push_char_n( st_s* o, char c, uz_t n )
     o->data[ o->size ] = 0;
     return o;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 char st_s_pop_char( st_s* o )
 {
@@ -492,6 +592,8 @@ char st_s_pop_char( st_s* o )
     return c;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void st_s_pop_n( st_s* o, uz_t n )
 {
     if( o->size  == 0 ) return;
@@ -499,6 +601,8 @@ void st_s_pop_n( st_s* o, uz_t n )
     o->size = ( o->size > n ) ? ( o->size - n ) : 0;
     o->data[ o->size ] = 0;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_push_st( st_s* o, const st_s* src )
 {
@@ -519,12 +623,16 @@ st_s* st_s_push_st( st_s* o, const st_s* src )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_push_st_d( st_s* o, st_s* src )
 {
     st_s_push_st( o, src );
     st_s_discard( src );
     return o;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_push_sc_n( st_s* o, sc_t sc, uz_t sc_size )
 {
@@ -539,10 +647,14 @@ st_s* st_s_push_sc_n( st_s* o, sc_t sc, uz_t sc_size )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_push_sc( st_s* o, sc_t sc )
 {
     return st_s_push_sc_n( o, sc, bcore_strlen( sc ) );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_push_typed( st_s* o, tp_t type, vc_t src )
 {
@@ -550,6 +662,8 @@ st_s* st_s_push_typed( st_s* o, tp_t type, vc_t src )
     st_s_copy_typed( s, type, src );
     return st_s_push_st_d( o, s );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_pushvf( st_s* o, sc_t format, va_list args )
 {
@@ -560,6 +674,8 @@ st_s* st_s_pushvf( st_s* o, sc_t format, va_list args )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_pushf( st_s* o, sc_t format, ... )
 {
     va_list args;
@@ -568,6 +684,8 @@ st_s* st_s_pushf( st_s* o, sc_t format, ... )
     va_end( args );
     return o;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_push_fv( st_s* o, sc_t format, va_list args )
 {
@@ -578,6 +696,8 @@ st_s* st_s_push_fv( st_s* o, sc_t format, va_list args )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_push_fa( st_s* o, sc_t format, ... )
 {
     va_list args;
@@ -586,6 +706,8 @@ st_s* st_s_push_fa( st_s* o, sc_t format, ... )
     va_end( args );
     return o;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 uz_t st_s_find_char( const st_s* o, uz_t start, uz_t end, char c )
 {
@@ -602,6 +724,8 @@ uz_t st_s_find_char( const st_s* o, uz_t start, uz_t end, char c )
         return start_l;
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 uz_t st_s_find_sc( const st_s* o, uz_t start, uz_t end, sc_t find_sc )
 {
@@ -635,10 +759,14 @@ uz_t st_s_find_sc( const st_s* o, uz_t start, uz_t end, sc_t find_sc )
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 uz_t st_s_find_st( const st_s* o, uz_t start, uz_t end, const st_s* st )
 {
     return st_s_find_sc( o, start, end, st->sc );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 uz_t st_s_find_st_d( const st_s* o, uz_t start, uz_t end, st_s* st )
 {
@@ -646,6 +774,8 @@ uz_t st_s_find_st_d( const st_s* o, uz_t start, uz_t end, st_s* st )
     st_s_discard( st );
     return r;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 uz_t st_s_find_any_sc( const st_s* o, uz_t start, uz_t end, sc_t sc )
 {
@@ -664,6 +794,8 @@ uz_t st_s_find_any_sc( const st_s* o, uz_t start, uz_t end, sc_t sc )
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 uz_t st_s_find_none_sc( const st_s* o, uz_t start, uz_t end, sc_t sc )
 {
     if( !sc || sc[ 0 ] == 0 ) return start;
@@ -681,6 +813,8 @@ uz_t st_s_find_none_sc( const st_s* o, uz_t start, uz_t end, sc_t sc )
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_remove( st_s* o, uz_t start, uz_t size )
 {
     if( start >= o->size ) return o;
@@ -692,6 +826,8 @@ st_s* st_s_remove( st_s* o, uz_t start, uz_t size )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 uz_t st_s_count_char( const st_s* o, uz_t start, uz_t end, char c )
 {
     uz_t count = 0;
@@ -699,6 +835,8 @@ uz_t st_s_count_char( const st_s* o, uz_t start, uz_t end, char c )
     for( uz_t j = start; j < end_l; j++ ) if( o->data[ j ] == c ) count++;
     return count;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 uz_t st_s_count_sc( const st_s* o, uz_t start, uz_t end, sc_t sc )
 {
@@ -717,10 +855,14 @@ uz_t st_s_count_sc( const st_s* o, uz_t start, uz_t end, sc_t sc )
     return count;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 uz_t st_s_count_st( const st_s* o, uz_t start, uz_t end, const st_s* st )
 {
     return st_s_count_sc( o, start, end, st->sc );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_insert_char( st_s* o, uz_t start, char c )
 {
@@ -741,6 +883,8 @@ st_s* st_s_insert_char( st_s* o, uz_t start, char c )
     o->data[ o->size ] = 0;
     return o;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_insert_st( st_s* o, uz_t start, const st_s* string )
 {
@@ -769,12 +913,16 @@ st_s* st_s_insert_st( st_s* o, uz_t start, const st_s* string )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_insert_st_d( st_s* o, uz_t start, st_s* string )
 {
     st_s_insert_st( o, start, string );
     st_s_discard( string );
     return o;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_insert_sc( st_s* o, uz_t start, sc_t sc )
 {
@@ -798,6 +946,8 @@ st_s* st_s_insert_sc( st_s* o, uz_t start, sc_t sc )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_replace_char( st_s* o, uz_t start, char c )
 {
     if( start >= o->size ) return o;
@@ -805,6 +955,8 @@ st_s* st_s_replace_char( st_s* o, uz_t start, char c )
     o->data[ start ] = c;
     return o;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_replace_st( st_s* o, uz_t start, const st_s* string )
 {
@@ -826,12 +978,16 @@ st_s* st_s_replace_st( st_s* o, uz_t start, const st_s* string )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_replace_st_d( st_s* o, uz_t start, st_s* string )
 {
     st_s_replace_st( o, start, string );
     st_s_discard( string );
     return o;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_replace_sc( st_s* o, uz_t start, sc_t sc )
 {
@@ -846,12 +1002,16 @@ st_s* st_s_replace_sc( st_s* o, uz_t start, sc_t sc )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_replace_char_char( st_s* o, char c, char replace )
 {
     if( o->space == 0 ) st_s_make_strong( o );
     for( uz_t i = 0; i < o->size; i++ ) if( o->data[ i ] == c ) o->data[ i ] = replace;
     return o;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_replace_char_sc( st_s* o, char c, sc_t sc )
 {
@@ -868,10 +1028,14 @@ st_s* st_s_replace_char_sc( st_s* o, char c, sc_t sc )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_replace_char_st( st_s* o, char c, const st_s* string )
 {
     return st_s_replace_char_sc( o, c, string->sc );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_replace_char_st_d( st_s* o, char c, st_s* string )
 {
@@ -879,6 +1043,8 @@ st_s* st_s_replace_char_st_d( st_s* o, char c, st_s* string )
     st_s_discard( string );
     return o;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_replace_sc_sc( st_s* o, sc_t match, sc_t replace )
 {
@@ -895,10 +1061,14 @@ st_s* st_s_replace_sc_sc( st_s* o, sc_t match, sc_t replace )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_replace_st_st( st_s* o, const st_s* match, const st_s* replace )
 {
     return st_s_replace_sc_sc( o, match->sc, replace->sc );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_replace_st_d_st_d( st_s* o, st_s* match, st_s* replace )
 {
@@ -907,6 +1077,8 @@ st_s* st_s_replace_st_d_st_d( st_s* o, st_s* match, st_s* replace )
     st_s_discard( replace );
     return o;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_set_lowercase( st_s* o )
 {
@@ -917,6 +1089,8 @@ void st_s_set_lowercase( st_s* o )
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void st_s_set_uppercase( st_s* o )
 {
     if( o->space == 0 ) st_s_make_strong( o );
@@ -926,10 +1100,14 @@ void st_s_set_uppercase( st_s* o )
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 uz_t st_s_lineof( const st_s* o, uz_t pos )
 {
     return st_s_count_char( o, 0, pos, '\n' ) + 1;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 uz_t st_s_colof( const st_s* o, uz_t pos )
 {
@@ -943,6 +1121,8 @@ uz_t st_s_colof( const st_s* o, uz_t pos )
     }
     return count + 1;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 uz_t st_s_posof( const st_s* o, uz_t line, uz_t col )
 {
@@ -963,6 +1143,8 @@ uz_t st_s_posof( const st_s* o, uz_t line, uz_t col )
     return pos + col;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 uz_t st_s_posofline( const st_s* o, uz_t pos )
 {
     uz_t pos_l = ( pos > o->size ) ? o->size : pos;
@@ -974,12 +1156,15 @@ uz_t st_s_posofline( const st_s* o, uz_t pos )
     return pos_l;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_to_stdout( const st_s* o )
 {
     if( !o ) return;
     bcore_msg( "%s", o->sc );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_to_stdout_d( st_s* o )
 {
@@ -988,10 +1173,14 @@ void st_s_to_stdout_d( st_s* o )
     st_s_discard( o );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void st_s_to_stdout_fv( sc_t format, va_list args )
 {
     st_s_to_stdout_d( st_s_create_fv( format, args ) );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_to_stdout_fa( sc_t format, ... )
 {
@@ -1001,12 +1190,15 @@ void st_s_to_stdout_fa( sc_t format, ... )
     va_end( args );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_print( const st_s* o )
 {
     if( !o ) return;
     bcore_msg( "%s", o->sc );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_print_d( st_s* o )
 {
@@ -1015,10 +1207,14 @@ void st_s_print_d( st_s* o )
     st_s_discard( o );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void st_s_print_fv( sc_t format, va_list args )
 {
     st_s_print_d( st_s_create_fv( format, args ) );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void st_s_print_fa( sc_t format, ... )
 {
@@ -1027,6 +1223,8 @@ void st_s_print_fa( sc_t format, ... )
     st_s_print_fv( format, args );
     va_end( args );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* st_s_show_line_context( const st_s* o, uz_t pos )
 {
@@ -1040,6 +1238,8 @@ st_s* st_s_show_line_context( const st_s* o, uz_t pos )
     st_s_push_char( s, '\n' );
     return s;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /** Expects character expression and returns resulting character.
  *  Either '<char>' for const character or [<index>] for indexed character.
@@ -1072,6 +1272,8 @@ static char c_char( sc_t o, uz_t on, sc_t f, uz_t* fi )
     *fi = i;
     return c;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /** evaluates logical match condition for characters
  * format "([0]=='a'&&[1]=='a'...)" (no whitespaces).
@@ -1137,11 +1339,15 @@ static bl_t c_match( sc_t o, uz_t on, sc_t f, uz_t* fi )
     return false;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 uz_t st_s_parse_err( vd_t arg, const st_s* o, uz_t idx, st_s* msg )
 {
     ERR( "Parse error at (%zu:%zu):\n%s\n%s\n", st_s_lineof( o, idx ), st_s_colof( o, idx ), st_s_show_line_context( o, idx )->sc, msg->sc );
     return idx;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 uz_t st_s_parse_msg( vd_t arg, const st_s* o, uz_t idx, st_s* msg )
 {
@@ -1149,11 +1355,28 @@ uz_t st_s_parse_msg( vd_t arg, const st_s* o, uz_t idx, st_s* msg )
     return idx;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static bl_t is_hex( sc_t sc )
 {
     if( sc[ 0 ] == '-' || sc[ 0 ] == '+' ) return is_hex( sc + 1 );
     return ( sc[ 0 ] == '0' && ( sc[ 1 ] == 'x' || sc[ 1 ] == 'X' ) );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static uz_t st_s_parse_errorf( const st_s* o, fp_st_s_parse_err errfp, vd_t arg, sz_t idx, sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    st_s* msg = st_s_createvf( format, args );
+    errfp( arg, o, idx, msg );
+    st_s_discard( msg );
+    va_end( args );
+    return idx;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errfp, vd_t arg, sc_t format, va_list args )
 {
@@ -1320,7 +1543,7 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     {
                         s0_t v;
                         sc_t sc = o->sc + idx;
-                        sres = sscanf( sc, "%"SCNi8"%n", &v, &size );
+                        sres = sscanf( sc, "%"SCNs0_t"%n", &v, &size );
                         if( set_arg )
                         {
                             s0_t* target = va_arg( args, s0_t* );
@@ -1333,7 +1556,7 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     {
                         s1_t v;
                         sc_t sc = o->sc + idx;
-                        sres = sscanf( sc, "%"SCNi16"%n", &v, &size );
+                        sres = sscanf( sc, "%"SCNs1_t"%n", &v, &size );
                         if( set_arg )
                         {
                             s1_t* target = va_arg( args, s1_t* );
@@ -1346,7 +1569,7 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     {
                         s2_t v;
                         sc_t sc = o->sc + idx;
-                        sres = sscanf( sc, "%"SCNi32"%n", &v, &size );
+                        sres = sscanf( sc, "%"SCNs2_t"%n", &v, &size );
                         if( set_arg )
                         {
                             s2_t* target = va_arg( args, s2_t* );
@@ -1359,7 +1582,7 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     {
                         s3_t v;
                         sc_t sc = o->sc + idx;
-                        sres = sscanf( sc, "%"SCNi64"%n", &v, &size );
+                        sres = sscanf( sc, "%"SCNs3_t"%n", &v, &size );
                         if( set_arg )
                         {
                             s3_t* target = va_arg( args, s3_t* );
@@ -1372,7 +1595,7 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     {
                         smax_t v;
                         sc_t sc = o->sc + idx;
-                        sres = sscanf( sc, "%"SCNiMAX"%n", &v, &size );
+                        sres = sscanf( sc, "%"SCNsmax_t"%n", &v, &size );
                         if( set_arg )
                         {
                             smax_t* target = va_arg( args, smax_t* );
@@ -1385,7 +1608,7 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     {
                         smax_t v;
                         sc_t sc = o->sc + idx;
-                        sres = sscanf( sc, "%"SCNiMAX"%n", &v, &size );
+                        sres = sscanf( sc, "%"SCNsz_t"%n", &v, &size );
                         if( set_arg )
                         {
                             sz_t* target = va_arg( args, sz_t* );
@@ -1458,6 +1681,19 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                         break;
                     }
 
+                    case TYPEOF_er_t:
+                    {
+                        er_t v;
+                        sc_t sc = o->sc + idx;
+                        sres = sscanf( sc, "%"SCNer_t"%n", &v, &size );
+                        if( set_arg )
+                        {
+                            er_t* target = va_arg( args, er_t* );
+                            if( target ) *target = v;
+                        }
+                        break;
+                    }
+
                     case TYPEOF_bl_t:
                     {
                         bl_t val = false;
@@ -1473,7 +1709,7 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                         }
                         else
                         {
-                            return errfp( arg, o, idx, st_s_createf( "Parsing #bl_t failed; true or false expected." ) );
+                            return st_s_parse_errorf( o, errfp, arg, idx, "Parsing #bl_t failed; true or false expected." );
                         }
                         if( set_arg )
                         {
@@ -1494,7 +1730,7 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
 
                 if( sres <= 0 )
                 {
-                    return errfp( arg, o, idx, st_s_createf( "Parsing type #%s failed.", ifnameof( type ) ) );
+                    return st_s_parse_errorf( o, errfp, arg, idx, "Parsing type #%s failed.", ifnameof( type ) );
                 }
                 idx += size;
                 if( idx > end_l ) idx = end_l;
@@ -1574,7 +1810,7 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                 }
                 else
                 {
-                    return errfp( arg, o, idx, st_s_createf( "'#' expected." ) );
+                    return st_s_parse_errorf( o, errfp, arg, idx, "'#' expected." );
                 }
             }
             else if( ( bcore_strcmp( "aware_t", fp ) >> 1 ) == 0 )
@@ -1584,7 +1820,7 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                 uintmax_t val;
                 if( sscanf( o->sc + idx, "%"SCNuMAX"%n", &val, &size ) <= 0 )
                 {
-                    return errfp( arg, o, idx, st_s_createf( "Parsing #aware_t failed." ) );
+                    return st_s_parse_errorf( o, errfp, arg, idx, "Parsing #aware_t failed." );
                 }
                 if( set_arg )
                 {
@@ -1610,7 +1846,7 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                 }
                 else
                 {
-                    return errfp( arg, o, idx, st_s_createf( "Parsing #bool failed: true or false expected." ) );
+                    return st_s_parse_errorf( o, errfp, arg, idx, "Parsing #bool failed: true or false expected." );
                 }
                 if( set_arg )
                 {
@@ -1673,7 +1909,7 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                 }
                 if( o->sc[ idx ] != '"' )
                 {
-                    return errfp( arg, o, idx, st_s_createf( "'\"' expected." ) );
+                    return st_s_parse_errorf( o, errfp, arg, idx, "'\"' expected." );
                 }
                 idx++;
                 while ( o->sc[ idx ] != '"' )
@@ -1742,12 +1978,14 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
             }
             else
             {
-                return errfp( arg, o, idx, st_s_createf( "Matching format characters '%s' failed", fp0 ) );
+                return st_s_parse_errorf( o, errfp, arg, idx, "Matching format characters '%s' failed", fp0 );
             }
         }
     }
     return idx;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 uz_t st_s_parse_efa( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errfp, vd_t arg, sc_t format, ... )
 {
@@ -1758,10 +1996,14 @@ uz_t st_s_parse_efa( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
     return idx;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 uz_t st_s_parse_fv( const st_s* o, uz_t start, uz_t end, sc_t format, va_list args )
 {
     return st_s_parse_efv( o, start, end, st_s_parse_err, NULL, format, args );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 uz_t st_s_parse_fa( const st_s* o, uz_t start, uz_t end, sc_t format, ... )
 {
@@ -1771,6 +2013,40 @@ uz_t st_s_parse_fa( const st_s* o, uz_t start, uz_t end, sc_t format, ... )
     va_end( args );
     return idx;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static uz_t st_s_parse_em_callback( vd_t arg, const st_s* o, uz_t idx, st_s* msg )
+{
+    ASSERT( arg );
+    er_t id = TYPEOF_parse_error;
+    ( *( er_t* )arg ) = id;
+    bcore_error_push_sc( id, msg->sc );
+    return idx;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+er_t st_s_parse_em_fv( const st_s* o, uz_t start, uz_t end, uz_t* out_idx, sc_t format, va_list args )
+{
+    er_t err = 0;
+    uz_t idx = st_s_parse_efv( o, start, end, st_s_parse_em_callback, &err, format, args );
+    if( out_idx ) *out_idx = idx;
+    return err;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+er_t st_s_parse_em_fa( const st_s* o, uz_t start, uz_t end, uz_t* out_idx, sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    er_t err = st_s_parse_em_fv( o, start, end, out_idx, format, args );
+    va_end( args );
+    return err;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static uz_t flow_snk( vd_t o, vc_t data, uz_t size )
 {
@@ -1792,6 +2068,8 @@ static uz_t flow_snk( vd_t o, vc_t data, uz_t size )
     return size;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static uz_t flow_src( vd_t o, vd_t data, uz_t size )
 {
     if( *( aware_t*)o != TYPEOF_st_s ) ERR( "object 'o' of type %u ('%s') must be st_s", *( aware_t*)o, ifnameof( *( aware_t*)o ) );
@@ -1804,6 +2082,8 @@ static uz_t flow_src( vd_t o, vd_t data, uz_t size )
     return size;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static void p_errorvf( const st_s* o, sc_t format, va_list args )
 {
     st_s* context = st_s_show_line_context( o, 0 );
@@ -1813,6 +2093,8 @@ static void p_errorvf( const st_s* o, sc_t format, va_list args )
     st_s_discard( context );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static void parse_fv( st_s* o, sc_t format, va_list args )
 {
     if( o->space > 0 ) ERR( "String is strong. Only weak strings can be used as flow-source." );
@@ -1821,17 +2103,23 @@ static void parse_fv( st_s* o, sc_t format, va_list args )
     o->size -= size;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static bl_t eos( const st_s* o )
 {
     if( o->space > 0 ) ERR( "String is strong. Only weak strings can be used as flow-source." );
     return o->size == 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static s3_t get_index( const st_s* o )
 {
     if( o->space > 0 ) ERR( "String is strong. Only weak strings can be used as flow-source." );
     return -( s3_t )o->size;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static void set_index( st_s* o, s3_t index )
 {
@@ -1853,6 +2141,8 @@ static void set_index( st_s* o, s3_t index )
     o->size = -index;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /// sanity feature
 void bcore_inst_t_check_sizeof( u2_t type, uz_t size );
 static void check_sanity( vc_t o )
@@ -1871,6 +2161,12 @@ static void check_sanity( vc_t o )
         if( c < 10 || c >= 128 ) ERR( "invalid character '%c' in string", c );
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* st_s_create_self( void )
 {
@@ -1903,6 +2199,12 @@ static bcore_self_s* st_s_create_self( void )
     bcore_self_s_push_ns_func( self, ( fp_t )st_s_cmp_st,       "bcore_fp_compare",         "cmp_st"       );
     return self;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static void st_s_quicktest( void )
 {
@@ -2014,7 +2316,39 @@ static void st_s_quicktest( void )
     ASSERT( granted_space == bcore_tbman_total_granted_space() );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
+static void st_s_selftest( void )
+{
+    st_s_quicktest();
+
+
+    // parsing with error management
+    {
+        BLM_INIT();
+        st_s* s = BLM_CREATE( st_s );
+        sz_t stack_size = bcore_error_stack_size();
+
+        st_s_push_fa( s, "This is my string." );
+        ASSERT( st_s_parse_em_fa( s, 0, s->size, NULL, "This is not my string." ) == TYPEOF_parse_error );
+        er_t err_id = 0;
+        st_s* err_msg = BLM_CREATE( st_s );
+
+        ASSERT( bcore_error_stack_size() == stack_size + 1 );
+        ASSERT( bcore_error_pop_st( &err_id, err_msg ) );
+        ASSERT( bcore_error_stack_size() == stack_size );
+        ASSERT( err_id == TYPEOF_parse_error );
+
+        BLM_DOWN();
+    }
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 vd_t bcore_st_signal_handler( const bcore_signal_s* o )
 {
@@ -2029,7 +2363,7 @@ vd_t bcore_st_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_selftest:
         {
-            st_s_quicktest();
+            st_s_selftest();
         }
         break;
 

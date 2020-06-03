@@ -437,6 +437,13 @@ uz_t sc_t_fnv( sd_t o, uz_t space, sc_t f, uz_t fsize, va_list* p_args )
                         }
                         break;
 
+                        case TYPEOF_er_t:
+                        {
+                            er_t* v = va_arg( *p_args, er_t* );
+                            if( v ) sres = snprintf( dst, space, "%"PRIer_t"", *v );
+                        }
+                        break;
+
                         case TYPEOF_bl_t:
                         {
                             bl_t* v = va_arg( *p_args, bl_t* );

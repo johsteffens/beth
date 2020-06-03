@@ -157,7 +157,8 @@ vd_t bcore_function_manager_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_down0:
         {
-            if( o->object && ( *( bl_t* )o->object ) )
+            s2_t verbosity = o->object ? *( s2_t* )o->object : 0;
+            if( verbosity > 0 )
             {
                 uz_t count = bcore_function_size();
                 uz_t space = bcore_tbman_total_granted_space();

@@ -291,10 +291,14 @@ void st_s_print_fa( sc_t format, ... );
 uz_t st_s_parse_fv( const st_s* o, uz_t start, uz_t end, sc_t format, va_list args );
 uz_t st_s_parse_fa( const st_s* o, uz_t start, uz_t end, sc_t format, ... );
 
-/// parse functions with parse error continuation
+/// parse functions with external parse error continuation
 typedef uz_t (*fp_st_s_parse_err)( vd_t arg, const st_s* o, uz_t idx, st_s* msg );
 uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errfp, vd_t arg, sc_t format, va_list args );
 uz_t st_s_parse_efa( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errfp, vd_t arg, sc_t format, ... );
+
+/// parse functions using error manager and returning error state
+er_t st_s_parse_em_fv( const st_s* o, uz_t start, uz_t end, uz_t* out_idx, sc_t format, va_list args );
+er_t st_s_parse_em_fa( const st_s* o, uz_t start, uz_t end, uz_t* out_idx, sc_t format, ... );
 
 /// constructs a double-line with a visible position indicator (useful for context messages/warnings/errors with highlighted position)
 st_s* st_s_show_line_context( const st_s* o, uz_t pos );

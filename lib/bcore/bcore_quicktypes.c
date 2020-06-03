@@ -59,6 +59,7 @@ static sr_s leaf_typelist()
     bcore_array_r_push_sc( &list, "vc_t" );
     bcore_array_r_push_sc( &list, "fp_t" );
     bcore_array_r_push_sc( &list, "tp_t" );
+    bcore_array_r_push_sc( &list, "er_t" );
     bcore_array_r_push_sc( &list, "bl_t" );
     bcore_array_r_push_sc( &list, "st_s" );
     bcore_array_r_push_sc( &list, "aware_t" );

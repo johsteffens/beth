@@ -643,6 +643,7 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, const b
 
                     case TYPEOF_tp_t:
                     case TYPEOF_aware_t:
+                    case TYPEOF_er_t:
                     {
                         if( bcore_source_r_parse_bl_fa( &src, " #?([0]>='0'&&[0]<='9')" ) )
                         {
@@ -2315,6 +2316,7 @@ static void flect_define_basics()
 
     // special purpose types
     BCORE_REGISTER_TYPE( type, tp_t                );
+    BCORE_REGISTER_TYPE( type, er_t                );
     BCORE_REGISTER_TYPE( type, aware_t             );
     BCORE_REGISTER_TYPE( root, bcore_flect_flags_s );
 
@@ -2428,7 +2430,8 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_down0:
         {
-            if( o->object && ( *( bl_t* )o->object ) )
+            s2_t verbosity = o->object ? *( s2_t* )o->object : 0;
+            if( verbosity > 0 )
             {
                 uz_t count = bcore_flect_size();
                 uz_t space = bcore_tbman_total_granted_space();

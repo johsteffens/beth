@@ -20,6 +20,8 @@
 #include "bcore_trait.h"
 #include "bcore_signal.h"
 #include "bcore_sinks.h"
+#include "bcore_error_manager.h"
+#include "bcore.h"
 
 #define NPX( name ) bcore_source_##name
 
@@ -70,7 +72,7 @@ void bcore_source_default_parse_errvf( const bcore_source_s* p, bcore_source* o,
     st_s* msg = st_s_createvf( format, args );
     bcore_sink_a_push_fa( BCORE_STDERR, "#<sc_t>\n", msg->sc );
     st_s_discard( msg );
-    bcore_exit( 1 );
+    bcore_down_exit( -1, 1 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -239,6 +241,28 @@ void NPX(p_parse_msg_to_sink_fa)( const NPX(s)* p, bcore_source* o, bcore_sink* 
 void NPX(a_parse_msg_to_sink_fa)(                  bcore_source* o, bcore_sink* s, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(a_parse_msg_to_sink_fv)(    o, s, f, a ); va_end( a ); }
 void NPX(x_parse_msg_to_sink_fa)(                          sr_s  o, bcore_sink* s, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(x_parse_msg_to_sink_fv)(    o, s, f, a ); va_end( a ); }
 void NPX(r_parse_msg_to_sink_fa)(                    const sr_s* o, bcore_sink* s, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(r_parse_msg_to_sink_fv)(    o, s, f, a ); va_end( a ); }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+er_t bcore_source_a_parse_err_to_em_fv( bcore_source* o, er_t err_id, sc_t format, va_list args )
+{
+    st_s* msg = st_s_create();
+    bcore_source_a_parse_msg_to_sink_fv( o, ( bcore_sink* )msg, format, args );
+    bcore_error_push_sc( err_id, msg->sc );
+    st_s_discard( msg );
+    return err_id;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+er_t bcore_source_a_parse_err_to_em_fa( bcore_source* o, er_t err_id, sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    er_t ret = bcore_source_a_parse_err_to_em_fv( o, err_id, format, args );
+    va_end( args );
+    return ret;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
