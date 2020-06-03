@@ -90,6 +90,12 @@ er_t beth_plant_update( bl_t* modified );
 
 /// builds from default config file: "plant_builder.cfg"
 #define BETH_PLANT_BUILD_FROM_DEFAULT() \
-    beth_plant_build_from_rel_file( __FILE__, "plant_builder.cfg" );
+{ \
+    if( beth_plant_build_from_rel_file( __FILE__, "plant_builder.cfg" ) ) \
+    { \
+        bcore_error_pop_all_to_stderr(); \
+        bcore_down( 1 ); \
+    } \
+}
 
 #endif // BCORE_PLANT_H
