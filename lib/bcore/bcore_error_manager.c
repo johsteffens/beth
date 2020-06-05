@@ -112,9 +112,31 @@ sz_t bcore_error_stack_size( void )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_error_push_sc( er_t id, sc_t msg )
+er_t bcore_error_push_sc( er_t id, sc_t msg )
 {
     context_s_push_sc( get_context(), id, msg );
+    return id;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+er_t bcore_error_push_fv( er_t id, sc_t format, va_list args )
+{
+    st_s* msg = st_s_create_fv( format, args );
+    er_t ret = bcore_error_push_sc( id, msg->sc );
+    st_s_discard( msg );
+    return ret;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+er_t bcore_error_push_fa( er_t id, sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    er_t ret = bcore_error_push_fv( id, format, args );
+    va_end( args );
+    return ret;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

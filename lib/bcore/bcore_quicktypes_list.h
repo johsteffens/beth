@@ -112,6 +112,7 @@
 #define TYPEOF_bcore_source               3085414374
 #define TYPEOF_bcore_source_buffer_s      3062724539
 #define TYPEOF_bcore_source_chain_s       1759345018
+#define TYPEOF_bcore_source_context_s     3850703772
 #define TYPEOF_bcore_source_file_s           3236919
 #define TYPEOF_bcore_source_point_s       2863492005
 #define TYPEOF_bcore_source_s             3124187480

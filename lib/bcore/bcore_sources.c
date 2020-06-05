@@ -21,6 +21,7 @@
 #include "bcore_spect_interpreter.h"
 #include "bcore_life.h"
 #include "bcore_sinks.h"
+#include "bcore_error_manager.h"
 
 #include <stdio.h>
 
@@ -197,21 +198,22 @@ void bcore_source_chain_s_set_index( bcore_source_chain_s* o, s3_t index )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void chain_context_to_sink( bcore_source_chain_s* o, bcore_sink* sink )
+static void chain_get_context( bcore_source_chain_s* o, bcore_source_context_s* context )
 {
+    uz_t index = bcore_source_chain_s_get_index( o );
+    context->index = index;
+
     if( o->size > 0 )
     {
         if( o->data[ 0 ] && ( *( aware_t* )o->data[ 0 ] ) == TYPEOF_bcore_source_file_s )
         {
             bcore_source_file_s* fo = o->data[ 0 ];
-            bcore_sink_a_pushf( sink, "In file '%s'", bcore_source_file_s_get_name( fo ) );
-            uz_t index = bcore_source_chain_s_get_index( o );
+            st_s_attach( &context->file_path, st_s_create_sc( bcore_source_file_s_get_name( fo ) ) );
+            st_s_attach( &context->txt_context, st_s_create() );
             uz_t line, col;
-            st_s* context = st_s_create();
-            bcore_source_file_s_get_line_col_context( fo, index, &line, &col, context );
-            bcore_sink_a_pushf( sink, " at line %zu, col %zu", line, col );
-            bcore_sink_a_pushf( sink, "\n%s", context->sc );
-            st_s_discard( context );
+            bcore_source_file_s_get_line_col_context( fo, index, &line, &col,context->txt_context );
+            context->line = line;
+            context->col = col;
         }
     }
 }
@@ -241,6 +243,31 @@ static void chain_parse_fv( bcore_source_chain_s* o, sc_t format, va_list args )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static er_t chain_parse_em_fv( bcore_source_chain_s* o, sc_t format, va_list args )
+{
+    er_t ret = 0;
+    if( o->size > 0 )
+    {
+        const bcore_source_s* source_p = bcore_source_s_get_aware( o->data[ o->size - 1 ] );
+        if( source_p->parse_em_fv )
+        {
+            ret = bcore_source_p_parse_em_fv( source_p, o->data[ o->size - 1 ], format, args );
+        }
+        else
+        {
+            bcore_source_chain_s_push_type( o, TYPEOF_bcore_source_string_s );
+            ret = chain_parse_em_fv( o, format, args );
+        }
+    }
+    else
+    {
+        ERR( "Chain is empty" );
+    }
+    return ret;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static bcore_self_s* chain_s_create_self( void )
 {
     sc_t def =
@@ -257,8 +284,9 @@ static bcore_self_s* chain_s_create_self( void )
     bcore_self_s_push_ns_amoeba( self, chain_copy_a, "copy" );
     bcore_self_s_push_ns_func( self, ( fp_t )chain_interpret_body_a,            "ap_t",                            "interpret_body" );
     bcore_self_s_push_ns_func( self, ( fp_t )chain_flow_src,                    "bcore_fp_flow_src",               "flow_src"  );
-    bcore_self_s_push_ns_func( self, ( fp_t )chain_context_to_sink,             "bcore_source_fp_context_to_sink", "context_to_sink" );
+    bcore_self_s_push_ns_func( self, ( fp_t )chain_get_context,                 "bcore_source_fp_get_context",     "get_context" );
     bcore_self_s_push_ns_func( self, ( fp_t )chain_parse_fv,                    "bcore_source_fp_parse_fv",        "parse_fv" );
+    bcore_self_s_push_ns_func( self, ( fp_t )chain_parse_em_fv,                 "bcore_source_fp_parse_em_fv",     "parse_em_fv" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_set_supplier, "bcore_source_fp_set_supplier",    "set_supplier" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_eos,          "bcore_source_fp_eos",             "eos" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_chain_s_get_file,     "bcore_source_fp_get_file",        "get_file" );
@@ -420,9 +448,9 @@ void bcore_source_buffer_s_set_index( bcore_source_buffer_s* o, s3_t index )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void buffer_context_to_sink( bcore_source_buffer_s* o, bcore_sink* sink )
+static void buffer_get_context( bcore_source_buffer_s* o, bcore_source_context_s* context )
 {
-    if( o->ext_supplier ) bcore_source_a_context_to_sink( o->ext_supplier, sink );
+    if( o->ext_supplier ) bcore_source_a_get_context( o->ext_supplier, context );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -450,7 +478,7 @@ static bcore_self_s* buffer_s_create_self( void )
     bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_source_buffer_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_init,         "bcore_fp_init",                   "init"  );
     bcore_self_s_push_ns_func( self, ( fp_t )buffer_flow_src,                    "bcore_fp_flow_src",               "flow_src"  );
-    bcore_self_s_push_ns_func( self, ( fp_t )buffer_context_to_sink,             "bcore_source_fp_context_to_sink", "context_to_sink" );
+    bcore_self_s_push_ns_func( self, ( fp_t )buffer_get_context,                 "bcore_source_fp_get_context",     "get_context" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_set_supplier, "bcore_source_fp_set_supplier",    "set_supplier" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_eos,          "bcore_source_fp_eos",             "eos" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_buffer_s_get_file,     "bcore_source_fp_get_file",        "get_file" );
@@ -646,31 +674,31 @@ void bcore_source_string_s_set_index( bcore_source_string_s* o, s3_t index )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void string_context_to_sink( const bcore_source_string_s* o, bcore_sink* sink )
+static void string_get_context( const bcore_source_string_s* o, bcore_source_context_s* context )
 {
     if( o->chain )
     {
+        uz_t index = bcore_source_chain_s_get_index( o->chain );
+        context->index = index;
+
         if( o->chain->data[ 0 ] && ( *( aware_t* )o->chain->data[ 0 ] ) == TYPEOF_bcore_source_file_s )
         {
             bcore_source_file_s* fo = o->chain->data[ 0 ];
-            bcore_sink_a_pushf( sink, "In file '%s'", bcore_source_file_s_get_name( fo ) );
-            uz_t index = bcore_source_chain_s_get_index( o->chain );
+            st_s_attach( &context->file_path, st_s_create_sc( bcore_source_file_s_get_name( fo ) ) );
+            st_s_attach( &context->txt_context, st_s_create() );
             uz_t line, col;
-            st_s* context = st_s_create();
-            bcore_source_file_s_get_line_col_context( fo, index, &line, &col, context );
-            bcore_sink_a_pushf( sink, " at line %zu, col %zu", line, col );
-            bcore_sink_a_pushf( sink, "\n%s", context->sc );
-            st_s_discard( context );
+            bcore_source_file_s_get_line_col_context( fo, index, &line, &col,context->txt_context );
+            context->line = line;
+            context->col = col;
         }
     }
     else
     {
-        st_s* context   = st_s_show_line_context( o->string, o->index );
-        uz_t line = st_s_lineof( o->string, o->index );
-        uz_t col  = st_s_colof( o->string, o->index );
-        bcore_sink_a_pushf( sink, "At line %zu, col %zu:", line, col );
-        bcore_sink_a_pushf( sink, "\n%s\n", context->sc );
-        st_s_discard( context );
+        uz_t index = o->index;
+        context->index = index;
+        st_s_attach( &context->txt_context, st_s_show_line_context( o->string, o->index ) );
+        context->line = st_s_lineof( o->string, o->index );
+        context->col  = st_s_colof( o->string, o->index );
     }
 }
 
@@ -679,9 +707,19 @@ static void string_context_to_sink( const bcore_source_string_s* o, bcore_sink* 
 static uz_t string_s_parse_err( vd_t arg, const st_s* string, uz_t idx, st_s* ext_msg )
 {
     const bcore_source_string_s* o = arg;
-    bcore_sink_a_push_fa( BCORE_STDERR, "Parse error: " );
-    string_context_to_sink( o, BCORE_STDERR );
-    bcore_sink_a_push_fa( BCORE_STDERR, "#<sc_t>\n", ext_msg->sc );
+
+    bcore_source_context_s* context = bcore_source_context_s_create();
+    st_s* msg = st_s_create();
+
+    string_get_context( o, context );
+
+    bcore_source_context_s_get_msg_fa( context, msg, "Parse error: #<sc_t>", ext_msg->sc );
+
+    bcore_sink_a_push_fa( BCORE_STDERR, "#<sc_t>\n", msg->sc );
+
+    bcore_source_context_s_discard( context );
+    st_s_discard( msg );
+
     bcore_exit( 1 );
     return idx;
 }
@@ -693,6 +731,64 @@ static void string_parse_fv( bcore_source_string_s* o, sc_t format, va_list args
     if( o->ext_supplier ) string_refill( o, o->refill_limit );
     if( !o->string ) ERR( "No string defined." );
     o->index = st_s_parse_efv( o->string, o->index, o->string->size, string_s_parse_err, o, format, args );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static uz_t string_s_parse_em_err( vd_t arg, const st_s* string, uz_t idx, st_s* ext_msg )
+{
+    struct { er_t er; st_s* msg; }* er_arg = arg;
+    er_arg->er = TYPEOF_parse_error;
+    st_s_attach( &er_arg->msg, st_s_clone( ext_msg ) );
+    return idx;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static er_t string_parse_em_fv( bcore_source_string_s* o, sc_t format, va_list args )
+{
+    if( o->ext_supplier ) string_refill( o, o->refill_limit );
+    if( !o->string ) ERR( "No string defined." );
+
+    struct { er_t er; st_s* msg; } er_arg;
+    er_arg.er = 0;
+    er_arg.msg = NULL;
+    uz_t index = st_s_parse_efv( o->string, o->index, o->string->size, string_s_parse_em_err, &er_arg, format, args );
+    if( er_arg.er )
+    {
+        BLM_INIT();
+        st_s* msg_main    = BLM_CREATE( st_s );
+        st_s* msg_pref    = BLM_CREATE( st_s );
+        st_s* msg_context = BLM_CREATE( st_s );
+        if( er_arg.msg ) BLM_A_PUSH( er_arg.msg );
+
+        if( o->chain )
+        {
+            if( o->chain->data[ 0 ] && ( *( aware_t* )o->chain->data[ 0 ] ) == TYPEOF_bcore_source_file_s )
+            {
+                bcore_source_file_s* fo = o->chain->data[ 0 ];
+                uz_t index = bcore_source_chain_s_get_index( o->chain );
+                uz_t line, col;
+                bcore_source_file_s_get_line_col_context( fo, index, &line, &col, msg_context );
+                st_s_push_fa( msg_pref, "#<sc_t>:#<uz_t>:#<uz_t>", bcore_source_file_s_get_name( fo ), line, col );
+            }
+        }
+        else
+        {
+            msg_context = BLM_A_PUSH( st_s_show_line_context( o->string, o->index ) );
+            uz_t line = st_s_lineof( o->string, o->index );
+            uz_t col  = st_s_colof( o->string, o->index );
+            st_s_push_fa( msg_pref, "At line %zu, col %zu", line, col );
+        }
+
+        st_s_push_fa( msg_main, "#<sc_t>: error: #<sc_t>\n", msg_pref->sc, er_arg.msg ? er_arg.msg->sc : "" );
+        st_s_push_fa( msg_main, "#<sc_t>\n", msg_context->sc );
+
+        bcore_error_push_sc( er_arg.er, msg_main->sc );
+        BLM_DOWN();
+    }
+    o->index = index;
+    return er_arg.er;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -722,9 +818,10 @@ static bcore_self_s* string_s_create_self( void )
     bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_source_string_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_init,         "bcore_fp_init", "init" );
     bcore_self_s_push_ns_func( self, ( fp_t )string_flow_src,                    "bcore_fp_flow_src",               "flow_src"  );
-    bcore_self_s_push_ns_func( self, ( fp_t )string_context_to_sink,             "bcore_source_fp_context_to_sink", "context_to_sink" );
-    bcore_self_s_push_ns_func( self, ( fp_t )string_parse_fv,                    "bcore_source_fp_parse_fv",        "parse_fv"   );
-    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_set_supplier, "bcore_source_fp_set_supplier",    "set_supplier"   );
+    bcore_self_s_push_ns_func( self, ( fp_t )string_get_context,                 "bcore_source_fp_get_context",     "get_context"  );
+    bcore_self_s_push_ns_func( self, ( fp_t )string_parse_fv,                    "bcore_source_fp_parse_fv",        "parse_fv"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )string_parse_em_fv,                 "bcore_source_fp_parse_em_fv",     "parse_em_fv"  );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_set_supplier, "bcore_source_fp_set_supplier",    "set_supplier" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_eos,          "bcore_source_fp_eos",             "eos" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_get_file,     "bcore_source_fp_get_file",        "get_file" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_get_index,    "bcore_source_fp_get_index",       "get_index" );
@@ -987,9 +1084,9 @@ void bcore_source_file_s_get_line_col_context( bcore_source_file_s* o, s3_t inde
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void file_context_to_sink( bcore_source_file_s* o, bcore_sink* sink )
+static void file_get_context( bcore_source_file_s* o, bcore_source_context_s* context )
 {
-    bcore_sink_a_pushf( sink, "File name: %s\n", o->name->sc );
+    st_s_attach( &context->file_path, st_s_clone( o->name ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1010,7 +1107,7 @@ static bcore_self_s* file_s_create_self( void )
     bcore_self_s_push_ns_amoeba( self, file_copy_a, "copy" );
     bcore_self_s_push_ns_func( self, ( fp_t )file_interpret_body_a,         "ap_t",                            "interpret_body" );
     bcore_self_s_push_ns_func( self, ( fp_t )file_flow_src,                 "bcore_fp_flow_src",               "flow_src"  );
-    bcore_self_s_push_ns_func( self, ( fp_t )file_context_to_sink,          "bcore_source_fp_context_to_sink", "context_to_sink" );
+    bcore_self_s_push_ns_func( self, ( fp_t )file_get_context,              "bcore_source_fp_get_context",     "get_context" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_eos,       "bcore_source_fp_eos",             "eos" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_get_file,  "bcore_source_fp_get_file",        "get_file" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_file_s_get_index, "bcore_source_fp_get_index",       "get_index" );
@@ -1038,19 +1135,6 @@ void bcore_source_point_s_set( bcore_source_point_s* o, bcore_source* source )
 {
     bcore_source_a_attach( &o->source, bcore_fork( source ) );
     o->index = bcore_source_a_get_index( source );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bcore_source_point_s_context_to_sink( const bcore_source_point_s* o, bcore_sink* sink )
-{
-    if( o->source )
-    {
-        s3_t index = bcore_source_a_get_index( o->source );
-        bcore_source_a_set_index( o->source, o->index );
-        bcore_source_a_context_to_sink( o->source, sink );
-        bcore_source_a_set_index( o->source, index );
-    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1130,6 +1214,35 @@ void bcore_source_point_s_parse_msg_fa( const bcore_source_point_s* o, sc_t form
     va_start( args, format );
     bcore_source_point_s_parse_msg_fv( o, format, args );
     va_end( args );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+er_t bcore_source_point_s_parse_err_to_em_fv( const bcore_source_point_s* o, er_t err_id, sc_t format, va_list args )
+{
+    if( o->source )
+    {
+        s3_t index = bcore_source_a_get_index( o->source );
+        bcore_source_a_set_index( o->source, o->index );
+        er_t ret = bcore_source_a_parse_err_to_em_fv( o->source, err_id, format, args );
+        bcore_source_a_set_index( o->source, index );
+        return ret;
+    }
+    else
+    {
+        return bcore_error_push_fv( err_id, format, args );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+er_t bcore_source_point_s_parse_err_to_em_fa( const bcore_source_point_s* o, er_t err_id, sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    er_t ret = bcore_source_point_s_parse_err_to_em_fv( o, err_id, format, args );
+    va_end( args );
+    return ret;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1218,6 +1331,26 @@ static st_s* sources_selftest( void )
             bcore_arr_uz_s_discard( arr );
             bcore_source_chain_s_discard( chain );
         }
+
+        /// parse error management
+        {
+            bcore_source_chain_s* chain = bcore_source_open_file( "test/test02.txt" );
+
+            for( uz_t i = 0; i < 100; i++ ) // read firs 100 lines correctly
+            {
+                uz_t v = 0;
+                bcore_source_a_parse_fa( (bcore_source*)chain, "line of text #<uz_t*>\n", &v );
+                ASSERT( i == v );
+            }
+
+            ASSERT( bcore_error_stack_size() == 0 );
+            er_t er = bcore_source_a_parse_em_fa( (bcore_source*)chain, "Nonsense" );
+            ASSERT( er == TYPEOF_parse_error );
+            ASSERT( bcore_error_stack_size() == 1 );
+            bcore_error_pop_to_sink( BCORE_SINK_NUL /*BCORE_STDOUT*/ );
+            bcore_source_chain_s_discard( chain );
+        }
+
     }
 
     bcore_life_s_discard( l );
@@ -1236,10 +1369,10 @@ vd_t bcore_sources_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
-            bcore_flect_define_creator( typeof( "bcore_source_string_s"   ), string_s_create_self );
-            bcore_flect_define_creator( typeof( "bcore_source_buffer_s"   ), buffer_s_create_self );
-            bcore_flect_define_creator( typeof( "bcore_source_file_s"     ), file_s_create_self   );
-            bcore_flect_define_creator( typeof( "bcore_source_chain_s"    ), chain_s_create_self  );
+            bcore_flect_define_creator( typeof( "bcore_source_string_s"  ), string_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_source_buffer_s"  ), buffer_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_source_file_s"    ), file_s_create_self   );
+            bcore_flect_define_creator( typeof( "bcore_source_chain_s"   ), chain_s_create_self  );
 
             BCORE_REGISTER_OBJECT( bcore_source_point_s );
         }

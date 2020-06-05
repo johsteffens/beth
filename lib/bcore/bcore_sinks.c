@@ -585,6 +585,24 @@ uz_t bcore_sink_stderr_s_push_data( bcore_sink_stderr_s* o, vc_t data, uz_t size
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+/// bcore_sink_nul_s
+/**********************************************************************************************************************/
+
+BCORE_DEFINE_OBJECT_INST_AUT( bcore_sink, bcore_sink_nul_s ) "{ aware_t _; func bcore_fp_flow_snk push_data = bcore_sink_nul_s_push_data; }";
+
+bcore_sink_nul_s* bcore_sink_nul_g = NULL;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_sink_nul_s_flush( bcore_sink_nul_s* o ) { /* nothing */ }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+uz_t bcore_sink_nul_s_push_data( bcore_sink_nul_s* o, vc_t data, uz_t size ) { return size; }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -602,9 +620,12 @@ vd_t bcore_sinks_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bcore_sink_stdout_s );
             BCORE_REGISTER_FFUNC( bcore_fp_flow_snk, bcore_sink_stderr_s_push_data );
             BCORE_REGISTER_OBJECT( bcore_sink_stderr_s );
+            BCORE_REGISTER_FFUNC( bcore_fp_flow_snk, bcore_sink_nul_s_push_data );
+            BCORE_REGISTER_OBJECT( bcore_sink_nul_s );
 
             bcore_sink_stdout_g = bcore_sink_stdout_s_create();
             bcore_sink_stderr_g = bcore_sink_stderr_s_create();
+            bcore_sink_nul_g    = bcore_sink_nul_s_create();
         }
         break;
 
@@ -612,6 +633,7 @@ vd_t bcore_sinks_signal_handler( const bcore_signal_s* o )
         {
              bcore_sink_stdout_s_detach( &bcore_sink_stdout_g );
              bcore_sink_stderr_s_detach( &bcore_sink_stderr_g );
+             bcore_sink_nul_s_detach( &bcore_sink_nul_g );
         }
 
         case TYPEOF_selftest:

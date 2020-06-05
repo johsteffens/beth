@@ -142,12 +142,22 @@ extern bcore_life_s* __bcore_life; // always NULL; needed to ingrain a life-chai
     return __retv;  \
 }
 
-// creates object and runs a member function as continuation
+/// creates object and runs a member function as continuation
 #define BLM_CREATEC( tname, fname, ... ) tname##_##fname( BLM_CREATE( tname ), __VA_ARGS__ )
 
-// clones object and runs a member function as continuation
+/// clones object and runs a member function as continuation
 #define BLM_CLONEC( tname, src, fname, ... ) tname##_##fname( BLM_CLONE( tname, src ), __VA_ARGS__ )
 
+
+/** Running expression with error management:
+ *    - BLM_TRY should be used inside a function returning er_t.
+ *    - expression should return er_t.
+ */
+#define BLM_TRY( expression ) \
+{ \
+    er_t __blm_err = expression; \
+    if( __blm_err ) BLM_RETURNV( er_t, __blm_err ) \
+}
 
 /// Deprecated Macros. Preferably use improved versions BLM_... above;
 #define BCORE_LIFE_INIT() bcore_life_s* __life = bcore_life_s_create()

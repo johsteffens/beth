@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-06-03T13:15:48Z
+ *  Last File Update: 2020-06-04T15:36:35Z
  *
  *  Copyright and License of this File:
  *
@@ -27,7 +27,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.
-#define HKEYOF_bcore_planted 284472848
+#define HKEYOF_bcore_planted 1692749092
 
 #define TYPEOF_bcore_planted 3660391305
 
@@ -465,6 +465,7 @@
 #define BETH_EXPAND_ITEM_bcore_error_manager_context_s \
   BCORE_DECLARE_OBJECT( bcore_error_manager_context_s ) \
     {aware_t _;bcore_error_manager_error_adl_s adl;bcore_mutex_s mutex;};
+#define TYPEOF_general_error 681885290
 #define TYPEOF_parse_error 1107704077
 #define TYPEOF_plant_error 742081543
 #define TYPEOF_error_stack 2991660346
@@ -482,4 +483,4 @@
 vd_t bcore_planted_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_PLANTED_H
-// BETH_PLANT_SIGNATURE 3056625961
+// BETH_PLANT_SIGNATURE 2076703831

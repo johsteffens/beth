@@ -49,6 +49,7 @@ stamp :context = aware :
 };
 
 /// frequently used error states
+name general_error; // general purpose error
 name parse_error; // errors from text/string parsing
 name plant_error; // errors from beth plant management
 name error_stack; // error stack is not zero (usually a subsequent error for functions that require an empty error stack)
@@ -68,8 +69,10 @@ sz_t bcore_error_stack_size( void );
 /// Removes all errors from stack
 void bcore_error_clear_stack( void );
 
-/// Pushes an error onto stack
-void bcore_error_push_sc( er_t id, sc_t  msg );
+/// Pushes an error onto stack; returns id
+er_t bcore_error_push_sc( er_t id, sc_t msg );
+er_t bcore_error_push_fv( er_t id, sc_t format, va_list args );
+er_t bcore_error_push_fa( er_t id, sc_t format, ... );
 
 /// Takes last error from stack; returns false if stack was empty
 bl_t bcore_error_pop_st( er_t* id, st_s* msg );

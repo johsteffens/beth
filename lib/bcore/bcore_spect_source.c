@@ -26,6 +26,70 @@
 #define NPX( name ) bcore_source_##name
 
 /**********************************************************************************************************************/
+/// bcore_source_context_s
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_source_context_s )
+"{"
+    "aware_t _; "
+    "st_s => file_path;" // file path; NULL if not available
+    "s3_t    index;" // current index
+    "sz_t    line;"  // line number for text based sources
+    "sz_t    col;"   // column number for text based sources
+    "st_s => txt_context;" // text context (if available)
+"}";
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_source_context_s_get_msg_fv( const bcore_source_context_s* o, st_s* msg, sc_t format, va_list args )
+{
+    st_s_clear( msg );
+    st_s_push_fa( msg, "#<sc_t>:#<uz_t>:#<uz_t>: ", o->file_path ? o->file_path->sc : "", o->line, o->col );
+    st_s_push_fv( msg, format, args );
+    if( o->txt_context )
+    {
+        st_s_push_fa( msg, "\n#<sc_t>", o->txt_context->sc );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_source_context_s_get_msg_fa( const bcore_source_context_s* o, st_s* msg, sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    bcore_source_context_s_get_msg_fv( o, msg, format, args );
+    va_end( args );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_source_context_s_get_error_msg_fv( const bcore_source_context_s* o, st_s* msg, sc_t format, va_list args )
+{
+    st_s_clear( msg );
+    st_s_push_fa( msg, "#<sc_t>:#<uz_t>:#<uz_t>: error: ", o->file_path ? o->file_path->sc : "", o->line, o->col );
+    st_s_push_fv( msg, format, args );
+    if( o->txt_context )
+    {
+        st_s_push_fa( msg, "\n#<sc_t>", o->txt_context->sc );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_source_context_s_get_error_msg_fa( const bcore_source_context_s* o, st_s* msg, sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    bcore_source_context_s_get_error_msg_fv( o, msg, format, args );
+    va_end( args );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 // bcore_source_s
 
 static void source_s_init( bcore_source_s* o )
@@ -67,42 +131,42 @@ u0_t bcore_source_default_inspect_u0( const bcore_source_s* p, bcore_source* o )
 
 void bcore_source_default_parse_errvf( const bcore_source_s* p, bcore_source* o, sc_t format, va_list args )
 {
-    bcore_sink_a_push_fa( BCORE_STDERR, "\nError: " );
-    bcore_source_p_context_to_sink( p, o, BCORE_STDERR );
-    st_s* msg = st_s_createvf( format, args );
-    bcore_sink_a_push_fa( BCORE_STDERR, "#<sc_t>\n", msg->sc );
-    st_s_discard( msg );
+    st_s* s0 = st_s_create_fa( format, args );
+    st_s* s1 = st_s_create();
+
+    bcore_source_a_parse_msg_to_sink_fa( o, ( bcore_sink* )s1, "error: #<sc_t>", s0->sc );
+    bcore_sink_a_push_fa( BCORE_STDERR, "\n#<sc_t>", s1->sc );
+
+    st_s_discard( s0 );
+    st_s_discard( s1 );
     bcore_down_exit( -1, 1 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_source_default_context_to_sink( const bcore_source_s* p, bcore_source* o, bcore_sink* sink )
+void bcore_source_default_get_context( const bcore_source_s* p, bcore_source* o, bcore_source_context_s* context )
 {
-    if( p->context_to_sink )
+    if( p->get_context )
     {
-        p->context_to_sink( o, sink );
+        p->get_context( o, context );
     }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void bcore_source_default_parse_msgf( const bcore_source_s* p, bcore_source* o, sc_t format, va_list args )
-{
-    st_s* msg = st_s_createvf( format, args );
-    bcore_msg( "%s\n", msg->sc );
-    st_s_discard( msg );
-    bcore_source_p_context_to_sink( p, o, BCORE_STDOUT );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 void bcore_source_default_parse_msgvf( const bcore_source_s* p, bcore_source* o, sc_t format, va_list args )
 {
-    st_s* msg = st_s_createvf( format, args );
-    bcore_msg( "%s\n", msg->sc );
-    st_s_discard( msg );
-    bcore_source_p_context_to_sink( p, o, BCORE_STDOUT );
+    st_s* s0 = st_s_create_fv( format, args );
+    bcore_source_context_s* context = bcore_source_context_s_create();
+    bcore_source_p_get_context( p, o, context );
+
+    st_s* s1 = st_s_create();
+    bcore_source_context_s_get_msg_fa( context, s1, "#<sc_t>", s0->sc );
+    bcore_sink_a_push_fa( BCORE_STDOUT, "#<sc_t>\n", s1->sc );
+
+    st_s_discard( s0 );
+    st_s_discard( s1 );
+    bcore_source_context_s_discard( context );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -119,11 +183,16 @@ void bcore_source_default_parse_err_fv( const bcore_source_s* p, bcore_source* o
 void bcore_source_default_parse_msg_to_sink_fv( const bcore_source_s* p, bcore_source* o, bcore_sink* sink, sc_t format, va_list args )
 {
     if( !sink ) return;
-    st_s* s = st_s_create_fv( format, args );
-    if( s->size > 0 && s->data[ s->size - 1 ] != '\n' ) st_s_push_char( s, '\n' );
-    bcore_sink_a_push_fa( sink, "#<sc_t>", s->sc );
-    bcore_source_p_context_to_sink( p, o, sink );
-    st_s_discard( s );
+    st_s* s0 = st_s_create_fv( format, args );
+    bcore_source_context_s* context = bcore_source_context_s_create();
+    bcore_source_p_get_context( p, o, context );
+
+    st_s* s1 = st_s_create();
+    bcore_source_context_s_get_msg_fa( context, s1, "#<sc_t>", s0->sc );
+    bcore_sink_a_push_fa( sink, "#<sc_t>", s1->sc );
+    st_s_discard( s0 );
+    st_s_discard( s1 );
+    bcore_source_context_s_discard( context );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -195,8 +264,9 @@ static bcore_source_s* create_from_self( const bcore_self_s* self )
     o->header.o_type = self->type;
 
     o->get_data        = ( bcore_fp_flow_src               )bcore_self_s_get_external_fp( self, bcore_name_enroll( "bcore_fp_flow_src" ), 0 );
-    o->context_to_sink = ( bcore_source_fp_context_to_sink )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_context_to_sink" ), 0 );
+    o->get_context     = ( bcore_source_fp_get_context     )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_get_context" ), 0 );
     o->parse_fv        = ( bcore_source_fp_parse_fv        )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_parse_fv" ), 0 );
+    o->parse_em_fv     = ( bcore_source_fp_parse_em_fv     )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_parse_em_fv" ), 0 );
     o->set_supplier    = ( bcore_source_fp_set_supplier    )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_set_supplier" ), 0 );
     o->eos             = ( bcore_source_fp_eos             )bcore_self_s_get_external_fp( self, bcore_name_enroll( "bcore_source_fp_eos" ), 0 );
     o->get_file        = ( bcore_source_fp_get_file        )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_get_file" ), 0 );
@@ -220,19 +290,23 @@ static bcore_self_s* source_s_create_self( void )
 /**********************************************************************************************************************/
 
 void NPX(p_parse_fa    )( const NPX(s)* p, bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(p_parse_fv    )( p, o, f, a ); va_end( a ); }
+er_t NPX(p_parse_em_fa )( const NPX(s)* p, bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); er_t r = NPX(p_parse_em_fv )( p, o, f, a ); va_end( a ); return r; }
 void NPX(p_parse_errf  )( const NPX(s)* p, bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(p_parse_errvf )( p, o, f, a ); va_end( a ); }
 void NPX(p_parse_msgf  )( const NPX(s)* p, bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(p_parse_msgvf )( p, o, f, a ); va_end( a ); }
 void NPX(p_parse_err_fa)( const NPX(s)* p, bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(p_parse_err_fv)( p, o, f, a ); va_end( a ); }
 void NPX(p_parse_msg_fa)( const NPX(s)* p, bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(p_parse_msg_fv)( p, o, f, a ); va_end( a ); }
 void NPX(a_parse_fa    )( bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(a_parse_fv    )( o, f, a ); va_end( a ); }
+er_t NPX(a_parse_em_fa )( bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); er_t r = NPX(a_parse_em_fv )( o, f, a ); va_end( a ); return r; }
 void NPX(a_parse_errf  )( bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(a_parse_errvf )( o, f, a ); va_end( a ); }
 void NPX(a_parse_err_fa)( bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(a_parse_err_fv)( o, f, a ); va_end( a ); }
 void NPX(a_parse_msg_fa)( bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(a_parse_msg_fv)( o, f, a ); va_end( a ); }
 void NPX(x_parse_fa    )( sr_s o, sc_t f, ...          ) { va_list a; va_start( a, f ); NPX(x_parse_fv    )( o, f, a ); va_end( a ); }
+er_t NPX(x_parse_em_fa )( sr_s o, sc_t f, ...          ) { va_list a; va_start( a, f ); er_t r = NPX(x_parse_em_fv )( o, f, a ); va_end( a ); return r; }
 void NPX(x_parse_errf  )( sr_s o, sc_t f, ...          ) { va_list a; va_start( a, f ); NPX(x_parse_errvf )( o, f, a ); va_end( a ); }
 void NPX(x_parse_err_fa)( sr_s o, sc_t f, ...          ) { va_list a; va_start( a, f ); NPX(x_parse_err_fv)( o, f, a ); va_end( a ); }
 void NPX(x_parse_msg_fa)( sr_s o, sc_t f, ...          ) { va_list a; va_start( a, f ); NPX(x_parse_msg_fv)( o, f, a ); va_end( a ); }
 void NPX(r_parse_fa    )( const sr_s* o, sc_t f, ...   ) { va_list a; va_start( a, f ); NPX(r_parse_fv    )( o, f, a ); va_end( a ); }
+er_t NPX(r_parse_em_fa )( const sr_s* o, sc_t f, ...   ) { va_list a; va_start( a, f ); er_t r = NPX(r_parse_em_fv )( o, f, a ); va_end( a ); return r; }
 void NPX(r_parse_errf  )( const sr_s* o, sc_t f, ...   ) { va_list a; va_start( a, f ); NPX(r_parse_errvf )( o, f, a ); va_end( a ); }
 void NPX(r_parse_err_fa)( const sr_s* o, sc_t f, ...   ) { va_list a; va_start( a, f ); NPX(r_parse_err_fv)( o, f, a ); va_end( a ); }
 void NPX(r_parse_msg_fa)( const sr_s* o, sc_t f, ...   ) { va_list a; va_start( a, f ); NPX(r_parse_msg_fv)( o, f, a ); va_end( a ); }
@@ -246,10 +320,14 @@ void NPX(r_parse_msg_to_sink_fa)(                    const sr_s* o, bcore_sink* 
 
 er_t bcore_source_a_parse_err_to_em_fv( bcore_source* o, er_t err_id, sc_t format, va_list args )
 {
-    st_s* msg = st_s_create();
-    bcore_source_a_parse_msg_to_sink_fv( o, ( bcore_sink* )msg, format, args );
-    bcore_error_push_sc( err_id, msg->sc );
-    st_s_discard( msg );
+    st_s* s0 = st_s_create_fa( format, args );
+    st_s* s1 = st_s_create();
+
+    bcore_source_a_parse_msg_to_sink_fa( o, ( bcore_sink* )s1, "error: #<sc_t>", s0->sc );
+    bcore_error_push_sc( err_id, s1->sc );
+
+    st_s_discard( s0 );
+    st_s_discard( s1 );
     return err_id;
 }
 
@@ -311,6 +389,8 @@ vd_t bcore_spect_source_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
+            BCORE_REGISTER_OBJECT( bcore_source_context_s );
+
             source_s_define_trait();
             bcore_flect_define_creator( typeof( "bcore_source_s"  ), source_s_create_self  );
             bcore_spect_setup_cache( &bcore_source_s_cache_g );

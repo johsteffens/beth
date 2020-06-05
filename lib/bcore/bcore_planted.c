@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-06-03T13:15:48Z
+ *  Last File Update: 2020-06-04T15:36:35Z
  *
  *  Copyright and License of this File:
  *
@@ -466,6 +466,7 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bcore_error_manager_error_s );
             BCORE_REGISTER_OBJECT( bcore_error_manager_error_adl_s );
             BCORE_REGISTER_OBJECT( bcore_error_manager_context_s );
+            BCORE_REGISTER_NAME( general_error );
             BCORE_REGISTER_NAME( parse_error );
             BCORE_REGISTER_NAME( plant_error );
             BCORE_REGISTER_NAME( error_stack );
@@ -476,4 +477,4 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// BETH_PLANT_SIGNATURE 3231288126
+// BETH_PLANT_SIGNATURE  795136520

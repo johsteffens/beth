@@ -66,24 +66,20 @@ static bcore_plant_compiler_s* plant_compiler_g = NULL;
 //----------------------------------------------------------------------------------------------------------------------
 // macros
 
-#define BLM_RETURN_ER0() \
-    BLM_RETURNV( er_t, 0 )
-
-#define BLM_TRY( expression ) \
-{ \
-    er_t blm_err__ = expression; \
-    if( blm_err__ ) BLM_RETURNV( er_t, blm_err__ ) \
-}
-
 #define BLM_SOURCE_PARSE_ERR_FA( source, ... ) \
 { \
     BLM_RETURNV( er_t, bcore_source_a_parse_err_to_em_fa( source, TYPEOF_parse_error, __VA_ARGS__ ) ); \
 }
 
+#define BLM_SOURCE_PARSE_FA( source, ... ) \
+{ \
+    er_t er = bcore_source_a_parse_em_fa( source, __VA_ARGS__ ); \
+    if( er ) BLM_RETURNV( er_t, er ); \
+}
+
 #define BLM_SOURCE_POINT_PARSE_ERR_FA( source_point, ... ) \
 { \
-    bcore_source_point_s_parse_err_fa( source_point, __VA_ARGS__ ); \
-    BLM_RETURNV( er_t, 1 ); \
+    BLM_RETURNV( er_t, bcore_source_point_s_parse_err_to_em_fa( source_point, TYPEOF_parse_error, __VA_ARGS__ ) ); \
 }
 
 /**********************************************************************************************************************/
@@ -794,18 +790,18 @@ static er_t bcore_plant_arg_s_parse( bcore_plant_arg_s* o, bcore_source* source 
     }
     else
     {
-        bcore_source_a_parse_fa( source, "#name ", s );
+        BLM_SOURCE_PARSE_FA( source, "#name ", s );
         if( s->size == 0 ) BLM_SOURCE_PARSE_ERR_FA( source, "Argument: Type expected." );
     }
     st_s_push_st( &o->type, s );
 
     while( bcore_source_a_parse_bl_fa( source, "#?'*' " ) ) st_s_push_sc( &o->type, "*" );
 
-    bcore_source_a_parse_fa( source, "#name ", s );
+    BLM_SOURCE_PARSE_FA( source, "#name ", s );
     if( s->size == 0 ) BLM_SOURCE_PARSE_ERR_FA( source, "Argument: Name expected." );
     st_s_push_st( &o->name, s );
 
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -843,7 +839,7 @@ static er_t bcore_plant_args_s_parse( bcore_plant_args_s* o, bcore_source* sourc
         BLM_TRY( bcore_plant_arg_s_parse( arg, source ) );
         bcore_array_a_push( ( bcore_array* ) o, sr_awc( arg ) );
     }
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -854,14 +850,14 @@ static er_t bcore_plant_args_s_append( bcore_plant_args_s* o, bcore_source* sour
     bl_t first = true;
     while( !bcore_source_a_parse_bl_fa( source, " #=?')' " ) ) // args follow
     {
-        if( !first ) bcore_source_a_parse_fa( source, " , " );
+        if( !first ) BLM_SOURCE_PARSE_FA( source, " , " );
         bcore_plant_arg_s* arg = BLM_A_PUSH( bcore_plant_arg_s_create() );
         arg->group = o->group;
         BLM_TRY( bcore_plant_arg_s_parse( arg, source ) );
         bcore_array_a_push( ( bcore_array* ) o, sr_awc( arg ) );
         first = false;
     }
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -964,7 +960,7 @@ static er_t bcore_plant_signature_s_parse( bcore_plant_signature_s* o, bcore_sou
         {
             predefined = true;
 
-            bcore_source_a_parse_fa( source, " #name", name_candidate );
+            BLM_SOURCE_PARSE_FA( source, " #name", name_candidate );
             if( name_buf->size == 0 )
             {
                 st_s_push_fa( name_buf, "#<sc_t>_#<sc_t>", o->group->name.sc, name_candidate->sc );
@@ -1015,7 +1011,7 @@ static er_t bcore_plant_signature_s_parse( bcore_plant_signature_s* o, bcore_sou
         st_s_push_fa( &o->ret_type, "#<sc_t>", name_buf->sc );
         if( st_s_equal_sc( name_buf, "const" ) )
         {
-            bcore_source_a_parse_fa( source, " #name", name_buf );
+            BLM_SOURCE_PARSE_FA( source, " #name", name_buf );
             if( name_buf->size == 0 ) BLM_SOURCE_PARSE_ERR_FA( source, "Return type missing." );
             st_s_push_fa( &o->ret_type, " #<sc_t>", name_buf->sc );
         }
@@ -1023,7 +1019,7 @@ static er_t bcore_plant_signature_s_parse( bcore_plant_signature_s* o, bcore_sou
     }
 
     // get name
-    bcore_source_a_parse_fa( source, " #name", &o->name );
+    BLM_SOURCE_PARSE_FA( source, " #name", &o->name );
     if( o->name.size == 0 )
     {
         if( name_candidate->size > 0 )
@@ -1042,24 +1038,24 @@ static er_t bcore_plant_signature_s_parse( bcore_plant_signature_s* o, bcore_sou
     o->args.group = o->group;
     if( !predefined )
     {
-        bcore_source_a_parse_fa( source, " ( " );
+        BLM_SOURCE_PARSE_FA( source, " ( " );
         if(      bcore_source_a_parse_bl_fa(  source, " #?'mutable' " ) ) o->arg_o = TYPEOF_mutable;
         else if( bcore_source_a_parse_bl_fa(  source, " #?'const' "   ) ) o->arg_o = TYPEOF_const;
         else if( bcore_source_a_parse_bl_fa(  source, " #?'plain' "   ) ) o->arg_o = 0;
         else     BLM_SOURCE_PARSE_ERR_FA( source, "'plain', mutable' or 'const' expected." );
 
         BLM_TRY( bcore_plant_args_s_parse( &o->args, source ) );
-        bcore_source_a_parse_fa( source, " ) " );
+        BLM_SOURCE_PARSE_FA( source, " ) " );
     }
     else if( bcore_source_a_parse_bl_fa( source, " #?'('" ) )
     {
         BLM_TRY( bcore_plant_args_s_append( &o->args, source ) );
-        bcore_source_a_parse_fa( source, " ) " );
+        BLM_SOURCE_PARSE_FA( source, " ) " );
     }
 
     st_s_copy_fa( &o->global_name, "#<sc_t>_#<sc_t>", o->group->name.sc, o->name.sc );
 
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1106,7 +1102,7 @@ static er_t bcore_plant_body_s_append( bcore_plant_body_s* o, sz_t indent, const
         st_s_push_fa( &o->code, "#<st_s*>", body_code );
         o->go_inline = false;
     }
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1117,7 +1113,7 @@ static er_t bcore_plant_body_s_parse_code( bcore_plant_body_s* o, bcore_plant_st
 
     st_s_clear( &o->code );
 
-    bcore_source_a_parse_fa( source, " {" );
+    BLM_SOURCE_PARSE_FA( source, " {" );
     sz_t nest_count = 1;
     bl_t exit_loop = false;
     o->go_inline = true;
@@ -1182,7 +1178,7 @@ static er_t bcore_plant_body_s_parse_code( bcore_plant_body_s* o, bcore_plant_st
                     bcore_plant_body_s* body = BLM_CREATE( bcore_plant_body_s );
                     body->group = o->group;
                     BLM_TRY( bcore_plant_body_s_parse_expression( body, stamp, source ) );
-                    bcore_source_a_parse_fa( source, " ;" ); // embedded body expression must close with a semicolon
+                    BLM_SOURCE_PARSE_FA( source, " ;" ); // embedded body expression must close with a semicolon
                     BLM_TRY( bcore_plant_body_s_append( o, indent, body ) );
                     BLM_DOWN();
                 }
@@ -1237,7 +1233,7 @@ static er_t bcore_plant_body_s_parse_code( bcore_plant_body_s* o, bcore_plant_st
         }
     }
 
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1288,7 +1284,7 @@ static er_t bcore_plant_body_s_parse_expression( bcore_plant_body_s* o, bcore_pl
         o->go_inline = false;
         BLM_TRY( bcore_plant_body_s_append( o, 0, body ) );
     }
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1304,17 +1300,17 @@ static er_t bcore_plant_body_s_parse( bcore_plant_body_s* o, bcore_plant_stamp_s
 
     if( !bcore_source_a_parse_bl_fa( source, " #=?'='" ) )
     {
-        bcore_source_a_parse_fa( source, " #name", string );
+        BLM_SOURCE_PARSE_FA( source, " #name", string );
         if( string->size == 0 ) BLM_SOURCE_PARSE_ERR_FA( source, "Body name expected." );
         st_s_push_fa( &o->name, "#<sc_t>", string->sc );
     }
 
-    bcore_source_a_parse_fa( source, " =" );
+    BLM_SOURCE_PARSE_FA( source, " =" );
 
     BLM_TRY( bcore_plant_body_s_parse_expression( o, stamp, source ) );
 
     st_s_copy_fa( &o->global_name, "#<sc_t>_#<sc_t>", o->group->name.sc, o->name.sc );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1389,7 +1385,7 @@ static er_t bcore_plant_feature_s_parse( bcore_plant_feature_s* o, bcore_source*
     {
         BLM_INIT();
         st_s* flags = BLM_CREATE( st_s );
-        bcore_source_a_parse_fa(  source, " #until'''", flags );
+        BLM_SOURCE_PARSE_FA(  source, " #until'''", flags );
         for( sz_t i = 0; i < flags->size; i++ )
         {
             switch( flags->data[ i ] )
@@ -1401,7 +1397,7 @@ static er_t bcore_plant_feature_s_parse( bcore_plant_feature_s* o, bcore_source*
                 default: BLM_SOURCE_PARSE_ERR_FA( source, "Feature: Flag '#<char>' not handled. Choose from 'ptar'.", flags->data[ i ] ); break;
             }
         }
-        bcore_source_a_parse_fa( source, "' " );
+        BLM_SOURCE_PARSE_FA( source, "' " );
         BLM_DOWN();
     }
     else
@@ -1438,7 +1434,7 @@ static er_t bcore_plant_feature_s_parse( bcore_plant_feature_s* o, bcore_source*
         else
         {
             if( o->strict )  BLM_SOURCE_PARSE_ERR_FA( source, "Feature is 'strict'. Default function would have no effect." );
-            bcore_source_a_parse_fa( source, " #name ", &o->default_name );
+            BLM_SOURCE_PARSE_FA( source, " #name ", &o->default_name );
             if( o->default_name.size == 0 ) BLM_SOURCE_PARSE_ERR_FA( source, "Feature: Default function name expected." );
             if( st_s_equal_st( &o->default_name, &o->name ) )
             {
@@ -1447,10 +1443,10 @@ static er_t bcore_plant_feature_s_parse( bcore_plant_feature_s* o, bcore_source*
         }
     }
 
-    bcore_source_a_parse_fa( source, " ; " );
+    BLM_SOURCE_PARSE_FA( source, " ; " );
 
     st_s_copy_fa( &o->global_name, "#<sc_t>_#<sc_t>", o->group->name.sc, o->name.sc );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1463,7 +1459,7 @@ static er_t bcore_plant_feature_s_expand_indef_typedef( const bcore_plant_featur
     bcore_sink_a_push_fa( sink, " #<sc_t>* o", o->group->name.sc );
     BLM_TRY( bcore_plant_args_s_expand( &o->args, false, sink ) );
     bcore_sink_a_push_fa( sink, " );" );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1637,7 +1633,7 @@ static er_t bcore_plant_feature_s_expand_indef_declaration( const bcore_plant_fe
             bcore_sink_a_push_fa( sink, " );" );
         }
     }
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1656,7 +1652,7 @@ static er_t bcore_plant_feature_s_expand_definition( const bcore_plant_feature_s
         bcore_sink_a_push_fa( sink, " )\n" );
         BLM_TRY( bcore_plant_body_s_expand( o->default_body, indent, sink ) );
     }
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1722,10 +1718,10 @@ static er_t bcore_plant_func_s_parse( bcore_plant_func_s* o, bcore_plant_group_s
         }
     }
 
-    bcore_source_a_parse_fa( source, " :" );
+    BLM_SOURCE_PARSE_FA( source, " :" );
     st_s_push_sc( &o->decl, ":" );
 
-    bcore_source_a_parse_fa( source, " #name", &o->name );
+    BLM_SOURCE_PARSE_FA( source, " #name", &o->name );
     if( o->name.size == 0 ) BLM_SOURCE_PARSE_ERR_FA( source, "Function name expected." );
     st_s_push_sc( &o->decl, o->name.sc );
 
@@ -1739,9 +1735,9 @@ static er_t bcore_plant_func_s_parse( bcore_plant_func_s* o, bcore_plant_group_s
         BLM_TRY( bcore_plant_body_s_parse( o->body, stamp, source ) );
     }
 
-    bcore_source_a_parse_fa( source, " ; " );
+    BLM_SOURCE_PARSE_FA( source, " ; " );
     st_s_push_sc( &o->decl, ";" );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1914,7 +1910,7 @@ static er_t stamp_s_resolve_chars( const bcore_plant_stamp_s* o, st_s* string )
         }
     }
     st_s_copy( string, buf );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1924,7 +1920,7 @@ static er_t bcore_plant_stamp_s_extend( bcore_plant_stamp_s* o, bcore_plant_grou
     BLM_INIT();
     ASSERT( o->self_source );
 
-    bcore_source_a_parse_fa( source, " {" );
+    BLM_SOURCE_PARSE_FA( source, " {" );
 
     if( o->self_source->sc[ o->self_source->size - 1 ] == '}' )
     {
@@ -2001,7 +1997,7 @@ static er_t bcore_plant_stamp_s_extend( bcore_plant_stamp_s* o, bcore_plant_grou
             }
         }
     }
-    bcore_source_a_parse_fa( source, " ; " );
+    BLM_SOURCE_PARSE_FA( source, " ; " );
 
     // apply all functions of group and parents, which are not yet defined in stamp
     if( !verbatim )
@@ -2022,7 +2018,7 @@ static er_t bcore_plant_stamp_s_extend( bcore_plant_stamp_s* o, bcore_plant_grou
 
     st_s_push_sc( o->self_source, "}" );
 
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2051,7 +2047,7 @@ static er_t bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
 
     st_s_push_fa( stamp_name, "_s" );
 
-    bcore_source_a_parse_fa( source, " = " );
+    BLM_SOURCE_PARSE_FA( source, " = " );
 
     if( bcore_source_a_parse_bl_fa( source, " #?w'extending'" ) )
     {
@@ -2091,7 +2087,7 @@ static er_t bcore_plant_stamp_s_parse( bcore_plant_stamp_s* o, bcore_plant_group
 
     BLM_TRY( bcore_plant_stamp_s_extend( o, group, source, verbatim ) );
 
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2106,7 +2102,7 @@ static er_t bcore_plant_stamp_s_finalize( bcore_plant_stamp_s* o )
         bcore_plant_func_s* func = o->funcs.data[ i ];
         if( func->body ) BLM_TRY( stamp_s_resolve_chars( o, &func->body->code ) );
     }
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2145,7 +2141,7 @@ static er_t bcore_plant_stamp_s_arg_s_expand( const bcore_plant_stamp_s* o, cons
     st_s* arg_type = BLM_CLONE( st_s, &arg->type );
     BLM_TRY( stamp_s_resolve_chars( o, arg_type ) );
     bcore_sink_a_push_fa( sink, "#<sc_t> #<sc_t>", arg_type->sc, arg->name.sc );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2159,7 +2155,7 @@ static er_t bcore_plant_stamp_s_args_s_expand( const bcore_plant_stamp_s* o, con
         first = false;
         BLM_TRY( bcore_plant_stamp_s_arg_s_expand( o, &args->data[ i ], sink ) );
     }
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2347,7 +2343,7 @@ static er_t bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
     }
 
     bcore_sink_a_push_fa( sink, "\n" );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2450,7 +2446,7 @@ static er_t bcore_plant_stamp_s_expand_definition( const bcore_plant_stamp_s* o,
         BLM_DOWN();
     }
 
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2488,7 +2484,7 @@ static er_t bcore_plant_stamp_s_expand_init1( const bcore_plant_stamp_s* o, sz_t
         }
     }
     bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_OBJECT( #<sc_t> );\n", indent, o->name.sc );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2522,16 +2518,16 @@ static er_t bcore_plant_name_s_parse( bcore_plant_name_s* o, bcore_source* sourc
     if( bcore_source_a_parse_bl_fa( source, " #?':'" ) )
     {
         st_s* name = BLM_CREATE( st_s );
-        bcore_source_a_parse_fa( source, " #name", name );
+        BLM_SOURCE_PARSE_FA( source, " #name", name );
         st_s_push_fa( &o->name, "#<sc_t>#<sc_t>#<sc_t>", o->group->name.sc, name->sc[ 0 ] ? "_" : "", name->sc );
     }
     else
     {
-        bcore_source_a_parse_fa( source, " #name", &o->name );
+        BLM_SOURCE_PARSE_FA( source, " #name", &o->name );
     }
     if( o->name.size == 0 ) BLM_SOURCE_PARSE_ERR_FA( source, "Feature: Name missing." );
-    bcore_source_a_parse_fa( source, " ; " );
-    BLM_RETURN_ER0();
+    BLM_SOURCE_PARSE_FA( source, " ; " );
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2581,16 +2577,16 @@ static er_t bcore_plant_forward_s_parse( bcore_plant_forward_s* o, bcore_source*
     if( bcore_source_a_parse_bl_fa( source, " #?':'" ) )
     {
         st_s* name = BLM_CREATE( st_s );
-        bcore_source_a_parse_fa( source, " #name", name );
+        BLM_SOURCE_PARSE_FA( source, " #name", name );
         st_s_push_fa( &o->name, "#<sc_t>#<sc_t>#<sc_t>", o->group->name.sc, name->sc[ 0 ] ? "_" : "", name->sc );
     }
     else
     {
-        bcore_source_a_parse_fa( source, " #name", &o->name );
+        BLM_SOURCE_PARSE_FA( source, " #name", &o->name );
     }
     if( o->name.size == 0 ) BLM_SOURCE_PARSE_ERR_FA( source, "Feature: Name missing." );
-    bcore_source_a_parse_fa( source, " ; " );
-    BLM_RETURN_ER0();
+    BLM_SOURCE_PARSE_FA( source, " ; " );
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2656,13 +2652,13 @@ static er_t bcore_plant_group_s_parse_name_recursive( bcore_plant_group_s* o, st
     {
         st_s_copy( name, &o->name );
         st_s* s = BLM_CREATE( st_s );
-        bcore_source_a_parse_fa( source, " #name", s );
+        BLM_SOURCE_PARSE_FA( source, " #name", s );
 
         // include certain key-characters in name
         if( bcore_source_a_parse_bl_fa( source, "#?'$'" ) )
         {
             st_s_push_char( s, '$' );
-            bcore_source_a_parse_fa( source, " #:name", s );
+            BLM_SOURCE_PARSE_FA( source, " #:name", s );
         }
 
         if( s->size > 0 )
@@ -2670,7 +2666,7 @@ static er_t bcore_plant_group_s_parse_name_recursive( bcore_plant_group_s* o, st
             st_s_push_fa( name, "_#<sc_t>", s->sc );
         }
     }
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2684,9 +2680,9 @@ static er_t bcore_plant_group_s_parse_name( bcore_plant_group_s* o, st_s* name, 
     }
     else
     {
-        bcore_source_a_parse_fa( source, " #name", name );
+        BLM_SOURCE_PARSE_FA( source, " #name", name );
     }
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2702,7 +2698,7 @@ static er_t bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
 
     if( o->group ) // this group is nested in another group, the group body is enclosed in { ... }
     {
-        bcore_source_a_parse_fa( source, " {" );
+        BLM_SOURCE_PARSE_FA( source, " {" );
         precode_termination = " #?'}'";
     }
     else // this group is root, the group body is enclosed in an non-parsable section of c source
@@ -2711,13 +2707,13 @@ static er_t bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
         {
             if( bcore_source_a_parse_bl_fa( source, "#?'/*'" ) )
             {
-                bcore_source_a_parse_fa( source, "#skip'*'" );
+                BLM_SOURCE_PARSE_FA( source, "#skip'*'" );
                 precode_termination = " #?'*/'";
                 break;
             }
             else if( bcore_source_a_parse_bl_fa( source, "#?'#ifdef'" ) )
             {
-                bcore_source_a_parse_fa( source, " PLANT_SECTION " );
+                BLM_SOURCE_PARSE_FA( source, " PLANT_SECTION " );
                 precode_termination = " #?'#endif'";
                 break;
             }
@@ -2768,7 +2764,7 @@ static er_t bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
             bcore_plant_signature_s* signature = BLM_CREATE( bcore_plant_signature_s );
             signature->group = o;
             BLM_TRY( bcore_plant_signature_s_parse( signature, source ) );
-            bcore_source_a_parse_fa( source, " ; " );
+            BLM_SOURCE_PARSE_FA( source, " ; " );
             BLM_TRY( bcore_plant_compiler_s_item_register( plant_compiler_g, ( bcore_plant* )signature, source ) );
             item = ( bcore_plant* )bcore_fork( signature );
             BLM_DOWN();
@@ -2779,7 +2775,7 @@ static er_t bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
             bcore_plant_body_s* body = BLM_CREATE( bcore_plant_body_s );
             body->group = o;
             BLM_TRY( bcore_plant_body_s_parse( body, NULL, source ) );
-            bcore_source_a_parse_fa( source, " ; " );
+            BLM_SOURCE_PARSE_FA( source, " ; " );
             BLM_TRY( bcore_plant_compiler_s_item_register( plant_compiler_g, ( bcore_plant* )body, source ) );
             item = ( bcore_plant* )bcore_fork( body );
             BLM_DOWN();
@@ -2816,14 +2812,14 @@ static er_t bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'expandable'" ) )
         {
-            bcore_source_a_parse_fa( source, " = " );
+            BLM_SOURCE_PARSE_FA( source, " = " );
             if(      bcore_source_a_parse_bl_fa( source, " #?'true'"  ) ) o->expandable = true;
             else if( bcore_source_a_parse_bl_fa( source, " #?'false'" ) ) o->expandable = false;
             else
             {
                 BLM_SOURCE_PARSE_ERR_FA( source, "'true' or 'false' expected." );
             }
-            bcore_source_a_parse_fa( source, " ; " );
+            BLM_SOURCE_PARSE_FA( source, " ; " );
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'extending'" ) )
         {
@@ -2845,7 +2841,7 @@ static er_t bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
                 if( !item ) BLM_SOURCE_PARSE_ERR_FA( source, "Template #<sc_t> not found.", templ_name->sc );
                 if( *(aware_t*)item != TYPEOF_bcore_plant_stamp_s ) BLM_SOURCE_PARSE_ERR_FA( source, "Template #<sc_t> is no stamp.", templ_name->sc );
                 o->extending = ( bcore_plant_stamp_s* )item;
-                bcore_source_a_parse_fa( source, " ;" );
+                BLM_SOURCE_PARSE_FA( source, " ;" );
             }
         }
         else if( bcore_source_a_parse_bl_fa( source, " #?w'func'" ) )
@@ -2875,7 +2871,7 @@ static er_t bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
             group->source      = o->source;
             group->extending   = o->extending;
             BLM_TRY( bcore_plant_group_s_parse_name( o, &group->name, source ) );
-            bcore_source_a_parse_fa( source, " =" );
+            BLM_SOURCE_PARSE_FA( source, " =" );
 
             // flags
             if( bcore_source_a_parse_bl_fa( source, " #?w'retrievable' " ) ) group->retrievable = true;
@@ -2883,7 +2879,7 @@ static er_t bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
             BLM_TRY( bcore_plant_group_s_parse_name( o, &group->trait_name, source ) );
             if( group->trait_name.size == 0 ) st_s_copy( &group->trait_name, &o->name );
             BLM_TRY( bcore_plant_group_s_parse( group, source ) );
-            bcore_source_a_parse_fa( source, " ; " );
+            BLM_SOURCE_PARSE_FA( source, " ; " );
             o->source->hash = bcore_tp_fold_tp( o->source->hash, group->hash );
             BLM_TRY( bcore_plant_compiler_s_group_register( plant_compiler_g, group, source ) );
             bcore_plant_nested_group_s* nested_group = BLM_CREATE( bcore_plant_nested_group_s );
@@ -2902,7 +2898,7 @@ static er_t bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
                 BLM_SOURCE_PARSE_ERR_FA( source, "Invalid flag." );
             }
 
-            bcore_source_a_parse_fa( source, " ;" );
+            BLM_SOURCE_PARSE_FA( source, " ;" );
         }
         else
         {
@@ -2918,7 +2914,7 @@ static er_t bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
             bcore_array_a_push( ( bcore_array* )o, sr_asd( item ) );
         }
     }
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2927,7 +2923,7 @@ static er_t bcore_plant_group_s_finalize( bcore_plant_group_s* o )
 {
     BLM_INIT();
     for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_a_finalize( o->data[ i ] ) );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2935,10 +2931,10 @@ static er_t bcore_plant_group_s_finalize( bcore_plant_group_s* o )
 static er_t bcore_plant_group_s_expand_forward( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
 {
     BLM_INIT();
-    if( !o->expandable ) BLM_RETURN_ER0();
+    if( !o->expandable ) BLM_RETURNV( er_t, 0 );
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }BCORE_FORWARD_OBJECT( #<sc_t> );", indent, o->name.sc );
     for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_a_expand_forward( o->data[ i ], indent, sink ) );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2946,7 +2942,7 @@ static er_t bcore_plant_group_s_expand_forward( const bcore_plant_group_s* o, sz
 static er_t bcore_plant_group_s_expand_spect_declaration( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
 {
     BLM_INIT();
-    if( !o->expandable ) BLM_RETURN_ER0();
+    if( !o->expandable ) BLM_RETURNV( er_t, 0 );
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }BCORE_DECLARE_SPECT( #<sc_t> )", indent, o->name.sc );
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }{", indent );
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }    bcore_spect_header_s header;", indent );
@@ -2962,7 +2958,7 @@ static er_t bcore_plant_group_s_expand_spect_declaration( const bcore_plant_grou
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( #<sc_t> )", indent, o->name.sc );
         bcore_sink_a_push_fa( sink, " \\\n#rn{ }static inline bl_t #<sc_t>_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_#<sc_t> ); }", indent, o->name.sc, o->name.sc );
     }
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2971,7 +2967,7 @@ static er_t bcore_plant_group_s_expand_declaration( const bcore_plant_group_s* o
 {
     BLM_INIT();
 
-    if( !o->expandable ) BLM_RETURN_ER0();
+    if( !o->expandable ) BLM_RETURNV( er_t, 0 );
 
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }//#rn{-}\n", indent, sz_max( 0, 118 - indent ) );
@@ -2999,7 +2995,7 @@ static er_t bcore_plant_group_s_expand_declaration( const bcore_plant_group_s* o
     for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_a_expand_indef_declaration( o->data[ i ], indent, sink ) );
 
     bcore_sink_a_push_fa( sink, "\n" );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3007,14 +3003,14 @@ static er_t bcore_plant_group_s_expand_declaration( const bcore_plant_group_s* o
 static er_t bcore_plant_group_s_expand_spect_definition( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
 {
     BLM_INIT();
-    if( !o->expandable ) BLM_RETURN_ER0();
+    if( !o->expandable ) BLM_RETURNV( er_t, 0 );
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }BCORE_DEFINE_SPECT( #<sc_t>, #<sc_t> )\n", indent, o->trait_name.sc, o->name.sc );
     bcore_sink_a_push_fa( sink, "#rn{ }\"{\"\n", indent );
     bcore_sink_a_push_fa( sink, "#rn{ }    \"bcore_spect_header_s header;\"\n", indent );
     for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_a_expand_spect_definition( o->data[ i ], indent + 4, sink ) );
     bcore_sink_a_push_fa( sink, "#rn{ }\"}\";\n", indent );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3022,7 +3018,7 @@ static er_t bcore_plant_group_s_expand_spect_definition( const bcore_plant_group
 static er_t bcore_plant_group_s_expand_definition( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
 {
     BLM_INIT();
-    if( !o->expandable ) BLM_RETURN_ER0();
+    if( !o->expandable ) BLM_RETURNV( er_t, 0 );
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }//#rn{-}\n", indent, sz_max( 0, 118 - indent ) );
     bcore_sink_a_push_fa( sink, "#rn{ }// group: #<sc_t>\n", indent, o->name.sc );
@@ -3047,7 +3043,7 @@ static er_t bcore_plant_group_s_expand_definition( const bcore_plant_group_s* o,
             }
         }
     }
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3055,7 +3051,7 @@ static er_t bcore_plant_group_s_expand_definition( const bcore_plant_group_s* o,
 static er_t bcore_plant_group_s_expand_init1( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
 {
     BLM_INIT();
-    if( !o->expandable ) BLM_RETURN_ER0();
+    if( !o->expandable ) BLM_RETURNV( er_t, 0 );
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }// group: #<sc_t>\n", indent, o->name.sc );
     for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_a_expand_init1( o->data[ i ], indent, sink ) );
@@ -3080,7 +3076,7 @@ static er_t bcore_plant_group_s_expand_init1( const bcore_plant_group_s* o, sz_t
             }
         }
     }
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3139,7 +3135,7 @@ static er_t bcore_plant_source_s_parse( bcore_plant_source_s* o, bcore_source* s
             group = BLM_CREATE( bcore_plant_group_s );
             BLM_TRY( bcore_plant_source_s_push_group( o, bcore_fork( group ) ) );
             group->source = o;
-            bcore_source_a_parse_fa( source, " ( #name, #name )", &group->name, &group->trait_name );
+            BLM_SOURCE_PARSE_FA( source, " ( #name, #name )", &group->name, &group->trait_name );
             BLM_DOWN();
         }
 
@@ -3150,7 +3146,7 @@ static er_t bcore_plant_source_s_parse( bcore_plant_source_s* o, bcore_source* s
             group = BLM_CREATE( bcore_plant_group_s );
             BLM_TRY( bcore_plant_source_s_push_group( o, bcore_fork( group ) ) );
             group->source = o;
-            bcore_source_a_parse_fa( source, " ( #name, #name, #name )", NULL, &group->name, &group->trait_name );
+            BLM_SOURCE_PARSE_FA( source, " ( #name, #name, #name )", NULL, &group->name, &group->trait_name );
             BLM_DOWN();
         }
 
@@ -3160,7 +3156,7 @@ static er_t bcore_plant_source_s_parse( bcore_plant_source_s* o, bcore_source* s
             group = BLM_CREATE( bcore_plant_group_s );
             BLM_TRY( bcore_plant_source_s_push_group( o, bcore_fork( group ) ) );
             group->source = o;
-            bcore_source_a_parse_fa( source, " ( #name, #name )", &group->name, &group->trait_name );
+            BLM_SOURCE_PARSE_FA( source, " ( #name, #name )", &group->name, &group->trait_name );
             BLM_DOWN();
         }
 
@@ -3176,7 +3172,7 @@ static er_t bcore_plant_source_s_parse( bcore_plant_source_s* o, bcore_source* s
             bcore_source_a_get_u0( source );
         }
     }
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3185,7 +3181,7 @@ static er_t bcore_plant_source_s_finalize( bcore_plant_source_s* o )
 {
     BLM_INIT();
     for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_group_s_finalize( o->data[ i ] ) );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3197,7 +3193,7 @@ static er_t bcore_plant_source_s_expand_declaration( const bcore_plant_source_s*
     bcore_sink_a_push_fa( sink, "#rn{ }/*#rn{*}*/\n", indent, sz_max( 0, 116 - indent ) );
     bcore_sink_a_push_fa( sink, "#rn{ }// source: #<sc_t>.h\n", indent, o->name.sc );
     for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_group_s_expand_declaration( o->data[ i ], indent, sink ) );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3210,7 +3206,7 @@ static er_t bcore_plant_source_s_expand_definition( const bcore_plant_source_s* 
     bcore_sink_a_push_fa( sink, "#rn{ }// source: #<sc_t>.h\n", indent, o->name.sc );
     bcore_sink_a_push_fa( sink, "#rn{ }##include \"#<sc_t>.h\"\n", indent, o->name.sc );
     for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_group_s_expand_definition( o->data[ i ], indent, sink ) );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3222,7 +3218,7 @@ static er_t bcore_plant_source_s_expand_init1( const bcore_plant_source_s* o, sz
     bcore_sink_a_push_fa( sink, "#rn{ }// #rn{-}\n", indent, sz_max( 0, 80 - indent ) );
     bcore_sink_a_push_fa( sink, "#rn{ }// source: #<sc_t>.h\n", indent, o->name.sc );
     for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_group_s_expand_init1( o->data[ i ], indent, sink ) );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3274,7 +3270,7 @@ static er_t bcore_plant_target_s_parse( bcore_plant_target_s* o, sc_t source_pat
         BLM_DOWN();
     }
 
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3283,7 +3279,7 @@ static er_t bcore_plant_target_s_finalize( bcore_plant_target_s* o )
 {
     BLM_INIT();
     for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_source_s_finalize( o->data[ i ] ) );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3315,7 +3311,7 @@ static er_t bcore_plant_target_s_expand_heading( const bcore_plant_target_s* o, 
     }
     bcore_sink_a_push_fa( sink, " *\n" );
     bcore_sink_a_push_fa( sink, " */\n" );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3354,7 +3350,7 @@ static er_t bcore_plant_target_s_expand_h( const bcore_plant_target_s* o, sz_t i
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }##endif // #<sc_t>_H\n", indent, name_upper->sc );
 
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3429,7 +3425,7 @@ static er_t bcore_plant_target_s_expand_c( const bcore_plant_target_s* o, sz_t i
     bcore_sink_a_push_fa( sink, "#rn{ }    }\n", indent );
     bcore_sink_a_push_fa( sink, "#rn{ }    return NULL;\n", indent );
     bcore_sink_a_push_fa( sink, "#rn{ }}\n", indent );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3473,7 +3469,7 @@ static er_t bcore_plant_compiler_write_with_signature( sc_t file, const st_s* da
     bcore_sink* sink = BLM_A_PUSH( bcore_file_open_sink( file ) );
     bcore_sink_a_push_data( sink, data->data, data->size );
     bcore_sink_a_push_fa( sink, "// BETH_PLANT_SIGNATURE #pl10 {#<tp_t>}\n", hash );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3525,7 +3521,7 @@ static er_t bcore_plant_target_s_expand_phase1( bcore_plant_target_s* o, bl_t* p
 
     if( p_modified ) *p_modified = o->modified;
 
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3534,7 +3530,7 @@ static er_t bcore_plant_target_s_expand_phase1( bcore_plant_target_s* o, bl_t* p
 static er_t bcore_plant_target_s_expand_phase2( bcore_plant_target_s* o, bl_t* p_modified )
 {
     BLM_INIT();
-    if( !o->modified ) BLM_RETURN_ER0();
+    if( !o->modified ) BLM_RETURNV( er_t, 0 );
 
     ASSERT( o->planted_h );
     ASSERT( o->planted_c );
@@ -3588,7 +3584,7 @@ static er_t bcore_plant_target_s_expand_phase2( bcore_plant_target_s* o, bl_t* p
     bcore_plant_compiler_write_with_signature( file_c->sc, o->planted_c );
 
     if( p_modified ) *p_modified = o->modified;
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3618,7 +3614,7 @@ static er_t bcore_plant_compiler_s_group_register( bcore_plant_compiler_s* o, co
         }
     }
     bcore_hmap_tpvd_s_set( &o->hmap_group, global_id, ( vd_t )group );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3645,7 +3641,7 @@ static er_t bcore_plant_compiler_s_item_register( bcore_plant_compiler_s* o, con
     }
 
     bcore_hmap_tpvd_s_set( &o->hmap_item, global_id, ( vd_t )item );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3700,7 +3696,7 @@ static er_t bcore_plant_compiler_s_parse( bcore_plant_compiler_s* o, sc_t target
 
     if( p_target_index ) *p_target_index = target_index;
 
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3709,7 +3705,7 @@ static er_t bcore_plant_compiler_s_finalize( bcore_plant_compiler_s* o )
 {
     BLM_INIT();
     for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_target_s_finalize( o->data[ i ] ) );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3768,7 +3764,7 @@ static er_t bcore_plant_compiler_s_expand( bcore_plant_compiler_s* o, bl_t* p_mo
     }
 
     if( p_modified ) *p_modified = modified;
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3805,7 +3801,7 @@ er_t bcore_plant_compiler_setup( void )
         }
         BLM_DOWN();
     }
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3817,7 +3813,7 @@ er_t bcore_plant_compiler_compile( sc_t target_name, sc_t source_path, sz_t* p_t
     if( !plant_compiler_g ) BLM_TRY( bcore_plant_compiler_setup() );
     BLM_TRY( bcore_plant_compiler_s_parse( plant_compiler_g, target_name, source_path, p_target_index ) );
     BLM_TRY( bcore_plant_compiler_s_finalize( plant_compiler_g ) );
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3866,7 +3862,7 @@ er_t bcore_plant_compiler_update_planted_files( bl_t* p_modified )
     plant_compiler_g = NULL;
     if( p_modified ) *p_modified = modified;
 
-    BLM_RETURN_ER0();
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
