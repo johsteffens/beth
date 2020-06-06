@@ -24,7 +24,7 @@ numerical frameworks, a [meta-code framework](#plant) for high level software de
 and a [framework for machine learning](#badapt) (in development).
 
 It is a personal *"moonshot"* project in which I'm trying to bring several high-level programming
-paradigms (such as OOP, Serialization, Dynamic Binding) together into efficient C code.
+paradigms (such as Polymorphism, Encapsulation, Dynamic Binding, Serialization) together into efficient C code.
 Then using this framework to develop useful solutions in numerical computing, 
 machine learning and other disciplines.
 
@@ -135,7 +135,11 @@ The framework is used for object instantiation, initialization, lifetime managem
 
 <a name = "perspective"></a>
 ### Perspective
-A key-component is the so-called *Perspective*, which is a special abstraction for a generic framework with the character of a polymorphic interface with dynamic binding. *Perspective* and *Object* need not be aware of each other at compile time, yet a *Perspective* may act as generic source of functionality for an object as well as its abstraction. The perspective-framework builds upon the reflection framework. Inside the beth codebase *perspective* is abbreviated `spect`.
+The *Perspective* is the answer to a common requirement: "I want to see (use) my object under a specific (abstract) aspect, e.g. as a mere container of data, as an array, as a set, as sortable, as streamable, etc". Thus, the perspective takes up the notion of an interface. In beth, this is achieved via dynamic binding. There is no need of inheritance or subtyping. *Interface* and *Object* need not be aware of each other at compile time.
+
+The perspective can make active use of the object's reflection to analyze and manipulate it as wanted. For example: There might be infinite ways of designing a list or array, but the array-perspective can handle anyone providing typically needed methods for array manipulation (random access, appending, deleting, sorting, etc).
+
+Inside the beth codebase *perspective* is abbreviated `spect`.
 
 <a name = "binding"></a>
 ### Associative Binding
