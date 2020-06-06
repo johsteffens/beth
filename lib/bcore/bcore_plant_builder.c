@@ -30,7 +30,7 @@ static bcore_arr_st_s* arr_path_g = NULL;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static er_t build_from_file( sc_t path, sz_t* target_index );
+static er_t build_from_file( sc_t path, sz_t* p_target_index );
 
 er_t bcore_plant_builder_target_s_build( const bcore_plant_builder_target_s* o, sz_t* p_target_index )
 {
@@ -102,6 +102,7 @@ er_t bcore_plant_builder_target_s_build( const bcore_plant_builder_target_s* o, 
         st_s* signal_handler = BLM_A_PUSH( st_s_create_fa( "#<sc_t>_general_signal_handler", o->name->sc ) );
         if( o->signal_handler ) st_s_copy( signal_handler, o->signal_handler );
         BLM_TRY( bcore_plant_compiler_set_target_signal_handler_name( target_index, signal_handler->sc ) );
+        if( p_target_index ) *p_target_index = target_index;
     }
 
     BLM_RETURNV( er_t, 0 );

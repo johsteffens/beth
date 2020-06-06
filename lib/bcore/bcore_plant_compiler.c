@@ -31,6 +31,7 @@
 #include "bcore_cday.h"
 #include "bcore_folder.h"
 #include "bcore_txt_ml.h"
+#include "bcore_error_manager.h"
 
 //#define BCORE_PLANT_DRY_RUN
 
@@ -562,14 +563,16 @@ BCORE_DECLARE_OBJECT( bcore_plant_target_s )
     aware_t _;
     st_s name; // target name (e.g. "bcore_plant")
     st_s path; // path excluding extension
-    tp_t hash;
     BCORE_ARRAY_DYN_LINK_STATIC_S( bcore_plant_source_s, );
     st_s signal_handler_name;    // name of governing signal handler
     bcore_arr_sz_s dependencies; // index array to dependent targets
+    bl_t flag; // general purpose flag
 
     bl_t modified;  // target is to be modified
     st_s* planted_h; // planted header file
     st_s* planted_c; // planted c file
+
+    bcore_plant_compiler_s* compiler;
 };
 
 BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_target_s )
@@ -577,15 +580,17 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_target_s )
     "aware_t _;"
     "st_s name;" // target name (e.g. "bcore_plant")
     "st_s path;" // path excluding extension
-    "tp_t hash;"
     "bcore_plant_source_s => [] arr;"
     "func bcore_plant_fp : finalize;"
     "st_s signal_handler_name;"    // name of governing signal handler
     "bcore_arr_sz_s dependencies;" // index array to dependent targets
+    "bl_t flag;" // general purpose flag
 
     "bl_t modified;"     // target is to be modified
     "st_s => planted_h;" // planted header file
     "st_s => planted_c;" // planted c file
+
+    "private vd_t compiler;"
 "}";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2260,12 +2265,12 @@ static er_t bcore_plant_stamp_s_expand_declaration( const bcore_plant_stamp_s* o
             }
             else
             {
-                BLM_SOURCE_POINT_PARSE_ERR_FA( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
+                BLM_SOURCE_POINT_PARSE_ERR_FA( &func->source_point, "Stamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
             }
         }
         else
         {
-            BLM_SOURCE_POINT_PARSE_ERR_FA( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
+            BLM_SOURCE_POINT_PARSE_ERR_FA( &func->source_point, "Stamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
         }
         BLM_DOWN();
     }
@@ -2359,7 +2364,7 @@ static er_t bcore_plant_stamp_s_expand_definition( const bcore_plant_stamp_s* o,
         BLM_SOURCE_POINT_PARSE_ERR_FA
         (
             &o->source_point,
-            "Plant Compiler: Reflection embedding failed.\n"
+            "Reflection embedding failed.\n"
             "The embedded code would require a string literal larger than 4095 characters.\n"
             "This exceeds the limit defined in C99.\n"
         );
@@ -2436,12 +2441,12 @@ static er_t bcore_plant_stamp_s_expand_definition( const bcore_plant_stamp_s* o,
             }
             else
             {
-                BLM_SOURCE_POINT_PARSE_ERR_FA( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
+                BLM_SOURCE_POINT_PARSE_ERR_FA( &func->source_point, "Stamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
             }
         }
         else
         {
-            BLM_SOURCE_POINT_PARSE_ERR_FA( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
+            BLM_SOURCE_POINT_PARSE_ERR_FA( &func->source_point, "Stamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
         }
         BLM_DOWN();
     }
@@ -2475,12 +2480,12 @@ static er_t bcore_plant_stamp_s_expand_init1( const bcore_plant_stamp_s* o, sz_t
             }
             else
             {
-                BLM_SOURCE_POINT_PARSE_ERR_FA( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
+                BLM_SOURCE_POINT_PARSE_ERR_FA( &func->source_point, "Stamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
             }
         }
         else
         {
-            BLM_SOURCE_POINT_PARSE_ERR_FA( &func->source_point, "Plant Compiler:\nStamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
+            BLM_SOURCE_POINT_PARSE_ERR_FA( &func->source_point, "Stamp #<sc_t>: Could not resolve function #<sc_t> #<sc_t>", o->name.sc, ifnameof( func->type ), func->name.sc );
         }
     }
     bcore_sink_a_push_fa( sink, "#rn{ }BCORE_REGISTER_OBJECT( #<sc_t> );\n", indent, o->name.sc );
@@ -3265,7 +3270,6 @@ static er_t bcore_plant_target_s_parse( bcore_plant_target_s* o, sc_t source_pat
         // parsing *.c files is generally not helpful  (currently plant code can only reside in header files)
         // if( bcore_file_exists( source_path_c->sc ) ) bcore_plant_source_s_parse( plant_source, BLM_A_PUSH( bcore_file_open_source( source_path_c->sc ) ) );
 
-        o->hash = bcore_tp_fold_tp( o->hash, plant_source->hash );
         bcore_array_a_push( ( bcore_array* )o, sr_asd( bcore_fork( plant_source ) ) );
         BLM_DOWN();
     }
@@ -3275,11 +3279,54 @@ static er_t bcore_plant_target_s_parse( bcore_plant_target_s* o, sc_t source_pat
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static er_t bcore_plant_target_s_get_hash( const bcore_plant_target_s* o )
+{
+    tp_t hash = bcore_tp_init();
+    BFOR_EACH( i, o ) hash = bcore_tp_fold_tp( hash, o->data[ i ]->hash );
+
+    BFOR_EACH( i, &o->dependencies )
+    {
+        sz_t idx = o->dependencies.data[ i ];
+        hash = bcore_tp_fold_sc( hash, o->compiler->data[ idx ]->name.sc );
+    }
+
+    return hash;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static er_t bcore_plant_target_s_finalize( bcore_plant_target_s* o )
 {
     BLM_INIT();
     for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_source_s_finalize( o->data[ i ] ) );
     BLM_RETURNV( er_t, 0 );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// returns true if target's dependencies are cyclic
+static bl_t bcore_plant_target_s_is_cyclic_recursive( bcore_plant_target_s* o )
+{
+    if( o->flag ) return true;
+    o->flag = true;
+    BFOR_EACH( i, &o->dependencies )
+    {
+        sz_t idx = o->dependencies.data[ i ];
+        if( bcore_plant_target_s_is_cyclic_recursive( o->compiler->data[ idx ] ) ) return true;
+    }
+    return false;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_plant_compiler_s_clear_flags( bcore_plant_compiler_s* o );
+static bl_t bcore_plant_target_s_is_cyclic( bcore_plant_target_s* o )
+{
+    bcore_plant_compiler_s_clear_flags( o->compiler );
+    bl_t cyclic = bcore_plant_target_s_is_cyclic_recursive( o );
+    bcore_plant_compiler_s_clear_flags( o->compiler );
+    return cyclic;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3321,6 +3368,8 @@ static er_t bcore_plant_target_s_expand_h( const bcore_plant_target_s* o, sz_t i
     BLM_INIT();
     bcore_plant_target_s_expand_heading( o, indent, sink );
 
+    tp_t target_hash = bcore_plant_target_s_get_hash( o );
+
     st_s* name_upper = BLM_CLONE( st_s, &o->name );
     st_s_set_uppercase( name_upper );
 
@@ -3333,14 +3382,14 @@ static er_t bcore_plant_target_s_expand_h( const bcore_plant_target_s* o, sz_t i
 
     bcore_sink_a_push_fa( sink, "\n" );
 
-    bcore_sink_a_push_fa( sink, "#rn{ }//To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.\n", indent, o->name.sc, o->hash );
-    bcore_sink_a_push_fa( sink, "#rn{ }##define HKEYOF_#<sc_t> #<tp_t>\n", indent, o->name.sc, o->hash );
+    bcore_sink_a_push_fa( sink, "#rn{ }//To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.\n", indent, o->name.sc, target_hash );
+    bcore_sink_a_push_fa( sink, "#rn{ }##define HKEYOF_#<sc_t> #<tp_t>\n", indent, o->name.sc, target_hash );
 
     bcore_sink_a_push_fa( sink, "\n" );
 
     bcore_sink_a_push_fa( sink, "#rn{ }##define TYPEOF_#<sc_t> #<tp_t>\n", indent, o->name.sc, typeof( o->name.sc ) );
 
-    for( sz_t i = 0; i < o->size; i++ ) bcore_plant_source_s_expand_declaration( o->data[ i ], indent, sink );
+    for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_source_s_expand_declaration( o->data[ i ], indent, sink ) );
 
     bcore_sink_a_push_fa( sink, "\n" );
     bcore_sink_a_push_fa( sink, "#rn{ }/*#rn{*}*/\n", indent, sz_max( 0, 116 - indent ) );
@@ -3357,7 +3406,6 @@ static er_t bcore_plant_target_s_expand_h( const bcore_plant_target_s* o, sz_t i
 
 static er_t bcore_plant_target_s_expand_init1( const bcore_plant_target_s* o, sz_t indent, bcore_sink* sink )
 {
-//    bcore_sink_a_push_fa( sink, "#rn{ }bcore_const_x_set_d( typeof( \"#<sc_t>_hash\" ), sr_tp( HKEYOF_#<sc_t> ) );\n", indent, o->name.sc, o->name.sc );
     return 0;
 }
 
@@ -3387,7 +3435,7 @@ static er_t bcore_plant_target_s_expand_c( const bcore_plant_target_s* o, sz_t i
     /// prototypes of signal handlers this target depends on
     BFOR_EACH( i, &o->dependencies )
     {
-        const bcore_plant_target_s* target = plant_compiler_g->data[ o->dependencies.data[ i ] ];
+        const bcore_plant_target_s* target = o->compiler->data[ o->dependencies.data[ i ] ];
         if( target->signal_handler_name.size == 0 ) continue;
         bcore_sink_a_push_fa( sink, "#rn{ }vd_t #<sc_t>( const bcore_signal_s* o );\n", indent, target->signal_handler_name.sc );
     }
@@ -3413,7 +3461,7 @@ static er_t bcore_plant_target_s_expand_c( const bcore_plant_target_s* o, sz_t i
         bcore_sink_a_push_fa( sink, "#rn{ }            bcore_arr_fp_s* arr_fp = o->object;\n", indent );
         BFOR_EACH( i, &o->dependencies )
         {
-            const bcore_plant_target_s* target = plant_compiler_g->data[ o->dependencies.data[ i ] ];
+            const bcore_plant_target_s* target = o->compiler->data[ o->dependencies.data[ i ] ];
             if( target->signal_handler_name.size == 0 ) continue;
             bcore_sink_a_push_fa( sink, "#rn{ }            bcore_arr_fp_s_push( arr_fp, ( fp_t )#<sc_t> );\n", indent, target->signal_handler_name.sc );
         }
@@ -3435,6 +3483,8 @@ static bl_t bcore_plant_target_s_to_be_modified( const bcore_plant_target_s* o )
     BLM_INIT();
     bl_t to_be_modified = true;
 
+    tp_t target_hash = bcore_plant_target_s_get_hash( o );
+
     st_s* file_h = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.h", o->path.sc ) );
     if( bcore_file_exists( file_h->sc ) )
     {
@@ -3449,7 +3499,7 @@ static bl_t bcore_plant_target_s_to_be_modified( const bcore_plant_target_s* o )
                 {
                     tp_t key_val = 0;
                     bcore_source_a_parse_fa( source, " #<tp_t*>", &key_val );
-                    to_be_modified = ( key_val != o->hash );
+                    to_be_modified = ( key_val != target_hash );
                     break;
                 }
             }
@@ -3535,8 +3585,8 @@ static er_t bcore_plant_target_s_expand_phase2( bcore_plant_target_s* o, bl_t* p
     ASSERT( o->planted_h );
     ASSERT( o->planted_c );
 
-    st_s*           undo_expand_actions = &plant_compiler_g->undo_expand_actions;
-    bcore_arr_st_s* undo_expand_files   = &plant_compiler_g->undo_expand_files;
+    st_s*           undo_expand_actions = &o->compiler->undo_expand_actions;
+    bcore_arr_st_s* undo_expand_files   = &o->compiler->undo_expand_files;
 
     st_s* file_h = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.h", o->path.sc ) );
     st_s* file_c = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.c", o->path.sc ) );
@@ -3683,7 +3733,7 @@ static er_t bcore_plant_compiler_s_parse( bcore_plant_compiler_s* o, sc_t target
     {
         BLM_INIT();
         bcore_plant_target_s* target = BLM_CREATE( bcore_plant_target_s );
-        target->hash = bcore_tp_init();
+        target->compiler = o;
         st_s_copy_sc( &target->name, target_name );
         st_s_copy(    &target->path, target_path );
         bcore_array_a_push( ( bcore_array* )o, sr_asd( bcore_fork( target ) ) );
@@ -3778,6 +3828,14 @@ static er_t bcore_plant_compiler_s_life_a_push( bcore_plant_compiler_s* o, vd_t 
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// clears flags in targets
+static void bcore_plant_compiler_s_clear_flags( bcore_plant_compiler_s* o )
+{
+    BFOR_EACH( i, o ) o->data[ i ]->flag = false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 /// plant interface
 
@@ -3835,6 +3893,10 @@ er_t bcore_plant_compiler_set_target_dependencies( sz_t target_index, const bcor
     ASSERT( target_index >= 0 && target_index < plant_compiler_g->size );
     bcore_plant_target_s* target = plant_compiler_g->data[ target_index ];
     bcore_arr_sz_s_copy( &target->dependencies, dependencies );
+    if( bcore_plant_target_s_is_cyclic( target ) )
+    {
+        return bcore_error_push_fa( TYPEOF_general_error, "Cyclic dependencies found in target '#<sc_t>'.", target->name.sc );
+    }
     return 0;
 }
 
@@ -3986,6 +4048,7 @@ vd_t bcore_plant_compiler_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bcore_plant_source_s );
             BCORE_REGISTER_FFUNC(  bcore_plant_fp_finalize, bcore_plant_source_s_finalize );
             BCORE_REGISTER_OBJECT( bcore_plant_target_s );
+            BCORE_REGISTER_FFUNC(  bcore_plant_fp_get_hash, bcore_plant_target_s_get_hash );
             BCORE_REGISTER_FFUNC(  bcore_plant_fp_finalize, bcore_plant_target_s_finalize );
             BCORE_REGISTER_OBJECT( bcore_plant_compiler_s );
             BCORE_REGISTER_FFUNC(  bcore_plant_fp_finalize, bcore_plant_compiler_s_finalize );

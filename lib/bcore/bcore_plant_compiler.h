@@ -210,6 +210,11 @@
  *  current folder and the root folder, it is loaded by the compiler.
  */
 
+/** TODO
+ *  - detect cyclic dependencies
+ *  - involve dependencies in target_s_get_hash-computation
+ */
+
 #ifndef BCORE_PLANT_COMPILER_H
 #define BCORE_PLANT_COMPILER_H
 

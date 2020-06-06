@@ -320,7 +320,7 @@ void NPX(r_parse_msg_to_sink_fa)(                    const sr_s* o, bcore_sink* 
 
 er_t bcore_source_a_parse_err_to_em_fv( bcore_source* o, er_t err_id, sc_t format, va_list args )
 {
-    st_s* s0 = st_s_create_fa( format, args );
+    st_s* s0 = st_s_create_fv( format, args );
     st_s* s1 = st_s_create();
 
     bcore_source_a_parse_msg_to_sink_fa( o, ( bcore_sink* )s1, "error: #<sc_t>", s0->sc );
