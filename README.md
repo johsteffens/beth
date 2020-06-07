@@ -135,7 +135,7 @@ The framework is used for object instantiation, initialization, lifetime managem
 
 <a name = "perspective"></a>
 ### Perspective
-The *Perspective* is the answer to a common requirement: "I want to see (use) my object under a specific (abstract) aspect, e.g. as a mere container of data, as an array, as a set, as sortable, as streamable, etc". Thus, the perspective takes up the notion of an interface. In beth, this is achieved via dynamic binding. There is no need of inheritance or subtyping. *Interface* and *Object* need not be aware of each other at compile time.
+The *Perspective* is the answer to a common requirement: "I want to see (use) my object under a specific (abstract) aspect, e.g. as a mere container of data, as an array, as a set, as sortable, as streamable, etc". Thus, the perspective takes up the notion of an interface. In beth, this is achieved via dynamic binding. There is no need for inheritance or subtyping. *Interface* and *Object* need not be aware of each other at compile time.
 
 The perspective can make active use of the object's reflection to analyze and manipulate it as wanted. For example: There might be infinite ways of designing a list or array, but the array-perspective can handle anyone providing typically needed methods for array manipulation (random access, appending, deleting, sorting, etc).
 
