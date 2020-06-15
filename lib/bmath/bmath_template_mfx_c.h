@@ -755,6 +755,24 @@ void BCATU(bmath_mfx_s,opd_add)( bmath_mfx_s* o, const bmath_vfx_s* a, const bma
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void BCATU(bmath_mfx_s,opd_mul_add)( bmath_mfx_s* o, const bmath_vfx_s* a, const bmath_vfx_s* b, f3_t w, const bmath_mfx_s* c )
+{
+    ASSERT( BCATU(bmath_mfx_s,is_equ_size)( o, c ) );
+    ASSERT( o->rows == a->size );
+    ASSERT( o->cols == b->size );
+
+    const fx_t* v1 = a->data;
+    const fx_t* v2 = b->data;
+    for( uz_t i = 0; i < o->rows; i++ )
+    {
+              fx_t* oi = o->data + o->stride * i;
+        const fx_t* ci = c->data + c->stride * i;
+        for( uz_t j = 0; j < o->cols; j++ ) oi[ j ] = ci[ j ] + ( w * v1[ i ] * v2[ j ] );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void BCATU(bmath_mfx_s,mul_hdm)( const bmath_mfx_s* a, const bmath_mfx_s* b, bmath_mfx_s* r )
 {
     ASSERT(  BCATU(bmath_mfx_s,is_equ_size)( a, b ) );
@@ -2754,7 +2772,7 @@ void BCATU(bmath_mfx_s,sweep_dcol_rotate_rev)( bmath_mfx_s* o, uz_t col_start, u
         bmath_grt_fx_s* g = grt->data + col_start;
         fx_t* r0  = o->data + col_start;
 
-        for( ; i < row_end - 4; i += 4 ) BCATU(bmath_simd,fx,4drow_swipe_rev)( r0 + o->stride * i, o->stride, g, size );
+        for( ; i + 4 < row_end; i += 4 ) BCATU(bmath_simd,fx,4drow_swipe_rev)( r0 + o->stride * i, o->stride, g, size );
         for( ; i < row_end    ; i++    ) BCATU(bmath_simd,fx,drow_swipe_rev)(  r0 + o->stride * i,            g, size );
     }
 }

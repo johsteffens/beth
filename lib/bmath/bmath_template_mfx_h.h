@@ -302,8 +302,9 @@ void BCATU(bmath_mfx_s,add)( const bmath_mfx_s* o, const bmath_mfx_s* b, bmath_m
 //----------------------------------------------------------------------------------------------------------------------
 // outer vector product
 
-void BCATU(bmath_mfx_s,opd)(     bmath_mfx_s* o, const bmath_vfx_s* a, const bmath_vfx_s* b );                       // opd( a, b )     -> o
-void BCATU(bmath_mfx_s,opd_add)( bmath_mfx_s* o, const bmath_vfx_s* a, const bmath_vfx_s* b, const bmath_mfx_s* c ); // opd( a, b ) + c -> o
+void BCATU(bmath_mfx_s,opd)(         bmath_mfx_s* o, const bmath_vfx_s* a, const bmath_vfx_s* b );                       // opd( a, b )     -> o
+void BCATU(bmath_mfx_s,opd_add)(     bmath_mfx_s* o, const bmath_vfx_s* a, const bmath_vfx_s* b,         const bmath_mfx_s* c ); // opd( a, b ) + c -> o
+void BCATU(bmath_mfx_s,opd_mul_add)( bmath_mfx_s* o, const bmath_vfx_s* a, const bmath_vfx_s* b, f3_t w, const bmath_mfx_s* c ); // opd( a, b ) * w + c -> o
 
 //----------------------------------------------------------------------------------------------------------------------
 // matrix * vector [ + vector] --> vector

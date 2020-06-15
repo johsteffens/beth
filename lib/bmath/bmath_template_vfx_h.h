@@ -30,7 +30,7 @@
  *  dft: discrete fourier transform  (fft used when size is power of 2)
  *  ift: inverse dft
  *  pmt: permutation
- *  tss: total sum of squares (also vector-norm)
+ *  tss: total sum of squares (also vector-norm^2 or inner product of vector with itself)
  */
 
 /**********************************************************************************************************************/

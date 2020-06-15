@@ -33,7 +33,7 @@
  *      * Supports full and thin decomposition.
  *      * Automatically detects and exploits sparsity
  *
- *  It is a = u * a' * vT, with u, v being unitary. Supports full and thin decomposition.
+ *  It is a = u * a' * vT, with u, v being unitary.
  *  If matrices u, v are desired, their size has to be preset but they need not be preinitialized.
  *  The routine does not change the actual allocation of either matrix, hence u, a, v may
  *  safely reference external data.
@@ -54,6 +54,7 @@
  *  If thin decomposition is chosen, then a' is returned as (thin) square matrix.
  *  Meaning either a->rows or a->cols is changed to min(m,n) by the routine.
  *
+ *  Returns false in case convergence could not be achieved.
  */
 bl_t BCATU(bmath_mfx_s,svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v );
 
