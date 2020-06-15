@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-27T11:02:20Z
+ *  Last File Update: 2020-06-15T15:55:26Z
  *
  *  Copyright and License of this File:
  *
@@ -946,7 +946,6 @@ vd_t badapt_planted_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
-            bcore_const_x_set_d( typeof( "badapt_planted_hash" ), sr_tp( HKEYOF_badapt_planted ) );
 
             // --------------------------------------------------------------------
             // source: badapt_adaptive.h
@@ -1289,3 +1288,4 @@ vd_t badapt_planted_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
+// BETH_PLANT_SIGNATURE 2212918754

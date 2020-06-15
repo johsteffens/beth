@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-06-06T18:48:02Z
+ *  Last File Update: 2020-06-15T15:55:26Z
  *
  *  Copyright and License of this File:
  *
@@ -2254,7 +2254,6 @@ sz_t bhvm_mcode_hbase_s_push_copy_from_index( bhvm_mcode_hbase_s* o, sz_t index 
 
 /**********************************************************************************************************************/
 
-vd_t bmath_general_signal_handler( const bcore_signal_s* o );
 vd_t bhvm_general_signal_handler( const bcore_signal_s* o );
 vd_t bhvm_general_signal_handler( const bcore_signal_s* o );
 
@@ -2472,7 +2471,6 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
         {
             ASSERT( o->object && ( *( aware_t* )o->object ) == TYPEOF_bcore_arr_fp_s );
             bcore_arr_fp_s* arr_fp = o->object;
-            bcore_arr_fp_s_push( arr_fp, ( fp_t )bmath_general_signal_handler );
             bcore_arr_fp_s_push( arr_fp, ( fp_t )bhvm_general_signal_handler );
             bcore_arr_fp_s_push( arr_fp, ( fp_t )bhvm_general_signal_handler );
         }
@@ -2481,4 +2479,4 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// BETH_PLANT_SIGNATURE 3577724836
+// BETH_PLANT_SIGNATURE 3775963455
