@@ -303,24 +303,29 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
             }
         }
 
-        // simplified encoding for certain leaf types
-        else if( bcore_source_r_parse_bl_fa( &src_l, "#=?'\"'" ) ) // string
+        /// simplified encoding for certain leaf types ...
+
+        // string
+        else if( bcore_source_r_parse_bl_fa( &src_l, "#=?'\"'" ) )
         {
             obj = sr_create( TYPEOF_st_s );
             bcore_source_r_parse_fa( &src_l, " #string", obj.o );
         }
-        else if( bcore_source_r_parse_bl_fa( &src_l, "#?(([0]>='0'&&[0]<='9')||[0]=='+'||[0]=='-')" ) ) // number
+        // number
+        else if( bcore_source_r_parse_bl_fa( &src_l, "#?(([0]>='0'&&[0]<='9')||[0]=='+'||[0]=='-')" ) )
         {
             obj = sr_create( TYPEOF_f3_t );
             f3_t* v = obj.o;
             bcore_source_r_parse_fa( &src_l, "#<f3_t*>", v );
         }
-        else if( bcore_source_r_parse_bl_fa( &src_l, "#?w'true'" ) ) // boolean
+        // boolean
+        else if( bcore_source_r_parse_bl_fa( &src_l, "#?w'true'" ) )
         {
             obj = sr_create( TYPEOF_bl_t );
             *( bl_t* )obj.o = true;
         }
-        else if( bcore_source_r_parse_bl_fa( &src_l, "#?w'false'" ) ) // boolean
+        // boolean
+        else if( bcore_source_r_parse_bl_fa( &src_l, "#?w'false'" ) )
         {
             obj = sr_create( TYPEOF_bl_t );
             *( bl_t* )obj.o = false;
@@ -389,7 +394,10 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
                     uz_t idx = bcore_via_x_nget_index( obj_l, ntype );
 
 #ifdef BCORE_TXT_ML_INTERPRETER_FULL_CONVERSION // see comment to this flag
-                    bcore_via_x_iset( obj_l, idx, interpret( o, sr_null(), src_l ) );
+                    {
+                        sr_s sr = interpret( o, sr_null(), src_l );
+                        bcore_via_x_iset( obj_l, idx, sr );
+                    }
 #else
                     if( bcore_via_x_iis_link( obj_l, idx ) )
                     {
