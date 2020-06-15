@@ -175,6 +175,8 @@ Key components of the plant language are `stamp`, `group` and `feature`.
 `group` represents a declarative context. Groups can be nested.
 `feature` represents a virtual function. It is defined inside a group turning it into a [perspective](#perspective).
 
+A dedicatd plant compiler is in project [beth_plant_builder](https://github.com/johsteffens/beth_plant_builder).
+
 # Motivation
 Object oriented programming is generally associated with a specific
 framework which can be seen in many programming Languages.
