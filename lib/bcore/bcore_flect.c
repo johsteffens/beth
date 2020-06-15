@@ -780,34 +780,39 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, const b
                 }
 
                 tp_t aware_tp = typeof( name->sc );
-                if( !bcore_flect_exists( aware_tp ) )
-                {
-                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' has no registered reflection.", ifnameof( parent_type ), name->sc );
-                }
 
-                const bcore_self_s* self = bcore_flect_get_self( aware_tp );
 
-                if( !bcore_self_s_is_aware( self ) )
+                if( advanced_checks )
                 {
-                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' is not self-aware.", ifnameof( parent_type ), name->sc );
-                }
-
-                if( o->type != 0 ) // assume trait
-                {
-                    st_s* log = st_s_create();
-                    if( !bcore_trait_satisfied_type( o->type, aware_tp, log ) )
+                    if( !bcore_flect_exists( aware_tp ) )
                     {
-                        bcore_source_r_parse_err_fa
-                        (
-                            &src,
-                            "Parent '#<sc_t>':\n'#<sc_t>' does not support trait '#<sc_t>' Reason:\n#<sc_t>",
-                            ifnameof( parent_type ),
-                            name->sc,
-                            ifnameof( o->type ),
-                            log->sc
-                        );
+                        bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' has no registered reflection.", ifnameof( parent_type ), name->sc );
                     }
-                    st_s_discard( log );
+
+                    const bcore_self_s* self = bcore_flect_get_self( aware_tp );
+
+                    if( !bcore_self_s_is_aware( self ) )
+                    {
+                        bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' is not self-aware.", ifnameof( parent_type ), name->sc );
+                    }
+
+                    if( o->type != 0 ) // assume trait
+                    {
+                        st_s* log = st_s_create();
+                        if( !bcore_trait_satisfied_type( o->type, aware_tp, log ) )
+                        {
+                            bcore_source_r_parse_err_fa
+                            (
+                                &src,
+                                "Parent '#<sc_t>':\n'#<sc_t>' does not support trait '#<sc_t>' Reason:\n#<sc_t>",
+                                ifnameof( parent_type ),
+                                name->sc,
+                                ifnameof( o->type ),
+                                log->sc
+                            );
+                        }
+                        st_s_discard( log );
+                    }
                 }
 
                 st_s_discard( name );
