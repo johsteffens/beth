@@ -607,9 +607,11 @@ BCORE_DECLARE_OBJECT( bcore_plant_compiler_s )
     bcore_arr_st_s undo_expand_files;   // list of files affected by undo_expand_sh
 
     // parameters
-    st_s* sh_file_undo_expand;
+    bl_t  backup_planted_files;
+    st_s* sh_script_file_undo_expand;
     bl_t  register_plain_functions;
     bl_t  register_signatures;
+    bl_t  overwrite_unsigned_planted_files;
     sz_t  verbosity;
 };
 
@@ -625,9 +627,12 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_compiler_s )
     "hidden bcore_arr_st_s undo_expand_files;" // list of files affected by undo_expand_sh
 
     // parameters
-    "st_s => sh_file_undo_expand;"
+    "bl_t backup_planted_files = true;"
+    "st_s => sh_script_file_undo_expand;"
     "bl_t register_plain_functions = true;"
     "bl_t register_signatures = false;"
+    "bl_t overwrite_unsigned_planted_files = false;"
+
     "sz_t verbosity = 1;"
 
     // functions
@@ -3525,7 +3530,7 @@ static er_t bcore_plant_compiler_write_with_signature( sc_t file, const st_s* da
 //----------------------------------------------------------------------------------------------------------------------
 
 /// returns true if correct signature could be verified
-static bl_t bcore_plant_compiler_check_signature( sc_t file )
+static bl_t bcore_plant_compiler_is_signed( sc_t file )
 {
     BLM_INIT();
     bcore_source* source = BLM_A_PUSH( bcore_file_open_source( file ) );
@@ -3548,6 +3553,35 @@ static bl_t bcore_plant_compiler_check_signature( sc_t file )
     if( hash != bcore_tp_fold_sc( bcore_tp_init(), data->sc ) ) BLM_RETURNV( bl_t, false );
 
     BLM_RETURNV( bl_t, true );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static er_t bcore_plant_compiler_s_check_overwrite( bcore_plant_compiler_s* o, sc_t file )
+{
+    BLM_INIT();
+    if( !bcore_file_exists( file ) ) BLM_RETURNV( er_t, 0 );
+
+    if( !bcore_plant_compiler_is_signed( file ) )
+    {
+        st_s* s = BLM_CREATE( st_s );
+        st_s_push_fa( s, "Planted file #<sc_t>: Signature check failed.\n", file );
+        st_s_push_fa( s, "This file might have been created or edited outside the plant framework.\n" );
+        if( o->overwrite_unsigned_planted_files )
+        {
+            st_s_push_fa( s, "Flag 'overwrite_unsigned_planted_files' is 'true'. The file will be overwritten.\n" );
+            bcore_sink_a_push_fa( BCORE_STDERR, "\nWARNING: #<sc_t>\n", s->sc );
+        }
+        else
+        {
+            st_s_push_fa( s, "The plant compiler has currently no permission to overwrite unsigned planted files.\n" );
+            st_s_push_fa( s, "You can fix it in one of following ways:\n" );
+            st_s_push_fa( s, "* Rename or move the file.\n" );
+            st_s_push_fa( s, "* Allow overwrite by setting flag 'overwrite_unsigned_planted_files' 'true'.\n" );
+            BLM_RETURNV( er_t, bcore_error_push_fa( TYPEOF_general_error, "\nERROR: #<sc_t>\n", s->sc ) );
+        }
+    }
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3591,13 +3625,11 @@ static er_t bcore_plant_target_s_expand_phase2( bcore_plant_target_s* o, bl_t* p
     st_s* file_h = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.h", o->path.sc ) );
     st_s* file_c = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.c", o->path.sc ) );
 
+    BLM_TRY( bcore_plant_compiler_s_check_overwrite( o->compiler, file_h->sc ) );
+    BLM_TRY( bcore_plant_compiler_s_check_overwrite( o->compiler, file_c->sc ) );
+
     if( bcore_file_exists( file_h->sc ) )
     {
-        if( !bcore_plant_compiler_check_signature( file_h->sc ) )
-        {
-            bcore_wrn_fa( "\nWARNING: #<sc_t> - Signature check failed.\n", file_h->sc );
-        }
-
         st_s* backup_name = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.backup", file_h->sc ) );
         bcore_file_rename( file_h->sc, backup_name->sc );
         st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>.backup #<sc_t>.swap\n",   file_h->sc, file_h->sc );
@@ -3611,11 +3643,6 @@ static er_t bcore_plant_target_s_expand_phase2( bcore_plant_target_s* o, bl_t* p
 
     if( bcore_file_exists( file_c->sc ) )
     {
-        if( !bcore_plant_compiler_check_signature( file_c->sc ) )
-        {
-            bcore_wrn_fa( "\nWARNING: #<sc_t> - Signature check failed.\n", file_c->sc );
-        }
-
         st_s* backup_name = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.backup", file_c->sc ) );
         bcore_file_rename( file_c->sc, backup_name->sc );
         st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>.backup #<sc_t>.swap\n",   file_c->sc, file_c->sc );
@@ -3784,9 +3811,9 @@ static er_t bcore_plant_compiler_s_expand( bcore_plant_compiler_s* o, bl_t* p_mo
     for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_target_s_expand_phase1( o->data[ i ], &modified ) );
     for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_target_s_expand_phase2( o->data[ i ], &modified ) );
 
-    if( o->sh_file_undo_expand && modified )
+    if( o->sh_script_file_undo_expand && modified )
     {
-        bcore_sink* sink = BLM_A_PUSH( bcore_file_open_sink( o->sh_file_undo_expand->sc ) );
+        bcore_sink* sink = BLM_A_PUSH( bcore_file_open_sink( o->sh_script_file_undo_expand->sc ) );
         bcore_sink_a_push_fa( sink, "##! /bin/bash\n" );
         bcore_sink_a_push_fa( sink, "echo \"This will swap each of the following files with its respective backup:\"\n" );
         BFOR_EACH( i, &o->undo_expand_files )
@@ -3915,9 +3942,9 @@ er_t bcore_plant_compiler_update_planted_files( bl_t* p_modified )
     {
         if( verbosity > 0 ) bcore_msg_fa( "BETH_PLANT: Expanded in #<f3_t> sec.\n", time );
         if( verbosity > 0 ) bcore_msg_fa( "BETH_PLANT: Files were updated. Rebuild is necessary.\n" );
-        if( plant_compiler_g->sh_file_undo_expand )
+        if( plant_compiler_g->sh_script_file_undo_expand )
         {
-            if( verbosity > 0 ) bcore_msg_fa( "BETH_PLANT: To revert to the previous state, execute '#<sc_t>'.\n", plant_compiler_g->sh_file_undo_expand->sc );
+            if( verbosity > 0 ) bcore_msg_fa( "BETH_PLANT: To revert to the previous state, execute '#<sc_t>'.\n", plant_compiler_g->sh_script_file_undo_expand->sc );
         }
     }
     bcore_plant_compiler_s_discard( plant_compiler_g );
