@@ -131,7 +131,7 @@ u0_t bcore_source_default_inspect_u0( const bcore_source_s* p, bcore_source* o )
 
 void bcore_source_default_parse_errvf( const bcore_source_s* p, bcore_source* o, sc_t format, va_list args )
 {
-    st_s* s0 = st_s_create_fa( format, args );
+    st_s* s0 = st_s_createvf( format, args );
     st_s* s1 = st_s_create();
 
     bcore_source_a_parse_msg_to_sink_fa( o, ( bcore_sink* )s1, "error: #<sc_t>", s0->sc );
