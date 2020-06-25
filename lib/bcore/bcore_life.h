@@ -129,6 +129,12 @@ extern bcore_life_s* __bcore_life; // always NULL; needed to ingrain a life-chai
 #define BLM_A_PUSH(       expr ) bcore_life_s_push_aware( BLM_INIT__,       expr )
 #define BLM_T_PUSH( type, expr ) bcore_life_s_push_typed( BLM_INIT__, type, expr )
 
+#define BLM_BREAK() \
+{ \
+    bcore_life_s_detach( &BLM_INIT__ ); \
+    break; \
+}
+
 #define BLM_RETURN() \
 { \
     bcore_life_s_discard_all( BLM_INIT__ ); \
