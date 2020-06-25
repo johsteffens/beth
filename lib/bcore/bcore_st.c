@@ -499,9 +499,13 @@ void st_s_discard( st_s* o )
 
 st_s* st_s_clone( const st_s* o )
 {
-    st_s* o_l = st_s_create();
-    st_s_copy( o_l, o );
-    return o_l;
+    if( o )
+    {
+        st_s* o_l = st_s_create();
+        st_s_copy( o_l, o );
+        return o_l;
+    }
+    return NULL;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
