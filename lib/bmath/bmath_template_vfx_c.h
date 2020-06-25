@@ -199,16 +199,18 @@ void BCATU(bmath_vfx_s,clear)( bmath_vfx_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_vfx_s,set_size)( bmath_vfx_s* o, uz_t size )
+bmath_vfx_s* BCATU(bmath_vfx_s,set_size)( bmath_vfx_s* o, uz_t size )
 {
     bcore_array_a_set_size( (bcore_array*)o, size );
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_vfx_s,set_space)( bmath_vfx_s* o, uz_t space )
+bmath_vfx_s* BCATU(bmath_vfx_s,set_space)( bmath_vfx_s* o, uz_t space )
 {
     bcore_array_a_set_space( (bcore_array*)o, space );
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -220,9 +222,10 @@ void BCATU(bmath_vfx_s,set_size_to)( const bmath_vfx_s* o, bmath_vfx_s* res )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_vfx_s,fill)( bmath_vfx_s* o, fx_t val )
+bmath_vfx_s* BCATU(bmath_vfx_s,fill)( bmath_vfx_s* o, fx_t val )
 {
     for( uz_t i = 0; i < o->size; i++ ) o->data[ i ] = val;
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -312,7 +315,7 @@ bl_t BCATU(bmath_vfx_s,is_nan)( const bmath_vfx_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-fx_t BCATU(bmath_vfx_s,tss)( const bmath_vfx_s* o )
+fx_t BCATU(bmath_vfx_s,fx_tss)( const bmath_vfx_s* o )
 {
     fx_t sum = 0;
     for( uz_t i = 0; i < o->size; i++ ) sum += BCATU(fx,sqr)( o->data[ i ] );

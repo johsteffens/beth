@@ -66,10 +66,10 @@ void BCATU(bmath_vfx_s,clear)( bmath_vfx_s* o );
 bmath_vfx_s* BCATU(bmath_vfx_s,create_set_size)( uz_t size );
 bmath_vfx_s* BCATU(bmath_vfx_s,create_fill)( uz_t size, fx_t val );
 
-void BCATU(bmath_vfx_s,set_size)(    bmath_vfx_s* o, uz_t size );
-void BCATU(bmath_vfx_s,set_space)(   bmath_vfx_s* o, uz_t space );
-void BCATU(bmath_vfx_s,set_size_to)( const bmath_vfx_s* o, bmath_vfx_s* res );
-void BCATU(bmath_vfx_s,fill)(        bmath_vfx_s* o, fx_t val );
+bmath_vfx_s* BCATU(bmath_vfx_s,set_size)(    bmath_vfx_s* o, uz_t size );
+bmath_vfx_s* BCATU(bmath_vfx_s,set_space)(   bmath_vfx_s* o, uz_t space );
+bmath_vfx_s* BCATU(bmath_vfx_s,fill)(        bmath_vfx_s* o, fx_t val );
+void         BCATU(bmath_vfx_s,set_size_to)( const bmath_vfx_s* o, bmath_vfx_s* res );
 
 /// copies external data into vector
 void BCATU(bmath_vfx_s,set_data)( bmath_vfx_s* o, const fx_t* data, sz_t size );
@@ -104,7 +104,13 @@ fx_t BCATU(bmath_vfx_s,fdev)( const bmath_vfx_s* o, const bmath_vfx_s* op );
 bl_t BCATU(bmath_vfx_s,is_nan)( const bmath_vfx_s* o );
 
 /// total sum of squares
-fx_t BCATU(bmath_vfx_s,tss)( const bmath_vfx_s* o );
+fx_t BCATU(bmath_vfx_s,fx_tss)( const bmath_vfx_s* o );
+
+// backward compatibility
+static inline fx_t BCATU(bmath_vfx_s,tss)( const bmath_vfx_s* o )
+{
+    return BCATU(bmath_vfx_s,fx_tss)( o );
+}
 
 /** fdev = ||f(o) - x||
  *  '|| ... ||' = Frobenius norm  ( sqrt(sum over squares) )
