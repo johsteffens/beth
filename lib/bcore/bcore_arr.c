@@ -271,6 +271,13 @@ uz_t bcore_arr_uz_s_idx_min( const bcore_arr_uz_s* o )
     return idx;
 }
 
+uz_t bcore_arr_uz_s_count_equal( const bcore_arr_uz_s* o, uz_t val )
+{
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->size; i++ ) count += ( o->data[ i ] == val );
+    return count;
+}
+
 /**********************************************************************************************************************/
 // bcore_arr_sz_s
 
@@ -438,6 +445,13 @@ bcore_arr_sz_s* bcore_arr_sz_s_reorder( bcore_arr_sz_s* o, const bcore_arr_uz_s*
     return o;
 }
 
+uz_t bcore_arr_sz_s_count_equal( const bcore_arr_sz_s* o, sz_t val )
+{
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->size; i++ ) count += ( o->data[ i ] == val );
+    return count;
+}
+
 /**********************************************************************************************************************/
 // bcore_arr_u3_s
 
@@ -603,6 +617,13 @@ bcore_arr_u3_s* bcore_arr_u3_s_reorder( bcore_arr_u3_s* o, const bcore_arr_uz_s*
     o->space = buf_space;
     o->size = order->size;
     return o;
+}
+
+uz_t bcore_arr_u3_s_count_equal( const bcore_arr_u3_s* o, u3_t val )
+{
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->size; i++ ) count += ( o->data[ i ] == val );
+    return count;
 }
 
 /**********************************************************************************************************************/
@@ -776,6 +797,13 @@ uz_t bcore_arr_tp_s_find( const bcore_arr_tp_s* o, uz_t start, uz_t end, tp_t v 
     }
 }
 
+uz_t bcore_arr_tp_s_count_equal( const bcore_arr_tp_s* o, tp_t val )
+{
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->size; i++ ) count += ( o->data[ i ] == val );
+    return count;
+}
+
 /**********************************************************************************************************************/
 // bcore_arr_bl_s
 
@@ -880,6 +908,13 @@ bl_t bcore_arr_bl_s_pop( bcore_arr_bl_s* o )
     if( o->size == 0 ) return 0;
     o->size--;
     return o->data[ o->size ];
+}
+
+uz_t bcore_arr_bl_s_count_equal( const bcore_arr_bl_s* o, bl_t val )
+{
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->size; i++ ) count += ( o->data[ i ] == val );
+    return count;
 }
 
 /**********************************************************************************************************************/
@@ -1011,6 +1046,23 @@ bcore_arr_st_s* bcore_arr_st_s_reorder( bcore_arr_st_s* o, const bcore_arr_uz_s*
     o->space = buf_space;
     o->size = order->size;
     return o;
+}
+
+uz_t bcore_arr_st_s_count_equal( const bcore_arr_st_s* o, const st_s* val )
+{
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->size; i++ )
+    {
+        if( val )
+        {
+            count += st_s_equal_st( val, o->data[ i ] );
+        }
+        else
+        {
+            count += ( o->data[ i ] == NULL );
+        }
+    }
+    return count;
 }
 
 /**********************************************************************************************************************/
@@ -1152,6 +1204,13 @@ uz_t bcore_arr_vd_s_find( const bcore_arr_vd_s* o, uz_t start, uz_t end, vd_t v 
     }
 }
 
+uz_t bcore_arr_vd_s_count_equal( const bcore_arr_vd_s* o, vd_t val )
+{
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->size; i++ ) count += ( o->data[ i ] == val );
+    return count;
+}
+
 /**********************************************************************************************************************/
 
 // bcore_arr_fp_s
@@ -1289,6 +1348,13 @@ uz_t bcore_arr_fp_s_find( const bcore_arr_fp_s* o, uz_t start, uz_t end, fp_t v 
         for( uz_t j = start_l - 1;  j < start_l && j >= end; j-- ) if( o->data[ j ] == v ) return j;
         return start_l;
     }
+}
+
+uz_t bcore_arr_fp_s_count_equal( const bcore_arr_fp_s* o, fp_t val )
+{
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->size; i++ ) count += ( o->data[ i ] == val );
+    return count;
 }
 
 /**********************************************************************************************************************/

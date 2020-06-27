@@ -47,8 +47,8 @@ bcore_arr_uz_s* bcore_arr_uz_s_set_space(  bcore_arr_uz_s* o, uz_t space );
 bcore_arr_uz_s* bcore_arr_uz_s_set_size(   bcore_arr_uz_s* o, uz_t size  ); // resize
 bcore_arr_uz_s* bcore_arr_uz_s_fill(       bcore_arr_uz_s* o, uz_t size, uz_t v ); // creates filled array of size <size>
 bcore_arr_uz_s* bcore_arr_uz_s_step_fill(  bcore_arr_uz_s* o, uz_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
-void bcore_arr_uz_s_push(       bcore_arr_uz_s* o, uz_t v );
-uz_t bcore_arr_uz_s_pop(        bcore_arr_uz_s* o );
+void            bcore_arr_uz_s_push(       bcore_arr_uz_s* o, uz_t v );
+uz_t            bcore_arr_uz_s_pop(        bcore_arr_uz_s* o );
 bcore_arr_uz_s* bcore_arr_uz_s_sort(       bcore_arr_uz_s* o, s2_t order ); // stable
 bcore_arr_uz_s* bcore_arr_uz_s_reorder(    bcore_arr_uz_s* o, const bcore_arr_uz_s* order );
 uz_t bcore_arr_uz_s_find( const bcore_arr_uz_s* o, uz_t start, uz_t end, uz_t v ); // behaves like st_s_find_*
@@ -57,8 +57,10 @@ uz_t bcore_arr_uz_s_max(     const bcore_arr_uz_s* o );
 uz_t bcore_arr_uz_s_min(     const bcore_arr_uz_s* o );
 uz_t bcore_arr_uz_s_idx_max( const bcore_arr_uz_s* o );
 uz_t bcore_arr_uz_s_idx_min( const bcore_arr_uz_s* o );
+uz_t bcore_arr_uz_s_count_equal(   const bcore_arr_uz_s* o, uz_t val ); // number of occurrence
 
 bcore_arr_uz_s* bcore_arr_uz_s_create_random_permutation( u2_t ( *rg )( u2_t ), u2_t seed, uz_t size );
+
 
 /**********************************************************************************************************************/
 
@@ -75,10 +77,12 @@ bcore_arr_sz_s* bcore_arr_sz_s_set_space( bcore_arr_sz_s* o, uz_t space );
 bcore_arr_sz_s* bcore_arr_sz_s_set_size(  bcore_arr_sz_s* o, uz_t size ); // resize
 bcore_arr_sz_s* bcore_arr_sz_s_fill(      bcore_arr_sz_s* o, uz_t size, sz_t v ); // creates filled array of size <size>
 bcore_arr_sz_s* bcore_arr_sz_s_step_fill( bcore_arr_sz_s* o, sz_t v_start, sz_t step, uz_t size ); // creates filled array according to stepping
-void bcore_arr_sz_s_push(      bcore_arr_sz_s* o, sz_t v );
-sz_t bcore_arr_sz_s_pop(       bcore_arr_sz_s* o );
+void            bcore_arr_sz_s_push(      bcore_arr_sz_s* o, sz_t v );
+sz_t            bcore_arr_sz_s_pop(       bcore_arr_sz_s* o );
 bcore_arr_sz_s* bcore_arr_sz_s_sort(      bcore_arr_sz_s* o, s2_t order ); // stable
 bcore_arr_sz_s* bcore_arr_sz_s_reorder(   bcore_arr_sz_s* o, const bcore_arr_uz_s* order );
+uz_t            bcore_arr_sz_s_count_equal( const bcore_arr_sz_s* o, sz_t val ); // number of occurrence
+
 
 /**********************************************************************************************************************/
 
@@ -99,6 +103,7 @@ void bcore_arr_u3_s_push(      bcore_arr_u3_s* o, u3_t v );
 u3_t bcore_arr_u3_s_pop(       bcore_arr_u3_s* o );
 bcore_arr_u3_s* bcore_arr_u3_s_sort(      bcore_arr_u3_s* o, s2_t order ); // stable
 bcore_arr_u3_s* bcore_arr_u3_s_reorder(   bcore_arr_u3_s* o, const bcore_arr_uz_s* order );
+uz_t            bcore_arr_u3_s_count_equal( const bcore_arr_u3_s* o, u3_t val ); // number of occurrence
 
 /**********************************************************************************************************************/
 
@@ -115,10 +120,11 @@ bcore_arr_tp_s* bcore_arr_tp_s_set_space(  bcore_arr_tp_s* o, uz_t space );
 bcore_arr_tp_s* bcore_arr_tp_s_set_size(   bcore_arr_tp_s* o, uz_t size ); // resize
 bcore_arr_tp_s* bcore_arr_tp_s_fill(       bcore_arr_tp_s* o, uz_t size, tp_t v ); // creates filled array of size <size>
 bcore_arr_tp_s* bcore_arr_tp_s_push(       bcore_arr_tp_s* o, tp_t v );
-tp_t bcore_arr_tp_s_pop(        bcore_arr_tp_s* o );
+tp_t            bcore_arr_tp_s_pop(        bcore_arr_tp_s* o );
 bcore_arr_tp_s* bcore_arr_tp_s_sort(       bcore_arr_tp_s* o, s2_t order ); // stable
 bcore_arr_tp_s* bcore_arr_tp_s_reorder(    bcore_arr_tp_s* o, const bcore_arr_uz_s* order );
 uz_t bcore_arr_tp_s_find( const bcore_arr_tp_s* o, uz_t start, uz_t end, tp_t v ); // behaves like st_s_find_*
+uz_t            bcore_arr_tp_s_count_equal( const bcore_arr_tp_s* o, tp_t val ); // number of occurrence
 
 /**********************************************************************************************************************/
 
@@ -135,7 +141,8 @@ bcore_arr_bl_s* bcore_arr_bl_s_set_space(  bcore_arr_bl_s* o, uz_t space );
 bcore_arr_bl_s* bcore_arr_bl_s_set_size(   bcore_arr_bl_s* o, uz_t size ); // resize
 bcore_arr_bl_s* bcore_arr_bl_s_fill(       bcore_arr_bl_s* o, uz_t size, bl_t v ); // creates filled array of size <size>
 bcore_arr_bl_s* bcore_arr_bl_s_push(       bcore_arr_bl_s* o, bl_t v );
-bl_t bcore_arr_bl_s_pop( bcore_arr_bl_s* o );
+bl_t            bcore_arr_bl_s_pop( bcore_arr_bl_s* o );
+uz_t            bcore_arr_bl_s_count_equal( const bcore_arr_bl_s* o, bl_t val ); // number of occurrence
 
 /**********************************************************************************************************************/
 
@@ -156,6 +163,7 @@ st_s* bcore_arr_st_s_push_sc(   bcore_arr_st_s* o, sc_t sc );
 void  bcore_arr_st_s_pop(       bcore_arr_st_s* o );
 bcore_arr_st_s* bcore_arr_st_s_sort(      bcore_arr_st_s* o, s2_t order ); // stable
 bcore_arr_st_s* bcore_arr_st_s_reorder(   bcore_arr_st_s* o, const bcore_arr_uz_s* order );
+uz_t            bcore_arr_st_s_count_equal( const bcore_arr_st_s* o, const st_s* val ); // number of occurrence
 
 /**********************************************************************************************************************/
 
@@ -175,7 +183,8 @@ bcore_arr_vd_s* bcore_arr_vd_s_fill(       bcore_arr_vd_s* o, uz_t size, vd_t v 
 void bcore_arr_vd_s_push(       bcore_arr_vd_s* o, vd_t v );
 vd_t bcore_arr_vd_s_pop(        bcore_arr_vd_s* o );
 bcore_arr_vd_s* bcore_arr_vd_s_reorder(    bcore_arr_vd_s* o, const bcore_arr_uz_s* order );
-uz_t bcore_arr_vd_s_find( const bcore_arr_vd_s* o, uz_t start, uz_t end, vd_t v );  // behaves like st_s_find_*
+uz_t            bcore_arr_vd_s_find(  const bcore_arr_vd_s* o, uz_t start, uz_t end, vd_t v );  // behaves like st_s_find_*
+uz_t            bcore_arr_vd_s_count_equal( const bcore_arr_vd_s* o, vd_t val ); // number of occurrence
 
 /**********************************************************************************************************************/
 
@@ -195,8 +204,8 @@ bcore_arr_fp_s* bcore_arr_fp_s_fill(       bcore_arr_fp_s* o, uz_t size, fp_t v 
 void bcore_arr_fp_s_push(       bcore_arr_fp_s* o, fp_t v );
 fp_t bcore_arr_fp_s_pop(        bcore_arr_fp_s* o );
 bcore_arr_fp_s* bcore_arr_fp_s_reorder(    bcore_arr_fp_s* o, const bcore_arr_uz_s* order );
-uz_t bcore_arr_fp_s_find( const bcore_arr_fp_s* o, uz_t start, uz_t end, fp_t v ); // behaves like st_s_find_*
-
+uz_t            bcore_arr_fp_s_find(  const bcore_arr_fp_s* o, uz_t start, uz_t end, fp_t v ); // behaves like st_s_find_*
+uz_t            bcore_arr_fp_s_count_equal( const bcore_arr_fp_s* o, fp_t val ); // number of occurrence
 
 /**********************************************************************************************************************/
 
