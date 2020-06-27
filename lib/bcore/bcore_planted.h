@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-06-15T13:46:04Z
+ *  Last File Update: 2020-06-27T11:27:30Z
  *
  *  Copyright and License of this File:
  *
@@ -16,7 +16,6 @@
  *  bcore_main.h
  *  bcore_hmap_name.h
  *  bcore_cday.h
- *  bcore_rand.h
  *  bcore_error_manager.h
  *
  */
@@ -27,7 +26,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.
-#define HKEYOF_bcore_planted 1692749092
+#define HKEYOF_bcore_planted 3358287363
 
 #define TYPEOF_bcore_planted 3660391305
 
@@ -369,73 +368,6 @@
   BETH_EXPAND_ITEM_bcore_cday_utc_s
 
 /**********************************************************************************************************************/
-// source: bcore_rand.h
-
-//----------------------------------------------------------------------------------------------------------------------
-// group: bcore_rand
-
-#define TYPEOF_bcore_rand 1316973988
-#define TYPEOF_bcore_rand_s 1000605462
-#define TYPEOF_bcore_rand_lcg_s 2579673579
-#define BETH_EXPAND_ITEM_bcore_rand_lcg_s \
-  BCORE_DECLARE_OBJECT( bcore_rand_lcg_s ) \
-    {aware_t _;u2_t state;}; \
-  static inline u3_t bcore_rand_lcg_s_max_u3( const bcore_rand_lcg_s* o ){return 0xFFFFFFFFu;} \
-  static inline u3_t bcore_rand_lcg_s_min_u3( const bcore_rand_lcg_s* o ){return 0;} \
-  static inline u3_t bcore_rand_lcg_s_gen_u3( bcore_rand_lcg_s* o ){return o->state = bcore_lcg_u2( o->state );} \
-  static inline f3_t bcore_rand_lcg_s_gen_f3( bcore_rand_lcg_s* o, f3_t min, f3_t max ){return min + ( max - min ) * ( ( f3_t )( bcore_rand_lcg_s_gen_u3( o ) - bcore_rand_lcg_s_min_u3( o ) ) / ( bcore_rand_lcg_s_max_u3( o ) - bcore_rand_lcg_s_min_u3( o ) ) );} \
-  static inline void bcore_rand_lcg_s_reseed( bcore_rand_lcg_s* o, u3_t seed ){o->state = seed;}
-#define TYPEOF_bcore_rand_xsg_s 2585631743
-#define BETH_EXPAND_ITEM_bcore_rand_xsg_s \
-  BCORE_DECLARE_OBJECT( bcore_rand_xsg_s ) \
-    {aware_t _;u2_t state;}; \
-  static inline u3_t bcore_rand_xsg_s_max_u3( const bcore_rand_xsg_s* o ){return 0xFFFFFFFFu;} \
-  static inline u3_t bcore_rand_xsg_s_min_u3( const bcore_rand_xsg_s* o ){return 1;} \
-  static inline u3_t bcore_rand_xsg_s_gen_u3( bcore_rand_xsg_s* o ){return o->state = bcore_xsg1_u2( o->state );} \
-  static inline f3_t bcore_rand_xsg_s_gen_f3( bcore_rand_xsg_s* o, f3_t min, f3_t max ){return min + ( max - min ) * ( ( f3_t )( bcore_rand_xsg_s_gen_u3( o ) - bcore_rand_xsg_s_min_u3( o ) ) / ( bcore_rand_xsg_s_max_u3( o ) - bcore_rand_xsg_s_min_u3( o ) ) );} \
-  static inline void bcore_rand_xsg_s_reseed( bcore_rand_xsg_s* o, u3_t seed ){o->state = ( ( seed & 0xFFFFFFFFu ) == 0 ) ? 1 : seed;}
-#define TYPEOF_bcore_rand_lxm_s 2874849002
-#define BETH_EXPAND_ITEM_bcore_rand_lxm_s \
-  BCORE_DECLARE_OBJECT( bcore_rand_lxm_s ) \
-    {aware_t _;u3_t l0;u3_t l1;u3_t x0;u3_t x1;};
-#define BETH_EXPAND_GROUP_bcore_rand \
-  BCORE_FORWARD_OBJECT( bcore_rand ); \
-  BCORE_FORWARD_OBJECT( bcore_rand_lcg_s ); \
-  BCORE_FORWARD_OBJECT( bcore_rand_xsg_s ); \
-  BCORE_FORWARD_OBJECT( bcore_rand_lxm_s ); \
-  typedef u3_t (*bcore_rand_max_u3)( const bcore_rand* o ); \
-  typedef u3_t (*bcore_rand_min_u3)( const bcore_rand* o ); \
-  typedef u3_t (*bcore_rand_gen_u3)( bcore_rand* o ); \
-  typedef f3_t (*bcore_rand_gen_f3)( bcore_rand* o, f3_t min, f3_t max ); \
-  typedef void (*bcore_rand_reseed)( bcore_rand* o, u3_t seed ); \
-  BCORE_DECLARE_SPECT( bcore_rand ) \
-  { \
-      bcore_spect_header_s header; \
-      bcore_rand_max_u3 max_u3; \
-      bcore_rand_min_u3 min_u3; \
-      bcore_rand_gen_u3 gen_u3; \
-      bcore_rand_gen_f3 gen_f3; \
-      bcore_rand_reseed reseed; \
-  }; \
-  static inline bcore_rand* bcore_rand_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_rand, t ); return ( bcore_rand* )bcore_inst_t_create( t ); } \
-  static inline bl_t bcore_rand_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_rand ); } \
-  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_rand ) \
-  static inline bl_t bcore_rand_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bcore_rand ); } \
-  static inline u3_t bcore_rand_a_max_u3( const bcore_rand* o ) { const bcore_rand_s* p = bcore_rand_s_get_aware( o ); assert( p->max_u3 ); return p->max_u3( o ); } \
-  static inline bl_t bcore_rand_a_defines_max_u3( const bcore_rand* o ) { return bcore_rand_s_get_aware( o )->max_u3 != NULL; } \
-  static inline u3_t bcore_rand_a_min_u3( const bcore_rand* o ) { const bcore_rand_s* p = bcore_rand_s_get_aware( o ); assert( p->min_u3 ); return p->min_u3( o ); } \
-  static inline bl_t bcore_rand_a_defines_min_u3( const bcore_rand* o ) { return bcore_rand_s_get_aware( o )->min_u3 != NULL; } \
-  static inline u3_t bcore_rand_a_gen_u3( bcore_rand* o ) { const bcore_rand_s* p = bcore_rand_s_get_aware( o ); assert( p->gen_u3 ); return p->gen_u3( o ); } \
-  static inline bl_t bcore_rand_a_defines_gen_u3( const bcore_rand* o ) { return bcore_rand_s_get_aware( o )->gen_u3 != NULL; } \
-  static inline f3_t bcore_rand_a_gen_f3( bcore_rand* o, f3_t min, f3_t max ) { const bcore_rand_s* p = bcore_rand_s_get_aware( o ); assert( p->gen_f3 ); return p->gen_f3( o, min, max ); } \
-  static inline bl_t bcore_rand_a_defines_gen_f3( const bcore_rand* o ) { return bcore_rand_s_get_aware( o )->gen_f3 != NULL; } \
-  static inline void bcore_rand_a_reseed( bcore_rand* o, u3_t seed ) { const bcore_rand_s* p = bcore_rand_s_get_aware( o ); assert( p->reseed ); p->reseed( o, seed ); } \
-  static inline bl_t bcore_rand_a_defines_reseed( const bcore_rand* o ) { return bcore_rand_s_get_aware( o )->reseed != NULL; } \
-  BETH_EXPAND_ITEM_bcore_rand_lcg_s \
-  BETH_EXPAND_ITEM_bcore_rand_xsg_s \
-  BETH_EXPAND_ITEM_bcore_rand_lxm_s
-
-/**********************************************************************************************************************/
 // source: bcore_error_manager.h
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -483,4 +415,4 @@
 vd_t bcore_planted_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_PLANTED_H
-// BETH_PLANT_SIGNATURE 3977525842
+// BETH_PLANT_SIGNATURE 2379910366

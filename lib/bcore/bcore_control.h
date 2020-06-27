@@ -147,22 +147,20 @@ bl_t bcore_strany( char c, sc_t str );
 /**********************************************************************************************************************/
 /// Pseudo random generators (non-cryptographic)
 
-/** Linear Congruential Generators.
- *  Generators below have a complete (2^n) period.
- *
- *  As for all LCG, the period length of lower order bits is maximally 2^bit-order. Hence higher order bits
- *  are more suitable for randomization than lower order bits.
- *
- *  LCG parameters have been empirically determined for project beth.
- */
+/// Linear Congruential Generators
 
-// tested generators with good lattice structure for dimensions 1, ..., 8
+// full-cycle generators with good lattice structure (tested for dimensions 1, ..., 8)
 static inline u2_t bcore_lcg00_u2( u2_t val ) { return val * ( 14000369  * 4 + 1 ) + 1; }
 static inline u2_t bcore_lcg01_u2( u2_t val ) { return val * ( 7329461   * 4 + 1 ) + 1; }
 static inline u2_t bcore_lcg02_u2( u2_t val ) { return val * ( 123457211 * 4 + 1 ) + 1; }
 static inline u2_t bcore_lcg03_u2( u2_t val ) { return val * ( 274300003 * 4 + 1 ) + 1; }
 static inline u2_t bcore_lcg04_u2( u2_t val ) { return val * ( 274300451 * 4 + 1 ) + 1; }
 static inline u2_t bcore_lcg05_u2( u2_t val ) { return val * 309313 + 1427550431; } // from bcore_lcg2_u2
+
+static inline u3_t bcore_lcg00_u3( u3_t val ) { return val * ( 1298444067566256367 * 4 + 1 ) + 1; }
+static inline u3_t bcore_lcg01_u3( u3_t val ) { return val * (  505810533149048947 * 4 + 1 ) + 1; }
+static inline u3_t bcore_lcg02_u3( u3_t val ) { return val * (  505810533149049769 * 4 + 1 ) + 1; }
+static inline u3_t bcore_lcg03_u3( u3_t val ) { return val * (  249949779319063069 * 4 + 1 ) + 1; }
 
 // deprecated generators
 static inline u2_t bcore_lcg_u2(  u2_t val ) { return val *  67261 + 1385791711; } // poor lattice
