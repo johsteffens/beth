@@ -104,7 +104,7 @@ void BCATU(bmath_asmfx_s,fit_size_data)( bmath_asmfx_s* o );
  *  This function first creates a random bmath_mfx_s which
  *  is then deflated into bmath_mfx_s.
  */
-void BCATU(bmath_asmfx_s,set_random)( bmath_asmfx_s* o, bl_t hsm, bl_t pdf, uz_t rd, fx_t density, fx_t min, fx_t max, u2_t* p_rval );
+void BCATU(bmath_asmfx_s,set_random)( bmath_asmfx_s* o, bl_t hsm, bl_t pdf, uz_t rd, fx_t density, fx_t min, fx_t max, u3_t* p_rval );
 
 /// zeros all values
 void BCATU(bmath_asmfx_s,zro)( bmath_asmfx_s* o );

@@ -215,7 +215,7 @@ badapt_adaptive* badapt_builder_mlp_funnel_s_build( const badapt_builder_mlp_fun
 
     BCORE_LIFE_INIT();
 
-    u2_t random_state = o->random_seed;
+    u3_t random_state = o->random_seed;
     badapt_mlp_s* mlp = badapt_mlp_s_create();
     badapt_mlp_arr_layer_s_set_size( &mlp->arr_layer, o->layers );
 

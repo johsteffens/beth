@@ -216,7 +216,7 @@ void badapt_problem_polynom_s_fetch_sample_tio( badapt_problem_polynom_s* o, bma
     bmath_vf3_s_set_size( in,  o->input_size );
     bmath_vf3_s_set_size( out, o->output_size );
 
-    for( sz_t i = 0; i < o->output_size; i++ ) out->data[ i ] = f3_xsg1_sym( &o->rval );
+    for( sz_t i = 0; i < o->output_size; i++ ) out->data[ i ] = f3_rnd_sym( &o->rval );
     for( sz_t i = 0; i < o->input_size;  i++ )
     {
         f3_t x1 = 2.0 * ( ( ( f3_t )i / ( o->input_size - 1 ) ) - 0.5 );
@@ -228,7 +228,7 @@ void badapt_problem_polynom_s_fetch_sample_tio( badapt_problem_polynom_s* o, bma
             x *= x1;
         }
 
-        in->data[ i ] = y + o->noise_level * f3_xsg1_sym( &o->rval );
+        in->data[ i ] = y + o->noise_level * f3_rnd_sym( &o->rval );
     }
 }
 

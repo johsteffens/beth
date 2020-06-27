@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-06-06T18:48:02Z
+ *  Last File Update: 2020-06-27T12:52:32Z
  *
  *  Copyright and License of this File:
  *
@@ -268,7 +268,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_sampler_binary_mul_s )
     "func ^:get_size_ex;"
 "}";
 
-BCORE_DEFINE_OBJECT_INST_P( bhpt_sampler_binary_xsg3_s )
+BCORE_DEFINE_OBJECT_INST_P( bhpt_sampler_binary_lcg00_s )
 "aware bhpt_sampler"
 "{"
     "sz_t bits = 4;"
@@ -320,8 +320,8 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_sampler_s )
     "aware bhpt_builder => builder;"
     "aware bhpt_adaptor => adaptor;"
     "aware bhpt_sampler => sampler;"
-    "u2_t rval_prime = 1234;"
-    "u2_t rval_test = 5342;"
+    "u3_t rval_prime = 1234;"
+    "u3_t rval_test = 5342;"
     "sz_t test_size = 1000;"
     "hidden bcore_mutex_s mutex;"
     "func ^:reset;"
@@ -505,10 +505,10 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_en, bhpt_sampler_binary_mul_s_get_size_en );
             BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_ex, bhpt_sampler_binary_mul_s_get_size_ex );
             BCORE_REGISTER_OBJECT( bhpt_sampler_binary_mul_s );
-            BCORE_REGISTER_FFUNC( bhpt_sampler_fetch, bhpt_sampler_binary_xsg3_s_fetch );
-            BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_en, bhpt_sampler_binary_xsg3_s_get_size_en );
-            BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_ex, bhpt_sampler_binary_xsg3_s_get_size_ex );
-            BCORE_REGISTER_OBJECT( bhpt_sampler_binary_xsg3_s );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_fetch, bhpt_sampler_binary_lcg00_s_fetch );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_en, bhpt_sampler_binary_lcg00_s_get_size_en );
+            BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_ex, bhpt_sampler_binary_lcg00_s_get_size_ex );
+            BCORE_REGISTER_OBJECT( bhpt_sampler_binary_lcg00_s );
             BCORE_REGISTER_FFUNC( bhpt_sampler_fetch, bhpt_sampler_binary_hash_s_fetch );
             BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_en, bhpt_sampler_binary_hash_s_get_size_en );
             BCORE_REGISTER_FFUNC( bhpt_sampler_get_size_ex, bhpt_sampler_binary_hash_s_get_size_ex );
@@ -555,4 +555,4 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// BETH_PLANT_SIGNATURE    3872017
+// BETH_PLANT_SIGNATURE 2091377835

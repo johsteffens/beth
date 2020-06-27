@@ -34,7 +34,7 @@ PLANT_GROUP( bhpt_sampler, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /// returns modified random variable
-feature strict 'a' u2_t fetch( const, u2_t rval, bhvm_value_s* x, bhvm_value_s* y );
+feature strict 'a' u3_t fetch( const, u3_t rval, bhvm_value_s* x, bhvm_value_s* y );
 feature strict 'a' sz_t get_size_en( const );
 feature strict 'a' sz_t get_size_ex( const );
 
@@ -90,7 +90,7 @@ stamp :binary_mul = aware :
 /** Type: Encoder
  *  Problem: Forward randomization.
  */
-stamp :binary_xsg3 = aware :
+stamp :binary_lcg00 = aware :
 {
     sz_t bits  = 4; // input size = bits; output size = bits
     f3_t val_h =  0.9;
@@ -153,10 +153,10 @@ stamp : = aware bhpt_tutor
     aware bhpt_sampler => sampler;
 
     /// rval_prime is updated after priming
-    u2_t rval_prime = 1234;
+    u3_t rval_prime = 1234;
 
     /// rval_test stays constant
-    u2_t rval_test = 5342;
+    u3_t rval_test = 5342;
 
     sz_t test_size = 1000;
 

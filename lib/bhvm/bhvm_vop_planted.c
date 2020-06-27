@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-05-27T11:04:14Z
+ *  Last File Update: 2020-06-27T12:55:43Z
  *
  *  Copyright and License of this File:
  *
@@ -168,7 +168,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar0_randomize_s )
     "bhvm_vop_ar0_index_s i;"
     "func bhvm_vop:arity;"
     "func bhvm_vop:get_index_arr;"
-    "u2_t rseed = 1234;"
+    "u3_t rseed = 1234;"
     "f3_t min = -0.5;"
     "f3_t max = 0.5;"
     "f3_t density = 1.0;"
@@ -179,7 +179,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar0_randomize_s )
 void bhvm_vop_ar0_randomize_s_run( const bhvm_vop_ar0_randomize_s* o, bhvm_holor_s* ah )
 {
     sz_t i = o->i.v[ 0 ];
-    u2_t rval = o->rseed + i;
+    u3_t rval = o->rseed + i;
     bhvm_value_s_set_random( &ah[ i ].v, o->density, o->min, o->max, &rval );
 }
 
@@ -199,7 +199,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar0_rand_s )
     "bhvm_vop_ar0_index_s i;"
     "func bhvm_vop:arity;"
     "func bhvm_vop:get_index_arr;"
-    "u2_t rval = 1234;"
+    "u3_t rval = 1234;"
     "f3_t min = -0.5;"
     "f3_t max = 0.5;"
     "f3_t density = 1.0;"
@@ -211,7 +211,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar0_rand_s )
 void bhvm_vop_ar0_rand_s_run( const bhvm_vop_ar0_rand_s* o, bhvm_holor_s* ah )
 {
     sz_t i = o->i.v[ 0 ];
-    u2_t* rval = ( u2_t* )&o->rval;
+    u3_t* rval = ( u3_t* )&o->rval;
     bcore_mutex_s* mutex = ( bcore_mutex_s* )&o->mutex;
     bcore_mutex_s_lock( mutex );
     bhvm_value_s_set_random( &ah[ i ].v, o->density, o->min, o->max, rval );
@@ -1307,7 +1307,6 @@ vd_t bhvm_vop_planted_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
-            bcore_const_x_set_d( typeof( "bhvm_vop_planted_hash" ), sr_tp( HKEYOF_bhvm_vop_planted ) );
 
             // --------------------------------------------------------------------
             // source: bhvm_vop.h
@@ -1907,3 +1906,4 @@ vd_t bhvm_vop_planted_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
+// BETH_PLANT_SIGNATURE 2904721430

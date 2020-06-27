@@ -30,7 +30,7 @@ bhpt_adaptive* bhpt_tutor_language_utf8_s_create_adaptive( const bhpt_tutor_lang
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-static u2_t bhpt_tutor_language_utf8_s_get_string( bhpt_tutor_language_utf8_s* o, u2_t rval, sz_t size, st_s* string )
+static u2_t bhpt_tutor_language_utf8_s_get_string( bhpt_tutor_language_utf8_s* o, u3_t rval, sz_t size, st_s* string )
 {
     if( !o->st )
     {
@@ -66,7 +66,7 @@ static u2_t bhpt_tutor_language_utf8_s_get_string( bhpt_tutor_language_utf8_s* o
         BLM_DOWN();
     }
 
-    sz_t index = f3_xsg1_pos( &rval ) * o->st->size;
+    sz_t index = f3_rnd_pos( &rval ) * o->st->size;
 
     st_s_set_size( string, 0, size );
     for( sz_t i = 0; i < size; i++ ) string->data[ i ] = o->st->data[ ( i + index ) % o->st->size ];
@@ -155,7 +155,7 @@ void bhpt_tutor_language_utf8_chatter_s_run( const bhpt_tutor_language_utf8_chat
         c_count = ( c_count + 1 ) % o->size_line;
     }
 
-    u2_t rval = 12341234 * bhvm_value_s_get_max_f3( &hy->v );
+    u3_t rval = 12341234 * bhvm_value_s_get_max_f3( &hy->v );
 
     f3_t* hy_data = hy->v.data;
 

@@ -324,12 +324,12 @@ static vd_t fourier_selftest( void )
         bcore_array_a_set_size( (bcore_array*)vec2, size );
         bcore_array_a_set_size( (bcore_array*)vec3, size );
 
-        u2_t rval = 1234;
+        u3_t rval = 1234;
 
         for( sz_t i = 0; i < size; i++ )
         {
-            fx_t re = BCATU(fx,xsg1_sym)( &rval );
-            fx_t im = BCATU(fx,xsg1_sym)( &rval );
+            fx_t re = BCATU(fx,rnd_sym)( &rval );
+            fx_t im = BCATU(fx,rnd_sym)( &rval );
             vec1->data[ i ] = BCATU(bmath,cfx,init)( re, im );
         }
 
@@ -362,12 +362,12 @@ static vd_t fourier_selftest( void )
         bcore_array_a_set_size( (bcore_array*)vec1, size );
         bcore_array_a_set_size( (bcore_array*)vec2, size );
 
-        u2_t rval = 1234;
+        u3_t rval = 1234;
 
         for( sz_t i = 0; i < size; i++ )
         {
-            fx_t re = BCATU(fx,xsg1_sym)( &rval );
-            fx_t im = BCATU(fx,xsg1_sym)( &rval );
+            fx_t re = BCATU(fx,rnd_sym)( &rval );
+            fx_t im = BCATU(fx,rnd_sym)( &rval );
             vec1->data[ i ] = BCATU(bmath,cfx,init)( re, im );
         }
 

@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-06-15T15:55:26Z
+ *  Last File Update: 2020-06-27T12:42:39Z
  *
  *  Copyright and License of this File:
  *
@@ -26,7 +26,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.
-#define HKEYOF_badapt_planted 1424984793
+#define HKEYOF_badapt_planted 3118850579
 
 #define TYPEOF_badapt_planted 2807899404
 
@@ -183,7 +183,7 @@
 #define TYPEOF_badapt_problem_sine_random_s 232405763
 #define BETH_EXPAND_ITEM_badapt_problem_sine_random_s \
   BCORE_DECLARE_OBJECT( badapt_problem_sine_random_s ) \
-    {aware_t _;sz_t input_size;u2_t rval;f3_t pos_tgt;f3_t neg_tgt;badapt_loss* preferred_loss;}; \
+    {aware_t _;sz_t input_size;u3_t rval;f3_t pos_tgt;f3_t neg_tgt;badapt_loss* preferred_loss;}; \
   static inline const badapt_loss* badapt_problem_sine_random_s_preferred_loss( const badapt_problem_sine_random_s* o ){return o->preferred_loss;} \
   static inline sz_t badapt_problem_sine_random_s_get_in_size( const badapt_problem_sine_random_s* o ){return o->input_size;} \
   static inline sz_t badapt_problem_sine_random_s_get_out_size( const badapt_problem_sine_random_s* o ){return 1;} \
@@ -192,7 +192,7 @@
 #define TYPEOF_badapt_problem_binary_add_s 2458357191
 #define BETH_EXPAND_ITEM_badapt_problem_binary_add_s \
   BCORE_DECLARE_OBJECT( badapt_problem_binary_add_s ) \
-    {aware_t _;sz_t bits;u2_t rval;f3_t val_h;f3_t val_l;badapt_loss* preferred_loss;}; \
+    {aware_t _;sz_t bits;u3_t rval;f3_t val_h;f3_t val_l;badapt_loss* preferred_loss;}; \
   static inline const badapt_loss* badapt_problem_binary_add_s_preferred_loss( const badapt_problem_binary_add_s* o ){return o->preferred_loss;} \
   static inline sz_t badapt_problem_binary_add_s_get_in_size( const badapt_problem_binary_add_s* o ){return o->bits * 2;} \
   static inline sz_t badapt_problem_binary_add_s_get_out_size( const badapt_problem_binary_add_s* o ){return o->bits + 1;} \
@@ -201,7 +201,7 @@
 #define TYPEOF_badapt_problem_binary_mul_s 2588868138
 #define BETH_EXPAND_ITEM_badapt_problem_binary_mul_s \
   BCORE_DECLARE_OBJECT( badapt_problem_binary_mul_s ) \
-    {aware_t _;sz_t bits;u2_t rval;f3_t val_h;f3_t val_l;badapt_loss* preferred_loss;}; \
+    {aware_t _;sz_t bits;u3_t rval;f3_t val_h;f3_t val_l;badapt_loss* preferred_loss;}; \
   static inline const badapt_loss* badapt_problem_binary_mul_s_preferred_loss( const badapt_problem_binary_mul_s* o ){return o->preferred_loss;} \
   static inline sz_t badapt_problem_binary_mul_s_get_in_size( const badapt_problem_binary_mul_s* o ){return o->bits * 2;} \
   static inline sz_t badapt_problem_binary_mul_s_get_out_size( const badapt_problem_binary_mul_s* o ){return o->bits * 2;} \
@@ -210,7 +210,7 @@
 #define TYPEOF_badapt_problem_binary_xsg3_s 1139719047
 #define BETH_EXPAND_ITEM_badapt_problem_binary_xsg3_s \
   BCORE_DECLARE_OBJECT( badapt_problem_binary_xsg3_s ) \
-    {aware_t _;sz_t bits;u2_t rval;f3_t val_h;f3_t val_l;badapt_loss* preferred_loss;}; \
+    {aware_t _;sz_t bits;u3_t rval;f3_t val_h;f3_t val_l;badapt_loss* preferred_loss;}; \
   static inline const badapt_loss* badapt_problem_binary_xsg3_s_preferred_loss( const badapt_problem_binary_xsg3_s* o ){return o->preferred_loss;} \
   static inline sz_t badapt_problem_binary_xsg3_s_get_in_size( const badapt_problem_binary_xsg3_s* o ){return o->bits;} \
   static inline sz_t badapt_problem_binary_xsg3_s_get_out_size( const badapt_problem_binary_xsg3_s* o ){return o->bits;} \
@@ -219,7 +219,7 @@
 #define TYPEOF_badapt_problem_binary_hash_s 2595152420
 #define BETH_EXPAND_ITEM_badapt_problem_binary_hash_s \
   BCORE_DECLARE_OBJECT( badapt_problem_binary_hash_s ) \
-    {aware_t _;sz_t bits;u2_t rval;f3_t val_h;f3_t val_l;bl_t reverse;badapt_loss* preferred_loss;}; \
+    {aware_t _;sz_t bits;u3_t rval;f3_t val_h;f3_t val_l;bl_t reverse;badapt_loss* preferred_loss;}; \
   static inline const badapt_loss* badapt_problem_binary_hash_s_preferred_loss( const badapt_problem_binary_hash_s* o ){return o->preferred_loss;} \
   static inline sz_t badapt_problem_binary_hash_s_get_in_size( const badapt_problem_binary_hash_s* o ){return o->bits;} \
   static inline sz_t badapt_problem_binary_hash_s_get_out_size( const badapt_problem_binary_hash_s* o ){return o->bits;} \
@@ -228,7 +228,7 @@
 #define TYPEOF_badapt_problem_polynom_s 4086382194
 #define BETH_EXPAND_ITEM_badapt_problem_polynom_s \
   BCORE_DECLARE_OBJECT( badapt_problem_polynom_s ) \
-    {aware_t _;sz_t input_size;sz_t output_size;f3_t range;u2_t rval;f3_t noise_level;badapt_loss* preferred_loss;}; \
+    {aware_t _;sz_t input_size;sz_t output_size;f3_t range;u3_t rval;f3_t noise_level;badapt_loss* preferred_loss;}; \
   static inline const badapt_loss* badapt_problem_polynom_s_preferred_loss( const badapt_problem_polynom_s* o ){return o->preferred_loss;} \
   static inline sz_t badapt_problem_polynom_s_get_in_size( const badapt_problem_polynom_s* o ){return o->input_size;} \
   static inline sz_t badapt_problem_polynom_s_get_out_size( const badapt_problem_polynom_s* o ){return o->output_size;} \
@@ -1011,4 +1011,4 @@
 vd_t badapt_planted_signal_handler( const bcore_signal_s* o );
 
 #endif // BADAPT_PLANTED_H
-// BETH_PLANT_SIGNATURE  179686566
+// BETH_PLANT_SIGNATURE 2310790830

@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-06-06T18:48:02Z
+ *  Last File Update: 2020-06-27T12:52:32Z
  *
  *  Copyright and License of this File:
  *
@@ -21,7 +21,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.
-#define HKEYOF_bhpt_planted 3107737291
+#define HKEYOF_bhpt_planted 3469176677
 
 #define TYPEOF_bhpt_planted 977128800
 
@@ -385,42 +385,42 @@
 #define BETH_EXPAND_ITEM_bhpt_sampler_sine_random_s \
   BCORE_DECLARE_OBJECT( bhpt_sampler_sine_random_s ) \
     {aware_t _;sz_t size_en;f3_t pos_tgt;f3_t neg_tgt;}; \
-  u2_t bhpt_sampler_sine_random_s_fetch( const bhpt_sampler_sine_random_s* o, u2_t rval, bhvm_value_s* x, bhvm_value_s* y ); \
+  u3_t bhpt_sampler_sine_random_s_fetch( const bhpt_sampler_sine_random_s* o, u3_t rval, bhvm_value_s* x, bhvm_value_s* y ); \
   static inline sz_t bhpt_sampler_sine_random_s_get_size_en( const bhpt_sampler_sine_random_s* o ){return o->size_en;} \
   static inline sz_t bhpt_sampler_sine_random_s_get_size_ex( const bhpt_sampler_sine_random_s* o ){return 1;}
 #define TYPEOF_bhpt_sampler_binary_add_s 579736158
 #define BETH_EXPAND_ITEM_bhpt_sampler_binary_add_s \
   BCORE_DECLARE_OBJECT( bhpt_sampler_binary_add_s ) \
     {aware_t _;sz_t bits;f3_t val_h;f3_t val_l;}; \
-  u2_t bhpt_sampler_binary_add_s_fetch( const bhpt_sampler_binary_add_s* o, u2_t rval, bhvm_value_s* x, bhvm_value_s* y ); \
+  u3_t bhpt_sampler_binary_add_s_fetch( const bhpt_sampler_binary_add_s* o, u3_t rval, bhvm_value_s* x, bhvm_value_s* y ); \
   static inline sz_t bhpt_sampler_binary_add_s_get_size_en( const bhpt_sampler_binary_add_s* o ){return o->bits * 2;} \
   static inline sz_t bhpt_sampler_binary_add_s_get_size_ex( const bhpt_sampler_binary_add_s* o ){return o->bits + 1;}
 #define TYPEOF_bhpt_sampler_binary_mul_s 1593470499
 #define BETH_EXPAND_ITEM_bhpt_sampler_binary_mul_s \
   BCORE_DECLARE_OBJECT( bhpt_sampler_binary_mul_s ) \
     {aware_t _;sz_t bits;f3_t val_h;f3_t val_l;}; \
-  u2_t bhpt_sampler_binary_mul_s_fetch( const bhpt_sampler_binary_mul_s* o, u2_t rval, bhvm_value_s* x, bhvm_value_s* y ); \
+  u3_t bhpt_sampler_binary_mul_s_fetch( const bhpt_sampler_binary_mul_s* o, u3_t rval, bhvm_value_s* x, bhvm_value_s* y ); \
   static inline sz_t bhpt_sampler_binary_mul_s_get_size_en( const bhpt_sampler_binary_mul_s* o ){return o->bits * 2;} \
   static inline sz_t bhpt_sampler_binary_mul_s_get_size_ex( const bhpt_sampler_binary_mul_s* o ){return o->bits * 2;}
-#define TYPEOF_bhpt_sampler_binary_xsg3_s 2584138048
-#define BETH_EXPAND_ITEM_bhpt_sampler_binary_xsg3_s \
-  BCORE_DECLARE_OBJECT( bhpt_sampler_binary_xsg3_s ) \
+#define TYPEOF_bhpt_sampler_binary_lcg00_s 3949471327
+#define BETH_EXPAND_ITEM_bhpt_sampler_binary_lcg00_s \
+  BCORE_DECLARE_OBJECT( bhpt_sampler_binary_lcg00_s ) \
     {aware_t _;sz_t bits;f3_t val_h;f3_t val_l;}; \
-  u2_t bhpt_sampler_binary_xsg3_s_fetch( const bhpt_sampler_binary_xsg3_s* o, u2_t rval, bhvm_value_s* x, bhvm_value_s* y ); \
-  static inline sz_t bhpt_sampler_binary_xsg3_s_get_size_en( const bhpt_sampler_binary_xsg3_s* o ){return o->bits;} \
-  static inline sz_t bhpt_sampler_binary_xsg3_s_get_size_ex( const bhpt_sampler_binary_xsg3_s* o ){return o->bits;}
+  u3_t bhpt_sampler_binary_lcg00_s_fetch( const bhpt_sampler_binary_lcg00_s* o, u3_t rval, bhvm_value_s* x, bhvm_value_s* y ); \
+  static inline sz_t bhpt_sampler_binary_lcg00_s_get_size_en( const bhpt_sampler_binary_lcg00_s* o ){return o->bits;} \
+  static inline sz_t bhpt_sampler_binary_lcg00_s_get_size_ex( const bhpt_sampler_binary_lcg00_s* o ){return o->bits;}
 #define TYPEOF_bhpt_sampler_binary_hash_s 1225036579
 #define BETH_EXPAND_ITEM_bhpt_sampler_binary_hash_s \
   BCORE_DECLARE_OBJECT( bhpt_sampler_binary_hash_s ) \
     {aware_t _;sz_t bits;f3_t val_h;f3_t val_l;bl_t reverse;}; \
-  u2_t bhpt_sampler_binary_hash_s_fetch( const bhpt_sampler_binary_hash_s* o, u2_t rval, bhvm_value_s* x, bhvm_value_s* y ); \
+  u3_t bhpt_sampler_binary_hash_s_fetch( const bhpt_sampler_binary_hash_s* o, u3_t rval, bhvm_value_s* x, bhvm_value_s* y ); \
   static inline sz_t bhpt_sampler_binary_hash_s_get_size_en( const bhpt_sampler_binary_hash_s* o ){return o->bits;} \
   static inline sz_t bhpt_sampler_binary_hash_s_get_size_ex( const bhpt_sampler_binary_hash_s* o ){return o->bits;}
 #define TYPEOF_bhpt_sampler_polynom_s 4138254329
 #define BETH_EXPAND_ITEM_bhpt_sampler_polynom_s \
   BCORE_DECLARE_OBJECT( bhpt_sampler_polynom_s ) \
     {aware_t _;sz_t size_en;sz_t size_ex;f3_t range;f3_t noise_level;}; \
-  u2_t bhpt_sampler_polynom_s_fetch( const bhpt_sampler_polynom_s* o, u2_t rval, bhvm_value_s* x, bhvm_value_s* y ); \
+  u3_t bhpt_sampler_polynom_s_fetch( const bhpt_sampler_polynom_s* o, u3_t rval, bhvm_value_s* x, bhvm_value_s* y ); \
   static inline sz_t bhpt_sampler_polynom_s_get_size_en( const bhpt_sampler_polynom_s* o ){return o->size_en;} \
   static inline sz_t bhpt_sampler_polynom_s_get_size_ex( const bhpt_sampler_polynom_s* o ){return o->size_ex;}
 #define BETH_EXPAND_GROUP_bhpt_sampler \
@@ -428,10 +428,10 @@
   BCORE_FORWARD_OBJECT( bhpt_sampler_sine_random_s ); \
   BCORE_FORWARD_OBJECT( bhpt_sampler_binary_add_s ); \
   BCORE_FORWARD_OBJECT( bhpt_sampler_binary_mul_s ); \
-  BCORE_FORWARD_OBJECT( bhpt_sampler_binary_xsg3_s ); \
+  BCORE_FORWARD_OBJECT( bhpt_sampler_binary_lcg00_s ); \
   BCORE_FORWARD_OBJECT( bhpt_sampler_binary_hash_s ); \
   BCORE_FORWARD_OBJECT( bhpt_sampler_polynom_s ); \
-  typedef u2_t (*bhpt_sampler_fetch)( const bhpt_sampler* o, u2_t rval, bhvm_value_s* x, bhvm_value_s* y ); \
+  typedef u3_t (*bhpt_sampler_fetch)( const bhpt_sampler* o, u3_t rval, bhvm_value_s* x, bhvm_value_s* y ); \
   typedef sz_t (*bhpt_sampler_get_size_en)( const bhpt_sampler* o ); \
   typedef sz_t (*bhpt_sampler_get_size_ex)( const bhpt_sampler* o ); \
   BCORE_DECLARE_SPECT( bhpt_sampler ) \
@@ -445,7 +445,7 @@
   static inline bl_t bhpt_sampler_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bhpt_sampler ); } \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bhpt_sampler ) \
   static inline bl_t bhpt_sampler_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bhpt_sampler ); } \
-  static inline u2_t bhpt_sampler_a_fetch( const bhpt_sampler* o, u2_t rval, bhvm_value_s* x, bhvm_value_s* y ) { const bhpt_sampler_s* p = bhpt_sampler_s_get_aware( o ); assert( p->fetch ); return p->fetch( o, rval, x, y ); } \
+  static inline u3_t bhpt_sampler_a_fetch( const bhpt_sampler* o, u3_t rval, bhvm_value_s* x, bhvm_value_s* y ) { const bhpt_sampler_s* p = bhpt_sampler_s_get_aware( o ); assert( p->fetch ); return p->fetch( o, rval, x, y ); } \
   static inline bl_t bhpt_sampler_a_defines_fetch( const bhpt_sampler* o ) { return true; } \
   static inline sz_t bhpt_sampler_a_get_size_en( const bhpt_sampler* o ) { const bhpt_sampler_s* p = bhpt_sampler_s_get_aware( o ); assert( p->get_size_en ); return p->get_size_en( o ); } \
   static inline bl_t bhpt_sampler_a_defines_get_size_en( const bhpt_sampler* o ) { return true; } \
@@ -454,7 +454,7 @@
   BETH_EXPAND_ITEM_bhpt_sampler_sine_random_s \
   BETH_EXPAND_ITEM_bhpt_sampler_binary_add_s \
   BETH_EXPAND_ITEM_bhpt_sampler_binary_mul_s \
-  BETH_EXPAND_ITEM_bhpt_sampler_binary_xsg3_s \
+  BETH_EXPAND_ITEM_bhpt_sampler_binary_lcg00_s \
   BETH_EXPAND_ITEM_bhpt_sampler_binary_hash_s \
   BETH_EXPAND_ITEM_bhpt_sampler_polynom_s
 
@@ -466,7 +466,7 @@
 #define TYPEOF_bhpt_tutor_sampler_s 3882161769
 #define BETH_EXPAND_ITEM_bhpt_tutor_sampler_s \
   BCORE_DECLARE_OBJECT( bhpt_tutor_sampler_s ) \
-    {aware_t _;bhpt_builder* builder;bhpt_adaptor* adaptor;bhpt_sampler* sampler;u2_t rval_prime;u2_t rval_test;sz_t test_size;bcore_mutex_s mutex;}; \
+    {aware_t _;bhpt_builder* builder;bhpt_adaptor* adaptor;bhpt_sampler* sampler;u3_t rval_prime;u3_t rval_test;sz_t test_size;bcore_mutex_s mutex;}; \
   static inline void bhpt_tutor_sampler_s_reset( bhpt_tutor_sampler_s* o ){} \
   bhpt_adaptive* bhpt_tutor_sampler_s_create_adaptive( const bhpt_tutor_sampler_s* o ); \
   static inline bhpt_adaptor* bhpt_tutor_sampler_s_create_adaptor( const bhpt_tutor_sampler_s* o ){return bhpt_adaptor_a_clone( o->adaptor );} \
@@ -512,4 +512,4 @@
 vd_t bhpt_planted_signal_handler( const bcore_signal_s* o );
 
 #endif // BHPT_PLANTED_H
-// BETH_PLANT_SIGNATURE 3284815632
+// BETH_PLANT_SIGNATURE 3526415798

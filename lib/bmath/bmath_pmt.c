@@ -29,14 +29,14 @@ void bmath_pmt_s_set_size( bmath_pmt_s* o, uz_t size )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_pmt_s_random( bmath_pmt_s* o, u2_t* rval )
+void bmath_pmt_s_random( bmath_pmt_s* o, u3_t* rval )
 {
     bmath_pmt_s_one( o );
     uz_t idx = 0;
 
     for( uz_t i = 0; i < o->size; i++ )
     {
-        idx = i + ( ( idx + ( *rval = bcore_xsg1_u2( *rval ) ) ) % ( o->size - i ) );
+        idx = i + ( ( idx + ( *rval = bcore_lcg00_u3( *rval ) ) ) % ( o->size - i ) );
         uz_t t = o->data[ i ];
         o->data[ i ] = o->data[ idx ];
         o->data[ idx ] = t;
@@ -222,7 +222,7 @@ static void selftest()
     BCORE_LIFE_CREATE( bmath_vf3_s, v2 );
     BCORE_LIFE_CREATE( bmath_vf3_s, v3 );
 
-    u2_t rval = 1234;
+    u3_t rval = 1234;
 
     uz_t n = 10;
 

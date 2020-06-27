@@ -116,7 +116,7 @@ static vd_t selftest( void )
     BCORE_LIFE_CREATE( bmath_vf3_s, v4 );
 
     {
-        u2_t rval = 1236;
+        u3_t rval = 1236;
         uz_t n = 40;
         uz_t m = 30;
         uz_t samples = 2000;

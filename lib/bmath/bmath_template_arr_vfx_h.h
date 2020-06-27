@@ -41,7 +41,7 @@ void BCATU(bmath_arr_vfx_s,reorder)(    bmath_arr_vfx_s* o, const bcore_arr_uz_s
 
 void BCATU(bmath_arr_vfx_s,on_section_set_size)(      bmath_arr_vfx_s* o, uz_t start, uz_t end, uz_t size );
 void BCATU(bmath_arr_vfx_s,on_section_fill)(          bmath_arr_vfx_s* o, uz_t start, uz_t end, fx_t val );
-void BCATU(bmath_arr_vfx_s,on_section_set_random)(    bmath_arr_vfx_s* o, uz_t start, uz_t end, fx_t density, fx_t min, fx_t max, u2_t* rval );
+void BCATU(bmath_arr_vfx_s,on_section_set_random)(    bmath_arr_vfx_s* o, uz_t start, uz_t end, fx_t density, fx_t min, fx_t max, u3_t* rval );
 void BCATU(bmath_arr_vfx_s,on_section_zro)(           bmath_arr_vfx_s* o, uz_t start, uz_t end );
 void BCATU(bmath_arr_vfx_s,on_section_neg)(     const bmath_arr_vfx_s* o, uz_t start, uz_t end,                        bmath_arr_vfx_s* res );
 void BCATU(bmath_arr_vfx_s,on_section_cpy)(     const bmath_arr_vfx_s* o, uz_t start, uz_t end,                        bmath_arr_vfx_s* res );

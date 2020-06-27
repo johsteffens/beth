@@ -1567,7 +1567,7 @@ void BCATU(bmath_mfx_s,mul_add_cps_selftest)()
         BCATU(bmath_mfx_s,set_size)(  a, m1, n  );
         BCATU(bmath_mfx_s,set_size)(  b, n,  m2 );
         BCATU(bmath_mfx_s,set_size)(  d, m1, m2 );
-        u2_t rval = 1236;
+        u3_t rval = 1236;
         BCATU(bmath_mfx_s,set_random)( a, false, false, 0, 1.0, -1, 1, &rval );
         BCATU(bmath_mfx_s,set_random)( b, false, false, 0, 1.0, -1, 1, &rval );
         BCATU(bmath_mfx_s,set_random)( d, false, false, 0, 1.0, -1, 1, &rval );
@@ -1587,7 +1587,7 @@ void BCATU(bmath_mfx_s,mul_add_cps_selftest)()
         BCATU(bmath_mfx_s,set_size)(  a, n,  m1  );
         BCATU(bmath_mfx_s,set_size)(  b, n,  m2 );
         BCATU(bmath_mfx_s,set_size)(  d, m1, m2 );
-        u2_t rval = 1236;
+        u3_t rval = 1236;
         BCATU(bmath_mfx_s,set_random)( a, false, false, 0, 1.0, -1, 1, &rval );
         BCATU(bmath_mfx_s,set_random)( b, false, false, 0, 1.0, -1, 1, &rval );
         BCATU(bmath_mfx_s,set_random)( d, false, false, 0, 1.0, -1, 1, &rval );
@@ -1607,7 +1607,7 @@ void BCATU(bmath_mfx_s,mul_add_cps_selftest)()
         BCATU(bmath_mfx_s,set_size)(  a, m1, n  );
         BCATU(bmath_mfx_s,set_size)(  b, m2, n  );
         BCATU(bmath_mfx_s,set_size)(  d, m1, m2 );
-        u2_t rval = 1236;
+        u3_t rval = 1236;
         BCATU(bmath_mfx_s,set_random)( a, false, false, 0, 1.0, -1, 1, &rval );
         BCATU(bmath_mfx_s,set_random)( b, false, false, 0, 1.0, -1, 1, &rval );
         BCATU(bmath_mfx_s,set_random)( d, false, false, 0, 1.0, -1, 1, &rval );
@@ -1627,7 +1627,7 @@ void BCATU(bmath_mfx_s,mul_add_cps_selftest)()
         BCATU(bmath_mfx_s,set_size)(  a, n,  m1 );
         BCATU(bmath_mfx_s,set_size)(  b, m2, n  );
         BCATU(bmath_mfx_s,set_size)(  d, m1, m2 );
-        u2_t rval = 1236;
+        u3_t rval = 1236;
         BCATU(bmath_mfx_s,set_random)( a, false, false, 0, 1.0, -1, 1, &rval );
         BCATU(bmath_mfx_s,set_random)( b, false, false, 0, 1.0, -1, 1, &rval );
         BCATU(bmath_mfx_s,set_random)( d, false, false, 0, 1.0, -1, 1, &rval );
@@ -1645,7 +1645,7 @@ void BCATU(bmath_mfx_s,mul_add_cps_selftest)()
     // a^T * a
     {
         BCATU(bmath_mfx_s,set_size)(  a, m1, n );
-        u2_t rval = 1236;
+        u3_t rval = 1236;
         BCATU(bmath_mfx_s,set_random)( a, false, false, 0, 1.0, -1, 1, &rval );
         BCATU(bmath_mfx_s,set_size)( ab, n, n );
         BCATU(bmath_mfx_s,set_size)( r1, n, n );
@@ -1659,7 +1659,7 @@ void BCATU(bmath_mfx_s,mul_add_cps_selftest)()
     // a * a^T
     {
         BCATU(bmath_mfx_s,set_size)(  a, n, m1 );
-        u2_t rval = 1236;
+        u3_t rval = 1236;
         BCATU(bmath_mfx_s,set_random)( a, false, false, 0, 1.0, -1, 1, &rval );
         BCATU(bmath_mfx_s,set_size)( ab, n, n );
         BCATU(bmath_mfx_s,set_size)( r1, n, n );

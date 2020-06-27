@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-06-15T15:55:26Z
+ *  Last File Update: 2020-06-27T12:42:39Z
  *
  *  Copyright and License of this File:
  *
@@ -125,7 +125,7 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_problem_sine_random_s )
 "aware badapt_supplier"
 "{"
     "sz_t input_size = 32;"
-    "u2_t rval = 1234;"
+    "u3_t rval = 1234;"
     "f3_t pos_tgt = 0.9;"
     "f3_t neg_tgt = -0.9;"
     "aware badapt_loss* preferred_loss = badapt_loss_l2_s;"
@@ -140,7 +140,7 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_problem_binary_add_s )
 "aware badapt_supplier"
 "{"
     "sz_t bits = 4;"
-    "u2_t rval = 1234;"
+    "u3_t rval = 1234;"
     "f3_t val_h = 0.9;"
     "f3_t val_l = -0.9;"
     "aware badapt_loss* preferred_loss = badapt_loss_l2_s;"
@@ -155,7 +155,7 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_problem_binary_mul_s )
 "aware badapt_supplier"
 "{"
     "sz_t bits = 4;"
-    "u2_t rval = 1234;"
+    "u3_t rval = 1234;"
     "f3_t val_h = 0.9;"
     "f3_t val_l = -0.9;"
     "aware badapt_loss* preferred_loss = badapt_loss_l2_s;"
@@ -170,7 +170,7 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_problem_binary_xsg3_s )
 "aware badapt_supplier"
 "{"
     "sz_t bits = 4;"
-    "u2_t rval = 1234;"
+    "u3_t rval = 1234;"
     "f3_t val_h = 0.9;"
     "f3_t val_l = -0.9;"
     "aware badapt_loss* preferred_loss = badapt_loss_l2_s;"
@@ -185,7 +185,7 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_problem_binary_hash_s )
 "aware badapt_supplier"
 "{"
     "sz_t bits = 4;"
-    "u2_t rval = 1234;"
+    "u3_t rval = 1234;"
     "f3_t val_h = 0.9;"
     "f3_t val_l = -0.9;"
     "bl_t reverse = false;"
@@ -203,7 +203,7 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_problem_polynom_s )
     "sz_t input_size = 32;"
     "sz_t output_size = 3;"
     "f3_t range = 1.0;"
-    "u2_t rval = 1234;"
+    "u3_t rval = 1234;"
     "f3_t noise_level = 0;"
     "aware badapt_loss* preferred_loss = badapt_loss_l2_s;"
     "func ^:preferred_loss;"
@@ -1288,4 +1288,4 @@ vd_t badapt_planted_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// BETH_PLANT_SIGNATURE 2212918754
+// BETH_PLANT_SIGNATURE 2141218650

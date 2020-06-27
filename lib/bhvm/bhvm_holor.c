@@ -619,7 +619,7 @@ void bhvm_value_s_cat_set( const bhvm_value_s* a, const bhvm_value_s* b, bhvm_va
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_value_s_set_random( bhvm_value_s* o, f3_t density, f3_t min, f3_t max, u2_t* p_rval )
+void bhvm_value_s_set_random( bhvm_value_s* o, f3_t density, f3_t min, f3_t max, u3_t* p_rval )
 {
     switch( o->type )
     {

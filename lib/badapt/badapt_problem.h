@@ -33,7 +33,7 @@ PLANT_GROUP( badapt_problem, bcore_inst )
 stamp :sine_random = aware badapt_supplier
 {
     sz_t input_size = 32;
-    u2_t rval       = 1234;
+    u3_t rval       = 1234;
     f3_t pos_tgt    =  0.9;
     f3_t neg_tgt    = -0.9;
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
@@ -53,7 +53,7 @@ stamp :sine_random = aware badapt_supplier
 stamp :binary_add = aware badapt_supplier
 {
     sz_t bits  = 4; // input size = bits * 2; output size = bits + 1
-    u2_t rval  = 1234;
+    u3_t rval  = 1234;
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
@@ -73,7 +73,7 @@ stamp :binary_add = aware badapt_supplier
 stamp :binary_mul = aware badapt_supplier
 {
     sz_t bits  = 4; // input size = bits * 2; output size = bits * 2
-    u2_t rval  = 1234;
+    u3_t rval  = 1234;
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
@@ -93,7 +93,7 @@ stamp :binary_mul = aware badapt_supplier
 stamp :binary_xsg3 = aware badapt_supplier
 {
     sz_t bits  = 4; // input size = bits; output size = bits
-    u2_t rval  = 1234;
+    u3_t rval  = 1234;
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
@@ -113,7 +113,7 @@ stamp :binary_xsg3 = aware badapt_supplier
 stamp :binary_hash = aware badapt_supplier
 {
     sz_t bits  = 4; // input size = bits; output size = bits
-    u2_t rval  = 1234;
+    u3_t rval  = 1234;
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
     bl_t reverse = false;
@@ -136,7 +136,7 @@ stamp :polynom = aware badapt_supplier
     sz_t input_size  = 32;
     sz_t output_size = 3;   // polynomial order + 1
     f3_t range       = 1.0; // +/- range of coefficients
-    u2_t rval        = 1234;
+    u3_t rval        = 1234;
     f3_t noise_level = 0;   // additive noise to input signal
     aware badapt_loss* preferred_loss = badapt_loss_l2_s;
 

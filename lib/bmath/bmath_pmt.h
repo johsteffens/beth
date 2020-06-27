@@ -45,7 +45,7 @@ BCORE_DECLARE_OBJECT( bmath_pmt_s ) { aware_t _; BCORE_ARRAY_DYN_SOLID_STATIC_S(
 void bmath_pmt_s_set_size( bmath_pmt_s* o, uz_t size ); // allocates but does not initialize array
 void bmath_pmt_s_one_n( bmath_pmt_s* o, uz_t n ); // allocates and initializes as n x n identity
 
-void bmath_pmt_s_random( bmath_pmt_s* o, u2_t* rval ); // sets random permutation
+void bmath_pmt_s_random( bmath_pmt_s* o, u3_t* rval ); // sets random permutation
 void bmath_pmt_s_one( bmath_pmt_s* o );
 void bmath_pmt_s_cpy(    const bmath_pmt_s* o, bmath_pmt_s* res );
 void bmath_pmt_s_to_mf3( const bmath_pmt_s* o, bmath_mf3_s* res );

@@ -82,7 +82,7 @@ bmath_vcfx_s* BCATU(bmath_vcfx_s,create_fill)( bmath_cfx_s val, uz_t size );
  *     density (range [0.0, 1.0]) specifies the rate at which the random generator
  *     creates a non-zero value.
  */
-void BCATU(bmath_vcfx_s,set_random)( bmath_vcfx_s* o, fx_t density, fx_t min, fx_t max, u2_t* p_rval );
+void BCATU(bmath_vcfx_s,set_random)( bmath_vcfx_s* o, fx_t density, fx_t min, fx_t max, u3_t* p_rval );
 
 void BCATU(bmath_vcfx_s,zro)(           bmath_vcfx_s* o );
 void BCATU(bmath_vcfx_s,neg)(     const bmath_vcfx_s* o, bmath_vcfx_s* res );

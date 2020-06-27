@@ -349,7 +349,7 @@ badapt_adaptive* badapt_builder_c1d_funnel_s_build( const badapt_builder_c1d_fun
 {
     BCORE_LIFE_INIT();
 
-    u2_t random_state = o->random_seed;
+    u3_t random_state = o->random_seed;
     badapt_c1d_s* c1d = badapt_c1d_s_create();
 
     f3_t kernels = o->input_kernels;

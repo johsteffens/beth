@@ -147,7 +147,7 @@ group :ar0 =
 
     stamp :randomize =
     {
-        u2_t rseed   = 1234;
+        u3_t rseed   = 1234;
         f3_t min     = -0.5;
         f3_t max     =  0.5;
         f3_t density =  1.0;
@@ -155,7 +155,7 @@ group :ar0 =
         func :: :run =
         {
             sz_t i = o->i.v[ 0 ];
-            u2_t rval = o->rseed + i;
+            u3_t rval = o->rseed + i;
             bhvm_value_s_set_random( &ah[ i ].v, o->density, o->min, o->max, &rval );
         };
 
@@ -175,7 +175,7 @@ group :ar0 =
       */
     stamp :rand =
     {
-        u2_t rval    = 1234; // mutable
+        u3_t rval    = 1234; // mutable
         f3_t min     = -0.5;
         f3_t max     =  0.5;
         f3_t density =  1.0;
@@ -184,7 +184,7 @@ group :ar0 =
         func :: :run =
         {
             sz_t i = o->i.v[ 0 ];
-            u2_t* rval = ( u2_t* )&o->rval;
+            u3_t* rval = ( u3_t* )&o->rval;
             bcore_mutex_s* mutex = ( bcore_mutex_s* )&o->mutex;
             bcore_mutex_s_lock( mutex );
             bhvm_value_s_set_random( &ah[ i ].v, o->density, o->min, o->max, rval );

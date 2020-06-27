@@ -162,16 +162,16 @@ bmath_vcfx_s* BCATU(bmath_vcfx_s,create_fill)( bmath_cfx_s val, uz_t size )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_vcfx_s,set_random)( bmath_vcfx_s* o, fx_t density, fx_t min, fx_t max, u2_t* p_rval )
+void BCATU(bmath_vcfx_s,set_random)( bmath_vcfx_s* o, fx_t density, fx_t min, fx_t max, u3_t* p_rval )
 {
-    u2_t rval = p_rval ? *p_rval : 12345;
+    u3_t rval = p_rval ? *p_rval : 12345;
     fx_t range = max - min;
     for( uz_t i = 0; i < o->size; i++ )
     {
-        if( f3_xsg1_pos( &rval ) < density )
+        if( f3_rnd_pos( &rval ) < density )
         {
-            o->data[ i ].v[ 0 ] = ( range * f3_xsg1_pos( &rval ) ) + min;
-            o->data[ i ].v[ 1 ] = ( range * f3_xsg1_pos( &rval ) ) + min;
+            o->data[ i ].v[ 0 ] = ( range * f3_rnd_pos( &rval ) ) + min;
+            o->data[ i ].v[ 1 ] = ( range * f3_rnd_pos( &rval ) ) + min;
         }
         else
         {
@@ -546,10 +546,6 @@ static vd_t selftest( void )
     {
         uz_t size = 100;
         bmath_vcfx_s* v1 = bcore_life_s_push_aware( l, BCATU(bmath_vcfx_s,create_size)( size ) );
-
-        //u2_t rval = 1234;
-        //BCATU(bmath_vcfx_s,set_random)( v1, 1.0, -1.0, 1.0, &rval );
-
 
         for( uz_t i = 0; i < size; i++ )
         {

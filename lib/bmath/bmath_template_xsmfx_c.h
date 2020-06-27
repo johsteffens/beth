@@ -104,7 +104,7 @@ void BCATU(bmath_xsmfx_s,fit_size_data)( bmath_xsmfx_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_xsmfx_s,set_random)( bmath_xsmfx_s* o, bl_t hsm, bl_t pdf, uz_t rd, fx_t density, fx_t min, fx_t max, u2_t* p_rval )
+void BCATU(bmath_xsmfx_s,set_random)( bmath_xsmfx_s* o, bl_t hsm, bl_t pdf, uz_t rd, fx_t density, fx_t min, fx_t max, u3_t* p_rval )
 {
     BLM_INIT();
     bmath_mfx_s* m1 = BLM_A_PUSH( BCATU(bmath_mfx_s,create)() );
@@ -417,7 +417,7 @@ static vd_t selftest( void )
         sz_t slos = 3;
         sz_t cols = xons * slos;
 
-        u2_t rval = 1234;
+        u3_t rval = 1234;
 
         BCATU(bmath_mfx_s,set_size)( m1, rows, cols );
         BCATU(bmath_mfx_s,set_size)( m2, rows, cols );

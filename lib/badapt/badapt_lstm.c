@@ -518,7 +518,7 @@ badapt_adaptive* badapt_lstm_builder_s_build( const badapt_lstm_builder_s* o )
 
     BCORE_LIFE_INIT();
 
-    u2_t random_state = o->random_seed;
+    u3_t random_state = o->random_seed;
     badapt_lstm_s* lstm = badapt_lstm_s_create();
 
     lstm->size_input    = o->size_input;
