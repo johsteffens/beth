@@ -162,10 +162,10 @@ static inline u3_t bcore_lcg01_u3( u3_t val ) { return val * (  5058105331490497
 static inline u3_t bcore_lcg02_u3( u3_t val ) { return val * (  249949779319063069 * 4 + 1 ) + 1; }
 static inline u3_t bcore_lcg03_u3( u3_t val ) { return val * ( 1298444067566256367 * 4 + 1 ) + 1; }
 
-// deprecated generators
+// deprecated generators (poor lattice or renamed)
 static inline u2_t bcore_lcg_u2(  u2_t val ) { return val *  67261 + 1385791711; } // poor lattice
 static inline u2_t bcore_lcg1_u2( u2_t val ) { return val * 122497 + 1283800139; } // poor lattice
-static inline u2_t bcore_lcg2_u2( u2_t val ) { return val * 309313 + 1427550431; } // --> bcore_lcg05_u2
+static inline u2_t bcore_lcg2_u2( u2_t val ) { return val * 309313 + 1427550431; } // renamed bcore_lcg05_u2
 static inline u2_t bcore_lcg3_u2( u2_t val ) { return val *  76157 + 1175399809; } // poor lattice
 
 /** Xor Shift Generators.

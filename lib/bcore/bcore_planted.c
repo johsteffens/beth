@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-06-27T11:27:30Z
+ *  Last File Update: 2020-06-29T13:14:12Z
  *
  *  Copyright and License of this File:
  *
@@ -17,6 +17,7 @@
  *  bcore_hmap_name.h
  *  bcore_cday.h
  *  bcore_error_manager.h
+ *  bcore_prsg.h
  *
  */
 
@@ -280,6 +281,268 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_error_manager_context_s )
 "}";
 
 /**********************************************************************************************************************/
+// source: bcore_prsg.h
+#include "bcore_prsg.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_prsg
+
+BCORE_DEFINE_SPECT( bcore_inst, bcore_prsg )
+"{"
+    "bcore_spect_header_s header;"
+    "feature aware bcore_prsg : bits;"
+    "feature aware bcore_prsg : max_u3;"
+    "feature aware bcore_prsg : min_u3;"
+    "feature aware bcore_prsg : gen_u3;"
+    "feature aware bcore_prsg : gen_f3;"
+    "feature aware bcore_prsg : reseed;"
+"}";
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_prsg_lcg
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_00_s )
+"aware bcore_prsg"
+"{"
+    "func ^:gen_f3;"
+    "u2_t state = 16437;"
+    "func ^:bits;"
+    "func ^:max_u3;"
+    "func ^:min_u3;"
+    "func ^:reseed;"
+    "func ^:gen_u3;"
+"}";
+
+f3_t bcore_prsg_lcg_u2_00_s_gen_f3( bcore_prsg_lcg_u2_00_s* o, f3_t min, f3_t max )
+{
+    return min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u2_00_s_gen_u3( o ) - bcore_prsg_lcg_u2_00_s_min_u3( o ) ) / ( bcore_prsg_lcg_u2_00_s_max_u3( o ) - bcore_prsg_lcg_u2_00_s_min_u3( o ) ) );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_01_s )
+"aware bcore_prsg"
+"{"
+    "func ^:gen_f3;"
+    "u2_t state = 16437;"
+    "func ^:bits;"
+    "func ^:max_u3;"
+    "func ^:min_u3;"
+    "func ^:reseed;"
+    "func ^:gen_u3;"
+"}";
+
+f3_t bcore_prsg_lcg_u2_01_s_gen_f3( bcore_prsg_lcg_u2_01_s* o, f3_t min, f3_t max )
+{
+    return min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u2_01_s_gen_u3( o ) - bcore_prsg_lcg_u2_01_s_min_u3( o ) ) / ( bcore_prsg_lcg_u2_01_s_max_u3( o ) - bcore_prsg_lcg_u2_01_s_min_u3( o ) ) );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_02_s )
+"aware bcore_prsg"
+"{"
+    "func ^:gen_f3;"
+    "u2_t state = 16437;"
+    "func ^:bits;"
+    "func ^:max_u3;"
+    "func ^:min_u3;"
+    "func ^:reseed;"
+    "func ^:gen_u3;"
+"}";
+
+f3_t bcore_prsg_lcg_u2_02_s_gen_f3( bcore_prsg_lcg_u2_02_s* o, f3_t min, f3_t max )
+{
+    return min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u2_02_s_gen_u3( o ) - bcore_prsg_lcg_u2_02_s_min_u3( o ) ) / ( bcore_prsg_lcg_u2_02_s_max_u3( o ) - bcore_prsg_lcg_u2_02_s_min_u3( o ) ) );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_03_s )
+"aware bcore_prsg"
+"{"
+    "func ^:gen_f3;"
+    "u2_t state = 16437;"
+    "func ^:bits;"
+    "func ^:max_u3;"
+    "func ^:min_u3;"
+    "func ^:reseed;"
+    "func ^:gen_u3;"
+"}";
+
+f3_t bcore_prsg_lcg_u2_03_s_gen_f3( bcore_prsg_lcg_u2_03_s* o, f3_t min, f3_t max )
+{
+    return min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u2_03_s_gen_u3( o ) - bcore_prsg_lcg_u2_03_s_min_u3( o ) ) / ( bcore_prsg_lcg_u2_03_s_max_u3( o ) - bcore_prsg_lcg_u2_03_s_min_u3( o ) ) );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_04_s )
+"aware bcore_prsg"
+"{"
+    "func ^:gen_f3;"
+    "u2_t state = 16437;"
+    "func ^:bits;"
+    "func ^:max_u3;"
+    "func ^:min_u3;"
+    "func ^:reseed;"
+    "func ^:gen_u3;"
+"}";
+
+f3_t bcore_prsg_lcg_u2_04_s_gen_f3( bcore_prsg_lcg_u2_04_s* o, f3_t min, f3_t max )
+{
+    return min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u2_04_s_gen_u3( o ) - bcore_prsg_lcg_u2_04_s_min_u3( o ) ) / ( bcore_prsg_lcg_u2_04_s_max_u3( o ) - bcore_prsg_lcg_u2_04_s_min_u3( o ) ) );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_05_s )
+"aware bcore_prsg"
+"{"
+    "func ^:gen_f3;"
+    "u2_t state = 16437;"
+    "func ^:bits;"
+    "func ^:max_u3;"
+    "func ^:min_u3;"
+    "func ^:reseed;"
+    "func ^:gen_u3;"
+"}";
+
+f3_t bcore_prsg_lcg_u2_05_s_gen_f3( bcore_prsg_lcg_u2_05_s* o, f3_t min, f3_t max )
+{
+    return min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u2_05_s_gen_u3( o ) - bcore_prsg_lcg_u2_05_s_min_u3( o ) ) / ( bcore_prsg_lcg_u2_05_s_max_u3( o ) - bcore_prsg_lcg_u2_05_s_min_u3( o ) ) );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_00_s )
+"aware bcore_prsg"
+"{"
+    "func ^:gen_f3;"
+    "u3_t state = 16437;"
+    "func ^:bits;"
+    "func ^:max_u3;"
+    "func ^:min_u3;"
+    "func ^:reseed;"
+    "func ^:gen_u3;"
+"}";
+
+f3_t bcore_prsg_lcg_u3_00_s_gen_f3( bcore_prsg_lcg_u3_00_s* o, f3_t min, f3_t max )
+{
+    return min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u3_00_s_gen_u3( o ) - bcore_prsg_lcg_u3_00_s_min_u3( o ) ) / ( bcore_prsg_lcg_u3_00_s_max_u3( o ) - bcore_prsg_lcg_u3_00_s_min_u3( o ) ) );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_01_s )
+"aware bcore_prsg"
+"{"
+    "func ^:gen_f3;"
+    "u3_t state = 16437;"
+    "func ^:bits;"
+    "func ^:max_u3;"
+    "func ^:min_u3;"
+    "func ^:reseed;"
+    "func ^:gen_u3;"
+"}";
+
+f3_t bcore_prsg_lcg_u3_01_s_gen_f3( bcore_prsg_lcg_u3_01_s* o, f3_t min, f3_t max )
+{
+    return min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u3_01_s_gen_u3( o ) - bcore_prsg_lcg_u3_01_s_min_u3( o ) ) / ( bcore_prsg_lcg_u3_01_s_max_u3( o ) - bcore_prsg_lcg_u3_01_s_min_u3( o ) ) );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_02_s )
+"aware bcore_prsg"
+"{"
+    "func ^:gen_f3;"
+    "u3_t state = 16437;"
+    "func ^:bits;"
+    "func ^:max_u3;"
+    "func ^:min_u3;"
+    "func ^:reseed;"
+    "func ^:gen_u3;"
+"}";
+
+f3_t bcore_prsg_lcg_u3_02_s_gen_f3( bcore_prsg_lcg_u3_02_s* o, f3_t min, f3_t max )
+{
+    return min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u3_02_s_gen_u3( o ) - bcore_prsg_lcg_u3_02_s_min_u3( o ) ) / ( bcore_prsg_lcg_u3_02_s_max_u3( o ) - bcore_prsg_lcg_u3_02_s_min_u3( o ) ) );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_03_s )
+"aware bcore_prsg"
+"{"
+    "func ^:gen_f3;"
+    "u3_t state = 16437;"
+    "func ^:bits;"
+    "func ^:max_u3;"
+    "func ^:min_u3;"
+    "func ^:reseed;"
+    "func ^:gen_u3;"
+"}";
+
+f3_t bcore_prsg_lcg_u3_03_s_gen_f3( bcore_prsg_lcg_u3_03_s* o, f3_t min, f3_t max )
+{
+    return min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u3_03_s_gen_u3( o ) - bcore_prsg_lcg_u3_03_s_min_u3( o ) ) / ( bcore_prsg_lcg_u3_03_s_max_u3( o ) - bcore_prsg_lcg_u3_03_s_min_u3( o ) ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_prsg_xsg
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_00_s )
+"aware bcore_prsg"
+"{"
+    "func ^:gen_f3;"
+    "u2_t state = 16432;"
+    "func ^:bits;"
+    "func ^:max_u3;"
+    "func ^:min_u3;"
+    "func ^:reseed;"
+    "func ^:gen_u3;"
+"}";
+
+f3_t bcore_prsg_xsg_u2_00_s_gen_f3( bcore_prsg_xsg_u2_00_s* o, f3_t min, f3_t max )
+{
+    return min + ( max - min ) * ( ( f3_t )( bcore_prsg_xsg_u2_00_s_gen_u3( o ) - bcore_prsg_xsg_u2_00_s_min_u3( o ) ) / ( bcore_prsg_xsg_u2_00_s_max_u3( o ) - bcore_prsg_xsg_u2_00_s_min_u3( o ) ) );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_01_s )
+"aware bcore_prsg"
+"{"
+    "func ^:gen_f3;"
+    "u2_t state = 16432;"
+    "func ^:bits;"
+    "func ^:max_u3;"
+    "func ^:min_u3;"
+    "func ^:reseed;"
+    "func ^:gen_u3;"
+"}";
+
+f3_t bcore_prsg_xsg_u2_01_s_gen_f3( bcore_prsg_xsg_u2_01_s* o, f3_t min, f3_t max )
+{
+    return min + ( max - min ) * ( ( f3_t )( bcore_prsg_xsg_u2_01_s_gen_u3( o ) - bcore_prsg_xsg_u2_01_s_min_u3( o ) ) / ( bcore_prsg_xsg_u2_01_s_max_u3( o ) - bcore_prsg_xsg_u2_01_s_min_u3( o ) ) );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_02_s )
+"aware bcore_prsg"
+"{"
+    "func ^:gen_f3;"
+    "u2_t state = 16432;"
+    "func ^:bits;"
+    "func ^:max_u3;"
+    "func ^:min_u3;"
+    "func ^:reseed;"
+    "func ^:gen_u3;"
+"}";
+
+f3_t bcore_prsg_xsg_u2_02_s_gen_f3( bcore_prsg_xsg_u2_02_s* o, f3_t min, f3_t max )
+{
+    return min + ( max - min ) * ( ( f3_t )( bcore_prsg_xsg_u2_02_s_gen_u3( o ) - bcore_prsg_xsg_u2_02_s_min_u3( o ) ) / ( bcore_prsg_xsg_u2_02_s_max_u3( o ) - bcore_prsg_xsg_u2_02_s_min_u3( o ) ) );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_03_s )
+"aware bcore_prsg"
+"{"
+    "func ^:gen_f3;"
+    "u2_t state = 16432;"
+    "func ^:bits;"
+    "func ^:max_u3;"
+    "func ^:min_u3;"
+    "func ^:reseed;"
+    "func ^:gen_u3;"
+"}";
+
+f3_t bcore_prsg_xsg_u2_03_s_gen_f3( bcore_prsg_xsg_u2_03_s* o, f3_t min, f3_t max )
+{
+    return min + ( max - min ) * ( ( f3_t )( bcore_prsg_xsg_u2_03_s_gen_u3( o ) - bcore_prsg_xsg_u2_03_s_min_u3( o ) ) / ( bcore_prsg_xsg_u2_03_s_max_u3( o ) - bcore_prsg_xsg_u2_03_s_min_u3( o ) ) );
+}
+
+/**********************************************************************************************************************/
 
 
 vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
@@ -398,10 +661,126 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_NAME( plant_error );
             BCORE_REGISTER_NAME( error_stack );
             BCORE_REGISTER_TRAIT( bcore_error_manager, bcore_inst );
+
+            // --------------------------------------------------------------------
+            // source: bcore_prsg.h
+
+            // group: bcore_prsg
+            BCORE_REGISTER_FEATURE( bcore_prsg_bits );
+            BCORE_REGISTER_FEATURE( bcore_prsg_max_u3 );
+            BCORE_REGISTER_FEATURE( bcore_prsg_min_u3 );
+            BCORE_REGISTER_FEATURE( bcore_prsg_gen_u3 );
+            BCORE_REGISTER_FEATURE( bcore_prsg_gen_f3 );
+            BCORE_REGISTER_FEATURE( bcore_prsg_reseed );
+            BCORE_REGISTER_SPECT( bcore_prsg );
+
+            // group: bcore_prsg_lcg
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_f3, bcore_prsg_lcg_u2_00_s_gen_f3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_bits, bcore_prsg_lcg_u2_00_s_bits );
+            BCORE_REGISTER_FFUNC( bcore_prsg_max_u3, bcore_prsg_lcg_u2_00_s_max_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_min_u3, bcore_prsg_lcg_u2_00_s_min_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_reseed, bcore_prsg_lcg_u2_00_s_reseed );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_u3, bcore_prsg_lcg_u2_00_s_gen_u3 );
+            BCORE_REGISTER_OBJECT( bcore_prsg_lcg_u2_00_s );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_f3, bcore_prsg_lcg_u2_01_s_gen_f3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_bits, bcore_prsg_lcg_u2_01_s_bits );
+            BCORE_REGISTER_FFUNC( bcore_prsg_max_u3, bcore_prsg_lcg_u2_01_s_max_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_min_u3, bcore_prsg_lcg_u2_01_s_min_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_reseed, bcore_prsg_lcg_u2_01_s_reseed );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_u3, bcore_prsg_lcg_u2_01_s_gen_u3 );
+            BCORE_REGISTER_OBJECT( bcore_prsg_lcg_u2_01_s );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_f3, bcore_prsg_lcg_u2_02_s_gen_f3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_bits, bcore_prsg_lcg_u2_02_s_bits );
+            BCORE_REGISTER_FFUNC( bcore_prsg_max_u3, bcore_prsg_lcg_u2_02_s_max_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_min_u3, bcore_prsg_lcg_u2_02_s_min_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_reseed, bcore_prsg_lcg_u2_02_s_reseed );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_u3, bcore_prsg_lcg_u2_02_s_gen_u3 );
+            BCORE_REGISTER_OBJECT( bcore_prsg_lcg_u2_02_s );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_f3, bcore_prsg_lcg_u2_03_s_gen_f3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_bits, bcore_prsg_lcg_u2_03_s_bits );
+            BCORE_REGISTER_FFUNC( bcore_prsg_max_u3, bcore_prsg_lcg_u2_03_s_max_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_min_u3, bcore_prsg_lcg_u2_03_s_min_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_reseed, bcore_prsg_lcg_u2_03_s_reseed );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_u3, bcore_prsg_lcg_u2_03_s_gen_u3 );
+            BCORE_REGISTER_OBJECT( bcore_prsg_lcg_u2_03_s );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_f3, bcore_prsg_lcg_u2_04_s_gen_f3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_bits, bcore_prsg_lcg_u2_04_s_bits );
+            BCORE_REGISTER_FFUNC( bcore_prsg_max_u3, bcore_prsg_lcg_u2_04_s_max_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_min_u3, bcore_prsg_lcg_u2_04_s_min_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_reseed, bcore_prsg_lcg_u2_04_s_reseed );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_u3, bcore_prsg_lcg_u2_04_s_gen_u3 );
+            BCORE_REGISTER_OBJECT( bcore_prsg_lcg_u2_04_s );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_f3, bcore_prsg_lcg_u2_05_s_gen_f3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_bits, bcore_prsg_lcg_u2_05_s_bits );
+            BCORE_REGISTER_FFUNC( bcore_prsg_max_u3, bcore_prsg_lcg_u2_05_s_max_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_min_u3, bcore_prsg_lcg_u2_05_s_min_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_reseed, bcore_prsg_lcg_u2_05_s_reseed );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_u3, bcore_prsg_lcg_u2_05_s_gen_u3 );
+            BCORE_REGISTER_OBJECT( bcore_prsg_lcg_u2_05_s );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_f3, bcore_prsg_lcg_u3_00_s_gen_f3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_bits, bcore_prsg_lcg_u3_00_s_bits );
+            BCORE_REGISTER_FFUNC( bcore_prsg_max_u3, bcore_prsg_lcg_u3_00_s_max_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_min_u3, bcore_prsg_lcg_u3_00_s_min_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_reseed, bcore_prsg_lcg_u3_00_s_reseed );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_u3, bcore_prsg_lcg_u3_00_s_gen_u3 );
+            BCORE_REGISTER_OBJECT( bcore_prsg_lcg_u3_00_s );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_f3, bcore_prsg_lcg_u3_01_s_gen_f3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_bits, bcore_prsg_lcg_u3_01_s_bits );
+            BCORE_REGISTER_FFUNC( bcore_prsg_max_u3, bcore_prsg_lcg_u3_01_s_max_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_min_u3, bcore_prsg_lcg_u3_01_s_min_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_reseed, bcore_prsg_lcg_u3_01_s_reseed );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_u3, bcore_prsg_lcg_u3_01_s_gen_u3 );
+            BCORE_REGISTER_OBJECT( bcore_prsg_lcg_u3_01_s );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_f3, bcore_prsg_lcg_u3_02_s_gen_f3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_bits, bcore_prsg_lcg_u3_02_s_bits );
+            BCORE_REGISTER_FFUNC( bcore_prsg_max_u3, bcore_prsg_lcg_u3_02_s_max_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_min_u3, bcore_prsg_lcg_u3_02_s_min_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_reseed, bcore_prsg_lcg_u3_02_s_reseed );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_u3, bcore_prsg_lcg_u3_02_s_gen_u3 );
+            BCORE_REGISTER_OBJECT( bcore_prsg_lcg_u3_02_s );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_f3, bcore_prsg_lcg_u3_03_s_gen_f3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_bits, bcore_prsg_lcg_u3_03_s_bits );
+            BCORE_REGISTER_FFUNC( bcore_prsg_max_u3, bcore_prsg_lcg_u3_03_s_max_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_min_u3, bcore_prsg_lcg_u3_03_s_min_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_reseed, bcore_prsg_lcg_u3_03_s_reseed );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_u3, bcore_prsg_lcg_u3_03_s_gen_u3 );
+            BCORE_REGISTER_OBJECT( bcore_prsg_lcg_u3_03_s );
+            BCORE_REGISTER_TRAIT( bcore_prsg_lcg, bcore_prsg );
+
+            // group: bcore_prsg_xsg
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_f3, bcore_prsg_xsg_u2_00_s_gen_f3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_bits, bcore_prsg_xsg_u2_00_s_bits );
+            BCORE_REGISTER_FFUNC( bcore_prsg_max_u3, bcore_prsg_xsg_u2_00_s_max_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_min_u3, bcore_prsg_xsg_u2_00_s_min_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_reseed, bcore_prsg_xsg_u2_00_s_reseed );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_u3, bcore_prsg_xsg_u2_00_s_gen_u3 );
+            BCORE_REGISTER_OBJECT( bcore_prsg_xsg_u2_00_s );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_f3, bcore_prsg_xsg_u2_01_s_gen_f3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_bits, bcore_prsg_xsg_u2_01_s_bits );
+            BCORE_REGISTER_FFUNC( bcore_prsg_max_u3, bcore_prsg_xsg_u2_01_s_max_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_min_u3, bcore_prsg_xsg_u2_01_s_min_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_reseed, bcore_prsg_xsg_u2_01_s_reseed );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_u3, bcore_prsg_xsg_u2_01_s_gen_u3 );
+            BCORE_REGISTER_OBJECT( bcore_prsg_xsg_u2_01_s );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_f3, bcore_prsg_xsg_u2_02_s_gen_f3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_bits, bcore_prsg_xsg_u2_02_s_bits );
+            BCORE_REGISTER_FFUNC( bcore_prsg_max_u3, bcore_prsg_xsg_u2_02_s_max_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_min_u3, bcore_prsg_xsg_u2_02_s_min_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_reseed, bcore_prsg_xsg_u2_02_s_reseed );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_u3, bcore_prsg_xsg_u2_02_s_gen_u3 );
+            BCORE_REGISTER_OBJECT( bcore_prsg_xsg_u2_02_s );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_f3, bcore_prsg_xsg_u2_03_s_gen_f3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_bits, bcore_prsg_xsg_u2_03_s_bits );
+            BCORE_REGISTER_FFUNC( bcore_prsg_max_u3, bcore_prsg_xsg_u2_03_s_max_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_min_u3, bcore_prsg_xsg_u2_03_s_min_u3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_reseed, bcore_prsg_xsg_u2_03_s_reseed );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_u3, bcore_prsg_xsg_u2_03_s_gen_u3 );
+            BCORE_REGISTER_OBJECT( bcore_prsg_xsg_u2_03_s );
+            BCORE_REGISTER_TRAIT( bcore_prsg_xsg, bcore_prsg );
         }
         break;
         default: break;
     }
     return NULL;
 }
-// BETH_PLANT_SIGNATURE 2287682100
+// BETH_PLANT_SIGNATURE 4085654506

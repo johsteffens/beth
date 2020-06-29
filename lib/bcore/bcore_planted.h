@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-06-27T11:27:30Z
+ *  Last File Update: 2020-06-29T13:14:12Z
  *
  *  Copyright and License of this File:
  *
@@ -17,6 +17,7 @@
  *  bcore_hmap_name.h
  *  bcore_cday.h
  *  bcore_error_manager.h
+ *  bcore_prsg.h
  *
  */
 
@@ -26,7 +27,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.
-#define HKEYOF_bcore_planted 3358287363
+#define HKEYOF_bcore_planted 3822700445
 
 #define TYPEOF_bcore_planted 3660391305
 
@@ -411,8 +412,239 @@
   BETH_EXPAND_ITEM_bcore_error_manager_context_s
 
 /**********************************************************************************************************************/
+// source: bcore_prsg.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_prsg
+
+#define TYPEOF_bcore_prsg 3663626195
+#define TYPEOF_bcore_prsg_s 329420597
+#define BETH_EXPAND_GROUP_bcore_prsg \
+  BCORE_FORWARD_OBJECT( bcore_prsg ); \
+  BCORE_FORWARD_OBJECT( bcore_prsg_lcg ); \
+  BCORE_FORWARD_OBJECT( bcore_prsg_xsg ); \
+  typedef sz_t (*bcore_prsg_bits)( const bcore_prsg* o ); \
+  typedef u3_t (*bcore_prsg_max_u3)( const bcore_prsg* o ); \
+  typedef u3_t (*bcore_prsg_min_u3)( const bcore_prsg* o ); \
+  typedef u3_t (*bcore_prsg_gen_u3)( bcore_prsg* o ); \
+  typedef f3_t (*bcore_prsg_gen_f3)( bcore_prsg* o, f3_t min, f3_t max ); \
+  typedef void (*bcore_prsg_reseed)( bcore_prsg* o, u3_t seed ); \
+  BCORE_DECLARE_SPECT( bcore_prsg ) \
+  { \
+      bcore_spect_header_s header; \
+      bcore_prsg_bits bits; \
+      bcore_prsg_max_u3 max_u3; \
+      bcore_prsg_min_u3 min_u3; \
+      bcore_prsg_gen_u3 gen_u3; \
+      bcore_prsg_gen_f3 gen_f3; \
+      bcore_prsg_reseed reseed; \
+  }; \
+  static inline bcore_prsg* bcore_prsg_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_prsg, t ); return ( bcore_prsg* )bcore_inst_t_create( t ); } \
+  static inline bl_t bcore_prsg_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_prsg ); } \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_prsg ) \
+  static inline bl_t bcore_prsg_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bcore_prsg ); } \
+  static inline sz_t bcore_prsg_a_bits( const bcore_prsg* o ) { const bcore_prsg_s* p = bcore_prsg_s_get_aware( o ); assert( p->bits ); return p->bits( o ); } \
+  static inline bl_t bcore_prsg_a_defines_bits( const bcore_prsg* o ) { return bcore_prsg_s_get_aware( o )->bits != NULL; } \
+  static inline u3_t bcore_prsg_a_max_u3( const bcore_prsg* o ) { const bcore_prsg_s* p = bcore_prsg_s_get_aware( o ); assert( p->max_u3 ); return p->max_u3( o ); } \
+  static inline bl_t bcore_prsg_a_defines_max_u3( const bcore_prsg* o ) { return bcore_prsg_s_get_aware( o )->max_u3 != NULL; } \
+  static inline u3_t bcore_prsg_a_min_u3( const bcore_prsg* o ) { const bcore_prsg_s* p = bcore_prsg_s_get_aware( o ); assert( p->min_u3 ); return p->min_u3( o ); } \
+  static inline bl_t bcore_prsg_a_defines_min_u3( const bcore_prsg* o ) { return bcore_prsg_s_get_aware( o )->min_u3 != NULL; } \
+  static inline u3_t bcore_prsg_a_gen_u3( bcore_prsg* o ) { const bcore_prsg_s* p = bcore_prsg_s_get_aware( o ); assert( p->gen_u3 ); return p->gen_u3( o ); } \
+  static inline bl_t bcore_prsg_a_defines_gen_u3( const bcore_prsg* o ) { return bcore_prsg_s_get_aware( o )->gen_u3 != NULL; } \
+  static inline f3_t bcore_prsg_a_gen_f3( bcore_prsg* o, f3_t min, f3_t max ) { const bcore_prsg_s* p = bcore_prsg_s_get_aware( o ); assert( p->gen_f3 ); return p->gen_f3( o, min, max ); } \
+  static inline bl_t bcore_prsg_a_defines_gen_f3( const bcore_prsg* o ) { return bcore_prsg_s_get_aware( o )->gen_f3 != NULL; } \
+  static inline void bcore_prsg_a_reseed( bcore_prsg* o, u3_t seed ) { const bcore_prsg_s* p = bcore_prsg_s_get_aware( o ); assert( p->reseed ); p->reseed( o, seed ); } \
+  static inline bl_t bcore_prsg_a_defines_reseed( const bcore_prsg* o ) { return bcore_prsg_s_get_aware( o )->reseed != NULL; } \
+  BETH_EXPAND_GROUP_bcore_prsg_lcg \
+  BETH_EXPAND_GROUP_bcore_prsg_xsg
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_prsg_lcg
+
+#define TYPEOF_bcore_prsg_lcg 2865172018
+#define TYPEOF_bcore_prsg_lcg_s 2153731564
+#define TYPEOF_bcore_prsg_lcg_u2_00_s 1211325803
+#define BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_00_s \
+  BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u2_00_s ) \
+    {aware_t _;u2_t state;}; \
+  f3_t bcore_prsg_lcg_u2_00_s_gen_f3( bcore_prsg_lcg_u2_00_s* o, f3_t min, f3_t max ); \
+  static inline sz_t bcore_prsg_lcg_u2_00_s_bits( const bcore_prsg_lcg_u2_00_s* o ){return 32;} \
+  static inline u3_t bcore_prsg_lcg_u2_00_s_max_u3( const bcore_prsg_lcg_u2_00_s* o ){return 0xFFFFFFFFu;} \
+  static inline u3_t bcore_prsg_lcg_u2_00_s_min_u3( const bcore_prsg_lcg_u2_00_s* o ){return 0;} \
+  static inline void bcore_prsg_lcg_u2_00_s_reseed( bcore_prsg_lcg_u2_00_s* o, u3_t seed ){o->state = seed ^ ( seed >> 32 );} \
+  static inline u3_t bcore_prsg_lcg_u2_00_s_gen_u3( bcore_prsg_lcg_u2_00_s* o ){return ( o->state = bcore_lcg00_u2( o->state ) );}
+#define TYPEOF_bcore_prsg_lcg_u2_01_s 3427325360
+#define BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_01_s \
+  BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u2_01_s ) \
+    {aware_t _;u2_t state;}; \
+  f3_t bcore_prsg_lcg_u2_01_s_gen_f3( bcore_prsg_lcg_u2_01_s* o, f3_t min, f3_t max ); \
+  static inline sz_t bcore_prsg_lcg_u2_01_s_bits( const bcore_prsg_lcg_u2_01_s* o ){return 32;} \
+  static inline u3_t bcore_prsg_lcg_u2_01_s_max_u3( const bcore_prsg_lcg_u2_01_s* o ){return 0xFFFFFFFFu;} \
+  static inline u3_t bcore_prsg_lcg_u2_01_s_min_u3( const bcore_prsg_lcg_u2_01_s* o ){return 0;} \
+  static inline void bcore_prsg_lcg_u2_01_s_reseed( bcore_prsg_lcg_u2_01_s* o, u3_t seed ){o->state = seed ^ ( seed >> 32 );} \
+  static inline u3_t bcore_prsg_lcg_u2_01_s_gen_u3( bcore_prsg_lcg_u2_01_s* o ){return ( o->state = bcore_lcg01_u2( o->state ) );}
+#define TYPEOF_bcore_prsg_lcg_u2_02_s 1998777197
+#define BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_02_s \
+  BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u2_02_s ) \
+    {aware_t _;u2_t state;}; \
+  f3_t bcore_prsg_lcg_u2_02_s_gen_f3( bcore_prsg_lcg_u2_02_s* o, f3_t min, f3_t max ); \
+  static inline sz_t bcore_prsg_lcg_u2_02_s_bits( const bcore_prsg_lcg_u2_02_s* o ){return 32;} \
+  static inline u3_t bcore_prsg_lcg_u2_02_s_max_u3( const bcore_prsg_lcg_u2_02_s* o ){return 0xFFFFFFFFu;} \
+  static inline u3_t bcore_prsg_lcg_u2_02_s_min_u3( const bcore_prsg_lcg_u2_02_s* o ){return 0;} \
+  static inline void bcore_prsg_lcg_u2_02_s_reseed( bcore_prsg_lcg_u2_02_s* o, u3_t seed ){o->state = seed ^ ( seed >> 32 );} \
+  static inline u3_t bcore_prsg_lcg_u2_02_s_gen_u3( bcore_prsg_lcg_u2_02_s* o ){return ( o->state = bcore_lcg02_u2( o->state ) );}
+#define TYPEOF_bcore_prsg_lcg_u2_03_s 4204330994
+#define BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_03_s \
+  BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u2_03_s ) \
+    {aware_t _;u2_t state;}; \
+  f3_t bcore_prsg_lcg_u2_03_s_gen_f3( bcore_prsg_lcg_u2_03_s* o, f3_t min, f3_t max ); \
+  static inline sz_t bcore_prsg_lcg_u2_03_s_bits( const bcore_prsg_lcg_u2_03_s* o ){return 32;} \
+  static inline u3_t bcore_prsg_lcg_u2_03_s_max_u3( const bcore_prsg_lcg_u2_03_s* o ){return 0xFFFFFFFFu;} \
+  static inline u3_t bcore_prsg_lcg_u2_03_s_min_u3( const bcore_prsg_lcg_u2_03_s* o ){return 0;} \
+  static inline void bcore_prsg_lcg_u2_03_s_reseed( bcore_prsg_lcg_u2_03_s* o, u3_t seed ){o->state = seed ^ ( seed >> 32 );} \
+  static inline u3_t bcore_prsg_lcg_u2_03_s_gen_u3( bcore_prsg_lcg_u2_03_s* o ){return ( o->state = bcore_lcg03_u2( o->state ) );}
+#define TYPEOF_bcore_prsg_lcg_u2_04_s 4107291135
+#define BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_04_s \
+  BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u2_04_s ) \
+    {aware_t _;u2_t state;}; \
+  f3_t bcore_prsg_lcg_u2_04_s_gen_f3( bcore_prsg_lcg_u2_04_s* o, f3_t min, f3_t max ); \
+  static inline sz_t bcore_prsg_lcg_u2_04_s_bits( const bcore_prsg_lcg_u2_04_s* o ){return 32;} \
+  static inline u3_t bcore_prsg_lcg_u2_04_s_max_u3( const bcore_prsg_lcg_u2_04_s* o ){return 0xFFFFFFFFu;} \
+  static inline u3_t bcore_prsg_lcg_u2_04_s_min_u3( const bcore_prsg_lcg_u2_04_s* o ){return 0;} \
+  static inline void bcore_prsg_lcg_u2_04_s_reseed( bcore_prsg_lcg_u2_04_s* o, u3_t seed ){o->state = seed ^ ( seed >> 32 );} \
+  static inline u3_t bcore_prsg_lcg_u2_04_s_gen_u3( bcore_prsg_lcg_u2_04_s* o ){return ( o->state = bcore_lcg04_u2( o->state ) );}
+#define TYPEOF_bcore_prsg_lcg_u2_05_s 2523630500
+#define BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_05_s \
+  BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u2_05_s ) \
+    {aware_t _;u2_t state;}; \
+  f3_t bcore_prsg_lcg_u2_05_s_gen_f3( bcore_prsg_lcg_u2_05_s* o, f3_t min, f3_t max ); \
+  static inline sz_t bcore_prsg_lcg_u2_05_s_bits( const bcore_prsg_lcg_u2_05_s* o ){return 32;} \
+  static inline u3_t bcore_prsg_lcg_u2_05_s_max_u3( const bcore_prsg_lcg_u2_05_s* o ){return 0xFFFFFFFFu;} \
+  static inline u3_t bcore_prsg_lcg_u2_05_s_min_u3( const bcore_prsg_lcg_u2_05_s* o ){return 0;} \
+  static inline void bcore_prsg_lcg_u2_05_s_reseed( bcore_prsg_lcg_u2_05_s* o, u3_t seed ){o->state = seed ^ ( seed >> 32 );} \
+  static inline u3_t bcore_prsg_lcg_u2_05_s_gen_u3( bcore_prsg_lcg_u2_05_s* o ){return ( o->state = bcore_lcg05_u2( o->state ) );}
+#define TYPEOF_bcore_prsg_lcg_u3_00_s 193544906
+#define BETH_EXPAND_ITEM_bcore_prsg_lcg_u3_00_s \
+  BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u3_00_s ) \
+    {aware_t _;u3_t state;}; \
+  f3_t bcore_prsg_lcg_u3_00_s_gen_f3( bcore_prsg_lcg_u3_00_s* o, f3_t min, f3_t max ); \
+  static inline sz_t bcore_prsg_lcg_u3_00_s_bits( const bcore_prsg_lcg_u3_00_s* o ){return 64;} \
+  static inline u3_t bcore_prsg_lcg_u3_00_s_max_u3( const bcore_prsg_lcg_u3_00_s* o ){return 0xFFFFFFFFFFFFFFFFull;} \
+  static inline u3_t bcore_prsg_lcg_u3_00_s_min_u3( const bcore_prsg_lcg_u3_00_s* o ){return 0;} \
+  static inline void bcore_prsg_lcg_u3_00_s_reseed( bcore_prsg_lcg_u3_00_s* o, u3_t seed ){o->state = seed;} \
+  static inline u3_t bcore_prsg_lcg_u3_00_s_gen_u3( bcore_prsg_lcg_u3_00_s* o ){return ( o->state = bcore_lcg00_u3( o->state ) );}
+#define TYPEOF_bcore_prsg_lcg_u3_01_s 1735628837
+#define BETH_EXPAND_ITEM_bcore_prsg_lcg_u3_01_s \
+  BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u3_01_s ) \
+    {aware_t _;u3_t state;}; \
+  f3_t bcore_prsg_lcg_u3_01_s_gen_f3( bcore_prsg_lcg_u3_01_s* o, f3_t min, f3_t max ); \
+  static inline sz_t bcore_prsg_lcg_u3_01_s_bits( const bcore_prsg_lcg_u3_01_s* o ){return 64;} \
+  static inline u3_t bcore_prsg_lcg_u3_01_s_max_u3( const bcore_prsg_lcg_u3_01_s* o ){return 0xFFFFFFFFFFFFFFFFull;} \
+  static inline u3_t bcore_prsg_lcg_u3_01_s_min_u3( const bcore_prsg_lcg_u3_01_s* o ){return 0;} \
+  static inline void bcore_prsg_lcg_u3_01_s_reseed( bcore_prsg_lcg_u3_01_s* o, u3_t seed ){o->state = seed;} \
+  static inline u3_t bcore_prsg_lcg_u3_01_s_gen_u3( bcore_prsg_lcg_u3_01_s* o ){return ( o->state = bcore_lcg01_u3( o->state ) );}
+#define TYPEOF_bcore_prsg_lcg_u3_02_s 3690718216
+#define BETH_EXPAND_ITEM_bcore_prsg_lcg_u3_02_s \
+  BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u3_02_s ) \
+    {aware_t _;u3_t state;}; \
+  f3_t bcore_prsg_lcg_u3_02_s_gen_f3( bcore_prsg_lcg_u3_02_s* o, f3_t min, f3_t max ); \
+  static inline sz_t bcore_prsg_lcg_u3_02_s_bits( const bcore_prsg_lcg_u3_02_s* o ){return 64;} \
+  static inline u3_t bcore_prsg_lcg_u3_02_s_max_u3( const bcore_prsg_lcg_u3_02_s* o ){return 0xFFFFFFFFFFFFFFFFull;} \
+  static inline u3_t bcore_prsg_lcg_u3_02_s_min_u3( const bcore_prsg_lcg_u3_02_s* o ){return 0;} \
+  static inline void bcore_prsg_lcg_u3_02_s_reseed( bcore_prsg_lcg_u3_02_s* o, u3_t seed ){o->state = seed;} \
+  static inline u3_t bcore_prsg_lcg_u3_02_s_gen_u3( bcore_prsg_lcg_u3_02_s* o ){return ( o->state = bcore_lcg02_u3( o->state ) );}
+#define TYPEOF_bcore_prsg_lcg_u3_03_s 958623203
+#define BETH_EXPAND_ITEM_bcore_prsg_lcg_u3_03_s \
+  BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u3_03_s ) \
+    {aware_t _;u3_t state;}; \
+  f3_t bcore_prsg_lcg_u3_03_s_gen_f3( bcore_prsg_lcg_u3_03_s* o, f3_t min, f3_t max ); \
+  static inline sz_t bcore_prsg_lcg_u3_03_s_bits( const bcore_prsg_lcg_u3_03_s* o ){return 64;} \
+  static inline u3_t bcore_prsg_lcg_u3_03_s_max_u3( const bcore_prsg_lcg_u3_03_s* o ){return 0xFFFFFFFFFFFFFFFFull;} \
+  static inline u3_t bcore_prsg_lcg_u3_03_s_min_u3( const bcore_prsg_lcg_u3_03_s* o ){return 0;} \
+  static inline void bcore_prsg_lcg_u3_03_s_reseed( bcore_prsg_lcg_u3_03_s* o, u3_t seed ){o->state = seed;} \
+  static inline u3_t bcore_prsg_lcg_u3_03_s_gen_u3( bcore_prsg_lcg_u3_03_s* o ){return ( o->state = bcore_lcg03_u3( o->state ) );}
+#define BETH_EXPAND_GROUP_bcore_prsg_lcg \
+  BCORE_FORWARD_OBJECT( bcore_prsg_lcg ); \
+  BCORE_FORWARD_OBJECT( bcore_prsg_lcg_u2_00_s ); \
+  BCORE_FORWARD_OBJECT( bcore_prsg_lcg_u2_01_s ); \
+  BCORE_FORWARD_OBJECT( bcore_prsg_lcg_u2_02_s ); \
+  BCORE_FORWARD_OBJECT( bcore_prsg_lcg_u2_03_s ); \
+  BCORE_FORWARD_OBJECT( bcore_prsg_lcg_u2_04_s ); \
+  BCORE_FORWARD_OBJECT( bcore_prsg_lcg_u2_05_s ); \
+  BCORE_FORWARD_OBJECT( bcore_prsg_lcg_u3_00_s ); \
+  BCORE_FORWARD_OBJECT( bcore_prsg_lcg_u3_01_s ); \
+  BCORE_FORWARD_OBJECT( bcore_prsg_lcg_u3_02_s ); \
+  BCORE_FORWARD_OBJECT( bcore_prsg_lcg_u3_03_s ); \
+  BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_00_s \
+  BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_01_s \
+  BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_02_s \
+  BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_03_s \
+  BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_04_s \
+  BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_05_s \
+  BETH_EXPAND_ITEM_bcore_prsg_lcg_u3_00_s \
+  BETH_EXPAND_ITEM_bcore_prsg_lcg_u3_01_s \
+  BETH_EXPAND_ITEM_bcore_prsg_lcg_u3_02_s \
+  BETH_EXPAND_ITEM_bcore_prsg_lcg_u3_03_s
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_prsg_xsg
+
+#define TYPEOF_bcore_prsg_xsg 749034726
+#define TYPEOF_bcore_prsg_xsg_s 1517635160
+#define TYPEOF_bcore_prsg_xsg_u2_00_s 2389956751
+#define BETH_EXPAND_ITEM_bcore_prsg_xsg_u2_00_s \
+  BCORE_DECLARE_OBJECT( bcore_prsg_xsg_u2_00_s ) \
+    {aware_t _;u2_t state;}; \
+  f3_t bcore_prsg_xsg_u2_00_s_gen_f3( bcore_prsg_xsg_u2_00_s* o, f3_t min, f3_t max ); \
+  static inline sz_t bcore_prsg_xsg_u2_00_s_bits( const bcore_prsg_xsg_u2_00_s* o ){return 32;} \
+  static inline u3_t bcore_prsg_xsg_u2_00_s_max_u3( const bcore_prsg_xsg_u2_00_s* o ){return 0xFFFFFFFFu;} \
+  static inline u3_t bcore_prsg_xsg_u2_00_s_min_u3( const bcore_prsg_xsg_u2_00_s* o ){return 1;} \
+  static inline void bcore_prsg_xsg_u2_00_s_reseed( bcore_prsg_xsg_u2_00_s* o, u3_t seed ){o->state = u2_max( 1, seed ^ ( seed >> 32 ) );} \
+  static inline u3_t bcore_prsg_xsg_u2_00_s_gen_u3( bcore_prsg_xsg_u2_00_s* o ){return ( o->state = bcore_xsg_u2(  o->state ) );}
+#define TYPEOF_bcore_prsg_xsg_u2_01_s 837530228
+#define BETH_EXPAND_ITEM_bcore_prsg_xsg_u2_01_s \
+  BCORE_DECLARE_OBJECT( bcore_prsg_xsg_u2_01_s ) \
+    {aware_t _;u2_t state;}; \
+  f3_t bcore_prsg_xsg_u2_01_s_gen_f3( bcore_prsg_xsg_u2_01_s* o, f3_t min, f3_t max ); \
+  static inline sz_t bcore_prsg_xsg_u2_01_s_bits( const bcore_prsg_xsg_u2_01_s* o ){return 32;} \
+  static inline u3_t bcore_prsg_xsg_u2_01_s_max_u3( const bcore_prsg_xsg_u2_01_s* o ){return 0xFFFFFFFFu;} \
+  static inline u3_t bcore_prsg_xsg_u2_01_s_min_u3( const bcore_prsg_xsg_u2_01_s* o ){return 1;} \
+  static inline void bcore_prsg_xsg_u2_01_s_reseed( bcore_prsg_xsg_u2_01_s* o, u3_t seed ){o->state = u2_max( 1, seed ^ ( seed >> 32 ) );} \
+  static inline u3_t bcore_prsg_xsg_u2_01_s_gen_u3( bcore_prsg_xsg_u2_01_s* o ){return ( o->state = bcore_xsg1_u2( o->state ) );}
+#define TYPEOF_bcore_prsg_xsg_u2_02_s 3146174033
+#define BETH_EXPAND_ITEM_bcore_prsg_xsg_u2_02_s \
+  BCORE_DECLARE_OBJECT( bcore_prsg_xsg_u2_02_s ) \
+    {aware_t _;u2_t state;}; \
+  f3_t bcore_prsg_xsg_u2_02_s_gen_f3( bcore_prsg_xsg_u2_02_s* o, f3_t min, f3_t max ); \
+  static inline sz_t bcore_prsg_xsg_u2_02_s_bits( const bcore_prsg_xsg_u2_02_s* o ){return 32;} \
+  static inline u3_t bcore_prsg_xsg_u2_02_s_max_u3( const bcore_prsg_xsg_u2_02_s* o ){return 0xFFFFFFFFu;} \
+  static inline u3_t bcore_prsg_xsg_u2_02_s_min_u3( const bcore_prsg_xsg_u2_02_s* o ){return 1;} \
+  static inline void bcore_prsg_xsg_u2_02_s_reseed( bcore_prsg_xsg_u2_02_s* o, u3_t seed ){o->state = u2_max( 1, seed ^ ( seed >> 32 ) );} \
+  static inline u3_t bcore_prsg_xsg_u2_02_s_gen_u3( bcore_prsg_xsg_u2_02_s* o ){return ( o->state = bcore_xsg2_u2( o->state ) );}
+#define TYPEOF_bcore_prsg_xsg_u2_03_s 1056863702
+#define BETH_EXPAND_ITEM_bcore_prsg_xsg_u2_03_s \
+  BCORE_DECLARE_OBJECT( bcore_prsg_xsg_u2_03_s ) \
+    {aware_t _;u2_t state;}; \
+  f3_t bcore_prsg_xsg_u2_03_s_gen_f3( bcore_prsg_xsg_u2_03_s* o, f3_t min, f3_t max ); \
+  static inline sz_t bcore_prsg_xsg_u2_03_s_bits( const bcore_prsg_xsg_u2_03_s* o ){return 32;} \
+  static inline u3_t bcore_prsg_xsg_u2_03_s_max_u3( const bcore_prsg_xsg_u2_03_s* o ){return 0xFFFFFFFFu;} \
+  static inline u3_t bcore_prsg_xsg_u2_03_s_min_u3( const bcore_prsg_xsg_u2_03_s* o ){return 1;} \
+  static inline void bcore_prsg_xsg_u2_03_s_reseed( bcore_prsg_xsg_u2_03_s* o, u3_t seed ){o->state = u2_max( 1, seed ^ ( seed >> 32 ) );} \
+  static inline u3_t bcore_prsg_xsg_u2_03_s_gen_u3( bcore_prsg_xsg_u2_03_s* o ){return ( o->state = bcore_xsg3_u2( o->state ) );}
+#define BETH_EXPAND_GROUP_bcore_prsg_xsg \
+  BCORE_FORWARD_OBJECT( bcore_prsg_xsg ); \
+  BCORE_FORWARD_OBJECT( bcore_prsg_xsg_u2_00_s ); \
+  BCORE_FORWARD_OBJECT( bcore_prsg_xsg_u2_01_s ); \
+  BCORE_FORWARD_OBJECT( bcore_prsg_xsg_u2_02_s ); \
+  BCORE_FORWARD_OBJECT( bcore_prsg_xsg_u2_03_s ); \
+  BETH_EXPAND_ITEM_bcore_prsg_xsg_u2_00_s \
+  BETH_EXPAND_ITEM_bcore_prsg_xsg_u2_01_s \
+  BETH_EXPAND_ITEM_bcore_prsg_xsg_u2_02_s \
+  BETH_EXPAND_ITEM_bcore_prsg_xsg_u2_03_s
+
+/**********************************************************************************************************************/
 
 vd_t bcore_planted_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_PLANTED_H
-// BETH_PLANT_SIGNATURE 2379910366
+// BETH_PLANT_SIGNATURE 1340228222

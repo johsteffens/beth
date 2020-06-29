@@ -53,5 +53,6 @@
 #include "bcore_plant.h"
 #include "bcore_main.h"
 #include "bcore_error_manager.h"
+#include "bcore_prsg.h"
 
 #endif // BCORE_STD_H
