@@ -38,10 +38,11 @@ feature 'a' er_t build( const, sz_t* target_index );
 
 stamp :target = aware :
 {
-    st_s => name;                // target name
-    st_s => root;                // root folder of subsequent file paths (used if they are relative)
-    bcore_arr_st_s dependencies; // dependent target definitions
-    bcore_arr_st_s sources;      // array of source files
+    st_s => name;                  // target name
+    st_s => extension = "planted"; // extension used for planted files
+    st_s => root;                  // root folder of subsequent file paths (used if they are relative)
+    bcore_arr_st_s dependencies;   // dependent target definitions
+    bcore_arr_st_s sources;        // array of source files
 
     /** Function name of principal signal handler for this plant
      * If not defined, it is assumed that the name if <name>_general_signal_handler

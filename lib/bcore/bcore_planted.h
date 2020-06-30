@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-06-29T13:14:12Z
+ *  Last File Update: 2020-06-29T13:36:16Z
  *
  *  Copyright and License of this File:
  *
@@ -27,7 +27,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.
-#define HKEYOF_bcore_planted 3822700445
+#define HKEYOF_bcore_planted 3205437494
 
 #define TYPEOF_bcore_planted 3660391305
 
@@ -62,7 +62,7 @@
 #define TYPEOF_bcore_plant_builder_target_s 4218879578
 #define BETH_EXPAND_ITEM_bcore_plant_builder_target_s \
   BCORE_DECLARE_OBJECT( bcore_plant_builder_target_s ) \
-    {aware_t _;st_s* name;st_s* root;bcore_arr_st_s dependencies;bcore_arr_st_s sources;st_s* signal_handler;}; \
+    {aware_t _;st_s* name;st_s* extension;st_s* root;bcore_arr_st_s dependencies;bcore_arr_st_s sources;st_s* signal_handler;}; \
   void bcore_plant_builder_target_s_source( bcore_plant_builder_target_s* o, bcore_source* source ); \
   er_t bcore_plant_builder_target_s_build( const bcore_plant_builder_target_s* o, sz_t* target_index );
 #define TYPEOF_bcore_plant_builder_target_adl_s 2526634006
@@ -647,4 +647,4 @@
 vd_t bcore_planted_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_PLANTED_H
-// BETH_PLANT_SIGNATURE 1340228222
+// BETH_PLANT_SIGNATURE  346511815

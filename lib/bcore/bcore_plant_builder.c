@@ -70,13 +70,9 @@ er_t bcore_plant_builder_target_s_build( const bcore_plant_builder_target_s* o, 
         st_s_push_fa( file_path, "#<sc_t>", o->sources.data[ i ]->sc );
 
         ASSERT( o->name );
+        ASSERT( o->extension );
 
-        if( st_s_count_sc( o->name, 0, -1, "_planted" ) > 0 )
-        {
-            ERR_fa( "Plant name is '#<sc_t>'. Substring '_planted' should not be part of the name.", o->name->sc );
-        }
-
-        st_s* planted_name = BLM_A_PUSH( st_s_create_fa( "#<sc_t>_planted", o->name->sc ) );
+        st_s* planted_name = BLM_A_PUSH( st_s_create_fa( "#<sc_t>_#<sc_t>", o->name->sc, o->extension->sc ) );
 
         sz_t index = -1;
         BLM_TRY( bcore_plant_compiler_compile( planted_name->sc, file_path->sc, &index ) );
