@@ -198,11 +198,11 @@ badapt_adaptive* badapt_ern_builder_s_build( const badapt_ern_builder_s* o )
     bmath_mf3_s_set_size( &ern->w_hx, o->size_hidden, o->size_input );
     bmath_mf3_s_set_size( &ern->w_hc, o->size_hidden, o->size_hidden );
     bmath_mf3_s_set_size( &ern->w_oh, o->size_output, o->size_hidden );
-    bmath_mf3_s_set_random( &ern->w_hx, false, false, 0, 1.0, -0.5, 0.5, &random_state );
+    bmath_mf3_s_set_random_u3( &ern->w_hx, false, false, 0, 1.0, -0.5, 0.5, &random_state );
 
     f3_t v_limit = 1.0 / f3_srt( o->size_hidden );
-    bmath_mf3_s_set_random( &ern->w_hc, false, false, 0, 1.0, -v_limit, v_limit, &random_state );
-    bmath_mf3_s_set_random( &ern->w_oh, false, false, 0, 1.0, -0.5, 0.5, &random_state );
+    bmath_mf3_s_set_random_u3( &ern->w_hc, false, false, 0, 1.0, -v_limit, v_limit, &random_state );
+    bmath_mf3_s_set_random_u3( &ern->w_oh, false, false, 0, 1.0, -0.5, 0.5, &random_state );
 
     bmath_mf3_s_set_size( &ern->d_w_hx, ern->w_hx.rows, ern->w_hx.cols );
     bmath_mf3_s_set_size( &ern->d_w_hc, ern->w_hc.rows, ern->w_hc.cols );

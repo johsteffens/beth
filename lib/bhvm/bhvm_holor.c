@@ -619,12 +619,12 @@ void bhvm_value_s_cat_set( const bhvm_value_s* a, const bhvm_value_s* b, bhvm_va
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_value_s_set_random( bhvm_value_s* o, f3_t density, f3_t min, f3_t max, u3_t* p_rval )
+void bhvm_value_s_set_random_u3( bhvm_value_s* o, f3_t density, f3_t min, f3_t max, u3_t* p_rval )
 {
     switch( o->type )
     {
-        case TYPEOF_f2_t: { bmath_vf2_s v = bhvm_value_s_get_weak_vf2( o ); bmath_vf2_s_set_random( &v, density, min, max, p_rval ); }; break;
-        case TYPEOF_f3_t: { bmath_vf3_s v = bhvm_value_s_get_weak_vf3( o ); bmath_vf3_s_set_random( &v, density, min, max, p_rval ); }; break;
+        case TYPEOF_f2_t: { bmath_vf2_s v = bhvm_value_s_get_weak_vf2( o ); bmath_vf2_s_set_random_u3( &v, density, min, max, p_rval ); }; break;
+        case TYPEOF_f3_t: { bmath_vf3_s v = bhvm_value_s_get_weak_vf3( o ); bmath_vf3_s_set_random_u3( &v, density, min, max, p_rval ); }; break;
         default: break;
     }
 }
@@ -1889,7 +1889,7 @@ static void selftest( void )
     bhvm_holor_s_copy_size( h2, h1 );
 
     u2_t rval = 123;
-    bhvm_holor_s_set_random( h1, 1.0, 0, 1, &rval );
+    bhvm_holor_s_set_random_u3( h1, 1.0, 0, 1, &rval );
     bhvm_holor_s_cpy( h1, h2 );
 
     bhvm_holor_s_mul_scl_f3_add( h1, 2, h2, h2 );

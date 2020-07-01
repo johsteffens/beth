@@ -156,16 +156,16 @@ void BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols );
  *
  *  Note:
  *  Even with rank_deficit == 0, a large matrix can be near enough to singular
- *  such that an attempt of matrix inversion fails. Use set_random_full_rank
+ *  such that an attempt of matrix inversion fails. Use set_random_u3_full_rank
  *  in order to create a full rank square matrix.
  */
-void BCATU(bmath_mfx_s,set_random)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, sz_t rank_deficit, fx_t density, fx_t min, fx_t max, u3_t* p_rval );
+void BCATU(bmath_mfx_s,set_random_u3)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, sz_t rank_deficit, fx_t density, fx_t min, fx_t max, u3_t* p_rval );
 
 /** Creates a random full rank square matrix
  *  pdf: true: Creates a positive definite matrix
  *  eps: Specifies the ratio of minimal to maximal magnitude of singular values.
  */
-void BCATU(bmath_mfx_s,set_random_full_rank)( bmath_mfx_s* o, bl_t pdf, fx_t eps, u3_t* p_rval );
+void BCATU(bmath_mfx_s,set_random_u3_full_rank)( bmath_mfx_s* o, bl_t pdf, fx_t eps, u3_t* p_rval );
 
 bmath_mfx_s* BCATU(bmath_mfx_s,create_set_size)( uz_t rows, uz_t cols );
 bmath_mfx_s* BCATU(bmath_mfx_s,create_fill_random)( uz_t rows, uz_t cols, fx_t min, fx_t max, u2_t* rval );

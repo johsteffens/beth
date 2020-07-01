@@ -90,10 +90,10 @@ void BCATU(bmath_arr_vfx_s,on_section_fill)( bmath_arr_vfx_s* o, uz_t start, uz_
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_arr_vfx_s,on_section_set_random)( bmath_arr_vfx_s* o, uz_t start, uz_t end, fx_t density, fx_t min, fx_t max, u3_t* rval )
+void BCATU(bmath_arr_vfx_s,on_section_set_random_u3)( bmath_arr_vfx_s* o, uz_t start, uz_t end, fx_t density, fx_t min, fx_t max, u3_t* rval )
 {
     end = end < o->size ? end : o->size;
-    for( uz_t i = start; i < end; i++ ) BCATU(bmath_vfx_s,set_random)( &o->data[ i ], density, min, max, rval );
+    for( uz_t i = start; i < end; i++ ) BCATU(bmath_vfx_s,set_random_u3)( &o->data[ i ], density, min, max, rval );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -389,7 +389,7 @@ static vd_t selftest( void )
 
         BCATU(bmath_arr_vfx_s,on_section_set_size)( a1, 0, -1, n );
         u3_t rval = 123;
-        BCATU(bmath_arr_vfx_s,on_section_set_random)( a1, 0, -1, 1.0, -1, 1, &rval );
+        BCATU(bmath_arr_vfx_s,on_section_set_random_u3)( a1, 0, -1, 1.0, -1, 1, &rval );
         BCATU(bmath_arr_vfx_s,on_section_set_sqr)( a1, 0, -1, 4 );
         for( uz_t i = 0; i < size; i++ ) ASSERT( BCATU(fx,abs)( BCATU(bmath_vfx_s,fx_sqr)( &a1->data[ i ] ) - 4.0 ) < max_dev );
         BCATU(bmath_arr_vfx_s,on_section_set_avg)( a1, 0, -1, 2 );

@@ -238,7 +238,7 @@ void BCATU(bmath_vfx_s,set_data)( bmath_vfx_s* o, const fx_t* data, sz_t size )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_vfx_s,set_random)( bmath_vfx_s* o, fx_t density, fx_t min, fx_t max, u3_t* p_rval )
+void BCATU(bmath_vfx_s,set_random_u3)( bmath_vfx_s* o, fx_t density, fx_t min, fx_t max, u3_t* p_rval )
 {
     u3_t rval = p_rval ? *p_rval : 12345;
     rval = ( rval ) ? rval : 12345; // map 0 to a valid rval for xsg

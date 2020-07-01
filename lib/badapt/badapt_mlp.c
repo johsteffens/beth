@@ -254,7 +254,7 @@ badapt_adaptive* badapt_builder_mlp_funnel_s_build( const badapt_builder_mlp_fun
     {
         badapt_mlp_layer_s* layer = &mlp->arr_layer.arr_data[ i ];
         bmath_mf3_s_set_size( &layer->w, layer->kernels, layer->input_size );
-        bmath_mf3_s_set_random( &layer->w, false, false, 0, 1.0, -0.5, 0.5, &random_state );
+        bmath_mf3_s_set_random_u3( &layer->w, false, false, 0, 1.0, -0.5, 0.5, &random_state );
 
         bmath_vf3_s_set_size( &layer->b, layer->kernels );
         bmath_vf3_s_zro( &layer->b );

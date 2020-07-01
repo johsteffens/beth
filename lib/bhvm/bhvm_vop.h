@@ -156,7 +156,7 @@ group :ar0 =
         {
             sz_t i = o->i.v[ 0 ];
             u3_t rval = o->rseed + i;
-            bhvm_value_s_set_random( &ah[ i ].v, o->density, o->min, o->max, &rval );
+            bhvm_value_s_set_random_u3( &ah[ i ].v, o->density, o->min, o->max, &rval );
         };
 
         func :: :sig = { return "y"; };
@@ -187,7 +187,7 @@ group :ar0 =
             u3_t* rval = ( u3_t* )&o->rval;
             bcore_mutex_s* mutex = ( bcore_mutex_s* )&o->mutex;
             bcore_mutex_s_lock( mutex );
-            bhvm_value_s_set_random( &ah[ i ].v, o->density, o->min, o->max, rval );
+            bhvm_value_s_set_random_u3( &ah[ i ].v, o->density, o->min, o->max, rval );
             bcore_mutex_s_unlock( mutex );
         };
 

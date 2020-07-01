@@ -420,7 +420,7 @@ badapt_adaptive* badapt_builder_c1d_funnel_s_build( const badapt_builder_c1d_fun
     {
         badapt_c1d_layer_s* layer = &c1d->arr_layer.arr_data[ i ];
         bmath_mf3_s_set_size( &layer->w, layer->kernel_size, layer->kernels );
-        bmath_mf3_s_set_random( &layer->w, false, false, 0, 1.0, -0.5, 0.5, &random_state );
+        bmath_mf3_s_set_random_u3( &layer->w, false, false, 0, 1.0, -0.5, 0.5, &random_state );
         bmath_vf3_s_set_size( &layer->b, layer->kernels * layer->steps );
         bmath_vf3_s_zro( &layer->b );
         layer->a = badapt_activator_a_clone( badapt_arr_layer_activator_s_get_activator( &o->arr_layer_activator, i, layers ) );

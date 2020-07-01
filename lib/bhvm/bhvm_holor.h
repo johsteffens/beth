@@ -293,7 +293,7 @@ static inline bmath_vf3_s bhvm_value_s_get_weak_vf3( const bhvm_value_s* o )
  *     density (range [0.0, 1.0]) specifies the rate at which the random generator
  *     creates a non-zero value.
  */
-void bhvm_value_s_set_random( bhvm_value_s* o, f3_t density, f3_t min, f3_t max, u3_t* p_rval );
+void bhvm_value_s_set_random_u3( bhvm_value_s* o, f3_t density, f3_t min, f3_t max, u3_t* p_rval );
 
 /** Frobenius Norm
  *  See bmath_mf3_fdev... for more details

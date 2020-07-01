@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-06-27T12:55:43Z
+ *  Last File Update: 2020-07-01T10:46:46Z
  *
  *  Copyright and License of this File:
  *
@@ -180,7 +180,7 @@ void bhvm_vop_ar0_randomize_s_run( const bhvm_vop_ar0_randomize_s* o, bhvm_holor
 {
     sz_t i = o->i.v[ 0 ];
     u3_t rval = o->rseed + i;
-    bhvm_value_s_set_random( &ah[ i ].v, o->density, o->min, o->max, &rval );
+    bhvm_value_s_set_random_u3( &ah[ i ].v, o->density, o->min, o->max, &rval );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar0_nul_dp_s )
@@ -214,7 +214,7 @@ void bhvm_vop_ar0_rand_s_run( const bhvm_vop_ar0_rand_s* o, bhvm_holor_s* ah )
     u3_t* rval = ( u3_t* )&o->rval;
     bcore_mutex_s* mutex = ( bcore_mutex_s* )&o->mutex;
     bcore_mutex_s_lock( mutex );
-    bhvm_value_s_set_random( &ah[ i ].v, o->density, o->min, o->max, rval );
+    bhvm_value_s_set_random_u3( &ah[ i ].v, o->density, o->min, o->max, rval );
     bcore_mutex_s_unlock( mutex );
 }
 
@@ -1906,4 +1906,4 @@ vd_t bhvm_vop_planted_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// BETH_PLANT_SIGNATURE 2904721430
+// BETH_PLANT_SIGNATURE 1962149864

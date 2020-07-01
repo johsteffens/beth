@@ -554,17 +554,17 @@ badapt_adaptive* badapt_lstm_builder_s_build( const badapt_lstm_builder_s* o )
     f3_t limit_rec = 1.0 / f3_srt( o->size_hidden );
     f3_t limit_fwd = 0.5;
 
-    bmath_mf3_s_set_random( &lstm->w_ox, false, false, 0, 1.0, -limit_fwd, limit_fwd, &random_state );
-    bmath_mf3_s_set_random( &lstm->w_oh, false, false, 0, 1.0, -limit_rec, limit_rec, &random_state );
-    bmath_mf3_s_set_random( &lstm->w_rh, false, false, 0, 1.0, -limit_fwd, limit_fwd, &random_state );
+    bmath_mf3_s_set_random_u3( &lstm->w_ox, false, false, 0, 1.0, -limit_fwd, limit_fwd, &random_state );
+    bmath_mf3_s_set_random_u3( &lstm->w_oh, false, false, 0, 1.0, -limit_rec, limit_rec, &random_state );
+    bmath_mf3_s_set_random_u3( &lstm->w_rh, false, false, 0, 1.0, -limit_fwd, limit_fwd, &random_state );
 
-    bmath_mf3_s_set_random( &lstm->w_fx, false, false, 0, 1.0, -limit_fwd, limit_fwd, &random_state );
-    bmath_mf3_s_set_random( &lstm->w_ix, false, false, 0, 1.0, -limit_fwd, limit_fwd, &random_state );
-    bmath_mf3_s_set_random( &lstm->w_qx, false, false, 0, 1.0, -limit_fwd, limit_fwd, &random_state );
+    bmath_mf3_s_set_random_u3( &lstm->w_fx, false, false, 0, 1.0, -limit_fwd, limit_fwd, &random_state );
+    bmath_mf3_s_set_random_u3( &lstm->w_ix, false, false, 0, 1.0, -limit_fwd, limit_fwd, &random_state );
+    bmath_mf3_s_set_random_u3( &lstm->w_qx, false, false, 0, 1.0, -limit_fwd, limit_fwd, &random_state );
 
-    bmath_mf3_s_set_random( &lstm->w_fh, false, false, 0, 1.0, -limit_rec, limit_rec, &random_state );
-    bmath_mf3_s_set_random( &lstm->w_ih, false, false, 0, 1.0, -limit_rec, limit_rec, &random_state );
-    bmath_mf3_s_set_random( &lstm->w_qh, false, false, 0, 1.0, -limit_rec, limit_rec, &random_state );
+    bmath_mf3_s_set_random_u3( &lstm->w_fh, false, false, 0, 1.0, -limit_rec, limit_rec, &random_state );
+    bmath_mf3_s_set_random_u3( &lstm->w_ih, false, false, 0, 1.0, -limit_rec, limit_rec, &random_state );
+    bmath_mf3_s_set_random_u3( &lstm->w_qh, false, false, 0, 1.0, -limit_rec, limit_rec, &random_state );
 
     BCORE_LIFE_RETURNV( badapt_adaptive*, ( badapt_adaptive* )lstm );
 }

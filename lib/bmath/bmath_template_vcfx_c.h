@@ -162,7 +162,7 @@ bmath_vcfx_s* BCATU(bmath_vcfx_s,create_fill)( bmath_cfx_s val, uz_t size )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_vcfx_s,set_random)( bmath_vcfx_s* o, fx_t density, fx_t min, fx_t max, u3_t* p_rval )
+void BCATU(bmath_vcfx_s,set_random_u3)( bmath_vcfx_s* o, fx_t density, fx_t min, fx_t max, u3_t* p_rval )
 {
     u3_t rval = p_rval ? *p_rval : 12345;
     fx_t range = max - min;

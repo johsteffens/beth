@@ -68,7 +68,7 @@ static void test_fourier_accuracy()
         bmath_vcf2_s_set_size( vcf2_2, size );
         bmath_vcf3_s_set_size( vcf3_2, size );
 
-        bmath_vcf2_s_set_random( vcf2_1, 1.0, -1.0, 1.0, NULL );
+        bmath_vcf2_s_set_random_u3( vcf2_1, 1.0, -1.0, 1.0, NULL );
 
         bmath_vcf3_s_copy_a( vcf3_1, vcf2_1 );
         bmath_vcf3_s_copy_a( vcf3_c, vcf2_1 );
@@ -100,7 +100,7 @@ static void test_fourier_accuracy()
         bmath_vcf3_s_set_size( vcf3_2, size );
         bmath_vcf3_s_set_size( vcf3_3, size );
 
-        bmath_vcf3_s_set_random( vcf3_1, 1.0, -1.0, 1.0, NULL );
+        bmath_vcf3_s_set_random_u3( vcf3_1, 1.0, -1.0, 1.0, NULL );
 
         bmath_fourier_f3_fft( vcf3_1->data, vcf3_2->data, vcf3_1->size );
         bmath_fourier_f3_dft( vcf3_1->data, vcf3_3->data, vcf3_1->size );
@@ -127,7 +127,7 @@ static void test_fourier_accuracy()
         bmath_vcf2_s_set_size( vcf2_2, size );
         bmath_vcf3_s_set_size( vcf3_2, size );
 
-        bmath_vcf2_s_set_random( vcf2_1, 1.0, -1.0, 1.0, NULL );
+        bmath_vcf2_s_set_random_u3( vcf2_1, 1.0, -1.0, 1.0, NULL );
 
         bmath_vcf3_s_copy_a( vcf3_1, vcf2_1 );
         bmath_vcf3_s_copy_a( vcf3_c, vcf2_1 );

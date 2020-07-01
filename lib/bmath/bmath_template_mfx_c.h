@@ -39,7 +39,7 @@ void BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_mfx_s,set_random)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, sz_t rank_deficit, fx_t density, fx_t min, fx_t max, u3_t* p_rval )
+void BCATU(bmath_mfx_s,set_random_u3)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, sz_t rank_deficit, fx_t density, fx_t min, fx_t max, u3_t* p_rval )
 {
     u3_t rval = p_rval ? *p_rval : 12345;
     rval = ( rval ) ? rval : 12345; // map 0 to a valid rval for xsg
@@ -51,7 +51,7 @@ void BCATU(bmath_mfx_s,set_random)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, sz_t ran
     {
         if( pdf )
         {
-            BCATU(bmath_mfx_s,set_random)( o, false, false, 0, density, min, max, &rval );
+            BCATU(bmath_mfx_s,set_random_u3)( o, false, false, 0, density, min, max, &rval );
             BCATU(bmath_mfx_s,mul_htp)( o, o, o );
         }
         else if( hsm )
@@ -103,16 +103,16 @@ void BCATU(bmath_mfx_s,set_random)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, sz_t ran
             bmath_mfx_s* m1 = BCATU(bmath_mfx_s,create)();
             bmath_vfx_s* v1 = BCATU(bmath_vfx_s,create)();
             BCATU(bmath_mfx_s,set_size)( m1, o->rows, rank );
-            BCATU(bmath_mfx_s,set_random)( m1, false, false, 0, density, min, max, &rval );
+            BCATU(bmath_mfx_s,set_random_u3)( m1, false, false, 0, density, min, max, &rval );
 
             BCATU(bmath_vfx_s,set_size)( v1, rank );
             if( pdf )
             {
-                BCATU(bmath_vfx_s,set_random)( v1, density, 0.0, 1.0, &rval );
+                BCATU(bmath_vfx_s,set_random_u3)( v1, density, 0.0, 1.0, &rval );
             }
             else
             {
-                BCATU(bmath_vfx_s,set_random)( v1, density, min, max, &rval );
+                BCATU(bmath_vfx_s,set_random_u3)( v1, density, min, max, &rval );
             }
 
             BCATU(bmath_mfx_s,mul_udu_htp)( m1, v1, o );
@@ -125,8 +125,8 @@ void BCATU(bmath_mfx_s,set_random)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, sz_t ran
             bmath_mfx_s* m2 = BCATU(bmath_mfx_s,create)();
             BCATU(bmath_mfx_s,set_size)( m1, o->rows, rank );
             BCATU(bmath_mfx_s,set_size)( m2, o->cols, rank );
-            BCATU(bmath_mfx_s,set_random)( m1, false, false, 0, density, min, max, &rval );
-            BCATU(bmath_mfx_s,set_random)( m2, false, false, 0, density, min, max, &rval );
+            BCATU(bmath_mfx_s,set_random_u3)( m1, false, false, 0, density, min, max, &rval );
+            BCATU(bmath_mfx_s,set_random_u3)( m2, false, false, 0, density, min, max, &rval );
             BCATU(bmath_mfx_s,mul_htp)( m1, m2, o );
             BCATU(bmath_mfx_s,discard)( m1 );
             BCATU(bmath_mfx_s,discard)( m2 );
@@ -138,13 +138,13 @@ void BCATU(bmath_mfx_s,set_random)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, sz_t ran
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_mfx_s,set_random_full_rank)( bmath_mfx_s* o, bl_t pdf, fx_t eps, u3_t* p_rval )
+void BCATU(bmath_mfx_s,set_random_u3_full_rank)( bmath_mfx_s* o, bl_t pdf, fx_t eps, u3_t* p_rval )
 {
     BLM_INIT();
     ASSERT( BCATU(bmath_mfx_s,is_square)( o ) );
     ASSERT( eps > 0 && eps <= 1.0 );
 
-    BCATU(bmath_mfx_s,set_random)( o, false, false, 0, 1.0, -1.0, 1.0, p_rval );
+    BCATU(bmath_mfx_s,set_random_u3)( o, false, false, 0, 1.0, -1.0, 1.0, p_rval );
     sz_t n = o->rows;
 
     bmath_mfx_s* u = BLM_A_PUSH( BCATU(bmath_mfx_s,create)() );
@@ -157,7 +157,7 @@ void BCATU(bmath_mfx_s,set_random_full_rank)( bmath_mfx_s* o, bl_t pdf, fx_t eps
 
     BCATU(bmath_mfx_s,svd)( u, o, v );
 
-    BCATU(bmath_vfx_s,set_random)( d, 1.0, eps, 1.0, p_rval );
+    BCATU(bmath_vfx_s,set_random_u3)( d, 1.0, eps, 1.0, p_rval );
 
     if( pdf )
     {
@@ -3002,7 +3002,7 @@ static vd_t selftest( void )
         u3_t rval = 1234;
         BCATU(bmath_mfx_s,set_size)( m1, n, n );
         BCATU(bmath_mfx_s,set_size_to)( m1, m2 );
-        BCATU(bmath_mfx_s,set_random)( m1, false, false, 0, 1.0, -1, 1, &rval );
+        BCATU(bmath_mfx_s,set_random_u3)( m1, false, false, 0, 1.0, -1, 1, &rval );
         BCATU(bmath_mfx_s,mul_htp)( m1, m1, m2 );
         ASSERT( BCATU(bmath_mfx_s,is_near_hsm)( m2, max_dev ) );
     }
@@ -3015,7 +3015,7 @@ static vd_t selftest( void )
         u3_t rval = 124;
         BCATU(bmath_arr,vfx,s,set_size)( a1, size );
         BCATU(bmath_arr,vfx,s,on_section_set_size)( a1, 0, -1, n );
-        BCATU(bmath_arr,vfx,s,on_section_set_random)( a1, 0, -1, 1.0, -1, 1, &rval );
+        BCATU(bmath_arr,vfx,s,on_section_set_random_u3)( a1, 0, -1, 1.0, -1, 1, &rval );
 
         BCATU(bmath_mfx_s,set_size)( m1, n, n );
         BCATU(bmath_mfx_s,set_size)( m2, n, n );
@@ -3047,8 +3047,8 @@ static vd_t selftest( void )
         BCATU(bmath_vfx_s,set_size)( v3, n );
 
         u3_t rval = 1243;
-        BCATU(bmath_mfx_s,set_random)( m1, false, false, 0, 1.0, -1, 1, &rval );
-        BCATU(bmath_vfx_s,set_random)( v1, 1.0, -1, 1, &rval );
+        BCATU(bmath_mfx_s,set_random_u3)( m1, false, false, 0, 1.0, -1, 1, &rval );
+        BCATU(bmath_vfx_s,set_random_u3)( v1, 1.0, -1, 1, &rval );
 
         BCATU(bmath_mfx_s,mul_av1)( m1, v1, v2 );
         BCATU(bmath_mfx_s,inv_av1)( m1, m2 );
@@ -3067,12 +3067,12 @@ static vd_t selftest( void )
         BCATU(bmath_vfx_s,set_size)( v3, n );
 
         u3_t rval = 1237;
-        BCATU(bmath_mfx_s,set_random)( m1, false, false, 0, 1.0, -1, 1, &rval );
+        BCATU(bmath_mfx_s,set_random_u3)( m1, false, false, 0, 1.0, -1, 1, &rval );
 
         bmath_mfx_s m1_sub = BCATU(bmath_mfx_s,get_weak_sub_mat)( m1, 0, 0, n, n );
         BCATU(bmath_mfx_s,mul_htp)( &m1_sub, &m1_sub, &m1_sub ); // make nxn submatrix of m1 symmetric
 
-        BCATU(bmath_vfx_s,set_random)( v1, 1.0, -1, 1, &rval );
+        BCATU(bmath_vfx_s,set_random_u3)( v1, 1.0, -1, 1, &rval );
 
         BCATU(bmath_mfx_s,mul_av1)( m1, v1, v2 );
         BCATU(bmath_mfx_s,pdf_inv_av1)( m1, m2 );
@@ -3091,12 +3091,12 @@ static vd_t selftest( void )
         BCATU(bmath_vfx_s,set_size)( v3, n );
 
         u3_t rval = 1237;
-        BCATU(bmath_mfx_s,set_random)( m1, false, false, 0, 1.0, -1, 1, &rval );
+        BCATU(bmath_mfx_s,set_random_u3)( m1, false, false, 0, 1.0, -1, 1, &rval );
 
         bmath_mfx_s m1_sub = BCATU(bmath_mfx_s,get_weak_sub_mat)( m1, 0, 0, n, n );
         BCATU(bmath_mfx_s,mul_htp)( &m1_sub, &m1_sub, &m1_sub ); // make nxn submatrix of m1 symmetric
 
-        BCATU(bmath_vfx_s,set_random)( v1, 1.0, -1, 1, &rval );
+        BCATU(bmath_vfx_s,set_random_u3)( v1, 1.0, -1, 1, &rval );
 
         BCATU(bmath_mfx_s,mul_av1)( m1, v1, v2 );
         BCATU(bmath_mfx_s,hsm_piv_av1)( m1, epsilon, m2 );
@@ -3121,8 +3121,8 @@ static vd_t selftest( void )
             BCATU(bmath_vfx_s,set_size)( v1, n );
 
             u3_t rval = 1236;
-            BCATU(bmath_mfx_s,set_random)( m1, false, false, 0, 1.0, -1, 1, &rval );
-            BCATU(bmath_vfx_s,set_random)( v1,                  1.0, -1, 1, &rval );
+            BCATU(bmath_mfx_s,set_random_u3)( m1, false, false, 0, 1.0, -1, 1, &rval );
+            BCATU(bmath_vfx_s,set_random_u3)( v1,                  1.0, -1, 1, &rval );
 
             BCATU(bmath_mfx_s,mul_udu_htp)( m1, v1, m5 );
 
@@ -3151,9 +3151,9 @@ static vd_t selftest( void )
             BCATU(bmath_vfx_s,set_size)( v2, n );
 
             u3_t rval = 1236;
-            BCATU(bmath_mfx_s,set_random)( m1, false, false, 0, 1.0, -1, 1, &rval );
-            BCATU(bmath_vfx_s,set_random)( v2,                  1.0, -1, 1, &rval );
-            BCATU(bmath_mfx_s,set_random)( m3, false, false, 0, 1.0, -1, 1, &rval );
+            BCATU(bmath_mfx_s,set_random_u3)( m1, false, false, 0, 1.0, -1, 1, &rval );
+            BCATU(bmath_vfx_s,set_random_u3)( v2,                  1.0, -1, 1, &rval );
+            BCATU(bmath_mfx_s,set_random_u3)( m3, false, false, 0, 1.0, -1, 1, &rval );
 
             BCATU(bmath_mfx_s,mul_udv_htp)( m1, v2, m3, m5 );
 
@@ -3181,9 +3181,9 @@ static vd_t selftest( void )
             BCATU(bmath_mfx_s,set_size)( m6, m, m );
 
             u3_t rval = 1236;
-            BCATU(bmath_mfx_s,set_random)( m1, false, false, 0, 1.0, -1, 1, &rval );
-            BCATU(bmath_mfx_s,set_random)( m2, false, false, 0, 1.0, -1, 1, &rval );
-            BCATU(bmath_mfx_s,set_random)( m3, false, false, 0, 1.0, -1, 1, &rval );
+            BCATU(bmath_mfx_s,set_random_u3)( m1, false, false, 0, 1.0, -1, 1, &rval );
+            BCATU(bmath_mfx_s,set_random_u3)( m2, false, false, 0, 1.0, -1, 1, &rval );
+            BCATU(bmath_mfx_s,set_random_u3)( m3, false, false, 0, 1.0, -1, 1, &rval );
 
             for( sz_t i = 0; i < m2->rows; i++ )
             {
