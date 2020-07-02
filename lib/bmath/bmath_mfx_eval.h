@@ -35,7 +35,8 @@ BCORE_DECLARE_OBJECT( bmath_mfx_eval_s )
     sz_t cols;
     sz_t dim3;       // third dimension (e.g. in multiplication tests); -1: use default
 
-    u2_t seed;       // random seed
+    bcore_prsg* prsg;  // random generator
+
     f3_t density;    // random matrix density
     bl_t full;       // full vs thin decomposition (where applicable)
     f3_t near_limit_f2; // limit for near-assertions (f2_t)
