@@ -90,6 +90,17 @@ void BCATU(bmath_arr_vfx_s,on_section_fill)( bmath_arr_vfx_s* o, uz_t start, uz_
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void BCATU(bmath_arr_vfx_s,on_section_set_random)( bmath_arr_vfx_s* o, uz_t start, uz_t end, fx_t density, fx_t min, fx_t max, bcore_prsg* prsg )
+{
+    BLM_INIT();
+    if( !prsg ) prsg = ( bcore_prsg* )BLM_CREATE( bcore_prsg_lcg_u3_00_s );
+    end = end < o->size ? end : o->size;
+    for( uz_t i = start; i < end; i++ ) BCATU(bmath_vfx_s,set_random)( &o->data[ i ], density, min, max, prsg );
+    BLM_DOWN();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void BCATU(bmath_arr_vfx_s,on_section_set_random_u3)( bmath_arr_vfx_s* o, uz_t start, uz_t end, fx_t density, fx_t min, fx_t max, u3_t* rval )
 {
     end = end < o->size ? end : o->size;

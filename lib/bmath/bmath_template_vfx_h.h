@@ -83,6 +83,7 @@ void BCATU(bmath_vfx_s,set_data)( bmath_vfx_s* o, const fx_t* data, sz_t size );
  *     density (range [0.0, 1.0]) specifies the rate at which the random generator
  *     creates a non-zero value.
  */
+void BCATU(bmath_vfx_s,set_random)(    bmath_vfx_s* o, fx_t density, fx_t min, fx_t max, bcore_prsg* prsg );
 void BCATU(bmath_vfx_s,set_random_u3)( bmath_vfx_s* o, fx_t density, fx_t min, fx_t max, u3_t* p_rval );
 
 /// swaps vectors by swapping data references (no copying of memory)

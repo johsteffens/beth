@@ -162,16 +162,16 @@ bmath_vcfx_s* BCATU(bmath_vcfx_s,create_fill)( bmath_cfx_s val, uz_t size )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_vcfx_s,set_random_u3)( bmath_vcfx_s* o, fx_t density, fx_t min, fx_t max, u3_t* p_rval )
+void BCATU(bmath_vcfx_s,set_random)( bmath_vcfx_s* o, fx_t density, fx_t min, fx_t max, bcore_prsg* prsg )
 {
-    u3_t rval = p_rval ? *p_rval : 12345;
-    fx_t range = max - min;
+    BLM_INIT();
+    if( !prsg ) prsg = ( bcore_prsg* )BLM_CREATE( bcore_prsg_lcg_u3_00_s );
     for( uz_t i = 0; i < o->size; i++ )
     {
-        if( f3_rnd_pos( &rval ) < density )
+        if( bcore_prsg_a_gen_f3( prsg, 0, 1 ) < density )
         {
-            o->data[ i ].v[ 0 ] = ( range * f3_rnd_pos( &rval ) ) + min;
-            o->data[ i ].v[ 1 ] = ( range * f3_rnd_pos( &rval ) ) + min;
+            o->data[ i ].v[ 0 ] = bcore_prsg_a_gen_f3( prsg, min, max );
+            o->data[ i ].v[ 1 ] = bcore_prsg_a_gen_f3( prsg, min, max );
         }
         else
         {
@@ -179,7 +179,19 @@ void BCATU(bmath_vcfx_s,set_random_u3)( bmath_vcfx_s* o, fx_t density, fx_t min,
             o->data[ i ].v[ 1 ] = 0;
         }
     }
-    if( p_rval ) *p_rval = rval;
+    BLM_DOWN();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void BCATU(bmath_vcfx_s,set_random_u3)( bmath_vcfx_s* o, fx_t density, fx_t min, fx_t max, u3_t* p_rval )
+{
+    BLM_INIT();
+    bcore_prsg* prsg = ( bcore_prsg* )BLM_CREATE( bcore_prsg_lcg_u3_00_s );
+    if( p_rval ) bcore_prsg_a_reseed( prsg, *p_rval );
+    BCATU(bmath_vcfx_s,set_random)( o, density, min, max, prsg );
+    if( p_rval ) *p_rval = bcore_prsg_a_gen_u3( prsg );
+    BLM_DOWN();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
