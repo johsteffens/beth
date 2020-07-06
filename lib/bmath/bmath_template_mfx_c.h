@@ -3004,7 +3004,7 @@ static vd_t selftest( void )
 
     }
 
-    fx_t max_dev = sizeof( fx_t ) == 4 ? 1E-3 : 1E-8;
+    fx_t max_dev = sizeof( fx_t ) == 4 ? 1E-2 : 1E-8;
     fx_t epsilon = sizeof( fx_t ) == 4 ? 1E-5 : 1E-8;
 
     // lower triangular inversion
@@ -3035,7 +3035,7 @@ static vd_t selftest( void )
     // covariance
     {
         uz_t size = 1000;
-        uz_t n    = 10;
+        uz_t n    = 20;
         u3_t rval = 124;
         BCATU(bmath_arr,vfx,s,set_size)( a1, size );
         BCATU(bmath_arr,vfx,s,on_section_set_size)( a1, 0, -1, n );
@@ -3063,7 +3063,7 @@ static vd_t selftest( void )
 
     // affine-transformation
     {
-        uz_t n = 20;
+        uz_t n = 10;
         BCATU(bmath_mfx_s,set_size)( m1, n, n + 1 );
         BCATU(bmath_mfx_s,set_size)( m2, n, n + 1 );
         BCATU(bmath_vfx_s,set_size)( v1, n );
@@ -3083,14 +3083,14 @@ static vd_t selftest( void )
 
     // hsm-affine-transformation
     {
-        uz_t n = 20;
+        uz_t n = 10;
         BCATU(bmath_mfx_s,set_size)( m1, n, n + 1 );
         BCATU(bmath_mfx_s,set_size)( m2, n, n + 1 );
         BCATU(bmath_vfx_s,set_size)( v1, n );
         BCATU(bmath_vfx_s,set_size)( v2, n );
         BCATU(bmath_vfx_s,set_size)( v3, n );
 
-        u3_t rval = 1235;
+        u3_t rval = 1236;
         BCATU(bmath_mfx_s,set_random_u3)( m1, false, false, 0, 1.0, -1, 1, &rval );
 
         bmath_mfx_s m1_sub = BCATU(bmath_mfx_s,get_weak_sub_mat)( m1, 0, 0, n, n );
@@ -3107,14 +3107,14 @@ static vd_t selftest( void )
 
     // hsm-affine-transformation (test via piv)
     {
-        uz_t n = 20;
+        uz_t n = 10;
         BCATU(bmath_mfx_s,set_size)( m1, n, n + 1 );
         BCATU(bmath_mfx_s,set_size)( m2, n, n + 1 );
         BCATU(bmath_vfx_s,set_size)( v1, n );
         BCATU(bmath_vfx_s,set_size)( v2, n );
         BCATU(bmath_vfx_s,set_size)( v3, n );
 
-        u3_t rval = 1235;
+        u3_t rval = 1236;
         BCATU(bmath_mfx_s,set_random_u3)( m1, false, false, 0, 1.0, -1, 1, &rval );
 
         bmath_mfx_s m1_sub = BCATU(bmath_mfx_s,get_weak_sub_mat)( m1, 0, 0, n, n );
