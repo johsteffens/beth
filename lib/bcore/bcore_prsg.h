@@ -24,6 +24,8 @@
 #ifndef BCORE_PRSG_H
 #define BCORE_PRSG_H
 
+#include "bcore_plant.h"
+#include "bcore_leaf.h"
 #include "bcore_control.h"
 #include "bcore_planted.h"
 
@@ -124,6 +126,8 @@ group :xsg =
 };
 
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+vd_t bcore_prsg_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 
