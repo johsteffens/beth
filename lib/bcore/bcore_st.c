@@ -1610,7 +1610,7 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
 
                     case TYPEOF_sz_t:
                     {
-                        smax_t v;
+                        sz_t v;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, "%"SCNsz_t"%n", &v, &size );
                         if( set_arg )
