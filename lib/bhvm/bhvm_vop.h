@@ -175,10 +175,12 @@ group :ar0 =
       */
     stamp :rand =
     {
-        u3_t rval    = 1234; // mutable
+        aware bcore_prsg => prsg;
+        u3_t rval    = 1234; // depracted, use prsg instead
         f3_t min     = -0.5;
         f3_t max     =  0.5;
         f3_t density =  1.0;
+
         hidden bcore_mutex_s mutex;
 
         func :: :run =
@@ -187,7 +189,14 @@ group :ar0 =
             u3_t* rval = ( u3_t* )&o->rval;
             bcore_mutex_s* mutex = ( bcore_mutex_s* )&o->mutex;
             bcore_mutex_s_lock( mutex );
-            bhvm_value_s_set_random_u3( &ah[ i ].v, o->density, o->min, o->max, rval );
+            if( o->prsg )
+            {
+                bhvm_value_s_set_random( &ah[ i ].v, o->density, o->min, o->max, o->prsg );
+            }
+            else
+            {
+                bhvm_value_s_set_random_u3( &ah[ i ].v, o->density, o->min, o->max, rval );
+            }
             bcore_mutex_s_unlock( mutex );
         };
 
