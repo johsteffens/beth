@@ -60,13 +60,17 @@ feature strict 'a' u3_t gen_u3( mutable );
 feature strict 'a' f3_t gen_f3( mutable, f3_t min, f3_t max );
 
 /** Computes a new state derived from a u3_t seed.
- *  Note that function state_u3 does not necessarily return that seed value.
+ *  Note: Function state_u3 above does not necessarily return that seed value.
  */
 feature strict 'a' void set_state_u3( mutable, u3_t seed );
 
 /// Computes a new state derived from state of a and b.
 feature 'a' void set_state_mix( mutable, const :* a, const :* b ) =
 {
+    /* Different mixing methods are thinkable:
+     * Adding, multiplying or xoring should all be suitable.
+     * We should just stick to the same method.
+     */
     :a_set_state_u3( o, :a_state_u3( a ) + :a_state_u3( b ) );
 };
 

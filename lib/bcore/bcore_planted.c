@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-07-11T12:37:01Z
+ *  Last File Update: 2020-07-11T15:36:52Z
  *
  *  Copyright and License of this File:
  *
@@ -307,6 +307,10 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_prsg )
 
 void bcore_prsg_set_state_mix__( bcore_prsg* o, const bcore_prsg* a, const bcore_prsg* b )
 {
+    /* Different mixing methods are thinkable:
+     * Adding, multiplying or xoring should all be suitable.
+     * We should just stick to the same method.
+     */
     bcore_prsg_a_set_state_u3( o, bcore_prsg_a_state_u3( a ) + bcore_prsg_a_state_u3( b ) );
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -1053,4 +1057,4 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// BETH_PLANT_SIGNATURE 2238243288
+// BETH_PLANT_SIGNATURE 3472101218

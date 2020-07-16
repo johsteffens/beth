@@ -212,7 +212,8 @@
 
 /** TODO
  *  - detect cyclic dependencies
- *  - involve dependencies in target_s_get_hash-computation
+ *  - (done) involve dependencies in target_s_get_hash-computation
+ *  - fix: group-trait is not hashed
  */
 
 #ifndef BCORE_PLANT_COMPILER_H
