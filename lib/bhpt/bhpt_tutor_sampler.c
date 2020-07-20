@@ -20,24 +20,22 @@
 /**********************************************************************************************************************/
 /// bhpt_sampler
 
-u3_t bhpt_sampler_sine_random_s_fetch( const bhpt_sampler_sine_random_s* o, u3_t rval, bhvm_value_s* en, bhvm_value_s* ex )
+void bhpt_sampler_sine_random_s_fetch( const bhpt_sampler_sine_random_s* o, bcore_prsg* prsg, bhvm_value_s* en, bhvm_value_s* ex )
 {
-    rval = bcore_lcg00_u3( rval );
-    bl_t pos = ( rval & 1 ) == 0; // pos vs neg sample
-    rval = bcore_lcg00_u3( rval );
-
     ASSERT( en->size == o->size_en );
     ASSERT( ex->size == 1 );
     ASSERT( en->type == TYPEOF_f3_t );
     ASSERT( ex->type == TYPEOF_f3_t );
+
+    bl_t pos = bcore_prsg_a_gen_bl( prsg );
 
     f3_t* en_data = ( f3_t* )en->data;
     f3_t* ex_data = ( f3_t* )ex->data;
 
     if( pos )
     {
-        f3_t omega = 1.0 * f3_pi() * f3_rnd_pos( &rval );
-        f3_t amplitude = 4.0 * f3_rnd_pos( &rval );
+        f3_t omega = 1.0 * f3_pi() * bcore_prsg_a_gen_f3( prsg, 0, 1 );
+        f3_t amplitude = 4.0 * bcore_prsg_a_gen_f3( prsg, 0, 1 );
 
         for( sz_t i = 0; i < o->size_en; i++ )
         {
@@ -48,24 +46,21 @@ u3_t bhpt_sampler_sine_random_s_fetch( const bhpt_sampler_sine_random_s* o, u3_t
     }
     else
     {
-        f3_t rwalker = f3_rnd_sym( &rval );
+        f3_t rwalker = bcore_prsg_a_gen_f3( prsg, -1, 1 );
         for( sz_t i = 0; i < o->size_en; i++ )
         {
-            rwalker += f3_rnd_sym( &rval );
+            rwalker += bcore_prsg_a_gen_f3( prsg, -1, 1 );
             f3_t vn = rwalker;
             en_data[ i ] = vn;
         }
         ex_data[ 0 ] = o->neg_tgt;
     }
-    return rval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-u3_t bhpt_sampler_binary_add_s_fetch( const bhpt_sampler_binary_add_s* o, u3_t rval, bhvm_value_s* en, bhvm_value_s* ex )
+void bhpt_sampler_binary_add_s_fetch( const bhpt_sampler_binary_add_s* o, bcore_prsg* prsg, bhvm_value_s* en, bhvm_value_s* ex )
 {
-    rval = bcore_lcg00_u3( rval );
-
     ASSERT( en->size == o->bits * 2 );
     ASSERT( ex->size == o->bits + 1 );
     ASSERT( en->type == TYPEOF_f3_t );
@@ -74,8 +69,8 @@ u3_t bhpt_sampler_binary_add_s_fetch( const bhpt_sampler_binary_add_s* o, u3_t r
     f3_t* en_data = ( f3_t* )en->data;
     f3_t* ex_data = ( f3_t* )ex->data;
 
-    u3_t v1 = ( rval = bcore_lcg00_u3( rval ) ) & ( ( 1 << o->bits ) - 1 );
-    u3_t v2 = ( rval = bcore_lcg00_u3( rval ) ) & ( ( 1 << o->bits ) - 1 );
+    u3_t v1 = bcore_prsg_a_gen_bits_u3( prsg, o->bits );
+    u3_t v2 = bcore_prsg_a_gen_bits_u3( prsg, o->bits );
     u3_t vo = v1 + v2;
 
     for( sz_t i = 0; i < o->bits; i++ )
@@ -88,16 +83,12 @@ u3_t bhpt_sampler_binary_add_s_fetch( const bhpt_sampler_binary_add_s* o, u3_t r
     {
         ex_data[ i ] = ( ( vo & ( 1 << i ) ) != 0 ) ? o->val_h : o->val_l;
     }
-
-    return rval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-u3_t bhpt_sampler_binary_mul_s_fetch( const bhpt_sampler_binary_mul_s* o, u3_t rval, bhvm_value_s* en, bhvm_value_s* ex )
+void bhpt_sampler_binary_mul_s_fetch( const bhpt_sampler_binary_mul_s* o, bcore_prsg* prsg, bhvm_value_s* en, bhvm_value_s* ex )
 {
-    rval = bcore_lcg00_u3( rval );
-
     ASSERT( en->size == o->bits * 2 );
     ASSERT( ex->size == o->bits * 2 );
     ASSERT( en->type == TYPEOF_f3_t );
@@ -106,8 +97,8 @@ u3_t bhpt_sampler_binary_mul_s_fetch( const bhpt_sampler_binary_mul_s* o, u3_t r
     f3_t* en_data = ( f3_t* )en->data;
     f3_t* ex_data = ( f3_t* )ex->data;
 
-    u3_t v1 = ( rval = bcore_lcg00_u3( rval ) ) & ( ( 1 << o->bits ) - 1 );
-    u3_t v2 = ( rval = bcore_lcg00_u3( rval ) ) & ( ( 1 << o->bits ) - 1 );
+    u3_t v1 = bcore_prsg_a_gen_bits_u3( prsg, o->bits );
+    u3_t v2 = bcore_prsg_a_gen_bits_u3( prsg, o->bits );
     u3_t vo = v1 * v2;
 
     for( sz_t i = 0; i < o->bits; i++ )
@@ -120,16 +111,12 @@ u3_t bhpt_sampler_binary_mul_s_fetch( const bhpt_sampler_binary_mul_s* o, u3_t r
     {
         ex_data[ i ] = ( ( vo & ( 1 << i ) ) != 0 ) ? o->val_h : o->val_l;
     }
-
-    return rval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-u3_t bhpt_sampler_binary_lcg00_s_fetch( const bhpt_sampler_binary_lcg00_s* o, u3_t rval, bhvm_value_s* en, bhvm_value_s* ex )
+void bhpt_sampler_binary_lcg00_s_fetch( const bhpt_sampler_binary_lcg00_s* o, bcore_prsg* prsg, bhvm_value_s* en, bhvm_value_s* ex )
 {
-    rval = bcore_lcg00_u3( rval );
-
     ASSERT( en->size == o->bits );
     ASSERT( ex->size == o->bits );
     ASSERT( en->type == TYPEOF_f3_t );
@@ -138,7 +125,7 @@ u3_t bhpt_sampler_binary_lcg00_s_fetch( const bhpt_sampler_binary_lcg00_s* o, u3
     f3_t* en_data = ( f3_t* )en->data;
     f3_t* ex_data = ( f3_t* )ex->data;
 
-    u3_t vi = ( rval = bcore_lcg00_u3( rval ) ) & ( ( 1 << o->bits ) - 1 );
+    u3_t vi = bcore_prsg_a_gen_bits_u3( prsg, o->bits );
     u3_t vo = bcore_lcg00_u3( vi ) & ( ( 1 << o->bits ) - 1 );
 
     for( sz_t i = 0; i < en->size; i++ )
@@ -150,16 +137,12 @@ u3_t bhpt_sampler_binary_lcg00_s_fetch( const bhpt_sampler_binary_lcg00_s* o, u3
     {
         ex_data[ i ] = ( ( vo & ( 1 << i ) ) != 0 ) ? o->val_h : o->val_l;
     }
-
-    return rval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-u3_t bhpt_sampler_binary_hash_s_fetch( const bhpt_sampler_binary_hash_s* o, u3_t rval, bhvm_value_s* en, bhvm_value_s* ex )
+void bhpt_sampler_binary_hash_s_fetch( const bhpt_sampler_binary_hash_s* o, bcore_prsg* prsg, bhvm_value_s* en, bhvm_value_s* ex )
 {
-    rval = bcore_lcg00_u3( rval );
-
     ASSERT( en->size == o->bits );
     ASSERT( ex->size == o->bits );
     ASSERT( en->type == TYPEOF_f3_t );
@@ -168,7 +151,7 @@ u3_t bhpt_sampler_binary_hash_s_fetch( const bhpt_sampler_binary_hash_s* o, u3_t
     f3_t* en_data = ( f3_t* )en->data;
     f3_t* ex_data = ( f3_t* )ex->data;
 
-    tp_t vi = ( rval = bcore_lcg00_u3( rval ) ) & ( ( 1 << o->bits ) - 1 );
+    tp_t vi = bcore_prsg_a_gen_bits_u3( prsg, o->bits );
     tp_t vo = bcore_tp_fold_tp( bcore_tp_init(), vi ) & ( ( 1 << o->bits ) - 1 );
 
     if( o->reverse ) tp_t_swap( &vi, &vo );
@@ -182,16 +165,12 @@ u3_t bhpt_sampler_binary_hash_s_fetch( const bhpt_sampler_binary_hash_s* o, u3_t
     {
         ex_data[ i ] = ( ( vo & ( 1 << i ) ) != 0 ) ? o->val_h : o->val_l;
     }
-
-    return rval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-u3_t bhpt_sampler_polynom_s_fetch( const bhpt_sampler_polynom_s* o, u3_t rval, bhvm_value_s* en, bhvm_value_s* ex )
+void bhpt_sampler_polynom_s_fetch( const bhpt_sampler_polynom_s* o, bcore_prsg* prsg, bhvm_value_s* en, bhvm_value_s* ex )
 {
-    rval = bcore_lcg00_u3( rval );
-
     ASSERT( en->size == o->size_en );
     ASSERT( ex->size == o->size_ex );
     ASSERT( en->type == TYPEOF_f3_t );
@@ -200,7 +179,7 @@ u3_t bhpt_sampler_polynom_s_fetch( const bhpt_sampler_polynom_s* o, u3_t rval, b
     f3_t* en_data = ( f3_t* )en->data;
     f3_t* ex_data = ( f3_t* )ex->data;
 
-    for( sz_t i = 0; i < o->size_ex; i++ ) ex_data[ i ] = f3_rnd_sym( &rval );
+    for( sz_t i = 0; i < o->size_ex; i++ ) ex_data[ i ] = bcore_prsg_a_gen_f3( prsg, -1, 1 );
     for( sz_t i = 0; i < o->size_en; i++ )
     {
         f3_t x1 = 2.0 * ( ( ( f3_t )i / ( o->size_en - 1 ) ) - 0.5 );
@@ -212,10 +191,8 @@ u3_t bhpt_sampler_polynom_s_fetch( const bhpt_sampler_polynom_s* o, u3_t rval, b
             x *= x1;
         }
 
-        en_data[ i ] = y + o->noise_level * f3_rnd_sym( &rval );
+        en_data[ i ] = y + o->noise_level * bcore_prsg_a_gen_f3( prsg, -1, 1 );
     }
-
-    return rval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -249,7 +226,7 @@ void bhpt_tutor_sampler_s_prime( bhpt_tutor_sampler_s* o, bhpt_adaptive* adaptiv
     bhvm_holor_s_fit_size( hf );
 
     bcore_mutex_s_lock( &o->mutex );
-    o->rval_prime = bhpt_sampler_a_fetch( o->sampler, o->rval_prime, &hx->v, &hy->v );
+    bhpt_sampler_a_fetch( o->sampler, o->prsg_priming, &hx->v, &hy->v );
     bcore_mutex_s_unlock( &o->mutex );
 
     bhpt_adaptive_a_axon_pass( adaptive, hx, hf );
@@ -282,11 +259,11 @@ void bhpt_tutor_sampler_s_test( bhpt_tutor_sampler_s* o, const bhpt_adaptive* ad
     f3_t sy2 = 0;
     f3_t sd2 = 0;
 
-    u3_t rval = o->rval_test;
+    bcore_prsg* prsg = BLM_A_PUSH( bcore_prsg_a_clone( o->prsg_testing ) );
 
     BFOR_SIZE( i, o->test_size )
     {
-        rval = bhpt_sampler_a_fetch( o->sampler, rval, &hx->v, &hy->v );
+        bhpt_sampler_a_fetch( o->sampler, prsg, &hx->v, &hy->v );
         bhpt_adaptive_a_axon_pass( adaptive, hx, hf );
         bhvm_hop_ar2_eci_sub_s_f( hy, hf, hd );
 

@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-06-27T12:52:32Z
+ *  Last File Update: 2020-07-20T13:15:59Z
  *
  *  Copyright and License of this File:
  *
@@ -320,8 +320,8 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_sampler_s )
     "aware bhpt_builder => builder;"
     "aware bhpt_adaptor => adaptor;"
     "aware bhpt_sampler => sampler;"
-    "u3_t rval_prime = 1234;"
-    "u3_t rval_test = 5342;"
+    "aware bcore_prsg => prsg_priming = bcore_prsg_lcg_u3_00_s;"
+    "aware bcore_prsg => prsg_testing = bcore_prsg_lcg_u3_01_s;"
     "sz_t test_size = 1000;"
     "hidden bcore_mutex_s mutex;"
     "func ^:reset;"
@@ -365,8 +365,8 @@ BCORE_DEFINE_OBJECT_INST_P( bhpt_tutor_language_utf8_s )
     "aware bhpt_adaptor => adaptor;"
     "aware => src;"
     "hidden st_s => st;"
-    "u2_t rval_prime = 1234;"
-    "u2_t rval_test = 5342;"
+    "aware bcore_prsg => prsg_priming = bcore_prsg_lcg_u3_00_s;"
+    "aware bcore_prsg => prsg_testing = bcore_prsg_lcg_u3_01_s;"
     "sz_t size_trans = 20;"
     "sz_t size_prime = 200;"
     "sz_t size_test = 1000;"
@@ -555,4 +555,4 @@ vd_t bhpt_planted_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// BETH_PLANT_SIGNATURE 2091377835
+// BETH_PLANT_SIGNATURE 4245517414

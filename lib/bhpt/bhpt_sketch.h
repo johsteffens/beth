@@ -157,11 +157,11 @@ group :tutor =
     /// resets the training session
     feature 'a' void reset( mutable ) = {};
 
-    /// primes a specified adaptive (concurrent for tutor)
+    /// primes a specified adaptive (must be concurrent for tutor)
     feature 'a' void prime( mutable, ::adaptive* adaptive ) = {};
 
-    /** Tests a specified adaptive (concurrent for tutor) and writes result to log;
-     *  Testing may mutate the tutor, if it necessary and done in a thread safe manner.
+    /** Tests a specified adaptive (must be concurrent for tutor) and writes result to log;
+     *  Testing may mutate the tutor, if necessary and done in a thread safe manner.
      *  Mutation is not desired, though, and should never affect the reliability or interpretability
      *  of test results.
      */

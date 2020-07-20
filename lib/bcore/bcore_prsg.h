@@ -49,29 +49,33 @@ feature strict 'a' u3_t min_u3( const );
 /** Function state_* computes the return value from the current state.
  *  The state is not changed.
  */
-feature strict 'a' u3_t state_u3( const );
-feature strict 'a' f3_t state_f3( const, f3_t min, f3_t max ); // return value is evenly distributed withing the range [min,max]
+feature strict 'a' u3_t state_u3     ( const );
+feature strict 'a' u3_t state_bits_u3( const, sz_t bits ); // returns 'bits' bits of the random random state; value range range: [0, (2^bits)-1]
+feature strict 'a' f3_t state_f3     ( const, f3_t min, f3_t max ); // return value is evenly distributed withing the range [min,max]
+feature        'a' bl_t state_bl     ( const ) = { return :a_state_bits_u3( o, 1 ) ? true : false; };
 
 /** Function gen* generates a subsequent state.
  *  A return value is computed from the new state according to function state*.
  */
-feature strict 'a' void gen(    mutable );
-feature strict 'a' u3_t gen_u3( mutable );
-feature strict 'a' f3_t gen_f3( mutable, f3_t min, f3_t max );
+feature strict 'a' void gen        ( mutable );
+feature strict 'a' u3_t gen_bits_u3( mutable, sz_t bits );
+feature strict 'a' u3_t gen_u3     ( mutable );
+feature strict 'a' f3_t gen_f3     ( mutable, f3_t min, f3_t max );
+feature        'a' bl_t gen_bl     ( mutable ) = { return :a_gen_bits_u3( o, 1 ) ? true : false; };
 
 /** Computes a new state derived from a u3_t seed.
  *  Note: Function state_u3 above does not necessarily return that seed value.
  */
-feature strict 'a' void set_state_u3( mutable, u3_t seed );
+feature strict 'a' :* set_state_u3( mutable, u3_t seed );
 
 /// Computes a new state derived from state of a and b.
-feature 'a' void set_state_mix( mutable, const :* a, const :* b ) =
+feature 'a' :*  set_state_mix( mutable, const :* a, const :* b ) =
 {
     /* Different mixing methods are thinkable:
      * Adding, multiplying or xoring should all be suitable.
      * We should just stick to the same method.
      */
-    :a_set_state_u3( o, :a_state_u3( a ) + :a_state_u3( b ) );
+    return :a_set_state_u3( o, :a_state_u3( a ) + :a_state_u3( b ) );
 };
 
 /// deprecated: use set_state_u3
@@ -85,6 +89,26 @@ stump :general = aware :
     {
         @_gen( o );
         return @_state_u3( o );
+    };
+
+    func ^ :state_bits_u3 =
+    {
+        assert( bits >= 0 && bits <= 64 );
+        sz_t o_bits = @_bits( o );
+        if( o_bits >= bits )
+        {
+            return @_state_u3( o ) >> ( o_bits - bits );
+        }
+        else
+        {
+            return @_state_u3( o ) << ( bits - o_bits );
+        }
+    };
+
+    func ^ :gen_bits_u3 =
+    {
+        @_gen( o );
+        return @_state_bits_u3( o, bits );
     };
 
     func ^ :state_f3 =
@@ -114,7 +138,7 @@ group :lcg =
         func ^ :max_u3 = { return 0xFFFFFFFFu; };
         func ^ :min_u3 = { return 0; };
         func ^ :state_u3 = { return o->state; };
-        func ^ :set_state_u3 = { o->state = seed ^ ( seed >> 32 ); };
+        func ^ :set_state_u3 = { o->state = seed ^ ( seed >> 32 ); return (::*)o; };
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -126,7 +150,7 @@ group :lcg =
         func ^ :max_u3 = { return 0xFFFFFFFFFFFFFFFFull; };
         func ^ :min_u3 = { return 0; };
         func ^ :state_u3 = { return o->state; };
-        func ^ :set_state_u3 = { o->state = seed; };
+        func ^ :set_state_u3 = { o->state = seed; return (::*)o; };
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -163,7 +187,7 @@ group :xsg =
         func ^ :max_u3 = { return 0xFFFFFFFFu; };
         func ^ :min_u3 = { return 1; };
         func ^ :state_u3 = { return o->state; };
-        func ^ :set_state_u3 = { o->state = u2_max( 1, seed ^ ( seed >> 32 ) ); };
+        func ^ :set_state_u3 = { o->state = u2_max( 1, seed ^ ( seed >> 32 ) ); return (::*)o; };
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

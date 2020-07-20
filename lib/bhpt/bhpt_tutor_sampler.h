@@ -33,8 +33,7 @@
 PLANT_GROUP( bhpt_sampler, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-/// returns modified random variable
-feature strict 'a' u3_t fetch( const, u3_t rval, bhvm_value_s* x, bhvm_value_s* y );
+feature strict 'a' void fetch( const, bcore_prsg* prsg, bhvm_value_s* x, bhvm_value_s* y );
 feature strict 'a' sz_t get_size_en( const );
 feature strict 'a' sz_t get_size_ex( const );
 
@@ -152,11 +151,11 @@ stamp : = aware bhpt_tutor
     aware bhpt_adaptor => adaptor;
     aware bhpt_sampler => sampler;
 
-    /// rval_prime is updated after priming
-    u3_t rval_prime = 1234;
+    /// updated after priming
+    aware bcore_prsg => prsg_priming = bcore_prsg_lcg_u3_00_s;
 
-    /// rval_test stays constant
-    u3_t rval_test = 5342;
+    /// stays constant (-> same sequence for each test)
+    aware bcore_prsg => prsg_testing = bcore_prsg_lcg_u3_01_s;
 
     sz_t test_size = 1000;
 

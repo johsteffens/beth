@@ -62,11 +62,11 @@ stamp :utf8 = aware bhpt_tutor
 
     hidden st_s => st; // buffered text
 
-    /// rval_prime is updated after priming
-    u2_t rval_prime = 1234;
+    /// updated after priming
+    aware bcore_prsg => prsg_priming = bcore_prsg_lcg_u3_00_s;
 
-    /// rval_test stays constant
-    u2_t rval_test = 5342;
+    /// stays constant (-> same sequence for each test)
+    aware bcore_prsg => prsg_testing = bcore_prsg_lcg_u3_01_s;
 
     /** Transient size: Number of characters fed after cyclic reset in order to obtain
      *  a representative cyclic network state. Used for cyclic networks.
@@ -83,7 +83,7 @@ stamp :utf8 = aware bhpt_tutor
 
     hidden bcore_mutex_s mutex;
 
-    func bhpt_tutor : reset = { o->rval_prime = 1234; };
+    func bhpt_tutor : reset = { bcore_prsg_a_attach( &o->prsg_priming, bcore_prsg_t_create( TYPEOF_bcore_prsg_lcg_u3_00_s ) ); };
     func bhpt_tutor : create_adaptive;
     func bhpt_tutor : create_adaptor = { return bhpt_adaptor_a_clone( o->adaptor ); };
     func bhpt_tutor : prime;

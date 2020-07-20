@@ -30,7 +30,7 @@ bhpt_adaptive* bhpt_tutor_language_utf8_s_create_adaptive( const bhpt_tutor_lang
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-static u2_t bhpt_tutor_language_utf8_s_get_string( bhpt_tutor_language_utf8_s* o, u3_t rval, sz_t size, st_s* string )
+static void bhpt_tutor_language_utf8_s_get_string( bhpt_tutor_language_utf8_s* o, bcore_prsg* prsg, sz_t size, st_s* string )
 {
     if( !o->st )
     {
@@ -66,13 +66,10 @@ static u2_t bhpt_tutor_language_utf8_s_get_string( bhpt_tutor_language_utf8_s* o
         BLM_DOWN();
     }
 
-    sz_t index = f3_rnd_pos( &rval ) * o->st->size;
+    sz_t index = bcore_prsg_a_gen_f3( prsg, 0, 1 ) * o->st->size;
 
     st_s_set_size( string, 0, size );
     for( sz_t i = 0; i < size; i++ ) string->data[ i ] = o->st->data[ ( i + index ) % o->st->size ];
-
-
-    return rval;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -101,7 +98,7 @@ void bhpt_tutor_language_utf8_s_prime( bhpt_tutor_language_utf8_s* o, bhpt_adapt
 
     bcore_mutex_s_lock( &o->mutex );
     st_s* string = BLM_CREATE( st_s );
-    o->rval_prime = bhpt_tutor_language_utf8_s_get_string( o, o->rval_prime, o->size_trans + o->size_prime + 1, string );
+    bhpt_tutor_language_utf8_s_get_string( o, o->prsg_priming, o->size_trans + o->size_prime + 1, string );
     bcore_mutex_s_unlock( &o->mutex );
 
     bhpt_adaptive_a_cyclic_reset( adaptive );
@@ -249,9 +246,11 @@ void bhpt_tutor_language_utf8_s_test( bhpt_tutor_language_utf8_s* o, const bhpt_
     bhvm_holor_s* hd  = BLM_CLONE( bhvm_holor_s, hy ); // y - f
     bhvm_holor_s* hsd = BLM_CLONE( bhvm_holor_s, hy ); // y - f
 
+    bcore_prsg* prsg = BLM_A_PUSH( bcore_prsg_a_clone( o->prsg_testing ) );
+
     bcore_mutex_s_lock( &( ( bhpt_tutor_language_utf8_s* )o )->mutex );
     st_s* string = BLM_CREATE( st_s );
-    bhpt_tutor_language_utf8_s_get_string( ( bhpt_tutor_language_utf8_s* )o, o->rval_test, o->size_trans + o->size_test + 1, string );
+    bhpt_tutor_language_utf8_s_get_string( ( bhpt_tutor_language_utf8_s* )o, prsg, o->size_trans + o->size_test + 1, string );
     bcore_mutex_s_unlock( &( ( bhpt_tutor_language_utf8_s* )o )->mutex );
 
     bhpt_adaptive_a_cyclic_reset( adaptive );

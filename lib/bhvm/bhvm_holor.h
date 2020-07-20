@@ -300,6 +300,7 @@ void bhvm_value_s_set_random_u3( bhvm_value_s* o, f3_t density, f3_t min, f3_t m
  *  See bmath_mf3_fdev... for more details
  */
 f3_t bhvm_value_s_fdev_equ( const bhvm_value_s* a, const bhvm_value_s* b );
+f3_t bhvm_value_s_fdev_equ( const bhvm_value_s* a, const bhvm_value_s* b );
 f3_t bhvm_value_s_fdev_zro( const bhvm_value_s* o );
 
 sz_t bhvm_value_s_get_sz( const bhvm_value_s* a, sz_t index );
