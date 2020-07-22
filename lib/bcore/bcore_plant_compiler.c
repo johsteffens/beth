@@ -603,12 +603,8 @@ BCORE_DECLARE_OBJECT( bcore_plant_compiler_s )
     bcore_hmap_tpvd_s hmap_item;
     bcore_life_s      life; // lifetime manager for items not managed elsewhere
 
-    st_s           undo_expand_actions; // undo_expand - script actions
-    bcore_arr_st_s undo_expand_files;   // list of files affected by undo_expand_sh
-
     // parameters
     bl_t  backup_planted_files;
-    st_s* sh_script_file_undo_expand;
     bl_t  register_plain_functions;
     bl_t  register_signatures;
     bl_t  overwrite_unsigned_planted_files;
@@ -623,12 +619,8 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_plant_compiler_s )
     "hidden bcore_hmap_tpvd_s hmap_item;"
     "hidden bcore_life_s      life;" // lifetime manager for items not managed elsewhere
 
-    "hidden st_s           undo_expand_actions;"
-    "hidden bcore_arr_st_s undo_expand_files;" // list of files affected by undo_expand_sh
-
     // parameters
     "bl_t backup_planted_files = true;"
-    "st_s => sh_script_file_undo_expand;"
     "bl_t register_plain_functions = true;"
     "bl_t register_signatures = false;"
     "bl_t overwrite_unsigned_planted_files = false;"
@@ -3625,40 +3617,11 @@ static er_t bcore_plant_target_s_expand_phase2( bcore_plant_target_s* o, bl_t* p
     ASSERT( o->planted_h );
     ASSERT( o->planted_c );
 
-    st_s*           undo_expand_actions = &o->compiler->undo_expand_actions;
-    bcore_arr_st_s* undo_expand_files   = &o->compiler->undo_expand_files;
-
     st_s* file_h = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.h", o->path.sc ) );
     st_s* file_c = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.c", o->path.sc ) );
 
     BLM_TRY( bcore_plant_compiler_s_check_overwrite( o->compiler, file_h->sc ) );
     BLM_TRY( bcore_plant_compiler_s_check_overwrite( o->compiler, file_c->sc ) );
-
-    if( bcore_file_exists( file_h->sc ) )
-    {
-        st_s* backup_name = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.backup", file_h->sc ) );
-        bcore_file_rename( file_h->sc, backup_name->sc );
-        st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>.backup #<sc_t>.swap\n",   file_h->sc, file_h->sc );
-        st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>        #<sc_t>.backup\n", file_h->sc, file_h->sc );
-        st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>.swap   #<sc_t>\n",        file_h->sc, file_h->sc );
-        st_s_push_fa( undo_expand_actions, "    touch #<sc_t>\n",        file_h->sc );
-        st_s_push_fa( undo_expand_actions, "\n" );
-
-        bcore_arr_st_s_push_st( undo_expand_files, file_h );
-    }
-
-    if( bcore_file_exists( file_c->sc ) )
-    {
-        st_s* backup_name = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.backup", file_c->sc ) );
-        bcore_file_rename( file_c->sc, backup_name->sc );
-        st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>.backup #<sc_t>.swap\n",   file_c->sc, file_c->sc );
-        st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>        #<sc_t>.backup\n", file_c->sc, file_c->sc );
-        st_s_push_fa( undo_expand_actions, "    mv    #<sc_t>.swap   #<sc_t>\n",        file_c->sc, file_c->sc );
-        st_s_push_fa( undo_expand_actions, "    touch #<sc_t>\n",        file_c->sc );
-        st_s_push_fa( undo_expand_actions, "\n" );
-
-        bcore_arr_st_s_push_st( undo_expand_files, file_c );
-    }
 
     bcore_msg_fa( "writing '#<sc_t>'\n", file_h->sc );
     bcore_plant_compiler_write_with_signature( file_h->sc, o->planted_h );
@@ -3811,40 +3774,8 @@ static er_t bcore_plant_compiler_s_expand( bcore_plant_compiler_s* o, bl_t* p_mo
     BLM_INIT();
     bl_t modified = false;
 
-    st_s_clear( &o->undo_expand_actions );
-    bcore_arr_st_s_clear( &o->undo_expand_files );
-
     for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_target_s_expand_phase1( o->data[ i ], &modified ) );
     for( sz_t i = 0; i < o->size; i++ ) BLM_TRY( bcore_plant_target_s_expand_phase2( o->data[ i ], &modified ) );
-
-    if( o->sh_script_file_undo_expand && modified )
-    {
-        bcore_sink* sink = BLM_A_PUSH( bcore_file_open_sink( o->sh_script_file_undo_expand->sc ) );
-        bcore_sink_a_push_fa( sink, "##! /bin/bash\n" );
-        bcore_sink_a_push_fa( sink, "echo \"This will swap each of the following files with its respective backup:\"\n" );
-        BFOR_EACH( i, &o->undo_expand_files )
-        {
-            bcore_sink_a_push_fa( sink, "echo \"#<sc_t>\"\n", o->undo_expand_files.data[ i ]->sc );
-        }
-
-        bcore_sink_a_push_fa( sink, "function swap_files\n" );
-        bcore_sink_a_push_fa( sink, "{\n" );
-        bcore_sink_a_push_fa( sink, "#<sc_t>", o->undo_expand_actions.sc );
-        bcore_sink_a_push_fa( sink, "  echo \"Done\"\n" );
-        bcore_sink_a_push_fa( sink, "}\n" );
-        bcore_sink_a_push_fa( sink, "\n" );
-
-        bcore_sink_a_push_fa( sink, "if [ \"$1\" != \"-f\" ]; then\n" );
-        bcore_sink_a_push_fa( sink, "  read -rp $'Continue? (Y/n): ' key;\n" );
-        bcore_sink_a_push_fa( sink, "  if [ \"$key\" == \"Y\" ]; then\n" );
-        bcore_sink_a_push_fa( sink, "    swap_files\n" );
-        bcore_sink_a_push_fa( sink, "  else\n" );
-        bcore_sink_a_push_fa( sink, "    echo \"Aborted\"\n" );
-        bcore_sink_a_push_fa( sink, "  fi\n" );
-        bcore_sink_a_push_fa( sink, "else\n" );
-        bcore_sink_a_push_fa( sink, "  swap_files\n" );
-        bcore_sink_a_push_fa( sink, "fi\n" );
-    }
 
     if( p_modified ) *p_modified = modified;
     BLM_RETURNV( er_t, 0 );
@@ -3948,10 +3879,6 @@ er_t bcore_plant_compiler_update_planted_files( bl_t* p_modified )
     {
         if( verbosity > 0 ) bcore_msg_fa( "BETH_PLANT: Expanded in #<f3_t> sec.\n", time );
         if( verbosity > 0 ) bcore_msg_fa( "BETH_PLANT: Files were updated. Rebuild is necessary.\n" );
-        if( plant_compiler_g->sh_script_file_undo_expand )
-        {
-            if( verbosity > 0 ) bcore_msg_fa( "BETH_PLANT: To revert to the previous state, execute '#<sc_t>'.\n", plant_compiler_g->sh_script_file_undo_expand->sc );
-        }
     }
     bcore_plant_compiler_s_discard( plant_compiler_g );
     plant_compiler_g = NULL;
