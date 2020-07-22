@@ -16,17 +16,47 @@
 #include "bcore_main.h"
 #include "bcore_std.h"
 
+#include <signal.h>
+
 //----------------------------------------------------------------------------------------------------------------------
 
-s2_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, char** argv )
+/// This variable is to be polled to obtained the latest signal state
+static volatile sig_atomic_t signal_received_g = 0;
+
+static void signal_callabck( int signal_received )
 {
-    bcore_arr_st_s* args = bcore_arr_st_s_create();
-    for( sz_t i = 0; i < argc; i++ ) bcore_arr_st_s_push_sc( args, argv[ i ] );
-    s2_t ret = -1;
+    /** due to restrictions and inconsistent implementations
+     *  of signal processing, we do the absolute minimum that is
+     *  deemed supported on all platforms.
+     */
+    signal_received_g = signal_received;
+}
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t bcore_main_frame_s_exit_required( const bcore_main_frame_s* o )
+{
+    if( !o ) return false;
+    /// lock-unlock to trigger memory fence
+    bcore_mutex_s_lock( ( bcore_mutex_s* )&o->mutex );
+    bl_t exit_required = ( signal_received_g == SIGINT ) || ( signal_received_g == SIGTERM );
+    bcore_mutex_s_unlock( ( bcore_mutex_s* )&o->mutex );
+    return exit_required;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+er_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, char** argv )
+{
+    bcore_arr_st_s_clear( &o->args );
+    for( sz_t i = 0; i < argc; i++ ) bcore_arr_st_s_push_sc( &o->args, argv[ i ] );
+    er_t error = 0;
     sc_t file = NULL;
-    if( o->use_first_argument && args->size > 1 )
+    if( o->use_first_argument && o->args.size > 1 )
     {
-        file = args->data[ 1 ]->sc;
+        file = o->args.data[ 1 ]->sc;
         if( !bcore_file_exists( file ) ) file = NULL;
     }
 
@@ -44,38 +74,28 @@ s2_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, char** argv )
 
     if( file )
     {
+        /// redirect signals
+        signal_received_g = 0;
+        signal( SIGINT , signal_callabck );
+        signal( SIGTERM, signal_callabck );
+
         sr_s sr_object = bcore_interpret_x( sr_awd( o->interpreter ), sr_asd( bcore_file_open_source( file ) ) );
-        ret = bcore_main_r_main( &sr_object, args );
+        error = bcore_main_r_main( &sr_object, o );
         sr_down( sr_object );
+
+        signal( SIGINT , SIG_DFL );
+        signal( SIGTERM, SIG_DFL );
+    }
+    else
+    {
+        bcore_error_push_fa( TYPEOF_general_error, "bcore_main_frame_s: Could not associate a file from arguments or frame configuration." );
+        error = TYPEOF_general_error;
     }
 
-    bcore_arr_st_s_discard( args );
-    return ret;
+    return error;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-
-/**********************************************************************************************************************/
-
-vd_t bcore_main_signal_handler( const bcore_signal_s* o )
-{
-    switch( bcore_signal_s_handle_type( o, typeof( "bcore_main" ) ) )
-    {
-        case TYPEOF_init1:
-        {
-        }
-        break;
-
-        case TYPEOF_selftest:
-        {
-        }
-        break;
-
-        default: break;
-    }
-
-    return NULL;
-}
 
 /**********************************************************************************************************************/
 

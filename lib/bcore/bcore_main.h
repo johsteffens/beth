@@ -15,23 +15,29 @@
 
 /** bcore_main is a functional generalizing the main function of a program.
  *
- *  Usage (in function main):
+ *  In function int main( int argc, char** argv ):
  *    - Instantiate and setup bcore_main_frame_s
  *    - call int bcore_main_s_main( bcore_main_s* o, sz_t argc, sc_t* argv )
  *         return value is intended to be the return of the program.
+
+ *  In a suitable object:
+ *    - overload feature bcore_main : main
+ *    - access argument list via frame->args
+ *    - poll for termination via bcore_main_frame_s_exit_required( frame )
  *
  *  bcore_main_frame_s_main does the following
  *    - loads an object from a config file implementing bcore_main : main.
+ *    - redirects signals SIGINT and SIGTERM; occurrence can be polled via function 'exit_required'
  *    - calls the feature of this object
  *    - returns the result of that call
- *    - if launch criteria were not met, returns immediately with value -1;
+ *    - if launch criteria were not met, returns immediately with value TYPEOF_general_error and a message of the error stack;
  *
  */
 
 #ifndef BCORE_MAIN_H
 #define BCORE_MAIN_H
 
-#include "bcore_plant_compiler.h"
+#include "bcore_plant.h"
 #include "bcore_trait.h"
 #include "bcore_planted.h"
 #include "bcore_txt_ml.h"
@@ -40,22 +46,32 @@
 
 /**********************************************************************************************************************/
 
-#ifdef TYPEOF_bcore_main
-PLANT_GROUP( bcore_main, bcore_inst )
+BETH_PLANT_DEFINE_GROUP( bcore_main, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    feature strict 'ar' s2_t main( mutable, const bcore_arr_st_s* args );
+    /// This function should be polled to determine if running routine is being required to exit.
+    signature bl_t exit_required( const );
 
     stamp :frame = aware bcore_inst
     {
         /// interpreter used to decode the config file
         aware bcore_interpreter => interpreter = bcore_txt_ml_interpreter_s;
 
+        /// program arguments
+        bcore_arr_st_s args;
+
+        hidden bcore_mutex_s mutex;
+
         /// The following criteria are processed in given order until one matches or all fail
         bl_t use_first_argument = true;   // path to config file is expected as first argument
         sc_t local_file = "beth.config";  // config file in current folder
         sc_t global_file;                 // global path to config file
+
+        /// This implementation allows 'o' to be NULL in which case it returns always false.
+        func : :exit_required;
     };
+
+    feature strict 'ar' er_t main( mutable, :frame_s* frame );
 
     stamp :arr = aware bcore_array { aware :* []; };
 
@@ -64,20 +80,18 @@ PLANT_GROUP( bcore_main, bcore_inst )
         :arr_s arr;
         func : : main =
         {
-            s2_t r = 0;
-            BFOR_EACH( i, &o->arr ) { if( ( r = :a_main( o->arr.data[ i ], args ) ) ) break; }
+            er_t r = 0;
+            BFOR_EACH( i, &o->arr )
+            {
+                if( ( r = :a_main( o->arr.data[ i ], frame ) ) ) break;
+            }
             return r;
         };
     };
 
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#endif // TYPEOF_bcore_main
 
-s2_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, char** argv );
-
-/**********************************************************************************************************************/
-
-vd_t bcore_main_signal_handler( const bcore_signal_s* o );
+er_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, char** argv );
 
 /**********************************************************************************************************************/
 
