@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-07-20T13:12:28Z
+ *  Last File Update: 2020-07-21T17:20:53Z
  *
  *  Copyright and License of this File:
  *
@@ -27,7 +27,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.
-#define HKEYOF_bcore_planted 4224832184
+#define HKEYOF_bcore_planted 3002595246
 
 #define TYPEOF_bcore_planted 3660391305
 
@@ -284,7 +284,8 @@
 #define TYPEOF_bcore_main_frame_s 3517913134
 #define BETH_EXPAND_ITEM_bcore_main_frame_s \
   BCORE_DECLARE_OBJECT( bcore_main_frame_s ) \
-    {aware_t _;bcore_interpreter* interpreter;bl_t use_first_argument;sc_t local_file;sc_t global_file;};
+    {aware_t _;bcore_interpreter* interpreter;bcore_arr_st_s args;bcore_mutex_s mutex;bl_t use_first_argument;sc_t local_file;sc_t global_file;}; \
+  bl_t bcore_main_frame_s_exit_required( const bcore_main_frame_s* o );
 #define TYPEOF_bcore_main_arr_s 2064610792
 #define BETH_EXPAND_ITEM_bcore_main_arr_s \
   BCORE_DECLARE_OBJECT( bcore_main_arr_s ) \
@@ -304,13 +305,13 @@
 #define BETH_EXPAND_ITEM_bcore_main_set_s \
   BCORE_DECLARE_OBJECT( bcore_main_set_s ) \
     {aware_t _;bcore_main_arr_s arr;}; \
-  s2_t bcore_main_set_s_main( bcore_main_set_s* o, const bcore_arr_st_s* args );
+  er_t bcore_main_set_s_main( bcore_main_set_s* o, bcore_main_frame_s* frame );
 #define BETH_EXPAND_GROUP_bcore_main \
   BCORE_FORWARD_OBJECT( bcore_main ); \
   BCORE_FORWARD_OBJECT( bcore_main_frame_s ); \
   BCORE_FORWARD_OBJECT( bcore_main_arr_s ); \
   BCORE_FORWARD_OBJECT( bcore_main_set_s ); \
-  typedef s2_t (*bcore_main_main)( bcore_main* o, const bcore_arr_st_s* args ); \
+  typedef er_t (*bcore_main_main)( bcore_main* o, bcore_main_frame_s* frame ); \
   BCORE_DECLARE_SPECT( bcore_main ) \
   { \
       bcore_spect_header_s header; \
@@ -320,11 +321,11 @@
   static inline bl_t bcore_main_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_main ); } \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_main ) \
   static inline bl_t bcore_main_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bcore_main ); } \
-  static inline s2_t bcore_main_a_main( bcore_main* o, const bcore_arr_st_s* args ) { const bcore_main_s* p = bcore_main_s_get_aware( o ); assert( p->main ); return p->main( o, args ); } \
-  static inline s2_t bcore_main_r_main( const sr_s* o, const bcore_arr_st_s* args ) { ASSERT( !sr_s_is_const( o ) ); const bcore_main_s* p = (const bcore_main_s*)ch_spect_p( o->p, TYPEOF_bcore_main_s ); assert( p->main ); return p->main( o->o, args ); } \
+  BETH_EXPAND_ITEM_bcore_main_frame_s \
+  static inline er_t bcore_main_a_main( bcore_main* o, bcore_main_frame_s* frame ) { const bcore_main_s* p = bcore_main_s_get_aware( o ); assert( p->main ); return p->main( o, frame ); } \
+  static inline er_t bcore_main_r_main( const sr_s* o, bcore_main_frame_s* frame ) { ASSERT( !sr_s_is_const( o ) ); const bcore_main_s* p = (const bcore_main_s*)ch_spect_p( o->p, TYPEOF_bcore_main_s ); assert( p->main ); return p->main( o->o, frame ); } \
   static inline bl_t bcore_main_a_defines_main( const bcore_main* o ) { return true; } \
   static inline bl_t bcore_main_r_defines_main( const sr_s* o ) { return true; } \
-  BETH_EXPAND_ITEM_bcore_main_frame_s \
   BETH_EXPAND_ITEM_bcore_main_arr_s \
   BETH_EXPAND_ITEM_bcore_main_set_s
 
@@ -757,4 +758,4 @@
 vd_t bcore_planted_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_PLANTED_H
-// BETH_PLANT_SIGNATURE 4291826844
+// BETH_PLANT_SIGNATURE 3869252530

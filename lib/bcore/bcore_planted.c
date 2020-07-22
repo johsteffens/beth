@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-07-20T13:12:28Z
+ *  Last File Update: 2020-07-21T17:20:53Z
  *
  *  Copyright and License of this File:
  *
@@ -188,6 +188,8 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_main_frame_s )
 "aware bcore_inst"
 "{"
     "aware bcore_interpreter => interpreter = bcore_txt_ml_interpreter_s;"
+    "bcore_arr_st_s args;"
+    "hidden bcore_mutex_s mutex;"
     "bl_t use_first_argument = true;"
     "sc_t local_file = \"beth.config\";"
     "sc_t global_file;"
@@ -206,10 +208,13 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_main_set_s )
     "func ^:main;"
 "}";
 
-s2_t bcore_main_set_s_main( bcore_main_set_s* o, const bcore_arr_st_s* args )
+er_t bcore_main_set_s_main( bcore_main_set_s* o, bcore_main_frame_s* frame )
 {
-    s2_t r = 0;
-    BFOR_EACH( i, &o->arr ) { if( ( r = bcore_main_a_main( o->arr.data[ i ], args ) ) ) break; }
+    er_t r = 0;
+    BFOR_EACH( i, &o->arr )
+    {
+        if( ( r = bcore_main_a_main( o->arr.data[ i ], frame ) ) ) break;
+    }
     return r;
 }
 
@@ -1164,8 +1169,8 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
             // source: bcore_main.h
 
             // group: bcore_main
-            BCORE_REGISTER_FEATURE( bcore_main_main );
             BCORE_REGISTER_OBJECT( bcore_main_frame_s );
+            BCORE_REGISTER_FEATURE( bcore_main_main );
             BCORE_REGISTER_OBJECT( bcore_main_arr_s );
             BCORE_REGISTER_FFUNC( bcore_main_main, bcore_main_set_s_main );
             BCORE_REGISTER_OBJECT( bcore_main_set_s );
@@ -1403,4 +1408,4 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// BETH_PLANT_SIGNATURE 1619574119
+// BETH_PLANT_SIGNATURE 1111656584
