@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-06-27T12:42:39Z
+ *  Last File Update: 2020-07-21T17:20:53Z
  *
  *  Copyright and License of this File:
  *
@@ -26,7 +26,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.
-#define HKEYOF_badapt_planted 3118850579
+#define HKEYOF_badapt_planted 1194511176
 
 #define TYPEOF_badapt_planted 2807899404
 
@@ -994,7 +994,7 @@
 #define BETH_EXPAND_ITEM_badapt_trainer_main_s \
   BCORE_DECLARE_OBJECT( badapt_trainer_main_s ) \
     {aware_t _;badapt_supplier* problem;badapt_builder* builder;badapt_guide* guide;badapt_trainer* trainer;}; \
-  s2_t badapt_trainer_main_s_main( badapt_trainer_main_s* o, const bcore_arr_st_s* args );
+  er_t badapt_trainer_main_s_main( badapt_trainer_main_s* o, bcore_main_frame_s* frame );
 #define BETH_EXPAND_GROUP_badapt_trainer_objects \
   BCORE_FORWARD_OBJECT( badapt_trainer_objects ); \
   BCORE_FORWARD_OBJECT( badapt_trainer_batch_s ); \
@@ -1011,4 +1011,4 @@
 vd_t badapt_planted_signal_handler( const bcore_signal_s* o );
 
 #endif // BADAPT_PLANTED_H
-// BETH_PLANT_SIGNATURE 2310790830
+// BETH_PLANT_SIGNATURE 3504020704

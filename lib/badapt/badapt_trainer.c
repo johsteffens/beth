@@ -156,23 +156,23 @@ void badapt_trainer_batch_s_run( const badapt_trainer_batch_s* o, badapt_trainin
 /**********************************************************************************************************************/
 /// badapt_trainer_main_s
 
-s2_t badapt_trainer_main_s_main( badapt_trainer_main_s* o, const bcore_arr_st_s* args )
+er_t badapt_trainer_main_s_main( badapt_trainer_main_s* o, bcore_main_frame_s* frame )
 {
     BCORE_LIFE_INIT();
 
     bl_t reset = false;
     BCORE_LIFE_CREATE( st_s, backup_path );
 
-    if( args )
+    if( frame->args.size > 0 )
     {
-        for( sz_t i = 0; i < args->size; i++ )
+        for( sz_t i = 0; i < frame->args.size; i++ )
         {
-            if( st_s_equal_sc( args->data[ i ], "-reset" ) ) reset = true;
+            if( st_s_equal_sc( frame->args.data[ i ], "-reset" ) ) reset = true;
         }
 
-        if( args->size > 1 )
+        if( frame->args.size > 1 )
         {
-            st_s_push_fa( backup_path, "#<sc_t>.state", args->data[ 1 ]->sc );
+            st_s_push_fa( backup_path, "#<sc_t>.state", frame->args.data[ 1 ]->sc );
         }
     }
 
@@ -193,7 +193,7 @@ s2_t badapt_trainer_main_s_main( badapt_trainer_main_s* o, const bcore_arr_st_s*
 
     badapt_adaptive_a_arc_to_sink( badapt_training_state_a_get_adaptive( state ), BCORE_STDOUT );
     badapt_trainer_a_run( o->trainer, state );
-    BCORE_LIFE_RETURNV( s2_t, 0 );
+    BCORE_LIFE_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
