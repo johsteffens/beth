@@ -149,8 +149,10 @@ void bhpt_tutor_language_utf8_chatter_s_run( const bhpt_tutor_language_utf8_chat
         bcore_sink_a_push_fa( log, "#<char>", c );
         bhpt_tutor_language_utf8_s_encode( tutor, c, &hx->v );
         bhpt_adaptive_a_axon_pass( adaptive, hx, hy );
-        c_count = ( c_count + 1 ) % o->size_line;
+        c_count++;
     }
+
+    c_count = c_count % o->size_line;
 
     u3_t rval = 12341234 * bhvm_value_s_get_max_f3( &hy->v );
 

@@ -119,6 +119,8 @@ stamp : = aware bcore_main
     aware bhpt_tutor   => tutor;
     hidden :thread_base_s => thread_base;
 
+    private bcore_main_frame_s* main_frame;
+
     // A single single cycle represents an adaptive primimg
 
     // number of threads to run a minibatch (0 means single threaded)
@@ -155,6 +157,9 @@ stamp : = aware bcore_main
     hidden aware bcore_sink -> log;
 
     func bcore_main : main;
+
+    func bcore_main : exit_required = { return bcore_main_frame_s_exit_required( o->main_frame ); };
+
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

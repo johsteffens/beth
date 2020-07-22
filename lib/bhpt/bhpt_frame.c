@@ -228,7 +228,7 @@ void bhpt_frame_s_run_single_threaded( bhpt_frame_s* o )
 
     sz_t cycle_adapt = sz_max( o->cycle_adapt, 1 );
 
-    while( state->cycle_number < o->cycle_finish )
+    while( state->cycle_number < o->cycle_finish  && !bhpt_frame_s_exit_required( o ) )
     {
         if( state->cycle_number == 0 || state->cycle_number - state->last_cycle_test >= o->cycle_test )
         {
@@ -267,7 +267,7 @@ void bhpt_frame_s_run_multi_threaded( bhpt_frame_s* o )
     sz_t prime_cycles_per_thread = sz_max( o->cycle_adapt / sz_max( o->threads, 1 ), 1 );
     sz_t cycle_adapt = o->threads * prime_cycles_per_thread;
 
-    while( state->cycle_number < o->cycle_finish )
+    while( state->cycle_number < o->cycle_finish && !bhpt_frame_s_exit_required( o ) )
     {
         if( state->cycle_number == 0 || state->cycle_number - state->last_cycle_test >= o->cycle_test )
         {
@@ -295,14 +295,17 @@ void bhpt_frame_s_run_multi_threaded( bhpt_frame_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-s2_t bhpt_frame_s_main( bhpt_frame_s* o, const bcore_arr_st_s* args )
+er_t bhpt_frame_s_main( bhpt_frame_s* o, bcore_main_frame_s* frame )
 {
     BLM_INIT();
+    o->main_frame = frame;
 
     bl_t reset = false;
 
     if( !o->log   ) o->log   = bcore_fork( BCORE_STDOUT );
     if( !o->state ) o->state = bhpt_frame_state_s_create();
+
+    const bcore_arr_st_s* args = &frame->args;
 
     if( args )
     {
@@ -366,7 +369,14 @@ s2_t bhpt_frame_s_main( bhpt_frame_s* o, const bcore_arr_st_s* args )
         bhpt_frame_s_run_multi_threaded( o );
     }
 
-    BLM_RETURNV( s2_t, 0 );
+    if( bhpt_frame_s_exit_required( o ) )
+    {
+        bcore_sink_a_push_fa( o->log, "\nSaving state at cycle #<sz_t>\n", o->state->cycle_number );
+        bhpt_frame_s_backup( o );
+        bcore_sink_a_push_fa( o->log, "Exiting cleanly.\n" );
+    }
+
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

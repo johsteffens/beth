@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-07-20T13:15:59Z
+ *  Last File Update: 2020-07-21T17:40:55Z
  *
  *  Copyright and License of this File:
  *
@@ -21,7 +21,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.
-#define HKEYOF_bhpt_planted 1662973516
+#define HKEYOF_bhpt_planted 3810714026
 
 #define TYPEOF_bhpt_planted 977128800
 
@@ -257,8 +257,9 @@
 #define TYPEOF_bhpt_frame_s 3192581947
 #define BETH_EXPAND_ITEM_bhpt_frame_s \
   BCORE_DECLARE_OBJECT( bhpt_frame_s ) \
-    {aware_t _;bhpt_tutor* tutor;bhpt_frame_thread_base_s* thread_base;sz_t threads;sz_t cycle_adapt;sz_t cycle_test;sz_t cycle_backup;sz_t cycle_finish;sz_t verbosity;bhpt_frame_state_s* state;bhvm_stats_s stats_grad;st_s state_path;bcore_sink* log;}; \
-  s2_t bhpt_frame_s_main( bhpt_frame_s* o, const bcore_arr_st_s* args );
+    {aware_t _;bhpt_tutor* tutor;bhpt_frame_thread_base_s* thread_base;bcore_main_frame_s* main_frame;sz_t threads;sz_t cycle_adapt;sz_t cycle_test;sz_t cycle_backup;sz_t cycle_finish;sz_t verbosity;bhpt_frame_state_s* state;bhvm_stats_s stats_grad;st_s state_path;bcore_sink* log;}; \
+  er_t bhpt_frame_s_main( bhpt_frame_s* o, bcore_main_frame_s* frame ); \
+  static inline bl_t bhpt_frame_s_exit_required( const bhpt_frame_s* o ){return bcore_main_frame_s_exit_required( o->main_frame );}
 #define BETH_EXPAND_GROUP_bhpt_frame \
   BCORE_FORWARD_OBJECT( bhpt_frame ); \
   BCORE_FORWARD_OBJECT( bhpt_frame_thread ); \
@@ -512,4 +513,4 @@
 vd_t bhpt_planted_signal_handler( const bcore_signal_s* o );
 
 #endif // BHPT_PLANTED_H
-// BETH_PLANT_SIGNATURE 2858179958
+// BETH_PLANT_SIGNATURE 1983830068
