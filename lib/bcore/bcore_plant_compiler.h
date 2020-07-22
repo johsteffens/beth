@@ -14,7 +14,7 @@
  */
 
 /** Plant Framework (Automatic code generation)
- *  Beth-Plant is a widely declarative language that can be immersed with
+ *  Beth-Plant is a mostly declarative language that can be immersed with
  *  c-code. bcore_plant_compiler translates beth-plant code into c-source code.
  *  Beth-plant code is located in header files.
  *  Translated c-source code is written into dedicated files, which can be
@@ -87,8 +87,8 @@
  *    inside body code:
  *       \body <body-expression>; // expands another body
  *       :<alphabetic-character>  // expands namespace
- *       :<space>                 // expands ':<space>' (without evaluation)
- *       \:                       // expands ':' (without evaluation)
+ *       :<space>                 // expands to ':<space>' (without evaluation)
+ *       \:                       // expands to ':' (without evaluation)
  *
  *  ----------------------------------------------------------------------------------------------
  *  feature:
@@ -211,9 +211,12 @@
  */
 
 /** TODO
- *  - detect cyclic dependencies
+ *  - (done) detect cyclic dependencies
  *  - (done) involve dependencies in target_s_get_hash-computation
- *  - fix: group-trait is not hashed
+ *  - (done) fix: group-trait seems not hashed
+ *  - (done) fix: function signature is not hashed in a function instance (can be solved by method below)
+ *  - (done) fix: a target's hash should embed hashes of all dependencies
+ *  - issue: target_s: sometimes the hashes from dependencies seem not correctly embedded (noticed when testing propagation of changes to feature bcore_main : main)
  */
 
 #ifndef BCORE_PLANT_COMPILER_H

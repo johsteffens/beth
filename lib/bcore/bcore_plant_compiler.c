@@ -2703,8 +2703,9 @@ static er_t bcore_plant_group_s_parse( bcore_plant_group_s* o, bcore_source* sou
     sc_t precode_termination = NULL;
 
     bcore_source_point_s_set( &o->source_point, source );
-
-    o->hash = typeof( o->name.sc );
+    o->hash = bcore_tp_init();
+    o->hash = bcore_tp_fold_sc( o->hash, o->name.sc );
+    o->hash = bcore_tp_fold_sc( o->hash, o->trait_name.sc );
 
     if( o->group ) // this group is nested in another group, the group body is enclosed in { ... }
     {
@@ -3284,15 +3285,20 @@ static er_t bcore_plant_target_s_parse( bcore_plant_target_s* o, sc_t source_pat
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static er_t bcore_plant_target_s_get_hash( const bcore_plant_target_s* o )
+static tp_t bcore_plant_target_s_get_hash( const bcore_plant_target_s* o )
 {
     tp_t hash = bcore_tp_init();
+
+    hash = bcore_tp_fold_tp( hash, o->_ );
+    hash = bcore_tp_fold_sc( hash, o->name.sc );
+
     BFOR_EACH( i, o ) hash = bcore_tp_fold_tp( hash, o->data[ i ]->hash );
 
     BFOR_EACH( i, &o->dependencies )
     {
         sz_t idx = o->dependencies.data[ i ];
-        hash = bcore_tp_fold_sc( hash, o->compiler->data[ idx ]->name.sc );
+        bcore_plant_target_s* dep_target = o->compiler->data[ idx ];
+        hash = bcore_tp_fold_tp( hash, bcore_plant_target_s_get_hash( dep_target ) );
     }
 
     return hash;
