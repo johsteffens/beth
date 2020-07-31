@@ -144,7 +144,7 @@ uz_t st_s_find_st_d(    const st_s* o, uz_t start, uz_t end,       st_s* st ); /
 uz_t st_s_find_any_sc(  const st_s* o, uz_t start, uz_t end, sc_t sc ); // any character in sc
 uz_t st_s_find_none_sc( const st_s* o, uz_t start, uz_t end, sc_t sc ); // any character not in sc
 
-/// Counting (expects start >= end)
+/// Counting matches (expects start >= end)
 uz_t st_s_count_char( const st_s* o, uz_t start, uz_t end, char c );
 uz_t st_s_count_sc(   const st_s* o, uz_t start, uz_t end, sc_t sc );
 uz_t st_s_count_st(   const st_s* o, uz_t start, uz_t end, const st_s* st );
@@ -154,6 +154,8 @@ st_s* st_s_insert_char( st_s* o, uz_t start, char c );
 st_s* st_s_insert_sc(   st_s* o, uz_t start, sc_t sc );
 st_s* st_s_insert_st(   st_s* o, uz_t start, const st_s* st );
 st_s* st_s_insert_st_d( st_s* o, uz_t start, st_s* st ); // discards string
+st_s* st_s_insert_fv(   st_s* o, uz_t start, sc_t format, va_list args );
+st_s* st_s_insert_fa(   st_s* o, uz_t start, sc_t format, ... );
 
 /// Replaces existing characters at position <start> (string length does not change)
 st_s* st_s_replace_char( st_s* o, uz_t start, char c );

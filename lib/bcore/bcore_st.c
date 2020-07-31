@@ -952,6 +952,27 @@ st_s* st_s_insert_sc( st_s* o, uz_t start, sc_t sc )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+st_s* st_s_insert_fv( st_s* o, uz_t start, sc_t format, va_list args )
+{
+    st_s* st = st_s_create_fv( format, args );
+    st_s_insert_st( o, start, st );
+    st_s_discard( st );
+    return o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+st_s* st_s_insert_fa(   st_s* o, uz_t start, sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    st_s_insert_fv( o, start, format, args );
+    va_end( args );
+    return o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_replace_char( st_s* o, uz_t start, char c )
 {
     if( start >= o->size ) return o;
