@@ -24,16 +24,22 @@
 /**********************************************************************************************************************/
 // bcore_arr_uz_s
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_arr_uz_s_init( bcore_arr_uz_s* o )
 {
     bcore_memzero( o, sizeof( *o ) );
     o->_ = TYPEOF_bcore_arr_uz_s;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_arr_uz_s_down( bcore_arr_uz_s* o )
 {
     if( o->space > 0 ) bcore_un_alloc( sizeof( uz_t ), o->data, o->space, 0, NULL );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_arr_uz_s_copy( bcore_arr_uz_s* o, const bcore_arr_uz_s* src )
 {
@@ -46,9 +52,13 @@ void bcore_arr_uz_s_copy( bcore_arr_uz_s* o, const bcore_arr_uz_s* src )
     o->size = src->size;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 BCORE_DEFINE_FUNCTION_CREATE(  bcore_arr_uz_s )
 BCORE_DEFINE_FUNCTION_DISCARD( bcore_arr_uz_s )
 BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_uz_s )
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* arr_uz_s_create_self( void )
 {
@@ -59,12 +69,16 @@ static bcore_self_s* arr_uz_s_create_self( void )
     return self;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_uz_s* bcore_arr_uz_s_clear( bcore_arr_uz_s* o )
 {
     o->size = 0;
     if( o->space == 0 ) o->data = NULL; // in case array is referencing external data
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_uz_s* bcore_arr_uz_s_set_space( bcore_arr_uz_s* o, uz_t space )
 {
@@ -80,6 +94,8 @@ bcore_arr_uz_s* bcore_arr_uz_s_set_space( bcore_arr_uz_s* o, uz_t space )
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_uz_s* bcore_arr_uz_s_fill( bcore_arr_uz_s* o, uz_t size, uz_t v )
 {
     bcore_arr_uz_s_set_space( o, size );
@@ -87,6 +103,8 @@ bcore_arr_uz_s* bcore_arr_uz_s_fill( bcore_arr_uz_s* o, uz_t size, uz_t v )
     o->size = size;
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_uz_s* bcore_arr_uz_s_set_size( bcore_arr_uz_s* o, uz_t size )
 {
@@ -98,6 +116,8 @@ bcore_arr_uz_s* bcore_arr_uz_s_set_size( bcore_arr_uz_s* o, uz_t size )
     o->size = size;
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_uz_s* bcore_arr_uz_s_step_fill( bcore_arr_uz_s* o, uz_t v_start, s3_t step, uz_t size )
 {
@@ -112,6 +132,8 @@ bcore_arr_uz_s* bcore_arr_uz_s_step_fill( bcore_arr_uz_s* o, uz_t v_start, s3_t 
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_arr_uz_s_make_strong( bcore_arr_uz_s* o )
 {
     if( o->size > o->space )
@@ -121,6 +143,8 @@ void bcore_arr_uz_s_make_strong( bcore_arr_uz_s* o )
         bcore_u_memcpy( sizeof( uz_t ), o->data, data, o->size );
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_arr_uz_s_push( bcore_arr_uz_s* o, uz_t v )
 {
@@ -132,12 +156,26 @@ void bcore_arr_uz_s_push( bcore_arr_uz_s* o, uz_t v )
     o->data[ o->size++ ] = v;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_uz_s* bcore_arr_uz_s_push_left( bcore_arr_uz_s* o, uz_t v )
+{
+    bcore_arr_uz_s_push( o, 0 );
+    for( sz_t i = o->size - 1; i > 0; i-- ) o->data[ i ] = o->data[ i - 1 ];
+    o->data[ 0 ] = v;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_arr_uz_s_pop( bcore_arr_uz_s* o )
 {
     if( o->size == 0 ) return 0;
     o->size--;
     return o->data[ o->size ];
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void uz_sort( uz_t* data, uz_t size, uz_t* buf, s2_t order )
 {
@@ -162,6 +200,8 @@ static void uz_sort( uz_t* data, uz_t size, uz_t* buf, s2_t order )
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_uz_s* bcore_arr_uz_s_sort( bcore_arr_uz_s* o, s2_t order ) // stable mergesort
 {
     if( o->space < o->size ) bcore_arr_uz_s_make_strong( o );
@@ -170,6 +210,8 @@ bcore_arr_uz_s* bcore_arr_uz_s_sort( bcore_arr_uz_s* o, s2_t order ) // stable m
     bcore_free( buf );
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_uz_s* bcore_arr_uz_s_reorder( bcore_arr_uz_s* o, const bcore_arr_uz_s* order )
 {
@@ -187,6 +229,8 @@ bcore_arr_uz_s* bcore_arr_uz_s_reorder( bcore_arr_uz_s* o, const bcore_arr_uz_s*
     o->size = order->size;
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_uz_s* bcore_arr_uz_s_create_random_permutation( u2_t ( *rg )( u2_t ), u2_t rval, uz_t size )
 {
@@ -207,6 +251,8 @@ bcore_arr_uz_s* bcore_arr_uz_s_create_random_permutation( u2_t ( *rg )( u2_t ), 
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_arr_uz_s_find( const bcore_arr_uz_s* o, uz_t start, uz_t end, uz_t v )
 {
     if( end >= start )
@@ -223,6 +269,8 @@ uz_t bcore_arr_uz_s_find( const bcore_arr_uz_s* o, uz_t start, uz_t end, uz_t v 
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_arr_uz_s_max( const bcore_arr_uz_s* o )
 {
     if( o->size == 0 ) return 0;
@@ -231,6 +279,8 @@ uz_t bcore_arr_uz_s_max( const bcore_arr_uz_s* o )
     return max;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_arr_uz_s_min( const bcore_arr_uz_s* o )
 {
     if( o->size == 0 ) return 0;
@@ -238,6 +288,8 @@ uz_t bcore_arr_uz_s_min( const bcore_arr_uz_s* o )
     for( uz_t i = 1; i < o->size; i++ ) min = o->data[ i ] < min ? o->data[ i ] : min;
     return min;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 uz_t bcore_arr_uz_s_idx_max( const bcore_arr_uz_s* o )
 {
@@ -255,6 +307,8 @@ uz_t bcore_arr_uz_s_idx_max( const bcore_arr_uz_s* o )
     return idx;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_arr_uz_s_idx_min( const bcore_arr_uz_s* o )
 {
     if( o->size == 0 ) return 0;
@@ -271,6 +325,8 @@ uz_t bcore_arr_uz_s_idx_min( const bcore_arr_uz_s* o )
     return idx;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_arr_uz_s_count_equal( const bcore_arr_uz_s* o, uz_t val )
 {
     uz_t count = 0;
@@ -278,8 +334,12 @@ uz_t bcore_arr_uz_s_count_equal( const bcore_arr_uz_s* o, uz_t val )
     return count;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 // bcore_arr_sz_s
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_arr_sz_s_init( bcore_arr_sz_s* o )
 {
@@ -287,10 +347,14 @@ void bcore_arr_sz_s_init( bcore_arr_sz_s* o )
     o->_ = TYPEOF_bcore_arr_sz_s;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_arr_sz_s_down( bcore_arr_sz_s* o )
 {
     if( o->space > 0 ) bcore_un_alloc( sizeof( sz_t ), o->data, o->space, 0, NULL );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_arr_sz_s_copy( bcore_arr_sz_s* o, const bcore_arr_sz_s* src )
 {
@@ -303,9 +367,13 @@ void bcore_arr_sz_s_copy( bcore_arr_sz_s* o, const bcore_arr_sz_s* src )
     o->size = src->size;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 BCORE_DEFINE_FUNCTION_CREATE(  bcore_arr_sz_s )
 BCORE_DEFINE_FUNCTION_DISCARD( bcore_arr_sz_s )
 BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_sz_s )
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* arr_sz_s_create_self( void )
 {
@@ -316,12 +384,16 @@ static bcore_self_s* arr_sz_s_create_self( void )
     return self;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_sz_s* bcore_arr_sz_s_clear( bcore_arr_sz_s* o )
 {
     o->size = 0;
     if( o->space == 0 ) o->data = NULL; // in case array is referencing external data
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_sz_s* bcore_arr_sz_s_set_space( bcore_arr_sz_s* o, uz_t space )
 {
@@ -337,6 +409,8 @@ bcore_arr_sz_s* bcore_arr_sz_s_set_space( bcore_arr_sz_s* o, uz_t space )
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_sz_s* bcore_arr_sz_s_fill( bcore_arr_sz_s* o, uz_t size, sz_t v )
 {
     bcore_arr_sz_s_set_space( o, size );
@@ -344,6 +418,8 @@ bcore_arr_sz_s* bcore_arr_sz_s_fill( bcore_arr_sz_s* o, uz_t size, sz_t v )
     o->size = size;
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_sz_s* bcore_arr_sz_s_set_size( bcore_arr_sz_s* o, uz_t size )
 {
@@ -355,6 +431,8 @@ bcore_arr_sz_s* bcore_arr_sz_s_set_size( bcore_arr_sz_s* o, uz_t size )
     o->size = size;
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_sz_s* bcore_arr_sz_s_step_fill( bcore_arr_sz_s* o, sz_t v_start, sz_t step, uz_t size )
 {
@@ -369,6 +447,8 @@ bcore_arr_sz_s* bcore_arr_sz_s_step_fill( bcore_arr_sz_s* o, sz_t v_start, sz_t 
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_arr_sz_s_make_strong( bcore_arr_sz_s* o )
 {
     if( o->size > o->space )
@@ -378,6 +458,8 @@ void bcore_arr_sz_s_make_strong( bcore_arr_sz_s* o )
         bcore_u_memcpy( sizeof( sz_t ), o->data, data, o->size );
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_arr_sz_s_push( bcore_arr_sz_s* o, sz_t v )
 {
@@ -389,12 +471,16 @@ void bcore_arr_sz_s_push( bcore_arr_sz_s* o, sz_t v )
     o->data[ o->size++ ] = v;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 sz_t bcore_arr_sz_s_pop( bcore_arr_sz_s* o )
 {
     if( o->size == 0 ) return 0;
     o->size--;
     return o->data[ o->size ];
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void sz_sort( sz_t* data, uz_t size, sz_t* buf, s2_t order )
 {
@@ -419,6 +505,8 @@ static void sz_sort( sz_t* data, uz_t size, sz_t* buf, s2_t order )
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_sz_s* bcore_arr_sz_s_sort( bcore_arr_sz_s* o, s2_t order ) // stable mergesort
 {
     if( o->space < o->size ) bcore_arr_sz_s_make_strong( o );
@@ -427,6 +515,8 @@ bcore_arr_sz_s* bcore_arr_sz_s_sort( bcore_arr_sz_s* o, s2_t order ) // stable m
     bcore_free( buf );
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_sz_s* bcore_arr_sz_s_reorder( bcore_arr_sz_s* o, const bcore_arr_uz_s* order )
 {
@@ -445,6 +535,8 @@ bcore_arr_sz_s* bcore_arr_sz_s_reorder( bcore_arr_sz_s* o, const bcore_arr_uz_s*
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_arr_sz_s_count_equal( const bcore_arr_sz_s* o, sz_t val )
 {
     uz_t count = 0;
@@ -452,8 +544,12 @@ uz_t bcore_arr_sz_s_count_equal( const bcore_arr_sz_s* o, sz_t val )
     return count;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 // bcore_arr_u3_s
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_arr_u3_s_init( bcore_arr_u3_s* o )
 {
@@ -461,10 +557,14 @@ void bcore_arr_u3_s_init( bcore_arr_u3_s* o )
     o->_ = TYPEOF_bcore_arr_u3_s;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_arr_u3_s_down( bcore_arr_u3_s* o )
 {
     if( o->space > 0 ) bcore_un_alloc( sizeof( u3_t ), o->data, o->space, 0, NULL );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_arr_u3_s_copy( bcore_arr_u3_s* o, const bcore_arr_u3_s* src )
 {
@@ -477,9 +577,13 @@ void bcore_arr_u3_s_copy( bcore_arr_u3_s* o, const bcore_arr_u3_s* src )
     o->size = src->size;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 BCORE_DEFINE_FUNCTION_CREATE(  bcore_arr_u3_s )
 BCORE_DEFINE_FUNCTION_DISCARD( bcore_arr_u3_s )
 BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_u3_s )
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* arr_u3_s_create_self( void )
 {
@@ -490,12 +594,16 @@ static bcore_self_s* arr_u3_s_create_self( void )
     return self;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_u3_s* bcore_arr_u3_s_clear( bcore_arr_u3_s* o )
 {
     o->size = 0;
     if( o->space == 0 ) o->data = NULL; // in case array is referencing external data
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_u3_s* bcore_arr_u3_s_set_space( bcore_arr_u3_s* o, uz_t space )
 {
@@ -511,6 +619,8 @@ bcore_arr_u3_s* bcore_arr_u3_s_set_space( bcore_arr_u3_s* o, uz_t space )
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_u3_s* bcore_arr_u3_s_fill( bcore_arr_u3_s* o, uz_t size, u3_t v )
 {
     bcore_arr_u3_s_set_space( o, size );
@@ -518,6 +628,8 @@ bcore_arr_u3_s* bcore_arr_u3_s_fill( bcore_arr_u3_s* o, uz_t size, u3_t v )
     o->size = size;
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_u3_s* bcore_arr_u3_s_set_size( bcore_arr_u3_s* o, uz_t size )
 {
@@ -529,6 +641,8 @@ bcore_arr_u3_s* bcore_arr_u3_s_set_size( bcore_arr_u3_s* o, uz_t size )
     o->size = size;
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_u3_s* bcore_arr_u3_s_step_fill( bcore_arr_u3_s* o, u3_t v_start, u3_t step, uz_t size )
 {
@@ -543,6 +657,8 @@ bcore_arr_u3_s* bcore_arr_u3_s_step_fill( bcore_arr_u3_s* o, u3_t v_start, u3_t 
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_arr_u3_s_make_strong( bcore_arr_u3_s* o )
 {
     if( o->size > o->space )
@@ -553,7 +669,9 @@ void bcore_arr_u3_s_make_strong( bcore_arr_u3_s* o )
     }
 }
 
-void bcore_arr_u3_s_push( bcore_arr_u3_s* o, u3_t v )
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_u3_s* bcore_arr_u3_s_push( bcore_arr_u3_s* o, u3_t v )
 {
     if( o->size >  o->space ) bcore_arr_u3_s_make_strong( o );
     if( o->size == o->space )
@@ -561,7 +679,10 @@ void bcore_arr_u3_s_push( bcore_arr_u3_s* o, u3_t v )
         o->data = bcore_un_alloc( sizeof( u3_t ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
     }
     o->data[ o->size++ ] = v;
+    return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 u3_t bcore_arr_u3_s_pop( bcore_arr_u3_s* o )
 {
@@ -569,6 +690,8 @@ u3_t bcore_arr_u3_s_pop( bcore_arr_u3_s* o )
     o->size--;
     return o->data[ o->size ];
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void u3_sort( u3_t* data, uz_t size, u3_t* buf, s2_t order )
 {
@@ -593,6 +716,8 @@ static void u3_sort( u3_t* data, uz_t size, u3_t* buf, s2_t order )
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_u3_s* bcore_arr_u3_s_sort( bcore_arr_u3_s* o, s2_t order ) // stable mergesort
 {
     if( o->space < o->size ) bcore_arr_u3_s_make_strong( o );
@@ -601,6 +726,8 @@ bcore_arr_u3_s* bcore_arr_u3_s_sort( bcore_arr_u3_s* o, s2_t order ) // stable m
     bcore_free( buf );
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_u3_s* bcore_arr_u3_s_reorder( bcore_arr_u3_s* o, const bcore_arr_uz_s* order )
 {
@@ -619,6 +746,8 @@ bcore_arr_u3_s* bcore_arr_u3_s_reorder( bcore_arr_u3_s* o, const bcore_arr_uz_s*
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_arr_u3_s_count_equal( const bcore_arr_u3_s* o, u3_t val )
 {
     uz_t count = 0;
@@ -626,8 +755,12 @@ uz_t bcore_arr_u3_s_count_equal( const bcore_arr_u3_s* o, u3_t val )
     return count;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 // bcore_arr_tp_s
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_arr_tp_s_init( bcore_arr_tp_s* o )
 {
@@ -635,10 +768,14 @@ void bcore_arr_tp_s_init( bcore_arr_tp_s* o )
     o->_ = TYPEOF_bcore_arr_tp_s;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_arr_tp_s_down( bcore_arr_tp_s* o )
 {
     if( o->space > 0 ) bcore_un_alloc( sizeof( tp_t ), o->data, o->space, 0, NULL );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_arr_tp_s_copy( bcore_arr_tp_s* o, const bcore_arr_tp_s* src )
 {
@@ -651,9 +788,13 @@ void bcore_arr_tp_s_copy( bcore_arr_tp_s* o, const bcore_arr_tp_s* src )
     o->size = src->size;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 BCORE_DEFINE_FUNCTION_CREATE(  bcore_arr_tp_s )
 BCORE_DEFINE_FUNCTION_DISCARD( bcore_arr_tp_s )
 BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_tp_s )
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* arr_tp_s_create_self( void )
 {
@@ -664,12 +805,16 @@ static bcore_self_s* arr_tp_s_create_self( void )
     return self;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_tp_s* bcore_arr_tp_s_clear( bcore_arr_tp_s* o )
 {
     o->size = 0;
     if( o->space == 0 ) o->data = NULL; // in case array is referencing external data
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_tp_s* bcore_arr_tp_s_set_space( bcore_arr_tp_s* o, uz_t space )
 {
@@ -685,6 +830,8 @@ bcore_arr_tp_s* bcore_arr_tp_s_set_space( bcore_arr_tp_s* o, uz_t space )
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_tp_s* bcore_arr_tp_s_fill( bcore_arr_tp_s* o, uz_t size, tp_t v )
 {
     bcore_arr_tp_s_set_space( o, size );
@@ -692,6 +839,8 @@ bcore_arr_tp_s* bcore_arr_tp_s_fill( bcore_arr_tp_s* o, uz_t size, tp_t v )
     o->size = size;
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_tp_s* bcore_arr_tp_s_set_size( bcore_arr_tp_s* o, uz_t size )
 {
@@ -704,6 +853,8 @@ bcore_arr_tp_s* bcore_arr_tp_s_set_size( bcore_arr_tp_s* o, uz_t size )
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_arr_tp_s_make_strong( bcore_arr_tp_s* o )
 {
     if( o->size > o->space )
@@ -713,6 +864,8 @@ void bcore_arr_tp_s_make_strong( bcore_arr_tp_s* o )
         bcore_u_memcpy( sizeof( tp_t ), o->data, data, o->size );
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_tp_s* bcore_arr_tp_s_push( bcore_arr_tp_s* o, tp_t v )
 {
@@ -725,12 +878,26 @@ bcore_arr_tp_s* bcore_arr_tp_s_push( bcore_arr_tp_s* o, tp_t v )
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_tp_s* bcore_arr_tp_s_push_left( bcore_arr_tp_s* o, tp_t v )
+{
+    bcore_arr_tp_s_push( o, 0 );
+    for( sz_t i = o->size - 1; i > 0; i-- ) o->data[ i ] = o->data[ i - 1 ];
+    o->data[ 0 ] = v;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 tp_t bcore_arr_tp_s_pop( bcore_arr_tp_s* o )
 {
     if( o->size == 0 ) return 0;
     o->size--;
     return o->data[ o->size ];
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void tp_sort( tp_t* data, uz_t size, tp_t* buf, s2_t order )
 {
@@ -755,6 +922,8 @@ static void tp_sort( tp_t* data, uz_t size, tp_t* buf, s2_t order )
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_tp_s* bcore_arr_tp_s_sort( bcore_arr_tp_s* o, s2_t order ) // stable mergesort
 {
     if( o->space < o->size ) bcore_arr_tp_s_make_strong( o );
@@ -763,6 +932,8 @@ bcore_arr_tp_s* bcore_arr_tp_s_sort( bcore_arr_tp_s* o, s2_t order ) // stable m
     bcore_free( buf );
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_tp_s* bcore_arr_tp_s_reorder( bcore_arr_tp_s* o, const bcore_arr_uz_s* order )
 {
@@ -781,6 +952,8 @@ bcore_arr_tp_s* bcore_arr_tp_s_reorder( bcore_arr_tp_s* o, const bcore_arr_uz_s*
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_arr_tp_s_find( const bcore_arr_tp_s* o, uz_t start, uz_t end, tp_t v )
 {
     if( end >= start )
@@ -797,6 +970,8 @@ uz_t bcore_arr_tp_s_find( const bcore_arr_tp_s* o, uz_t start, uz_t end, tp_t v 
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_arr_tp_s_count_equal( const bcore_arr_tp_s* o, tp_t val )
 {
     uz_t count = 0;
@@ -804,8 +979,12 @@ uz_t bcore_arr_tp_s_count_equal( const bcore_arr_tp_s* o, tp_t val )
     return count;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 // bcore_arr_bl_s
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_arr_bl_s_init( bcore_arr_bl_s* o )
 {
@@ -813,10 +992,14 @@ void bcore_arr_bl_s_init( bcore_arr_bl_s* o )
     o->_ = TYPEOF_bcore_arr_bl_s;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_arr_bl_s_down( bcore_arr_bl_s* o )
 {
     if( o->space > 0 ) bcore_un_alloc( sizeof( bl_t ), o->data, o->space, 0, NULL );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_arr_bl_s_copy( bcore_arr_bl_s* o, const bcore_arr_bl_s* src )
 {
@@ -829,9 +1012,13 @@ void bcore_arr_bl_s_copy( bcore_arr_bl_s* o, const bcore_arr_bl_s* src )
     o->size = src->size;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 BCORE_DEFINE_FUNCTION_CREATE(  bcore_arr_bl_s )
 BCORE_DEFINE_FUNCTION_DISCARD( bcore_arr_bl_s )
 BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_bl_s )
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* arr_bl_s_create_self( void )
 {
@@ -842,12 +1029,16 @@ static bcore_self_s* arr_bl_s_create_self( void )
     return self;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_bl_s* bcore_arr_bl_s_clear( bcore_arr_bl_s* o )
 {
     o->size = 0;
     if( o->space == 0 ) o->data = NULL; // in case array is referencing external data
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_bl_s* bcore_arr_bl_s_set_space( bcore_arr_bl_s* o, uz_t space )
 {
@@ -863,6 +1054,8 @@ bcore_arr_bl_s* bcore_arr_bl_s_set_space( bcore_arr_bl_s* o, uz_t space )
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_bl_s* bcore_arr_bl_s_fill( bcore_arr_bl_s* o, uz_t size, bl_t v )
 {
     bcore_arr_bl_s_set_space( o, size );
@@ -870,6 +1063,8 @@ bcore_arr_bl_s* bcore_arr_bl_s_fill( bcore_arr_bl_s* o, uz_t size, bl_t v )
     o->size = size;
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_bl_s* bcore_arr_bl_s_set_size( bcore_arr_bl_s* o, uz_t size )
 {
@@ -882,6 +1077,8 @@ bcore_arr_bl_s* bcore_arr_bl_s_set_size( bcore_arr_bl_s* o, uz_t size )
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_arr_bl_s_make_strong( bcore_arr_bl_s* o )
 {
     if( o->size > o->space )
@@ -891,6 +1088,8 @@ void bcore_arr_bl_s_make_strong( bcore_arr_bl_s* o )
         bcore_u_memcpy( sizeof( bl_t ), o->data, data, o->size );
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_bl_s* bcore_arr_bl_s_push( bcore_arr_bl_s* o, bl_t v )
 {
@@ -903,12 +1102,26 @@ bcore_arr_bl_s* bcore_arr_bl_s_push( bcore_arr_bl_s* o, bl_t v )
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_bl_s* bcore_arr_bl_s_push_left( bcore_arr_bl_s* o, bl_t v )
+{
+    bcore_arr_bl_s_push( o, false );
+    for( sz_t i = o->size - 1; i > 0; i-- ) o->data[ i ] = o->data[ i - 1 ];
+    o->data[ 0 ] = v;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 bl_t bcore_arr_bl_s_pop( bcore_arr_bl_s* o )
 {
     if( o->size == 0 ) return 0;
     o->size--;
     return o->data[ o->size ];
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 uz_t bcore_arr_bl_s_count_equal( const bcore_arr_bl_s* o, bl_t val )
 {
@@ -917,7 +1130,11 @@ uz_t bcore_arr_bl_s_count_equal( const bcore_arr_bl_s* o, bl_t val )
     return count;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 BCORE_DEFINE_FUNCTION_INIT_INST( bcore_arr_st_s )
 BCORE_DEFINE_FUNCTION_DOWN_INST( bcore_arr_st_s )
@@ -926,10 +1143,14 @@ BCORE_DEFINE_FUNCTION_CREATE(    bcore_arr_st_s )
 BCORE_DEFINE_FUNCTION_DISCARD(   bcore_arr_st_s )
 BCORE_DEFINE_FUNCTION_CLONE(     bcore_arr_st_s )
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static bcore_self_s* arr_st_s_create_self( void )
 {
     return BCORE_SELF_S_BUILD_PARSE_SC( "bcore_arr_st_s = bcore_array { aware_t _; st_s* [] arr; }", bcore_arr_st_s );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_st_s* bcore_arr_st_s_clear( bcore_arr_st_s* o )
 {
@@ -944,11 +1165,15 @@ bcore_arr_st_s* bcore_arr_st_s_clear( bcore_arr_st_s* o )
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_st_s* bcore_arr_st_s_set_space( bcore_arr_st_s* o, uz_t space )
 {
     bcore_array_a_set_space( (bcore_array*)o, space );
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_st_s* bcore_arr_st_s_set_size( bcore_arr_st_s* o, uz_t size )
 {
@@ -960,6 +1185,8 @@ bcore_arr_st_s* bcore_arr_st_s_set_size( bcore_arr_st_s* o, uz_t size )
     o->size = size;
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_arr_st_s_make_strong( bcore_arr_st_s* o )
 {
@@ -974,6 +1201,8 @@ void bcore_arr_st_s_make_strong( bcore_arr_st_s* o )
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 st_s* bcore_arr_st_s_push_st( bcore_arr_st_s* o, const st_s* st )
 {
     if( o->size >  o->space ) bcore_arr_st_s_make_strong( o );
@@ -984,6 +1213,8 @@ st_s* bcore_arr_st_s_push_st( bcore_arr_st_s* o, const st_s* st )
     o->data[ o->size++ ] = st_s_clone( st );
     return o->data[ o->size - 1 ];
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 st_s* bcore_arr_st_s_push_st_d( bcore_arr_st_s* o, st_s* st )
 {
@@ -996,10 +1227,14 @@ st_s* bcore_arr_st_s_push_st_d( bcore_arr_st_s* o, st_s* st )
     return o->data[ o->size - 1 ];
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 st_s* bcore_arr_st_s_push_sc( bcore_arr_st_s* o, sc_t sc )
 {
     return bcore_arr_st_s_push_st_d( o, st_s_create_sc( sc ) );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_arr_st_s_pop( bcore_arr_st_s* o )
 {
@@ -1007,6 +1242,8 @@ void bcore_arr_st_s_pop( bcore_arr_st_s* o )
     o->size--;
     st_s_discard( o->data[ o->size ] );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void st_sort( st_s** data, uz_t size, st_s** buf, s2_t order )
 {
@@ -1021,6 +1258,8 @@ static void st_sort( st_s** data, uz_t size, st_s** buf, s2_t order )
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_st_s* bcore_arr_st_s_sort( bcore_arr_st_s* o, s2_t order ) // stable mergesort
 {
     if( o->space < o->size ) bcore_arr_st_s_make_strong( o );
@@ -1029,6 +1268,8 @@ bcore_arr_st_s* bcore_arr_st_s_sort( bcore_arr_st_s* o, s2_t order ) // stable m
     bcore_free( buf );
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_st_s* bcore_arr_st_s_reorder( bcore_arr_st_s* o, const bcore_arr_uz_s* order )
 {
@@ -1048,6 +1289,8 @@ bcore_arr_st_s* bcore_arr_st_s_reorder( bcore_arr_st_s* o, const bcore_arr_uz_s*
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_arr_st_s_count_equal( const bcore_arr_st_s* o, const st_s* val )
 {
     uz_t count = 0;
@@ -1065,9 +1308,13 @@ uz_t bcore_arr_st_s_count_equal( const bcore_arr_st_s* o, const st_s* val )
     return count;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 // bcore_arr_vd_s
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_arr_vd_s_init( bcore_arr_vd_s* o )
 {
@@ -1075,10 +1322,14 @@ void bcore_arr_vd_s_init( bcore_arr_vd_s* o )
     o->_ = TYPEOF_bcore_arr_vd_s;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_arr_vd_s_down( bcore_arr_vd_s* o )
 {
     if( o->space > 0 ) bcore_un_alloc( sizeof( vd_t ), o->data, o->space, 0, NULL );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_arr_vd_s_copy( bcore_arr_vd_s* o, const bcore_arr_vd_s* src )
 {
@@ -1091,9 +1342,13 @@ void bcore_arr_vd_s_copy( bcore_arr_vd_s* o, const bcore_arr_vd_s* src )
     o->size = src->size;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 BCORE_DEFINE_FUNCTION_CREATE(  bcore_arr_vd_s )
 BCORE_DEFINE_FUNCTION_DISCARD( bcore_arr_vd_s )
 BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_vd_s )
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* arr_vd_s_create_self( void )
 {
@@ -1104,12 +1359,16 @@ static bcore_self_s* arr_vd_s_create_self( void )
     return self;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_vd_s* bcore_arr_vd_s_clear( bcore_arr_vd_s* o )
 {
     o->size = 0;
     if( o->space == 0 ) o->data = NULL; // in case array is referencing external data
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_vd_s* bcore_arr_vd_s_set_space( bcore_arr_vd_s* o, uz_t space )
 {
@@ -1125,6 +1384,8 @@ bcore_arr_vd_s* bcore_arr_vd_s_set_space( bcore_arr_vd_s* o, uz_t space )
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_vd_s* bcore_arr_vd_s_fill( bcore_arr_vd_s* o, uz_t size, vd_t v )
 {
     bcore_arr_vd_s_set_space( o, size );
@@ -1132,6 +1393,8 @@ bcore_arr_vd_s* bcore_arr_vd_s_fill( bcore_arr_vd_s* o, uz_t size, vd_t v )
     o->size = size;
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_vd_s* bcore_arr_vd_s_set_size( bcore_arr_vd_s* o, uz_t size )
 {
@@ -1144,6 +1407,8 @@ bcore_arr_vd_s* bcore_arr_vd_s_set_size( bcore_arr_vd_s* o, uz_t size )
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_arr_vd_s_make_strong( bcore_arr_vd_s* o )
 {
     if( o->size > o->space )
@@ -1154,7 +1419,9 @@ void bcore_arr_vd_s_make_strong( bcore_arr_vd_s* o )
     }
 }
 
-void bcore_arr_vd_s_push( bcore_arr_vd_s* o, vd_t v )
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_vd_s* bcore_arr_vd_s_push( bcore_arr_vd_s* o, vd_t v )
 {
     if( o->size >  o->space ) bcore_arr_vd_s_make_strong( o );
     if( o->size == o->space )
@@ -1162,7 +1429,20 @@ void bcore_arr_vd_s_push( bcore_arr_vd_s* o, vd_t v )
         o->data = bcore_un_alloc( sizeof( vd_t ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
     }
     o->data[ o->size++ ] = v;
+    return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_vd_s* bcore_arr_vd_s_push_left( bcore_arr_vd_s* o, vd_t v )
+{
+    bcore_arr_vd_s_push( o, NULL );
+    for( sz_t i = o->size - 1; i > 0; i-- ) o->data[ i ] = o->data[ i - 1 ];
+    o->data[ 0 ] = v;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 vd_t bcore_arr_vd_s_pop( bcore_arr_vd_s* o )
 {
@@ -1170,6 +1450,8 @@ vd_t bcore_arr_vd_s_pop( bcore_arr_vd_s* o )
     o->size--;
     return o->data[ o->size ];
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_vd_s* bcore_arr_vd_s_reorder( bcore_arr_vd_s* o, const bcore_arr_uz_s* order )
 {
@@ -1188,6 +1470,8 @@ bcore_arr_vd_s* bcore_arr_vd_s_reorder( bcore_arr_vd_s* o, const bcore_arr_uz_s*
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_arr_vd_s_find( const bcore_arr_vd_s* o, uz_t start, uz_t end, vd_t v )
 {
     if( end >= start )
@@ -1204,6 +1488,8 @@ uz_t bcore_arr_vd_s_find( const bcore_arr_vd_s* o, uz_t start, uz_t end, vd_t v 
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_arr_vd_s_count_equal( const bcore_arr_vd_s* o, vd_t val )
 {
     uz_t count = 0;
@@ -1211,9 +1497,13 @@ uz_t bcore_arr_vd_s_count_equal( const bcore_arr_vd_s* o, vd_t val )
     return count;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 // bcore_arr_fp_s
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_arr_fp_s_init( bcore_arr_fp_s* o )
 {
@@ -1221,10 +1511,14 @@ void bcore_arr_fp_s_init( bcore_arr_fp_s* o )
     o->_ = TYPEOF_bcore_arr_fp_s;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_arr_fp_s_down( bcore_arr_fp_s* o )
 {
     if( o->space > 0 ) bcore_un_alloc( sizeof( fp_t ), o->data, o->space, 0, NULL );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_arr_fp_s_copy( bcore_arr_fp_s* o, const bcore_arr_fp_s* src )
 {
@@ -1241,6 +1535,8 @@ BCORE_DEFINE_FUNCTION_CREATE(  bcore_arr_fp_s )
 BCORE_DEFINE_FUNCTION_DISCARD( bcore_arr_fp_s )
 BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_fp_s )
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static bcore_self_s* arr_fp_s_create_self( void )
 {
     bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_arr_fp_s = bcore_array { aware_t _; fp_t [] arr; }", bcore_arr_fp_s );
@@ -1250,12 +1546,16 @@ static bcore_self_s* arr_fp_s_create_self( void )
     return self;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_fp_s* bcore_arr_fp_s_clear( bcore_arr_fp_s* o )
 {
     o->size = 0;
     if( o->space == 0 ) o->data = NULL; // in case array is referencing external data
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_fp_s* bcore_arr_fp_s_set_space( bcore_arr_fp_s* o, uz_t space )
 {
@@ -1271,6 +1571,8 @@ bcore_arr_fp_s* bcore_arr_fp_s_set_space( bcore_arr_fp_s* o, uz_t space )
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_fp_s* bcore_arr_fp_s_set_size( bcore_arr_fp_s* o, sz_t size )
 {
     bcore_arr_fp_s_set_space( o, size );
@@ -1282,6 +1584,8 @@ bcore_arr_fp_s* bcore_arr_fp_s_set_size( bcore_arr_fp_s* o, sz_t size )
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_fp_s* bcore_arr_fp_s_fill( bcore_arr_fp_s* o, uz_t size, fp_t v )
 {
     bcore_arr_fp_s_set_space( o, size );
@@ -1289,6 +1593,8 @@ bcore_arr_fp_s* bcore_arr_fp_s_fill( bcore_arr_fp_s* o, uz_t size, fp_t v )
     o->size = size;
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_arr_fp_s_make_strong( bcore_arr_fp_s* o )
 {
@@ -1300,7 +1606,9 @@ void bcore_arr_fp_s_make_strong( bcore_arr_fp_s* o )
     }
 }
 
-void bcore_arr_fp_s_push( bcore_arr_fp_s* o, fp_t v )
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_fp_s* bcore_arr_fp_s_push( bcore_arr_fp_s* o, fp_t v )
 {
     if( o->size >  o->space ) bcore_arr_fp_s_make_strong( o );
     if( o->size == o->space )
@@ -1308,7 +1616,20 @@ void bcore_arr_fp_s_push( bcore_arr_fp_s* o, fp_t v )
         o->data = bcore_un_alloc( sizeof( fp_t ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
     }
     o->data[ o->size++ ] = v;
+    return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_fp_s* bcore_arr_fp_s_push_left( bcore_arr_fp_s* o, fp_t v )
+{
+    bcore_arr_fp_s_push( o, NULL );
+    for( sz_t i = o->size - 1; i > 0; i-- ) o->data[ i ] = o->data[ i - 1 ];
+    o->data[ 0 ] = v;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 fp_t bcore_arr_fp_s_pop( bcore_arr_fp_s* o )
 {
@@ -1316,6 +1637,8 @@ fp_t bcore_arr_fp_s_pop( bcore_arr_fp_s* o )
     o->size--;
     return o->data[ o->size ];
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_fp_s* bcore_arr_fp_s_reorder( bcore_arr_fp_s* o, const bcore_arr_uz_s* order )
 {
@@ -1334,6 +1657,8 @@ bcore_arr_fp_s* bcore_arr_fp_s_reorder( bcore_arr_fp_s* o, const bcore_arr_uz_s*
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_arr_fp_s_find( const bcore_arr_fp_s* o, uz_t start, uz_t end, fp_t v )
 {
     if( end >= start )
@@ -1350,6 +1675,8 @@ uz_t bcore_arr_fp_s_find( const bcore_arr_fp_s* o, uz_t start, uz_t end, fp_t v 
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_arr_fp_s_count_equal( const bcore_arr_fp_s* o, fp_t val )
 {
     uz_t count = 0;
@@ -1357,8 +1684,12 @@ uz_t bcore_arr_fp_s_count_equal( const bcore_arr_fp_s* o, fp_t val )
     return count;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 // bcore_arr_sr_s
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 BCORE_DEFINE_FUNCTION_INIT_INST( bcore_arr_sr_s )
 BCORE_DEFINE_FUNCTION_DOWN_INST( bcore_arr_sr_s )
@@ -1367,11 +1698,15 @@ BCORE_DEFINE_FUNCTION_CREATE(    bcore_arr_sr_s )
 BCORE_DEFINE_FUNCTION_DISCARD(   bcore_arr_sr_s )
 BCORE_DEFINE_FUNCTION_CLONE(     bcore_arr_sr_s )
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static bcore_self_s* arr_sr_s_create_self( void )
 {
     bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_arr_sr_s = bcore_array { aware_t _; sr_s [] arr; }", bcore_arr_sr_s );
     return self;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_sr_s* bcore_arr_sr_s_clear( bcore_arr_sr_s* o )
 {
@@ -1386,11 +1721,15 @@ bcore_arr_sr_s* bcore_arr_sr_s_clear( bcore_arr_sr_s* o )
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_sr_s* bcore_arr_sr_s_set_space( bcore_arr_sr_s* o, uz_t space )
 {
     bcore_array_a_set_space( (bcore_array*)o, space );
     return o;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_sr_s* bcore_arr_sr_s_set_size( bcore_arr_sr_s* o, uz_t size )
 {
@@ -1398,10 +1737,14 @@ bcore_arr_sr_s* bcore_arr_sr_s_set_size( bcore_arr_sr_s* o, uz_t size )
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_arr_sr_s_make_strong( bcore_arr_sr_s* o )
 {
     bcore_array_a_make_strong( (bcore_array*)o );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 sr_s* bcore_arr_sr_s_push_sr( bcore_arr_sr_s* o, sr_s v )
 {
@@ -1414,6 +1757,8 @@ sr_s* bcore_arr_sr_s_push_sr( bcore_arr_sr_s* o, sr_s v )
     return &o->data[ o->size - 1 ];
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 sr_s* bcore_arr_sr_s_push_tp( bcore_arr_sr_s* o, tp_t type )
 {
     if( o->size > o->space ) bcore_arr_sr_s_make_strong( o );
@@ -1425,6 +1770,7 @@ sr_s* bcore_arr_sr_s_push_tp( bcore_arr_sr_s* o, tp_t type )
     return &o->data[ o->size - 1 ];
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
 
 sr_s bcore_arr_sr_s_pop( bcore_arr_sr_s* o )
 {
@@ -1433,10 +1779,14 @@ sr_s bcore_arr_sr_s_pop( bcore_arr_sr_s* o )
     return o->data[ o->size ];
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_arr_sr_s_sort( bcore_arr_sr_s* o, s2_t order )
 {
     bcore_array_a_sort( (bcore_array*)o, 0, o->size, order );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_sr_s* bcore_arr_sr_s_reorder( bcore_arr_sr_s* o, const bcore_arr_uz_s* order )
 {
@@ -1444,12 +1794,15 @@ bcore_arr_sr_s* bcore_arr_sr_s_reorder( bcore_arr_sr_s* o, const bcore_arr_uz_s*
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_sr_s* bcore_arr_sr_s_set_spect( bcore_arr_sr_s* o, tp_t spect_type )
 {
     for( sz_t i = 0; i < o->size; i++ ) o->data[ i ] = sr_cp( o->data[ i ], spect_type );
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 // selftests
@@ -1538,6 +1891,8 @@ st_s* bcore_arr_uz_selftest( void )
 
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 st_s* bcore_arr_st_selftest( void )
 {
     st_s* log = st_s_createf( "== bcore_arr_st_selftest " );
@@ -1615,7 +1970,11 @@ st_s* bcore_arr_st_selftest( void )
 
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 vd_t bcore_arr_signal_handler( const bcore_signal_s* o )
 {
@@ -1649,3 +2008,6 @@ vd_t bcore_arr_signal_handler( const bcore_signal_s* o )
 
     return NULL;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+
