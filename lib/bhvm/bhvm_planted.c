@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-07-22T09:05:39Z
+ *  Last File Update: 2020-07-30T15:46:25Z
  *
  *  Copyright and License of this File:
  *
@@ -2038,6 +2038,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_node_s )
     "sz_t ag0 = -1;"
     "sz_t ax1 = -1;"
     "sz_t ag1 = -1;"
+    "bl_t param;"
     "bl_t adaptive;"
     "bl_t cyclic;"
 "}";
@@ -2195,6 +2196,7 @@ BCORE_DEFINE_SPECT( bhvm_mcode, bhvm_mcode_hmeta )
 "{"
     "bcore_spect_header_s header;"
     "feature aware bhvm_mcode_hmeta : get_name = bhvm_mcode_hmeta_get_name__;"
+    "feature aware bhvm_mcode_hmeta : get_global_name = bhvm_mcode_hmeta_get_global_name__;"
     "feature aware bhvm_mcode_hmeta : get_pclass = bhvm_mcode_hmeta_get_pclass__;"
     "feature aware bhvm_mcode_hmeta : get_node = bhvm_mcode_hmeta_get_node__;"
     "feature aware bhvm_mcode_hmeta : set_node = bhvm_mcode_hmeta_set_node__;"
@@ -2443,6 +2445,8 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             // group: bhvm_mcode_hmeta
             BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_get_name );
             BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_get_name, bhvm_mcode_hmeta_get_name__ );
+            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_get_global_name );
+            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_get_global_name, bhvm_mcode_hmeta_get_global_name__ );
             BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_get_pclass );
             BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_get_pclass, bhvm_mcode_hmeta_get_pclass__ );
             BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_get_node );
@@ -2479,4 +2483,4 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// BETH_PLANT_SIGNATURE  867282980
+// BETH_PLANT_SIGNATURE 3620391045

@@ -85,6 +85,9 @@ stamp :node = aware :
      */
     sz_t ag1 = -1;
 
+    /// node is a parameter
+    bl_t param;
+
     /// node is adaptive
     bl_t adaptive;
 
@@ -124,6 +127,8 @@ stamp :nbase = aware bcore_array
 group :hmeta =
 {
     feature 'a' tp_t get_name( const ) = { return 0; };
+    feature 'a' sc_t get_global_name( const ) = { return ""; };
+
     feature 'a' tp_t get_pclass( const )  = { return 0; };
 
     feature 'a' ::node_s* get_node( const ) = { return NULL; };
