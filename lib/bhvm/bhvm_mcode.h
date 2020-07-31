@@ -127,8 +127,6 @@ stamp :nbase = aware bcore_array
 group :hmeta =
 {
     feature 'a' tp_t get_name( const ) = { return 0; };
-    feature 'a' sc_t get_global_name( const ) = { return ""; };
-
     feature 'a' tp_t get_pclass( const )  = { return 0; };
 
     feature 'a' ::node_s* get_node( const ) = { return NULL; };
@@ -163,13 +161,8 @@ group :hbase =
 
         func  : :set_size =
         {
-            sz_t old_size = o->holor_adl.size;
             bhvm_holor_adl_s_set_size( &o->holor_adl, size );
-            for( sz_t i = old_size; i < size; i++ )
-            {
-                if( !o->holor_adl.data[ i ] ) o->holor_adl.data[ i ] = bhvm_holor_s_create();
-            }
-            ::hmeta_adl_s_set_size( &o->hmeta_adl, size  );
+               ::hmeta_adl_s_set_size( &o->hmeta_adl, size );
             return o;
         };
 

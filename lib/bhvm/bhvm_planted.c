@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-07-31T11:49:17Z
+ *  Last File Update: 2020-07-31T15:51:47Z
  *
  *  Copyright and License of this File:
  *
@@ -2196,7 +2196,6 @@ BCORE_DEFINE_SPECT( bhvm_mcode, bhvm_mcode_hmeta )
 "{"
     "bcore_spect_header_s header;"
     "feature aware bhvm_mcode_hmeta : get_name = bhvm_mcode_hmeta_get_name__;"
-    "feature aware bhvm_mcode_hmeta : get_global_name = bhvm_mcode_hmeta_get_global_name__;"
     "feature aware bhvm_mcode_hmeta : get_pclass = bhvm_mcode_hmeta_get_pclass__;"
     "feature aware bhvm_mcode_hmeta : get_node = bhvm_mcode_hmeta_get_node__;"
     "feature aware bhvm_mcode_hmeta : set_node = bhvm_mcode_hmeta_set_node__;"
@@ -2221,13 +2220,8 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_hbase_s )
 
 bhvm_mcode_hbase_s* bhvm_mcode_hbase_s_set_size( bhvm_mcode_hbase_s* o, sz_t size )
 {
-    sz_t old_size = o->holor_adl.size;
     bhvm_holor_adl_s_set_size( &o->holor_adl, size );
-    for( sz_t i = old_size; i < size; i++ )
-    {
-        if( !o->holor_adl.data[ i ] ) o->holor_adl.data[ i ] = bhvm_holor_s_create();
-    }
-    bhvm_mcode_hmeta_adl_s_set_size( &o->hmeta_adl, size  );
+       bhvm_mcode_hmeta_adl_s_set_size( &o->hmeta_adl, size );
     return o;
 }
 
@@ -2450,8 +2444,6 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
             // group: bhvm_mcode_hmeta
             BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_get_name );
             BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_get_name, bhvm_mcode_hmeta_get_name__ );
-            BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_get_global_name );
-            BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_get_global_name, bhvm_mcode_hmeta_get_global_name__ );
             BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_get_pclass );
             BCORE_REGISTER_FFUNC( bhvm_mcode_hmeta_get_pclass, bhvm_mcode_hmeta_get_pclass__ );
             BCORE_REGISTER_FEATURE( bhvm_mcode_hmeta_get_node );
@@ -2488,4 +2480,4 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// BETH_PLANT_SIGNATURE 2061580485
+// BETH_PLANT_SIGNATURE 2595886984

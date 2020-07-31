@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-07-31T11:49:17Z
+ *  Last File Update: 2020-07-31T15:51:47Z
  *
  *  Copyright and License of this File:
  *
@@ -19,7 +19,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.
-#define HKEYOF_bhvm_planted 570276619
+#define HKEYOF_bhvm_planted 1916653750
 
 #define TYPEOF_bhvm_planted 1373500053
 
@@ -1166,7 +1166,6 @@
   BCORE_FORWARD_OBJECT( bhvm_mcode_hmeta ); \
   BCORE_FORWARD_OBJECT( bhvm_mcode_hmeta_adl_s ); \
   typedef tp_t (*bhvm_mcode_hmeta_get_name)( const bhvm_mcode_hmeta* o ); \
-  typedef sc_t (*bhvm_mcode_hmeta_get_global_name)( const bhvm_mcode_hmeta* o ); \
   typedef tp_t (*bhvm_mcode_hmeta_get_pclass)( const bhvm_mcode_hmeta* o ); \
   typedef bhvm_mcode_node_s* (*bhvm_mcode_hmeta_get_node)( const bhvm_mcode_hmeta* o ); \
   typedef void (*bhvm_mcode_hmeta_set_node)( bhvm_mcode_hmeta* o, bhvm_mcode_node_s* node ); \
@@ -1178,7 +1177,6 @@
   { \
       bcore_spect_header_s header; \
       bhvm_mcode_hmeta_get_name get_name; \
-      bhvm_mcode_hmeta_get_global_name get_global_name; \
       bhvm_mcode_hmeta_get_pclass get_pclass; \
       bhvm_mcode_hmeta_get_node get_node; \
       bhvm_mcode_hmeta_set_node set_node; \
@@ -1194,9 +1192,6 @@
   static inline tp_t bhvm_mcode_hmeta_a_get_name( const bhvm_mcode_hmeta* o ) { const bhvm_mcode_hmeta_s* p = bhvm_mcode_hmeta_s_get_aware( o ); assert( p->get_name ); return p->get_name( o ); } \
   static inline bl_t bhvm_mcode_hmeta_a_defines_get_name( const bhvm_mcode_hmeta* o ) { return true; } \
   static inline tp_t bhvm_mcode_hmeta_get_name__( const bhvm_mcode_hmeta* o ){return 0;} \
-  static inline sc_t bhvm_mcode_hmeta_a_get_global_name( const bhvm_mcode_hmeta* o ) { const bhvm_mcode_hmeta_s* p = bhvm_mcode_hmeta_s_get_aware( o ); assert( p->get_global_name ); return p->get_global_name( o ); } \
-  static inline bl_t bhvm_mcode_hmeta_a_defines_get_global_name( const bhvm_mcode_hmeta* o ) { return true; } \
-  static inline sc_t bhvm_mcode_hmeta_get_global_name__( const bhvm_mcode_hmeta* o ){return "";} \
   static inline tp_t bhvm_mcode_hmeta_a_get_pclass( const bhvm_mcode_hmeta* o ) { const bhvm_mcode_hmeta_s* p = bhvm_mcode_hmeta_s_get_aware( o ); assert( p->get_pclass ); return p->get_pclass( o ); } \
   static inline bl_t bhvm_mcode_hmeta_a_defines_get_pclass( const bhvm_mcode_hmeta* o ) { return true; } \
   static inline tp_t bhvm_mcode_hmeta_get_pclass__( const bhvm_mcode_hmeta* o ){return 0;} \
@@ -1248,4 +1243,4 @@
 vd_t bhvm_planted_signal_handler( const bcore_signal_s* o );
 
 #endif // BHVM_PLANTED_H
-// BETH_PLANT_SIGNATURE 3307597318
+// BETH_PLANT_SIGNATURE 1407143109
