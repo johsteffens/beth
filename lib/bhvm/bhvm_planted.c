@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-07-30T15:46:25Z
+ *  Last File Update: 2020-07-31T11:49:17Z
  *
  *  Copyright and License of this File:
  *
@@ -2079,12 +2079,12 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_track_s )
     "func bhvm_vop:run;"
 "}";
 
-void bhvm_mcode_track_s_run( const bhvm_mcode_track_s* o, bhvm_holor_s* ah )
+void bhvm_mcode_track_s_run( const bhvm_mcode_track_s* o, bhvm_holor_s** ah )
 {
     BFOR_EACH( i, o ) bhvm_mcode_op_s_run( &o->data[ i ], ah );
 }
 
-void bhvm_mcode_track_s_run_section( const bhvm_mcode_track_s* o, sz_t start, sz_t size, bhvm_holor_s* ah )
+void bhvm_mcode_track_s_run_section( const bhvm_mcode_track_s* o, sz_t start, sz_t size, bhvm_holor_s** ah )
 {
     assert( start >= 0 && start < o->size - size );
     for( sz_t i = 0; i < size; i++ ) bhvm_mcode_op_s_run( &o->data[ i + start ], ah );
@@ -2212,7 +2212,7 @@ BCORE_DEFINE_SPECT( bhvm_mcode, bhvm_mcode_hmeta )
 BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_hbase_s )
 "aware bhvm_mcode_hbase"
 "{"
-    "bhvm_holor_ads_s holor_ads;"
+    "bhvm_holor_adl_s holor_adl;"
     "bhvm_mcode_hmeta_adl_s hmeta_adl;"
     "sz_t copy_size_limit = -1;"
     "func bcore_via_call:mutated;"
@@ -2221,16 +2221,21 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_mcode_hbase_s )
 
 bhvm_mcode_hbase_s* bhvm_mcode_hbase_s_set_size( bhvm_mcode_hbase_s* o, sz_t size )
 {
-    bhvm_holor_ads_s_set_size( &o->holor_ads, size  );
+    sz_t old_size = o->holor_adl.size;
+    bhvm_holor_adl_s_set_size( &o->holor_adl, size );
+    for( sz_t i = old_size; i < size; i++ )
+    {
+        if( !o->holor_adl.data[ i ] ) o->holor_adl.data[ i ] = bhvm_holor_s_create();
+    }
     bhvm_mcode_hmeta_adl_s_set_size( &o->hmeta_adl, size  );
     return o;
 }
 
 sz_t bhvm_mcode_hbase_s_push_hm( bhvm_mcode_hbase_s* o, const bhvm_holor_s* h, const bhvm_mcode_hmeta* m )
 {
-    sz_t idx = o->holor_ads.size;
-    bhvm_mcode_hmeta_adl_s_push_c( &o->hmeta_adl, m );
-    bhvm_holor_ads_s_push_c( &o->holor_ads, h );
+    sz_t idx = o->holor_adl.size;
+       bhvm_mcode_hmeta_adl_s_push_c( &o->hmeta_adl, m );
+    bhvm_holor_adl_s_push_c( &o->holor_adl, h );
     return idx;
 }
 
@@ -2246,11 +2251,11 @@ sz_t bhvm_mcode_hbase_s_push_hmc( bhvm_mcode_hbase_s* o, const bhvm_holor_s* h, 
 
 sz_t bhvm_mcode_hbase_s_push_copy_from_index( bhvm_mcode_hbase_s* o, sz_t index )
 {
-    assert( index >= 0 && index < o->holor_ads.size );
+    assert( index >= 0 && index < o->holor_adl.size );
     
-    sz_t ret = o->holor_ads.size;
-       bhvm_mcode_hmeta_adl_s_push_d( &o->hmeta_adl, bhvm_mcode_hmeta_a_clone(     o->hmeta_adl.data[ index ] ) );
-    bhvm_holor_ads_s_push_d( &o->holor_ads, bhvm_holor_s_clone( &o->holor_ads.data[ index ] ) );
+    sz_t ret = o->holor_adl.size;
+       bhvm_mcode_hmeta_adl_s_push_c( &o->hmeta_adl, o->hmeta_adl.data[ index ] );
+    bhvm_holor_adl_s_push_c( &o->holor_adl, o->holor_adl.data[ index ] );
     return ret;
 }
 
@@ -2483,4 +2488,4 @@ vd_t bhvm_planted_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// BETH_PLANT_SIGNATURE 3620391045
+// BETH_PLANT_SIGNATURE 2061580485

@@ -167,7 +167,7 @@ void bhvm_mcode_frame_s_check_integrity( const bhvm_mcode_frame_s* o )
     BFOR_EACH( i, &o->lib->arr )
     {
         const bhvm_mcode_track_s* track = o->lib->arr.data[ i ];
-        bhvm_mcode_track_s_check_index( track, o->hbase->holor_ads.size );
+        bhvm_mcode_track_s_check_index( track, o->hbase->holor_adl.size );
     }
 
     bhvm_mcode_hbase_s* hbase = o->hbase;

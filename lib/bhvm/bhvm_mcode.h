@@ -158,12 +158,17 @@ group :hbase =
 
     stamp : = aware :
     {
-        bhvm_holor_ads_s holor_ads;
+        bhvm_holor_adl_s holor_adl;
            ::hmeta_adl_s hmeta_adl;
 
         func  : :set_size =
         {
-            bhvm_holor_ads_s_set_size( &o->holor_ads, size  );
+            sz_t old_size = o->holor_adl.size;
+            bhvm_holor_adl_s_set_size( &o->holor_adl, size );
+            for( sz_t i = old_size; i < size; i++ )
+            {
+                if( !o->holor_adl.data[ i ] ) o->holor_adl.data[ i ] = bhvm_holor_s_create();
+            }
             ::hmeta_adl_s_set_size( &o->hmeta_adl, size  );
             return o;
         };
@@ -173,13 +178,13 @@ group :hbase =
         func bcore_via_call : mutated = { if( o->copy_size_limit >= 0 ) @_set_size( o, o->copy_size_limit ); };
         func bcore_inst_call : copy_x = { if( o->copy_size_limit >= 0 ) @_set_size( o, o->copy_size_limit ); };
 
-        func  : :get_size = { return o->holor_ads.size; };
+        func  : :get_size = { return o->holor_adl.size; };
 
         func :: :push_hm  =
         {
-            sz_t idx = o->holor_ads.size;
-            ::hmeta_adl_s_push_c( &o->hmeta_adl, m );
-            bhvm_holor_ads_s_push_c( &o->holor_ads, h );
+            sz_t idx = o->holor_adl.size;
+               ::hmeta_adl_s_push_c( &o->hmeta_adl, m );
+            bhvm_holor_adl_s_push_c( &o->holor_adl, h );
             return idx;
         };
 
@@ -195,20 +200,20 @@ group :hbase =
 
         func :: :push_copy_from_index =
         {
-            assert( index >= 0 && index < o->holor_ads.size );
+            assert( index >= 0 && index < o->holor_adl.size );
 
-            sz_t ret = o->holor_ads.size;
-               ::hmeta_adl_s_push_d( &o->hmeta_adl, ::hmeta_a_clone(     o->hmeta_adl.data[ index ] ) );
-            bhvm_holor_ads_s_push_d( &o->holor_ads, bhvm_holor_s_clone( &o->holor_ads.data[ index ] ) );
+            sz_t ret = o->holor_adl.size;
+               ::hmeta_adl_s_push_c( &o->hmeta_adl, o->hmeta_adl.data[ index ] );
+            bhvm_holor_adl_s_push_c( &o->holor_adl, o->holor_adl.data[ index ] );
             return ret;
         };
 
-        func : :get_holor = { assert( index >= 0 && index < o->holor_ads.size ); return &o->holor_ads.data[ index ]; };
-        func : :get_hmeta = { assert( index >= 0 && index < o->hmeta_adl.size ); return  o->hmeta_adl.data[ index ]; };
+        func : :get_holor = { assert( index >= 0 && index < o->holor_adl.size ); return o->holor_adl.data[ index ]; };
+        func : :get_hmeta = { assert( index >= 0 && index < o->hmeta_adl.size ); return o->hmeta_adl.data[ index ]; };
     };
 };
 
-signature void run_section( const, sz_t start, sz_t size, bhvm_holor_s* ah );
+signature void run_section( const, sz_t start, sz_t size, bhvm_holor_s** ah );
 
 stamp :track = aware bcore_array
 {
@@ -262,7 +267,7 @@ signature      void track_vop_push_d  ( mutable, tp_t name,       bhvm_vop* vop 
 signature      void track_vop_push_c  ( mutable, tp_t name, const bhvm_vop* vop );
 signature      void track_push        ( mutable, tp_t name, tp_t src_name ); // appends track of src_name
 signature      void track_remove      ( mutable, tp_t name );                // removes track if existing
-signature      void track_run_ah      (   const, tp_t name, bhvm_holor_s* ah );
+signature      void track_run_ah      (   const, tp_t name, bhvm_holor_s** ah );
 signature      void track_run         (   const, tp_t name );
 
 signature :track_vop_push_d track_vop_set_args_push_d( const bhvm_vop_arr_ci_s* arr_ci );
@@ -355,7 +360,7 @@ stamp :frame = aware :
     func : :push_hmc  = { if( !o->hbase ) o->hbase = :hbase_s_create(); return :hbase_s_push_hmc(  o->hbase, h, m, c, arr_ci ); };
     func : :push_node = { if( !o->nbase ) o->nbase = :nbase_s_create(); return :nbase_s_push_node( o->nbase                  ); };
 
-    func : :track_run = { if( !o->lib ) return; :lib_s_track_run_ah( o->lib, name, o->hbase->holor_ads.data ); };
+    func : :track_run = { if( !o->lib ) return; :lib_s_track_run_ah( o->lib, name, o->hbase->holor_adl.data ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

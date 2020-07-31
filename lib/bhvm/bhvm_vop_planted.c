@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-07-22T09:05:39Z
+ *  Last File Update: 2020-07-31T11:17:16Z
  *
  *  Copyright and License of this File:
  *
@@ -176,11 +176,11 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar0_randomize_s )
     "func bhvm_vop:sig;"
 "}";
 
-void bhvm_vop_ar0_randomize_s_run( const bhvm_vop_ar0_randomize_s* o, bhvm_holor_s* ah )
+void bhvm_vop_ar0_randomize_s_run( const bhvm_vop_ar0_randomize_s* o, bhvm_holor_s** ah )
 {
     sz_t i = o->i.v[ 0 ];
     u3_t rval = o->rseed + i;
-    bhvm_value_s_set_random_u3( &ah[ i ].v, o->density, o->min, o->max, &rval );
+    bhvm_value_s_set_random_u3( &ah[ i ]->v, o->density, o->min, o->max, &rval );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar0_nul_dp_s )
@@ -209,7 +209,7 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar0_rand_s )
     "func bhvm_vop:sig;"
 "}";
 
-void bhvm_vop_ar0_rand_s_run( const bhvm_vop_ar0_rand_s* o, bhvm_holor_s* ah )
+void bhvm_vop_ar0_rand_s_run( const bhvm_vop_ar0_rand_s* o, bhvm_holor_s** ah )
 {
     sz_t i = o->i.v[ 0 ];
     u3_t* rval = ( u3_t* )&o->rval;
@@ -217,11 +217,11 @@ void bhvm_vop_ar0_rand_s_run( const bhvm_vop_ar0_rand_s* o, bhvm_holor_s* ah )
     bcore_mutex_s_lock( mutex );
     if( o->prsg )
     {
-        bhvm_value_s_set_random( &ah[ i ].v, o->density, o->min, o->max, o->prsg );
+        bhvm_value_s_set_random( &ah[ i ]->v, o->density, o->min, o->max, o->prsg );
     }
     else
     {
-        bhvm_value_s_set_random_u3( &ah[ i ].v, o->density, o->min, o->max, rval );
+        bhvm_value_s_set_random_u3( &ah[ i ]->v, o->density, o->min, o->max, rval );
     }
     bcore_mutex_s_unlock( mutex );
 }
@@ -589,10 +589,10 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar1_fork_s )
     "func bhvm_vop:run;"
 "}";
 
-void bhvm_vop_ar1_fork_s_run( const bhvm_vop_ar1_fork_s* o, bhvm_holor_s* ah )
+void bhvm_vop_ar1_fork_s_run( const bhvm_vop_ar1_fork_s* o, bhvm_holor_s** ah )
 {
-    bhvm_holor_s* a = &ah[o->i.v[0]];
-    bhvm_holor_s* y = &ah[o->i.v[1]];
+    bhvm_holor_s* a = ah[o->i.v[0]];
+    bhvm_holor_s* y = ah[o->i.v[1]];
     bhvm_holor_s_fork( y, a );
 }
 
@@ -607,10 +607,10 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar1_reshape_s )
     "func bhvm_vop:run;"
 "}";
 
-void bhvm_vop_ar1_reshape_s_run( const bhvm_vop_ar1_reshape_s* o, bhvm_holor_s* ah )
+void bhvm_vop_ar1_reshape_s_run( const bhvm_vop_ar1_reshape_s* o, bhvm_holor_s** ah )
 {
-    bhvm_holor_s* a = &ah[o->i.v[0]];
-    bhvm_holor_s* y = &ah[o->i.v[1]];
+    bhvm_holor_s* a = ah[o->i.v[0]];
+    bhvm_holor_s* y = ah[o->i.v[1]];
     assert( bhvm_shape_s_get_volume( &o->shape ) ==  bhvm_shape_s_get_volume( &a->s ) );
     bhvm_shape_s_copy( &y->s, &o->shape );
     bhvm_value_s_fork( &y->v, &a->v );
@@ -1914,4 +1914,4 @@ vd_t bhvm_vop_planted_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// BETH_PLANT_SIGNATURE 2356386797
+// BETH_PLANT_SIGNATURE   72068457

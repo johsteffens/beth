@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-07-30T15:46:25Z
+ *  Last File Update: 2020-07-31T11:49:17Z
  *
  *  Copyright and License of this File:
  *
@@ -19,7 +19,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.
-#define HKEYOF_bhvm_planted 3616452196
+#define HKEYOF_bhvm_planted 570276619
 
 #define TYPEOF_bhvm_planted 1373500053
 
@@ -1034,7 +1034,7 @@
     {aware_t _;bhvm_vop* vop;bhvm_vop_s* p;}; \
   static inline void bhvm_mcode_op_s_copy_x( bhvm_mcode_op_s* o ){o->p = o->vop ? ( bhvm_vop_s* )bhvm_vop_s_get_aware( o->vop ) : NULL;} \
   static inline void bhvm_mcode_op_s_mutated( bhvm_mcode_op_s* o ){bhvm_mcode_op_s_copy_x( o );} \
-  static inline void bhvm_mcode_op_s_run( const bhvm_mcode_op_s* o, bhvm_holor_s* ah ){assert( o->p ); assert( o->p->run ); o->p->run( (vc_t)o->vop, ah );}
+  static inline void bhvm_mcode_op_s_run( const bhvm_mcode_op_s* o, bhvm_holor_s** ah ){assert( o->p ); assert( o->p->run ); o->p->run( (vc_t)o->vop, ah );}
 #define TYPEOF_pclass_ax0 2551261537
 #define TYPEOF_pclass_ag0 2251382966
 #define TYPEOF_pclass_ax1 2534483918
@@ -1063,8 +1063,8 @@
 #define BETH_EXPAND_ITEM_bhvm_mcode_track_s \
   BCORE_DECLARE_OBJECT( bhvm_mcode_track_s ) \
     {aware_t _;tp_t name;BCORE_ARRAY_DYN_SOLID_STATIC_S( bhvm_mcode_op_s, );}; \
-  void bhvm_mcode_track_s_run( const bhvm_mcode_track_s* o, bhvm_holor_s* ah ); \
-  void bhvm_mcode_track_s_run_section( const bhvm_mcode_track_s* o, sz_t start, sz_t size, bhvm_holor_s* ah ); \
+  void bhvm_mcode_track_s_run( const bhvm_mcode_track_s* o, bhvm_holor_s** ah ); \
+  void bhvm_mcode_track_s_run_section( const bhvm_mcode_track_s* o, sz_t start, sz_t size, bhvm_holor_s** ah ); \
   sz_t bhvm_mcode_track_s_vop_push_d( bhvm_mcode_track_s* o, bhvm_vop* vop ); \
   sz_t bhvm_mcode_track_s_vop_push_c( bhvm_mcode_track_s* o, const bhvm_vop* vop ); \
   sz_t bhvm_mcode_track_s_push_copy_from_index( bhvm_mcode_track_s* o, sz_t index ); \
@@ -1106,7 +1106,7 @@
   void bhvm_mcode_lib_s_track_vop_set_args_push_d( bhvm_mcode_lib_s* o, tp_t name, bhvm_vop* vop, const bhvm_vop_arr_ci_s* arr_ci ); \
   void bhvm_mcode_lib_s_track_push( bhvm_mcode_lib_s* o, tp_t name, tp_t src_name ); \
   void bhvm_mcode_lib_s_track_remove( bhvm_mcode_lib_s* o, tp_t name ); \
-  static inline void bhvm_mcode_lib_s_track_run_ah( const bhvm_mcode_lib_s* o, tp_t name, bhvm_holor_s* ah ){bhvm_mcode_track_s* t = bhvm_mcode_lib_s_track_get( (bhvm_mcode_lib_s*)o, name ); if( t ) bhvm_mcode_track_s_run( t, ah );}
+  static inline void bhvm_mcode_lib_s_track_run_ah( const bhvm_mcode_lib_s* o, tp_t name, bhvm_holor_s** ah ){bhvm_mcode_track_s* t = bhvm_mcode_lib_s_track_get( (bhvm_mcode_lib_s*)o, name ); if( t ) bhvm_mcode_track_s_run( t, ah );}
 #define TYPEOF_bhvm_mcode_frame_s 832185203
 #define BETH_EXPAND_ITEM_bhvm_mcode_frame_s \
   BCORE_DECLARE_OBJECT( bhvm_mcode_frame_s ) \
@@ -1120,7 +1120,7 @@
   static inline sz_t bhvm_mcode_frame_s_push_hm( bhvm_mcode_frame_s* o, const bhvm_holor_s* h, const bhvm_mcode_hmeta* m ){if( !o->hbase ) o->hbase = bhvm_mcode_hbase_s_create(); return bhvm_mcode_hbase_s_push_hm(   o->hbase, h, m            );} \
   static inline sz_t bhvm_mcode_frame_s_push_hmc( bhvm_mcode_frame_s* o, const bhvm_holor_s* h, const bhvm_mcode_hmeta* m, char c, bhvm_vop_arr_ci_s* arr_ci ){if( !o->hbase ) o->hbase = bhvm_mcode_hbase_s_create(); return bhvm_mcode_hbase_s_push_hmc(  o->hbase, h, m, c, arr_ci );} \
   static inline bhvm_mcode_node_s* bhvm_mcode_frame_s_push_node( bhvm_mcode_frame_s* o ){if( !o->nbase ) o->nbase = bhvm_mcode_nbase_s_create(); return bhvm_mcode_nbase_s_push_node( o->nbase                  );} \
-  static inline void bhvm_mcode_frame_s_track_run( const bhvm_mcode_frame_s* o, tp_t name ){if( !o->lib ) return; bhvm_mcode_lib_s_track_run_ah( o->lib, name, o->hbase->holor_ads.data );}
+  static inline void bhvm_mcode_frame_s_track_run( const bhvm_mcode_frame_s* o, tp_t name ){if( !o->lib ) return; bhvm_mcode_lib_s_track_run_ah( o->lib, name, o->hbase->holor_adl.data );}
 #define BETH_EXPAND_GROUP_bhvm_mcode \
   BCORE_FORWARD_OBJECT( bhvm_mcode ); \
   BCORE_FORWARD_OBJECT( bhvm_mcode_op_s ); \
@@ -1228,16 +1228,16 @@
 #define TYPEOF_bhvm_mcode_hbase_s 3977623907
 #define BETH_EXPAND_ITEM_bhvm_mcode_hbase_s \
   BCORE_DECLARE_OBJECT( bhvm_mcode_hbase_s ) \
-    {aware_t _;bhvm_holor_ads_s holor_ads;bhvm_mcode_hmeta_adl_s hmeta_adl;sz_t copy_size_limit;}; \
+    {aware_t _;bhvm_holor_adl_s holor_adl;bhvm_mcode_hmeta_adl_s hmeta_adl;sz_t copy_size_limit;}; \
   bhvm_mcode_hbase_s* bhvm_mcode_hbase_s_set_size( bhvm_mcode_hbase_s* o, sz_t size ); \
   static inline void bhvm_mcode_hbase_s_mutated( bhvm_mcode_hbase_s* o ){if( o->copy_size_limit >= 0 ) bhvm_mcode_hbase_s_set_size( o, o->copy_size_limit );} \
   static inline void bhvm_mcode_hbase_s_copy_x( bhvm_mcode_hbase_s* o ){if( o->copy_size_limit >= 0 ) bhvm_mcode_hbase_s_set_size( o, o->copy_size_limit );} \
-  static inline sz_t bhvm_mcode_hbase_s_get_size( const bhvm_mcode_hbase_s* o ){return o->holor_ads.size;} \
+  static inline sz_t bhvm_mcode_hbase_s_get_size( const bhvm_mcode_hbase_s* o ){return o->holor_adl.size;} \
   sz_t bhvm_mcode_hbase_s_push_hm( bhvm_mcode_hbase_s* o, const bhvm_holor_s* h, const bhvm_mcode_hmeta* m ); \
   sz_t bhvm_mcode_hbase_s_push_hmc( bhvm_mcode_hbase_s* o, const bhvm_holor_s* h, const bhvm_mcode_hmeta* m, char c, bhvm_vop_arr_ci_s* arr_ci ); \
   sz_t bhvm_mcode_hbase_s_push_copy_from_index( bhvm_mcode_hbase_s* o, sz_t index ); \
-  static inline bhvm_holor_s* bhvm_mcode_hbase_s_get_holor( const bhvm_mcode_hbase_s* o, sz_t index ){assert( index >= 0 && index < o->holor_ads.size ); return &o->holor_ads.data[ index ];} \
-  static inline bhvm_mcode_hmeta* bhvm_mcode_hbase_s_get_hmeta( const bhvm_mcode_hbase_s* o, sz_t index ){assert( index >= 0 && index < o->hmeta_adl.size ); return  o->hmeta_adl.data[ index ];}
+  static inline bhvm_holor_s* bhvm_mcode_hbase_s_get_holor( const bhvm_mcode_hbase_s* o, sz_t index ){assert( index >= 0 && index < o->holor_adl.size ); return o->holor_adl.data[ index ];} \
+  static inline bhvm_mcode_hmeta* bhvm_mcode_hbase_s_get_hmeta( const bhvm_mcode_hbase_s* o, sz_t index ){assert( index >= 0 && index < o->hmeta_adl.size ); return o->hmeta_adl.data[ index ];}
 #define BETH_EXPAND_GROUP_bhvm_mcode_hbase \
   BCORE_FORWARD_OBJECT( bhvm_mcode_hbase ); \
   BCORE_FORWARD_OBJECT( bhvm_mcode_hbase_s ); \
@@ -1248,4 +1248,4 @@
 vd_t bhvm_planted_signal_handler( const bcore_signal_s* o );
 
 #endif // BHVM_PLANTED_H
-// BETH_PLANT_SIGNATURE 3053609021
+// BETH_PLANT_SIGNATURE 3307597318
