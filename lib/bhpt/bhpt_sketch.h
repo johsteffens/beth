@@ -143,12 +143,12 @@ group :builder =
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /** The tutor defines an adaptive and a training task.
- *  It provide routines for adaptive generation, priming and testing.
+ *  It provides routines for adaptive generation, priming and testing.
  *  Priming and testing may mutate the tutor in a concurrent fashion.
  */
 group :tutor =
 {
-    /// creates adaptive via builder releasing ownership
+    /// creates adaptive via builder
     feature strict 'a' ::adaptive* create_adaptive( const );
 
     /// creates adaptor for adaptive
@@ -162,7 +162,7 @@ group :tutor =
 
     /** Tests a specified adaptive (must be concurrent for tutor) and writes result to log;
      *  Testing may mutate the tutor, if necessary and done in a thread safe manner.
-     *  Mutation is not desired, though, and should never affect the reliability or interpretability
+     *  Mutation is not desirable, though, and should never affect the reliability or interpretability
      *  of test results.
      */
     feature 'a' void test( mutable, const ::adaptive* adaptive, sz_t verbosity, bcore_sink* log ) = {};
