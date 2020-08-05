@@ -14,7 +14,7 @@
       * [Associative Binding](#binding)
       * [RTTI](#RTTI)
       * [Memory Management](#memory-management)
-      * [XOI (automatic code)](#xoi)
+      * [Xoila (automatic code)](#xoila)
    * [Motivation](#motivation)
 
 # About Beth
@@ -163,18 +163,18 @@ the enveloping instance is automatically determined and destroyed.
 A simplified version of the memory-manager (excluding reference management)
 was spun-off into a stand-alone solution in project [tbman](https://github.com/johsteffens/tbman).
 
-<a name = "xoi"></a>
-### XOI
-XOI is a dedicated (mostly declarative) meta language intended to reduce boilerplate coding.
+<a name = "xoila"></a>
+### Xoila
+Xoila is a dedicated (mostly declarative) meta language intended to reduce boilerplate coding.
 It allows expressing key aspects of reflections and perspectives in a well-readable,
 compact and simple style.
 It uses a simple hierarchical namespace scheme.
-XOI-code can also wrap snippets of c-code in which namespaces can be used.
+Xoila-code can also wrap snippets of c-code in which namespaces can be used.
 
-XOI-code is embedded in c-code as non-parseable section, 
-initiated by macro `PLANT_GROUP( <group-name>, <trait-name> )`. 
+Xoila-code is embedded in c-code as non-parseable section, 
+initiated by macro `XOILA_DEFINE_GROUP( <group-name>, <trait-name> )`. 
 
-Key components of the xoi language are `stamp`, `group` and `feature`.
+Key components of the xoila language are `stamp`, `group` and `feature`.
 
 `stamp` represents an object (or class). It can have member variables and functions.
 A stamp is defined inside a `group`.
@@ -182,7 +182,7 @@ A stamp is defined inside a `group`.
 `feature` represents a virtual function.
 It is defined inside a group turning it into a [perspective](#perspective).
 
-The xoi-compiler is called **xoico**.
+The xoila-compiler is called **xoico**.
 You can find it in repository [xoico](https://github.com/johsteffens/xoico).
 
 # Motivation
@@ -259,7 +259,7 @@ From April 2017:
    * Made [badapt_dev](https://github.com/johsteffens/badapt_dev) public.
    * *Haptive/Lion*: Language and Compiler: Continued development.
    * *Haptive/Lion*: Continued development now codenamed *Opal*
-   * Reimplemented and renamed meta-language beth-plant: [XOI](#xoi).
+   * Reimplemented and renamed meta-language beth-plant: [Xoila](#xoila).
    
 ------
 
