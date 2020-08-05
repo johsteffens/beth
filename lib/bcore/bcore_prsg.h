@@ -24,7 +24,7 @@
 #ifndef BCORE_PRSG_H
 #define BCORE_PRSG_H
 
-#include "bcore_xoi.h"
+#include "bcore_xoila.h"
 #include "bcore_life.h"
 #include "bcore_leaf.h"
 #include "bcore_control.h"
@@ -32,7 +32,7 @@
 
 /**********************************************************************************************************************/
 
-XOI_DEFINE_GROUP( bcore_prsg, bcore_inst )
+XOILA_DEFINE_GROUP( bcore_prsg, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /** Number of active bits in the u3 value of the generator.

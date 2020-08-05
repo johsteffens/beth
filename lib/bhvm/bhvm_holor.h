@@ -68,7 +68,7 @@
 
 #ifdef TYPEOF_bhvm
 
-XOI_DEFINE_GROUP( bhvm, bcore_inst )
+XOILA_DEFINE_GROUP( bhvm, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 stamp :shape = bcore_array

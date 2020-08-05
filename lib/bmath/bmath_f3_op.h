@@ -27,7 +27,7 @@
 
 /**********************************************************************************************************************/
 
-XOI_DEFINE_GROUP( bmath_f3_op, bcore_inst )
+XOILA_DEFINE_GROUP( bmath_f3_op, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /** Framework of n-ari operators spelled out on scalars and providing a structure for

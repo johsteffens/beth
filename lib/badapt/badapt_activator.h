@@ -22,7 +22,7 @@
 /**********************************************************************************************************************/
 
 /// activation function
-XOI_DEFINE_GROUP( badapt_activation, bcore_inst )
+XOILA_DEFINE_GROUP( badapt_activation, bcore_inst )
 #ifdef PLANT_SECTION
     feature strict 'pa' f3_t fx( const, f3_t x ); // y  = f( x )
     feature strict 'pa' f3_t dy( const, f3_t y ); // dy = d( y ) (derivative applied on y)
@@ -94,7 +94,7 @@ XOI_DEFINE_GROUP( badapt_activation, bcore_inst )
 /**********************************************************************************************************************/
 
 /// activator: (adaptive) activation applied to a vector
-XOI_DEFINE_GROUP( badapt_activator, bcore_inst )
+XOILA_DEFINE_GROUP( badapt_activator, bcore_inst )
 #ifdef PLANT_SECTION
 
     /// activation function

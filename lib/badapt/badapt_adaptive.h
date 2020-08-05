@@ -23,7 +23,7 @@
 /**********************************************************************************************************************/
 
 /// training dynamics
-XOI_DEFINE_GROUP( badapt_dynamics, bcore_inst )
+XOILA_DEFINE_GROUP( badapt_dynamics, bcore_inst )
 #ifdef PLANT_SECTION
 
 /// updates weights if forward map is: in * w = out;
@@ -42,7 +42,7 @@ stamp :std = aware :
 /**********************************************************************************************************************/
 
 /// adaptive unit
-XOI_DEFINE_GROUP( badapt_adaptive, bcore_inst )
+XOILA_DEFINE_GROUP( badapt_adaptive, bcore_inst )
 #ifdef PLANT_SECTION
 
     // ===== required features =====
@@ -118,7 +118,7 @@ XOI_DEFINE_GROUP( badapt_adaptive, bcore_inst )
 /**********************************************************************************************************************/
 
 /// builder: constructs the adaptive architecture
-XOI_DEFINE_GROUP( badapt_builder, bcore_inst )
+XOILA_DEFINE_GROUP( badapt_builder, bcore_inst )
 #ifdef PLANT_SECTION
 
     /// input vector size

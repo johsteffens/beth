@@ -25,7 +25,7 @@
 
 /**********************************************************************************************************************/
 
-XOI_DEFINE_GROUP( bmath_asmf2, bcore_inst )
+XOILA_DEFINE_GROUP( bmath_asmf2, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     stamp bmath_asmf2 = aware bcore_inst
     {

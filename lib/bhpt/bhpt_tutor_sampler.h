@@ -30,7 +30,7 @@
 
 #ifdef TYPEOF_bhpt_sampler
 
-XOI_DEFINE_GROUP( bhpt_sampler, bcore_inst )
+XOILA_DEFINE_GROUP( bhpt_sampler, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 feature strict 'a' void fetch( const, bcore_prsg* prsg, bhvm_value_s* x, bhvm_value_s* y );
@@ -140,7 +140,7 @@ stamp :polynom = aware :
 
 #ifdef TYPEOF_bhpt_tutor_sampler
 
-XOI_DEFINE_GROUP( bhpt_tutor_sampler, bcore_inst )
+XOILA_DEFINE_GROUP( bhpt_tutor_sampler, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -18,8 +18,8 @@
  *  It manages components, which have a low-level implementation: E.g. beth-system features.
  */
 
-#ifndef BCORE_XOI_INEXPANDABLE_H
-#define BCORE_XOI_INEXPANDABLE_H
+#ifndef BCORE_XOILA_INEXPANDABLE_H
+#define BCORE_XOILA_INEXPANDABLE_H
 
 #include "bcore_std.h"
 #include "bcore_xoi_out.h"
@@ -27,7 +27,7 @@
 /**********************************************************************************************************************/
 
 #ifdef TYPEOF_bcore_fp
-XOI_DEFINE_GROUP( bcore_fp, bcore_inst )
+XOILA_DEFINE_GROUP( bcore_fp, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 expandable = false;
@@ -40,8 +40,8 @@ feature '' void copy_typed( mutable, tp_t type, vc_t src );
 
 /**********************************************************************************************************************/
 
-vd_t bcore_xoi_inexpandable_signal_handler( const bcore_signal_s* o );
+vd_t bcore_xoila_inexpandable_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 
-#endif  // BCORE_XOI_INEXPANDABLE_H
+#endif  // BCORE_XOILA_INEXPANDABLE_H

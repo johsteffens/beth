@@ -25,7 +25,7 @@
 
 /**********************************************************************************************************************/
 
-XOI_DEFINE_GROUP( badapt_mlp, bcore_inst )
+XOILA_DEFINE_GROUP( badapt_mlp, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 stamp :layer = aware bcore_inst

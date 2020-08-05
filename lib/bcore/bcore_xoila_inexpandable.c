@@ -13,13 +13,13 @@
  *  limitations under the License.
  */
 
-#include "bcore_xoi_inexpandable.h"
+#include "bcore_xoila_inexpandable.h"
 
 /**********************************************************************************************************************/
 
-vd_t bcore_xoi_inexpandable_signal_handler( const bcore_signal_s* o )
+vd_t bcore_xoila_inexpandable_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bcore_xoi_inexpandable" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_xoila_inexpandable" ) ) )
     {
         case TYPEOF_init1:
         {

@@ -31,7 +31,7 @@
 
 #ifdef TYPEOF_bhvm_vop
 
-XOI_DEFINE_GROUP( bhvm_vop, bcore_inst )
+XOILA_DEFINE_GROUP( bhvm_vop, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 stamp :arr = aware bcore_array { aware bhvm_vop => []; };

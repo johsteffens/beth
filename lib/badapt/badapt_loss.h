@@ -21,7 +21,7 @@
 
 /**********************************************************************************************************************/
 
-XOI_DEFINE_GROUP( badapt_loss, bcore_inst )
+XOILA_DEFINE_GROUP( badapt_loss, bcore_inst )
 #ifdef PLANT_SECTION
 
     // loss function

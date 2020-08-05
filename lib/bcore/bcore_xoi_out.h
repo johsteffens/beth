@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-08-05T13:48:17Z
+ *  Last File Update: 2020-08-05T16:32:22Z
  *
  *  Copyright and License of this File:
  *
@@ -8,8 +8,8 @@
  *  Source code defining this file is distributed across following files:
  *
  *  bcore_file.h
- *  bcore_xoi_inexpandable.h
- *  bcore_xoi_sample.h
+ *  bcore_xoila_inexpandable.h
+ *  bcore_xoila_sample.h
  *  bcore_spect_inst_call.h
  *  bcore_spect_via_call.h
  *  bcore_main.h
@@ -26,7 +26,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.
-#define HKEYOF_bcore_xoi_out 788028539
+#define HKEYOF_bcore_xoi_out 3791754814
 
 #define TYPEOF_bcore_xoi_out 1237696822
 
@@ -51,96 +51,96 @@
   BETH_EXPAND_ITEM_bcore_file_path_s
 
 /**********************************************************************************************************************/
-// source: bcore_xoi_inexpandable.h
+// source: bcore_xoila_inexpandable.h
 
 /**********************************************************************************************************************/
-// source: bcore_xoi_sample.h
+// source: bcore_xoila_sample.h
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bcore_xoi_sample
+// group: bcore_xoila_sample
 
-#define TYPEOF_bcore_xoi_sample 1809822008
-#define TYPEOF_bcore_xoi_sample_s 3071878754
+#define TYPEOF_bcore_xoila_sample 3192213229
+#define TYPEOF_bcore_xoila_sample_s 710029983
 #define TYPEOF_anyglobalname 2209051205
-#define TYPEOF_bcore_xoi_sample_object2_s 1216877858
-#define BETH_EXPAND_ITEM_bcore_xoi_sample_object2_s \
-  BCORE_DECLARE_OBJECT( bcore_xoi_sample_object2_s ) \
-    {aware_t _;bcore_xoi_sample_features_object_s object;st_s name2;}; \
-  void bcore_xoi_sample_object2_s_setup( bcore_xoi_sample_object2_s* o, sz_t n ); \
-  void bcore_xoi_sample_object2_s_to_stdout( const bcore_xoi_sample_object2_s* o );
-#define BETH_EXPAND_GROUP_bcore_xoi_sample \
-  BCORE_FORWARD_OBJECT( bcore_xoi_sample ); \
-  BCORE_FORWARD_OBJECT( bcore_xoi_sample_signatures ); \
-  BCORE_FORWARD_OBJECT( bcore_xoi_sample_features ); \
-  BCORE_FORWARD_OBJECT( bcore_xoi_sample_object2_s ); \
-  BETH_EXPAND_GROUP_bcore_xoi_sample_signatures \
-  BETH_EXPAND_GROUP_bcore_xoi_sample_features \
-  BETH_EXPAND_ITEM_bcore_xoi_sample_object2_s
+#define TYPEOF_bcore_xoila_sample_object2_s 3045603879
+#define BETH_EXPAND_ITEM_bcore_xoila_sample_object2_s \
+  BCORE_DECLARE_OBJECT( bcore_xoila_sample_object2_s ) \
+    {aware_t _;bcore_xoila_sample_features_object_s object;st_s name2;}; \
+  void bcore_xoila_sample_object2_s_setup( bcore_xoila_sample_object2_s* o, sz_t n ); \
+  void bcore_xoila_sample_object2_s_to_stdout( const bcore_xoila_sample_object2_s* o );
+#define BETH_EXPAND_GROUP_bcore_xoila_sample \
+  BCORE_FORWARD_OBJECT( bcore_xoila_sample ); \
+  BCORE_FORWARD_OBJECT( bcore_xoila_sample_signatures ); \
+  BCORE_FORWARD_OBJECT( bcore_xoila_sample_features ); \
+  BCORE_FORWARD_OBJECT( bcore_xoila_sample_object2_s ); \
+  BETH_EXPAND_GROUP_bcore_xoila_sample_signatures \
+  BETH_EXPAND_GROUP_bcore_xoila_sample_features \
+  BETH_EXPAND_ITEM_bcore_xoila_sample_object2_s
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bcore_xoi_sample_signatures
+// group: bcore_xoila_sample_signatures
 
-#define TYPEOF_bcore_xoi_sample_signatures 3518994586
-#define TYPEOF_bcore_xoi_sample_signatures_s 317588484
-#define BETH_EXPAND_GROUP_bcore_xoi_sample_signatures \
-  BCORE_FORWARD_OBJECT( bcore_xoi_sample_signatures );
+#define TYPEOF_bcore_xoila_sample_signatures 2786267517
+#define TYPEOF_bcore_xoila_sample_signatures_s 3510692271
+#define BETH_EXPAND_GROUP_bcore_xoila_sample_signatures \
+  BCORE_FORWARD_OBJECT( bcore_xoila_sample_signatures );
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bcore_xoi_sample_features
+// group: bcore_xoila_sample_features
 
-#define TYPEOF_bcore_xoi_sample_features 1954537258
-#define TYPEOF_bcore_xoi_sample_features_s 47886292
-#define TYPEOF_bcore_xoi_sample_features_object_s 2004806254
-#define BETH_EXPAND_ITEM_bcore_xoi_sample_features_object_s \
-  BCORE_DECLARE_OBJECT( bcore_xoi_sample_features_object_s ) \
+#define TYPEOF_bcore_xoila_sample_features 2734102561
+#define TYPEOF_bcore_xoila_sample_features_s 1291897483
+#define TYPEOF_bcore_xoila_sample_features_object_s 1878847515
+#define BETH_EXPAND_ITEM_bcore_xoila_sample_features_object_s \
+  BCORE_DECLARE_OBJECT( bcore_xoila_sample_features_object_s ) \
     {aware_t _;st_s name1;BCORE_ARRAY_DYN_LINK_STATIC_S( sz_t, arr_ );}; \
-  void bcore_xoi_sample_features_object_s_setup( bcore_xoi_sample_features_object_s* o, sz_t n ); \
-  static inline void bcore_xoi_sample_features_object_s_to_stdout( const bcore_xoi_sample_features_object_s* o ){bcore_txt_ml_a_to_stdout( o );} \
-  sz_t bcore_xoi_sample_features_object_s_get_size( const bcore_xoi_sample_features_object_s* o ); \
-  static inline void bcore_xoi_sample_features_object_s_simple_function( bcore_xoi_sample_features_object_s* o, sz_t n ){/* do nothing */}
-#define BETH_EXPAND_GROUP_bcore_xoi_sample_features \
-  BCORE_FORWARD_OBJECT( bcore_xoi_sample_features ); \
-  BCORE_FORWARD_OBJECT( bcore_xoi_sample_features_object_s ); \
-  typedef void (*bcore_xoi_sample_features_setup)( bcore_xoi_sample_features* o, sz_t n ); \
-  typedef void (*bcore_xoi_sample_features_to_stdout)( const bcore_xoi_sample_features* o ); \
-  typedef sz_t (*bcore_xoi_sample_features_get_size)( const bcore_xoi_sample_features* o ); \
-  BCORE_DECLARE_SPECT( bcore_xoi_sample_features ) \
+  void bcore_xoila_sample_features_object_s_setup( bcore_xoila_sample_features_object_s* o, sz_t n ); \
+  static inline void bcore_xoila_sample_features_object_s_to_stdout( const bcore_xoila_sample_features_object_s* o ){bcore_txt_ml_a_to_stdout( o );} \
+  sz_t bcore_xoila_sample_features_object_s_get_size( const bcore_xoila_sample_features_object_s* o ); \
+  static inline void bcore_xoila_sample_features_object_s_simple_function( bcore_xoila_sample_features_object_s* o, sz_t n ){/* do nothing */}
+#define BETH_EXPAND_GROUP_bcore_xoila_sample_features \
+  BCORE_FORWARD_OBJECT( bcore_xoila_sample_features ); \
+  BCORE_FORWARD_OBJECT( bcore_xoila_sample_features_object_s ); \
+  typedef void (*bcore_xoila_sample_features_setup)( bcore_xoila_sample_features* o, sz_t n ); \
+  typedef void (*bcore_xoila_sample_features_to_stdout)( const bcore_xoila_sample_features* o ); \
+  typedef sz_t (*bcore_xoila_sample_features_get_size)( const bcore_xoila_sample_features* o ); \
+  BCORE_DECLARE_SPECT( bcore_xoila_sample_features ) \
   { \
       bcore_spect_header_s header; \
-      bcore_xoi_sample_features_setup setup; \
-      bcore_xoi_sample_features_to_stdout to_stdout; \
-      bcore_xoi_sample_features_get_size get_size; \
+      bcore_xoila_sample_features_setup setup; \
+      bcore_xoila_sample_features_to_stdout to_stdout; \
+      bcore_xoila_sample_features_get_size get_size; \
   }; \
-  static inline bcore_xoi_sample_features* bcore_xoi_sample_features_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_xoi_sample_features, t ); return ( bcore_xoi_sample_features* )bcore_inst_t_create( t ); } \
-  static inline bl_t bcore_xoi_sample_features_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_xoi_sample_features ); } \
-  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_xoi_sample_features ) \
-  static inline bl_t bcore_xoi_sample_features_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bcore_xoi_sample_features ); } \
-  static inline void bcore_xoi_sample_features_p_setup( const bcore_xoi_sample_features_s* __p, bcore_xoi_sample_features* o, sz_t n ) { assert( __p->setup ); __p->setup( o, n ); } \
-  static inline void bcore_xoi_sample_features_t_setup( tp_t __t, bcore_xoi_sample_features* o, sz_t n ) { const bcore_xoi_sample_features_s* p = bcore_xoi_sample_features_s_get_typed( __t ); assert( p->setup ); p->setup( o, n ); } \
-  static inline void bcore_xoi_sample_features_a_setup( bcore_xoi_sample_features* o, sz_t n ) { const bcore_xoi_sample_features_s* p = bcore_xoi_sample_features_s_get_aware( o ); assert( p->setup ); p->setup( o, n ); } \
-  static inline void bcore_xoi_sample_features_r_setup( const sr_s* o, sz_t n ) { ASSERT( !sr_s_is_const( o ) ); const bcore_xoi_sample_features_s* p = (const bcore_xoi_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_xoi_sample_features_s ); assert( p->setup ); p->setup( o->o, n ); } \
-  static inline bl_t bcore_xoi_sample_features_p_defines_setup( const bcore_xoi_sample_features_s* __p ) { return true; } \
-  static inline bl_t bcore_xoi_sample_features_t_defines_setup( tp_t __t ) { return true; } \
-  static inline bl_t bcore_xoi_sample_features_a_defines_setup( const bcore_xoi_sample_features* o ) { return true; } \
-  static inline bl_t bcore_xoi_sample_features_r_defines_setup( const sr_s* o ) { return true; } \
-  static inline void bcore_xoi_sample_features_p_to_stdout( const bcore_xoi_sample_features_s* __p, const bcore_xoi_sample_features* o ) { assert( __p->to_stdout ); __p->to_stdout( o ); } \
-  static inline void bcore_xoi_sample_features_t_to_stdout( tp_t __t, const bcore_xoi_sample_features* o ) { const bcore_xoi_sample_features_s* p = bcore_xoi_sample_features_s_get_typed( __t ); assert( p->to_stdout ); p->to_stdout( o ); } \
-  static inline void bcore_xoi_sample_features_a_to_stdout( const bcore_xoi_sample_features* o ) { const bcore_xoi_sample_features_s* p = bcore_xoi_sample_features_s_get_aware( o ); assert( p->to_stdout ); p->to_stdout( o ); } \
-  static inline void bcore_xoi_sample_features_r_to_stdout( const sr_s* o ) { const bcore_xoi_sample_features_s* p = (const bcore_xoi_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_xoi_sample_features_s ); assert( p->to_stdout ); p->to_stdout( o->o ); } \
-  static inline bl_t bcore_xoi_sample_features_p_defines_to_stdout( const bcore_xoi_sample_features_s* __p ) { return true; } \
-  static inline bl_t bcore_xoi_sample_features_t_defines_to_stdout( tp_t __t ) { return true; } \
-  static inline bl_t bcore_xoi_sample_features_a_defines_to_stdout( const bcore_xoi_sample_features* o ) { return true; } \
-  static inline bl_t bcore_xoi_sample_features_r_defines_to_stdout( const sr_s* o ) { return true; } \
-  void bcore_xoi_sample_features_to_stdout__( const bcore_xoi_sample_features* o ); \
-  static inline sz_t bcore_xoi_sample_features_p_get_size( const bcore_xoi_sample_features_s* __p, const bcore_xoi_sample_features* o ) { assert( __p->get_size ); return __p->get_size( o ); } \
-  static inline sz_t bcore_xoi_sample_features_t_get_size( tp_t __t, const bcore_xoi_sample_features* o ) { const bcore_xoi_sample_features_s* p = bcore_xoi_sample_features_s_get_typed( __t ); assert( p->get_size ); return p->get_size( o ); } \
-  static inline sz_t bcore_xoi_sample_features_a_get_size( const bcore_xoi_sample_features* o ) { const bcore_xoi_sample_features_s* p = bcore_xoi_sample_features_s_get_aware( o ); assert( p->get_size ); return p->get_size( o ); } \
-  static inline sz_t bcore_xoi_sample_features_r_get_size( const sr_s* o ) { const bcore_xoi_sample_features_s* p = (const bcore_xoi_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_xoi_sample_features_s ); assert( p->get_size ); return p->get_size( o->o ); } \
-  static inline bl_t bcore_xoi_sample_features_p_defines_get_size( const bcore_xoi_sample_features_s* __p ) { return __p->get_size != NULL; } \
-  static inline bl_t bcore_xoi_sample_features_t_defines_get_size( tp_t __t ) { return bcore_xoi_sample_features_s_get_typed( __t )->get_size != NULL; } \
-  static inline bl_t bcore_xoi_sample_features_a_defines_get_size( const bcore_xoi_sample_features* o ) { return bcore_xoi_sample_features_s_get_aware( o )->get_size != NULL; } \
-  static inline bl_t bcore_xoi_sample_features_r_defines_get_size( const sr_s* o ) { return ( (bcore_xoi_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_xoi_sample_features_s ) )->get_size != NULL; } \
-  BETH_EXPAND_ITEM_bcore_xoi_sample_features_object_s
+  static inline bcore_xoila_sample_features* bcore_xoila_sample_features_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_xoila_sample_features, t ); return ( bcore_xoila_sample_features* )bcore_inst_t_create( t ); } \
+  static inline bl_t bcore_xoila_sample_features_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_xoila_sample_features ); } \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_xoila_sample_features ) \
+  static inline bl_t bcore_xoila_sample_features_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bcore_xoila_sample_features ); } \
+  static inline void bcore_xoila_sample_features_p_setup( const bcore_xoila_sample_features_s* __p, bcore_xoila_sample_features* o, sz_t n ) { assert( __p->setup ); __p->setup( o, n ); } \
+  static inline void bcore_xoila_sample_features_t_setup( tp_t __t, bcore_xoila_sample_features* o, sz_t n ) { const bcore_xoila_sample_features_s* p = bcore_xoila_sample_features_s_get_typed( __t ); assert( p->setup ); p->setup( o, n ); } \
+  static inline void bcore_xoila_sample_features_a_setup( bcore_xoila_sample_features* o, sz_t n ) { const bcore_xoila_sample_features_s* p = bcore_xoila_sample_features_s_get_aware( o ); assert( p->setup ); p->setup( o, n ); } \
+  static inline void bcore_xoila_sample_features_r_setup( const sr_s* o, sz_t n ) { ASSERT( !sr_s_is_const( o ) ); const bcore_xoila_sample_features_s* p = (const bcore_xoila_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_xoila_sample_features_s ); assert( p->setup ); p->setup( o->o, n ); } \
+  static inline bl_t bcore_xoila_sample_features_p_defines_setup( const bcore_xoila_sample_features_s* __p ) { return true; } \
+  static inline bl_t bcore_xoila_sample_features_t_defines_setup( tp_t __t ) { return true; } \
+  static inline bl_t bcore_xoila_sample_features_a_defines_setup( const bcore_xoila_sample_features* o ) { return true; } \
+  static inline bl_t bcore_xoila_sample_features_r_defines_setup( const sr_s* o ) { return true; } \
+  static inline void bcore_xoila_sample_features_p_to_stdout( const bcore_xoila_sample_features_s* __p, const bcore_xoila_sample_features* o ) { assert( __p->to_stdout ); __p->to_stdout( o ); } \
+  static inline void bcore_xoila_sample_features_t_to_stdout( tp_t __t, const bcore_xoila_sample_features* o ) { const bcore_xoila_sample_features_s* p = bcore_xoila_sample_features_s_get_typed( __t ); assert( p->to_stdout ); p->to_stdout( o ); } \
+  static inline void bcore_xoila_sample_features_a_to_stdout( const bcore_xoila_sample_features* o ) { const bcore_xoila_sample_features_s* p = bcore_xoila_sample_features_s_get_aware( o ); assert( p->to_stdout ); p->to_stdout( o ); } \
+  static inline void bcore_xoila_sample_features_r_to_stdout( const sr_s* o ) { const bcore_xoila_sample_features_s* p = (const bcore_xoila_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_xoila_sample_features_s ); assert( p->to_stdout ); p->to_stdout( o->o ); } \
+  static inline bl_t bcore_xoila_sample_features_p_defines_to_stdout( const bcore_xoila_sample_features_s* __p ) { return true; } \
+  static inline bl_t bcore_xoila_sample_features_t_defines_to_stdout( tp_t __t ) { return true; } \
+  static inline bl_t bcore_xoila_sample_features_a_defines_to_stdout( const bcore_xoila_sample_features* o ) { return true; } \
+  static inline bl_t bcore_xoila_sample_features_r_defines_to_stdout( const sr_s* o ) { return true; } \
+  void bcore_xoila_sample_features_to_stdout__( const bcore_xoila_sample_features* o ); \
+  static inline sz_t bcore_xoila_sample_features_p_get_size( const bcore_xoila_sample_features_s* __p, const bcore_xoila_sample_features* o ) { assert( __p->get_size ); return __p->get_size( o ); } \
+  static inline sz_t bcore_xoila_sample_features_t_get_size( tp_t __t, const bcore_xoila_sample_features* o ) { const bcore_xoila_sample_features_s* p = bcore_xoila_sample_features_s_get_typed( __t ); assert( p->get_size ); return p->get_size( o ); } \
+  static inline sz_t bcore_xoila_sample_features_a_get_size( const bcore_xoila_sample_features* o ) { const bcore_xoila_sample_features_s* p = bcore_xoila_sample_features_s_get_aware( o ); assert( p->get_size ); return p->get_size( o ); } \
+  static inline sz_t bcore_xoila_sample_features_r_get_size( const sr_s* o ) { const bcore_xoila_sample_features_s* p = (const bcore_xoila_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_xoila_sample_features_s ); assert( p->get_size ); return p->get_size( o->o ); } \
+  static inline bl_t bcore_xoila_sample_features_p_defines_get_size( const bcore_xoila_sample_features_s* __p ) { return __p->get_size != NULL; } \
+  static inline bl_t bcore_xoila_sample_features_t_defines_get_size( tp_t __t ) { return bcore_xoila_sample_features_s_get_typed( __t )->get_size != NULL; } \
+  static inline bl_t bcore_xoila_sample_features_a_defines_get_size( const bcore_xoila_sample_features* o ) { return bcore_xoila_sample_features_s_get_aware( o )->get_size != NULL; } \
+  static inline bl_t bcore_xoila_sample_features_r_defines_get_size( const sr_s* o ) { return ( (bcore_xoila_sample_features_s*)ch_spect_p( o->p, TYPEOF_bcore_xoila_sample_features_s ) )->get_size != NULL; } \
+  BETH_EXPAND_ITEM_bcore_xoila_sample_features_object_s
 
 /**********************************************************************************************************************/
 // source: bcore_spect_inst_call.h
@@ -710,4 +710,4 @@
 vd_t bcore_xoi_out_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_XOI_OUT_H
-// BETH_PLANT_SIGNATURE 2388391803
+// BETH_PLANT_SIGNATURE 3909787697

@@ -30,7 +30,7 @@
 
 #ifdef TYPEOF_bhpt
 
-XOI_DEFINE_GROUP( bhpt, bcore_inst )
+XOILA_DEFINE_GROUP( bhpt, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /** The adaptor defines a method for updating adaptive holors from accumulated gradients

@@ -15,8 +15,8 @@
 
 /// beth-plant interface functions and macros
 
-#ifndef BCORE_XOI_H
-#define BCORE_XOI_H
+#ifndef BCORE_XOILA_H
+#define BCORE_XOILA_H
 
 #include "bcore_trait.h"
 #include "bcore_spect.h"
@@ -32,12 +32,12 @@
 /** Opening a plant section by defining a group in the header file.
  *  This macro also defines the signal_handler
  */
-#define XOI_DEFINE_GROUP( group_name, trait ) \
+#define XOILA_DEFINE_GROUP( group_name, trait ) \
     BETH_EXPAND_GROUP_##group_name
 
-/// Declares general signal handler of *.signal.c
-#define BETH_PLANT_DECLARE_GENERAL_SIGNAL_HANDLER( plant_name ) \
-    vd_t plant_name##_general_signal_handler( const bcore_signal_s* o );
+/// Declares general signal handler of *_signal.c
+#define BETH_PLANT_DECLARE_GENERAL_SIGNAL_HANDLER( target_name ) \
+    vd_t target_name##_general_signal_handler( const bcore_signal_s* o );
 
 /// Inside *signal.c: Begin of a plant registry for a specific plane name
 #define BETH_PLANT_SIGNAL_OPEN_PLANT( plant_name ) \
@@ -69,4 +69,4 @@
 #define BETH_PLANT_CLOSE() \
     bcore_down( false );
 
-#endif // BCORE_XOI_H
+#endif // BCORE_XOILA_H

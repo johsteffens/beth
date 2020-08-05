@@ -29,7 +29,7 @@
 
 #ifdef TYPEOF_bhpt_tutor_language
 
-XOI_DEFINE_GROUP( bhpt_tutor_language, bcore_inst )
+XOILA_DEFINE_GROUP( bhpt_tutor_language, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

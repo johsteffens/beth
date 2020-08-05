@@ -22,7 +22,7 @@
 #include "bcore_signal.h"
 #include "bcore_xoi_out.h"
 #include "bcore_spect_via_call.h"
-#include "bcore_xoi.h"
+#include "bcore_xoila.h"
 
 BCORE_FORWARD_OBJECT( bcore_source );
 BCORE_FORWARD_OBJECT( bcore_sink );
@@ -30,7 +30,7 @@ BCORE_FORWARD_OBJECT( bcore_sink );
 /**********************************************************************************************************************/
 
 #ifdef TYPEOF_bcore_file
-XOI_DEFINE_GROUP( bcore_file, bcore_inst )
+XOILA_DEFINE_GROUP( bcore_file, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 signature sc_t get_sc( const );

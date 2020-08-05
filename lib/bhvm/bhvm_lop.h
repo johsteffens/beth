@@ -100,7 +100,7 @@ static inline sz_t bhvm_lop_gcd3( sz_t a, sz_t b, sz_t c ) { return bhvm_lop_gcd
 
 #ifdef TYPEOF_bhvm_lop
 
-XOI_DEFINE_GROUP( bhvm_lop, bcore_inst )
+XOILA_DEFINE_GROUP( bhvm_lop, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

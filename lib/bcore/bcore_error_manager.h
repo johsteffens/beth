@@ -16,7 +16,7 @@
 #ifndef BCORE_ERROR_MANAGER_H
 #define BCORE_ERROR_MANAGER_H
 
-#include "bcore_xoi.h"
+#include "bcore_xoila.h"
 #include "bcore_spect.h"
 #include "bcore_spect_inst.h"
 #include "bcore_xoi_out.h"
@@ -30,7 +30,7 @@
 
 #ifdef BETH_EXPAND_GROUP_bcore_error_manager
 
-XOI_DEFINE_GROUP( bcore_error_manager, bcore_inst )
+XOILA_DEFINE_GROUP( bcore_error_manager, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 stamp :error = aware :

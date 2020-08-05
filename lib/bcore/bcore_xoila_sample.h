@@ -23,8 +23,8 @@
 
 /**********************************************************************************************************************/
 
-#ifdef TYPEOF_bcore_xoi_sample
-XOI_DEFINE_GROUP( bcore_xoi_sample, bcore_inst )
+#ifdef TYPEOF_bcore_xoila_sample
+XOILA_DEFINE_GROUP( bcore_xoila_sample, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 group :signatures =
@@ -37,7 +37,7 @@ group :features =
     signature void sig_setup(       mutable, sz_t n );
     signature void simple_function( mutable, sz_t n );
 
-    feature strict 'ptar' bcore_xoi_sample_signatures : setup;
+    feature strict 'ptar' bcore_xoila_sample_signatures : setup;
 
     feature        'ptar' void to_stdout( const ) =
     {
@@ -52,23 +52,23 @@ group :features =
     {
         st_s name1;
         sz_t => [] arr;
-        func bcore_xoi_sample_features : setup;
-        func bcore_xoi_sample_features : to_stdout = : to_stdout_body;
-        func bcore_xoi_sample_features : get_size;
-        func bcore_xoi_sample_features : simple_function = { /* do nothing */ };
+        func bcore_xoila_sample_features : setup;
+        func bcore_xoila_sample_features : to_stdout = : to_stdout_body;
+        func bcore_xoila_sample_features : get_size;
+        func bcore_xoila_sample_features : simple_function = { /* do nothing */ };
     };
 
 };
 
 name anyglobalname;
 
-stamp bcore_xoi_sample_object2 = bcore_inst
+stamp bcore_xoila_sample_object2 = bcore_inst
 {
     aware_t _;
-    bcore_xoi_sample_features_object_s object;
+    bcore_xoila_sample_features_object_s object;
     st_s name2;
-    func bcore_xoi_sample_features : setup;
-    func bcore_xoi_sample_features : to_stdout;
+    func bcore_xoila_sample_features : setup;
+    func bcore_xoila_sample_features : to_stdout;
 };
 
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -77,7 +77,7 @@ stamp bcore_xoi_sample_object2 = bcore_inst
 
 /**********************************************************************************************************************/
 
-vd_t bcore_xoi_sample_signal_handler( const bcore_signal_s* o );
+vd_t bcore_xoila_sample_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 

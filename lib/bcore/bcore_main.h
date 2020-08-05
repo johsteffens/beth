@@ -37,7 +37,7 @@
 #ifndef BCORE_MAIN_H
 #define BCORE_MAIN_H
 
-#include "bcore_xoi.h"
+#include "bcore_xoila.h"
 #include "bcore_trait.h"
 #include "bcore_spect_inst.h"
 #include "bcore_xoi_out.h"
@@ -48,7 +48,7 @@
 
 /**********************************************************************************************************************/
 
-XOI_DEFINE_GROUP( bcore_main, bcore_inst )
+XOILA_DEFINE_GROUP( bcore_main, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     /// This function should be polled to determine if running routine is being required to exit.

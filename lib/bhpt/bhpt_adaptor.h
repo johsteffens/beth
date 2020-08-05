@@ -28,7 +28,7 @@
 
 #ifdef TYPEOF_bhpt_adaptor_stamp
 
-XOI_DEFINE_GROUP( bhpt_adaptor_stamp, bhpt_adaptor )
+XOILA_DEFINE_GROUP( bhpt_adaptor_stamp, bhpt_adaptor )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
