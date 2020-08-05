@@ -47,12 +47,14 @@ BCORE_FORWARD_OBJECT( bcore_plant_target_s );
 BCORE_FORWARD_OBJECT( bcore_plant_compiler_s );
 
 static const bcore_plant* bcore_plant_compiler_s_item_get( const bcore_plant_compiler_s* o, tp_t item_id );
-
 static bl_t bcore_plant_compiler_s_item_exists( const bcore_plant_compiler_s* o, tp_t item_id );
 static er_t bcore_plant_compiler_s_item_register(     bcore_plant_compiler_s* o, const bcore_plant* item,          bcore_source* source );
 static er_t bcore_plant_compiler_s_group_register(    bcore_plant_compiler_s* o, const bcore_plant_group_s* group, bcore_source* source );
 static er_t bcore_plant_compiler_s_life_a_push(       bcore_plant_compiler_s* o, vd_t object );
-static er_t bcore_plant_group_s_parse_name( bcore_plant_group_s* o, st_s* name, bcore_source* source );
+static er_t bcore_plant_compiler_write_with_signature( sc_t file, const st_s* data );
+static er_t bcore_plant_compiler_s_check_overwrite(   bcore_plant_compiler_s* o, sc_t file );
+
+static er_t bcore_plant_group_s_parse_name(           bcore_plant_group_s* o, st_s* name, bcore_source* source );
 static er_t bcore_plant_group_s_parse_name_recursive( bcore_plant_group_s* o, st_s* name, bcore_source* source );
 static er_t bcore_plant_source_s_push_group( bcore_plant_source_s* o, bcore_plant_group_s* group );
 static sc_t bcore_plant_stamp_s_get_rel_name_sc( const bcore_plant_stamp_s* o );
@@ -3096,7 +3098,7 @@ static tp_t bcore_plant_nested_group_s_get_hash( const bcore_plant_nested_group_
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static er_t bcore_plant_nested_group_s_expand_forward( const bcore_plant_group_s* o, sz_t indent, bcore_sink* sink )
+static er_t bcore_plant_nested_group_s_expand_forward( const bcore_plant_nested_group_s* o, sz_t indent, bcore_sink* sink )
 {
     bcore_sink_a_push_fa( sink, " \\\n#rn{ }BCORE_FORWARD_OBJECT( #<sc_t> );", indent, o->group->name.sc );
     return 0;
@@ -3514,6 +3516,30 @@ static bl_t bcore_plant_target_s_to_be_modified( const bcore_plant_target_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// expands all text files in memory
+static er_t bcore_plant_target_s_expand_phase1( bcore_plant_target_s* o, bl_t* p_modified )
+{
+    BLM_INIT();
+    st_s_detach( &o->planted_h );
+    st_s_detach( &o->planted_c );
+    o->modified = false;
+
+    if( bcore_plant_target_s_to_be_modified( o ) )
+    {
+        o->planted_h = st_s_create();
+        o->planted_c = st_s_create();
+        BLM_TRY( bcore_plant_target_s_expand_h( o, 0, ( bcore_sink* )o->planted_h ) );
+        BLM_TRY( bcore_plant_target_s_expand_c( o, 0, ( bcore_sink* )o->planted_c ) );
+        o->modified = true;
+    }
+
+    if( p_modified ) *p_modified = o->modified;
+
+    BLM_RETURNV( er_t, 0 );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /// returns true if a file was modified
 static er_t bcore_plant_compiler_write_with_signature( sc_t file, const st_s* data )
 {
@@ -3524,6 +3550,38 @@ static er_t bcore_plant_compiler_write_with_signature( sc_t file, const st_s* da
     bcore_sink_a_push_fa( sink, "// BETH_PLANT_SIGNATURE #pl10 {#<tp_t>}\n", hash );
     BLM_RETURNV( er_t, 0 );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// returns true if a file was modified
+static er_t bcore_plant_target_s_expand_phase2( bcore_plant_target_s* o, bl_t* p_modified )
+{
+    BLM_INIT();
+    if( !o->modified ) BLM_RETURNV( er_t, 0 );
+
+    ASSERT( o->planted_h );
+    ASSERT( o->planted_c );
+
+    st_s* file_h = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.h", o->path.sc ) );
+    st_s* file_c = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.c", o->path.sc ) );
+
+    BLM_TRY( bcore_plant_compiler_s_check_overwrite( o->compiler, file_h->sc ) );
+    BLM_TRY( bcore_plant_compiler_s_check_overwrite( o->compiler, file_c->sc ) );
+
+    bcore_msg_fa( "writing '#<sc_t>'\n", file_h->sc );
+    bcore_plant_compiler_write_with_signature( file_h->sc, o->planted_h );
+
+    bcore_msg_fa( "writing '#<sc_t>'\n", file_c->sc );
+    bcore_plant_compiler_write_with_signature( file_c->sc, o->planted_c );
+
+    if( p_modified ) *p_modified = o->modified;
+    BLM_RETURNV( er_t, 0 );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// plant_compiler
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -3583,60 +3641,6 @@ static er_t bcore_plant_compiler_s_check_overwrite( bcore_plant_compiler_s* o, s
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-
-/// expands all text files in memory
-static er_t bcore_plant_target_s_expand_phase1( bcore_plant_target_s* o, bl_t* p_modified )
-{
-    BLM_INIT();
-    st_s_detach( &o->planted_h );
-    st_s_detach( &o->planted_c );
-    o->modified = false;
-
-    if( bcore_plant_target_s_to_be_modified( o ) )
-    {
-        o->planted_h = st_s_create();
-        o->planted_c = st_s_create();
-        BLM_TRY( bcore_plant_target_s_expand_h( o, 0, ( bcore_sink* )o->planted_h ) );
-        BLM_TRY( bcore_plant_target_s_expand_c( o, 0, ( bcore_sink* )o->planted_c ) );
-        o->modified = true;
-    }
-
-    if( p_modified ) *p_modified = o->modified;
-
-    BLM_RETURNV( er_t, 0 );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/// returns true if a file was modified
-static er_t bcore_plant_target_s_expand_phase2( bcore_plant_target_s* o, bl_t* p_modified )
-{
-    BLM_INIT();
-    if( !o->modified ) BLM_RETURNV( er_t, 0 );
-
-    ASSERT( o->planted_h );
-    ASSERT( o->planted_c );
-
-    st_s* file_h = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.h", o->path.sc ) );
-    st_s* file_c = BLM_A_PUSH( st_s_create_fa( "#<sc_t>.c", o->path.sc ) );
-
-    BLM_TRY( bcore_plant_compiler_s_check_overwrite( o->compiler, file_h->sc ) );
-    BLM_TRY( bcore_plant_compiler_s_check_overwrite( o->compiler, file_c->sc ) );
-
-    bcore_msg_fa( "writing '#<sc_t>'\n", file_h->sc );
-    bcore_plant_compiler_write_with_signature( file_h->sc, o->planted_h );
-
-    bcore_msg_fa( "writing '#<sc_t>'\n", file_c->sc );
-    bcore_plant_compiler_write_with_signature( file_c->sc, o->planted_c );
-
-    if( p_modified ) *p_modified = o->modified;
-    BLM_RETURNV( er_t, 0 );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/**********************************************************************************************************************/
-/// plant_compiler
 
 /// returns false if already registered; checks for collision
 static er_t bcore_plant_compiler_s_group_register( bcore_plant_compiler_s* o, const bcore_plant_group_s* group, bcore_source* source )
