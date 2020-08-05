@@ -270,12 +270,23 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
     {
         ERR_fa
         (
-            "Recursion limit '#<sz_t>' reached at object '#<sc_t>'\n"
-            "A possible cause of this error is that a reflection is cyclic.\n"
-            "Certain types of cycles cannot be resolved by the framework.\n"
-            "Note that the problem can be with the reflection of '#<sc_t>' or an object containing it.\n",
+            "Recursion limit '#<sz_t>' was reached at object '#<sc_t>'.\n"
+            "\n"
+            "\tThis happens when static elements across multiple reflections form a cycle.\n"
+            "\n"
+            "\tPossible Solution:\n"
+            "\t   1. Determine the cycle.\n"
+            "\t   2. Unspecify the type in one element or make it non-static.\n"
+            "\n"
+            "\tTyped-links and aware-links are both non-static links.\n"
+            "\n"
+            "\tExample:\n"
+            "\t  foo_s => bar;       // could be cyclic\n"
+            "\t  aware foo_s => bar; // not cyclic (foo_s must be aware)\n"
+            "\t  typed foo_s => bar; // not cyclic\n"
+            "\t  vd_t bar;           // not cyclic\n"
+            "\n",
             recursion_count_limit,
-            ifnameof( o_type ),
             ifnameof( o_type )
         );
     }
