@@ -14,13 +14,13 @@
       * [Associative Binding](#binding)
       * [RTTI](#RTTI)
       * [Memory Management](#memory-management)
-      * [Plant (automatic code)](#plant)
+      * [XOI (automatic code)](#xoi)
    * [Motivation](#motivation)
 
 # About Beth
 
 *Beth* is a collection of foundation libraries covering basic objects, advanced 
-numerical frameworks, a [meta-code framework](#plant) for high level software design
+numerical frameworks, a [meta-code framework](#xoi) for high level software design
 and a [framework for machine learning](#badapt) (in development).
 
 It is a personal *"moonshot"* project in which I'm trying to bring several high-level programming
@@ -163,19 +163,27 @@ the enveloping instance is automatically determined and destroyed.
 A simplified version of the memory-manager (excluding reference management)
 was spun-off into a stand-alone solution in project [tbman](https://github.com/johsteffens/tbman).
 
-<a name = "plant"></a>
-### Plant
-Beth-Plant is a dedicated (mostly declarative) meta language intended to reduce boilerplate coding. It allows expressing key aspects of reflections and perspectives in a well-readable, compact and simple style. It uses a simple hierarchical namespace scheme. Plant-code can also wrap snippets of c-code in which namespaces can be used. The plant-compiler converts plant-code and c-code snippets into pure c-code.
+<a name = "xoi"></a>
+### XOI
+XOI is a dedicated (mostly declarative) meta language intended to reduce boilerplate coding.
+It allows expressing key aspects of reflections and perspectives in a well-readable,
+compact and simple style.
+It uses a simple hierarchical namespace scheme.
+XOI-code can also wrap snippets of c-code in which namespaces can be used.
 
-Plant-code is embedded in c-code as non-parseable section, initiated by macro `PLANT_GROUP( <group-name>, <trait-name> )`. Source files containing plant-code are registered to the plant-compiler.
+XOI-code is embedded in c-code as non-parseable section, 
+initiated by macro `PLANT_GROUP( <group-name>, <trait-name> )`. 
 
-Key components of the plant language are `stamp`, `group` and `feature`.
+Key components of the xoi language are `stamp`, `group` and `feature`.
 
-`stamp` represents an object (or class). It can have member variables and functions. A stamp is defined inside a `group`.
+`stamp` represents an object (or class). It can have member variables and functions.
+A stamp is defined inside a `group`.
 `group` represents a declarative context. Groups can be nested.
-`feature` represents a virtual function. It is defined inside a group turning it into a [perspective](#perspective).
+`feature` represents a virtual function.
+It is defined inside a group turning it into a [perspective](#perspective).
 
-A dedicatd plant compiler is in project [beth_plant_builder](https://github.com/johsteffens/beth_plant_builder).
+The xoi-compiler is called **xoico**.
+You can find it in repository [xoico](https://github.com/johsteffens/xoico).
 
 # Motivation
 Object oriented programming is generally associated with a specific
@@ -249,7 +257,9 @@ From April 2017:
 2020:
 
    * Made [badapt_dev](https://github.com/johsteffens/badapt_dev) public.
-   * *Haptive/Lion* Language and Compiler: Continued development.
+   * *Haptive/Lion*: Language and Compiler: Continued development.
+   * *Haptive/Lion*: Continued development now codenamed *Opal*
+   * Reimplemented and renamed meta-language beth-plant: [XOI](#xoi).
    
 ------
 
