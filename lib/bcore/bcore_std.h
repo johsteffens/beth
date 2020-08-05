@@ -24,6 +24,7 @@
 #include "bcore_feature.h"
 #include "bcore_flect.h"
 #include "bcore_file.h"
+#include "bcore_folder.h"
 #include "bcore_trait.h"
 #include "bcore_spect.h"
 #include "bcore_spect_inst.h"
@@ -54,5 +55,6 @@
 #include "bcore_main.h"
 #include "bcore_error_manager.h"
 #include "bcore_prsg.h"
+#include "bcore_cday.h"
 
 #endif // BCORE_STD_H
