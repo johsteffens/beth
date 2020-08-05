@@ -52,7 +52,7 @@
 
 #include "bcore_std.h"
 #include "bmath_std.h"
-#include "bhvm_planted.h"
+#include "bhvm_xoi_out.h"
 #include "bhvm_lop.h"
 
 /**********************************************************************************************************************/
@@ -68,7 +68,7 @@
 
 #ifdef TYPEOF_bhvm
 
-PLANT_GROUP( bhvm, bcore_inst )
+XOI_DEFINE_GROUP( bhvm, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 stamp :shape = bcore_array

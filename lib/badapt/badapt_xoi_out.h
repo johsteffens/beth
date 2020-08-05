@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
- *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-07-22T09:05:39Z
+ *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
+ *  Last File Update: 2020-08-05T12:45:03Z
  *
  *  Copyright and License of this File:
  *
@@ -20,15 +20,15 @@
  *
  */
 
-#ifndef BADAPT_PLANTED_H
-#define BADAPT_PLANTED_H
+#ifndef BADAPT_XOI_OUT_H
+#define BADAPT_XOI_OUT_H
 
 #include "bcore_control.h"
 
 //To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.
-#define HKEYOF_badapt_planted 1194511176
+#define HKEYOF_badapt_xoi_out 4229877416
 
-#define TYPEOF_badapt_planted 2807899404
+#define TYPEOF_badapt_xoi_out 3897798779
 
 /**********************************************************************************************************************/
 // source: badapt_adaptive.h
@@ -1008,7 +1008,7 @@
 
 /**********************************************************************************************************************/
 
-vd_t badapt_planted_signal_handler( const bcore_signal_s* o );
+vd_t badapt_xoi_out_signal_handler( const bcore_signal_s* o );
 
-#endif // BADAPT_PLANTED_H
-// BETH_PLANT_SIGNATURE 4058675543
+#endif // BADAPT_XOI_OUT_H
+// BETH_PLANT_SIGNATURE 2140161194

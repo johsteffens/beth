@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
- *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-07-31T11:17:16Z
+ *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
+ *  Last File Update: 2020-08-05T12:45:03Z
  *
  *  Copyright and License of this File:
  *
@@ -11,7 +11,7 @@
  *
  */
 
-#include "bhvm_vop_planted.h"
+#include "bhvm_vop_xoi_out.h"
 #include "bcore_spect.h"
 #include "bcore_spect_inst.h"
 #include "bcore_sr.h"
@@ -1309,9 +1309,9 @@ BCORE_DEFINE_OBJECT_INST_P( bhvm_vop_ar3_pow_dp_b_s )
 /**********************************************************************************************************************/
 
 
-vd_t bhvm_vop_planted_signal_handler( const bcore_signal_s* o )
+vd_t bhvm_vop_xoi_out_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bhvm_vop_planted" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bhvm_vop_xoi_out" ) ) )
     {
         case TYPEOF_init1:
         {
@@ -1914,4 +1914,4 @@ vd_t bhvm_vop_planted_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// BETH_PLANT_SIGNATURE   72068457
+// BETH_PLANT_SIGNATURE 1979911881

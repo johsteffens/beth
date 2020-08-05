@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
- *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-07-22T09:05:39Z
+ *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
+ *  Last File Update: 2020-08-05T12:45:03Z
  *
  *  Copyright and License of this File:
  *
@@ -20,7 +20,7 @@
  *
  */
 
-#include "badapt_planted.h"
+#include "badapt_xoi_out.h"
 #include "bcore_spect.h"
 #include "bcore_spect_inst.h"
 #include "bcore_sr.h"
@@ -940,9 +940,9 @@ BCORE_DEFINE_OBJECT_INST_P( badapt_trainer_main_s )
 
 vd_t bmath_general_signal_handler( const bcore_signal_s* o );
 
-vd_t badapt_planted_signal_handler( const bcore_signal_s* o )
+vd_t badapt_xoi_out_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "badapt_planted" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "badapt_xoi_out" ) ) )
     {
         case TYPEOF_init1:
         {
@@ -1288,4 +1288,4 @@ vd_t badapt_planted_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// BETH_PLANT_SIGNATURE 1787415181
+// BETH_PLANT_SIGNATURE 2629574022

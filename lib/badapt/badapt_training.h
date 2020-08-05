@@ -23,7 +23,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-PLANT_GROUP( badapt_supplier, bcore_inst )
+XOI_DEFINE_GROUP( badapt_supplier, bcore_inst )
 #ifdef PLANT_SECTION
     feature strict 'a' sz_t get_in_size(  const );
     feature strict 'a' sz_t get_out_size( const );
@@ -43,7 +43,7 @@ PLANT_GROUP( badapt_supplier, bcore_inst )
 //----------------------------------------------------------------------------------------------------------------------
 
 BCORE_FORWARD_OBJECT( badapt_training_state );
-PLANT_GROUP( badapt_guide, bcore_inst )
+XOI_DEFINE_GROUP( badapt_guide, bcore_inst )
 #ifdef PLANT_SECTION
     // callback for training iterations; state can be changed; return value indicates if training shall continue
     feature strict 'a' bl_t callback( const, badapt_training_state* state );
@@ -52,7 +52,7 @@ PLANT_GROUP( badapt_guide, bcore_inst )
 //----------------------------------------------------------------------------------------------------------------------
 
 BCORE_FORWARD_OBJECT( badapt_progress_s );
-PLANT_GROUP( badapt_training_state, bcore_inst )
+XOI_DEFINE_GROUP( badapt_training_state, bcore_inst )
 #ifdef PLANT_SECTION
     feature 'a' void set_adaptive( mutable, const badapt_adaptive* adaptive );
     feature 'a' badapt_adaptive* get_adaptive( const );
@@ -93,7 +93,7 @@ PLANT_GROUP( badapt_training_state, bcore_inst )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-PLANT_GROUP( badapt_trainer, bcore_inst )
+XOI_DEFINE_GROUP( badapt_trainer, bcore_inst )
 #ifdef PLANT_SECTION
     // sets up builder parameters where suitable
     feature strict 'a' void run( const, badapt_training_state* state );
@@ -102,7 +102,7 @@ PLANT_GROUP( badapt_trainer, bcore_inst )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-PLANT_GROUP( badapt_training_objects, bcore_inst )
+XOI_DEFINE_GROUP( badapt_training_objects, bcore_inst )
 #ifdef PLANT_SECTION
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

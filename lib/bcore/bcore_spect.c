@@ -192,12 +192,31 @@ static void spect_manager_close()
 /// tests if the object's self reflection satisfies the requirements of a perspective
 static bl_t supports( const bcore_self_s* self, st_s* log )
 {
-    if( !self->body                          ) return false;
-    if( bcore_self_s_items_size( self ) < 2  ) return false;
+    if( !self->body )
+    {
+        if( log ) st_s_push_fa( log, "Reflection has no body." );
+        return false;
+    }
+
+    if( bcore_self_s_items_size( self ) < 2  )
+    {
+        if( log ) st_s_push_fa( log, "Reflection has #<sz_t> element(s). At least 2 are needed.", bcore_self_s_items_size( self ) );
+        return false;
+    }
+
     if( bcore_self_s_get_item( self, 0 )->type != TYPEOF_bcore_spect_header_s )
     {
-        if( bcore_self_s_get_item( self, 0 )->type != TYPEOF_aware_t ) return false;
-        if( bcore_self_s_get_item( self, 1 )->type != TYPEOF_tp_t    ) return false;
+        if( bcore_self_s_get_item( self, 0 )->type != TYPEOF_aware_t )
+        {
+            if( log ) st_s_push_fa( log, "Reflection is not self aware." );
+            return false;
+        }
+
+        if( bcore_self_s_get_item( self, 1 )->type != TYPEOF_tp_t )
+        {
+            if( log ) st_s_push_fa( log, "Second element of a prespective-reflection is not tp_t" );
+            return false;
+        }
     }
 
     return true;

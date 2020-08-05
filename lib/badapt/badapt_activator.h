@@ -17,12 +17,12 @@
 #define BADAPT_ACTIVATOR_H
 
 #include "bmath_std.h"
-#include "badapt_planted.h"
+#include "badapt_xoi_out.h"
 
 /**********************************************************************************************************************/
 
 /// activation function
-PLANT_GROUP( badapt_activation, bcore_inst )
+XOI_DEFINE_GROUP( badapt_activation, bcore_inst )
 #ifdef PLANT_SECTION
     feature strict 'pa' f3_t fx( const, f3_t x ); // y  = f( x )
     feature strict 'pa' f3_t dy( const, f3_t y ); // dy = d( y ) (derivative applied on y)
@@ -94,7 +94,7 @@ PLANT_GROUP( badapt_activation, bcore_inst )
 /**********************************************************************************************************************/
 
 /// activator: (adaptive) activation applied to a vector
-PLANT_GROUP( badapt_activator, bcore_inst )
+XOI_DEFINE_GROUP( badapt_activator, bcore_inst )
 #ifdef PLANT_SECTION
 
     /// activation function

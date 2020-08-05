@@ -15,16 +15,16 @@
 
 /** Testbed and sample for Plant Framework */
 
-#ifndef BCORE_PLANT_SAMPLE_H
-#define BCORE_PLANT_SAMPLE_H
+#ifndef BCORE_XOI_SAMPLE_H
+#define BCORE_XOI_SAMPLE_H
 
 #include "bcore_std.h"
-#include "bcore_planted.h"
+#include "bcore_xoi_out.h"
 
 /**********************************************************************************************************************/
 
-#ifdef TYPEOF_bcore_plant_sample
-PLANT_GROUP( bcore_plant_sample, bcore_inst )
+#ifdef TYPEOF_bcore_xoi_sample
+XOI_DEFINE_GROUP( bcore_xoi_sample, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 group :signatures =
@@ -37,7 +37,7 @@ group :features =
     signature void sig_setup(       mutable, sz_t n );
     signature void simple_function( mutable, sz_t n );
 
-    feature strict 'ptar' bcore_plant_sample_signatures : setup;
+    feature strict 'ptar' bcore_xoi_sample_signatures : setup;
 
     feature        'ptar' void to_stdout( const ) =
     {
@@ -52,23 +52,23 @@ group :features =
     {
         st_s name1;
         sz_t => [] arr;
-        func bcore_plant_sample_features : setup;
-        func bcore_plant_sample_features : to_stdout = : to_stdout_body;
-        func bcore_plant_sample_features : get_size;
-        func bcore_plant_sample_features : simple_function = { /* do nothing */ };
+        func bcore_xoi_sample_features : setup;
+        func bcore_xoi_sample_features : to_stdout = : to_stdout_body;
+        func bcore_xoi_sample_features : get_size;
+        func bcore_xoi_sample_features : simple_function = { /* do nothing */ };
     };
 
 };
 
 name anyglobalname;
 
-stamp bcore_plant_sample_object2 = bcore_inst
+stamp bcore_xoi_sample_object2 = bcore_inst
 {
     aware_t _;
-    bcore_plant_sample_features_object_s object;
+    bcore_xoi_sample_features_object_s object;
     st_s name2;
-    func bcore_plant_sample_features : setup;
-    func bcore_plant_sample_features : to_stdout;
+    func bcore_xoi_sample_features : setup;
+    func bcore_xoi_sample_features : to_stdout;
 };
 
 #endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -77,8 +77,8 @@ stamp bcore_plant_sample_object2 = bcore_inst
 
 /**********************************************************************************************************************/
 
-vd_t bcore_plant_sample_signal_handler( const bcore_signal_s* o );
+vd_t bcore_xoi_sample_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 
-#endif  // BCORE_PLANT_SAMPLE_H
+#endif  // BCORE_XOI_SAMPLE_H

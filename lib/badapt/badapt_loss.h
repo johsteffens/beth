@@ -17,11 +17,11 @@
 #define BADAPT_LOSS_H
 
 #include "bmath_std.h"
-#include "badapt_planted.h"
+#include "badapt_xoi_out.h"
 
 /**********************************************************************************************************************/
 
-PLANT_GROUP( badapt_loss, bcore_inst )
+XOI_DEFINE_GROUP( badapt_loss, bcore_inst )
 #ifdef PLANT_SECTION
 
     // loss function

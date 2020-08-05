@@ -26,13 +26,13 @@
 #include "bmath_std.h"
 #include "bhvm_std.h"
 #include "bhpt_sketch.h"
-#include "bhpt_planted.h"
+#include "bhpt_xoi_out.h"
 
 /**********************************************************************************************************************/
 
 #ifdef TYPEOF_bhpt_frame
 
-PLANT_GROUP( bhpt_frame, bcore_inst )
+XOI_DEFINE_GROUP( bhpt_frame, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

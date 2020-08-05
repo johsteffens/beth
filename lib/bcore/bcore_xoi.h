@@ -15,31 +15,12 @@
 
 /// beth-plant interface functions and macros
 
-#ifndef BCORE_PLANT_H
-#define BCORE_PLANT_H
+#ifndef BCORE_XOI_H
+#define BCORE_XOI_H
 
-#include "bcore_plant_builder.h"
-
-/**********************************************************************************************************************/
-/// Beth-Plant Interface Functions
-
-/// build plant from configuration file (thread safe)
-er_t beth_plant_build_from_file( sc_t path );
-
-/** Builds from configuration file given in path.
- *  If path is relative, the root folder is take from root_path
- *  where root path specifies a file or folder inside the root path.
- *  Example:
- *     beth_plant_build_from_rel_file( __FILE__, "beth_plant.cfg" );
- *     --> beth_plant.cfg is assumed to be in the folder of beth_plant.cfg
- */
-er_t beth_plant_build_from_rel_file( sc_t root_path, sc_t path );
-
-/// Checks if compiled plants require an update of the corresponding panted files (thread safe)
-bl_t beth_plant_update_required( void );
-
-/// Updates all planted files that require an update; returns true if any file was modified. (thread safe)
-er_t beth_plant_update( bl_t* modified );
+#include "bcore_trait.h"
+#include "bcore_spect.h"
+#include "bcore_spect_inst.h"
 
 /**********************************************************************************************************************/
 
@@ -51,8 +32,8 @@ er_t beth_plant_update( bl_t* modified );
 /** Opening a plant section by defining a group in the header file.
  *  This macro also defines the signal_handler
  */
-#define BETH_PLANT_DEFINE_GROUP( group_name, trait ) \
-    PLANT_GROUP( group_name, trait ) \
+#define XOI_DEFINE_GROUP( group_name, trait ) \
+    BETH_EXPAND_GROUP_##group_name
 
 /// Declares general signal handler of *.signal.c
 #define BETH_PLANT_DECLARE_GENERAL_SIGNAL_HANDLER( plant_name ) \
@@ -64,7 +45,7 @@ er_t beth_plant_update( bl_t* modified );
     { \
         BLM_INIT(); \
         bcore_arr_fp_s* arr_fp = BLM_CREATE( bcore_arr_fp_s ); \
-        bcore_arr_fp_s_push( arr_fp, ( fp_t )plant_name##_planted_signal_handler );
+        bcore_arr_fp_s_push( arr_fp, ( fp_t )plant_name##_xoi_out_signal_handler );
 
 /// Inside *signal.c: Registering a source inside a given plant registry
 #define BETH_PLANT_SIGNAL_USE_SOURCE( source_name ) \
@@ -88,8 +69,4 @@ er_t beth_plant_update( bl_t* modified );
 #define BETH_PLANT_CLOSE() \
     bcore_down( false );
 
-/// builds from default config file: "plant_builder.cfg"
-#define BETH_PLANT_BUILD_FROM_DEFAULT() \
-    beth_plant_build_from_rel_file( __FILE__, "plant_builder.cfg" );
-
-#endif // BCORE_PLANT_H
+#endif // BCORE_XOI_H

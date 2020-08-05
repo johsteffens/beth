@@ -15,6 +15,7 @@
 
 #include "bcore_error_manager.h"
 #include "bcore_sinks.h"
+#include "bcore_life.h"
 
 static bcore_error_manager_context_s* context_g = NULL;
 

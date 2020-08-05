@@ -20,16 +20,16 @@
 #ifndef BCORE_HMAP_NAME_H
 #define BCORE_HMAP_NAME_H
 
-#include "bcore_plant_compiler.h"
+#include "bcore_xoi.h"
 #include "bcore_trait.h"
-#include "bcore_planted.h"
+#include "bcore_xoi_out.h"
 #include "bcore_hmap_tp_sr.h"
 #include "bcore_arr.h"
 
 /**********************************************************************************************************************/
 
 #ifdef TYPEOF_bcore_hmap_name
-PLANT_GROUP( bcore_hmap_name, bcore_inst )
+XOI_DEFINE_GROUP( bcore_hmap_name, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 stamp : = aware bcore_inst { bcore_hmap_tp_sr_s map; };

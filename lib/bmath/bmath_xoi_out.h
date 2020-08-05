@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
- *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-07-22T09:05:39Z
+ *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
+ *  Last File Update: 2020-08-05T12:45:03Z
  *
  *  Copyright and License of this File:
  *
@@ -15,15 +15,15 @@
  *
  */
 
-#ifndef BMATH_PLANTED_H
-#define BMATH_PLANTED_H
+#ifndef BMATH_XOI_OUT_H
+#define BMATH_XOI_OUT_H
 
 #include "bcore_control.h"
 
 //To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.
-#define HKEYOF_bmath_planted 312050195
+#define HKEYOF_bmath_xoi_out 3603102603
 
-#define TYPEOF_bmath_planted 1908897596
+#define TYPEOF_bmath_xoi_out 3737829739
 
 /**********************************************************************************************************************/
 // source: bmath_f3_op.h
@@ -559,7 +559,7 @@
 
 /**********************************************************************************************************************/
 
-vd_t bmath_planted_signal_handler( const bcore_signal_s* o );
+vd_t bmath_xoi_out_signal_handler( const bcore_signal_s* o );
 
-#endif // BMATH_PLANTED_H
-// BETH_PLANT_SIGNATURE 3893128202
+#endif // BMATH_XOI_OUT_H
+// BETH_PLANT_SIGNATURE  387011382

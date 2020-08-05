@@ -17,13 +17,13 @@
 #define BADAPT_adaptive_H
 
 #include "bmath_std.h"
-#include "badapt_planted.h"
+#include "badapt_xoi_out.h"
 #include "badapt_loss.h"
 
 /**********************************************************************************************************************/
 
 /// training dynamics
-PLANT_GROUP( badapt_dynamics, bcore_inst )
+XOI_DEFINE_GROUP( badapt_dynamics, bcore_inst )
 #ifdef PLANT_SECTION
 
 /// updates weights if forward map is: in * w = out;
@@ -42,7 +42,7 @@ stamp :std = aware :
 /**********************************************************************************************************************/
 
 /// adaptive unit
-PLANT_GROUP( badapt_adaptive, bcore_inst )
+XOI_DEFINE_GROUP( badapt_adaptive, bcore_inst )
 #ifdef PLANT_SECTION
 
     // ===== required features =====
@@ -118,7 +118,7 @@ PLANT_GROUP( badapt_adaptive, bcore_inst )
 /**********************************************************************************************************************/
 
 /// builder: constructs the adaptive architecture
-PLANT_GROUP( badapt_builder, bcore_inst )
+XOI_DEFINE_GROUP( badapt_builder, bcore_inst )
 #ifdef PLANT_SECTION
 
     /// input vector size

@@ -14,7 +14,7 @@
  */
 
 #include "bhpt_signal.h"
-#include "bhpt_planted.h"
+#include "bhpt_xoi_out.h"
 #include "bhpt_sketch.h"
 #include "bhpt_frame.h"
 #include "bhpt_adaptor.h"
@@ -37,7 +37,7 @@ vd_t bhpt_general_signal_handler( const bcore_signal_s* o )
     {
         bcore_fp_signal_handler arr[] =
         {
-            bhpt_planted_signal_handler,
+            bhpt_xoi_out_signal_handler,
             bhpt_sketch_signal_handler,
             bhpt_frame_signal_handler,
             bhpt_adaptor_signal_handler,

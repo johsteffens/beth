@@ -37,16 +37,18 @@
 #ifndef BCORE_MAIN_H
 #define BCORE_MAIN_H
 
-#include "bcore_plant.h"
+#include "bcore_xoi.h"
 #include "bcore_trait.h"
-#include "bcore_planted.h"
+#include "bcore_spect_inst.h"
+#include "bcore_xoi_out.h"
 #include "bcore_txt_ml.h"
 #include "bcore_spect_interpreter.h"
+#include "bcore_spect_array.h"
 #include "bcore_arr.h"
 
 /**********************************************************************************************************************/
 
-BETH_PLANT_DEFINE_GROUP( bcore_main, bcore_inst )
+XOI_DEFINE_GROUP( bcore_main, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     /// This function should be polled to determine if running routine is being required to exit.

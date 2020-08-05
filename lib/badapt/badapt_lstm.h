@@ -106,11 +106,11 @@
 #include "bcore_std.h"
 #include "badapt_activator.h"
 #include "badapt_adaptive.h"
-#include "badapt_planted.h"
+#include "badapt_xoi_out.h"
 
 /**********************************************************************************************************************/
 
-PLANT_GROUP( badapt_lstm, bcore_inst )
+XOI_DEFINE_GROUP( badapt_lstm, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 stamp :layer = bcore_inst

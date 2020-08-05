@@ -19,13 +19,13 @@
 /**********************************************************************************************************************/
 
 #include "bcore_std.h"
-#include "bmath_planted.h"
+#include "bmath_xoi_out.h"
 #include "bmath_mf2.h"
 #include "bmath_mf3.h"
 
 /**********************************************************************************************************************/
 
-PLANT_GROUP( bmath_asmf3, bcore_inst )
+XOI_DEFINE_GROUP( bmath_asmf3, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     stamp bmath_asmf3 = aware bcore_inst
     {

@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
- *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-07-22T09:05:39Z
+ *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
+ *  Last File Update: 2020-08-05T13:48:17Z
  *
  *  Copyright and License of this File:
  *
@@ -8,9 +8,8 @@
  *  Source code defining this file is distributed across following files:
  *
  *  bcore_file.h
- *  bcore_plant_builder.h
- *  bcore_plant_inexpandable.h
- *  bcore_plant_sample.h
+ *  bcore_xoi_inexpandable.h
+ *  bcore_xoi_sample.h
  *  bcore_spect_inst_call.h
  *  bcore_spect_via_call.h
  *  bcore_main.h
@@ -21,7 +20,7 @@
  *
  */
 
-#include "bcore_planted.h"
+#include "bcore_xoi_out.h"
 #include "bcore_spect.h"
 #include "bcore_spect_inst.h"
 #include "bcore_sr.h"
@@ -55,93 +54,52 @@ void bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name )
 }
 
 /**********************************************************************************************************************/
-// source: bcore_plant_builder.h
-#include "bcore_plant_builder.h"
-
-//----------------------------------------------------------------------------------------------------------------------
-// group: bcore_plant_builder
-
-BCORE_DEFINE_OBJECT_INST_P( bcore_plant_builder_target_s )
-"aware bcore_plant_builder"
-"{"
-    "st_s => name;"
-    "st_s => extension = \"planted\";"
-    "st_s => root;"
-    "bcore_arr_st_s dependencies;"
-    "bcore_arr_st_s sources;"
-    "st_s => signal_handler;"
-    "func bcore_via_call:source;"
-    "func ^:build;"
-"}";
-
-void bcore_plant_builder_target_s_source( bcore_plant_builder_target_s* o, bcore_source* source )
-{
-    if( !o->root )
-    {
-        o->root = bcore_file_folder_path( bcore_source_a_get_file( source ) );
-        st_s_attach( &o->root, bcore_file_path_minimized( o->root->sc ) );
-    }
-}
-
-BCORE_DEFINE_OBJECT_INST_P( bcore_plant_builder_target_adl_s )
-"aware bcore_array"
-"{"
-    "bcore_plant_builder_target_s => [];"
-"}";
-
-BCORE_DEFINE_SPECT( bcore_inst, bcore_plant_builder )
-"{"
-    "bcore_spect_header_s header;"
-    "feature aware bcore_plant_builder : build;"
-"}";
+// source: bcore_xoi_inexpandable.h
+#include "bcore_xoi_inexpandable.h"
 
 /**********************************************************************************************************************/
-// source: bcore_plant_inexpandable.h
-#include "bcore_plant_inexpandable.h"
-
-/**********************************************************************************************************************/
-// source: bcore_plant_sample.h
-#include "bcore_plant_sample.h"
+// source: bcore_xoi_sample.h
+#include "bcore_xoi_sample.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bcore_plant_sample
+// group: bcore_xoi_sample
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_plant_sample_object2_s )
+BCORE_DEFINE_OBJECT_INST_P( bcore_xoi_sample_object2_s )
 "bcore_inst"
 "{"
     "aware_t _;"
-    "bcore_plant_sample_features_object_s object;"
+    "bcore_xoi_sample_features_object_s object;"
     "st_s name2;"
-    "func bcore_plant_sample_features:setup;"
-    "func bcore_plant_sample_features:to_stdout;"
+    "func bcore_xoi_sample_features:setup;"
+    "func bcore_xoi_sample_features:to_stdout;"
 "}";
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bcore_plant_sample_signatures
+// group: bcore_xoi_sample_signatures
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bcore_plant_sample_features
+// group: bcore_xoi_sample_features
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_plant_sample_features_object_s )
+BCORE_DEFINE_OBJECT_INST_P( bcore_xoi_sample_features_object_s )
 "aware bcore_inst"
 "{"
     "st_s name1;"
     "sz_t => [] arr;"
-    "func bcore_plant_sample_features:setup;"
-    "func bcore_plant_sample_features:to_stdout;"
-    "func bcore_plant_sample_features:get_size;"
+    "func bcore_xoi_sample_features:setup;"
+    "func bcore_xoi_sample_features:to_stdout;"
+    "func bcore_xoi_sample_features:get_size;"
 "}";
 
-BCORE_DEFINE_SPECT( bcore_plant_sample, bcore_plant_sample_features )
+BCORE_DEFINE_SPECT( bcore_xoi_sample, bcore_xoi_sample_features )
 "{"
     "bcore_spect_header_s header;"
-    "feature strict aware bcore_plant_sample_features : setup;"
-    "feature aware bcore_plant_sample_features : to_stdout = bcore_plant_sample_features_to_stdout__;"
-    "feature aware bcore_plant_sample_features : get_size;"
+    "feature strict aware bcore_xoi_sample_features : setup;"
+    "feature aware bcore_xoi_sample_features : to_stdout = bcore_xoi_sample_features_to_stdout__;"
+    "feature aware bcore_xoi_sample_features : get_size;"
 "}";
 
 
-void bcore_plant_sample_features_to_stdout__( const bcore_plant_sample_features* o )
+void bcore_xoi_sample_features_to_stdout__( const bcore_xoi_sample_features* o )
 {
     bcore_msg_fa( "Called to_stdout__\n" );
 }
@@ -1087,9 +1045,9 @@ f3_t bcore_prsg_xsg_u2_03_s_gen_f3( bcore_prsg_xsg_u2_03_s* o, f3_t min, f3_t ma
 /**********************************************************************************************************************/
 
 
-vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
+vd_t bcore_xoi_out_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bcore_planted" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_xoi_out" ) ) )
     {
         case TYPEOF_init1:
         {
@@ -1103,42 +1061,31 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_TRAIT( bcore_file, bcore_inst );
 
             // --------------------------------------------------------------------
-            // source: bcore_plant_builder.h
-
-            // group: bcore_plant_builder
-            BCORE_REGISTER_FEATURE( bcore_plant_builder_build );
-            BCORE_REGISTER_FFUNC( bcore_via_call_source, bcore_plant_builder_target_s_source );
-            BCORE_REGISTER_FFUNC( bcore_plant_builder_build, bcore_plant_builder_target_s_build );
-            BCORE_REGISTER_OBJECT( bcore_plant_builder_target_s );
-            BCORE_REGISTER_OBJECT( bcore_plant_builder_target_adl_s );
-            BCORE_REGISTER_SPECT( bcore_plant_builder );
+            // source: bcore_xoi_inexpandable.h
 
             // --------------------------------------------------------------------
-            // source: bcore_plant_inexpandable.h
+            // source: bcore_xoi_sample.h
 
-            // --------------------------------------------------------------------
-            // source: bcore_plant_sample.h
-
-            // group: bcore_plant_sample
+            // group: bcore_xoi_sample
             BCORE_REGISTER_NAME( anyglobalname );
-            BCORE_REGISTER_FFUNC( bcore_plant_sample_features_setup, bcore_plant_sample_object2_s_setup );
-            BCORE_REGISTER_FFUNC( bcore_plant_sample_features_to_stdout, bcore_plant_sample_object2_s_to_stdout );
-            BCORE_REGISTER_OBJECT( bcore_plant_sample_object2_s );
-            BCORE_REGISTER_TRAIT( bcore_plant_sample, bcore_inst );
+            BCORE_REGISTER_FFUNC( bcore_xoi_sample_features_setup, bcore_xoi_sample_object2_s_setup );
+            BCORE_REGISTER_FFUNC( bcore_xoi_sample_features_to_stdout, bcore_xoi_sample_object2_s_to_stdout );
+            BCORE_REGISTER_OBJECT( bcore_xoi_sample_object2_s );
+            BCORE_REGISTER_TRAIT( bcore_xoi_sample, bcore_inst );
 
-            // group: bcore_plant_sample_signatures
-            BCORE_REGISTER_TRAIT( bcore_plant_sample_signatures, bcore_plant_sample );
+            // group: bcore_xoi_sample_signatures
+            BCORE_REGISTER_TRAIT( bcore_xoi_sample_signatures, bcore_xoi_sample );
 
-            // group: bcore_plant_sample_features
-            BCORE_REGISTER_FEATURE( bcore_plant_sample_features_setup );
-            BCORE_REGISTER_FEATURE( bcore_plant_sample_features_to_stdout );
-            BCORE_REGISTER_FFUNC( bcore_plant_sample_features_to_stdout, bcore_plant_sample_features_to_stdout__ );
-            BCORE_REGISTER_FEATURE( bcore_plant_sample_features_get_size );
-            BCORE_REGISTER_FFUNC( bcore_plant_sample_features_setup, bcore_plant_sample_features_object_s_setup );
-            BCORE_REGISTER_FFUNC( bcore_plant_sample_features_to_stdout, bcore_plant_sample_features_object_s_to_stdout );
-            BCORE_REGISTER_FFUNC( bcore_plant_sample_features_get_size, bcore_plant_sample_features_object_s_get_size );
-            BCORE_REGISTER_OBJECT( bcore_plant_sample_features_object_s );
-            BCORE_REGISTER_SPECT( bcore_plant_sample_features );
+            // group: bcore_xoi_sample_features
+            BCORE_REGISTER_FEATURE( bcore_xoi_sample_features_setup );
+            BCORE_REGISTER_FEATURE( bcore_xoi_sample_features_to_stdout );
+            BCORE_REGISTER_FFUNC( bcore_xoi_sample_features_to_stdout, bcore_xoi_sample_features_to_stdout__ );
+            BCORE_REGISTER_FEATURE( bcore_xoi_sample_features_get_size );
+            BCORE_REGISTER_FFUNC( bcore_xoi_sample_features_setup, bcore_xoi_sample_features_object_s_setup );
+            BCORE_REGISTER_FFUNC( bcore_xoi_sample_features_to_stdout, bcore_xoi_sample_features_object_s_to_stdout );
+            BCORE_REGISTER_FFUNC( bcore_xoi_sample_features_get_size, bcore_xoi_sample_features_object_s_get_size );
+            BCORE_REGISTER_OBJECT( bcore_xoi_sample_features_object_s );
+            BCORE_REGISTER_SPECT( bcore_xoi_sample_features );
 
             // --------------------------------------------------------------------
             // source: bcore_spect_inst_call.h
@@ -1408,4 +1355,4 @@ vd_t bcore_planted_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// BETH_PLANT_SIGNATURE  268135735
+// BETH_PLANT_SIGNATURE  152288602

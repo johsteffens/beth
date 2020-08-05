@@ -35,8 +35,8 @@
 /**********************************************************************************************************************/
 
 #include "bmath_std.h"
-#include "bhvm_planted.h"
-#include "bhvm_lop_planted.h"
+#include "bhvm_xoi_out.h"
+#include "bhvm_lop_xoi_out.h"
 
 /**********************************************************************************************************************/
 
@@ -100,7 +100,7 @@ static inline sz_t bhvm_lop_gcd3( sz_t a, sz_t b, sz_t c ) { return bhvm_lop_gcd
 
 #ifdef TYPEOF_bhvm_lop
 
-PLANT_GROUP( bhvm_lop, bcore_inst )
+XOI_DEFINE_GROUP( bhvm_lop, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

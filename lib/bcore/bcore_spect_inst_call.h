@@ -20,14 +20,14 @@
 #ifndef BCORE_SPECT_INST_CALL_H
 #define BCORE_SPECT_INST_CALL_H
 
-#include "bcore_plant_compiler.h"
-#include "bcore_planted.h"
+#include "bcore_xoi.h"
+#include "bcore_xoi_out.h"
 #include "bcore_trait.h"
 
 /**********************************************************************************************************************/
 
 #ifdef TYPEOF_bcore_inst_call
-PLANT_GROUP( bcore_inst_call, bcore_inst )
+XOI_DEFINE_GROUP( bcore_inst_call, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     feature 'p' void init_x( mutable ); // called by bcore_inst when exiting initialization
     feature 'p' void down_e( mutable ); // called by bcore_inst when entering shutdown

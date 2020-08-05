@@ -16,10 +16,12 @@
 #ifndef BCORE_ERROR_MANAGER_H
 #define BCORE_ERROR_MANAGER_H
 
+#include "bcore_xoi.h"
+#include "bcore_spect.h"
 #include "bcore_spect_inst.h"
-#include "bcore_plant.h"
-#include "bcore_planted.h"
+#include "bcore_xoi_out.h"
 #include "bcore_trait.h"
+#include "bcore_spect_array.h"
 
 /** Dynamic error management.
  *  Maintains a global list of for error (-conditions) and
@@ -28,7 +30,7 @@
 
 #ifdef BETH_EXPAND_GROUP_bcore_error_manager
 
-PLANT_GROUP( bcore_error_manager, bcore_inst )
+XOI_DEFINE_GROUP( bcore_error_manager, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 stamp :error = aware :

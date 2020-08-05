@@ -24,14 +24,14 @@
 /**********************************************************************************************************************/
 
 #include "bmath_std.h"
-#include "bhvm_vop_planted.h"
+#include "bhvm_vop_xoi_out.h"
 #include "bhvm_hop.h"
 
 /**********************************************************************************************************************/
 
 #ifdef TYPEOF_bhvm_vop
 
-PLANT_GROUP( bhvm_vop, bcore_inst )
+XOI_DEFINE_GROUP( bhvm_vop, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 stamp :arr = aware bcore_array { aware bhvm_vop => []; };

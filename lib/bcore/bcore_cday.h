@@ -32,8 +32,8 @@
 #ifndef BCORE_CDAY_H
 #define BCORE_CDAY_H
 
-#include "bcore_plant_compiler.h"
-#include "bcore_planted.h"
+#include "bcore_xoi.h"
+#include "bcore_xoi_out.h"
 #include "bcore_trait.h"
 #include "bcore_st.h"
 #include "bcore_spect_source.h"
@@ -44,7 +44,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 
 #ifdef TYPEOF_bcore_cday
-PLANT_GROUP( bcore_cday, bcore_inst )
+XOI_DEFINE_GROUP( bcore_cday, bcore_inst )
 #ifdef PLANT_SECTION
 
 stamp :ymd = aware : { s2_t y; s2_t m; s2_t d; }; // year - month - day

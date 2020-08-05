@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
- *  Compiling Agent : bcore_plant_compiler (C) 2019, 2020 J.B.Steffens
- *  Last File Update: 2020-07-31T11:17:16Z
+ *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
+ *  Last File Update: 2020-08-05T12:45:03Z
  *
  *  Copyright and License of this File:
  *
@@ -11,15 +11,15 @@
  *
  */
 
-#ifndef BHVM_VOP_PLANTED_H
-#define BHVM_VOP_PLANTED_H
+#ifndef BHVM_VOP_XOI_OUT_H
+#define BHVM_VOP_XOI_OUT_H
 
 #include "bcore_control.h"
 
 //To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.
-#define HKEYOF_bhvm_vop_planted 3202717309
+#define HKEYOF_bhvm_vop_xoi_out 1807485887
 
-#define TYPEOF_bhvm_vop_planted 1505462431
+#define TYPEOF_bhvm_vop_xoi_out 3663646852
 
 /**********************************************************************************************************************/
 // source: bhvm_vop.h
@@ -1296,7 +1296,7 @@
 
 /**********************************************************************************************************************/
 
-vd_t bhvm_vop_planted_signal_handler( const bcore_signal_s* o );
+vd_t bhvm_vop_xoi_out_signal_handler( const bcore_signal_s* o );
 
-#endif // BHVM_VOP_PLANTED_H
-// BETH_PLANT_SIGNATURE 3932836492
+#endif // BHVM_VOP_XOI_OUT_H
+// BETH_PLANT_SIGNATURE 1551791835

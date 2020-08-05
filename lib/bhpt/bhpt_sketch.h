@@ -24,13 +24,13 @@
 
 #include "bmath_std.h"
 #include "bhvm_std.h"
-#include "bhpt_planted.h"
+#include "bhpt_xoi_out.h"
 
 /**********************************************************************************************************************/
 
 #ifdef TYPEOF_bhpt
 
-PLANT_GROUP( bhpt, bcore_inst )
+XOI_DEFINE_GROUP( bhpt, bcore_inst )
 #ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /** The adaptor defines a method for updating adaptive holors from accumulated gradients

@@ -42,7 +42,7 @@
 #include "bmath_grt_f3.h"
 #include "bmath_estimator.h"
 #include "bmath_plot.h"
-#include "bmath_planted.h"
+#include "bmath_xoi_out.h"
 #include "bmath_stat.h"
 
 vd_t bmath_general_signal_handler( const bcore_signal_s* o )
@@ -89,7 +89,7 @@ vd_t bmath_general_signal_handler( const bcore_signal_s* o )
             bmath_grt_f3_signal_handler,
             bmath_estimator_signal_handler,
             bmath_plot_signal_handler,
-            bmath_planted_signal_handler,
+            bmath_xoi_out_signal_handler,
             bmath_stat_signal_handler,
         };
 
