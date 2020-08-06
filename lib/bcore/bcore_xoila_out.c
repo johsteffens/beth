@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-08-05T16:32:22Z
+ *  Last File Update: 2020-08-06T09:53:50Z
  *
  *  Copyright and License of this File:
  *
@@ -20,7 +20,7 @@
  *
  */
 
-#include "bcore_xoi_out.h"
+#include "bcore_xoila_out.h"
 #include "bcore_spect.h"
 #include "bcore_spect_inst.h"
 #include "bcore_sr.h"
@@ -1045,9 +1045,9 @@ f3_t bcore_prsg_xsg_u2_03_s_gen_f3( bcore_prsg_xsg_u2_03_s* o, f3_t min, f3_t ma
 /**********************************************************************************************************************/
 
 
-vd_t bcore_xoi_out_signal_handler( const bcore_signal_s* o )
+vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bcore_xoi_out" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_xoila_out" ) ) )
     {
         case TYPEOF_init1:
         {
@@ -1355,4 +1355,4 @@ vd_t bcore_xoi_out_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// BETH_PLANT_SIGNATURE  956482649
+// BETH_PLANT_SIGNATURE  989028837

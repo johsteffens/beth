@@ -37,37 +37,41 @@
     BETH_EXPAND_GROUP_##group_name
 
 /// Declares general signal handler of *_signal.c
-#define BETH_PLANT_DECLARE_GENERAL_SIGNAL_HANDLER( target_name ) \
+#define BETH_DECLARE_GENERAL_SIGNAL_HANDLER( target_name ) \
     vd_t target_name##_general_signal_handler( const bcore_signal_s* o );
 
 /// Inside *signal.c: Begin of a plant registry for a specific plane name
-#define BETH_PLANT_SIGNAL_OPEN_PLANT( plant_name ) \
-    vd_t plant_name##_general_signal_handler( const bcore_signal_s* o ) \
+#define BETH_SIGNAL_OPEN( target_name ) \
+    vd_t target_name##_general_signal_handler( const bcore_signal_s* o ) \
     { \
         BLM_INIT(); \
         bcore_arr_fp_s* arr_fp = BLM_CREATE( bcore_arr_fp_s ); \
-        bcore_arr_fp_s_push( arr_fp, ( fp_t )plant_name##_xoi_out_signal_handler );
+        bcore_arr_fp_s_push( arr_fp, ( fp_t )target_name##_xoila_out_signal_handler );
 
 /// Inside *signal.c: Registering a source inside a given plant registry
-#define BETH_PLANT_SIGNAL_USE_SOURCE( source_name ) \
+#define BETH_SIGNAL_USE_SOURCE( source_name ) \
     bcore_arr_fp_s_push( arr_fp, ( fp_t )source_name##_signal_handler );
 
 /// Inside *signal.c: End of a plant registry for a specific plane name
-#define BETH_PLANT_SIGNAL_CLOSE_PLANT( plant_name ) \
+#define BETH_SIGNAL_CLOSE() \
         BLM_RETURNV( vd_t, bcore_signal_s_broadcast( o, ( bcore_fp_signal_handler* )arr_fp->data, arr_fp->size ) ); \
     }
 
+#define BETH_SIGNAL_DEFINE( target_name ) \
+    BETH_SIGNAL_OPEN( target_name ) \
+    BETH_SIGNAL_CLOSE()
+
 /// Beginning of main function: registering plant signal handler
-#define BETH_PLANT_USE( plant_name ) \
-    BETH_PLANT_DECLARE_GENERAL_SIGNAL_HANDLER( plant_name ) \
+#define BETH_USE( plant_name ) \
+    BETH_DECLARE_GENERAL_SIGNAL_HANDLER( plant_name ) \
     bcore_register_signal_handler_with_deep_dependencies( plant_name##_general_signal_handler );
 
 /// general closer (end of main)
-#define BETH_PLANT_CLOSEV( verbose ) \
+#define BETH_CLOSEV( verbose ) \
     bcore_down( verbose );
 
 /// general closer (end of main)
-#define BETH_PLANT_CLOSE() \
+#define BETH_CLOSE() \
     bcore_down( false );
 
 #endif // BCORE_XOILA_H

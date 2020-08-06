@@ -15,11 +15,11 @@
 
 /** Testbed and sample for Plant Framework */
 
-#ifndef BCORE_XOI_SAMPLE_H
-#define BCORE_XOI_SAMPLE_H
+#ifndef BCORE_XOILA_SAMPLE_H
+#define BCORE_XOILA_SAMPLE_H
 
 #include "bcore_std.h"
-#include "bcore_xoi_out.h"
+#include "bcore_xoila_out.h"
 
 /**********************************************************************************************************************/
 
@@ -81,4 +81,4 @@ vd_t bcore_xoila_sample_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 
-#endif  // BCORE_XOI_SAMPLE_H
+#endif  // BCORE_XOILA_SAMPLE_H

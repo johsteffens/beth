@@ -14,7 +14,7 @@
  */
 
 #include "badapt_signal.h"
-#include "badapt_xoi_out.h"
+#include "badapt_xoila_out.h"
 #include "badapt_adaptive.h"
 #include "badapt_problem.h"
 #include "badapt_activator.h"
@@ -44,7 +44,7 @@ vd_t badapt_general_signal_handler( const bcore_signal_s* o )
     {
         bcore_fp_signal_handler arr[] =
         {
-            badapt_xoi_out_signal_handler,
+            badapt_xoila_out_signal_handler,
             badapt_adaptive_signal_handler,
             badapt_problem_signal_handler,
             badapt_activator_signal_handler,

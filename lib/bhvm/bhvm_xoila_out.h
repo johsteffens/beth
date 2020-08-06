@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-08-05T12:45:03Z
+ *  Last File Update: 2020-08-06T09:53:50Z
  *
  *  Copyright and License of this File:
  *
@@ -13,15 +13,15 @@
  *
  */
 
-#ifndef BHVM_XOI_OUT_H
-#define BHVM_XOI_OUT_H
+#ifndef BHVM_XOILA_OUT_H
+#define BHVM_XOILA_OUT_H
 
 #include "bcore_control.h"
 
 //To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.
-#define HKEYOF_bhvm_xoi_out 907969349
+#define HKEYOF_bhvm_xoila_out 1852163040
 
-#define TYPEOF_bhvm_xoi_out 1386746850
+#define TYPEOF_bhvm_xoila_out 3853157877
 
 /**********************************************************************************************************************/
 // source: bhvm_holor.h
@@ -1240,7 +1240,7 @@
 
 /**********************************************************************************************************************/
 
-vd_t bhvm_xoi_out_signal_handler( const bcore_signal_s* o );
+vd_t bhvm_xoila_out_signal_handler( const bcore_signal_s* o );
 
-#endif // BHVM_XOI_OUT_H
-// BETH_PLANT_SIGNATURE 3879439662
+#endif // BHVM_XOILA_OUT_H
+// BETH_PLANT_SIGNATURE 2901127916

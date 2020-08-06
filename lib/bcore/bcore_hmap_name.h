@@ -22,7 +22,7 @@
 
 #include "bcore_xoila.h"
 #include "bcore_trait.h"
-#include "bcore_xoi_out.h"
+#include "bcore_xoila_out.h"
 #include "bcore_hmap_tp_sr.h"
 #include "bcore_arr.h"
 

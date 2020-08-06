@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-08-05T12:45:03Z
+ *  Last File Update: 2020-08-06T09:53:50Z
  *
  *  Copyright and License of this File:
  *
@@ -15,7 +15,7 @@
  *
  */
 
-#include "bhpt_xoi_out.h"
+#include "bhpt_xoila_out.h"
 #include "bcore_spect.h"
 #include "bcore_spect_inst.h"
 #include "bcore_sr.h"
@@ -395,9 +395,9 @@ void bhpt_tutor_language_utf8_s_status_to_sink( const bhpt_tutor_language_utf8_s
 
 vd_t bhvm_general_signal_handler( const bcore_signal_s* o );
 
-vd_t bhpt_xoi_out_signal_handler( const bcore_signal_s* o )
+vd_t bhpt_xoila_out_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bhpt_xoi_out" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bhpt_xoila_out" ) ) )
     {
         case TYPEOF_init1:
         {
@@ -556,4 +556,4 @@ vd_t bhpt_xoi_out_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// BETH_PLANT_SIGNATURE 1346542759
+// BETH_PLANT_SIGNATURE  688509692

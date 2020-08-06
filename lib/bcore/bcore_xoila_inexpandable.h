@@ -22,7 +22,7 @@
 #define BCORE_XOILA_INEXPANDABLE_H
 
 #include "bcore_std.h"
-#include "bcore_xoi_out.h"
+#include "bcore_xoila_out.h"
 
 /**********************************************************************************************************************/
 

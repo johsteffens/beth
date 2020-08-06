@@ -106,7 +106,7 @@
 #include "bcore_std.h"
 #include "badapt_activator.h"
 #include "badapt_adaptive.h"
-#include "badapt_xoi_out.h"
+#include "badapt_xoila_out.h"
 
 /**********************************************************************************************************************/
 

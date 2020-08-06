@@ -33,7 +33,7 @@
 #define BCORE_CDAY_H
 
 #include "bcore_xoila.h"
-#include "bcore_xoi_out.h"
+#include "bcore_xoila_out.h"
 #include "bcore_trait.h"
 #include "bcore_st.h"
 #include "bcore_spect_source.h"

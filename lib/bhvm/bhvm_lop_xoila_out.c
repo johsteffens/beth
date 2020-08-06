@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-08-05T12:45:03Z
+ *  Last File Update: 2020-08-06T09:53:50Z
  *
  *  Copyright and License of this File:
  *
@@ -11,7 +11,7 @@
  *
  */
 
-#include "bhvm_lop_xoi_out.h"
+#include "bhvm_lop_xoila_out.h"
 #include "bcore_spect.h"
 #include "bcore_spect_inst.h"
 #include "bcore_sr.h"
@@ -1152,9 +1152,9 @@ void bhvm_lop_ar3_branch_vvvv_s_f( tp_t tknit, vc_t a, vc_t b, vc_t c, vd_t r, s
 /**********************************************************************************************************************/
 
 
-vd_t bhvm_lop_xoi_out_signal_handler( const bcore_signal_s* o )
+vd_t bhvm_lop_xoila_out_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bhvm_lop_xoi_out" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bhvm_lop_xoila_out" ) ) )
     {
         case TYPEOF_init1:
         {
@@ -1245,4 +1245,4 @@ vd_t bhvm_lop_xoi_out_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// BETH_PLANT_SIGNATURE 3049429720
+// BETH_PLANT_SIGNATURE 1172002471

@@ -19,7 +19,7 @@
 /**********************************************************************************************************************/
 
 #include "bcore_std.h"
-#include "bmath_xoi_out.h"
+#include "bmath_xoila_out.h"
 #include "bmath_mf2.h"
 #include "bmath_mf3.h"
 
