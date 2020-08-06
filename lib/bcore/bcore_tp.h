@@ -23,7 +23,7 @@
 
 // Hashing based on FNV-1a (see bcore_control.h for details);
 static inline tp_t bcore_tp_init() { return FNV_U2_INIT; }
-static inline tp_t bcore_tp_fold_u0( tp_t o, u0_t v ) { return ( o ^ v ) * FNV_U2_FOLD; }
+static inline tp_t bcore_tp_fold_u0( tp_t o, u0_t v ) { return ( ( o ^ v ) * FNV_U2_FOLD ) & 0x00000000FFFFFFFFull; }
 static inline tp_t bcore_tp_fold_u1( tp_t o, u1_t v ) { return bcore_tp_fold_u0( bcore_tp_fold_u0( o, v ), v >>  8 ); }
 static inline tp_t bcore_tp_fold_u2( tp_t o, u2_t v ) { return bcore_tp_fold_u1( bcore_tp_fold_u1( o, v ), v >> 16 ); }
 static inline tp_t bcore_tp_fold_u3( tp_t o, u3_t v ) { return bcore_tp_fold_u2( bcore_tp_fold_u2( o, v ), v >> 32 ); }

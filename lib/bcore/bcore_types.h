@@ -60,7 +60,7 @@ typedef void*       nd_t; // pointer to a nucleus (signature of an amoeba)
 typedef void (*fp_t)( void );
 
 // types for special purposes
-typedef u2_t tp_t;    // object type identifier
+typedef u3_t tp_t;     // object type identifier
 typedef tp_t aware_t;  // self-awareness type (first element in self-aware object)
 typedef uz_t offset_t; // used as address offsets into an object
 
@@ -89,15 +89,8 @@ typedef _Atomic fp_t atomic_fp_t;
 #define PRIsz_t "ti" // t ~ ptrdiff_t
 #define PRIuz_t "zu"
 #define PRIoffset_t "zu"
-#define PRItp_t PRIu32
+#define PRItp_t PRIu64
 #define PRIer_t PRItp_t
-
-
-
-
-
-
-
 
 #define SCNs0_t SCNi8
 #define SCNs1_t SCNi16
@@ -116,7 +109,7 @@ typedef _Atomic fp_t atomic_fp_t;
 #define SCNsz_t "ti" // t ~ ptrdiff_t
 #define SCNuz_t "zu"
 #define SCNoffset_t "zu"
-#define SCNtp_t SCNu32
+#define SCNtp_t SCNu64
 #define SCNer_t SCNtp_t
 
 

@@ -104,7 +104,7 @@ sc_t bcore_name_try_name( tp_t type )
 sc_t bcore_name_get_name( tp_t type )
 {
     sc_t name = bcore_name_try_name( type );
-    if( !name ) ERR( "hash %"PRIu32" has no name", type );
+    if( !name ) ERR( "hash %"PRItp_t" has no name", type );
     return name;
 }
 
@@ -126,7 +126,7 @@ st_s* bcore_name_try_name_s( tp_t type )
 st_s* bcore_name_get_name_s( tp_t type )
 {
     st_s* s = bcore_name_try_name_s( type );
-    if( !s ) ERR( "hash %"PRIu32" has no name", type );
+    if( !s ) ERR( "hash %"PRItp_t" has no name", type );
     return s;
 }
 

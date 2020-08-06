@@ -2169,12 +2169,12 @@ static void set_index( st_s* o, s3_t index )
 //----------------------------------------------------------------------------------------------------------------------
 
 /// sanity feature
-void bcore_inst_t_check_sizeof( u2_t type, uz_t size );
+void bcore_inst_t_check_sizeof( tp_t type, uz_t size );
 static void check_sanity( vc_t o )
 {
     bcore_inst_t_check_sizeof( TYPEOF_st_s, sizeof( st_s ) );
 
-    if( TYPEOF_st_s != *(aware_t *)o ) ERR( "incorrect type value (%"PRIu32") (expected st_s)", *(aware_t *)o );
+    if( TYPEOF_st_s != *(aware_t *)o ) ERR( "incorrect type value (%"PRItp_t") (expected st_s)", *(aware_t *)o );
     const st_s* s = o;
 
     if( ( s->space > 0 ) && ( s->space < s->size ) ) ERR( "space (%zu) < size (%zu)", s->space, s->size );

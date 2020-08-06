@@ -29,7 +29,7 @@ static st_s* get_def_quicktype( hf hash, sr_s string, uz_t align )
     st_s* s = st_s_createf( "#define TYPEOF_%s", name );
     uz_t pad = s->size < align ? align - s->size : 1;
     st_s_push_char_n( s, ' ', pad );
-    st_s_pushf( s, "% 10"PRIu32, hash( name ) );
+    st_s_pushf( s, "% 10"PRItp_t, hash( name ) );
     st_s_push_char( s, '\n' );
     sr_down( string );
     return s;

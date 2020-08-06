@@ -283,7 +283,7 @@ uz_t bcore_hmap_tp_sr_s_size( const bcore_hmap_tp_sr_s* o )
     return o->size;
 }
 
-u2_t bcore_hmap_tp_sr_s_idx_key( const bcore_hmap_tp_sr_s* o, uz_t idx )
+tp_t bcore_hmap_tp_sr_s_idx_key( const bcore_hmap_tp_sr_s* o, uz_t idx )
 {
     assert( idx < o->size );
     return o->nodes[ idx ].key;
