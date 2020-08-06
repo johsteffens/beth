@@ -24,7 +24,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 XOILA_DEFINE_GROUP( badapt_supplier, bcore_inst )
-#ifdef PLANT_SECTION
+#ifdef XOILA_SECTION
     feature strict 'a' sz_t get_in_size(  const );
     feature strict 'a' sz_t get_out_size( const );
 
@@ -38,22 +38,22 @@ XOILA_DEFINE_GROUP( badapt_supplier, bcore_inst )
 
     // sets up builder parameters where suitable
     feature 'a' void setup_builder( const, badapt_builder* builder ) = setup_builder_default;
-#endif // PLANT_SECTION
+#endif // XOILA_SECTION
 
 //----------------------------------------------------------------------------------------------------------------------
 
 BCORE_FORWARD_OBJECT( badapt_training_state );
 XOILA_DEFINE_GROUP( badapt_guide, bcore_inst )
-#ifdef PLANT_SECTION
+#ifdef XOILA_SECTION
     // callback for training iterations; state can be changed; return value indicates if training shall continue
     feature strict 'a' bl_t callback( const, badapt_training_state* state );
-#endif // PLANT_SECTION
+#endif // XOILA_SECTION
 
 //----------------------------------------------------------------------------------------------------------------------
 
 BCORE_FORWARD_OBJECT( badapt_progress_s );
 XOILA_DEFINE_GROUP( badapt_training_state, bcore_inst )
-#ifdef PLANT_SECTION
+#ifdef XOILA_SECTION
     feature 'a' void set_adaptive( mutable, const badapt_adaptive* adaptive );
     feature 'a' badapt_adaptive* get_adaptive( const );
 
@@ -89,21 +89,21 @@ XOILA_DEFINE_GROUP( badapt_training_state, bcore_inst )
         return true;
     };
 
-#endif // PLANT_SECTION
+#endif // XOILA_SECTION
 
 //----------------------------------------------------------------------------------------------------------------------
 
 XOILA_DEFINE_GROUP( badapt_trainer, bcore_inst )
-#ifdef PLANT_SECTION
+#ifdef XOILA_SECTION
     // sets up builder parameters where suitable
     feature strict 'a' void run( const, badapt_training_state* state );
     feature strict 'a' badapt_training_state* create_state( const ); // creates initial state for given training
-#endif // PLANT_SECTION
+#endif // XOILA_SECTION
 
 //----------------------------------------------------------------------------------------------------------------------
 
 XOILA_DEFINE_GROUP( badapt_training_objects, bcore_inst )
-#ifdef PLANT_SECTION
+#ifdef XOILA_SECTION
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -161,7 +161,7 @@ stamp badapt_guide_std = aware badapt_guide
     func badapt_guide    : callback;
 };
 
-#endif // PLANT_SECTION
+#endif // XOILA_SECTION
 
 //----------------------------------------------------------------------------------------------------------------------
 

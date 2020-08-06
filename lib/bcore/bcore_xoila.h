@@ -26,8 +26,9 @@
 
 /// Macros
 
-///--------------------------------------------------------------------------------------------------------------------
-/// Dedicated Plant Setup Framework
+#ifdef XOILA_SECTION
+    #error "Keyword XOILA_SECTION is reserved for embedded xoila-code. Do not use it as macro."
+#endif
 
 /** Opening a plant section by defining a group in the header file.
  *  This macro also defines the signal_handler

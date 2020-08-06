@@ -26,7 +26,7 @@
 /**********************************************************************************************************************/
 
 XOILA_DEFINE_GROUP( bmath_xsmf3, bcore_inst )
-#ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     stamp bmath_xsmf3 = aware bcore_inst
     {
         sz_t slos;   // values per xon
@@ -46,7 +46,7 @@ XOILA_DEFINE_GROUP( bmath_xsmf3, bcore_inst )
     name bmath_fp_xsmf3_s_htp_mul;
     name bmath_fp_xsmf3_s_htp_mul_htp;
 
-#endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #define BMATH_TEMPLATE_FX_PREC 3
 #include "bmath_template_xsmfx_h.h"

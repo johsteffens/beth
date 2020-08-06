@@ -22,7 +22,7 @@
 /**********************************************************************************************************************/
 
 XOILA_DEFINE_GROUP( badapt_loss, bcore_inst )
-#ifdef PLANT_SECTION
+#ifdef XOILA_SECTION
 
     // loss function
     feature strict 'pa' f3_t loss( const, const bmath_vf3_s* out, const bmath_vf3_s* target );
@@ -73,7 +73,7 @@ XOILA_DEFINE_GROUP( badapt_loss, bcore_inst )
         };
     };
 
-#endif // PLANT_SECTION
+#endif // XOILA_SECTION
 
 /**********************************************************************************************************************/
 

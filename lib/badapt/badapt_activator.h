@@ -23,7 +23,7 @@
 
 /// activation function
 XOILA_DEFINE_GROUP( badapt_activation, bcore_inst )
-#ifdef PLANT_SECTION
+#ifdef XOILA_SECTION
     feature strict 'pa' f3_t fx( const, f3_t x ); // y  = f( x )
     feature strict 'pa' f3_t dy( const, f3_t y ); // dy = d( y ) (derivative applied on y)
 
@@ -89,13 +89,13 @@ XOILA_DEFINE_GROUP( badapt_activation, bcore_inst )
         func : :dy = { return y > 0 ? 1 : 0.01; };
     };
 
-#endif // PLANT_SECTION
+#endif // XOILA_SECTION
 
 /**********************************************************************************************************************/
 
 /// activator: (adaptive) activation applied to a vector
 XOILA_DEFINE_GROUP( badapt_activator, bcore_inst )
-#ifdef PLANT_SECTION
+#ifdef XOILA_SECTION
 
     /// activation function
     feature 'a' const badapt_activation* get_activation( const )                    = { return NULL; };
@@ -175,7 +175,7 @@ XOILA_DEFINE_GROUP( badapt_activator, bcore_inst )
     stamp badapt_arr_layer_activator = aware bcore_array { badapt_layer_activator_s    [] arr; };
     stamp badapt_arr_activator       = aware bcore_array { aware badapt_activator   => [] arr; };
 
-#endif // PLANT_SECTION
+#endif // XOILA_SECTION
 
 /**********************************************************************************************************************/
 

@@ -24,7 +24,7 @@
 
 /// training dynamics
 XOILA_DEFINE_GROUP( badapt_dynamics, bcore_inst )
-#ifdef PLANT_SECTION
+#ifdef XOILA_SECTION
 
 /// updates weights if forward map is: in * w = out;
 feature strict 'a' void weights_adapt( const, const bmath_vf3_s* in, bmath_mf3_s* w, const bmath_vf3_s* grad_out, f3_t epsilon_factor );
@@ -37,13 +37,13 @@ stamp :std = aware :
     func badapt_dynamics : weights_adapt;
 };
 
-#endif // PLANT_SECTION
+#endif // XOILA_SECTION
 
 /**********************************************************************************************************************/
 
 /// adaptive unit
 XOILA_DEFINE_GROUP( badapt_adaptive, bcore_inst )
-#ifdef PLANT_SECTION
+#ifdef XOILA_SECTION
 
     // ===== required features =====
 
@@ -113,13 +113,13 @@ XOILA_DEFINE_GROUP( badapt_adaptive, bcore_inst )
         return out;
     };
 
-#endif // PLANT_SECTION
+#endif // XOILA_SECTION
 
 /**********************************************************************************************************************/
 
 /// builder: constructs the adaptive architecture
 XOILA_DEFINE_GROUP( badapt_builder, bcore_inst )
-#ifdef PLANT_SECTION
+#ifdef XOILA_SECTION
 
     /// input vector size
     feature strict 'a' sz_t get_in_size( const );
@@ -132,7 +132,7 @@ XOILA_DEFINE_GROUP( badapt_builder, bcore_inst )
     /// builds adaptive ready to be trained; passes ownership
     feature strict 'a' badapt_adaptive* build( const );
 
-#endif // PLANT_SECTION
+#endif // XOILA_SECTION
 
 /**********************************************************************************************************************/
 

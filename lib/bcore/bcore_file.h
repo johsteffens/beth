@@ -31,7 +31,7 @@ BCORE_FORWARD_OBJECT( bcore_sink );
 
 #ifdef TYPEOF_bcore_file
 XOILA_DEFINE_GROUP( bcore_file, bcore_inst )
-#ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 signature sc_t get_sc( const );
 signature void set_sc( mutable, sc_t name );
@@ -59,7 +59,7 @@ stamp : path = aware bcore_inst
     };
 };
 
-#endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #endif // TYPEOF_bcore_file
 
 bcore_file_path_s* bcore_file_path_s_create_sc( sc_t sc );

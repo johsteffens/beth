@@ -28,7 +28,7 @@
 
 #ifdef TYPEOF_bcore_inst_call
 XOILA_DEFINE_GROUP( bcore_inst_call, bcore_inst )
-#ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     feature 'p' void init_x( mutable ); // called by bcore_inst when exiting initialization
     feature 'p' void down_e( mutable ); // called by bcore_inst when entering shutdown
     feature 'p' void copy_e( mutable ); // called by bcore_inst when entering copy
@@ -40,7 +40,7 @@ XOILA_DEFINE_GROUP( bcore_inst_call, bcore_inst )
     name :copy_e;
     name :copy_x;
     name :discard_e;
-#endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #endif // optional enclosure
 
 /**********************************************************************************************************************/

@@ -26,7 +26,7 @@
 /**********************************************************************************************************************/
 
 XOILA_DEFINE_GROUP( bmath_asmf2, bcore_inst )
-#ifdef PLANT_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     stamp bmath_asmf2 = aware bcore_inst
     {
         sz_t cols;     // values per row
@@ -45,7 +45,7 @@ XOILA_DEFINE_GROUP( bmath_asmf2, bcore_inst )
     name bmath_fp_asmf2_s_htp_mul;
     name bmath_fp_asmf2_s_htp_mul_htp;
 
-#endif // PLANT_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #define BMATH_TEMPLATE_FX_PREC 2
 #include "bmath_template_asmfx_h.h"
