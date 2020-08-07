@@ -109,7 +109,6 @@ void  bcore_hmap_u2vd_s_run_d(           bcore_hmap_u2vd_s* o, vd_t obj, void (*
 /** bcore_hmap_tpuz_s:
  *    key-type: tp_t
  *    val-type: uz_t.
- *    Maximum number of keys: 2^32
  *    content shell { bcore_hnode_tpuz_s []; } data; }
  */
 typedef struct bcore_hnode_tpuz_s
@@ -162,7 +161,6 @@ sz_t bcore_hmap_tpuz_s_from_array( bcore_hmap_tpuz_s* o, bcore_array* array, tp_
 /** bcore_hmap_tpfp_s:
  *    key-type: tp_t
  *    val-type: fp_t.
- *    Maximum number of keys: 2^32
  *    Not serializable
  */
 typedef struct bcore_hnode_tpfp_s
@@ -204,7 +202,6 @@ fp_t  bcore_hmap_tpfp_s_idx_val( const bcore_hmap_tpfp_s* o, uz_t idx ); // retu
 /** bcore_hmap_tptp_s:
  *    key-type: tp_t
  *    val-type: tp_t.
- *    Maximum number of keys: 2^32
  *    content shell { bcore_hnode_tptp_s []; } data;
  */
 typedef struct bcore_hnode_tptp_s
@@ -246,7 +243,6 @@ tp_t  bcore_hmap_tptp_s_idx_val( const bcore_hmap_tptp_s* o, uz_t idx ); // retu
 /** bcore_hmap_tpvd_s: maps keys to pointer
  *    key-type: tp_t
  *    val-type: vd_t (not owned, no assumption about type)
- *    Maximum number of keys: 2^32
  *    shell: no shell
  */
 typedef struct bcore_hnode_tpvd_s
@@ -281,7 +277,6 @@ vd_t  bcore_hmap_tpvd_s_idx_val( const bcore_hmap_tpvd_s* o, uz_t idx ); // retu
  *    key-type: tp_t
  *    val-type: vd_t. (typed, owned)
  *    All values are either NULL or of the same type.
- *    Maximum number of keys: 2^32
  *    shell: { tp_t type; { tp_t key; sr_s obj; } []; } data;
  */
 typedef struct bcore_hnode_tpto_s
@@ -326,7 +321,6 @@ vd_t  bcore_hmap_tpto_s_idx_val( const bcore_hmap_tpto_s* o, uz_t idx ); // retu
 /** bcore_hmap_tp_s:  maps a key to automatic index
  *    key-type: tp_t
  *    val-type: no explicit value
- *    Maximum number of keys: 2^32
  *    content shell: { tp_t []; } data;
  */
 typedef struct bcore_hmap_tp_s

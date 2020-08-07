@@ -196,13 +196,13 @@ static vd_t selftest( void )
         vc_t val;
     } kv_s;
 
-    u2_t rinit = 12234;
-    u2_t rval = rinit;
+    u3_t rinit = 12234;
+    u3_t rval = rinit;
 
     kv_s* kvbuf = bcore_alloc( NULL, kvbuf_size * sizeof( kv_s ) );
     for( uz_t i = 0; i < kvbuf_size; i++ )
     {
-        rval = bcore_xsg_u2( rval );
+        rval = bcore_lcg00_u3( rval );
         tp_t key = rval;
         vc_t val = ( vc_t )( intptr_t )key;
         kvbuf[ i ].key = key;

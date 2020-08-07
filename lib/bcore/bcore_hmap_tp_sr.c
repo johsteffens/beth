@@ -22,22 +22,31 @@
 #include <time.h>
 
 /**********************************************************************************************************************/
+// hash functions (non-cryptographic)
 
-/// hashing (non-cryptographic)
-static u2_t hash_tpu2_1( tp_t key )
+//----------------------------------------------------------------------------------------------------------------------
+
+static tp_t hash_tpu3_1( tp_t key )
 {
-    u2_t h = ( 632432329 ^ ( ( key       ) & 0x0FFFFu ) ) * 88888888901;
-         h = ( h         ^ ( ( key >> 16 ) & 0x0FFFFu ) ) * 88888888901;
+    u3_t h = ( 0x9036a4254b378c1full ^ ( ( key       ) & 0x0FFFFull ) ) * 0x1000000109f;
+         h = ( h                     ^ ( ( key >> 16 ) & 0x0FFFFull ) ) * 0x1000000111f;
+         h = ( h                     ^ ( ( key >> 32 ) & 0x0FFFFull ) ) * 0x10000001359;
+         h = ( h                     ^ ( ( key >> 48 ) & 0x0FFFFull ) ) * 0x100000013e3;
     return h;
 }
 
-/// hashing (non-cryptographic)
-static u2_t hash_tpu2_2( tp_t key )
+//----------------------------------------------------------------------------------------------------------------------
+
+static tp_t hash_tpu3_2( tp_t key )
 {
-    u2_t h = ( 368653234 ^ ( ( key       ) & 0x0FFFFu ) ) * 77777777827;
-         h = ( h         ^ ( ( key >> 16 ) & 0x0FFFFu ) ) * 77777777827;
+    u3_t h = ( 0x37651f84128a9b31ull ^ ( ( key       ) & 0x0FFFFull ) ) * 0x1000001000011;
+         h = ( h                     ^ ( ( key >> 16 ) & 0x0FFFFull ) ) * 0x10000010000cf;
+         h = ( h                     ^ ( ( key >> 32 ) & 0x0FFFFull ) ) * 0x10000010001dd;
+         h = ( h                     ^ ( ( key >> 48 ) & 0x0FFFFull ) ) * 0x1000001000371;
     return h;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 
@@ -125,10 +134,10 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tp_sr_s )
 static uz_t tp_sr_find( const bcore_hmap_tp_sr_s* o, tp_t key ) // returns valid index or o->size
 {
     if( o->size == 0 ) return o->size;
-    u2_t mask = o->size - 1;
-    uz_t idx = hash_tpu2_1( key ) & mask;
+    uz_t mask = o->size - 1;
+    uz_t idx = hash_tpu3_1( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
-    idx = hash_tpu2_2( key ) & mask;
+    idx = hash_tpu3_2( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
     return o->size;
 }
@@ -137,18 +146,18 @@ static uz_t tp_sr_set( bcore_hmap_tp_sr_s* o, bcore_hnode_tp_sr_s node, uz_t dep
 {
     uz_t size = o->size;
     if( size == 0 ) return size;
-    u2_t mask = o->size - 1;
+    u3_t mask = o->size - 1;
 
     if( depth == o->depth_limit ) return size;
 
-    uz_t idx1 = hash_tpu2_1( node.key ) & mask;
+    uz_t idx1 = hash_tpu3_1( node.key ) & mask;
     if( !o->nodes[ idx1 ].key )
     {
         o->nodes[ idx1 ] = node;
         return idx1;
     }
 
-    uz_t idx2 = hash_tpu2_2( node.key ) & mask;
+    uz_t idx2 = hash_tpu3_2( node.key ) & mask;
     if( !o->nodes[ idx2 ].key )
     {
         o->nodes[ idx2 ] = node;
@@ -399,8 +408,8 @@ static st_s* hmap_tp_sr_selftest( void )
         u3_t rval2 = 12345;
         for( uz_t i = 0; i < cycles; i++ )
         {
-            rval1 = bcore_xsg_u2( rval1 );
-            rval2 = bcore_xsg_u2( rval2 );
+            rval1 = bcore_lcg00_u3( rval1 );
+            rval2 = bcore_lcg00_u3( rval2 );
             kv_s kv;
             kv.key = ( tp_t )rval1;
             kv.val = ( u3_t )rval2;
@@ -410,16 +419,16 @@ static st_s* hmap_tp_sr_selftest( void )
             bcore_hmap_tp_sr_s_set( map, kv.key, sr_create_strong_typed( TYPEOF_u3_t, &kv.val ) );
 
             // retrieve
-            rval1 = bcore_xsg_u2( rval1 );
+            rval1 = bcore_lcg00_u3( rval1 );
             kv = kvbuf[ rval1 % kvbuf_size ];
             u3_t* val_ptr = bcore_hmap_tp_sr_s_get( map, kv.key )->o;
             if( kv.val != *val_ptr ) ERR( "value mismatch (%lu vs %lu)", kv.val, *val_ptr );
 
             // delete
-            rval1 = bcore_xsg_u2( rval1 );
+            rval1 = bcore_lcg00_u3( rval1 );
             if( ( ( rval1 >> 10 ) & 1 ) == 1 )
             {
-                rval1 = bcore_xsg_u2( rval1 );
+                rval1 = bcore_lcg00_u3( rval1 );
                 uz_t idx = rval1 % kvbuf_size;
                 kv_s kv = kvbuf[ idx ];
                 if( !bcore_hmap_tp_sr_s_get( map, kv.key ) )  ERR( "key (%lu) not found", kv.key );

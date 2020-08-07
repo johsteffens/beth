@@ -50,19 +50,23 @@ static u2_t hash_u2u2_2( u2_t key )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static u2_t hash_tpu2_1( tp_t key )
+static tp_t hash_tpu3_1( tp_t key )
 {
-    u2_t h = ( 632432329 ^ ( ( key       ) & 0x0FFFFu ) ) * 88888888901;
-         h = ( h         ^ ( ( key >> 16 ) & 0x0FFFFu ) ) * 88888888901;
+    u3_t h = ( 0x9036a4254b378c1full ^ ( ( key       ) & 0x0FFFFull ) ) * 0x1000000109f;
+         h = ( h                     ^ ( ( key >> 16 ) & 0x0FFFFull ) ) * 0x1000000111f;
+         h = ( h                     ^ ( ( key >> 32 ) & 0x0FFFFull ) ) * 0x10000001359;
+         h = ( h                     ^ ( ( key >> 48 ) & 0x0FFFFull ) ) * 0x100000013e3;
     return h;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static u2_t hash_tpu2_2( tp_t key )
+static tp_t hash_tpu3_2( tp_t key )
 {
-    u2_t h = ( 368653234 ^ ( ( key       ) & 0x0FFFFu ) ) * 77777777827;
-         h = ( h         ^ ( ( key >> 16 ) & 0x0FFFFu ) ) * 77777777827;
+    u3_t h = ( 0x37651f84128a9b31ull ^ ( ( key       ) & 0x0FFFFull ) ) * 0x1000001000011;
+         h = ( h                     ^ ( ( key >> 16 ) & 0x0FFFFull ) ) * 0x10000010000cf;
+         h = ( h                     ^ ( ( key >> 32 ) & 0x0FFFFull ) ) * 0x10000010001dd;
+         h = ( h                     ^ ( ( key >> 48 ) & 0x0FFFFull ) ) * 0x1000001000371;
     return h;
 }
 
@@ -227,7 +231,7 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_u2vd_s )
 static uz_t u2vd_find( const bcore_hmap_u2vd_s* o, u2_t key ) // returns valid index or o->size
 {
     if( o->size == 0 ) return o->size;
-    u2_t mask = o->size - 1;
+    uz_t mask = o->size - 1;
     if( o->h1 )
     {
         uz_t idx = o->h1( key ) & mask;
@@ -254,7 +258,7 @@ static uz_t u2vd_find( const bcore_hmap_u2vd_s* o, u2_t key ) // returns valid i
 static bcore_hnode_u2vd_s* u2vd_set( const bcore_hmap_u2vd_s* o, bcore_hnode_u2vd_s node, uz_t depth ) // sets new node
 {
     if( o->size == 0 ) return NULL;
-    u2_t mask = o->size - 1;
+    uz_t mask = o->size - 1;
     node.flag_trace = 0;
     if( depth == o->depth_limit ) return NULL;
 
@@ -842,10 +846,10 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tpuz_s )
 static uz_t tpsz_find( const bcore_hmap_tpuz_s* o, tp_t key ) // returns valid index or o->size
 {
     if( o->size == 0 ) return o->size;
-    u2_t mask = o->size - 1;
-    uz_t idx = hash_tpu2_1( key ) & mask;
+    uz_t mask = o->size - 1;
+    uz_t idx = hash_tpu3_1( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
-    idx = hash_tpu2_2( key ) & mask;
+    idx = hash_tpu3_2( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
     return o->size;
 }
@@ -856,18 +860,18 @@ uz_t tpsz_set( bcore_hmap_tpuz_s* o, bcore_hnode_tpuz_s node, uz_t depth ) // se
 {
     uz_t size = o->size;
     if( size == 0 ) return size;
-    u2_t mask = o->size - 1;
+    uz_t mask = o->size - 1;
 
     if( depth == o->depth_limit ) return size;
 
-    uz_t idx1 = hash_tpu2_1( node.key ) & mask;
+    uz_t idx1 = hash_tpu3_1( node.key ) & mask;
     if( !o->nodes[ idx1 ].key )
     {
         o->nodes[ idx1 ] = node;
         return idx1;
     }
 
-    uz_t idx2 = hash_tpu2_2( node.key ) & mask;
+    uz_t idx2 = hash_tpu3_2( node.key ) & mask;
     if( !o->nodes[ idx2 ].key )
     {
         o->nodes[ idx2 ] = node;
@@ -1097,7 +1101,7 @@ static st_s* hmap_tpsz_s_status( bcore_hmap_tpuz_s* o )
 static st_s* hmap_tpsz_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
-    st_s* log = st_s_createf( "== bcore_hmap_tpuz_selftest " );
+    st_s* log = st_s_createf( "== bcore_hmap_tpsz_selftest " );
     st_s_push_char_n( log, '=', 120 - log->size );
     st_s_push_char( log, '\n' );
 
@@ -1121,8 +1125,8 @@ static st_s* hmap_tpsz_selftest( void )
         u3_t rval2 = 12345;
         for( uz_t i = 0; i < cycles; i++ )
         {
-            rval1 = bcore_xsg_u2( rval1 );
-            rval2 = bcore_xsg_u2( rval2 );
+            rval1 = bcore_lcg00_u3( rval1 );
+            rval2 = bcore_lcg00_u3( rval2 );
             kv_s kv;
             kv.key = ( u2_t )rval1;
             kv.val = ( uz_t )rval2;
@@ -1132,16 +1136,16 @@ static st_s* hmap_tpsz_selftest( void )
             bcore_hmap_tpuz_s_set( map, kv.key, kv.val );
 
             // retrieve
-            rval1 = bcore_xsg_u2( rval1 );
+            rval1 = bcore_lcg00_u3( rval1 );
             kv = kvbuf[ rval1 % kvbuf_size ];
             uz_t* val_ptr = bcore_hmap_tpuz_s_get( map, kv.key );
             if( kv.val != *val_ptr ) ERR( "value mismatch (%lu vs %lu)", kv.val, *val_ptr );
 
             // delete
-            rval1 = bcore_xsg_u2( rval1 );
+            rval1 = bcore_lcg00_u3( rval1 );
             if( ( ( rval1 >> 10 ) & 1 ) == 1 )
             {
-                rval1 = bcore_xsg_u2( rval1 );
+                rval1 = bcore_lcg00_u3( rval1 );
                 uz_t idx = rval1 % kvbuf_size;
                 kv_s kv = kvbuf[ idx ];
                 if( !bcore_hmap_tpuz_s_get( map, kv.key ) )  ERR( "key (%lu) not found", kv.key );
@@ -1288,10 +1292,10 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tpfp_s )
 static uz_t tpfp_find( const bcore_hmap_tpfp_s* o, tp_t key ) // returns valid index or o->size
 {
     if( o->size == 0 ) return o->size;
-    u2_t mask = o->size - 1;
-    uz_t idx = hash_tpu2_1( key ) & mask;
+    uz_t mask = o->size - 1;
+    uz_t idx = hash_tpu3_1( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
-    idx = hash_tpu2_2( key ) & mask;
+    idx = hash_tpu3_2( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
     return o->size;
 }
@@ -1302,18 +1306,18 @@ uz_t tpfp_set( bcore_hmap_tpfp_s* o, bcore_hnode_tpfp_s node, uz_t depth ) // se
 {
     uz_t size = o->size;
     if( size == 0 ) return size;
-    u2_t mask = o->size - 1;
+    uz_t mask = o->size - 1;
 
     if( depth == o->depth_limit ) return size;
 
-    uz_t idx1 = hash_tpu2_1( node.key ) & mask;
+    uz_t idx1 = hash_tpu3_1( node.key ) & mask;
     if( !o->nodes[ idx1 ].key )
     {
         o->nodes[ idx1 ] = node;
         return idx1;
     }
 
-    uz_t idx2 = hash_tpu2_2( node.key ) & mask;
+    uz_t idx2 = hash_tpu3_2( node.key ) & mask;
     if( !o->nodes[ idx2 ].key )
     {
         o->nodes[ idx2 ] = node;
@@ -1725,10 +1729,10 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tptp_s )
 static uz_t tptp_find( const bcore_hmap_tptp_s* o, tp_t key ) // returns valid index or o->size
 {
     if( o->size == 0 ) return o->size;
-    u2_t mask = o->size - 1;
-    uz_t idx = hash_tpu2_1( key ) & mask;
+    uz_t mask = o->size - 1;
+    uz_t idx = hash_tpu3_1( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
-    idx = hash_tpu2_2( key ) & mask;
+    idx = hash_tpu3_2( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
     return o->size;
 }
@@ -1739,18 +1743,18 @@ uz_t tptp_set( bcore_hmap_tptp_s* o, bcore_hnode_tptp_s node, uz_t depth ) // se
 {
     uz_t size = o->size;
     if( size == 0 ) return size;
-    u2_t mask = o->size - 1;
+    uz_t mask = o->size - 1;
 
     if( depth == o->depth_limit ) return size;
 
-    uz_t idx1 = hash_tpu2_1( node.key ) & mask;
+    uz_t idx1 = hash_tpu3_1( node.key ) & mask;
     if( !o->nodes[ idx1 ].key )
     {
         o->nodes[ idx1 ] = node;
         return idx1;
     }
 
-    uz_t idx2 = hash_tpu2_2( node.key ) & mask;
+    uz_t idx2 = hash_tpu3_2( node.key ) & mask;
     if( !o->nodes[ idx2 ].key )
     {
         o->nodes[ idx2 ] = node;
@@ -2156,10 +2160,10 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tpvd_s )
 static uz_t tpvd_find( const bcore_hmap_tpvd_s* o, tp_t key ) // returns valid index or o->size
 {
     if( o->size == 0 ) return o->size;
-    u2_t mask = o->size - 1;
-    uz_t idx = hash_tpu2_1( key ) & mask;
+    uz_t mask = o->size - 1;
+    uz_t idx = hash_tpu3_1( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
-    idx = hash_tpu2_2( key ) & mask;
+    idx = hash_tpu3_2( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
     return o->size;
 }
@@ -2170,18 +2174,18 @@ uz_t tpvd_set( bcore_hmap_tpvd_s* o, bcore_hnode_tpvd_s node, uz_t depth ) // se
 {
     uz_t size = o->size;
     if( size == 0 ) return size;
-    u2_t mask = o->size - 1;
+    uz_t mask = o->size - 1;
 
     if( depth == o->depth_limit ) return size;
 
-    uz_t idx1 = hash_tpu2_1( node.key ) & mask;
+    uz_t idx1 = hash_tpu3_1( node.key ) & mask;
     if( !o->nodes[ idx1 ].key )
     {
         o->nodes[ idx1 ] = node;
         return idx1;
     }
 
-    uz_t idx2 = hash_tpu2_2( node.key ) & mask;
+    uz_t idx2 = hash_tpu3_2( node.key ) & mask;
     if( !o->nodes[ idx2 ].key )
     {
         o->nodes[ idx2 ] = node;
@@ -2441,8 +2445,8 @@ static st_s* hmap_tpvd_selftest( void )
     st_s_pushf( log, "Mixed access: " );
 
     {
-        uz_t rval1 = 1;
-        uz_t rval2 = 12345;
+        u3_t rval1 = 1;
+        u3_t rval2 = 12345;
         for( uz_t i = 0; i < cycles; i++ )
         {
             rval1 = bcore_xsg_u2( rval1 );
@@ -2623,10 +2627,10 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tpto_s )
 static uz_t tpto_find( const bcore_hmap_tpto_s* o, tp_t key ) // returns valid index or o->size
 {
     if( o->size == 0 ) return o->size;
-    u2_t mask = o->size - 1;
-    uz_t idx = hash_tpu2_1( key ) & mask;
+    uz_t mask = o->size - 1;
+    uz_t idx = hash_tpu3_1( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
-    idx = hash_tpu2_2( key ) & mask;
+    idx = hash_tpu3_2( key ) & mask;
     if( o->nodes[ idx ].key == key ) return idx;
     return o->size;
 }
@@ -2637,18 +2641,18 @@ uz_t tpto_set( bcore_hmap_tpto_s* o, bcore_hnode_tpto_s node, uz_t depth ) // se
 {
     uz_t size = o->size;
     if( size == 0 ) return size;
-    u2_t mask = o->size - 1;
+    uz_t mask = o->size - 1;
 
     if( depth == o->depth_limit ) return size;
 
-    uz_t idx1 = hash_tpu2_1( node.key ) & mask;
+    uz_t idx1 = hash_tpu3_1( node.key ) & mask;
     if( !o->nodes[ idx1 ].key )
     {
         o->nodes[ idx1 ] = node;
         return idx1;
     }
 
-    uz_t idx2 = hash_tpu2_2( node.key ) & mask;
+    uz_t idx2 = hash_tpu3_2( node.key ) & mask;
     if( !o->nodes[ idx2 ].key )
     {
         o->nodes[ idx2 ] = node;
@@ -3109,10 +3113,10 @@ BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tp_s )
 static uz_t tp_find( const bcore_hmap_tp_s* o, tp_t key ) // returns valid index or o->size
 {
     if( o->size == 0 ) return o->size;
-    u2_t mask = o->size - 1;
-    uz_t idx = hash_tpu2_1( key ) & mask;
+    uz_t mask = o->size - 1;
+    uz_t idx = hash_tpu3_1( key ) & mask;
     if( o->keys[ idx ] == key ) return idx;
-    idx = hash_tpu2_2( key ) & mask;
+    idx = hash_tpu3_2( key ) & mask;
     if( o->keys[ idx ] == key ) return idx;
     return o->size;
 }
@@ -3123,18 +3127,18 @@ static uz_t tp_set( bcore_hmap_tp_s* o, tp_t key, uz_t depth ) // sets new node,
 {
     uz_t size = o->size;
     if( size == 0 ) return size;
-    u2_t mask = o->size - 1;
+    uz_t mask = o->size - 1;
 
     if( depth == o->depth_limit ) return size;
 
-    uz_t idx1 = hash_tpu2_1( key ) & mask;
+    uz_t idx1 = hash_tpu3_1( key ) & mask;
     if( !o->keys[ idx1 ] )
     {
         o->keys[ idx1 ] = key;
         return idx1;
     }
 
-    uz_t idx2 = hash_tpu2_2( key ) & mask;
+    uz_t idx2 = hash_tpu3_2( key ) & mask;
     if( !o->keys[ idx2 ] )
     {
         o->keys[ idx2 ] = key;
@@ -3366,28 +3370,26 @@ static st_s* hmap_tp_selftest( void )
     st_s_pushf( log, "Mixed access: " );
 
     {
-        u3_t rval1 = 1;
-        u3_t rval2 = 12345;
+        u3_t rval1 = 13478;
         for( uz_t i = 0; i < cycles; i++ )
         {
-            rval1 = bcore_xsg_u2( rval1 );
-            rval2 = bcore_xsg_u2( rval2 );
+            rval1 = bcore_lcg00_u3( rval1 );
             kv_s kv;
-            kv.key = ( u2_t )rval1;
+            kv.key = ( tp_t )rval1;
             kv.val = bcore_hmap_tp_s_set( map, kv.key );
             kvbuf[ kvbuf_size++ ] = kv;
 
             // retrieve
-            rval1 = bcore_xsg_u2( rval1 );
+            rval1 = bcore_lcg00_u3( rval1 );
             kv = kvbuf[ rval1 % kvbuf_size ];
             uz_t val = bcore_hmap_tp_s_get( map, kv.key );
             if( val == map->size ) ERR( "index error (%lu)", val );
 
             // delete
-            rval1 = bcore_xsg_u2( rval1 );
+            rval1 = bcore_lcg00_u3( rval1 );
             if( ( ( rval1 >> 10 ) & 1 ) == 1 )
             {
-                rval1 = bcore_xsg_u2( rval1 );
+                rval1 = bcore_lcg00_u3( rval1 );
                 uz_t idx = rval1 % kvbuf_size;
                 kv_s kv = kvbuf[ idx ];
                 if( bcore_hmap_tp_s_get( map, kv.key ) == map->size )  ERR( "key (%lu) not found", kv.key );
