@@ -54,7 +54,7 @@ typedef struct hmap_s
     bcore_arr_vd_s arr;
 
     /// The map is used to access instances.
-    bcore_hmap_u2vd_s map;
+    bcore_hmap_u3vd_s map;
 
     bcore_mutex_s mutex;
 
@@ -70,7 +70,7 @@ static void hmap_s_init( hmap_s* o )
 {
     bcore_arr_vd_s_init( &o->arr );
     bcore_arr_vd_s_init( &o->cache_arr );
-    bcore_hmap_u2vd_s_init( &o->map );
+    bcore_hmap_u3vd_s_init( &o->map );
     bcore_mutex_s_init( &o->mutex );
     bcore_tp_fastmap_s_init( &o->cache );
     bcore_arr_vd_s_push( &o->cache_arr, &o->cache ); // o->cache will be managed via hmap_s_g->cache_arr
@@ -79,7 +79,7 @@ static void hmap_s_init( hmap_s* o )
 static sz_t hmap_s_size( hmap_s* o )
 {
     bcore_mutex_s_lock( &o->mutex );
-    sz_t size = bcore_hmap_u2vd_s_keys( &o->map );
+    sz_t size = bcore_hmap_u3vd_s_keys( &o->map );
     bcore_mutex_s_unlock( &o->mutex );
     return size;
 }
@@ -113,7 +113,7 @@ static void hmap_s_down( hmap_s* o )
         tp_t p_type = ( ( bcore_spect_header_s* )spect )->p_type;
         tp_t o_type = ( ( bcore_spect_header_s* )spect )->o_type;
         tp_t sig    = bcore_tp_fold_tp( p_type, o_type );
-        bcore_hmap_u2vd_s_remove_h( &o->map, sig );
+        bcore_hmap_u3vd_s_remove_h( &o->map, sig );
 
         /** During discard we lift the lock because the spect's destructor
          *  may retrieve (even recreate) perspective instances.
@@ -150,7 +150,7 @@ static void hmap_s_down( hmap_s* o )
     }
     bcore_arr_vd_s_down( &o->cache_arr );
 
-    bcore_hmap_u2vd_s_down( &o->map );
+    bcore_hmap_u3vd_s_down( &o->map );
     bcore_arr_vd_s_down(    &o->arr );
     bcore_mutex_s_unlock( &o->mutex );
     bcore_mutex_s_down( &o->mutex );
@@ -241,7 +241,7 @@ bl_t bcore_spect_trait_supported( tp_t spect_trait, tp_t o_type )
     tp_t sig = bcore_tp_fold_tp( p_type, o_type );
     assert( hmap_s_g != NULL );
     bcore_mutex_s_lock( &hmap_s_g->mutex );
-    bl_t exists = bcore_hmap_u2vd_s_exists( &hmap_s_g->map, sig );
+    bl_t exists = bcore_hmap_u3vd_s_exists( &hmap_s_g->map, sig );
     bcore_mutex_s_unlock( &hmap_s_g->mutex );
     if( exists ) return true;
     return bcore_trait_satisfied_type( spect_trait, o_type, NULL );
@@ -266,7 +266,7 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
     if( val ) return val;
 
     bcore_mutex_s_lock( &hmap_s_g->mutex );
-    vd_t* vdp = bcore_hmap_u2vd_s_get( &hmap_s_g->map, sig );
+    vd_t* vdp = bcore_hmap_u3vd_s_get( &hmap_s_g->map, sig );
     if( vdp )
     {
         hmap_s_cache_set( hmap_s_g, sig, *vdp );
@@ -333,15 +333,15 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
     // Due to the unlocked period, the perspective might have
     // been registered by another thread meanwhile.
     // In that case we discard spect and retrieve the registered version.
-    if( bcore_hmap_u2vd_s_exists( &hmap_s_g->map, sig ) )
+    if( bcore_hmap_u3vd_s_exists( &hmap_s_g->map, sig ) )
     {
         discard_spect = spect;
-        spect = *bcore_hmap_u2vd_s_get( &hmap_s_g->map, sig );
+        spect = *bcore_hmap_u3vd_s_get( &hmap_s_g->map, sig );
     }
     else
     {
         bcore_arr_vd_s_push( &hmap_s_g->arr, spect );
-        bcore_hmap_u2vd_s_set( &hmap_s_g->map, sig, spect, false );
+        bcore_hmap_u3vd_s_set( &hmap_s_g->map, sig, spect, false );
     }
 
     bcore_mutex_s_unlock( &hmap_s_g->mutex );
@@ -608,7 +608,7 @@ st_s* bcore_spect_status()
 {
     bcore_life_s* l = bcore_life_s_create();
     assert( hmap_s_g != NULL );
-    const bcore_hmap_u2vd_s* map  = &hmap_s_g->map;
+    const bcore_hmap_u3vd_s* map  = &hmap_s_g->map;
     bcore_hmap_tpuz_s* hist = bcore_life_s_push_aware( l, bcore_hmap_tpuz_s_create() );
     st_s* log = st_s_create();
 
@@ -617,7 +617,7 @@ st_s* bcore_spect_status()
         st_s_push_sc( s, "registered perspectives " );
         st_s_push_char_n( s, '.', 32 - s->size );
         bcore_mutex_s_lock( &hmap_s_g->mutex );
-        st_s_pushf( s, "% 4zu\n", bcore_hmap_u2vd_s_keys( map ) );
+        st_s_pushf( s, "% 4zu\n", bcore_hmap_u3vd_s_keys( map ) );
         bcore_mutex_s_unlock( &hmap_s_g->mutex );
         st_s_push_st_d( log, s );
     }
@@ -625,7 +625,7 @@ st_s* bcore_spect_status()
     for( uz_t i = 0; i < map->size; i++ )
     {
         bcore_mutex_s_lock( &hmap_s_g->mutex );
-        vd_t val = bcore_hmap_u2vd_s_idx_val( map, i );
+        vd_t val = bcore_hmap_u3vd_s_idx_val( map, i );
         bcore_mutex_s_unlock( &hmap_s_g->mutex );
         if( val ) ( *bcore_hmap_tpuz_s_fget( hist, *( aware_t* )val, 0 ) )++;
     }

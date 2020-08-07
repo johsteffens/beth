@@ -19,21 +19,32 @@
 #include "bcore_flect.h"
 #include "bcore_spect_array.h"
 
-/// hashing (non-cryptographic)
-static u2_t hash_tpu2_1( tp_t key )
+/**********************************************************************************************************************/
+// hash functions (non-cryptographic)
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static u3_t hash_tpu3_1( tp_t key )
 {
-    u2_t h = ( 632432329 ^ ( ( key       ) & 0x0FFFFu ) ) * 88888888901;
-         h = ( h         ^ ( ( key >> 16 ) & 0x0FFFFu ) ) * 88888888901;
+    u3_t h = ( 0x9036a4254b378c1full ^ ( ( key       ) & 0x0FFFFull ) ) * 0x1000000109f;
+         h = ( h                     ^ ( ( key >> 16 ) & 0x0FFFFull ) ) * 0x1000000111f;
+         h = ( h                     ^ ( ( key >> 32 ) & 0x0FFFFull ) ) * 0x10000001359;
+         h = ( h                     ^ ( ( key >> 48 ) & 0x0FFFFull ) ) * 0x100000013e3;
     return h;
 }
 
-/// hashing (non-cryptographic)
-static u2_t hash_tpu2_2( tp_t key )
+//----------------------------------------------------------------------------------------------------------------------
+
+static u3_t hash_tpu3_2( tp_t key )
 {
-    u2_t h = ( 368653234 ^ ( ( key       ) & 0x0FFFFu ) ) * 77777777827;
-         h = ( h         ^ ( ( key >> 16 ) & 0x0FFFFu ) ) * 77777777827;
+    u3_t h = ( 0x37651f84128a9b31ull ^ ( ( key       ) & 0x0FFFFull ) ) * 0x1000001000011;
+         h = ( h                     ^ ( ( key >> 16 ) & 0x0FFFFull ) ) * 0x10000010000cf;
+         h = ( h                     ^ ( ( key >> 32 ) & 0x0FFFFull ) ) * 0x10000010001dd;
+         h = ( h                     ^ ( ( key >> 48 ) & 0x0FFFFull ) ) * 0x1000001000371;
     return h;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 
@@ -187,10 +198,10 @@ BCORE_DEFINE_FUNCTION_DISCARD( bcore_name_map_s )
 static uz_t find( const bcore_name_map_s* o, tp_t key ) // returns valid index or o->size
 {
     if( o->size == 0 ) return o->size;
-    u2_t mask = o->size - 1;
-    uz_t idx = hash_tpu2_1( key ) & mask;
+    uz_t mask = o->size - 1;
+    uz_t idx = hash_tpu3_1( key ) & mask;
     if( o->data[ idx ].key == key ) return idx;
-    idx = hash_tpu2_2( key ) & mask;
+    idx = hash_tpu3_2( key ) & mask;
     if( o->data[ idx ].key == key ) return idx;
     return o->size;
 }
@@ -199,18 +210,18 @@ static uz_t set( bcore_name_map_s* o, bcore_name_s name, uz_t depth ) // sets ne
 {
     uz_t size = o->size;
     if( size == 0 ) return size;
-    u2_t mask = o->size - 1;
+    uz_t mask = o->size - 1;
 
     if( depth == o->depth_limit ) return size;
 
-    uz_t idx1 = hash_tpu2_1( name.key ) & mask;
+    uz_t idx1 = hash_tpu3_1( name.key ) & mask;
     if( !o->data[ idx1 ].key )
     {
         o->data[ idx1 ] = name;
         return idx1;
     }
 
-    uz_t idx2 = hash_tpu2_2( name.key ) & mask;
+    uz_t idx2 = hash_tpu3_2( name.key ) & mask;
     if( !o->data[ idx2 ].key )
     {
         o->data[ idx2 ] = name;
