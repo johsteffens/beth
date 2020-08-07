@@ -68,9 +68,14 @@ void bcore_sink_default_push_fa( const bcore_sink_s* p, bcore_sink* o, sc_t f, .
     va_end( a );
 }
 
+void bcore_sink_default_push_u0( const bcore_sink_s* p, bcore_sink* o, u0_t u )
+{
+    p->push_data( o, &u, 1 );
+}
+
 void bcore_sink_default_push_char( const bcore_sink_s* p, bcore_sink* o, char c )
 {
-    p->push_data( o, &c, 1 );
+    bcore_sink_default_push_u0( p, o, c );
 }
 
 void bcore_sink_default_push_sc( const bcore_sink_s* p, bcore_sink* o, sc_t sc )

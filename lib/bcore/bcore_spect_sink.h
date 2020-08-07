@@ -37,6 +37,7 @@ BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP1( bcore_sink, push_data, uz_t, vc_t, data,
 BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP1( bcore_sink, flush )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_sink, pushvf,   sc_t, format, va_list, args )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_sink, push_fv,  sc_t, format, va_list, args )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_sink, push_u0,           u0_t, u )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_sink, push_char,         char, c )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_sink, push_sc,           sc_t, sc )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_sink, push_string, const st_s*, string )

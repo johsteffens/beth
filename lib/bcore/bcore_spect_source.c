@@ -129,6 +129,13 @@ u0_t bcore_source_default_inspect_u0( const bcore_source_s* p, bcore_source* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+char bcore_source_default_inspect_char( const bcore_source_s* p, bcore_source* o )
+{
+    return bcore_source_default_inspect_u0( p, o );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_source_default_parse_errvf( const bcore_source_s* p, bcore_source* o, sc_t format, va_list args )
 {
     st_s* s0 = st_s_createvf( format, args );

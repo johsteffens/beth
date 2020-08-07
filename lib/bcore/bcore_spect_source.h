@@ -78,19 +78,27 @@ u0_t bcore_source_default_get_u0( const bcore_source_s* p, bcore_source* o )
     return v;
 }
 
+static inline
+char bcore_source_default_get_char( const bcore_source_s* p, bcore_source* o )
+{
+    return bcore_source_default_get_u0( p, o );
+}
+
 /// Parse functions can be used for scannlerless parsing or lexing.
 
 /// Reads and consumes data. Returns number of bytes consumed.
 BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP1( bcore_source, get_data, uz_t, vd_t, data, uz_t, size )
 
 /// Reads and consumes a single byte. Returns 0 in case eos is reached.
-BCORE_FUNC_SPECT_CONST0_RET1_ARG0_MAP0( bcore_source, get_u0, u0_t )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG0_MAP0( bcore_source, get_u0  , u0_t )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG0_MAP0( bcore_source, get_char, char )
 
 /// Reads data at current position without consumption. Returns number of bytes copied.
 BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_source, inspect_data, uz_t, vd_t, data, uz_t, size )
 
 /// Reads a single byte current position without consumption. Returns 0 in case eos is reached.
-BCORE_FUNC_SPECT_CONST0_RET1_ARG0_MAP0( bcore_source, inspect_u0, u0_t )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG0_MAP0( bcore_source, inspect_u0  , u0_t )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG0_MAP0( bcore_source, inspect_char, char )
 
 /// Reads and consumes data using formatted parsing according to st_s_parse_fv fromat rules.
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP1( bcore_source, parse_fv, sc_t, format, va_list, args )
