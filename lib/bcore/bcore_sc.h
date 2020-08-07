@@ -45,11 +45,14 @@
  *  Format rules:
  *
  *  Type -> string conversion:
- *  "#<type>" or "#<type*>"
+ *  "#<type>"  or "#<type*>"
+ *  "#x<type>" or "#x<type*>"
+ *  "#X<type>" or "#X<type*>"
  *      Converts argument.
+ *      If x, X is given: Converts argument to hexadecimal output if type is unsigned integer, otherwise x,X is ignored.
  *      Argument: <type> or pointer to <type>
  *      Supported types: u*_t, s*_t, f*_t, uz_t, bl_t.
- *      Example: "#<u3_t>"
+ *      Examples: "#<u3_t>"; "#X<u3_t>"
  *
  *  "#<char>" or "#<char*>"
  *      Converts single character.

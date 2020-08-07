@@ -73,7 +73,19 @@ uz_t sc_t_fnv( sd_t o, uz_t space, sc_t f, uz_t fsize, va_list* p_args )
     {
         if( f[ i ] == '#' )
         {
+            u0_t hex = 0;
             i++;
+            if( f[ i ] == 'x' )
+            {
+                hex = 1;
+                i++;
+            }
+            else if( f[ i ] == 'X' )
+            {
+                hex = 2;
+                i++;
+            }
+
             tp_t type = 0;
             int inc = 0;
             bl_t is_ptr = false;
@@ -328,35 +340,40 @@ uz_t sc_t_fnv( sd_t o, uz_t space, sc_t f, uz_t fsize, va_list* p_args )
                         case TYPEOF_u0_t:
                         {
                             u0_t* v = va_arg( *p_args, u0_t* );
-                            if( v ) sres = snprintf( dst, space, "%"PRIu0_t"", *v );
+                            const char* f = ( hex == 0 ) ? "%"PRIu0_t"" : ( hex == 1 ) ? "%"PRIxu0_t"" : "%"PRIXu0_t"";
+                            if( v ) sres = snprintf( dst, space, f, *v );
                         }
                         break;
 
                         case TYPEOF_u1_t:
                         {
                             u1_t* v = va_arg( *p_args, u1_t* );
-                            if( v ) sres = snprintf( dst, space, "%"PRIu1_t"", *v );
+                            const char* f = ( hex == 0 ) ? "%"PRIu1_t"" : ( hex == 1 ) ? "%"PRIxu1_t"" : "%"PRIXu1_t"";
+                            if( v ) sres = snprintf( dst, space, f, *v );
                         }
                         break;
 
                         case TYPEOF_u2_t:
                         {
                             u2_t* v = va_arg( *p_args, u2_t* );
-                            if( v ) sres = snprintf( dst, space, "%"PRIu2_t"", *v );
+                            const char* f = ( hex == 0 ) ? "%"PRIu2_t"" : ( hex == 1 ) ? "%"PRIxu2_t"" : "%"PRIXu2_t"";
+                            if( v ) sres = snprintf( dst, space, f, *v );
                         }
                         break;
 
                         case TYPEOF_u3_t:
                         {
                             u3_t* v = va_arg( *p_args, u3_t* );
-                            if( v ) sres = snprintf( dst, space, "%"PRIu3_t"", *v );
+                            const char* f = ( hex == 0 ) ? "%"PRIu3_t"" : ( hex == 1 ) ? "%"PRIxu3_t"" : "%"PRIXu3_t"";
+                            if( v ) sres = snprintf( dst, space, f, *v );
                         }
                         break;
 
                         case TYPEOF_umax_t:
                         {
                             umax_t* v = va_arg( *p_args, umax_t* );
-                            if( v ) sres = snprintf( dst, space, "%"PRIumax_t"", *v );
+                            const char* f = ( hex == 0 ) ? "%"PRIumax_t"" : ( hex == 1 ) ? "%"PRIxumax_t"" : "%"PRIXumax_t"";
+                            if( v ) sres = snprintf( dst, space, f, *v );
                         }
                         break;
 
@@ -405,7 +422,8 @@ uz_t sc_t_fnv( sd_t o, uz_t space, sc_t f, uz_t fsize, va_list* p_args )
                         case TYPEOF_uz_t:
                         {
                             uz_t* v = va_arg( *p_args, uz_t* );
-                            if( v ) sres = snprintf( dst, space, "%"PRIuz_t"", *v );
+                            const char* f = ( hex == 0 ) ? "%"PRIuz_t"" : ( hex == 1 ) ? "%"PRIxuz_t"" : "%"PRIXuz_t"";
+                            if( v ) sres = snprintf( dst, space, f, *v );
                         }
                         break;
 
@@ -433,7 +451,8 @@ uz_t sc_t_fnv( sd_t o, uz_t space, sc_t f, uz_t fsize, va_list* p_args )
                         case TYPEOF_tp_t:
                         {
                             tp_t* v = va_arg( *p_args, tp_t* );
-                            if( v ) sres = snprintf( dst, space, "%"PRItp_t"", *v );
+                            const char* f = ( hex == 0 ) ? "%"PRItp_t"" : ( hex == 1 ) ? "%"PRIxtp_t"" : "%"PRIXtp_t"";
+                            if( v ) sres = snprintf( dst, space, f, *v );
                         }
                         break;
 
@@ -475,19 +494,52 @@ uz_t sc_t_fnv( sd_t o, uz_t space, sc_t f, uz_t fsize, va_list* p_args )
                     switch( type )
                     {
                         case TYPEOF_u0_t: // u0 and u1 is promoted to unsigned int
-                        case TYPEOF_u1_t: sres = snprintf( dst, space, "%u", va_arg( *p_args, unsigned int ) ); break;
-                        case TYPEOF_u2_t: sres = snprintf( dst, space, "%"PRIu2_t"", va_arg( *p_args, u2_t ) ); break;
-                        case TYPEOF_u3_t: sres = snprintf( dst, space, "%"PRIu3_t"", va_arg( *p_args, u3_t ) ); break;
+
+                        case TYPEOF_u1_t:
+                        {
+                            const char* f = ( hex == 0 ) ? "%u" : ( hex == 1 ) ? "%x" : "%X";
+                            sres = snprintf( dst, space, f, va_arg( *p_args, unsigned int ) );
+                        }
+                        break;
+
+                        case TYPEOF_u2_t:
+                        {
+                            const char* f = ( hex == 0 ) ? "%"PRIu2_t"" : ( hex == 1 ) ? "%"PRIxu2_t"" : "%"PRIXu2_t"";
+                            sres = snprintf( dst, space, f, va_arg( *p_args, u2_t ) );
+                        }
+                        break;
+
+                        case TYPEOF_u3_t:
+                        {
+                            const char* f = ( hex == 0 ) ? "%"PRIu3_t"" : ( hex == 1 ) ? "%"PRIxu3_t"" : "%"PRIXu3_t"";
+                            sres = snprintf( dst, space, f, va_arg( *p_args, u3_t ) );
+                        }
+                        break;
+
                         case TYPEOF_s0_t: // s0 and s1 is promoted to int
                         case TYPEOF_s1_t: sres = snprintf( dst, space, "%i",         va_arg( *p_args, int  ) ); break;
                         case TYPEOF_s2_t: sres = snprintf( dst, space, "%"PRIs2_t"", va_arg( *p_args, s2_t ) ); break;
                         case TYPEOF_s3_t: sres = snprintf( dst, space, "%"PRIs3_t"", va_arg( *p_args, s3_t ) ); break;
                         case TYPEOF_sz_t: sres = snprintf( dst, space, "%"PRIsz_t"", va_arg( *p_args, sz_t ) ); break;
-                        case TYPEOF_uz_t: sres = snprintf( dst, space, "%"PRIuz_t"", va_arg( *p_args, uz_t ) ); break;
+
+                        case TYPEOF_uz_t:
+                        {
+                            const char* f = ( hex == 0 ) ? "%"PRIuz_t"" : ( hex == 1 ) ? "%"PRIxuz_t"" : "%"PRIXuz_t"";
+                            sres = snprintf( dst, space, f, va_arg( *p_args, uz_t ) );
+                        }
+                        break;
+
                         // f2_t is promoted to double
                         case TYPEOF_f2_t: sres = snprintf( dst, space, "%g",       va_arg( *p_args, double ) ); break;
                         case TYPEOF_f3_t: sres = snprintf( dst, space, "%"PRIf3_t"", va_arg( *p_args, f3_t ) ); break;
-                        case TYPEOF_tp_t: sres = snprintf( dst, space, "%"PRItp_t"", va_arg( *p_args, tp_t ) ); break;
+
+                        case TYPEOF_tp_t:
+                        {
+                            const char* f = ( hex == 0 ) ? "%"PRItp_t"" : ( hex == 1 ) ? "%"PRIxtp_t"" : "%"PRIXtp_t"";
+                            sres = snprintf( dst, space, f, va_arg( *p_args, tp_t ) );
+                        }
+                        break;
+
                         // bl_t is promoted to int
                         case TYPEOF_bl_t: sres = snprintf( dst, space, va_arg( *p_args, int ) ? "true" : "false" ); break;
                         case TYPEOF_sc_t: sres = snprintf( dst, space, "%s", va_arg( *p_args, sc_t ) ); break;
