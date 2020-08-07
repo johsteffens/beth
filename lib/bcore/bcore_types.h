@@ -84,6 +84,22 @@ typedef _Atomic fp_t atomic_fp_t;
 #define PRIu3_t PRIu64
 #define PRIumax_t PRIuMAX
 
+#define PRIxu0_t PRIx8
+#define PRIxu1_t PRIx16
+#define PRIxu2_t PRIx32
+#define PRIxu3_t PRIx64
+#define PRIxuz_t "zx"
+#define PRIxtp_t PRIx64
+#define PRIxumax_t PRIxMAX
+
+#define PRIXu0_t PRIX8
+#define PRIXu1_t PRIX16
+#define PRIXu2_t PRIX32
+#define PRIXu3_t PRIX64
+#define PRIXuz_t "zX"
+#define PRIXtp_t PRIX64
+#define PRIXumax_t PRIXMAX
+
 #define PRIf3_t "lg"
 #define PRIf2_t "g"
 #define PRIsz_t "ti" // t ~ ptrdiff_t
@@ -103,6 +119,12 @@ typedef _Atomic fp_t atomic_fp_t;
 #define SCNu2_t SCNu32
 #define SCNu3_t SCNu64
 #define SCNumax_t SCNuMAX
+
+#define SCNxu0_t SCNx8
+#define SCNxu1_t SCNx16
+#define SCNxu2_t SCNx32
+#define SCNxu3_t SCNx64
+#define SCNxumax_t SCNxMAX
 
 #define SCNf3_t "lg"
 #define SCNf2_t "g"
