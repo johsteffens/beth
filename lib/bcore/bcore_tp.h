@@ -21,13 +21,34 @@
 #include <stdarg.h>
 #include "bcore_control.h"
 
-// Hashing based on FNV-1a (see bcore_control.h for details);
+/**********************************************************************************************************************/
+/// Hashing (non-cryptographic)
+
+/** FNV-1a for 0-terminated strings and data blocks.
+ *  Conceived by Glenn Fowler, Landon Curt Noll and Kiem-Phon Vo in 1991.
+ *  References:
+ *  http://www.isthe.com/chongo/tech/comp/fnv/index.html
+ *  http://en.wikipedia.org/wiki/Fowler_Noll_Vo_hash
+ */
+
+#define FNV_U2_INIT 0x811c9dc5u
+#define FNV_U2_FOLD 0x01000193u
+
+#define FNV_U3_INIT 0xcbf29ce484222325ull
+#define FNV_U3_FOLD 0x00000100000001B3ull
+
+/// TODO: switch to FNV_U3_INIT (has values will be different)
 static inline tp_t bcore_tp_init() { return FNV_U2_INIT; }
+
+/// TODO: switch to FNV_U3_FOLD; remove mask (has values will be different)
 static inline tp_t bcore_tp_fold_u0( tp_t o, u0_t v ) { return ( ( o ^ v ) * FNV_U2_FOLD ) & 0x00000000FFFFFFFFull; }
 static inline tp_t bcore_tp_fold_u1( tp_t o, u1_t v ) { return bcore_tp_fold_u0( bcore_tp_fold_u0( o, v ), v >>  8 ); }
 static inline tp_t bcore_tp_fold_u2( tp_t o, u2_t v ) { return bcore_tp_fold_u1( bcore_tp_fold_u1( o, v ), v >> 16 ); }
 static inline tp_t bcore_tp_fold_u3( tp_t o, u3_t v ) { return bcore_tp_fold_u2( bcore_tp_fold_u2( o, v ), v >> 32 ); }
+
+/// TODO: change to bcore_tp_fold_u3 (has values will be different)
 static inline tp_t bcore_tp_fold_tp( tp_t o, tp_t v ) { return bcore_tp_fold_u2( o, v ); }
+
 static inline tp_t bcore_tp_fold_sc( tp_t o, sc_t v ) { if( !v ) return bcore_tp_fold_u0( o, 0 ); while( *v ) { o = bcore_tp_fold_u0( o, *v++ ); } return o; }
 static inline tp_t bcore_tp_fold_vc( tp_t o, vc_t a, uz_t n ) { for( const u0_t* v = a; n > 0; n-- ) { o = bcore_tp_fold_u0( o, *v++ ); } return o; }
 static inline tp_t bcore_tp_fold_uz( tp_t o, uz_t v ) { return bcore_tp_fold_vc( o, &v, sizeof( uz_t ) ); }

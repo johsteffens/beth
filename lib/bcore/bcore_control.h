@@ -186,43 +186,6 @@ static inline u2_t bcore_xsg2_u2( u2_t rval ) { rval ^= ( rval >>  5 ); rval ^= 
 static inline u2_t bcore_xsg3_u2( u2_t rval ) { rval ^= ( rval >> 17 ); rval ^= ( rval << 15 ); return rval ^ ( rval >> 23 ); }
 
 /**********************************************************************************************************************/
-/// Hashing (non-cryptographic)
-
-/** FNV-1a for 0-terminated strings and data blocks.
- *  Conceived by Glenn Fowler, Landon Curt Noll and Kiem-Phon Vo in 1991.
- *  References:
- *  http://www.isthe.com/chongo/tech/comp/fnv/index.html
- *  http://en.wikipedia.org/wiki/Fowler_Noll_Vo_hash
- */
-#define FNV_U2_INIT 0x811c9dc5u
-#define FNV_U2_FOLD 0x01000193u
-
-static inline u2_t bcore_fnv_fold_text_u2( u2_t hash, sc_t text )
-{
-    while( *text ) hash = ( hash ^ ( u0_t )( *text++ ) ) * FNV_U2_FOLD;
-    return hash;
-}
-
-static inline u2_t bcore_fnv_fold_u2_u2( u2_t hash, u2_t val )
-{
-    hash = ( hash ^ ( ( val       ) & 0x0FF ) ) * FNV_U2_FOLD;
-    hash = ( hash ^ ( ( val >>  8 ) & 0x0FF ) ) * FNV_U2_FOLD;
-    hash = ( hash ^ ( ( val >> 16 ) & 0x0FF ) ) * FNV_U2_FOLD;
-    hash = ( hash ^ ( ( val >> 24 ) & 0x0FF ) ) * FNV_U2_FOLD;
-    return hash;
-}
-static inline u2_t bcore_fnv_fold_data_u2( u2_t hash, vc_t data, uz_t size )
-{
-    const u0_t* src = data;
-    for( uz_t i = 0; i < size; i++ ) hash = ( hash ^ src[ i ] ) * FNV_U2_FOLD;
-    return hash;
-}
-
-static inline u2_t bcore_fnv_hash_text_u2( sc_t text            ) { return bcore_fnv_fold_text_u2( FNV_U2_INIT, text );       }
-static inline u2_t bcore_fnv_hash_u2_u2(   u2_t val             ) { return bcore_fnv_fold_u2_u2(   FNV_U2_INIT, val );        }
-static inline u2_t bcore_fnv_hash_data_u2( vc_t data, uz_t size ) { return bcore_fnv_fold_data_u2( FNV_U2_INIT, data, size ); }
-
-/**********************************************************************************************************************/
 
 vd_t bcore_control_signal_handler( const bcore_signal_s* o );
 
