@@ -106,6 +106,62 @@ void  bcore_hmap_u2vd_s_run_d(           bcore_hmap_u2vd_s* o, vd_t obj, void (*
 
 /**********************************************************************************************************************/
 
+/** bcore_hmap_u3vd_s:
+ *    key-type: u3_t
+ *    val-type: vd_t or fp_t.
+ *    Map holds aware objects if so desired.
+ *    Map can reference any object but hold only aware objects.
+ */
+typedef struct bcore_hnode_u3vd_s bcore_hnode_u3vd_s;
+typedef u3_t (*bcore_hash_u3u3)( u3_t v );
+
+typedef struct bcore_hmap_u3vd_s
+{
+    aware_t _;
+    union
+    {
+        bcore_array_dyn_solid_static_s arr;
+        struct
+        {
+            bcore_hnode_u3vd_s* data;
+            uz_t size;
+            uz_t space;
+        };
+    };
+    uz_t depth_limit;
+    uz_t size_limit;
+    bcore_hash_u3u3 h1, h2, h3;
+} bcore_hmap_u3vd_s;
+
+BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_u3vd_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bcore_hmap_u3vd_s )
+BCORE_DECLARE_FUNCTION_COPY(    bcore_hmap_u3vd_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bcore_hmap_u3vd_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_u3vd_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_u3vd_s )
+
+void  bcore_hmap_u3vd_s_set_hash_function( bcore_hmap_u3vd_s* o, uz_t index, bcore_hash_u3u3 hf ); // optionally sets external hash function (up to three functions can be specified via index 0, 1, 2)
+vd_t* bcore_hmap_u3vd_s_get(       const bcore_hmap_u3vd_s* o, u3_t key ); // returns pointer to value or NULL when key does not exist
+void  bcore_hmap_u3vd_s_set(             bcore_hmap_u3vd_s* o, u3_t key, vd_t val, bool hold ); // hold==true only for aware objects
+fp_t* bcore_hmap_u3vd_s_getf(      const bcore_hmap_u3vd_s* o, u3_t key ); // returns pointer to function pointer; returns NULL when key does not exist
+void  bcore_hmap_u3vd_s_setf(            bcore_hmap_u3vd_s* o, u3_t key, fp_t func );
+vd_t  bcore_hmap_u3vd_s_remove_h(        bcore_hmap_u3vd_s* o, u3_t key ); // removes key, returns object and transfers ownership if held. Returns NULL if key did not exist.
+fp_t  bcore_hmap_u3vd_s_removef_h(       bcore_hmap_u3vd_s* o, u3_t key ); // removes key and returns function pointer. Returns NULL if key did not exist.
+void  bcore_hmap_u3vd_s_remove_d(        bcore_hmap_u3vd_s* o, u3_t key ); // removes key and discards object if held. No effect if key did not exist.
+vd_t  bcore_hmap_u3vd_s_detach_h(        bcore_hmap_u3vd_s* o, u3_t key ); // sets hold-flag 'false' and returns value
+bool  bcore_hmap_u3vd_s_exists(    const bcore_hmap_u3vd_s* o, u3_t key ); // checks if key exists
+bool  bcore_hmap_u3vd_s_holds(     const bcore_hmap_u3vd_s* o, u3_t key ); // checks if object is held; Returns false if key does not exist.
+void  bcore_hmap_u3vd_s_clear(           bcore_hmap_u3vd_s* o           ); // removes all entries and frees memory
+uz_t  bcore_hmap_u3vd_s_keys(      const bcore_hmap_u3vd_s* o           ); // returns number of registered keys
+uz_t  bcore_hmap_u3vd_s_size(      const bcore_hmap_u3vd_s* o           ); // returns current size of the hash map (note that this includes empty places)
+u3_t  bcore_hmap_u3vd_s_idx_key(   const bcore_hmap_u3vd_s* o, uz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
+bool  bcore_hmap_u3vd_s_idx_holds( const bcore_hmap_u3vd_s* o, uz_t idx ); // returns indexed hold-flag (idx indexes the entire table including empty places)
+vd_t  bcore_hmap_u3vd_s_idx_val(   const bcore_hmap_u3vd_s* o, uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
+void  bcore_hmap_u3vd_s_run_c(     const bcore_hmap_u3vd_s* o, vd_t obj, void (*fp)( vd_t obj, u3_t key, vd_t  val ) ); // runs a function on all registered key-value pairs
+void  bcore_hmap_u3vd_s_run_d(           bcore_hmap_u3vd_s* o, vd_t obj, void (*fp)( vd_t obj, u3_t key, vd_t* val ) ); // runs a function on all registered key-value pairs; value can be changed
+
+/**********************************************************************************************************************/
+
 /** bcore_hmap_tpuz_s:
  *    key-type: tp_t
  *    val-type: uz_t.

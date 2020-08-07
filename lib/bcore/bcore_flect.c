@@ -1770,7 +1770,7 @@ static bcore_self_s* flect_self_s_create_self( void )
 
 typedef struct creator_map_s
 {
-    bcore_hmap_u2vd_s* hmap;
+    bcore_hmap_u3vd_s* hmap;
     bcore_mutex_s mutex;
 } creator_map_s;
 
@@ -1778,7 +1778,7 @@ typedef struct creator_map_s
 
 static void creator_map_s_init( creator_map_s* o )
 {
-    o->hmap = bcore_hmap_u2vd_s_create();
+    o->hmap = bcore_hmap_u3vd_s_create();
     bcore_mutex_s_init( &o->mutex );
 }
 
@@ -1787,7 +1787,7 @@ static void creator_map_s_init( creator_map_s* o )
 static void creator_map_s_down( creator_map_s* o )
 {
     bcore_mutex_s_lock( &o->mutex );
-    bcore_hmap_u2vd_s_discard( o->hmap );
+    bcore_hmap_u3vd_s_discard( o->hmap );
     bcore_mutex_s_unlock( &o->mutex );
     bcore_mutex_s_down( &o->mutex );
 }
@@ -1814,7 +1814,7 @@ static void creator_map_s_discard( creator_map_s* o )
 
 typedef struct self_map_s
 {
-    bcore_hmap_u2vd_s* hmap;
+    bcore_hmap_u3vd_s* hmap;
     bcore_mutex_s mutex;
 } self_map_s;
 
@@ -1822,7 +1822,7 @@ typedef struct self_map_s
 
 static void self_map_s_init( self_map_s* o )
 {
-    o->hmap = bcore_hmap_u2vd_s_create();
+    o->hmap = bcore_hmap_u3vd_s_create();
     bcore_mutex_s_init( &o->mutex );
 }
 
@@ -1835,16 +1835,16 @@ static void self_map_s_down( self_map_s* o )
     {
         // We manually detach objects here to keep hmap from invoking
         // perspective management, which may (already) be down at this point.
-        uz_t hmap_size = bcore_hmap_u2vd_s_size( o->hmap );
+        uz_t hmap_size = bcore_hmap_u3vd_s_size( o->hmap );
         for( uz_t i = 0; i < hmap_size; i++ )
         {
-            if( bcore_hmap_u2vd_s_idx_holds( o->hmap, i ) )
+            if( bcore_hmap_u3vd_s_idx_holds( o->hmap, i ) )
             {
-                tp_t key = bcore_hmap_u2vd_s_idx_key( o->hmap, i );
-                bcore_self_s_discard( bcore_hmap_u2vd_s_detach_h( o->hmap, key ) );
+                tp_t key = bcore_hmap_u3vd_s_idx_key( o->hmap, i );
+                bcore_self_s_discard( bcore_hmap_u3vd_s_detach_h( o->hmap, key ) );
             }
         }
-        bcore_hmap_u2vd_s_discard( o->hmap );
+        bcore_hmap_u3vd_s_discard( o->hmap );
     }
     bcore_mutex_s_unlock( &o->mutex );
     bcore_mutex_s_down( &o->mutex );
@@ -1920,13 +1920,13 @@ bl_t bcore_flect_exists( tp_t type )
     bl_t exists = false;
 
     bcore_mutex_s_lock( &self_map_s_g->mutex );
-    exists = bcore_hmap_u2vd_s_exists( self_map_s_g->hmap, type );
+    exists = bcore_hmap_u3vd_s_exists( self_map_s_g->hmap, type );
     bcore_mutex_s_unlock( &self_map_s_g->mutex );
     if( exists ) return true;
 
     assert( creator_map_s_g != NULL );
     bcore_mutex_s_lock( &creator_map_s_g->mutex );
-    exists = bcore_hmap_u2vd_s_exists( creator_map_s_g->hmap, type );
+    exists = bcore_hmap_u3vd_s_exists( creator_map_s_g->hmap, type );
     bcore_mutex_s_unlock( &creator_map_s_g->mutex );
     return exists;
 }
@@ -1938,21 +1938,21 @@ sz_t bcore_flect_size()
     sz_t count = 0;
     bcore_mutex_s_lock( &creator_map_s_g->mutex );
     {
-        sz_t size = bcore_hmap_u2vd_s_size( creator_map_s_g->hmap );
+        sz_t size = bcore_hmap_u3vd_s_size( creator_map_s_g->hmap );
         for( sz_t i = 0; i < size; i++ )
         {
-            tp_t type = bcore_hmap_u2vd_s_idx_key( creator_map_s_g->hmap, i );
+            tp_t type = bcore_hmap_u3vd_s_idx_key( creator_map_s_g->hmap, i );
             if( type ) count++;
         }
     }
 
     bcore_mutex_s_lock( &self_map_s_g->mutex );
     {
-        sz_t size = bcore_hmap_u2vd_s_size( self_map_s_g->hmap );
+        sz_t size = bcore_hmap_u3vd_s_size( self_map_s_g->hmap );
         for( sz_t i = 0; i < size; i++ )
         {
-            tp_t type = bcore_hmap_u2vd_s_idx_key( self_map_s_g->hmap, i );
-            if( type && !bcore_hmap_u2vd_s_exists( creator_map_s_g->hmap, type ) )
+            tp_t type = bcore_hmap_u3vd_s_idx_key( self_map_s_g->hmap, i );
+            if( type && !bcore_hmap_u3vd_s_exists( creator_map_s_g->hmap, type ) )
             {
                  count++;
             }
@@ -1971,21 +1971,21 @@ void bcore_flect_push_all_types( bcore_arr_tp_s* arr )
 {
     bcore_mutex_s_lock( &creator_map_s_g->mutex );
     {
-        sz_t size = bcore_hmap_u2vd_s_size( creator_map_s_g->hmap );
+        sz_t size = bcore_hmap_u3vd_s_size( creator_map_s_g->hmap );
         for( sz_t i = 0; i < size; i++ )
         {
-            tp_t type = bcore_hmap_u2vd_s_idx_key( creator_map_s_g->hmap, i );
+            tp_t type = bcore_hmap_u3vd_s_idx_key( creator_map_s_g->hmap, i );
             if( type ) bcore_arr_tp_s_push( arr, type );
         }
     }
 
     bcore_mutex_s_lock( &self_map_s_g->mutex );
     {
-        sz_t size = bcore_hmap_u2vd_s_size( self_map_s_g->hmap );
+        sz_t size = bcore_hmap_u3vd_s_size( self_map_s_g->hmap );
         for( sz_t i = 0; i < size; i++ )
         {
-            tp_t type = bcore_hmap_u2vd_s_idx_key( self_map_s_g->hmap, i );
-            if( type && !bcore_hmap_u2vd_s_exists( creator_map_s_g->hmap, type ) )
+            tp_t type = bcore_hmap_u3vd_s_idx_key( self_map_s_g->hmap, i );
+            if( type && !bcore_hmap_u3vd_s_exists( creator_map_s_g->hmap, type ) )
             {
                 bcore_arr_tp_s_push( arr, type );
             }
@@ -2010,7 +2010,7 @@ bcore_self_s* bcore_flect_try_d_self( tp_t type )
     // try reflection registry
     assert( self_map_s_g != NULL );
     bcore_mutex_s_lock( &self_map_s_g->mutex );
-    vd_t* p_val = bcore_hmap_u2vd_s_get( self_map_s_g->hmap, type );
+    vd_t* p_val = bcore_hmap_u3vd_s_get( self_map_s_g->hmap, type );
     bcore_mutex_s_unlock( &self_map_s_g->mutex );
     if( p_val ) return *p_val;
 
@@ -2019,7 +2019,7 @@ bcore_self_s* bcore_flect_try_d_self( tp_t type )
     assert( creator_map_s_g != NULL );
 
     bcore_mutex_s_lock( &creator_map_s_g->mutex );
-    fp_t* p_func = bcore_hmap_u2vd_s_getf( creator_map_s_g->hmap, type );
+    fp_t* p_func = bcore_hmap_u3vd_s_getf( creator_map_s_g->hmap, type );
     bcore_mutex_s_unlock( &creator_map_s_g->mutex );
 
     if( p_func )
@@ -2039,17 +2039,17 @@ bcore_self_s* bcore_flect_try_d_self( tp_t type )
         bcore_mutex_s_lock( &self_map_s_g->mutex );
         bcore_flect_set_trait( self );
 
-        if( bcore_hmap_u2vd_s_exists( self_map_s_g->hmap, type ) )
+        if( bcore_hmap_u3vd_s_exists( self_map_s_g->hmap, type ) )
         {
             // If this reflection has meanwhile been registered by another thread,
             // kill current self and retrieve registered version
             discard_self = self;
-            self = *bcore_hmap_u2vd_s_get( self_map_s_g->hmap, type );
+            self = *bcore_hmap_u3vd_s_get( self_map_s_g->hmap, type );
         }
         else
         {
             // else: register current self
-            bcore_hmap_u2vd_s_set( self_map_s_g->hmap, type, self, true );
+            bcore_hmap_u3vd_s_set( self_map_s_g->hmap, type, self, true );
         }
         bcore_mutex_s_unlock( &self_map_s_g->mutex );
 
@@ -2094,9 +2094,9 @@ tp_t bcore_flect_define_self_d( bcore_self_s* self )
     bcore_self_s_check_integrity( self );
     tp_t type = self->type;
     bcore_mutex_s_lock( &self_map_s_g->mutex );
-    if( bcore_hmap_u2vd_s_exists( self_map_s_g->hmap, type ) ) ERR( "'%s' (%"PRItp_t") is already defined", ifnameof( type ), type );
+    if( bcore_hmap_u3vd_s_exists( self_map_s_g->hmap, type ) ) ERR( "'%s' (%"PRItp_t") is already defined", ifnameof( type ), type );
     bcore_flect_set_trait( self );
-    bcore_hmap_u2vd_s_set( self_map_s_g->hmap, type, self, true );
+    bcore_hmap_u3vd_s_set( self_map_s_g->hmap, type, self, true );
     bcore_mutex_s_unlock( &self_map_s_g->mutex );
     return self->type;
 }
@@ -2110,7 +2110,7 @@ static tp_t flect_define_self_rentrant_d( bcore_self_s* self )
     tp_t type = self->type;
     bcore_mutex_s_lock( &self_map_s_g->mutex );
     bcore_flect_set_trait( self );
-    if( !bcore_hmap_u2vd_s_exists( self_map_s_g->hmap, type ) ) bcore_hmap_u2vd_s_set( self_map_s_g->hmap, type, self, true );
+    if( !bcore_hmap_u3vd_s_exists( self_map_s_g->hmap, type ) ) bcore_hmap_u3vd_s_set( self_map_s_g->hmap, type, self, true );
     bcore_mutex_s_unlock( &self_map_s_g->mutex );
     return self->type;
 }
@@ -2213,8 +2213,8 @@ void bcore_flect_define_creator( tp_t type, bcore_flect_create_self_fp creator )
 {
     assert( creator_map_s_g != NULL );
     bcore_mutex_s_lock( &creator_map_s_g->mutex );
-    if( bcore_hmap_u2vd_s_exists( creator_map_s_g->hmap, type ) ) ERR( "'%s' (%"PRItp_t") is already defined", ifnameof( type ), type );
-    bcore_hmap_u2vd_s_setf( creator_map_s_g->hmap, type, ( fp_t )creator );
+    if( bcore_hmap_u3vd_s_exists( creator_map_s_g->hmap, type ) ) ERR( "'%s' (%"PRItp_t") is already defined", ifnameof( type ), type );
+    bcore_hmap_u3vd_s_setf( creator_map_s_g->hmap, type, ( fp_t )creator );
     bcore_mutex_s_unlock( &creator_map_s_g->mutex );
 }
 
