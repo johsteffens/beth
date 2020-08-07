@@ -1,6 +1,6 @@
 /** This file was generated from beth-plant source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-08-06T09:53:50Z
+ *  Last File Update: 2020-08-07T21:18:46Z
  *
  *  Copyright and License of this File:
  *
@@ -26,9 +26,9 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by the plant-compiler, reset the hash key value below to 0.
-#define HKEYOF_badapt_xoila_out 854984953
+#define HKEYOF_badapt_xoila_out 361486866375329078
 
-#define TYPEOF_badapt_xoila_out 2630478544
+#define TYPEOF_badapt_xoila_out 0xAE11401AC8836690ull
 
 /**********************************************************************************************************************/
 // source: badapt_adaptive.h
@@ -36,9 +36,9 @@
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_dynamics
 
-#define TYPEOF_badapt_dynamics 776275350
-#define TYPEOF_badapt_dynamics_s 1839376072
-#define TYPEOF_badapt_dynamics_std_s 2426636234
+#define TYPEOF_badapt_dynamics 0x6F2A182C792CC0B6ull
+#define TYPEOF_badapt_dynamics_s 0x691DC3EB990AF348ull
+#define TYPEOF_badapt_dynamics_std_s 0xA9EBA2AE5356CAEAull
 #define BETH_EXPAND_ITEM_badapt_dynamics_std_s \
   BCORE_DECLARE_OBJECT( badapt_dynamics_std_s ) \
     {aware_t _;f3_t epsilon;f3_t lambda_l1;f3_t lambda_l2;}; \
@@ -63,8 +63,8 @@
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_adaptive
 
-#define TYPEOF_badapt_adaptive 3626296374
-#define TYPEOF_badapt_adaptive_s 2278398760
+#define TYPEOF_badapt_adaptive 0xA528B9E79971D556ull
+#define TYPEOF_badapt_adaptive_s 0xDE29D90B2D33F928ull
 #define BETH_EXPAND_GROUP_badapt_adaptive \
   BCORE_FORWARD_OBJECT( badapt_adaptive ); \
   typedef sz_t (*badapt_adaptive_get_in_size)( const badapt_adaptive* o ); \
@@ -139,8 +139,8 @@
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_builder
 
-#define TYPEOF_badapt_builder 2907309879
-#define TYPEOF_badapt_builder_s 3971266449
+#define TYPEOF_badapt_builder 0x93A45464E95C3C37ull
+#define TYPEOF_badapt_builder_s 0x7A3A54CEA22604F1ull
 #define BETH_EXPAND_GROUP_badapt_builder \
   BCORE_FORWARD_OBJECT( badapt_builder ); \
   typedef sz_t (*badapt_builder_get_in_size)( const badapt_builder* o ); \
@@ -178,9 +178,9 @@
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_problem
 
-#define TYPEOF_badapt_problem 978854679
-#define TYPEOF_badapt_problem_s 3095822769
-#define TYPEOF_badapt_problem_sine_random_s 232405763
+#define TYPEOF_badapt_problem 0x63054F7665FEA137ull
+#define TYPEOF_badapt_problem_s 0x88C4056461B731F1ull
+#define TYPEOF_badapt_problem_sine_random_s 0xE9ADCBCE4A325B43ull
 #define BETH_EXPAND_ITEM_badapt_problem_sine_random_s \
   BCORE_DECLARE_OBJECT( badapt_problem_sine_random_s ) \
     {aware_t _;sz_t input_size;u3_t rval;f3_t pos_tgt;f3_t neg_tgt;badapt_loss* preferred_loss;}; \
@@ -189,7 +189,7 @@
   static inline sz_t badapt_problem_sine_random_s_get_out_size( const badapt_problem_sine_random_s* o ){return 1;} \
   void badapt_problem_sine_random_s_fetch_sample_tio( badapt_problem_sine_random_s* o, bmath_vf3_s* in, bmath_vf3_s* out ); \
   void badapt_problem_sine_random_s_fetch_sample_vio( badapt_problem_sine_random_s* o, bmath_vf3_s* in, bmath_vf3_s* out );
-#define TYPEOF_badapt_problem_binary_add_s 2458357191
+#define TYPEOF_badapt_problem_binary_add_s 0x26B663E8BA615E07ull
 #define BETH_EXPAND_ITEM_badapt_problem_binary_add_s \
   BCORE_DECLARE_OBJECT( badapt_problem_binary_add_s ) \
     {aware_t _;sz_t bits;u3_t rval;f3_t val_h;f3_t val_l;badapt_loss* preferred_loss;}; \
@@ -198,7 +198,7 @@
   static inline sz_t badapt_problem_binary_add_s_get_out_size( const badapt_problem_binary_add_s* o ){return o->bits + 1;} \
   void badapt_problem_binary_add_s_fetch_sample_tio( badapt_problem_binary_add_s* o, bmath_vf3_s* in, bmath_vf3_s* out ); \
   void badapt_problem_binary_add_s_fetch_sample_vio( badapt_problem_binary_add_s* o, bmath_vf3_s* in, bmath_vf3_s* out );
-#define TYPEOF_badapt_problem_binary_mul_s 2588868138
+#define TYPEOF_badapt_problem_binary_mul_s 0x571E5568E721B7AAull
 #define BETH_EXPAND_ITEM_badapt_problem_binary_mul_s \
   BCORE_DECLARE_OBJECT( badapt_problem_binary_mul_s ) \
     {aware_t _;sz_t bits;u3_t rval;f3_t val_h;f3_t val_l;badapt_loss* preferred_loss;}; \
@@ -207,7 +207,7 @@
   static inline sz_t badapt_problem_binary_mul_s_get_out_size( const badapt_problem_binary_mul_s* o ){return o->bits * 2;} \
   void badapt_problem_binary_mul_s_fetch_sample_tio( badapt_problem_binary_mul_s* o, bmath_vf3_s* in, bmath_vf3_s* out ); \
   void badapt_problem_binary_mul_s_fetch_sample_vio( badapt_problem_binary_mul_s* o, bmath_vf3_s* in, bmath_vf3_s* out );
-#define TYPEOF_badapt_problem_binary_xsg3_s 1139719047
+#define TYPEOF_badapt_problem_binary_xsg3_s 0xBB4E542257F6DA67ull
 #define BETH_EXPAND_ITEM_badapt_problem_binary_xsg3_s \
   BCORE_DECLARE_OBJECT( badapt_problem_binary_xsg3_s ) \
     {aware_t _;sz_t bits;u3_t rval;f3_t val_h;f3_t val_l;badapt_loss* preferred_loss;}; \
@@ -216,7 +216,7 @@
   static inline sz_t badapt_problem_binary_xsg3_s_get_out_size( const badapt_problem_binary_xsg3_s* o ){return o->bits;} \
   void badapt_problem_binary_xsg3_s_fetch_sample_tio( badapt_problem_binary_xsg3_s* o, bmath_vf3_s* in, bmath_vf3_s* out ); \
   void badapt_problem_binary_xsg3_s_fetch_sample_vio( badapt_problem_binary_xsg3_s* o, bmath_vf3_s* in, bmath_vf3_s* out );
-#define TYPEOF_badapt_problem_binary_hash_s 2595152420
+#define TYPEOF_badapt_problem_binary_hash_s 0x5DC297CF455A97E4ull
 #define BETH_EXPAND_ITEM_badapt_problem_binary_hash_s \
   BCORE_DECLARE_OBJECT( badapt_problem_binary_hash_s ) \
     {aware_t _;sz_t bits;u3_t rval;f3_t val_h;f3_t val_l;bl_t reverse;badapt_loss* preferred_loss;}; \
@@ -225,7 +225,7 @@
   static inline sz_t badapt_problem_binary_hash_s_get_out_size( const badapt_problem_binary_hash_s* o ){return o->bits;} \
   void badapt_problem_binary_hash_s_fetch_sample_tio( badapt_problem_binary_hash_s* o, bmath_vf3_s* in, bmath_vf3_s* out ); \
   void badapt_problem_binary_hash_s_fetch_sample_vio( badapt_problem_binary_hash_s* o, bmath_vf3_s* in, bmath_vf3_s* out );
-#define TYPEOF_badapt_problem_polynom_s 4086382194
+#define TYPEOF_badapt_problem_polynom_s 0x1AB35017385FB692ull
 #define BETH_EXPAND_ITEM_badapt_problem_polynom_s \
   BCORE_DECLARE_OBJECT( badapt_problem_polynom_s ) \
     {aware_t _;sz_t input_size;sz_t output_size;f3_t range;u3_t rval;f3_t noise_level;badapt_loss* preferred_loss;}; \
@@ -255,75 +255,75 @@
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_activation
 
-#define TYPEOF_badapt_activation 1242735104
-#define TYPEOF_badapt_activation_s 314872026
-#define TYPEOF_badapt_activation_zero_s 1163169501
+#define TYPEOF_badapt_activation 0xECF4E35F5A4D5920ull
+#define TYPEOF_badapt_activation_s 0xBDBA36F2BFBCD8DAull
+#define TYPEOF_badapt_activation_zero_s 0xE264BBA07F78B63Dull
 #define BETH_EXPAND_ITEM_badapt_activation_zero_s \
   BCORE_DECLARE_OBJECT( badapt_activation_zero_s ) \
     {aware_t _;}; \
   static inline f3_t badapt_activation_zero_s_fx( const badapt_activation_zero_s* o, f3_t x ){return 0.0;} \
   static inline f3_t badapt_activation_zero_s_dy( const badapt_activation_zero_s* o, f3_t y ){return 0.0;}
-#define TYPEOF_badapt_activation_one_s 3799420289
+#define TYPEOF_badapt_activation_one_s 0xF69C446DDC5DDE41ull
 #define BETH_EXPAND_ITEM_badapt_activation_one_s \
   BCORE_DECLARE_OBJECT( badapt_activation_one_s ) \
     {aware_t _;}; \
   static inline f3_t badapt_activation_one_s_fx( const badapt_activation_one_s* o, f3_t x ){return 1.0;} \
   static inline f3_t badapt_activation_one_s_dy( const badapt_activation_one_s* o, f3_t y ){return 0.0;}
-#define TYPEOF_badapt_activation_linear_s 3097414786
+#define TYPEOF_badapt_activation_linear_s 0xBBB2ECEF2F6C8422ull
 #define BETH_EXPAND_ITEM_badapt_activation_linear_s \
   BCORE_DECLARE_OBJECT( badapt_activation_linear_s ) \
     {aware_t _;}; \
   static inline f3_t badapt_activation_linear_s_fx( const badapt_activation_linear_s* o, f3_t x ){return   x;} \
   static inline f3_t badapt_activation_linear_s_dy( const badapt_activation_linear_s* o, f3_t y ){return 1.0;}
-#define TYPEOF_badapt_activation_sigm_s 747753319
+#define TYPEOF_badapt_activation_sigm_s 0xD30583EEDCFF9347ull
 #define BETH_EXPAND_ITEM_badapt_activation_sigm_s \
   BCORE_DECLARE_OBJECT( badapt_activation_sigm_s ) \
     {aware_t _;}; \
   static inline f3_t badapt_activation_sigm_s_fx( const badapt_activation_sigm_s* o, f3_t x ){return ( x > -700 ) ? ( 1.0 / ( 1.0 + exp( -x ) ) ) : 0;} \
   static inline f3_t badapt_activation_sigm_s_dy( const badapt_activation_sigm_s* o, f3_t y ){return y * ( 1.0 - y );}
-#define TYPEOF_badapt_activation_sigm_hard_s 710496809
+#define TYPEOF_badapt_activation_sigm_hard_s 0xFD7711EE7D2AE7A9ull
 #define BETH_EXPAND_ITEM_badapt_activation_sigm_hard_s \
   BCORE_DECLARE_OBJECT( badapt_activation_sigm_hard_s ) \
     {aware_t _;}; \
   static inline f3_t badapt_activation_sigm_hard_s_fx( const badapt_activation_sigm_hard_s* o, f3_t x ){return ( x < -2.0 ) ? 0.0 : ( x > 2.0 ) ? 1.0 : 0.25 * ( x + 2.0 );} \
   static inline f3_t badapt_activation_sigm_hard_s_dy( const badapt_activation_sigm_hard_s* o, f3_t y ){return ( y <  0.0 ) ? 0.0 : ( y > 1.0 ) ? 0.0 : 0.25;}
-#define TYPEOF_badapt_activation_sigm_leaky_s 2268012026
+#define TYPEOF_badapt_activation_sigm_leaky_s 0xC730D520767FB95Aull
 #define BETH_EXPAND_ITEM_badapt_activation_sigm_leaky_s \
   BCORE_DECLARE_OBJECT( badapt_activation_sigm_leaky_s ) \
     {aware_t _;}; \
   static inline f3_t badapt_activation_sigm_leaky_s_fx( const badapt_activation_sigm_leaky_s* o, f3_t x ){return ( x < -2.0 ) ? 0.01 * ( x + 2.0 ) : ( x > 2.0 ) ? 1.0 + 0.01 * ( x - 2.0 ) : 0.25 * ( x + 2.0 );} \
   static inline f3_t badapt_activation_sigm_leaky_s_dy( const badapt_activation_sigm_leaky_s* o, f3_t y ){return ( y <  0.0 ) ? 0.01 : ( y > 1.0 ) ? 0.01 : 0.25;}
-#define TYPEOF_badapt_activation_tanh_s 2100774626
+#define TYPEOF_badapt_activation_tanh_s 0x21F4866548AE5562ull
 #define BETH_EXPAND_ITEM_badapt_activation_tanh_s \
   BCORE_DECLARE_OBJECT( badapt_activation_tanh_s ) \
     {aware_t _;}; \
   static inline f3_t badapt_activation_tanh_s_fx( const badapt_activation_tanh_s* o, f3_t x ){return ( x < 350 ) ? ( 1.0 - ( 2.0 / ( exp( 2.0 * x ) + 1.0 ) ) ) : 1.0;} \
   static inline f3_t badapt_activation_tanh_s_dy( const badapt_activation_tanh_s* o, f3_t y ){return 1.0 - f3_sqr( y );}
-#define TYPEOF_badapt_activation_tanh_hard_s 873661470
+#define TYPEOF_badapt_activation_tanh_hard_s 0x2F7B786321B2D79Eull
 #define BETH_EXPAND_ITEM_badapt_activation_tanh_hard_s \
   BCORE_DECLARE_OBJECT( badapt_activation_tanh_hard_s ) \
     {aware_t _;}; \
   static inline f3_t badapt_activation_tanh_hard_s_fx( const badapt_activation_tanh_hard_s* o, f3_t x ){return ( x < -1.0 ) ? -1.0 : ( x > 1.0 ) ? 1.0 : x;} \
   static inline f3_t badapt_activation_tanh_hard_s_dy( const badapt_activation_tanh_hard_s* o, f3_t y ){return ( y < -1.0 ) ?  0.0 : ( y > 1.0 ) ? 0.0 : 1.0;}
-#define TYPEOF_badapt_activation_tanh_leaky_s 2702577623
+#define TYPEOF_badapt_activation_tanh_leaky_s 0x28209AECA73FC317ull
 #define BETH_EXPAND_ITEM_badapt_activation_tanh_leaky_s \
   BCORE_DECLARE_OBJECT( badapt_activation_tanh_leaky_s ) \
     {aware_t _;}; \
   static inline f3_t badapt_activation_tanh_leaky_s_fx( const badapt_activation_tanh_leaky_s* o, f3_t x ){return ( x < -1.0 ) ? -1.0 + 0.01 * ( x + 1.0 ) : ( x > 1.0 ) ? 1.0 + 0.01 * ( x - 1.0 ) : x;} \
   static inline f3_t badapt_activation_tanh_leaky_s_dy( const badapt_activation_tanh_leaky_s* o, f3_t y ){return ( y < -1.0 ) ?  0.01 : ( y > 1.0 ) ? 0.01 : 1.0;}
-#define TYPEOF_badapt_activation_softplus_s 3728332191
+#define TYPEOF_badapt_activation_softplus_s 0xAA1BD2B4A3D6AF7Full
 #define BETH_EXPAND_ITEM_badapt_activation_softplus_s \
   BCORE_DECLARE_OBJECT( badapt_activation_softplus_s ) \
     {aware_t _;}; \
   static inline f3_t badapt_activation_softplus_s_fx( const badapt_activation_softplus_s* o, f3_t x ){return ( x < 700 ) ? log( 1.0 + exp( x ) ) : x;} \
   static inline f3_t badapt_activation_softplus_s_dy( const badapt_activation_softplus_s* o, f3_t y ){f3_t u = exp( y ); return ( u - 1.0 ) / u;}
-#define TYPEOF_badapt_activation_relu_s 708121501
+#define TYPEOF_badapt_activation_relu_s 0xCB7C6368DCC02D3Dull
 #define BETH_EXPAND_ITEM_badapt_activation_relu_s \
   BCORE_DECLARE_OBJECT( badapt_activation_relu_s ) \
     {aware_t _;}; \
   static inline f3_t badapt_activation_relu_s_fx( const badapt_activation_relu_s* o, f3_t x ){return x > 0 ? x : 0;} \
   static inline f3_t badapt_activation_relu_s_dy( const badapt_activation_relu_s* o, f3_t y ){return y > 0 ? 1 : 0;}
-#define TYPEOF_badapt_activation_leaky_relu_s 841402970
+#define TYPEOF_badapt_activation_leaky_relu_s 0xC605B0B4BF67EDDAull
 #define BETH_EXPAND_ITEM_badapt_activation_leaky_relu_s \
   BCORE_DECLARE_OBJECT( badapt_activation_leaky_relu_s ) \
     {aware_t _;}; \
@@ -379,9 +379,9 @@
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_activator
 
-#define TYPEOF_badapt_activator 1765962851
-#define TYPEOF_badapt_activator_s 991795461
-#define TYPEOF_badapt_activator_plain_s 3369734202
+#define TYPEOF_badapt_activator 0xE32A937FECB89B23ull
+#define TYPEOF_badapt_activator_s 0xAA0362D5D267FB25ull
+#define TYPEOF_badapt_activator_plain_s 0xD3A0D3A2989336BAull
 #define BETH_EXPAND_ITEM_badapt_activator_plain_s \
   BCORE_DECLARE_OBJECT( badapt_activator_plain_s ) \
     {aware_t _;badapt_activation* activation;}; \
@@ -389,17 +389,17 @@
   void badapt_activator_plain_s_bgrad( const badapt_activator_plain_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out ); \
   static inline void badapt_activator_plain_s_set_activation( badapt_activator_plain_s* o, const badapt_activation* activation ){badapt_activation_a_replicate( &o->activation, activation );} \
   static inline const badapt_activation* badapt_activator_plain_s_get_activation( const badapt_activator_plain_s* o ){return o->activation;}
-#define TYPEOF_badapt_activator_softmax_s 3206266268
+#define TYPEOF_badapt_activator_softmax_s 0x09832B25AA04273Cull
 #define BETH_EXPAND_ITEM_badapt_activator_softmax_s \
   BCORE_DECLARE_OBJECT( badapt_activator_softmax_s ) \
     {aware_t _;}; \
   void badapt_activator_softmax_s_infer( const badapt_activator_softmax_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
   void badapt_activator_softmax_s_bgrad( const badapt_activator_softmax_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out );
-#define TYPEOF_badapt_layer_activator_s 4048593039
+#define TYPEOF_badapt_layer_activator_s 0x0B60AB292B6F798Full
 #define BETH_EXPAND_ITEM_badapt_layer_activator_s \
   BCORE_DECLARE_OBJECT( badapt_layer_activator_s ) \
     {aware_t _;sz_t layer;badapt_activator* activator;};
-#define TYPEOF_badapt_arr_layer_activator_s 1342407707
+#define TYPEOF_badapt_arr_layer_activator_s 0xD18F72473056ED7Bull
 #define BETH_EXPAND_ITEM_badapt_arr_layer_activator_s \
   BCORE_DECLARE_OBJECT( badapt_arr_layer_activator_s ) \
     {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( badapt_layer_activator_s, arr_ );}; \
@@ -413,7 +413,7 @@
       bcore_array_t_push( TYPEOF_badapt_arr_layer_activator_s, ( bcore_array* )o, sr_null() ); \
       return &o->arr_data[ o->arr_size - 1 ]; \
   }
-#define TYPEOF_badapt_arr_activator_s 3921137337
+#define TYPEOF_badapt_arr_activator_s 0x1EE6A0DE9405BD79ull
 #define BETH_EXPAND_ITEM_badapt_arr_activator_s \
   BCORE_DECLARE_OBJECT( badapt_arr_activator_s ) \
     {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( badapt_activator, arr_ );}; \
@@ -473,16 +473,16 @@
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_loss
 
-#define TYPEOF_badapt_loss 2315142799
-#define TYPEOF_badapt_loss_s 3349774265
-#define TYPEOF_badapt_loss_l2_s 537646796
+#define TYPEOF_badapt_loss 0x458B0AAF5F20056Full
+#define TYPEOF_badapt_loss_s 0x54BE68AFAB1AF1B9ull
+#define TYPEOF_badapt_loss_l2_s 0x1B522F0292FE1C8Cull
 #define BETH_EXPAND_ITEM_badapt_loss_l2_s \
   BCORE_DECLARE_OBJECT( badapt_loss_l2_s ) \
     {aware_t _;}; \
   static inline f3_t badapt_loss_l2_s_loss( const badapt_loss_l2_s* o, const bmath_vf3_s* out, const bmath_vf3_s* target ){return bmath_vf3_s_f3_sub_sqr( target, out );} \
   static inline f3_t badapt_loss_l2_s_loss_f3( const badapt_loss_l2_s* o, f3_t out, f3_t target ){return f3_sqr( target - out );} \
   static inline void badapt_loss_l2_s_bgrad( const badapt_loss_l2_s* o, const bmath_vf3_s* out, const bmath_vf3_s* target, bmath_vf3_s* grad ){bmath_vf3_s_sub( target, out, grad );}
-#define TYPEOF_badapt_loss_log_s 193592684
+#define TYPEOF_badapt_loss_log_s 0xC955DB23F8C4B4CCull
 #define BETH_EXPAND_ITEM_badapt_loss_log_s \
   BCORE_DECLARE_OBJECT( badapt_loss_log_s ) \
     {aware_t _;}; \
@@ -528,13 +528,13 @@
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_mlp
 
-#define TYPEOF_badapt_mlp 498425923
-#define TYPEOF_badapt_mlp_s 3664397861
-#define TYPEOF_badapt_mlp_layer_s 189394571
+#define TYPEOF_badapt_mlp 0x5F5D31D578408C83ull
+#define TYPEOF_badapt_mlp_s 0xAB7BB05298F556C5ull
+#define TYPEOF_badapt_mlp_layer_s 0xC7DA10435AD36F8Bull
 #define BETH_EXPAND_ITEM_badapt_mlp_layer_s \
   BCORE_DECLARE_OBJECT( badapt_mlp_layer_s ) \
     {aware_t _;sz_t input_size;sz_t kernels;bmath_mf3_s w;bmath_vf3_s b;badapt_activator* a;bmath_vf3_s o;};
-#define TYPEOF_badapt_mlp_arr_layer_s 2923615799
+#define TYPEOF_badapt_mlp_arr_layer_s 0xE03C139F59F81E97ull
 #define BETH_EXPAND_ITEM_badapt_mlp_arr_layer_s \
   BCORE_DECLARE_OBJECT( badapt_mlp_arr_layer_s ) \
     {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( badapt_mlp_layer_s, arr_ );}; \
@@ -548,7 +548,7 @@
       bcore_array_t_push( TYPEOF_badapt_mlp_arr_layer_s, ( bcore_array* )o, sr_null() ); \
       return &o->arr_data[ o->arr_size - 1 ]; \
   }
-#define TYPEOF_badapt_mlp_s 3664397861
+#define TYPEOF_badapt_mlp_s 0xAB7BB05298F556C5ull
 #define BETH_EXPAND_ITEM_badapt_mlp_s \
   BCORE_DECLARE_OBJECT( badapt_mlp_s ) \
     {aware_t _;badapt_dynamics_std_s dynamics;badapt_mlp_arr_layer_s arr_layer;sz_t max_buffer_size;bmath_vf3_s in;}; \
@@ -561,7 +561,7 @@
   void badapt_mlp_s_minfer( badapt_mlp_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
   void badapt_mlp_s_bgrad( const badapt_mlp_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out ); \
   void badapt_mlp_s_bgrad_adapt( badapt_mlp_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out );
-#define TYPEOF_badapt_builder_mlp_funnel_s 3643146818
+#define TYPEOF_badapt_builder_mlp_funnel_s 0xDC10106AF50965A2ull
 #define BETH_EXPAND_ITEM_badapt_builder_mlp_funnel_s \
   BCORE_DECLARE_OBJECT( badapt_builder_mlp_funnel_s ) \
     {aware_t _;sz_t input_size;sz_t input_kernels;sz_t output_kernels;sz_t layers;f3_t kernels_rate;u2_t random_seed;badapt_dynamics_std_s dynamics;badapt_arr_layer_activator_s arr_layer_activator;}; \
@@ -587,13 +587,13 @@
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_c1d
 
-#define TYPEOF_badapt_c1d 4280081428
-#define TYPEOF_badapt_c1d_s 2405996614
-#define TYPEOF_badapt_c1d_layer_s 169352500
+#define TYPEOF_badapt_c1d 0x079CB9D54639D294ull
+#define TYPEOF_badapt_c1d_s 0x26E9DFE12AC206E6ull
+#define TYPEOF_badapt_c1d_layer_s 0xB8676104E3EA66F4ull
 #define BETH_EXPAND_ITEM_badapt_c1d_layer_s \
   BCORE_DECLARE_OBJECT( badapt_c1d_layer_s ) \
     {aware_t _;sz_t input_size;sz_t stride;sz_t steps;sz_t kernel_size;sz_t kernels;bmath_mf3_s w;bmath_vf3_s b;badapt_activator* a;bmath_vf3_s o;};
-#define TYPEOF_badapt_c1d_arr_layer_s 2858590876
+#define TYPEOF_badapt_c1d_arr_layer_s 0xE60A13E9827828FCull
 #define BETH_EXPAND_ITEM_badapt_c1d_arr_layer_s \
   BCORE_DECLARE_OBJECT( badapt_c1d_arr_layer_s ) \
     {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( badapt_c1d_layer_s, arr_ );}; \
@@ -607,7 +607,7 @@
       bcore_array_t_push( TYPEOF_badapt_c1d_arr_layer_s, ( bcore_array* )o, sr_null() ); \
       return &o->arr_data[ o->arr_size - 1 ]; \
   }
-#define TYPEOF_badapt_c1d_s 2405996614
+#define TYPEOF_badapt_c1d_s 0x26E9DFE12AC206E6ull
 #define BETH_EXPAND_ITEM_badapt_c1d_s \
   BCORE_DECLARE_OBJECT( badapt_c1d_s ) \
     {aware_t _;badapt_dynamics_std_s dynamics;badapt_c1d_arr_layer_s arr_layer;sz_t max_buffer_size;bmath_vf3_s in;}; \
@@ -620,7 +620,7 @@
   void badapt_c1d_s_minfer( badapt_c1d_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
   void badapt_c1d_s_bgrad( const badapt_c1d_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out ); \
   void badapt_c1d_s_bgrad_adapt( badapt_c1d_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out );
-#define TYPEOF_badapt_builder_c1d_funnel_s 437767695
+#define TYPEOF_badapt_builder_c1d_funnel_s 0xC0A9F98392BF3ACFull
 #define BETH_EXPAND_ITEM_badapt_builder_c1d_funnel_s \
   BCORE_DECLARE_OBJECT( badapt_builder_c1d_funnel_s ) \
     {aware_t _;sz_t input_size;sz_t input_step;sz_t input_convolution_size;sz_t input_kernels;sz_t output_kernels;f3_t kernels_rate;sz_t reduction_step;sz_t convolution_size;u2_t random_seed;badapt_dynamics_std_s dynamics;badapt_arr_layer_activator_s arr_layer_activator;}; \
@@ -646,13 +646,13 @@
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_ern
 
-#define TYPEOF_badapt_ern 3572010651
-#define TYPEOF_badapt_ern_s 3488918381
-#define TYPEOF_badapt_ern_layer_s 879149859
+#define TYPEOF_badapt_ern 0x173A07D54E969B1Bull
+#define TYPEOF_badapt_ern_s 0x10918E065854ED4Dull
+#define TYPEOF_badapt_ern_layer_s 0x50D0E09190D57763ull
 #define BETH_EXPAND_ITEM_badapt_ern_layer_s \
   BCORE_DECLARE_OBJECT( badapt_ern_layer_s ) \
     {bmath_vf3_s v_x;bmath_vf3_s v_c;bmath_vf3_s v_h;};
-#define TYPEOF_badapt_ern_arr_layer_s 3542192735
+#define TYPEOF_badapt_ern_arr_layer_s 0xF527C86AC577DC7Full
 #define BETH_EXPAND_ITEM_badapt_ern_arr_layer_s \
   BCORE_DECLARE_OBJECT( badapt_ern_arr_layer_s ) \
     {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( badapt_ern_layer_s, arr_ );}; \
@@ -666,7 +666,7 @@
       bcore_array_t_push( TYPEOF_badapt_ern_arr_layer_s, ( bcore_array* )o, sr_t_create( TYPEOF_badapt_ern_layer_s ) ); \
       return o->arr_data[ o->arr_size - 1 ]; \
   }
-#define TYPEOF_badapt_ern_s 3488918381
+#define TYPEOF_badapt_ern_s 0x10918E065854ED4Dull
 #define BETH_EXPAND_ITEM_badapt_ern_s \
   BCORE_DECLARE_OBJECT( badapt_ern_s ) \
     {aware_t _;sz_t size_input;sz_t size_hidden;sz_t size_output;sz_t size_unfolded;badapt_dynamics_std_s dynamics;bmath_mf3_s w_hx;bmath_mf3_s w_hc;bmath_mf3_s w_oh;bmath_vf3_s b_h;bmath_vf3_s b_o;badapt_activator* a_h;badapt_activator* a_o;bmath_vf3_s v_o;bmath_vf3_s d_v_o;bmath_vf3_s d_v_c;bmath_vf3_s d_v_h;bmath_mf3_s d_w_hx;bmath_mf3_s d_w_hc;bmath_vf3_s d_b_h;badapt_ern_arr_layer_s arr_layer;}; \
@@ -678,7 +678,7 @@
   void badapt_ern_s_minfer( badapt_ern_s* o, const bmath_vf3_s* in, bmath_vf3_s* out ); \
   void badapt_ern_s_bgrad_adapt( badapt_ern_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out ); \
   void badapt_ern_s_get_weights_min_max( const badapt_ern_s* o, f3_t* min, f3_t* max );
-#define TYPEOF_badapt_ern_builder_s 178034157
+#define TYPEOF_badapt_ern_builder_s 0x4D47B2E334CBCDEDull
 #define BETH_EXPAND_ITEM_badapt_ern_builder_s \
   BCORE_DECLARE_OBJECT( badapt_ern_builder_s ) \
     {aware_t _;sz_t size_input;sz_t size_hidden;sz_t size_output;sz_t size_unfolded;badapt_dynamics_std_s dynamics;u2_t random_seed;badapt_activator* a_h;badapt_activator* a_o;}; \
@@ -704,13 +704,13 @@
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_lstm
 
-#define TYPEOF_badapt_lstm 3143739258
-#define TYPEOF_badapt_lstm_s 1040139428
-#define TYPEOF_badapt_lstm_layer_s 3112546698
+#define TYPEOF_badapt_lstm 0xAE450CAF9AA9DC5Aull
+#define TYPEOF_badapt_lstm_s 0x7E667E981B55E864ull
+#define TYPEOF_badapt_lstm_layer_s 0xE6D1F42ADD04662Aull
 #define BETH_EXPAND_ITEM_badapt_lstm_layer_s \
   BCORE_DECLARE_OBJECT( badapt_lstm_layer_s ) \
     {bmath_vf3_s v_x;bmath_vf3_s v_f;bmath_vf3_s v_i;bmath_vf3_s v_o;bmath_vf3_s v_q;bmath_vf3_s v_c;bmath_vf3_s v_d;bmath_vf3_s v_h;};
-#define TYPEOF_badapt_lstm_arr_layer_s 99245790
+#define TYPEOF_badapt_lstm_arr_layer_s 0xE45BB23F91EE22DEull
 #define BETH_EXPAND_ITEM_badapt_lstm_arr_layer_s \
   BCORE_DECLARE_OBJECT( badapt_lstm_arr_layer_s ) \
     {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( badapt_lstm_layer_s, arr_ );}; \
@@ -724,7 +724,7 @@
       bcore_array_t_push( TYPEOF_badapt_lstm_arr_layer_s, ( bcore_array* )o, sr_t_create( TYPEOF_badapt_lstm_layer_s ) ); \
       return o->arr_data[ o->arr_size - 1 ]; \
   }
-#define TYPEOF_badapt_lstm_s 1040139428
+#define TYPEOF_badapt_lstm_s 0x7E667E981B55E864ull
 #define BETH_EXPAND_ITEM_badapt_lstm_s \
   BCORE_DECLARE_OBJECT( badapt_lstm_s ) \
     {aware_t _;sz_t size_input;sz_t size_hidden;sz_t size_output;sz_t size_unfolded;badapt_dynamics_std_s dynamics;bmath_mf3_s w_fx;bmath_mf3_s w_fh;bmath_mf3_s w_ix;bmath_mf3_s w_ih;bmath_mf3_s w_ox;bmath_mf3_s w_oh;bmath_mf3_s w_qx;bmath_mf3_s w_qh;bmath_mf3_s w_rh;bmath_vf3_s b_f;bmath_vf3_s b_i;bmath_vf3_s b_o;bmath_vf3_s b_q;bmath_vf3_s b_r;badapt_activator* a_f;badapt_activator* a_i;badapt_activator* a_o;badapt_activator* a_q;badapt_activator* a_d;badapt_activator* a_r;bmath_vf3_s v_r;bmath_vf3_s d_v_r;bmath_vf3_s d_v_f;bmath_vf3_s d_v_i;bmath_vf3_s d_v_o;bmath_vf3_s d_v_q;bmath_vf3_s d_v_c;bmath_vf3_s d_v_d;bmath_vf3_s d_v_h;bmath_mf3_s d_w_fx;bmath_mf3_s d_w_fh;bmath_mf3_s d_w_ix;bmath_mf3_s d_w_ih;bmath_mf3_s d_w_ox;bmath_mf3_s d_w_oh;bmath_mf3_s d_w_qx;bmath_mf3_s d_w_qh;bmath_vf3_s d_b_f;bmath_vf3_s d_b_i;bmath_vf3_s d_b_o;bmath_vf3_s d_b_q;badapt_lstm_arr_layer_s arr_layer;}; \
@@ -737,7 +737,7 @@
   void badapt_lstm_s_bgrad_adapt( badapt_lstm_s* o, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out ); \
   void badapt_lstm_s_reset( badapt_lstm_s* o ); \
   void badapt_lstm_s_get_weights_min_max( const badapt_lstm_s* o, f3_t* min, f3_t* max );
-#define TYPEOF_badapt_lstm_builder_s 2648274872
+#define TYPEOF_badapt_lstm_builder_s 0xA09D4970B3894B18ull
 #define BETH_EXPAND_ITEM_badapt_lstm_builder_s \
   BCORE_DECLARE_OBJECT( badapt_lstm_builder_s ) \
     {aware_t _;sz_t size_input;sz_t size_hidden;sz_t size_output;sz_t size_unfolded;badapt_dynamics_std_s dynamics;u2_t random_seed;f3_t random_range;badapt_activator* a_f;badapt_activator* a_i;badapt_activator* a_o;badapt_activator* a_q;badapt_activator* a_d;badapt_activator* a_r;}; \
@@ -764,8 +764,8 @@
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_supplier
 
-#define TYPEOF_badapt_supplier 1387458544
-#define TYPEOF_badapt_supplier_s 2616919562
+#define TYPEOF_badapt_supplier 0xB3D9134DEFA02A50ull
+#define TYPEOF_badapt_supplier_s 0xBF6C9D36BA0F4CCAull
 #define BETH_EXPAND_GROUP_badapt_supplier \
   BCORE_FORWARD_OBJECT( badapt_supplier ); \
   typedef sz_t (*badapt_supplier_get_in_size)( const badapt_supplier* o ); \
@@ -813,8 +813,8 @@
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_guide
 
-#define TYPEOF_badapt_guide 4278624408
-#define TYPEOF_badapt_guide_s 2128916482
+#define TYPEOF_badapt_guide 0x5B86984BFF528B98ull
+#define TYPEOF_badapt_guide_s 0xB93841372DB82B22ull
 #define BETH_EXPAND_GROUP_badapt_guide \
   BCORE_FORWARD_OBJECT( badapt_guide ); \
   typedef bl_t (*badapt_guide_callback)( const badapt_guide* o, badapt_training_state* state ); \
@@ -833,8 +833,8 @@
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_training_state
 
-#define TYPEOF_badapt_training_state 2190295860
-#define TYPEOF_badapt_training_state_s 3622237734
+#define TYPEOF_badapt_training_state 0x4F9574C7D8DCC954ull
+#define TYPEOF_badapt_training_state_s 0x82480E0713B710A6ull
 #define BETH_EXPAND_GROUP_badapt_training_state \
   BCORE_FORWARD_OBJECT( badapt_training_state ); \
   typedef void (*badapt_training_state_set_adaptive)( badapt_training_state* o, const badapt_adaptive* adaptive ); \
@@ -899,8 +899,8 @@
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_trainer
 
-#define TYPEOF_badapt_trainer 1053730437
-#define TYPEOF_badapt_trainer_s 385523047
+#define TYPEOF_badapt_trainer 0x9AFDF67F79326DC5ull
+#define TYPEOF_badapt_trainer_s 0x51B80046FB776B87ull
 #define BETH_EXPAND_GROUP_badapt_trainer \
   BCORE_FORWARD_OBJECT( badapt_trainer ); \
   typedef void (*badapt_trainer_run)( const badapt_trainer* o, badapt_training_state* state ); \
@@ -923,13 +923,13 @@
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_training_objects
 
-#define TYPEOF_badapt_training_objects 446020241
-#define TYPEOF_badapt_training_objects_s 990621627
-#define TYPEOF_badapt_progress_s 1786273765
+#define TYPEOF_badapt_training_objects 0x90745573260A4871ull
+#define TYPEOF_badapt_training_objects_s 0xE6999940C602A93Bull
+#define TYPEOF_badapt_progress_s 0x6DD9C06D525B6B45ull
 #define BETH_EXPAND_ITEM_badapt_progress_s \
   BCORE_DECLARE_OBJECT( badapt_progress_s ) \
     {sz_t iteration;f3_t error;f3_t improved;f3_t bias;};
-#define TYPEOF_badapt_training_state_std_s 3157709416
+#define TYPEOF_badapt_training_state_std_s 0x3C728A98F106E808ull
 #define BETH_EXPAND_ITEM_badapt_training_state_std_s \
   BCORE_DECLARE_OBJECT( badapt_training_state_std_s ) \
     {aware_t _;badapt_progress_s progress;badapt_adaptive* adaptive;badapt_supplier* supplier;badapt_guide* guide;st_s backup_file_name;}; \
@@ -943,7 +943,7 @@
   static inline badapt_guide* badapt_training_state_std_s_get_guide( const badapt_training_state_std_s* o ){return ( badapt_guide* )o->guide;} \
   static inline void badapt_training_state_std_s_set_backup_path( badapt_training_state_std_s* o, sc_t name ){st_s_copy_sc( &o->backup_file_name, name );} \
   static inline sc_t badapt_training_state_std_s_get_backup_path( const badapt_training_state_std_s* o ){return o->backup_file_name.sc;}
-#define TYPEOF_badapt_guide_std_s 1442673228
+#define TYPEOF_badapt_guide_std_s 0x604F4934B1C9864Cull
 #define BETH_EXPAND_ITEM_badapt_guide_std_s \
   BCORE_DECLARE_OBJECT( badapt_guide_std_s ) \
     {aware_t _;f3_t annealing_factor;bcore_sink* log;}; \
@@ -964,19 +964,19 @@
 //----------------------------------------------------------------------------------------------------------------------
 // group: badapt_trainer_objects
 
-#define TYPEOF_badapt_trainer_objects 2941531770
-#define TYPEOF_badapt_trainer_objects_s 44166052
-#define TYPEOF_badapt_trainer_batch_s 3745932548
+#define TYPEOF_badapt_trainer_objects 0xB6D3D2214D8451DAull
+#define TYPEOF_badapt_trainer_objects_s 0x6C8C551A618339E4ull
+#define TYPEOF_badapt_trainer_batch_s 0x58BEA8EBAD759E24ull
 #define BETH_EXPAND_ITEM_badapt_trainer_batch_s \
   BCORE_DECLARE_OBJECT( badapt_trainer_batch_s ) \
     {aware_t _;badapt_loss* loss;sz_t batch_size;sz_t batch_cycles_per_fetch;sz_t fetch_cycles_per_iteration;sz_t valid_size;sz_t max_iterations;}; \
   void badapt_trainer_batch_s_run( const badapt_trainer_batch_s* o, badapt_training_state* state ); \
   badapt_training_state* badapt_trainer_batch_s_create_state( const badapt_trainer_batch_s* o );
-#define TYPEOF_badapt_sample_batch_s 3659720691
+#define TYPEOF_badapt_sample_batch_s 0x98599EC14D677173ull
 #define BETH_EXPAND_ITEM_badapt_sample_batch_s \
   BCORE_DECLARE_OBJECT( badapt_sample_batch_s ) \
     {bmath_vf3_s in;bmath_vf3_s out;};
-#define TYPEOF_badapt_arr_sample_batch_s 1005014423
+#define TYPEOF_badapt_arr_sample_batch_s 0x7C8125548C85F7F7ull
 #define BETH_EXPAND_ITEM_badapt_arr_sample_batch_s \
   BCORE_DECLARE_OBJECT( badapt_arr_sample_batch_s ) \
     {aware_t _;BCORE_ARRAY_DYN_SOLID_STATIC_S( badapt_sample_batch_s, arr_ );}; \
@@ -990,7 +990,7 @@
       bcore_array_t_push( TYPEOF_badapt_arr_sample_batch_s, ( bcore_array* )o, sr_null() ); \
       return &o->arr_data[ o->arr_size - 1 ]; \
   }
-#define TYPEOF_badapt_trainer_main_s 3593175425
+#define TYPEOF_badapt_trainer_main_s 0xC4C3003C3E5AB4C1ull
 #define BETH_EXPAND_ITEM_badapt_trainer_main_s \
   BCORE_DECLARE_OBJECT( badapt_trainer_main_s ) \
     {aware_t _;badapt_supplier* problem;badapt_builder* builder;badapt_guide* guide;badapt_trainer* trainer;}; \
@@ -1011,4 +1011,4 @@
 vd_t badapt_xoila_out_signal_handler( const bcore_signal_s* o );
 
 #endif // BADAPT_XOILA_OUT_H
-// BETH_PLANT_SIGNATURE  929142506
+// BETH_PLANT_SIGNATURE 12781338065948597100

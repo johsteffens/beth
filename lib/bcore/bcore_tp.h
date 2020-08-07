@@ -32,17 +32,17 @@
  */
 
 /// deprecated ===========================================
-#define FNV_U2_INIT 0x811c9dc5u
-#define FNV_U2_FOLD 0x01000193u
-static inline tp_t bcore_tp_init() { return FNV_U2_INIT; }
-static inline tp_t bcore_tp_fold_u0( tp_t o, u0_t v ) { return ( ( o ^ v ) * FNV_U2_FOLD ) & 0x00000000FFFFFFFFull; }
+//#define FNV_U2_INIT 0x811c9dc5u
+//#define FNV_U2_FOLD 0x01000193u
+//static inline tp_t bcore_tp_init() { return FNV_U2_INIT; }
+//static inline tp_t bcore_tp_fold_u0( tp_t o, u0_t v ) { return ( ( o ^ v ) * FNV_U2_FOLD ) & 0x00000000FFFFFFFFull; }
 /// deprecated ===========================================
 
-//#define FNV_U3_INIT 0xcbf29ce484222325ull
-//#define FNV_U3_FOLD 0x00000100000001B3ull
-//
-//static inline tp_t bcore_tp_init() { return FNV_U3_INIT; }
-//static inline tp_t bcore_tp_fold_u0( tp_t o, u0_t v ) { return ( o ^ v ) * FNV_U3_FOLD; }
+#define FNV_U3_INIT 0xcbf29ce484222325ull
+#define FNV_U3_FOLD 0x00000100000001B3ull
+
+static inline tp_t bcore_tp_init() { return FNV_U3_INIT; }
+static inline tp_t bcore_tp_fold_u0( tp_t o, u0_t v ) { return ( o ^ v ) * FNV_U3_FOLD; }
 
 static inline tp_t bcore_tp_fold_u1( tp_t o, u1_t v ) { return bcore_tp_fold_u0( bcore_tp_fold_u0( o, v ), v >>  8 ); }
 static inline tp_t bcore_tp_fold_u2( tp_t o, u2_t v ) { return bcore_tp_fold_u1( bcore_tp_fold_u1( o, v ), v >> 16 ); }
