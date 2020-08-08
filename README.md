@@ -53,6 +53,7 @@ with focus on platform independence and computational efficiency.
 $ git clone https://github.com/johsteffens/beth.git
 $ git clone https://github.com/johsteffens/xoico.git
 $ cd beth
+$ make run-xoico
 $ make
 ```
 
