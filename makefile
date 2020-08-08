@@ -29,15 +29,15 @@ OBJS = $(SRCS:.c=.o)
 TARGET = libbeth.a
 
 .PHONY: clean
-.PHONY: pre-build
+.PHONY: run-xoico
 
-$(TARGET): pre-build $(OBJS)
+$(TARGET): run-xoico $(OBJS)
 	$(AR) $(AFLAGS) $@ $(OBJS)
 
 %.o: %.c %.h
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-pre-build: $(XOICO)
+run-xoico: $(XOICO)
 	$(XOICO) $(XOICO_CFGS)
 	
 $(XOICO):
