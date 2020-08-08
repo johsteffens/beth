@@ -47,23 +47,22 @@ Some objectives are...
 All code inside beth is designed/developed from scratch (no mere adaptation of preexisting code) 
 with focus on platform independence and computational efficiency.
 
-# Usage
-Beth is intended as foundation library for more specialized projects. 
+# Getting Started
 
-### Requirements/Dependencies
-   * gcc (or similar compiler suite) supporting the C11 standard.
-   * Library `pthread` of the POSIX.1c standard.
+```
+$ git clone https://github.com/johsteffens/beth.git
+$ git clone https://github.com/johsteffens/xoico.git
+$ cd xoico
+$ make
+$ cd ../beth
+$ ../xoico/xoico lib/lib_xoico.cfg
+$ make
+```
 
-### Build with a project depending on beth
-   * Depending repositories owned by me contain instructions to build everything.
-   * Example: [actinon](https://github.com/johsteffens/actinon) - [How to use it](https://github.com/johsteffens/actinon#how-to-use-it).
-    
-### Build as stand-alone library
-   * `git clone https://github.com/johsteffens/beth.git`
-   * `cd beth/lib`
-   * `make`
+This repository uses a meta language [xoila](#xoila).
 
-This creates the static library `beth.a`.
+**[xoico](https://github.com/johsteffens/xoico)** is a xoila-compiler generating or updating additional 
+c-source files needed to compile this repository with a c-compiler.
       
 # License
 The source code in this repository is licensed under the [Apache 2.0 License](https://github.com/johsteffens/beth/blob/master/LICENSE). 
