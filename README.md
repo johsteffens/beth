@@ -1,6 +1,6 @@
 # Table of Content
    * [About Beth](#about-beth)
-   * [Usage](#usage)
+   * [Getting Started](#getting-started)
    * [License](#license)
    * [Sub Libraries](#sub-libraries)
       * [bcore - Core Concepts](#bcore)
@@ -54,8 +54,8 @@ $ git clone https://github.com/johsteffens/beth.git
 $ git clone https://github.com/johsteffens/xoico.git
 $ cd xoico
 $ make
-$ cd ../beth
-$ ../xoico/xoico lib/lib_xoico.cfg
+$ cd ../beth/lib
+$ ../../xoico/xoico lib_xoico.cfg
 $ make
 ```
 
