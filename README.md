@@ -52,10 +52,7 @@ with focus on platform independence and computational efficiency.
 ```
 $ git clone https://github.com/johsteffens/beth.git
 $ git clone https://github.com/johsteffens/xoico.git
-$ cd xoico
-$ make
-$ cd ../beth/lib
-$ ../../xoico/xoico lib_xoico.cfg
+$ cd beth
 $ make
 ```
 
