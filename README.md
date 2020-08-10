@@ -53,15 +53,9 @@ with focus on platform independence and computational efficiency.
 $ git clone https://github.com/johsteffens/beth.git
 $ git clone https://github.com/johsteffens/xoico.git
 $ cd beth
-$ make run-xoico
 $ make
 ```
 
-This repository uses a meta language [xoila](#xoila).
-
-**[xoico](https://github.com/johsteffens/xoico)** is a xoila-compiler generating or updating additional 
-c-source files needed to compile this repository with a c-compiler.
-      
 # License
 The source code in this repository is licensed under the [Apache 2.0 License](https://github.com/johsteffens/beth/blob/master/LICENSE). 
 

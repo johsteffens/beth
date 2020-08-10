@@ -6,6 +6,7 @@ beth.*
 beth_dev.*
 bin
 obj
+out
 app
 private
 test
