@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-08-10T12:43:18Z
+ *  Last File Update: 2020-08-11T09:32:16Z
  *
  *  Copyright and License of this File:
  *
@@ -9,7 +9,6 @@
  *
  *  bcore_file.h
  *  bcore_xoila_inexpandable.h
- *  bcore_xoila_sample.h
  *  bcore_spect_inst_call.h
  *  bcore_spect_via_call.h
  *  bcore_main.h
@@ -57,52 +56,6 @@ void bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name )
 // source: bcore_xoila_inexpandable.h
 #include "bcore_xoila_inexpandable.h"
 
-/**********************************************************************************************************************/
-// source: bcore_xoila_sample.h
-#include "bcore_xoila_sample.h"
-
-//----------------------------------------------------------------------------------------------------------------------
-// group: bcore_xoila_sample
-
-BCORE_DEFINE_OBJECT_INST_P( bcore_xoila_sample_object2_s )
-"bcore_inst"
-"{"
-    "aware_t _;"
-    "bcore_xoila_sample_features_object_s object;"
-    "st_s name2;"
-    "func bcore_xoila_sample_features:setup;"
-    "func bcore_xoila_sample_features:to_stdout;"
-"}";
-
-//----------------------------------------------------------------------------------------------------------------------
-// group: bcore_xoila_sample_signatures
-
-//----------------------------------------------------------------------------------------------------------------------
-// group: bcore_xoila_sample_features
-
-BCORE_DEFINE_OBJECT_INST_P( bcore_xoila_sample_features_object_s )
-"aware bcore_inst"
-"{"
-    "st_s name1;"
-    "sz_t => [] arr;"
-    "func bcore_xoila_sample_features:setup;"
-    "func bcore_xoila_sample_features:to_stdout;"
-    "func bcore_xoila_sample_features:get_size;"
-"}";
-
-BCORE_DEFINE_SPECT( bcore_xoila_sample, bcore_xoila_sample_features )
-"{"
-    "bcore_spect_header_s header;"
-    "feature strict aware bcore_xoila_sample_features : setup;"
-    "feature aware bcore_xoila_sample_features : to_stdout = bcore_xoila_sample_features_to_stdout__;"
-    "feature aware bcore_xoila_sample_features : get_size;"
-"}";
-
-
-void bcore_xoila_sample_features_to_stdout__( const bcore_xoila_sample_features* o )
-{
-    bcore_msg_fa( "Called to_stdout__\n" );
-}
 /**********************************************************************************************************************/
 // source: bcore_spect_inst_call.h
 #include "bcore_spect_inst_call.h"
@@ -1064,30 +1017,6 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
             // source: bcore_xoila_inexpandable.h
 
             // --------------------------------------------------------------------
-            // source: bcore_xoila_sample.h
-
-            // group: bcore_xoila_sample
-            BCORE_REGISTER_NAME( anyglobalname );
-            BCORE_REGISTER_FFUNC( bcore_xoila_sample_features_setup, bcore_xoila_sample_object2_s_setup );
-            BCORE_REGISTER_FFUNC( bcore_xoila_sample_features_to_stdout, bcore_xoila_sample_object2_s_to_stdout );
-            BCORE_REGISTER_OBJECT( bcore_xoila_sample_object2_s );
-            BCORE_REGISTER_TRAIT( bcore_xoila_sample, bcore_inst );
-
-            // group: bcore_xoila_sample_signatures
-            BCORE_REGISTER_TRAIT( bcore_xoila_sample_signatures, bcore_xoila_sample );
-
-            // group: bcore_xoila_sample_features
-            BCORE_REGISTER_FEATURE( bcore_xoila_sample_features_setup );
-            BCORE_REGISTER_FEATURE( bcore_xoila_sample_features_to_stdout );
-            BCORE_REGISTER_FFUNC( bcore_xoila_sample_features_to_stdout, bcore_xoila_sample_features_to_stdout__ );
-            BCORE_REGISTER_FEATURE( bcore_xoila_sample_features_get_size );
-            BCORE_REGISTER_FFUNC( bcore_xoila_sample_features_setup, bcore_xoila_sample_features_object_s_setup );
-            BCORE_REGISTER_FFUNC( bcore_xoila_sample_features_to_stdout, bcore_xoila_sample_features_object_s_to_stdout );
-            BCORE_REGISTER_FFUNC( bcore_xoila_sample_features_get_size, bcore_xoila_sample_features_object_s_get_size );
-            BCORE_REGISTER_OBJECT( bcore_xoila_sample_features_object_s );
-            BCORE_REGISTER_SPECT( bcore_xoila_sample_features );
-
-            // --------------------------------------------------------------------
             // source: bcore_spect_inst_call.h
 
             // group: bcore_inst_call
@@ -1355,4 +1284,4 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOILA_OUT_SIGNATURE 0xB9A5C300544A1367ull
+// XOILA_OUT_SIGNATURE 0xB384B45A7187461Bull
