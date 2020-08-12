@@ -1,6 +1,6 @@
 # Table of Content
-   * [About Beth](#about-beth)
    * [Getting Started](#getting-started)
+   * [About Beth](#about-beth)
    * [License](#license)
    * [Sub Libraries](#sub-libraries)
       * [bcore - Core Concepts](#bcore)
@@ -16,6 +16,15 @@
       * [Memory Management](#memory-management)
       * [Xoila (automatic code)](#xoila)
    * [Motivation](#motivation)
+
+# Getting Started
+
+```
+$ git clone https://github.com/johsteffens/beth.git
+$ git clone https://github.com/johsteffens/xoico.git
+$ cd beth
+$ make
+```
 
 # About Beth
 
@@ -46,15 +55,6 @@ Some objectives are...
 
 All code inside beth is designed/developed from scratch (no mere adaptation of preexisting code) 
 with focus on platform independence and computational efficiency.
-
-# Getting Started
-
-```
-$ git clone https://github.com/johsteffens/beth.git
-$ git clone https://github.com/johsteffens/xoico.git
-$ cd beth
-$ make
-```
 
 # License
 The source code in this repository is licensed under the [Apache 2.0 License](https://github.com/johsteffens/beth/blob/master/LICENSE). 
