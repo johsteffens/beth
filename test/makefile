@@ -31,6 +31,7 @@ $(BETH_LIB):
 	make -C ..
 
 run: $(TARGET) $(SRCS)
+	mkdir -p temp
 	$(TARGET)
 
 clean:
