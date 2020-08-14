@@ -1800,7 +1800,8 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                             }
                             fp++;
                         }
-                        fp += ( *fp == term );
+                        if( *fp != term ) ERR_fa( "Format string #<sc_t>: ##?-directive: '#<char>'-enclosure was not terminated.", format, term );
+                        fp++;
                         if( flag && word )
                         {
                             if( ( idx < end_l ) )
