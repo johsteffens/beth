@@ -3,7 +3,6 @@
 *.xml
 *.backup
 beth.*
-beth_dev.*
 bin
 obj
 out
