@@ -229,6 +229,7 @@ void bhpt_tutor_language_utf8_chatter_s_run( const bhpt_tutor_language_utf8_chat
         if( c == '\n' ) c_count = 1;
     }
 
+
     bcore_sink_a_push_fa( log, "\n#rn{=}\n", o->size_line );
     BLM_DOWN();
 }

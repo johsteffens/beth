@@ -711,7 +711,7 @@ void bcore_hmap_u2vd_filltest()
 static st_s* hmap_u2vd_selftest( void )
 {
     st_s* log = st_s_createf( "== bcore_hmap_u2vd_selftest " );
-    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
 
     bcore_hmap_u2vd_s* map = bcore_hmap_u2vd_s_create();
@@ -803,7 +803,7 @@ static st_s* hmap_u2vd_selftest( void )
     bcore_hmap_u2vd_s_discard( map );
     bcore_alloc( kvbuf, 0 );
 
-    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char_n( log, '=', 80 );
     st_s_push_char( log, '\n' );
     return log;
 }
@@ -1427,7 +1427,7 @@ void bcore_hmap_u3vd_filltest()
 static st_s* hmap_u3vd_selftest( void )
 {
     st_s* log = st_s_createf( "== bcore_hmap_u3vd_selftest " );
-    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
 
     bcore_hmap_u3vd_s* map = bcore_hmap_u3vd_s_create();
@@ -1519,7 +1519,7 @@ static st_s* hmap_u3vd_selftest( void )
     bcore_hmap_u3vd_s_discard( map );
     bcore_alloc( kvbuf, 0 );
 
-    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char_n( log, '=', 80 );
     st_s_push_char( log, '\n' );
     return log;
 }
@@ -1840,7 +1840,7 @@ static st_s* hmap_tpsz_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     st_s* log = st_s_createf( "== bcore_hmap_tpsz_selftest " );
-    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
 
     bcore_hmap_tpuz_s* map = bcore_hmap_tpuz_s_create();
@@ -1963,7 +1963,7 @@ static st_s* hmap_tpsz_selftest( void )
 
     bcore_life_s_discard( l );
 
-    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char_n( log, '=', 80 );
     st_s_push_char( log, '\n' );
     return log;
 }
@@ -2286,7 +2286,7 @@ static st_s* hmap_tpfp_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     st_s* log = st_s_createf( "== bcore_hmap_tpfp_selftest " );
-    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
 
     bcore_hmap_tpfp_s* map = bcore_hmap_tpfp_s_create();
@@ -2404,7 +2404,7 @@ static st_s* hmap_tpfp_selftest( void )
 
     bcore_life_s_discard( l );
 
-    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char_n( log, '=', 80 );
     st_s_push_char( log, '\n' );
     return log;
 }
@@ -2723,7 +2723,7 @@ static st_s* hmap_tptp_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     st_s* log = st_s_createf( "== bcore_hmap_tptp_selftest " );
-    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
 
     bcore_hmap_tptp_s* map = bcore_hmap_tptp_s_create();
@@ -2846,7 +2846,7 @@ static st_s* hmap_tptp_selftest( void )
 
     bcore_life_s_discard( l );
 
-    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char_n( log, '=', 80 );
     st_s_push_char( log, '\n' );
     return log;
 }
@@ -3164,7 +3164,7 @@ static st_s* hmap_tpvd_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     st_s* log = st_s_createf( "== bcore_hmap_tpvd_selftest " );
-    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
 
     bcore_hmap_tpvd_s* map = bcore_hmap_tpvd_s_create();
@@ -3281,7 +3281,7 @@ static st_s* hmap_tpvd_selftest( void )
 
     bcore_life_s_discard( l );
 
-    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char_n( log, '=', 80 );
     st_s_push_char( log, '\n' );
     return log;
 }
@@ -3675,7 +3675,7 @@ static st_s* hmap_tpto_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     st_s* log = st_s_createf( "== bcore_hmap_tpto_selftest " );
-    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
 
     bcore_hmap_tpto_s* map = bcore_hmap_tpto_s_create();
@@ -3801,7 +3801,7 @@ static st_s* hmap_tpto_selftest( void )
 
     bcore_life_s_discard( l );
 
-    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char_n( log, '=', 80 );
     st_s_push_char( log, '\n' );
     return log;
 }
@@ -4089,7 +4089,7 @@ static st_s* hmap_tp_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     st_s* log = st_s_createf( "== bcore_hmap_tp_selftest " );
-    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
 
     bcore_hmap_tp_s* map = bcore_hmap_tp_s_create();
@@ -4204,7 +4204,7 @@ static st_s* hmap_tp_selftest( void )
 
     bcore_life_s_discard( l );
 
-    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char_n( log, '=', 80 );
     st_s_push_char( log, '\n' );
     return log;
 }

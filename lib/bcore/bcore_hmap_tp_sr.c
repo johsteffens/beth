@@ -385,7 +385,7 @@ static st_s* hmap_tp_sr_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     st_s* log = st_s_createf( "== bcore_hmap_tp_sr_selftest " );
-    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
 
     bcore_hmap_tp_sr_s* map = bcore_life_s_push_aware( l, bcore_hmap_tp_sr_s_create() );
@@ -508,7 +508,7 @@ static st_s* hmap_tp_sr_selftest( void )
     bcore_alloc( kvbuf, 0 );
     bcore_life_s_discard( l );
 
-    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char_n( log, '=', 80 );
     st_s_push_char( log, '\n' );
     return log;
 }

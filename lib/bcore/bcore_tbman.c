@@ -2955,7 +2955,7 @@ static void tbman_s_quicktest( void )
 static st_s* tbman_s_rctest( void )
 {
     st_s* log = st_s_createf( "== tbman_s_rctest " );
-    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
 
     typedef struct myclass
@@ -3047,7 +3047,7 @@ static st_s* tbman_s_rctest( void )
     bcore_tbman_release( ref_arr1 );
     bcore_tbman_release( ref_arr2 );
 
-    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char_n( log, '=', 80 );
     st_s_push_char( log, '\n' );
 
     st_s_push_st_d( log, bcore_tbman_s_status( tbman_s_g, 1 ) );
@@ -3059,7 +3059,7 @@ static st_s* tbman_s_rctest( void )
 static st_s* tbman_s_memtest( void )
 {
     st_s* log = st_s_createf( "== tbman_s_memtest " );
-    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
 
     uz_t table_size = 100000;
@@ -3080,7 +3080,7 @@ static st_s* tbman_s_memtest( void )
         st_s_push_st_d( log, tbman_alloc_challenge( bcore_tbman_external_bn_alloc, table_size, cycles, max_alloc, seed, true, false ) );
     }
 
-    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char_n( log, '=', 80 );
     st_s_push_char( log, '\n' );
     return log;
 }

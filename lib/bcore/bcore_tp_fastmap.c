@@ -184,7 +184,7 @@ uz_t bcore_tp_fastmap_s_keys( bcore_tp_fastmap_s* o )
 static vd_t selftest( void )
 {
     st_s* log = st_s_createf( "== bcore_tp_fastmap_selftest " );
-    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
 
     const uz_t cycles = 10000;
@@ -287,7 +287,7 @@ static vd_t selftest( void )
     bcore_tp_fastmap_s_discard( map );
     bcore_free( kvbuf );
 
-    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char_n( log, '=', 80 );
     st_s_push_char( log, '\n' );
     return log;
 }

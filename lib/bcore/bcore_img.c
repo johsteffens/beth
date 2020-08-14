@@ -76,20 +76,48 @@ void bcore_img_u2_s_pnm_to_file( const bcore_img_u2_s* o, sc_t file )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bcore_img_u2_s_pnm_from_source( bcore_img_u2_s* o, bcore_source* src )
+void bcore_img_u2_s_pnm_from_source( bcore_img_u2_s* o, bcore_source* source )
 {
+    BLM_INIT();
+
+    // We avoid source-parse functions so that source can stay a mere data buffer.
+    // Instead we scan the first text lines into a string:
+    st_s* first_three_lines = BLM_CREATE( st_s );
+    sz_t count = 0;
+    while( !bcore_source_a_eos( source ) )
+    {
+        char c = bcore_source_a_get_char( source );
+        st_s_push_char( first_three_lines, c );
+        if( c == '\n' )
+        {
+            count++;
+            if( count == 3 ) break;
+        }
+    }
+
     uz_t rows = 0, cols = 0;
-    bcore_source_a_parse_fa( src, "P6 #<uz_t*> #<uz_t*> 255\n", &cols, &rows );
+
+    bcore_source_a_parse_fa
+    (
+        BLM_A_PUSH( bcore_source_string_s_create_from_string( first_three_lines ) ),
+        "P6 #<uz_t*> #<uz_t*> 255\n",
+        &cols,
+        &rows
+    );
+
     bcore_img_u2_s_set_size( o, rows, cols );
+
     for( sz_t i = 0; i < o->rows; i++ )
     {
         for( sz_t j = 0; j < o->cols; j++ )
         {
             u0_t rgb[ 3 ];
-            bcore_source_a_get_data( src, rgb, 3 );
+            bcore_source_a_get_data( source, rgb, 3 );
             bcore_img_u2_s_set_rgb( o, i, j, rgb[ 0 ], rgb[ 1 ], rgb[ 2 ] );
         }
     }
+
+    BLM_DOWN();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -107,9 +135,9 @@ void bcore_img_u2_s_pnm_from_file( bcore_img_u2_s* o, sc_t file )
 
 static void selftest( void )
 {
-    BCORE_LIFE_INIT();
-    BCORE_LIFE_CREATE( bcore_img_u2_s, i1 );
-    BCORE_LIFE_CREATE( bcore_img_u2_s, i2 );
+    BLM_INIT();
+    bcore_img_u2_s* i1 = BLM_CREATE( bcore_img_u2_s );
+    bcore_img_u2_s* i2 = BLM_CREATE( bcore_img_u2_s );
     sz_t rows = 128;
     sz_t cols = 256;
     bcore_img_u2_s_set_size( i1, rows, cols );
@@ -121,11 +149,14 @@ static void selftest( void )
         }
     }
 
-    bcore_img_u2_s_pnm_to_file(   i1, "test/i1.pnm" );
-    bcore_img_u2_s_pnm_from_file( i2, "test/i1.pnm" );
+    bcore_sink_buffer_s* sink = BLM_CREATE( bcore_sink_buffer_s );
+    bcore_img_u2_s_pnm_to_sink( i1, ( bcore_sink* )sink );
+
+    bcore_source_buffer_s* source = BLM_A_PUSH( bcore_source_buffer_s_create_from_data( sink->data, sink->size ) );
+    bcore_img_u2_s_pnm_from_source( i2, ( bcore_source* )source );
     ASSERT( bcore_compare_aware( i1, i2 ) == 0 );
 
-    BCORE_LIFE_DOWN();
+    BLM_DOWN();
 }
 
 

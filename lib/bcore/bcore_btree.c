@@ -649,7 +649,7 @@ st_s* bcore_btree_ip_s_status( bcore_btree_ip_s* o )
 static st_s* btree_ip_s_selftest( void )
 {
     st_s* log = st_s_createf( "== btree_ip_s_selftest " );
-    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
     bcore_btree_ip_s* t = bcore_btree_ip_s_create();
     const uz_t cycles = 200000;
@@ -736,7 +736,7 @@ static st_s* btree_ip_s_selftest( void )
 
     bcore_btree_ip_s_discard( t );
     bcore_alloc( kvbuf, 0 );
-    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char_n( log, '=', 80 );
     st_s_push_char( log, '\n' );
     return log;
 }
@@ -1442,7 +1442,7 @@ st_s* bcore_btree_ps_s_status( bcore_btree_ps_s* o )
 static st_s* btree_ps_s_selftest( void )
 {
     st_s* log = st_s_createf( "== btree_ps_s_selftest " );
-    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
     bcore_btree_ps_s* t = bcore_btree_ps_s_create( NULL );
     const uz_t cycles = 200000;
@@ -1529,7 +1529,7 @@ static st_s* btree_ps_s_selftest( void )
 
     bcore_btree_ps_s_discard( t );
     bcore_alloc( kvbuf, 0 );
-    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char_n( log, '=', 80 );
     st_s_push_char( log, '\n' );
     return log;
 }
@@ -2242,7 +2242,7 @@ st_s* bcore_btree_pp_s_status( bcore_btree_pp_s* o )
 static st_s* btree_pp_s_selftest( void )
 {
     st_s* log = st_s_createf( "== btree_pp_s_selftest " );
-    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
     bcore_btree_pp_s* t = bcore_btree_pp_s_create( NULL );
     const uz_t cycles = 200000;
@@ -2347,7 +2347,7 @@ static st_s* btree_pp_s_selftest( void )
 
     bcore_btree_pp_s_discard( t );
     bcore_alloc( kvbuf, 0 );
-    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char_n( log, '=', 80 );
     st_s_push_char( log, '\n' );
     return log;
 }
@@ -3051,7 +3051,7 @@ st_s* bcore_btree_vd_s_status( bcore_btree_vd_s* o )
 static st_s* btree_vd_s_selftest( void )
 {
     st_s* log = st_s_createf( "== btree_vd_s_selftest " );
-    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
 
     bcore_btree_vd_s* t = bcore_btree_vd_s_create( NULL );
@@ -3154,7 +3154,7 @@ static st_s* btree_vd_s_selftest( void )
 
     bcore_btree_vd_s_discard( t );
     bcore_alloc( kvbuf, 0 );
-    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char_n( log, '=', 80 );
     st_s_push_char( log, '\n' );
     return log;
 }

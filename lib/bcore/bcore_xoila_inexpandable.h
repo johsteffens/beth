@@ -27,6 +27,49 @@
 /**********************************************************************************************************************/
 
 #ifdef TYPEOF_bcore_fp
+XOILA_DEFINE_GROUP( bcore_inexpandable, bcore_inst )
+#ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+expandable = false;
+
+// External types
+
+// primitives
+type u0_t;
+type u1_t;
+type u2_t;
+type u3_t;
+type s0_t;
+type s1_t;
+type s2_t;
+type s3_t;
+type f2_t;
+type f3_t;
+type uz_t;
+type sz_t;
+type tp_t;
+type aware_t;
+type sc_t;
+type sd_t;
+
+// objects
+type st_s;
+type sr_s;
+
+// perspectives
+type bcore_inst;
+type bcore_array;
+type bcore_via;
+type bcore_source;
+type bcore_sink;
+
+#endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#endif // TYPEOF_bcore_fp
+
+/**********************************************************************************************************************/
+
+#ifdef TYPEOF_bcore_fp
 XOILA_DEFINE_GROUP( bcore_fp, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -36,7 +79,7 @@ feature '' void copy_typed( mutable, tp_t type, vc_t src );
 
 #endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#endif // optional enclosure
+#endif // TYPEOF_bcore_fp
 
 /**********************************************************************************************************************/
 

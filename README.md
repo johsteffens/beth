@@ -26,6 +26,14 @@ $ cd beth
 $ make
 ```
 
+You can optionally run a battery of tests
+to ensure beth works correctly on your platform:
+
+```
+$ cd test
+$ make run
+```
+
 # About Beth
 
 *Beth* is a collection of foundation libraries covering basic objects, advanced 

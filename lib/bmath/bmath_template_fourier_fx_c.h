@@ -302,8 +302,9 @@ void BCATU(bmath_fourier,fx,fft)( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t
 
 static vd_t fourier_selftest( void )
 {
+
     st_s* log = st_s_create_fa( "== Fourier_selftest: '#<sc_t>' ", BSTR(bmath_cfx_s) );
-    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
 
     typedef struct complex_vec_s { aware_t _; bmath_cfx_s* data; uz_t size; uz_t space; } complex_vec_s;
@@ -382,7 +383,7 @@ static vd_t fourier_selftest( void )
 
     bcore_life_s_discard( l );
 
-    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char_n( log, '=', 80 );
     st_s_push_char( log, '\n' );
     return log;
 }

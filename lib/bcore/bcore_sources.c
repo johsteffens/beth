@@ -1283,14 +1283,14 @@ static st_s* sources_selftest( void )
 
     // write object to file
     {
-        bcore_sink_chain_s* chain = bcore_sink_open_file( "test/test01.txt" );
+        bcore_sink_chain_s* chain = bcore_sink_open_file( "temp/sources_selftest01.txt" );
         bcore_translate_x( bcore_inst_t_create_sr( typeof( "bcore_txt_ml_translator_s" ) ), arr, sr_awd( chain ) );
         bcore_sink_chain_s_discard( chain );
     }
 
     // create object from file
     {
-        bcore_source_chain_s* chain = bcore_life_s_push_aware( l, bcore_source_open_file( "test/test01.txt" ) );
+        bcore_source_chain_s* chain = bcore_life_s_push_aware( l, bcore_source_open_file( "temp/sources_selftest01.txt" ) );
         sr_s chain_clone = sr_awd( bcore_life_s_push_aware( l, bcore_inst_a_clone( (bcore_inst*)chain ) ) );
         sr_s sr = bcore_interpret_x( bcore_inst_t_create_sr( typeof( "bcore_txt_ml_interpreter_s" ) ), chain_clone );
         sr = bcore_life_s_push_sr( l, sr );
@@ -1300,13 +1300,13 @@ static st_s* sources_selftest( void )
     // random access
     {
         {
-            bcore_sink_chain_s* chain = bcore_sink_open_file( "test/test02.txt" );
+            bcore_sink_chain_s* chain = bcore_sink_open_file( "temp/sources_selftest02.txt" );
             for( uz_t i = 0; i < 10000; i++ ) bcore_sink_a_push_string_d( (bcore_sink*)chain, st_s_create_fa( "line of text #<uz_t>\n", i ) );
             bcore_sink_chain_s_discard( chain );
         }
 
         {
-            bcore_source_chain_s* chain = bcore_source_open_file( "test/test02.txt" );
+            bcore_source_chain_s* chain = bcore_source_open_file( "temp/sources_selftest02.txt" );
             bcore_arr_uz_s* arr = bcore_arr_uz_s_create();
             for( uz_t i = 0; i < 10000; i++ )
             {
@@ -1334,7 +1334,7 @@ static st_s* sources_selftest( void )
 
         /// parse error management
         {
-            bcore_source_chain_s* chain = bcore_source_open_file( "test/test02.txt" );
+            bcore_source_chain_s* chain = bcore_source_open_file( "temp/sources_selftest02.txt" );
 
             for( uz_t i = 0; i < 100; i++ ) // read firs 100 lines correctly
             {

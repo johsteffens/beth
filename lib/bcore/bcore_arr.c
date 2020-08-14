@@ -1812,7 +1812,7 @@ bcore_arr_sr_s* bcore_arr_sr_s_set_spect( bcore_arr_sr_s* o, tp_t spect_type )
 st_s* bcore_arr_uz_selftest( void )
 {
     st_s* log = st_s_createf( "== bcore_arr_uz_selftest " );
-    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
 
     bcore_arr_uz_s* sz_arr1 = bcore_arr_uz_s_create();
@@ -1885,7 +1885,7 @@ st_s* bcore_arr_uz_selftest( void )
     bcore_arr_uz_s_discard( sz_arr1 );
     bcore_arr_uz_s_discard( sz_arr2 );
 
-    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char_n( log, '=', 80 );
     st_s_push_char( log, '\n' );
     return log;
 
@@ -1896,7 +1896,7 @@ st_s* bcore_arr_uz_selftest( void )
 st_s* bcore_arr_st_selftest( void )
 {
     st_s* log = st_s_createf( "== bcore_arr_st_selftest " );
-    st_s_push_char_n( log, '=', 120 - log->size );
+    st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
 
     bcore_arr_st_s* st_arr1 = bcore_arr_st_s_create();
@@ -1964,7 +1964,7 @@ st_s* bcore_arr_st_selftest( void )
     bcore_arr_st_s_discard( st_arr1 );
     bcore_arr_st_s_discard( st_arr2 );
 
-    st_s_push_char_n( log, '=', 120 );
+    st_s_push_char_n( log, '=', 80 );
     st_s_push_char( log, '\n' );
     return log;
 

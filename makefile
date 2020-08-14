@@ -27,6 +27,14 @@ SRCS = \
   $(wildcard lib/bhvm/*.c)\
   $(wildcard lib/bhpt/*.c)
 
+HDRS = \
+  $(wildcard lib/bcore/*.h)\
+  $(wildcard lib/bclos/*.h)\
+  $(wildcard lib/bmath/*.h)\
+  $(wildcard lib/badapt/*.h)\
+  $(wildcard lib/bhvm/*.h)\
+  $(wildcard lib/bhpt/*.h)
+
 OBJS = $(SRCS:lib/%.c=out/%.o)
 
 .PHONY: clean
