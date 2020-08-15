@@ -430,7 +430,7 @@ sc_t bcore_source_buffer_s_get_file( const bcore_source_buffer_s* o )
 
 s3_t bcore_source_buffer_s_get_index( const bcore_source_buffer_s* o )
 {
-    return o->index - o->size;
+    return ( ( s3_t )o->index ) - o->size;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -656,7 +656,7 @@ sc_t bcore_source_string_s_get_file( const bcore_source_string_s* o )
 s3_t bcore_source_string_s_get_index( const bcore_source_string_s* o )
 {
     s3_t size = o->string ? o->string->size : 0;
-    return o->index - size;
+    return ( ( s3_t )o->index ) - size;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1126,7 +1126,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_source_point_s )
 "{"
     "aware_t _;"
     "aware bcore_source -> source;"
-    "sz_t index;"
+    "s3_t index;"
 "}";
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -183,7 +183,7 @@ BCORE_DECLARE_OBJECT( bcore_source_point_s )
 {
     aware_t _;
     bcore_source* source; // shallow reference
-    sz_t index;
+    s3_t index;
 };
 
 void bcore_source_point_s_set(               bcore_source_point_s* o, bcore_source* source );
