@@ -31,23 +31,16 @@
  *  http://en.wikipedia.org/wiki/Fowler_Noll_Vo_hash
  */
 
-/// deprecated ===========================================
-//#define FNV_U2_INIT 0x811c9dc5u
-//#define FNV_U2_FOLD 0x01000193u
-//static inline tp_t bcore_tp_init() { return FNV_U2_INIT; }
-//static inline tp_t bcore_tp_fold_u0( tp_t o, u0_t v ) { return ( ( o ^ v ) * FNV_U2_FOLD ) & 0x00000000FFFFFFFFull; }
-/// deprecated ===========================================
-
 #define FNV_U3_INIT 0xcbf29ce484222325ull
 #define FNV_U3_FOLD 0x00000100000001B3ull
 
 static inline tp_t bcore_tp_init() { return FNV_U3_INIT; }
 static inline tp_t bcore_tp_fold_u0( tp_t o, u0_t v ) { return ( o ^ v ) * FNV_U3_FOLD; }
-
 static inline tp_t bcore_tp_fold_u1( tp_t o, u1_t v ) { return bcore_tp_fold_u0( bcore_tp_fold_u0( o, v ), v >>  8 ); }
 static inline tp_t bcore_tp_fold_u2( tp_t o, u2_t v ) { return bcore_tp_fold_u1( bcore_tp_fold_u1( o, v ), v >> 16 ); }
 static inline tp_t bcore_tp_fold_u3( tp_t o, u3_t v ) { return bcore_tp_fold_u2( bcore_tp_fold_u2( o, v ), v >> 32 ); }
 static inline tp_t bcore_tp_fold_tp( tp_t o, tp_t v ) { return bcore_tp_fold_u3( o, v ); }
+static inline tp_t bcore_tp_fold_bl( tp_t o, bl_t v ) { return bcore_tp_fold_u0( o, v ? 1 : 0 ); }
 
 static inline tp_t bcore_tp_fold_sc( tp_t o, sc_t v ) { if( !v ) return bcore_tp_fold_u0( o, 0 ); while( *v ) { o = bcore_tp_fold_u0( o, *v++ ); } return o; }
 static inline tp_t bcore_tp_fold_vc( tp_t o, vc_t a, uz_t n ) { for( const u0_t* v = a; n > 0; n-- ) { o = bcore_tp_fold_u0( o, *v++ ); } return o; }
