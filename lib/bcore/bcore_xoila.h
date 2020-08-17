@@ -36,7 +36,7 @@
  *        evaluated by the xoila-compiler
  *  Examples:
  *    XOILA_DEFINE_GROUP( bhvm_vop, bcore_inst )               - continues with #ifdef XOILA_SECTION enclosing xoila code
- *    XOILA_DEFINE_GROUP( bhvm_vop, bcore_inst, "bhvm_vop.x" ) - all related xoila code is included from "bhvm_vop.x"
+ *    XOILA_DEFINE_GROUP( bhvm_vop, bcore_inst, "bhvm_vop.x" ) - all related xoila code is embedded from "bhvm_vop.x"
  */
 #define XOILA_DEFINE_GROUP( group_name, ... ) \
     BETH_EXPAND_GROUP_##group_name
