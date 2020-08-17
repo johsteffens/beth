@@ -5,6 +5,7 @@ CFLAGS  = -Wall -O3 -std=c11
 LDFLAGS = -lbeth -lm -lpthread
 
 MAIN_SRC = src
+BETH_LIB = ../out/libbeth.a
 
 LIB_FOLDERS = \
 	-L ../out
@@ -30,7 +31,7 @@ $(TARGET): $(SRCS) $(BETH_LIB)
 $(BETH_LIB):
 	make -C ..
 
-run: $(TARGET) $(SRCS)
+run: $(TARGET) $(SRCS) $(BETH_LIB)
 	mkdir -p temp
 	$(TARGET)
 

@@ -200,7 +200,7 @@ void bcore_source_chain_s_set_index( bcore_source_chain_s* o, s3_t index )
 
 static void chain_get_context( bcore_source_chain_s* o, bcore_source_context_s* context )
 {
-    uz_t index = bcore_source_chain_s_get_index( o );
+    s3_t index = bcore_source_chain_s_get_index( o );
     context->index = index;
 
     if( o->size > 0 )
@@ -678,7 +678,7 @@ static void string_get_context( const bcore_source_string_s* o, bcore_source_con
 {
     if( o->chain )
     {
-        uz_t index = bcore_source_chain_s_get_index( o->chain );
+        s3_t index = bcore_source_chain_s_get_index( o->chain );
         context->index = index;
 
         if( o->chain->data[ 0 ] && ( *( aware_t* )o->chain->data[ 0 ] ) == TYPEOF_bcore_source_file_s )
@@ -767,7 +767,7 @@ static er_t string_parse_em_fv( bcore_source_string_s* o, sc_t format, va_list a
             if( o->chain->data[ 0 ] && ( *( aware_t* )o->chain->data[ 0 ] ) == TYPEOF_bcore_source_file_s )
             {
                 bcore_source_file_s* fo = o->chain->data[ 0 ];
-                uz_t index = bcore_source_chain_s_get_index( o->chain );
+                s3_t index = bcore_source_chain_s_get_index( o->chain );
                 uz_t line, col;
                 bcore_source_file_s_get_line_col_context( fo, index, &line, &col, msg_context );
                 st_s_push_fa( msg_pref, "#<sc_t>:#<uz_t>:#<uz_t>", bcore_source_file_s_get_name( fo ), line, col );
@@ -1044,7 +1044,14 @@ void bcore_source_file_s_get_line_col_context( bcore_source_file_s* o, s3_t inde
 
     for( s3_t i = 0; i < index; i++ )
     {
-        char c = fgetc( o->handle );
+        int c = fgetc( o->handle );
+
+        if( c == EOF )
+        {
+            WRN_fa( "Index: '#<s3_t>': End of file reached at position '#<s3_t>'.\n", index, i );
+            break;
+        }
+
         if( c == '\n' )
         {
             line++;

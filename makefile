@@ -37,10 +37,9 @@ HDRS = \
 
 OBJS = $(SRCS:lib/%.c=out/%.o)
 
-.PHONY: clean
-.PHONY: pass2
+.PHONY: clean cleanall pass2
 
-$(TARGET): $(XOICO)
+$(TARGET): $(XOICO) $(SRCS) $(HDRS)
 	$(XOICO) $(XOICO_CFGS)
 	$(MAKE) -C . pass2 # second pass to capture changes by xoico
 

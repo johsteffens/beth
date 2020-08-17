@@ -50,8 +50,8 @@ typedef er_t (*bcore_source_fp_parse_em_fv )(    vd_t o, sc_t format, va_list ar
 typedef void (*bcore_source_fp_set_supplier)(    vd_t o, vd_t supplier );             // to create a chain of source units
 typedef bl_t (*bcore_source_fp_eos)(             vc_t o );                            // (required) end of source has been reached
 typedef sc_t (*bcore_source_fp_get_file)(        vc_t o );                            // returns file name if source is of a file system or "" otherwise
-typedef uz_t (*bcore_source_fp_get_index)(       vc_t o );                            // returns the current read index (0 if not supported)
-typedef void (*bcore_source_fp_set_index)(       vd_t o, uz_t index );                // sets read index to requested position (error if not supported)
+typedef s3_t (*bcore_source_fp_get_index)(       vc_t o );                            // returns the current read index (0 if not supported)
+typedef void (*bcore_source_fp_set_index)(       vd_t o, s3_t index );                // sets read index to requested position (error if not supported)
 typedef void (*bcore_source_fp_get_context)(     vc_t o, bcore_source_context_s* context ); // retrieves context information
 
 /// required source features:
