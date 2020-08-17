@@ -32,8 +32,13 @@
 
 /** Opening a plant section by defining a group in the header file.
  *  This macro also defines the signal_handler
+ *  Note: The variadic list contain additional arguments: trait_name, optional_include_file which are
+ *        evaluated by the xoila-compiler
+ *  Examples:
+ *    XOILA_DEFINE_GROUP( bhvm_vop, bcore_inst )               - continues with #ifdef XOILA_SECTION enclosing xoila code
+ *    XOILA_DEFINE_GROUP( bhvm_vop, bcore_inst, "bhvm_vop.x" ) - all related xoila code is included from "bhvm_vop.x"
  */
-#define XOILA_DEFINE_GROUP( group_name, trait ) \
+#define XOILA_DEFINE_GROUP( group_name, ... ) \
     BETH_EXPAND_GROUP_##group_name
 
 /// Declares general signal handler of *_signal.c
