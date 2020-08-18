@@ -78,8 +78,17 @@ stamp :arr_ci = aware bcore_array
         :ci_s_push_ci( @_push( o ), c, i );
     };
 
-    func : :i_of_c = { BFOR_EACH( j, o ) if( o->data[ j ].c == c ) return o->data[ j ].i; return -1; };
-    func : :c_of_i = { BFOR_EACH( j, o ) if( o->data[ j ].i == i ) return o->data[ j ].c; return -1; };
+    func : :i_of_c =
+    {
+        BFOR_EACH( j, o ) if( o->data[ j ].c == c ) return o->data[ j ].i;
+        return -1;
+    };
+
+    func : :c_of_i =
+    {
+        BFOR_EACH( j, o ) if( o->data[ j ].i == i ) return o->data[ j ].c;
+        return -1;
+    };
 };
 
 /** Sets arguments from index data according to signature
