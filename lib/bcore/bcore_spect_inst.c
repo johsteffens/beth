@@ -965,9 +965,9 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
 
 static void copy_call_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
 {
-    if( p->inst_call_p->copy_e ) p->inst_call_p->copy_e( dst );
+    if( p->inst_call_p->copy_e ) p->inst_call_p->copy_e( dst, src );
     copy_generic( p, dst, src );
-    if( p->inst_call_p->copy_x ) p->inst_call_p->copy_x( dst );
+    if( p->inst_call_p->copy_x ) p->inst_call_p->copy_x( dst, src );
 }
 
 typedef struct { ap_t ap; const bcore_inst_s* p; vd_t dst; vc_t src; } copy_nc;
