@@ -43,7 +43,7 @@ stamp :op = aware :
     private bhvm_vop_s* p; // perspective of vop
 
     func bcore_inst_call : copy_x  = { o->p = o->vop ? ( bhvm_vop_s* )bhvm_vop_s_get_aware( o->vop ) : NULL; };
-    func bcore_via_call  : mutated = { @_copy_x( o ); };
+    func bcore_via_call  : mutated = { @_copy_x( o, NULL ); };
     func bhvm_vop        : run = { assert( o->p ); assert( o->p->run ); o->p->run( (vc_t)o->vop, ah ); };
 };
 
