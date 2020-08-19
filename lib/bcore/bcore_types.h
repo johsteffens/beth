@@ -41,6 +41,12 @@ typedef ptrdiff_t   sz_t;
 typedef size_t      uz_t;
 
 typedef bool        bl_t;
+typedef u3_t        tp_t;     // object type identifier
+typedef tp_t        er_t; // error state return value (used by functions to communicate the error state; 0: no error)
+
+typedef tp_t        aware_t;  // self-awareness type (first element in self-aware object)
+typedef uz_t        offset_t; // used as address offsets into an object
+
 
 typedef intmax_t    smax_t;
 typedef uintmax_t   umax_t;
@@ -58,13 +64,6 @@ typedef void*       nd_t; // pointer to a nucleus (signature of an amoeba)
  *  propagation.
  */
 typedef void (*fp_t)( void );
-
-// types for special purposes
-typedef u3_t tp_t;     // object type identifier
-typedef tp_t aware_t;  // self-awareness type (first element in self-aware object)
-typedef uz_t offset_t; // used as address offsets into an object
-
-typedef tp_t er_t; // error state return value (used by functions to communicate the error state; 0: no error)
 
 // types used for atomic operations
 typedef _Atomic tp_t atomic_tp_t;

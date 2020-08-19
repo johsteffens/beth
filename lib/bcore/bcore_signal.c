@@ -28,6 +28,7 @@
 #include "bcore_hmap_tp_sr.h"
 #include "bcore_img.h"
 #include "bcore_leaf.h"
+#include "bcore_leaf_obj.h"
 #include "bcore_life.h"
 #include "bcore_name.h"
 #include "bcore_name_manager.h"
@@ -137,6 +138,7 @@ vd_t bcore_general_signal_handler( const bcore_signal_s* o )
         bcore_arr_signal_handler,
         bcore_img_signal_handler,
         bcore_leaf_signal_handler,
+        bcore_leaf_obj_signal_handler,
         bcore_file_signal_handler,
         bcore_folder_signal_handler,
         bcore_spect_hash_signal_handler,
