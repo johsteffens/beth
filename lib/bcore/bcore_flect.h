@@ -668,7 +668,7 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
 
 #define BCORE_OFFSET( object, offset ) ( ( vd_t* )( ( u0_t* )object + offset ) )
 
-/// deprecated: prefer BCORE_DEFINE_OBJECT_FLAT
+/// this macro is used in actinon but is otherwise deprecated; prefer BCORE_DEFINE_OBJECT_FLAT
 #define BCORE_DEFINE_FUNCTIONS_SELF_OBJECT_FLAT( name, def ) \
     BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( name ) \
     BCORE_DEFINE_CREATE_SELF( name, def )
