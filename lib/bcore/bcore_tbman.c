@@ -2966,7 +2966,7 @@ static st_s* tbman_s_rctest( void )
         u3_t* v2;
     } myclass;
 
-    tp_t t_myclass = bcore_flect_type_parse_sc( "{ st_s name1; st_s* name2; u3_t v1; u3_t* v2; }" );
+    tp_t t_myclass = bcore_flect_type_parse_sc( "{ st_s name1; st_s => name2; u3_t v1; u3_t => v2; }" );
     bcore_inst_t_discard( t_myclass, bcore_inst_t_create( t_myclass ) ); // cycle once to get all perspectives alive
 
     myclass* obj1 = bcore_inst_t_create( t_myclass );

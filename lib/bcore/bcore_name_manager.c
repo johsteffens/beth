@@ -18,6 +18,7 @@
 #include "bcore_st.h"
 #include "bcore_threads.h"
 #include "bcore_signal.h"
+#include "bcore_hmap_name.h"
 
 /**********************************************************************************************************************/
 // hash map
@@ -209,6 +210,18 @@ void bcore_name_remove( tp_t type )
     assert( hmap_s_g != NULL );
     bcore_mutex_s_lock( &hmap_s_g->mutex );
     bcore_name_map_s_remove( &hmap_s_g->map, type );
+    bcore_mutex_s_unlock( &hmap_s_g->mutex );
+}
+
+void bcore_name_push_all( bcore_hmap_name_s* name_map )
+{
+    assert( hmap_s_g != NULL );
+    bcore_mutex_s_lock( &hmap_s_g->mutex );
+    for( uz_t i = 0; i < hmap_s_g->map.size; i++ )
+    {
+        const bcore_name_s* name = &hmap_s_g->map.data[ i ];
+        if( name->key ) bcore_hmap_name_s_set_sc( name_map, name->name );
+    }
     bcore_mutex_s_unlock( &hmap_s_g->mutex );
 }
 

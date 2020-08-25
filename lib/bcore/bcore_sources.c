@@ -275,7 +275,7 @@ static bcore_self_s* chain_s_create_self( void )
     "bcore_source_chain_s = bcore_source"
     "{ "
       "aware_t _; "
-      "aware * [] data; "
+      "aware => [] data; "
     "}";
 
     bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_source_chain_s );
@@ -808,7 +808,7 @@ static bcore_self_s* string_s_create_self( void )
     "bcore_source_string_s = bcore_source "
     "{ "
       "aware_t _; "
-      "st_s* string; "
+      "st_s => string; "
       "uz_t index; "
       "private vd_t supplier; "
       "uz_t refill_limit;    "
@@ -1104,7 +1104,7 @@ static bcore_self_s* file_s_create_self( void )
     "bcore_source_file_s = bcore_source "
     "{ "
       "aware_t _; "
-      "st_s* name; "
+      "st_s => name; "
       "private vd_t handle; "
     "}";
 

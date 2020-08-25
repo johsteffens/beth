@@ -23,6 +23,8 @@
 
 #include "bcore_name.h"
 
+BCORE_FORWARD_OBJECT( bcore_hmap_name_s );
+
 /** Names and Name-Spaces
  *  Each name has an associated name-space.
  *  The root name space (default) has type 0.
@@ -68,6 +70,9 @@ st_s* bcore_name_get_name_s( tp_t type );
 
 /// removes hash and associated name; no effect when not enrolled (thread safe)
 void bcore_name_remove( tp_t type );
+
+/// pushes all names to name_map (thread safe)
+void bcore_name_push_all( bcore_hmap_name_s* name_map );
 
 // TODO (johannes#1#): move away from name 'typeof' (e.g. use btypeof instead) ...
 // It conflicts with a keyword in a gcc extension

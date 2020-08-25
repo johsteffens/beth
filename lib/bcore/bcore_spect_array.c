@@ -1818,18 +1818,17 @@ static st_s* spect_array_selftest( void )
     vd_t arr = bcore_inst_t_create( typeof( "string_array" ) );
     const bcore_array_s* arr_p = bcore_array_s_get_aware( arr );
 
-    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_static_dyn_array      = { aware_t _; st_s    []   arr; }" ) ) );
-    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_static_link_dyn_array = { aware_t _; st_s *  []   arr; }" ) ) );
-    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_typed_dyn_array       = { aware_t _; typed   []   arr; }" ) ) );
-    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_typed_link_dyn_array  = { aware_t _; typed * []   arr; }" ) ) );
-    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_aware_link_dyn_array  = { aware_t _; aware * []   arr; }" ) ) );
-    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_static_fix_array      = { aware_t _; st_s    [10] arr; }" ) ) );
-    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_static_link_fix_array = { aware_t _; st_s *  [10] arr; }" ) ) );
-    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_aware_link_fix_array  = { aware_t _; aware * [10] arr; }" ) ) );
+    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_static_dyn_array      = { aware_t _; st_s     []   arr; }" ) ) );
+    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_static_link_dyn_array = { aware_t _; st_s =>  []   arr; }" ) ) );
+    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_typed_dyn_array       = { aware_t _; typed    []   arr; }" ) ) );
+    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_typed_link_dyn_array  = { aware_t _; typed => []   arr; }" ) ) );
+    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_aware_link_dyn_array  = { aware_t _; aware => []   arr; }" ) ) );
+    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_static_fix_array      = { aware_t _; st_s     [10] arr; }" ) ) );
+    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_static_link_fix_array = { aware_t _; st_s =>  [10] arr; }" ) ) );
+    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_aware_link_fix_array  = { aware_t _; aware => [10] arr; }" ) ) );
 
     for( uz_t i = 0; i < get_size( arr_p, arr ); i++ )
     {
-
         const st_s* code = arr_p->get( arr_p, arr, i ).o;
         bcore_self_s* self = bcore_self_s_build_parse_sc( code->sc, 0, 0 );
         ASSERT( !bcore_spect_trait_supported( typeof( "bcore_array" ), self->type ) );

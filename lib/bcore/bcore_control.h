@@ -288,9 +288,9 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
 #define BCORE_DECLARE_FUNCTION_CREATE( name ) name* name##_create();
 #define BCORE_DECLARE_FUNCTION_DISCARD( name ) void name##_discard( name* o );
 #define BCORE_DECLARE_FUNCTION_CLONE( name )  name* name##_clone( const name* o );
-#define BCORE_DECLARE_FUNCTION_DETACH( name )    static inline void name##_detach(    name** o ) { if( !o ) return; name##_discard( *o ); *o = NULL; }
-#define BCORE_DECLARE_FUNCTION_ATTACH( name )    static inline void name##_attach(    name** o, name* src ) { if( !o ) return; name##_discard( *o ); *o = src; }
-#define BCORE_DECLARE_FUNCTION_REPLICATE( name ) static inline void name##_replicate( name** o, name* src ) { if( !o ) return; name##_discard( *o ); *o = name##_clone( src ); }
+#define BCORE_DECLARE_FUNCTION_DETACH( name )    static inline void  name##_detach(    name** o ) { if( !o ) return; name##_discard( *o ); *o = NULL; }
+#define BCORE_DECLARE_FUNCTION_ATTACH( name )    static inline name* name##_attach(    name** o, name* src ) { if( !o ) return NULL; name##_discard( *o ); *o = src; return *o; }
+#define BCORE_DECLARE_FUNCTION_REPLICATE( name ) static inline name* name##_replicate( name** o, name* src ) { if( !o ) return NULL; name##_discard( *o ); *o = name##_clone( src );  return *o; }
 
 #define BCORE_DECLARE_FUNCTIONS_OBJ( name )\
     BCORE_DECLARE_FUNCTION_INIT( name ) \

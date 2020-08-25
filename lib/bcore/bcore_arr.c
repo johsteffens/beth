@@ -1147,7 +1147,7 @@ BCORE_DEFINE_FUNCTION_CLONE(     bcore_arr_st_s )
 
 static bcore_self_s* arr_st_s_create_self( void )
 {
-    return BCORE_SELF_S_BUILD_PARSE_SC( "bcore_arr_st_s = bcore_array { aware_t _; st_s* [] arr; }", bcore_arr_st_s );
+    return BCORE_SELF_S_BUILD_PARSE_SC( "bcore_arr_st_s = bcore_array { aware_t _; st_s => [] arr; }", bcore_arr_st_s );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

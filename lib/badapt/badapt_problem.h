@@ -36,7 +36,7 @@ stamp :sine_random = aware badapt_supplier
     u3_t rval       = 1234;
     f3_t pos_tgt    =  0.9;
     f3_t neg_tgt    = -0.9;
-    aware badapt_loss* preferred_loss = badapt_loss_l2_s;
+    aware badapt_loss => preferred_loss = badapt_loss_l2_s;
 
     func badapt_supplier : preferred_loss = { return o->preferred_loss; };
     func badapt_supplier : get_in_size    = { return o->input_size; };
@@ -56,7 +56,7 @@ stamp :binary_add = aware badapt_supplier
     u3_t rval  = 1234;
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
-    aware badapt_loss* preferred_loss = badapt_loss_l2_s;
+    aware badapt_loss => preferred_loss = badapt_loss_l2_s;
 
     func badapt_supplier : preferred_loss = { return o->preferred_loss; };
     func badapt_supplier : get_in_size    = { return o->bits * 2; };
@@ -76,7 +76,7 @@ stamp :binary_mul = aware badapt_supplier
     u3_t rval  = 1234;
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
-    aware badapt_loss* preferred_loss = badapt_loss_l2_s;
+    aware badapt_loss => preferred_loss = badapt_loss_l2_s;
 
     func badapt_supplier : preferred_loss = { return o->preferred_loss; };
     func badapt_supplier : get_in_size    = { return o->bits * 2; };
@@ -96,7 +96,7 @@ stamp :binary_xsg3 = aware badapt_supplier
     u3_t rval  = 1234;
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
-    aware badapt_loss* preferred_loss = badapt_loss_l2_s;
+    aware badapt_loss => preferred_loss = badapt_loss_l2_s;
 
     func badapt_supplier : preferred_loss = { return o->preferred_loss; };
     func badapt_supplier : get_in_size    = { return o->bits; };
@@ -117,7 +117,7 @@ stamp :binary_hash = aware badapt_supplier
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
     bl_t reverse = false;
-    aware badapt_loss* preferred_loss = badapt_loss_l2_s;
+    aware badapt_loss => preferred_loss = badapt_loss_l2_s;
 
     func badapt_supplier : preferred_loss = { return o->preferred_loss; };
     func badapt_supplier : get_in_size    = { return o->bits; };
@@ -138,7 +138,7 @@ stamp :polynom = aware badapt_supplier
     f3_t range       = 1.0; // +/- range of coefficients
     u3_t rval        = 1234;
     f3_t noise_level = 0;   // additive noise to input signal
-    aware badapt_loss* preferred_loss = badapt_loss_l2_s;
+    aware badapt_loss => preferred_loss = badapt_loss_l2_s;
 
     func badapt_supplier : preferred_loss = { return o->preferred_loss; };
     func badapt_supplier : get_in_size    = { return o->input_size; };

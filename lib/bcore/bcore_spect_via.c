@@ -517,10 +517,10 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_via )
 sr_s bcore_spect_via_create_zoo( uz_t size )
 {
     bcore_life_s* l = bcore_life_s_create();
-                      bcore_flect_type_parse_sc( "vectors = { st_s * [ 2 ] data1; u3_t [ 3 ] data2; }" );
-    tp_t t_animal   = bcore_flect_type_parse_sc( "animal = { st_s* type; f3_t weight; st_s * [] features; vectors vdata; }" );
-    tp_t t_compound = bcore_flect_type_parse_sc( "compound = { u3_t id; uz_t area; animal * [] animals; }" );
-    tp_t t_zoo      = bcore_flect_type_parse_sc( "zoo = { st_s* name; typed * [] compounds; }" );
+                      bcore_flect_type_parse_sc( "vectors = { st_s => [ 2 ] data1; u3_t [ 3 ] data2; }" );
+    tp_t t_animal   = bcore_flect_type_parse_sc( "animal = { st_s => type; f3_t weight; st_s => [] features; vectors vdata; }" );
+    tp_t t_compound = bcore_flect_type_parse_sc( "compound = { u3_t id; uz_t area; animal => [] animals; }" );
+    tp_t t_zoo      = bcore_flect_type_parse_sc( "zoo = { st_s => name; typed => [] compounds; }" );
 
     sr_s ret = bcore_inst_t_create_sr( t_zoo );
     sr_s zoo = sr_cw( ret );

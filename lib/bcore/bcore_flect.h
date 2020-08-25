@@ -113,7 +113,7 @@ typedef struct bcore_flect_flags_s
 {
     union
     {
-        tp_t data; // collection of flags
+        u2_t data; // collection of flags
         struct
         {
             // invisible to all perspectives (inst spect may only initialize and destroy the field)
@@ -278,8 +278,13 @@ bcore_self_s* bcore_self_s_create();
 bcore_self_s* bcore_self_s_clone( const bcore_self_s* o );
 void          bcore_self_s_discard( bcore_self_s* o );
 
+BCORE_DECLARE_FUNCTION_DETACH( bcore_self_s )
+BCORE_DECLARE_FUNCTION_ATTACH( bcore_self_s )
+BCORE_DECLARE_FUNCTION_REPLICATE( bcore_self_s )
+
 uz_t                     bcore_self_s_items_size( const bcore_self_s* o );
 const bcore_self_item_s* bcore_self_s_get_item( const bcore_self_s* o, uz_t index );
+const bcore_self_item_s* bcore_self_s_get_item_by_name( const bcore_self_s* o, tp_t name ); // returns NULL in case of no match
 
 bcore_self_item_s* bcore_self_s_push( bcore_self_s* o, const bcore_self_item_s* item );
 bcore_self_item_s* bcore_self_s_push_d( bcore_self_s* o, bcore_self_item_s* item );
@@ -325,7 +330,7 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *    Example: 'func bmath_fp:add' expands to 'func bmath_fp_add add'
  *
  *  qualifier:
- *    *, =>   : (deep) link    // object is referenced and inst perspective takes full control incl. deep copy
+ *       =>   : (deep) link    // object is referenced and inst perspective takes full control incl. deep copy
  *       ->   : (shallow) link // object is referenced and inst perspective controls lifetime but only forks links (no cloning)
  *        []  : dynamic array
  *     [size] : fixed-size-array

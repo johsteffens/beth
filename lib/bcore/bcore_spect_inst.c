@@ -1834,10 +1834,10 @@ static st_s* spect_inst_selftest( void )
 {
     typedef struct { aware_t _; bcore_array_dyn_link_typed_s string_arr; u2_t val1; u3_t val2; s1_t val3; } test_object1_s;
 
-    bcore_flect_define_self_d( bcore_self_s_build_parse_sc( " test_object1_s = { aware_t _; typed * [] string_arr; u2_t val1; u3_t val2; s1_t val3; }", 0, 0 ) );
+    bcore_flect_define_self_d( bcore_self_s_build_parse_sc( " test_object1_s = { aware_t _; typed => [] string_arr; u2_t val1; u3_t val2; s1_t val3; }", 0, 0 ) );
 
     typedef struct { aware_t _; u2_t val1; test_object1_s* o1; } test_object2_s;
-    bcore_flect_define_self_d( bcore_self_s_build_parse_sc( " test_object2_s = { aware_t _; u2_t val1; test_object1_s* o1; }", 0, 0 ) );
+    bcore_flect_define_self_d( bcore_self_s_build_parse_sc( " test_object2_s = { aware_t _; u2_t val1; test_object1_s => o1; }", 0, 0 ) );
 
     test_object1_s* o1 = bcore_inst_t_create( typeof( "test_object1_s" ) );
 
