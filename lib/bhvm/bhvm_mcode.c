@@ -151,7 +151,7 @@ void bhvm_mcode_frame_s_mutated( bhvm_mcode_frame_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_mcode_frame_s_copy_x( bhvm_mcode_frame_s* o, const bcore_inst* src )
+void bhvm_mcode_frame_s_copy_x( bhvm_mcode_frame_s* o, const bhvm_mcode_frame_s* src )
 {
     bhvm_mcode_frame_s_reassign_mnodes( o );
 }
