@@ -167,11 +167,12 @@ was spun-off into a stand-alone solution in project [tbman](https://github.com/j
 
 <a name = "xoila"></a>
 ### Xoila
-Xoila is a dedicated (mostly declarative) meta language intended to reduce boilerplate coding.
+Xoila is a meta language intended to reduce boilerplate coding.
 It allows expressing key aspects of reflections and perspectives in a well-readable,
 compact and simple style.
-It uses a simple hierarchical namespace scheme.
-Xoila-code can also wrap snippets of c-code in which namespaces can be used.
+
+The language is defined by the compiler [xoico](https://github.com/johsteffens/xoico).
+Xoico and Beth form an ecosystem.
 
 Xoila-code is embedded in c-code as non-parseable section, 
 initiated by macro `XOILA_DEFINE_GROUP( <group-name>, <trait-name> )`. 
@@ -182,10 +183,11 @@ Key components of the xoila language are `stamp`, `group` and `feature`.
 A stamp is defined inside a `group`.
 `group` represents a declarative context. Groups can be nested.
 `feature` represents a virtual function.
-It is defined inside a group turning it into a [perspective](#perspective).
 
-The xoila-compiler is called **xoico**.
-You can find it in repository [xoico](https://github.com/johsteffens/xoico).
+Xoila uses a simple hierarchical namespace-scheme.
+
+The language is still in developmenet. Once it
+reaches (sufficient) feature-completeness, it will be better documented.
 
 # Motivation
 Object oriented programming is generally associated with a specific
