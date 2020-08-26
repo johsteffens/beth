@@ -254,19 +254,19 @@ group :ar2 =
 
     /// multiplication ---------------------------------------------------------
 
-    signature :f f_vv_cv;
-    signature :f f_vv_av;
-    signature :f f_vs_cv;
-    signature :f f_vs_av;
-    signature :f f_vv_as;
-    signature :f f_vv_cs;
+    signature extending :f f_vv_cv();
+    signature extending :f f_vv_av();
+    signature extending :f f_vs_cv();
+    signature extending :f f_vs_av();
+    signature extending :f f_vv_as();
+    signature extending :f f_vv_cs();
 
-    signature :f_m f_mv_cv;
-    signature :f_m f_mv_av;
-    signature :f_m f_vm_cv;
-    signature :f_m f_vm_av;
-    signature :f_m f_vv_cm;
-    signature :f_m f_vv_am;
+    signature extending :f_m f_mv_cv();
+    signature extending :f_m f_mv_av();
+    signature extending :f_m f_vm_cv();
+    signature extending :f_m f_vm_av();
+    signature extending :f_m f_vv_cm();
+    signature extending :f_m f_vv_am();
 
     stamp verbatim :mul_body = aware bcore_inst
     {

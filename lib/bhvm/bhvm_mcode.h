@@ -143,7 +143,7 @@ group :hmeta =
 
 /// returns index to pushed holor;
 signature sz_t push_hm ( mutable, const bhvm_holor_s* h, const :hmeta* m );
-signature :push_hm push_hmc( char c, bhvm_vop_arr_ci_s* arr_ci );
+signature sz_t push_hmc( mutable, const bhvm_holor_s* h, const :hmeta* m, char c, bhvm_vop_arr_ci_s* arr_ci );
 signature sz_t push_copy_from_index( mutable, sz_t index );
 
 group :hbase =
@@ -263,7 +263,7 @@ signature      void track_remove      ( mutable, tp_t name );                // 
 signature      void track_run_ah      (   const, tp_t name, bhvm_holor_s** ah );
 signature      void track_run         (   const, tp_t name );
 
-signature :track_vop_push_d track_vop_set_args_push_d( const bhvm_vop_arr_ci_s* arr_ci );
+signature void track_vop_set_args_push_d( mutable, tp_t name, bhvm_vop* vop, const bhvm_vop_arr_ci_s* arr_ci );
 
 // track library
 stamp :lib = aware :
