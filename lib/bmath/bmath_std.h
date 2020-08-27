@@ -23,7 +23,6 @@
 #include "bmath_signal.h"
 #include "bmath_spect_vector.h"
 #include "bmath_spect_matrix.h"
-#include "bmath_f3_op.h"
 #include "bmath_vf2.h"
 #include "bmath_vf3.h"
 #include "bmath_mf2.h"

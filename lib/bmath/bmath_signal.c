@@ -19,7 +19,6 @@
 #include "bmath_spect_vector.h"
 #include "bmath_spect_matrix.h"
 #include "bmath_leaf.h"
-#include "bmath_f3_op.h"
 #include "bmath_cf2.h"
 #include "bmath_cf3.h"
 #include "bmath_fourier_f2.h"
@@ -66,7 +65,6 @@ vd_t bmath_general_signal_handler( const bcore_signal_s* o )
             bmath_spect_vector_signal_handler,
             bmath_spect_matrix_signal_handler,
             bmath_leaf_signal_handler,
-            bmath_f3_op_signal_handler,
             bmath_cf2_signal_handler,
             bmath_cf3_signal_handler,
             bmath_fourier_f2_signal_handler,
