@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-08-26T15:24:57Z
+ *  Last File Update: 2020-08-27T07:40:27Z
  *
  *  Copyright and License of this File:
  *
@@ -25,7 +25,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by xoico, reset the hash key value below to 0.
-#define HKEYOF_bcore_xoila_out 0xAABF3F289356E6E1ull
+#define HKEYOF_bcore_xoila_out 0x8A866DE70BC74D37ull
 
 #define TYPEOF_bcore_xoila_out 0xC52DA50A6069BDB1ull
 
@@ -69,8 +69,8 @@
   BCORE_FORWARD_OBJECT( bcore_inst_call ); \
   typedef void (*bcore_inst_call_init_x)( bcore_inst_call* o ); \
   typedef void (*bcore_inst_call_down_e)( bcore_inst_call* o ); \
-  typedef void (*bcore_inst_call_copy_e)( bcore_inst_call* o, const bcore_inst* src ); \
-  typedef void (*bcore_inst_call_copy_x)( bcore_inst_call* o, const bcore_inst* src ); \
+  typedef void (*bcore_inst_call_copy_e)( bcore_inst_call* o, const bcore_inst_call* src ); \
+  typedef void (*bcore_inst_call_copy_x)( bcore_inst_call* o, const bcore_inst_call* src ); \
   typedef void (*bcore_inst_call_discard_e)( bcore_inst_call* o ); \
   BCORE_DECLARE_SPECT( bcore_inst_call ) \
   { \
@@ -87,9 +87,9 @@
   static inline bl_t bcore_inst_call_p_defines_init_x( const bcore_inst_call_s* __p ) { return __p->init_x != NULL; } \
   static inline void bcore_inst_call_p_down_e( const bcore_inst_call_s* __p, bcore_inst_call* o ) { assert( __p->down_e ); __p->down_e( o ); } \
   static inline bl_t bcore_inst_call_p_defines_down_e( const bcore_inst_call_s* __p ) { return __p->down_e != NULL; } \
-  static inline void bcore_inst_call_p_copy_e( const bcore_inst_call_s* __p, bcore_inst_call* o, const bcore_inst* src ) { assert( __p->copy_e ); __p->copy_e( o, src ); } \
+  static inline void bcore_inst_call_p_copy_e( const bcore_inst_call_s* __p, bcore_inst_call* o, const bcore_inst_call* src ) { assert( __p->copy_e ); __p->copy_e( o, src ); } \
   static inline bl_t bcore_inst_call_p_defines_copy_e( const bcore_inst_call_s* __p ) { return __p->copy_e != NULL; } \
-  static inline void bcore_inst_call_p_copy_x( const bcore_inst_call_s* __p, bcore_inst_call* o, const bcore_inst* src ) { assert( __p->copy_x ); __p->copy_x( o, src ); } \
+  static inline void bcore_inst_call_p_copy_x( const bcore_inst_call_s* __p, bcore_inst_call* o, const bcore_inst_call* src ) { assert( __p->copy_x ); __p->copy_x( o, src ); } \
   static inline bl_t bcore_inst_call_p_defines_copy_x( const bcore_inst_call_s* __p ) { return __p->copy_x != NULL; } \
   static inline void bcore_inst_call_p_discard_e( const bcore_inst_call_s* __p, bcore_inst_call* o ) { assert( __p->discard_e ); __p->discard_e( o ); } \
   static inline bl_t bcore_inst_call_p_defines_discard_e( const bcore_inst_call_s* __p ) { return __p->discard_e != NULL; }
@@ -620,4 +620,4 @@
 vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_XOILA_OUT_H
-// XOILA_OUT_SIGNATURE 0x1AE98EB86F5D832Cull
+// XOILA_OUT_SIGNATURE 0xAFED1F3BF25A80D5ull
