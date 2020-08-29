@@ -154,6 +154,9 @@ typedef struct bcore_flect_flags_s
             // aware or typed objects; 'type' value of self_item can be 0 or represent a trait
             unsigned f_virtual : 1;
 
+            // for managed static links: create an instance of given type during init
+            unsigned f_create_on_init : 1;
+
         };
     };
 } bcore_flect_flags_s;
@@ -313,7 +316,7 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *  Typical Format:
  *  [:]<type-name> = [aware] [<trait-name> [<parent-name>]]
  *  {
- *      [<prefixes>] <type> [:] [<qualifier>] <name> [=<default>];
+ *      [<prefixes>] <type> [:] [<qualifier>] <name> [{!|=<default>}];
  *
  *      func <type> [:] <name> [= <ftype>];
  *
@@ -362,8 +365,9 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *  Dynamic Function:
  *    A dynamic function is given by a function_pointer (fp_t or registered feature)
  *    It can optionally be initialized with a registered function.
- *    <type> <name> [= <ftype>];  // ftype is the name for the function registered with BCORE_REGISTER_(F)FUNC
+ *    <type> <name> [{!|= <ftype>}];  // ftype is the name for the function registered with BCORE_REGISTER_(F)FUNC
  *    If <type> is a registered feature, then <ftype> must be of that feature. This is tested during parsing.
+ *    '!' can be used as shortcut in case ftype == type.
  *
  *    Examples:
  *      my_feature_fp my_func = my_registered_default_func;

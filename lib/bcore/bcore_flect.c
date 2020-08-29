@@ -330,7 +330,6 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
     bl_t f_spect     = false;
     bl_t f_const     = false;
     bl_t f_deep_copy = true;
-    bl_t f_assign_default = false;
     bl_t f_feature   = false;
     bl_t f_feature_requires_awareness = false;
     bl_t f_strict    = false;
@@ -461,7 +460,7 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
         }
     }
 
-    bcore_source_r_parse_fa( &src, "#name #?'=' ", item_name, &f_assign_default );
+    bcore_source_r_parse_fa( &src, "#name ", item_name );
 
     if( extend_type_name )
     {
@@ -538,7 +537,29 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
 
     o->flags.f_fp = bcore_trait_is_of( o->type, TYPEOF_function_pointer );
 
-    if( f_assign_default )
+    if( bcore_source_r_parse_bl_fa( &src, "#?'!' " ) )
+    {
+
+        if( !o->flags.f_spect && ( o->caps == BCORE_CAPS_LINK_STATIC ) )
+        {
+            o->flags.f_create_on_init = true;
+        }
+        else if( !o->flags.f_spect && o->caps == BCORE_CAPS_SOLID_STATIC )
+        {
+            /* '!' for solid static types is allowed but has no effect */
+        }
+        else
+        {
+            bcore_source_r_parse_err_fa
+            (
+                &src,
+                "Parent '#<sc_t>':\nItem #<sc_t>: Postfix '!' is not supported in this context.",
+                ifnameof( parent_type ),
+                item_name->sc
+            );
+        }
+    }
+    else if( bcore_source_r_parse_bl_fa( &src, "#?'=' " ) )
     {
         if( o->caps == BCORE_CAPS_SOLID_STATIC )
         {
@@ -712,7 +733,6 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
             }
 
             tp_t aware_tp = typeof( name->sc );
-
 
             if( advanced_checks )
             {

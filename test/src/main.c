@@ -57,6 +57,8 @@ int main( void )
 //    bclos_quicktypes_to_stdout( NULL ); return 0;
 //    bmath_quicktypes_to_stdout( NULL ); return 0;
 
+    selftest( "bcore_spect_inst" );
+
     selftest( "bcore_hmap" );
     selftest( "bcore_tp_fastmap" );
     selftest( "bcore_hmap_tp_sr" );
@@ -91,7 +93,6 @@ int main( void )
 
     selftest( "bcore_cday" );
     selftest( "bcore_plant_sample" );
-    selftest( "bcore_spect_inst" );
 
     selftest( "bclos_procedure" );
     selftest( "bclos_machine" );

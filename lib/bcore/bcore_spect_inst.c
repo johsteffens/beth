@@ -259,6 +259,13 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
 
             case BCORE_CAPS_LINK_STATIC:
             {
+                if( self_item->flags.f_create_on_init )
+                {
+                    assert( !self_item->flags.f_spect );
+                    bcore_inst** p_inst = ( bcore_inst** )dst_obj;
+                    *p_inst = bcore_inst_t_create( self_item->type );
+                }
+
                 if( self_item->default_u3 )
                 {
                     if( self_item->flags.f_spect )
@@ -269,7 +276,13 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
                     {
                         switch( self_item->type )
                         {
-                            case TYPEOF_st_s: *( st_s** )dst_obj = st_s_clone( bcore_const_string_get_st( self_item->default_tp ) ); break;
+                            case TYPEOF_st_s:
+                            {
+                                st_s** p_st = ( st_s** )dst_obj;
+                                if( !*p_st ) *p_st = st_s_create();
+                                st_s_copy( *p_st, bcore_const_string_get_st( self_item->default_tp ) );
+                            }
+                            break;
 
                             default:
                             {
@@ -1510,6 +1523,7 @@ static bcore_inst_s* create_from_self( const bcore_self_s* self )
                 case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
                 case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
                 {
+                    if( self_item->flags.f_create_on_init ) o->init_flat = false;
                     o->copy_flat = false;
                     o->down_flat = false;
                 }
@@ -1921,12 +1935,29 @@ static st_s* spect_inst_selftest( void )
 
     // default strings
     {
-        typedef struct { sc_t str0; st_s* str1; st_s str2; } string_init_object_s;
-        bcore_flect_define_self_d( BCORE_SELF_S_BUILD_PARSE_SC( "string_init_object_s = { sc_t str0 = \"hi\"; st_s => str1 = \"hello\"; st_s str2 = \"world!\"; }", string_init_object_s ) );
+        typedef struct { sc_t str0; st_s* str1; st_s str2; st_s* str3; st_s* str4; } string_init_object_s;
+        bcore_flect_define_self_d
+        (
+            BCORE_SELF_S_BUILD_PARSE_SC
+            (
+                "string_init_object_s = \
+                { \
+                    sc_t str0 = \"hi\"; \
+                    st_s => str1 = \"hello\"; \
+                    st_s str2 = \"world!\"; \
+                    st_s -> str3!; \
+                    aware st_s => str4!; \
+                } \
+                ",
+                string_init_object_s
+            )
+        );
         string_init_object_s* o = bcore_inst_t_create( typeof( "string_init_object_s" ) );
         ASSERT( sc_t_equal(     o->str0, "hi" ) );
         ASSERT( st_s_equal_sc(  o->str1, "hello" ) );
         ASSERT( st_s_equal_sc( &o->str2, "world!" ) );
+        ASSERT( o->str3 );
+        ASSERT( o->str4 );
         bcore_inst_t_discard( typeof( "string_init_object_s" ), o );
     }
 
