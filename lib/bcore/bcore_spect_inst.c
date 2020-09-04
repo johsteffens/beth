@@ -1946,7 +1946,7 @@ static st_s* spect_inst_selftest( void )
                     st_s => str1 = \"hello\"; \
                     st_s str2 = \"world!\"; \
                     st_s -> str3!; \
-                    aware st_s => str4!; \
+                    st_s => str4!; \
                 } \
                 ",
                 string_init_object_s
