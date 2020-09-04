@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-09-02T12:47:08Z
+ *  Last File Update: 2020-09-04T17:45:17Z
  *
  *  Copyright and License of this File:
  *
@@ -63,7 +63,7 @@ void bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_inst_call
 
-BCORE_DEFINE_SPECT( bcore_inst, bcore_inst_call )
+XOILA_DEFINE_SPECT( bcore_inst, bcore_inst_call )
 "{"
     "bcore_spect_header_s header;"
     "feature bcore_inst_call : init_x;"
@@ -80,7 +80,7 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_inst_call )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_via_call
 
-BCORE_DEFINE_SPECT( bcore_inst, bcore_via_call )
+XOILA_DEFINE_SPECT( bcore_inst, bcore_via_call )
 "{"
     "bcore_spect_header_s header;"
     "feature bcore_via_call : source;"
@@ -129,7 +129,7 @@ er_t bcore_main_set_s_main( bcore_main_set_s* o, bcore_main_frame_s* frame )
     return r;
 }
 
-BCORE_DEFINE_SPECT( bcore_inst, bcore_main )
+XOILA_DEFINE_SPECT( bcore_inst, bcore_main )
 "{"
     "bcore_spect_header_s header;"
     "feature strict aware bcore_main : main;"
@@ -204,7 +204,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_error_manager_context_s )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_prsg
 
-BCORE_DEFINE_SPECT( bcore_inst, bcore_prsg )
+XOILA_DEFINE_SPECT( bcore_inst, bcore_prsg )
 "{"
     "bcore_spect_header_s header;"
     "feature strict aware bcore_prsg : bits;"
@@ -1030,7 +1030,7 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_NAME( bcore_inst_call_copy_e );
             BCORE_REGISTER_NAME( bcore_inst_call_copy_x );
             BCORE_REGISTER_NAME( bcore_inst_call_discard_e );
-            BCORE_REGISTER_SPECT( bcore_inst_call );
+            XOILA_REGISTER_SPECT( bcore_inst_call );
 
             // --------------------------------------------------------------------
             // source: bcore_spect_via_call.h
@@ -1039,7 +1039,7 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FEATURE( bcore_via_call_source );
             BCORE_REGISTER_FEATURE( bcore_via_call_mutated );
             BCORE_REGISTER_FEATURE( bcore_via_call_shelve );
-            BCORE_REGISTER_SPECT( bcore_via_call );
+            XOILA_REGISTER_SPECT( bcore_via_call );
 
             // --------------------------------------------------------------------
             // source: bcore_main.h
@@ -1050,7 +1050,7 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bcore_main_arr_s );
             BCORE_REGISTER_FFUNC( bcore_main_main, bcore_main_set_s_main );
             BCORE_REGISTER_OBJECT( bcore_main_set_s );
-            BCORE_REGISTER_SPECT( bcore_main );
+            XOILA_REGISTER_SPECT( bcore_main );
 
             // --------------------------------------------------------------------
             // source: bcore_hmap_name.h
@@ -1103,7 +1103,7 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bcore_prsg_set_state_mix, bcore_prsg_set_state_mix__ );
             BCORE_REGISTER_FEATURE( bcore_prsg_reseed );
             BCORE_REGISTER_FFUNC( bcore_prsg_reseed, bcore_prsg_reseed__ );
-            BCORE_REGISTER_SPECT( bcore_prsg );
+            XOILA_REGISTER_SPECT( bcore_prsg );
 
             // group: bcore_prsg_lcg
             BCORE_REGISTER_FFUNC( bcore_prsg_gen_u3, bcore_prsg_lcg_u2_00_s_gen_u3 );
@@ -1284,4 +1284,4 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOILA_OUT_SIGNATURE 0xC18D1E3190A7FA88ull
+// XOILA_OUT_SIGNATURE 0xBF8959E4F68FD8D9ull

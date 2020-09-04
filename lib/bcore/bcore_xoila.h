@@ -41,6 +41,31 @@
 #define XOILA_DEFINE_GROUP( group_name, ... ) \
     BETH_EXPAND_GROUP_##group_name
 
+/// XOILA perspective macros (perspective types have a name *_spect_s instead of *_s)
+
+// Optionally conclude with semicolon and continue
+// struct-body via BCORE_DECLARE_SPECT_BODY
+#define XOILA_DECLARE_SPECT( group_name ) \
+    typedef struct group_name group_name; \
+    typedef struct group_name##_spect_s group_name##_spect_s; \
+    BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( group_name##_spect_s ) \
+    BCORE_DEFINE_INLINE_SPECT_GET_AWARE( group_name##_spect_s ) \
+    struct group_name##_spect_s
+
+// Body definition only
+#define XOILA_DECLARE_SPECT_BODY( group_name ) \
+    struct group_name##_spect_s
+
+#define XOILA_DEFINE_SPECT( parent_type, group_name ) \
+    static sc_t group_name##_spect_s_def_g; \
+    BCORE_DEFINE_SPECT_CACHE( group_name##_spect_s ); \
+    BCORE_DEFINE_CREATE_SELF( group_name##_spect_s, group_name##_spect_s_def_g ) \
+    static sc_t group_name##_spect_s_def_g = #group_name "_spect_s = spect " #parent_type
+
+#define XOILA_REGISTER_SPECT( group_name )\
+    bcore_spect_setup_cache( &group_name##_spect_s_cache_g ); \
+    bcore_spect_define_creator( bentypeof( #group_name "_spect_s" ), bentypeof( #group_name ), group_name##_spect_s_create_self );
+
 /// Declares general signal handler of *_signal.c
 #define BETH_DECLARE_GENERAL_SIGNAL_HANDLER( target_name ) \
     vd_t target_name##_general_signal_handler( const bcore_signal_s* o );

@@ -68,7 +68,7 @@ typedef struct bcore_inst_o
     vd_t o;
 } bcore_inst_o;
 
-BCORE_FORWARD_OBJECT( bcore_inst_call_s );
+BCORE_FORWARD_OBJECT( bcore_inst_call_spect_s );
 
 BCORE_DECLARE_SPECT( bcore_inst )
 {
@@ -97,7 +97,7 @@ BCORE_DECLARE_SPECT( bcore_inst )
     bcore_fp_clone        clone_o;
 
     /// callback perspective
-    const bcore_inst_call_s* inst_call_p;
+    const bcore_inst_call_spect_s* inst_call_p;
 
     /// these functions are always defined and represent the service this perspective offers
     void ( *init         )( const bcore_inst_s* p, vd_t o );

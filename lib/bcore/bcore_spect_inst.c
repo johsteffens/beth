@@ -1699,7 +1699,7 @@ static bcore_inst_s* create_from_self( const bcore_self_s* self )
     // inst_calls
     if( inst_call_any )
     {
-        o->inst_call_p = bcore_inst_call_s_get_typed( self->type );
+        o->inst_call_p = bcore_inst_call_spect_s_get_typed( self->type );
     }
 
     if( !o->down_flat ) o->copy_flat = false;

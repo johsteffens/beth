@@ -350,11 +350,13 @@ vc_t bcore_spect_get_typed( tp_t p_type, tp_t o_type )
 
 /**********************************************************************************************************************/
 
-void bcore_spect_define_trait( const bcore_self_s* p_self )
+void bcore_spect_define_trait( const bcore_self_s* p_self, tp_t tp_trait_name )
 {
     assert( p_self != NULL );
 
-    tp_t trait = 0;
+    tp_t trait = tp_trait_name;
+
+    if( trait == 0 )
     {
         st_s* p_name = st_s_create_sc( ifnameof( p_self->type ) );
         if( p_name->size < 3 || p_name->sc[ p_name->size - 2 ] != '_' || p_name->sc[ p_name->size - 1 ] != 's' )
@@ -586,11 +588,11 @@ vd_t bcore_spect_create_from_self_typed( tp_t p_type, tp_t o_type )
     return bcore_spect_create_from_self( p_self, o_self );
 }
 
-void bcore_spect_define_creator( tp_t type, bcore_flect_create_self_fp creator )
+void bcore_spect_define_creator( tp_t type, tp_t tp_trait_name, bcore_flect_create_self_fp creator )
 {
     bcore_flect_define_creator( type, creator );
     bcore_self_s* self = creator();
-    bcore_spect_define_trait( self );
+    bcore_spect_define_trait( self, tp_trait_name );
     bcore_self_s_discard( self );
 }
 

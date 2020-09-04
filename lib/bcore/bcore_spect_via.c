@@ -380,7 +380,7 @@ static bcore_via_s* bcore_via_s_create_from_self( const bcore_self_s* self )
 
     const bcore_inst_s* inst_p = bcore_inst_s_get_typed( self->type );
     o->inst_p = inst_p;
-    o->via_call_p = bcore_via_call_s_get_typed( self->type );
+    o->via_call_p = bcore_via_call_spect_s_get_typed( self->type );
 
     o->vitem_arr = NULL;
     uz_t vitem_arr_size  = 0;
@@ -503,7 +503,7 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_via )
 "{"
     "bcore_spect_header_s header;"
     "private bcore_inst_s* inst_p;"
-    "private bcore_via_call_s* via_call_p;"
+    "private bcore_via_call_spect_s* via_call_p;"
     "private uz_t  size;"
     "private bl_t  is_leaf;"
     "private vd_t vitem_arr;"

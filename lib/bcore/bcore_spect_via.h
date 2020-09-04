@@ -53,13 +53,13 @@ typedef struct bcore_vitem_s
     bcore_fp_set fp_set;       // optional explicit setter
 } bcore_vitem_s;
 
-BCORE_FORWARD_OBJECT( bcore_via_call_s );
+BCORE_FORWARD_OBJECT( bcore_via_call_spect_s );
 
 BCORE_DECLARE_SPECT( bcore_via )
 {
     bcore_spect_header_s  header;
     const bcore_inst_s*     inst_p;     // inst perspective of this item
-    const bcore_via_call_s* via_call_p; // via callback perspective of this item
+    const bcore_via_call_spect_s* via_call_p; // via callback perspective of this item
     uz_t  size;                 // number of elements
     bl_t  is_leaf;
     bcore_vitem_s* vitem_arr;   // array of vitem

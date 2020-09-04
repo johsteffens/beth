@@ -40,9 +40,9 @@ XOILA_DEFINE_GROUP( bhvm_mcode, bcore_inst )
 stamp :op = aware :
 {
     aware bhvm_vop => vop;
-    private bhvm_vop_s* p; // perspective of vop
+    private bhvm_vop_spect_s* p; // perspective of vop
 
-    func bcore_inst_call : copy_x  = { o->p = o->vop ? ( bhvm_vop_s* )bhvm_vop_s_get_aware( o->vop ) : NULL; };
+    func bcore_inst_call : copy_x  = { o->p = o->vop ? ( bhvm_vop_spect_s* )bhvm_vop_spect_s_get_aware( o->vop ) : NULL; };
     func bcore_via_call  : mutated = { @_copy_x( o, NULL ); };
     func bhvm_vop        : run = { assert( o->p ); assert( o->p->run ); o->p->run( (vc_t)o->vop, ah ); };
 };
@@ -229,7 +229,7 @@ stamp :track = aware bcore_array
         assert( vop );
         :op_s* op = @_push( o );
         op->vop = vop;
-        op->p = ( bhvm_vop_s* )bhvm_vop_s_get_aware( op->vop );
+        op->p = ( bhvm_vop_spect_s* )bhvm_vop_spect_s_get_aware( op->vop );
         assert( op->p );
         return o->size - 1;
     };
