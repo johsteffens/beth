@@ -778,7 +778,7 @@ static er_t string_parse_em_fv( bcore_source_string_s* o, sc_t format, va_list a
             msg_context = BLM_A_PUSH( st_s_show_line_context( o->string, o->index ) );
             uz_t line = st_s_lineof( o->string, o->index );
             uz_t col  = st_s_colof( o->string, o->index );
-            st_s_push_fa( msg_pref, "At line %zu, col %zu", line, col );
+            st_s_push_fa( msg_pref, "At line #<uz_t>, col #<uz_t>", line, col );
         }
 
         st_s_push_fa( msg_main, "#<sc_t>: error: #<sc_t>\n", msg_pref->sc, er_arg.msg ? er_arg.msg->sc : "" );
