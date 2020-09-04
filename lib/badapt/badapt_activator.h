@@ -118,7 +118,7 @@ XOILA_DEFINE_GROUP( badapt_activator, bcore_inst )
         func : :infer =
         {
             assert( in->size == out->size );
-            const badapt_activation_s* activation_p = badapt_activation_s_get_aware( o->activation );
+            const badapt_activation_spect_s* activation_p = badapt_activation_spect_s_get_aware( o->activation );
             for( sz_t i = 0; i < out->size; i++ )
             {
                 out->data[ i ] = badapt_activation_p_fx( activation_p, o->activation, in->data[ i ] );
@@ -129,7 +129,7 @@ XOILA_DEFINE_GROUP( badapt_activator, bcore_inst )
         {
             assert( grad_in->size == grad_out->size );
             assert( grad_in->size ==      out->size );
-            const badapt_activation_s* activation_p = badapt_activation_s_get_aware( o->activation );
+            const badapt_activation_spect_s* activation_p = badapt_activation_spect_s_get_aware( o->activation );
             for( sz_t i = 0; i < out->size; i++ )
             {
                 grad_in->data[ i ] = badapt_activation_p_dy( activation_p, o->activation, out->data[ i ] ) * grad_out->data[ i ];
