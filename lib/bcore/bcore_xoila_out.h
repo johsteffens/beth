@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-08-28T16:49:20Z
+ *  Last File Update: 2020-09-02T12:47:08Z
  *
  *  Copyright and License of this File:
  *
@@ -25,7 +25,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by xoico, reset the hash key value below to 0.
-#define HKEYOF_bcore_xoila_out 0x5A376544A9E1E5C5ull
+#define HKEYOF_bcore_xoila_out 0x520EE01388DF785Eull
 
 #define TYPEOF_bcore_xoila_out 0xC52DA50A6069BDB1ull
 
@@ -40,7 +40,12 @@
 #define TYPEOF_bcore_file_path_s 0x5CF0BE285C3A10CFull
 #define BETH_EXPAND_ITEM_bcore_file_path_s \
   BCORE_DECLARE_OBJECT( bcore_file_path_s ) \
-    {aware_t _;st_s name;st_s* root;st_s* full;}; \
+  { \
+      aware_t _; \
+      st_s name; \
+      st_s* root; \
+      st_s* full; \
+  }; \
   void bcore_file_path_s_source( bcore_file_path_s* o, bcore_source* source ); \
   static inline sc_t bcore_file_path_s_get_sc( const bcore_file_path_s* o ){return o->full ? o->full->sc : o->name.sc;} \
   void bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name );
@@ -146,12 +151,23 @@
 #define TYPEOF_bcore_main_frame_s 0x32D158C73073F54Eull
 #define BETH_EXPAND_ITEM_bcore_main_frame_s \
   BCORE_DECLARE_OBJECT( bcore_main_frame_s ) \
-    {aware_t _;bcore_interpreter* interpreter;bcore_arr_st_s args;bcore_mutex_s mutex;bl_t use_first_argument;sc_t local_file;sc_t global_file;}; \
+  { \
+      aware_t _; \
+      bcore_interpreter* interpreter; \
+      bcore_arr_st_s args; \
+      bcore_mutex_s mutex; \
+      bl_t use_first_argument; \
+      sc_t local_file; \
+      sc_t global_file; \
+  }; \
   bl_t bcore_main_frame_s_exit_required( const bcore_main_frame_s* o );
 #define TYPEOF_bcore_main_arr_s 0xAB5CAE6CCF6EDB68ull
 #define BETH_EXPAND_ITEM_bcore_main_arr_s \
   BCORE_DECLARE_OBJECT( bcore_main_arr_s ) \
-    {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( bcore_main, );}; \
+  { \
+      aware_t _; \
+      BCORE_ARRAY_DYN_LINK_STATIC_S( bcore_main, ); \
+  }; \
   static inline bcore_main_arr_s* bcore_main_arr_s_set_space( bcore_main_arr_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bcore_main_arr_s, ( bcore_array* )o, size ); return o; } \
   static inline bcore_main_arr_s* bcore_main_arr_s_set_size( bcore_main_arr_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bcore_main_arr_s, ( bcore_array* )o, size ); return o; } \
   static inline bcore_main_arr_s* bcore_main_arr_s_clear( bcore_main_arr_s* o ) { bcore_array_t_set_space( TYPEOF_bcore_main_arr_s, ( bcore_array* )o, 0 ); return o; } \
@@ -166,7 +182,10 @@
 #define TYPEOF_bcore_main_set_s 0x3503376AEC71546Full
 #define BETH_EXPAND_ITEM_bcore_main_set_s \
   BCORE_DECLARE_OBJECT( bcore_main_set_s ) \
-    {aware_t _;bcore_main_arr_s arr;}; \
+  { \
+      aware_t _; \
+      bcore_main_arr_s arr; \
+  }; \
   er_t bcore_main_set_s_main( bcore_main_set_s* o, bcore_main_frame_s* frame );
 #define BETH_EXPAND_GROUP_bcore_main \
   BCORE_FORWARD_OBJECT( bcore_main ); \
@@ -202,7 +221,10 @@
 #define TYPEOF_bcore_hmap_name_s 0x36F8463812FD3AE7ull
 #define BETH_EXPAND_ITEM_bcore_hmap_name_s \
   BCORE_DECLARE_OBJECT( bcore_hmap_name_s ) \
-    {aware_t _;bcore_hmap_tp_sr_s map;};
+  { \
+      aware_t _; \
+      bcore_hmap_tp_sr_s map; \
+  };
 #define BETH_EXPAND_GROUP_bcore_hmap_name \
   BCORE_FORWARD_OBJECT( bcore_hmap_name ); \
   BCORE_FORWARD_OBJECT( bcore_hmap_name_s ); \
@@ -219,11 +241,20 @@
 #define TYPEOF_bcore_cday_ymd_s 0x0925C4B71AD1263Dull
 #define BETH_EXPAND_ITEM_bcore_cday_ymd_s \
   BCORE_DECLARE_OBJECT( bcore_cday_ymd_s ) \
-    {aware_t _;s2_t y;s2_t m;s2_t d;};
+  { \
+      aware_t _; \
+      s2_t y; \
+      s2_t m; \
+      s2_t d; \
+  };
 #define TYPEOF_bcore_cday_utc_s 0xB3FF29791CCF8201ull
 #define BETH_EXPAND_ITEM_bcore_cday_utc_s \
   BCORE_DECLARE_OBJECT( bcore_cday_utc_s ) \
-    {aware_t _;s2_t cday;s2_t ms;};
+  { \
+      aware_t _; \
+      s2_t cday; \
+      s2_t ms; \
+  };
 #define BETH_EXPAND_GROUP_bcore_cday \
   BCORE_FORWARD_OBJECT( bcore_cday ); \
   BCORE_FORWARD_OBJECT( bcore_cday_ymd_s ); \
@@ -242,11 +273,18 @@
 #define TYPEOF_bcore_error_manager_error_s 0x98F2D6C747A7D80Cull
 #define BETH_EXPAND_ITEM_bcore_error_manager_error_s \
   BCORE_DECLARE_OBJECT( bcore_error_manager_error_s ) \
-    {aware_t _;er_t id;st_s msg;};
+  { \
+      aware_t _; \
+      er_t id; \
+      st_s msg; \
+  };
 #define TYPEOF_bcore_error_manager_error_adl_s 0x5D87C559ED44DAC4ull
 #define BETH_EXPAND_ITEM_bcore_error_manager_error_adl_s \
   BCORE_DECLARE_OBJECT( bcore_error_manager_error_adl_s ) \
-    {aware_t _;BCORE_ARRAY_DYN_LINK_STATIC_S( bcore_error_manager_error_s, );}; \
+  { \
+      aware_t _; \
+      BCORE_ARRAY_DYN_LINK_STATIC_S( bcore_error_manager_error_s, ); \
+  }; \
   static inline bcore_error_manager_error_adl_s* bcore_error_manager_error_adl_s_set_space( bcore_error_manager_error_adl_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bcore_error_manager_error_adl_s, ( bcore_array* )o, size ); return o; } \
   static inline bcore_error_manager_error_adl_s* bcore_error_manager_error_adl_s_set_size( bcore_error_manager_error_adl_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bcore_error_manager_error_adl_s, ( bcore_array* )o, size ); return o; } \
   static inline bcore_error_manager_error_adl_s* bcore_error_manager_error_adl_s_clear( bcore_error_manager_error_adl_s* o ) { bcore_array_t_set_space( TYPEOF_bcore_error_manager_error_adl_s, ( bcore_array* )o, 0 ); return o; } \
@@ -260,7 +298,11 @@
 #define TYPEOF_bcore_error_manager_context_s 0x9EF599CE2C2E59C1ull
 #define BETH_EXPAND_ITEM_bcore_error_manager_context_s \
   BCORE_DECLARE_OBJECT( bcore_error_manager_context_s ) \
-    {aware_t _;bcore_error_manager_error_adl_s adl;bcore_mutex_s mutex;};
+  { \
+      aware_t _; \
+      bcore_error_manager_error_adl_s adl; \
+      bcore_mutex_s mutex; \
+  };
 #define TYPEOF_general_error 0x4D9E984C5B21FAEAull
 #define TYPEOF_parse_error 0x690AF8765815EC4Dull
 #define TYPEOF_plant_error 0x6C62A00462378607ull
@@ -369,7 +411,10 @@
 #define TYPEOF_bcore_prsg_lcg_u2_00_s 0xEDC5E07658932AEBull
 #define BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_00_s \
   BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u2_00_s ) \
-    {aware_t _;u2_t state;}; \
+  { \
+      aware_t _; \
+      u2_t state; \
+  }; \
   u3_t bcore_prsg_lcg_u2_00_s_gen_u3( bcore_prsg_lcg_u2_00_s* o ); \
   u3_t bcore_prsg_lcg_u2_00_s_state_bits_u3( const bcore_prsg_lcg_u2_00_s* o, sz_t bits ); \
   u3_t bcore_prsg_lcg_u2_00_s_gen_bits_u3( bcore_prsg_lcg_u2_00_s* o, sz_t bits ); \
@@ -384,7 +429,10 @@
 #define TYPEOF_bcore_prsg_lcg_u2_01_s 0xE310A77651EDDF10ull
 #define BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_01_s \
   BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u2_01_s ) \
-    {aware_t _;u2_t state;}; \
+  { \
+      aware_t _; \
+      u2_t state; \
+  }; \
   u3_t bcore_prsg_lcg_u2_01_s_gen_u3( bcore_prsg_lcg_u2_01_s* o ); \
   u3_t bcore_prsg_lcg_u2_01_s_state_bits_u3( const bcore_prsg_lcg_u2_01_s* o, sz_t bits ); \
   u3_t bcore_prsg_lcg_u2_01_s_gen_bits_u3( bcore_prsg_lcg_u2_01_s* o, sz_t bits ); \
@@ -399,7 +447,10 @@
 #define TYPEOF_bcore_prsg_lcg_u2_02_s 0xDBC196764E2C002Dull
 #define BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_02_s \
   BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u2_02_s ) \
-    {aware_t _;u2_t state;}; \
+  { \
+      aware_t _; \
+      u2_t state; \
+  }; \
   u3_t bcore_prsg_lcg_u2_02_s_gen_u3( bcore_prsg_lcg_u2_02_s* o ); \
   u3_t bcore_prsg_lcg_u2_02_s_state_bits_u3( const bcore_prsg_lcg_u2_02_s* o, sz_t bits ); \
   u3_t bcore_prsg_lcg_u2_02_s_gen_bits_u3( bcore_prsg_lcg_u2_02_s* o, sz_t bits ); \
@@ -414,7 +465,10 @@
 #define TYPEOF_bcore_prsg_lcg_u2_03_s 0xD3995D7649B1EC92ull
 #define BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_03_s \
   BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u2_03_s ) \
-    {aware_t _;u2_t state;}; \
+  { \
+      aware_t _; \
+      u2_t state; \
+  }; \
   u3_t bcore_prsg_lcg_u2_03_s_gen_u3( bcore_prsg_lcg_u2_03_s* o ); \
   u3_t bcore_prsg_lcg_u2_03_s_state_bits_u3( const bcore_prsg_lcg_u2_03_s* o, sz_t bits ); \
   u3_t bcore_prsg_lcg_u2_03_s_gen_bits_u3( bcore_prsg_lcg_u2_03_s* o, sz_t bits ); \
@@ -429,7 +483,10 @@
 #define TYPEOF_bcore_prsg_lcg_u2_04_s 0x0E667C766A7AFEFFull
 #define BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_04_s \
   BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u2_04_s ) \
-    {aware_t _;u2_t state;}; \
+  { \
+      aware_t _; \
+      u2_t state; \
+  }; \
   u3_t bcore_prsg_lcg_u2_04_s_gen_u3( bcore_prsg_lcg_u2_04_s* o ); \
   u3_t bcore_prsg_lcg_u2_04_s_state_bits_u3( const bcore_prsg_lcg_u2_04_s* o, sz_t bits ); \
   u3_t bcore_prsg_lcg_u2_04_s_gen_bits_u3( bcore_prsg_lcg_u2_04_s* o, sz_t bits ); \
@@ -444,7 +501,10 @@
 #define TYPEOF_bcore_prsg_lcg_u2_05_s 0x0718637666BAC584ull
 #define BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_05_s \
   BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u2_05_s ) \
-    {aware_t _;u2_t state;}; \
+  { \
+      aware_t _; \
+      u2_t state; \
+  }; \
   u3_t bcore_prsg_lcg_u2_05_s_gen_u3( bcore_prsg_lcg_u2_05_s* o ); \
   u3_t bcore_prsg_lcg_u2_05_s_state_bits_u3( const bcore_prsg_lcg_u2_05_s* o, sz_t bits ); \
   u3_t bcore_prsg_lcg_u2_05_s_gen_bits_u3( bcore_prsg_lcg_u2_05_s* o, sz_t bits ); \
@@ -459,7 +519,10 @@
 #define TYPEOF_bcore_prsg_lcg_u3_00_s 0xE7FB4DA7051A0C0Aull
 #define BETH_EXPAND_ITEM_bcore_prsg_lcg_u3_00_s \
   BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u3_00_s ) \
-    {aware_t _;u3_t state;}; \
+  { \
+      aware_t _; \
+      u3_t state; \
+  }; \
   u3_t bcore_prsg_lcg_u3_00_s_gen_u3( bcore_prsg_lcg_u3_00_s* o ); \
   u3_t bcore_prsg_lcg_u3_00_s_state_bits_u3( const bcore_prsg_lcg_u3_00_s* o, sz_t bits ); \
   u3_t bcore_prsg_lcg_u3_00_s_gen_bits_u3( bcore_prsg_lcg_u3_00_s* o, sz_t bits ); \
@@ -474,7 +537,10 @@
 #define TYPEOF_bcore_prsg_lcg_u3_01_s 0xEF4A66A708DBF885ull
 #define BETH_EXPAND_ITEM_bcore_prsg_lcg_u3_01_s \
   BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u3_01_s ) \
-    {aware_t _;u3_t state;}; \
+  { \
+      aware_t _; \
+      u3_t state; \
+  }; \
   u3_t bcore_prsg_lcg_u3_01_s_gen_u3( bcore_prsg_lcg_u3_01_s* o ); \
   u3_t bcore_prsg_lcg_u3_01_s_state_bits_u3( const bcore_prsg_lcg_u3_01_s* o, sz_t bits ); \
   u3_t bcore_prsg_lcg_u3_01_s_gen_bits_u3( bcore_prsg_lcg_u3_01_s* o, sz_t bits ); \
@@ -489,7 +555,10 @@
 #define TYPEOF_bcore_prsg_lcg_u3_02_s 0xF77297A70D55FE88ull
 #define BETH_EXPAND_ITEM_bcore_prsg_lcg_u3_02_s \
   BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u3_02_s ) \
-    {aware_t _;u3_t state;}; \
+  { \
+      aware_t _; \
+      u3_t state; \
+  }; \
   u3_t bcore_prsg_lcg_u3_02_s_gen_u3( bcore_prsg_lcg_u3_02_s* o ); \
   u3_t bcore_prsg_lcg_u3_02_s_state_bits_u3( const bcore_prsg_lcg_u3_02_s* o, sz_t bits ); \
   u3_t bcore_prsg_lcg_u3_02_s_gen_bits_u3( bcore_prsg_lcg_u3_02_s* o, sz_t bits ); \
@@ -504,7 +573,10 @@
 #define TYPEOF_bcore_prsg_lcg_u3_03_s 0x0227B0A713FB1403ull
 #define BETH_EXPAND_ITEM_bcore_prsg_lcg_u3_03_s \
   BCORE_DECLARE_OBJECT( bcore_prsg_lcg_u3_03_s ) \
-    {aware_t _;u3_t state;}; \
+  { \
+      aware_t _; \
+      u3_t state; \
+  }; \
   u3_t bcore_prsg_lcg_u3_03_s_gen_u3( bcore_prsg_lcg_u3_03_s* o ); \
   u3_t bcore_prsg_lcg_u3_03_s_state_bits_u3( const bcore_prsg_lcg_u3_03_s* o, sz_t bits ); \
   u3_t bcore_prsg_lcg_u3_03_s_gen_bits_u3( bcore_prsg_lcg_u3_03_s* o, sz_t bits ); \
@@ -547,7 +619,10 @@
 #define TYPEOF_bcore_prsg_xsg_u2_00_s 0x6446C2147EAACD0Full
 #define BETH_EXPAND_ITEM_bcore_prsg_xsg_u2_00_s \
   BCORE_DECLARE_OBJECT( bcore_prsg_xsg_u2_00_s ) \
-    {aware_t _;u2_t state;}; \
+  { \
+      aware_t _; \
+      u2_t state; \
+  }; \
   u3_t bcore_prsg_xsg_u2_00_s_gen_u3( bcore_prsg_xsg_u2_00_s* o ); \
   u3_t bcore_prsg_xsg_u2_00_s_state_bits_u3( const bcore_prsg_xsg_u2_00_s* o, sz_t bits ); \
   u3_t bcore_prsg_xsg_u2_00_s_gen_bits_u3( bcore_prsg_xsg_u2_00_s* o, sz_t bits ); \
@@ -562,7 +637,10 @@
 #define TYPEOF_bcore_prsg_xsg_u2_01_s 0x5C1EA9147A30EFD4ull
 #define BETH_EXPAND_ITEM_bcore_prsg_xsg_u2_01_s \
   BCORE_DECLARE_OBJECT( bcore_prsg_xsg_u2_01_s ) \
-    {aware_t _;u2_t state;}; \
+  { \
+      aware_t _; \
+      u2_t state; \
+  }; \
   u3_t bcore_prsg_xsg_u2_01_s_gen_u3( bcore_prsg_xsg_u2_01_s* o ); \
   u3_t bcore_prsg_xsg_u2_01_s_state_bits_u3( const bcore_prsg_xsg_u2_01_s* o, sz_t bits ); \
   u3_t bcore_prsg_xsg_u2_01_s_gen_bits_u3( bcore_prsg_xsg_u2_01_s* o, sz_t bits ); \
@@ -577,7 +655,10 @@
 #define TYPEOF_bcore_prsg_xsg_u2_02_s 0x54CF7814766EDA91ull
 #define BETH_EXPAND_ITEM_bcore_prsg_xsg_u2_02_s \
   BCORE_DECLARE_OBJECT( bcore_prsg_xsg_u2_02_s ) \
-    {aware_t _;u2_t state;}; \
+  { \
+      aware_t _; \
+      u2_t state; \
+  }; \
   u3_t bcore_prsg_xsg_u2_02_s_gen_u3( bcore_prsg_xsg_u2_02_s* o ); \
   u3_t bcore_prsg_xsg_u2_02_s_state_bits_u3( const bcore_prsg_xsg_u2_02_s* o, sz_t bits ); \
   u3_t bcore_prsg_xsg_u2_02_s_gen_bits_u3( bcore_prsg_xsg_u2_02_s* o, sz_t bits ); \
@@ -592,7 +673,10 @@
 #define TYPEOF_bcore_prsg_xsg_u2_03_s 0x4AF43F1470833276ull
 #define BETH_EXPAND_ITEM_bcore_prsg_xsg_u2_03_s \
   BCORE_DECLARE_OBJECT( bcore_prsg_xsg_u2_03_s ) \
-    {aware_t _;u2_t state;}; \
+  { \
+      aware_t _; \
+      u2_t state; \
+  }; \
   u3_t bcore_prsg_xsg_u2_03_s_gen_u3( bcore_prsg_xsg_u2_03_s* o ); \
   u3_t bcore_prsg_xsg_u2_03_s_state_bits_u3( const bcore_prsg_xsg_u2_03_s* o, sz_t bits ); \
   u3_t bcore_prsg_xsg_u2_03_s_gen_bits_u3( bcore_prsg_xsg_u2_03_s* o, sz_t bits ); \
@@ -620,4 +704,4 @@
 vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_XOILA_OUT_H
-// XOILA_OUT_SIGNATURE 0xC67B655877535C26ull
+// XOILA_OUT_SIGNATURE 0x093F208F3CE1883Aull

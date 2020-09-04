@@ -542,6 +542,16 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
 
         if( !o->flags.f_spect && ( o->caps == BCORE_CAPS_LINK_STATIC ) )
         {
+            if( o->type == parent_type )
+            {
+                bcore_source_r_parse_err_fa
+                (
+                    &src,
+                    "Parent '#<sc_t>':\nItem #<sc_t>: Postfix '!' is not allowed on recursive members.",
+                    ifnameof( parent_type ),
+                    item_name->sc
+                );
+            }
             o->flags.f_create_on_init = true;
         }
         else if( !o->flags.f_spect && o->caps == BCORE_CAPS_SOLID_STATIC )
@@ -892,10 +902,13 @@ static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, const b
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_self_item_s_struct_to_sink( const bcore_self_item_s* o, bcore_sink* sink )
+// returns false in case nothing was written
+bl_t bcore_self_item_s_struct_to_sink( const bcore_self_item_s* o, bcore_sink* sink )
 {
     sc_t type = ifnameof( o->type );
     sc_t name = ifnameof( o->name );
+
+    bl_t ret = true;
 
     switch( o->caps )
     {
@@ -1014,7 +1027,12 @@ void bcore_self_item_s_struct_to_sink( const bcore_self_item_s* o, bcore_sink* s
         }
         break;
 
-        case BCORE_CAPS_EXTERNAL_FUNC: /* nothing to do */ break;
+        case BCORE_CAPS_EXTERNAL_FUNC:
+        {
+            /* nothing to do */
+            ret = false;
+        }
+        break;
 
         default:
         {
@@ -1022,6 +1040,8 @@ void bcore_self_item_s_struct_to_sink( const bcore_self_item_s* o, bcore_sink* s
         }
         break;
     }
+
+    return ret;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1266,6 +1286,7 @@ void bcore_self_s_forward_struct_to_sink( const bcore_self_s* o, sz_t indent, bc
 void bcore_self_s_struct_body_to_sink( const bcore_self_s* o, sz_t indent, bcore_sink* sink )
 {
     sc_t name = nameof( o->type );
+    st_s* buf = st_s_create();
     if( !name ) ERR_fa( "Type of reflection has no registered name." );
     bcore_sink_a_push_fa( sink, "#rn{ }{\n", indent );
     if( o->body )
@@ -1273,11 +1294,38 @@ void bcore_self_s_struct_body_to_sink( const bcore_self_s* o, sz_t indent, bcore
         for( sz_t i = 0; i < o->body->size; i++ )
         {
             const bcore_self_item_s* item = o->body->data[ i ];
-            bcore_sink_a_push_fa( sink, "#rn{ }    ", indent );
-            bcore_self_item_s_struct_to_sink( item, sink );
-            bcore_sink_a_push_fa( sink, "\n" );
+            st_s_clear( buf );
+            if( bcore_self_item_s_struct_to_sink( item, ( bcore_sink* )buf ) )
+            {
+                bcore_sink_a_push_fa( sink, "#rn{ }    #<sc_t>\n", indent, buf->sc );
+            }
         }
     }
+    st_s_discard( buf );
+    bcore_sink_a_push_fa( sink, "#rn{ }}", indent );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_self_s_struct_body_to_sink_newline_escaped( const bcore_self_s* o, sz_t indent, bcore_sink* sink )
+{
+    sc_t name = nameof( o->type );
+    st_s* buf = st_s_create();
+    if( !name ) ERR_fa( "Type of reflection has no registered name." );
+    bcore_sink_a_push_fa( sink, "#rn{ }{ \\\n", indent );
+    if( o->body )
+    {
+        for( sz_t i = 0; i < o->body->size; i++ )
+        {
+            const bcore_self_item_s* item = o->body->data[ i ];
+            st_s_clear( buf );
+            if( bcore_self_item_s_struct_to_sink( item, ( bcore_sink* )buf ) )
+            {
+                bcore_sink_a_push_fa( sink, "#rn{ }    #<sc_t> \\\n", indent, buf->sc );
+            }
+        }
+    }
+    st_s_discard( buf );
     bcore_sink_a_push_fa( sink, "#rn{ }}", indent );
 }
 
@@ -1293,7 +1341,6 @@ void bcore_self_s_struct_body_to_sink_single_line( const bcore_self_s* o, bcore_
         for( sz_t i = 0; i < o->body->size; i++ )
         {
             const bcore_self_item_s* item = o->body->data[ i ];
-            //bcore_sink_a_push_fa( sink, " " );
             bcore_self_item_s_struct_to_sink( item, sink );
         }
     }

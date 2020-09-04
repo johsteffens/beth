@@ -448,8 +448,9 @@ void bcore_self_s_check_integrity( const bcore_self_s* o );
 void bcore_self_s_forward_struct_to_sink( const bcore_self_s* o, sz_t indent, bcore_sink* sink );
 
 /// Creates compatible C-Structure body of reflection. (Auto code generation)
-void bcore_self_s_struct_body_to_sink( const bcore_self_s* o, sz_t indent, bcore_sink* sink );
-void bcore_self_s_struct_body_to_sink_single_line( const bcore_self_s* o, bcore_sink* sink );
+void bcore_self_s_struct_body_to_sink                ( const bcore_self_s* o, sz_t indent, bcore_sink* sink );
+void bcore_self_s_struct_body_to_sink_newline_escaped( const bcore_self_s* o, sz_t indent, bcore_sink* sink );
+void bcore_self_s_struct_body_to_sink_single_line    ( const bcore_self_s* o,              bcore_sink* sink );
 
 /** Creates compatible C-Structure of reflection. (Auto code generation)
  *  Format:
