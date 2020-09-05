@@ -209,7 +209,7 @@ vd_t bcore_error_manager_signal_handler( const bcore_signal_s* o )
                     er_t id = 0;
                     while( bcore_error_pop_st( &id, msg ) )
                     {
-                        bcore_wrn_fa( "\n    #<sc_t>: #<sc_t>\n", ifnameof( id ), msg->sc );
+                        bcore_wrn_fa( "\n#<sc_t>: #<sc_t>\n", ifnameof( id ), msg->sc );
                     }
                     st_s_discard( msg );
                 }
