@@ -165,7 +165,11 @@ extern bcore_life_s* __bcore_life; // always NULL; needed to ingrain a life-chai
     if( __blm_err ) BLM_RETURNV( er_t, __blm_err ) \
 }
 
-/// Deprecated Macros. Preferably use improved versions BLM_... above;
+/// Error report in function with error management
+#define BLM_ERR_FA( ... ) \
+BLM_RETURNV( er_t, bcore_error_push_fa( TYPEOF_general_error, __VA_ARGS__ ) )
+
+/// Deprecated Macros. Preferably use BLM_... above;
 #define BCORE_LIFE_INIT() bcore_life_s* __life = bcore_life_s_create()
 #define BCORE_LIFE_DOWN() bcore_life_s_detach( &__life )
 #define BCORE_LIFE_CREATE( type_name, var_name ) type_name* var_name = bcore_life_s_push_typed( __life, TYPEOF_##type_name, type_name##_create() )
