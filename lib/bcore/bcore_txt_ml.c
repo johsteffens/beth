@@ -33,8 +33,16 @@
 // flags
 
 /** This flag allows full type conversion to object elements in interpreter:
- *  Any type can be assigned provided the target has a conversion (copy_typed) in place.
- *  It causes extra overhead (potentially slower, more memory).
+ *  Advatage:
+ *      - Any type can be assigned provided the target has a conversion (copy_typed) in place.
+ *        --> this provides much more editing flexibility in configuration textfiles.
+ *
+ *  Disadvantage:
+ *      - Hidden and private embedded members are being reset to their initial state
+ *        Note: This generally applies to linked members regardless of full conversion setting.
+ *
+ *      - Causes extra overhead (potentially slower, more memory).
+ *
  *  Disable in case overhead is not tolerable.
  */
 #define BCORE_TXT_ML_INTERPRETER_FULL_CONVERSION
