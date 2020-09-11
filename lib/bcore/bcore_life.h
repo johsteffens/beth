@@ -125,9 +125,10 @@ extern bcore_life_s* __bcore_life; // always NULL; needed to ingrain a life-chai
 
 #define BLM_DOWN() bcore_life_s_detach( &BLM_INIT__ )
 #define BLM_CREATE( tname ) ( tname* )bcore_life_s_push_typed( BLM_INIT__, TYPEOF_##tname, tname##_create() )
-#define BLM_CLONE(  tname, src ) ( tname* )bcore_life_s_push_typed( BLM_INIT__, TYPEOF_##tname, tname##_clone( src ) )
-#define BLM_A_PUSH(       expr ) bcore_life_s_push_aware( BLM_INIT__,       expr )
-#define BLM_T_PUSH( type, expr ) bcore_life_s_push_typed( BLM_INIT__, type, expr )
+#define BLM_CLONE(  tname, expr ) ( tname* )bcore_life_s_push_typed( BLM_INIT__, TYPEOF_##tname, tname##_clone( expr ) )
+#define BLM_A_PUSH(        expr ) bcore_life_s_push_aware( BLM_INIT__,       expr )
+#define BLM_T_PUSH( type,  expr ) bcore_life_s_push_typed( BLM_INIT__, type, expr )
+#define BLM_A_CLONE(       expr ) bcore_life_s_push_aware( BLM_INIT__, bcore_inst_a_clone( ( bcore_inst* )expr ) )
 
 #define BLM_BREAK() \
 { \
