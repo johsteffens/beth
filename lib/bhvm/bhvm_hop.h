@@ -29,6 +29,20 @@
 #include "bhvm_holor.h"
 
 /**********************************************************************************************************************/
+/// Macros
+
+#define BODY_ASSERT_VVV assert( a->v.size == r->v.size ); assert( b->v.size == r->v.size );
+#define BODY_ASSERT_VSV assert( a->v.size == r->v.size ); assert( b->v.size == 1         );
+#define BODY_ASSERT_SVV assert( a->v.size == 1         ); assert( b->v.size == r->v.size );
+#define BODY_ASSERT_VVS assert( a->v.size == b->v.size ); assert( r->v.size == 1         );
+#define BODY_ASSERT_MVV assert( a->s.size == 2 ); assert( b->v.size == a->s.data[ 0 ] ); assert( r->v.size == a->s.data[ 1 ] );
+#define BODY_ASSERT_VMV assert( b->s.size == 2 ); assert( a->v.size == b->s.data[ 1 ] ); assert( r->v.size == b->s.data[ 0 ] );
+#define BODY_ASSERT_VVM assert( r->s.size == 2 ); assert( a->v.size == r->s.data[ 1 ] ); assert( b->v.size == r->s.data[ 0 ] );
+#define BODY_ASSERT_TVV assert( a->s.size == 2 ); assert( b->v.size == a->s.data[ 1 ] ); assert( r->v.size == a->s.data[ 0 ] );
+#define BODY_ASSERT_VTV assert( b->s.size == 2 ); assert( a->v.size == b->s.data[ 0 ] ); assert( r->v.size == b->s.data[ 1 ] );
+#define BODY_ASSERT_VVT assert( r->s.size == 2 ); assert( a->v.size == r->s.data[ 0 ] ); assert( b->v.size == r->s.data[ 1 ] );
+
+/**********************************************************************************************************************/
 
 XOILA_DEFINE_GROUP( bhvm_hop, bcore_inst, "bhvm_hop.x" )
 
