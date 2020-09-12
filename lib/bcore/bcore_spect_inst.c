@@ -326,6 +326,7 @@ static void init_generic( const bcore_inst_s* p, vd_t o )
             break;
 
             case BCORE_CAPS_LINK_TYPED:
+            case BCORE_CAPS_POINTER:
             case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
             case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
             case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
@@ -431,6 +432,12 @@ static void down_generic( const bcore_inst_s* p, vd_t o )
             {
                 bcore_link_aware_s* s = item_obj;
                 if( s->link ) bcore_inst_a_discard( s->link );
+            }
+            break;
+
+            case BCORE_CAPS_POINTER:
+            {
+                // nothing to do
             }
             break;
 
@@ -718,6 +725,14 @@ static void copy_generic( const bcore_inst_s* p, vd_t dst, vc_t src )
                 {
                     dst->link = NULL;
                 }
+            }
+            break;
+
+            case BCORE_CAPS_POINTER:
+            {
+                vd_t* dst = dst_obj;
+                vd_t* src = src_obj;
+                *dst = *src;
             }
             break;
 
@@ -1925,17 +1940,106 @@ static st_s* spect_inst_selftest( void )
 
     // just links
     {
-        typedef struct { st_s* str1; st_s* str2; } links_object_s;
-        bcore_flect_define_self_d( BCORE_SELF_S_BUILD_PARSE_SC( "links_object_s = { st_s => str1; st_s => str2; }", links_object_s ) );
-        links_object_s* o = bcore_inst_t_create( typeof( "links_object_s" ) );
-        o->str1 = st_s_create_sc( "hello " );
-        o->str2 = st_s_create_sc( "world!" );
-        bcore_inst_t_discard( typeof( "links_object_s" ), o );
+        typedef struct
+        {
+            st_s* str1;
+            st_s* str2;
+            st_s* str3;
+        } links_object_s;
+
+        bcore_flect_define_self_d
+        (
+            BCORE_SELF_S_BUILD_PARSE_SC
+            (
+                "links_object_s = \
+                { \
+                    st_s => str1; \
+                    st_s -> str2; \
+                    hidden st_s * str3; \
+                } \
+                ",
+                links_object_s
+            )
+        );
+
+        st_s* ext_str = st_s_create_sc( "external" );
+
+        links_object_s* o1 = bcore_inst_t_create( typeof( "links_object_s" ) );
+        o1->str1 = st_s_create_sc( "hello " );
+        o1->str2 = st_s_create_sc( "world!" );
+        o1->str3 = ext_str;
+
+        links_object_s* o2 = bcore_inst_t_clone( typeof( "links_object_s" ), ( const bcore_inst* )o1 );
+
+        ASSERT( o1->str1 != o2->str1 );
+        ASSERT( o1->str2 == o2->str2 );
+        ASSERT( o1->str3 == o2->str3 );
+
+        bcore_inst_t_discard( typeof( "links_object_s" ), o1 );
+        bcore_inst_t_discard( typeof( "links_object_s" ), o2 );
+
+        st_s_discard( ext_str );
+    }
+
+    // flat copy
+    {
+        typedef struct
+        {
+            tp_t v1;
+            u1_t v2;
+            st_s* p1;
+        } flat_object_s;
+
+        bcore_flect_define_self_d
+        (
+            BCORE_SELF_S_BUILD_PARSE_SC
+            (
+                "flat_object_s = \
+                { \
+                    tp_t v1; \
+                    u1_t v2; \
+                    hidden st_s* p1; \
+                } \
+                ",
+                flat_object_s
+            )
+        );
+
+        st_s* ext_str = st_s_create_sc( "external" );
+
+        const bcore_inst_s* spect = bcore_inst_s_get_typed( typeof( "flat_object_s" ) );
+        ASSERT( spect->init_flat );
+        ASSERT( spect->copy_flat );
+        ASSERT( spect->down_flat );
+
+        flat_object_s* o1 = bcore_inst_t_create( typeof( "flat_object_s" ) );
+        o1->v1 = 123;
+        o1->v2 = 456;
+        o1->p1 = ext_str;
+
+        flat_object_s* o2 = bcore_inst_t_clone( typeof( "flat_object_s" ), ( const bcore_inst* )o1 );
+
+        ASSERT( o1->v1 == o2->v1 );
+        ASSERT( o1->v2 == o2->v2 );
+        ASSERT( o1->p1 == o2->p1 );
+
+        bcore_inst_t_discard( typeof( "flat_object_s" ), o1 );
+        bcore_inst_t_discard( typeof( "flat_object_s" ), o2 );
+
+        st_s_discard( ext_str );
     }
 
     // default strings
     {
-        typedef struct { sc_t str0; st_s* str1; st_s str2; st_s* str3; st_s* str4; } string_init_object_s;
+        typedef struct
+        {
+            sc_t  str0;
+            st_s* str1;
+            st_s  str2;
+            st_s* str3;
+            st_s* str4;
+        } string_init_object_s;
+
         bcore_flect_define_self_d
         (
             BCORE_SELF_S_BUILD_PARSE_SC

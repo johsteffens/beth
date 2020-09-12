@@ -51,6 +51,7 @@ enum
     BCORE_CAPS_LINK_STATIC,
     BCORE_CAPS_LINK_TYPED,
     BCORE_CAPS_LINK_AWARE,
+    BCORE_CAPS_POINTER,          // simple pointer not to be dereferenced by perspective
     BCORE_CAPS_ARRAY_DYN_SOLID_STATIC,
     BCORE_CAPS_ARRAY_DYN_SOLID_TYPED,
     BCORE_CAPS_ARRAY_DYN_LINK_STATIC,
@@ -151,7 +152,7 @@ typedef struct bcore_flect_flags_s
             //    * false: linked objects are forked
             unsigned f_deep_copy : 1;
 
-            // aware or typed objects; 'type' value of self_item can be 0 or represent a trait
+            // used on aware or typed objects or pure pointers; 'type' value of self_item can be 0 or represent a trait
             unsigned f_virtual : 1;
 
             // for managed static links: create an instance of given type during init
@@ -333,10 +334,15 @@ bcore_self_s* bcore_self_s_create_array_fix_link_aware(   uz_t size );
  *    Example: 'func bmath_fp:add' expands to 'func bmath_fp_add add'
  *
  *  qualifier:
- *       =>   : (deep) link    // object is referenced and inst perspective takes full control incl. deep copy
- *       ->   : (shallow) link // object is referenced and inst perspective controls lifetime but only forks links (no cloning)
- *        []  : dynamic array
- *     [size] : fixed-size-array
+ *       *    : simple pointer // no dereferencing by perspectives; function copy may copy the address
+ *      =>    : deep link      // object is referenced and inst perspective takes full control incl. deep copy
+ *      ->    : shallow link   // object is referenced and inst perspective controls lifetime but only forks links (no cloning)
+ *         [] : dynamic array of embedded instances
+ *      => [] : dynamic array of deep links
+ *      -> [] : dynamic array of shallow links
+ *        [size] : fixed-size-array of embedded instances
+ *     => [size] : fixed-size-array of deep links
+ *     -> [size] : fixed-size-array of shallow links
  *
  *  prefixes: (multiple prefixes can be mixed)
  *     private : Invisible to perspectives (no tracing, no copying, no ownership). Exception: spect_inst may initialize the field with zeros

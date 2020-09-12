@@ -42,6 +42,7 @@ static const sc_t bcore_flect_caps_e_sc_arr[] =
     "LINK_STATIC",
     "LINK_TYPED",
     "LINK_AWARE",
+    "POINTER",
     "ARRAY_DYN_SOLID_STATIC",
     "ARRAY_DYN_SOLID_TYPED",
     "ARRAY_DYN_LINK_STATIC",
@@ -262,6 +263,7 @@ uz_t bcore_self_item_s_inst_size( const bcore_self_item_s* o )
         case BCORE_CAPS_LINK_STATIC:            return sizeof( bcore_link_static_s );
         case BCORE_CAPS_LINK_TYPED:             return sizeof( bcore_link_typed_s );
         case BCORE_CAPS_LINK_AWARE:             return sizeof( bcore_link_aware_s );
+        case BCORE_CAPS_POINTER:                return sizeof( vd_t );
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return sizeof( bcore_array_dyn_solid_static_s );
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return sizeof( bcore_array_dyn_solid_typed_s );
         case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return sizeof( bcore_array_dyn_link_static_s );
@@ -286,6 +288,7 @@ uz_t bcore_self_item_s_inst_align( const bcore_self_item_s* o )
         case BCORE_CAPS_LINK_STATIC:            return alignof( bcore_link_static_s );
         case BCORE_CAPS_LINK_TYPED:             return alignof( bcore_link_typed_s );
         case BCORE_CAPS_LINK_AWARE:             return alignof( bcore_link_aware_s );
+        case BCORE_CAPS_POINTER:                return alignof( vd_t );
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return alignof( bcore_array_dyn_solid_static_s );
         case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return alignof( bcore_array_dyn_solid_typed_s );
         case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return alignof( bcore_array_dyn_link_static_s );
@@ -330,6 +333,7 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
     bl_t f_spect     = false;
     bl_t f_const     = false;
     bl_t f_deep_copy = true;
+    bl_t f_treat_as_pointer = false;
     bl_t f_feature   = false;
     bl_t f_feature_requires_awareness = false;
     bl_t f_strict    = false;
@@ -421,12 +425,19 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
 
     if( bcore_source_r_parse_bl_fa( &src, "#?'*' " ) )
     {
-        if( !f_private )
+        if( !(f_private || f_hidden ) )
         {
-            bcore_source_r_parse_msg_to_sink_fa( &src, BCORE_STDERR, "Use of '*' to declare a public deep link. Use '=>' instead. (In definition of '#<sc_t>') \n", ifnameof( parent_type ) );
+            bcore_source_r_parse_err_fa
+            (
+                &src,
+                "In definition of '#<sc_t>':\n"
+                "Declaring a pointer requires 'hidden' or 'private' specification.\n",
+                ifnameof( parent_type )
+            );
         }
         f_link = true;
-        f_deep_copy = true;
+        f_treat_as_pointer = true;
+        f_deep_copy = false;
     }
     else if( bcore_source_r_parse_bl_fa( &src, "#?'=>' " ) )
     {
@@ -441,6 +452,11 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
 
     if( bcore_source_r_parse_bl_fa( &src, "#?'[' " ) )
     {
+        if( f_treat_as_pointer )
+        {
+            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nArray of pointers is not supported.", ifnameof( parent_type ) );
+        }
+
         if( bcore_source_r_parse_bl_fa( &src, "#?']' " ) )
         {
             f_arr_dyn = true;
@@ -478,7 +494,7 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
     o->flags.f_feature   = f_feature;
     o->flags.f_feature_requires_awarenes = f_feature_requires_awareness;
     o->flags.f_strict    = f_strict;
-    o->flags.f_virtual   = f_aware || f_typed;
+    o->flags.f_virtual   = f_aware || f_typed || f_treat_as_pointer;
 
     if( f_arr_fix ) o->array_fix_size = array_fix_size;
 
@@ -487,7 +503,13 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
         bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPerspectives are shallow links. Use 'spect #<sc_t> ->' to clarify method of referencing.", ifnameof( parent_type ), type_name->sc );
     }
 
-    if( f_aware )
+    if( f_treat_as_pointer )
+    {
+        o->type = ( type_val > 0 ) ? type_val : ( type_name->size > 0 ? entypeof( type_name->sc ) : 0 );
+        o->name = entypeof( item_name->sc );
+        o->caps = BCORE_CAPS_POINTER;
+    }
+    else if( f_aware )
     {
         if( !f_link )
         {
@@ -787,7 +809,7 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
                                                "  - single solid static nesting\n"
                                                "  - strings\n"
                                                "  - aware link nesting (default must be an aware type with reflection)\n"
-                                               "other capsulations cannot receive a default value.", ifnameof( parent_type ) );
+                                               "other nestings cannot receive a default value.", ifnameof( parent_type ) );
         }
     }
     bcore_life_s_discard( l );
@@ -938,6 +960,19 @@ bl_t bcore_self_item_s_struct_to_sink( const bcore_self_item_s* o, bcore_sink* s
         break;
 
         case BCORE_CAPS_LINK_AWARE:
+        {
+            if( o->type )
+            {
+                bcore_sink_a_push_fa( sink, "#<sc_t>* #<sc_t>;", type, name );
+            }
+            else
+            {
+                bcore_sink_a_push_fa( sink, "vd_t #<sc_t>;", name );
+            }
+        }
+        break;
+
+        case BCORE_CAPS_POINTER:
         {
             if( o->type )
             {
