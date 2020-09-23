@@ -26,11 +26,11 @@
 
 /**********************************************************************************************************************/
 
-#ifdef TYPEOF_bcore_fp
+#ifdef TYPEOF_bcore_inexpandable
 XOILA_DEFINE_GROUP( bcore_inexpandable, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-expandable = false;
+set inexpandable;
 
 // External types
 
@@ -56,30 +56,39 @@ type sd_t;
 type st_s;
 type sr_s;
 
-// perspectives
+// perspectives - deprecated (declared as group below)
 type bcore_inst;
 type bcore_array;
 type bcore_via;
 type bcore_source;
 type bcore_sink;
 
+/// st_s
+group st = bcore_inst
+{
+    stamp : = bcore_inst
+    {
+        sd_t data;
+        sc_t sc;
+        uz_t size;
+        uz_t space;
+    };
+};
+
+group bcore_inst   = : {};
+group bcore_array  = bcore_inst {};
+group bcore_via    = bcore_inst {};
+group bcore_source = bcore_inst {};
+group bcore_sink   = bcore_inst {};
+
+group bcore_fp = bcore_inst
+{
+    feature '' void copy_typed( mutable, tp_t type, vc_t src );
+};
+
 #endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#endif // TYPEOF_bcore_fp
-
-/**********************************************************************************************************************/
-
-#ifdef TYPEOF_bcore_fp
-XOILA_DEFINE_GROUP( bcore_fp, bcore_inst )
-#ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-expandable = false;
-
-feature '' void copy_typed( mutable, tp_t type, vc_t src );
-
-#endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#endif // TYPEOF_bcore_fp
+#endif // TYPEOF_bcore_bcore_inexpandable
 
 /**********************************************************************************************************************/
 

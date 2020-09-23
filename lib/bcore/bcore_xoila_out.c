@@ -1,12 +1,13 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-09-12T10:29:25Z
+ *  Last File Update: 2020-09-23T21:09:45Z
  *
  *  Copyright and License of this File:
  *
  *  Generated code inherits the copyright and license of the underlying xoila source code.
  *  Source code defining this file is distributed across following files:
  *
+ *  bcore_st.h
  *  bcore_file.h
  *  bcore_xoila_inexpandable.h
  *  bcore_spect_inst_call.h
@@ -25,6 +26,10 @@
 #include "bcore_sr.h"
 #include "bcore_const_manager.h"
 
+
+/**********************************************************************************************************************/
+// source: bcore_st.h
+#include "bcore_st.h"
 
 /**********************************************************************************************************************/
 // source: bcore_file.h
@@ -1006,6 +1011,9 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
         {
 
             // --------------------------------------------------------------------
+            // source: bcore_st.h
+
+            // --------------------------------------------------------------------
             // source: bcore_file.h
 
             // group: bcore_file
@@ -1284,4 +1292,4 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOILA_OUT_SIGNATURE 0xCE3A88131B4160E0ull
+// XOILA_OUT_SIGNATURE 0xC32544731C080E35ull
