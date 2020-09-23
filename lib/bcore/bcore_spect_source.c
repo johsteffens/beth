@@ -228,6 +228,13 @@ sc_t bcore_source_default_get_file( const bcore_source_s* p, const bcore_source*
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void bcore_source_default_set_parent( const bcore_source_s* p, bcore_source* o, vd_t parent )
+{
+    if( p->set_parent ) p->set_parent( o, parent );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 s3_t bcore_source_default_get_index( const bcore_source_s* p, const bcore_source* o )
 {
     if( p->get_index ) return p->get_index( o );
@@ -275,6 +282,7 @@ static bcore_source_s* create_from_self( const bcore_self_s* self )
     o->parse_fv        = ( bcore_source_fp_parse_fv        )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_parse_fv" ), 0 );
     o->parse_em_fv     = ( bcore_source_fp_parse_em_fv     )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_parse_em_fv" ), 0 );
     o->set_supplier    = ( bcore_source_fp_set_supplier    )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_set_supplier" ), 0 );
+    o->set_parent      = ( bcore_source_fp_set_parent      )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_set_parent" ), 0 );
     o->eos             = ( bcore_source_fp_eos             )bcore_self_s_get_external_fp( self, bcore_name_enroll( "bcore_source_fp_eos" ), 0 );
     o->get_file        = ( bcore_source_fp_get_file        )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_get_file" ), 0 );
     o->get_index       = ( bcore_source_fp_get_index       )bcore_self_s_try_external_fp( self, bcore_name_enroll( "bcore_source_fp_get_index" ), 0 );
@@ -351,10 +359,28 @@ er_t bcore_source_a_parse_err_to_em_fa( bcore_source* o, er_t err_id, sc_t forma
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bcore_source* bcore_source_t_clone( tp_t type )
+bcore_source* bcore_source_t_create( tp_t type )
 {
     bcore_trait_assert_satisfied_type( TYPEOF_bcore_source, type );
     return ( bcore_source* )bcore_inst_t_create( type );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_source_a_copy( bcore_source* o, const bcore_source* src )
+{
+    ASSERT( src );
+    bcore_inst_a_copy( ( bcore_inst* )o, ( bcore_inst* )src );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bcore_source* bcore_source_a_clone( const bcore_source* src )
+{
+    if( !src ) return NULL;
+    bcore_source* source = bcore_source_t_create( *( aware_t* )src );
+    bcore_source_a_copy( source, src );
+    return source;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

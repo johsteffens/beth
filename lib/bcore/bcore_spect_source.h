@@ -48,6 +48,7 @@ void bcore_source_context_s_get_error_msg_fa( const bcore_source_context_s* o, s
 typedef void (*bcore_source_fp_parse_fv )(       vd_t o, sc_t format, va_list args ); // parse function
 typedef er_t (*bcore_source_fp_parse_em_fv )(    vd_t o, sc_t format, va_list args ); // parse function with error management
 typedef void (*bcore_source_fp_set_supplier)(    vd_t o, vd_t supplier );             // to create a chain of source units
+typedef void (*bcore_source_fp_set_parent)(      vd_t o, vd_t parent );               // sets parent chain in chain elements
 typedef bl_t (*bcore_source_fp_eos)(             vc_t o );                            // (required) end of source has been reached
 typedef sc_t (*bcore_source_fp_get_file)(        vc_t o );                            // returns file name if source is of a file system or "" otherwise
 typedef s3_t (*bcore_source_fp_get_index)(       vc_t o );                            // returns the current read index (0 if not supported)
@@ -64,6 +65,7 @@ BCORE_DECLARE_SPECT( bcore_source )
     bcore_source_fp_parse_fv        parse_fv;
     bcore_source_fp_parse_em_fv     parse_em_fv;
     bcore_source_fp_set_supplier    set_supplier;
+    bcore_source_fp_set_parent      set_parent;
     bcore_source_fp_eos             eos;
     bcore_source_fp_get_file        get_file;
     bcore_source_fp_get_index       get_index;
@@ -128,6 +130,9 @@ BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_source, get_file, sc_t )
 /// Defines the supplier of a stream. Error when not supported.
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP1( bcore_source, set_supplier, vd_t, supplier )
 
+/// Defines the parent of a stream if available
+BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_source, set_parent, vd_t, parent )
+
 /** Random access:
  *  Functions set_index, get_index provide random access within a specific stream configuration.
  *  Access features need not be supported.
@@ -169,7 +174,9 @@ void bcore_source_r_parse_err_fa( const sr_s* o, sc_t format, ... );
 er_t bcore_source_a_parse_err_to_em_fv( bcore_source* o, er_t err_id, sc_t format, va_list args );
 er_t bcore_source_a_parse_err_to_em_fa( bcore_source* o, er_t err_id, sc_t format, ... );
 
-bcore_source* bcore_source_t_clone( tp_t type );
+bcore_source* bcore_source_t_create( tp_t type );
+void bcore_source_a_copy( bcore_source* o, const bcore_source* src );
+bcore_source* bcore_source_a_clone( const bcore_source* src );
 void bcore_source_a_discard( bcore_source* o );
 void bcore_source_a_detach( bcore_source** o );
 void bcore_source_a_attach( bcore_source** o, bcore_source* src );

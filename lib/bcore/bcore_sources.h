@@ -119,7 +119,7 @@ typedef struct bcore_source_string_s
     vd_t ext_supplier;       // optional external supplier (source) turning this source into a buffer; (ext_supplier is not owned by bcore_source_string_s)
     uz_t refill_limit;       // size size limit to request refill from supplier (if present)
     uz_t prefetch_size;      // data amount prefetched from supplier (if present)
-    bcore_source_chain_s* chain; // governing chain (if any)
+    bcore_source_chain_s* parent; // governing chain (if any)
 } bcore_source_string_s;
 
 void                   bcore_source_string_s_init(          bcore_source_string_s* o );
@@ -138,6 +138,8 @@ uz_t                   bcore_source_string_s_get_data(      bcore_source_string_
  *  The supplier is automatically detached when empty.
  */
 void bcore_source_string_s_set_supplier( bcore_source_string_s* o, vd_t supplier );
+
+void bcore_source_string_s_set_parent( bcore_source_string_s* o, vd_t parent );
 
 bl_t bcore_source_string_s_eos(  const bcore_source_string_s* o );
 sc_t bcore_source_string_s_get_file(  const bcore_source_string_s* o );
@@ -186,7 +188,7 @@ BCORE_DECLARE_OBJECT( bcore_source_point_s )
     s3_t index;
 };
 
-void bcore_source_point_s_set(               bcore_source_point_s* o, bcore_source* source );
+void bcore_source_point_s_set(                bcore_source_point_s* o, bcore_source* source );
 void bcore_source_point_s_parse_err_fv( const bcore_source_point_s* o, sc_t format, va_list args );
 void bcore_source_point_s_parse_err_fa( const bcore_source_point_s* o, sc_t format, ... );
 void bcore_source_point_s_parse_msg_fv( const bcore_source_point_s* o, sc_t format, va_list args );
@@ -197,6 +199,9 @@ void bcore_source_point_s_parse_msg_to_sink_fa( const bcore_source_point_s* o, b
 /// generates a parse error message and pushes it to the error stack (see bcore_error_manager.h); returns err_id
 er_t bcore_source_point_s_parse_err_to_em_fv( const bcore_source_point_s* o, er_t err_id, sc_t format, va_list args );
 er_t bcore_source_point_s_parse_err_to_em_fa( const bcore_source_point_s* o, er_t err_id, sc_t format, ... );
+
+/// creates a cloned source pointing to the index positionof source point
+bcore_source* bcore_source_point_s_clone_source( const bcore_source_point_s* o );
 
 /**********************************************************************************************************************/
 // syntactic sugar

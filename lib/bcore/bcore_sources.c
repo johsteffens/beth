@@ -65,7 +65,11 @@ static void chain_copy_a( bcore_nucleus_s* nc )
 {
     bcore_source_chain_s* o = nc->client;
     nc->default_handler( nc );
-    for( uz_t i = 1; i < o->size; i++ ) bcore_source_a_set_supplier( o->data[ i ], o->data[ i - 1 ] );
+    for( uz_t i = 0; i < o->size; i++ )
+    {
+        bcore_source_a_set_parent( o->data[ i ], o );
+        if( i > 0 ) bcore_source_a_set_supplier( o->data[ i ], o->data[ i - 1 ] );
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -103,7 +107,11 @@ static void chain_interpret_body_a( vd_t nc )
     struct { ap_t a; vc_t p; vc_t inter; vd_t source; tp_t type; vd_t obj; } * nc_l = nc;
     nc_l->a( nc ); // default
     bcore_source_chain_s* o = nc_l->obj;
-    for( uz_t i = 1; i < o->size; i++ ) bcore_source_a_set_supplier( o->data[ i ], o->data[ i - 1 ] );
+    for( uz_t i = 0; i < o->size; i++ )
+    {
+        bcore_source_a_set_parent( o->data[ i ], o );
+        if( i > 0 ) bcore_source_a_set_supplier( o->data[ i ], o->data[ i - 1 ] );
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -676,14 +684,14 @@ void bcore_source_string_s_set_index( bcore_source_string_s* o, s3_t index )
 
 static void string_get_context( const bcore_source_string_s* o, bcore_source_context_s* context )
 {
-    if( o->chain )
+    if( o->parent )
     {
-        s3_t index = bcore_source_chain_s_get_index( o->chain );
+        s3_t index = bcore_source_chain_s_get_index( o->parent );
         context->index = index;
 
-        if( o->chain->data[ 0 ] && ( *( aware_t* )o->chain->data[ 0 ] ) == TYPEOF_bcore_source_file_s )
+        if( o->parent->data[ 0 ] && ( *( aware_t* )o->parent->data[ 0 ] ) == TYPEOF_bcore_source_file_s )
         {
-            bcore_source_file_s* fo = o->chain->data[ 0 ];
+            bcore_source_file_s* fo = o->parent->data[ 0 ];
             st_s_attach( &context->file_path, st_s_create_sc( bcore_source_file_s_get_name( fo ) ) );
             st_s_attach( &context->txt_context, st_s_create() );
             uz_t line, col;
@@ -762,12 +770,12 @@ static er_t string_parse_em_fv( bcore_source_string_s* o, sc_t format, va_list a
         st_s* msg_context = BLM_CREATE( st_s );
         if( er_arg.msg ) BLM_A_PUSH( er_arg.msg );
 
-        if( o->chain )
+        if( o->parent )
         {
-            if( o->chain->data[ 0 ] && ( *( aware_t* )o->chain->data[ 0 ] ) == TYPEOF_bcore_source_file_s )
+            if( o->parent->data[ 0 ] && ( *( aware_t* )o->parent->data[ 0 ] ) == TYPEOF_bcore_source_file_s )
             {
-                bcore_source_file_s* fo = o->chain->data[ 0 ];
-                s3_t index = bcore_source_chain_s_get_index( o->chain );
+                bcore_source_file_s* fo = o->parent->data[ 0 ];
+                s3_t index = bcore_source_chain_s_get_index( o->parent );
                 uz_t line, col;
                 bcore_source_file_s_get_line_col_context( fo, index, &line, &col, msg_context );
                 st_s_push_fa( msg_pref, "#<sc_t>:#<uz_t>:#<uz_t>", bcore_source_file_s_get_name( fo ), line, col );
@@ -802,6 +810,14 @@ void bcore_source_string_s_set_supplier( bcore_source_string_s* o, vd_t supplier
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void bcore_source_string_s_set_parent( bcore_source_string_s* o, vd_t parent )
+{
+    if( parent ) ASSERT( *( aware_t* )parent == TYPEOF_bcore_source_chain_s );
+    o->parent = parent;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static bcore_self_s* string_s_create_self( void )
 {
     sc_t def =
@@ -813,7 +829,7 @@ static bcore_self_s* string_s_create_self( void )
       "private vd_t supplier; "
       "uz_t refill_limit;    "
       "uz_t prefetch_size;   "
-      "private bcore_source_chain_s* chain;" // governing chain (if any)
+      "private bcore_source_chain_s* parent;" // governing chain (if any)
     "}";
     bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_source_string_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_init,         "bcore_fp_init", "init" );
@@ -822,6 +838,7 @@ static bcore_self_s* string_s_create_self( void )
     bcore_self_s_push_ns_func( self, ( fp_t )string_parse_fv,                    "bcore_source_fp_parse_fv",        "parse_fv"     );
     bcore_self_s_push_ns_func( self, ( fp_t )string_parse_em_fv,                 "bcore_source_fp_parse_em_fv",     "parse_em_fv"  );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_set_supplier, "bcore_source_fp_set_supplier",    "set_supplier" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_set_parent,   "bcore_source_fp_set_parent",      "set_parent" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_eos,          "bcore_source_fp_eos",             "eos" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_get_file,     "bcore_source_fp_get_file",        "get_file" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_source_string_s_get_index,    "bcore_source_fp_get_index",       "get_index" );
@@ -1254,6 +1271,16 @@ er_t bcore_source_point_s_parse_err_to_em_fa( const bcore_source_point_s* o, er_
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+bcore_source* bcore_source_point_s_clone_source( const bcore_source_point_s* o )
+{
+    if( !o->source ) return NULL;
+    bcore_source* source = bcore_source_a_clone( o->source );
+    bcore_source_a_set_index( source, o->index );
+    return source;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1264,7 +1291,7 @@ bcore_source_chain_s* bcore_source_open_file( sc_t file_name )
     bcore_source_chain_s_push_d( chain, bcore_source_file_s_create_name( file_name ) );
     bcore_source_chain_s_push_d( chain, bcore_inst_t_create( TYPEOF_bcore_source_string_s ) );
     bcore_source_string_s* string = chain->data[ chain->size - 1 ];
-    string->chain = chain;
+    string->parent = chain;
     return chain;
 }
 
