@@ -107,7 +107,7 @@ group :ar1_eci =
         sz_t m = sz_max( a->v.size, r->v.size ) / n;
 
 
-        #define :ACC_CASE( TA_T, TR_T, FUNC ) \
+        #define BHVM_ACC_CASE( TA_T, TR_T, FUNC ) \
         { \
             const TA_T *a0 = a->v.data, *a1 = a0; \
                   TR_T *r0 = r->v.data, *r1 = r0; \
@@ -121,14 +121,14 @@ group :ar1_eci =
 
         switch( BKNIT_FA2( a->v.type, r->v.type ) )
         {
-            case BKNIT_F22: :ACC_CASE( f2_t, f2_t, @_f2 ); break;
-            case BKNIT_F23: :ACC_CASE( f2_t, f3_t, @_f3 ); break;
-            case BKNIT_F32: :ACC_CASE( f3_t, f2_t, @_f3 ); break;
-            case BKNIT_F33: :ACC_CASE( f3_t, f3_t, @_f3 ); break;
+            case BKNIT_F22: BHVM_ACC_CASE( f2_t, f2_t, @_f2 ); break;
+            case BKNIT_F23: BHVM_ACC_CASE( f2_t, f3_t, @_f3 ); break;
+            case BKNIT_F32: BHVM_ACC_CASE( f3_t, f2_t, @_f3 ); break;
+            case BKNIT_F33: BHVM_ACC_CASE( f3_t, f3_t, @_f3 ); break;
             default: BKNIT_FA2_ERR( a->v.type, r->v.type ); break;
         }
 
-        #undef :ACC_CASE
+        #undef BHVM_ACC_CASE
     };
 
     stamp :cpy_acc = { func : :f2 = { return  a; };          func : :f3 = { return  a; };          func : :f = :body_acc; };
@@ -293,7 +293,7 @@ group :ar2_eci =
         sz_t n = sz_gcd( sz_gcd( a->v.size, b->v.size ), r->v.size );
         sz_t m = sz_max( sz_max( a->v.size, b->v.size ), r->v.size ) / n;
 
-        #define :SET_CASE( TA_T, TB_T, TR_T, FUNC ) \
+        #define BHVM_SET_CASE( TA_T, TB_T, TR_T, FUNC ) \
         { \
             const TA_T *a0 = a->v.data, *a1 = a0; \
             const TB_T *b0 = b->v.data, *b1 = b0; \
@@ -309,18 +309,18 @@ group :ar2_eci =
 
         switch( BKNIT_FA3( a->v.type, b->v.type, r->v.type ) )
         {
-            case BKNIT_F222: :SET_CASE( f2_t, f2_t, f2_t, @_f2 ); break;
-            case BKNIT_F223: :SET_CASE( f2_t, f2_t, f3_t, @_f3 ); break;
-            case BKNIT_F232: :SET_CASE( f2_t, f3_t, f2_t, @_f3 ); break;
-            case BKNIT_F233: :SET_CASE( f2_t, f3_t, f3_t, @_f3 ); break;
-            case BKNIT_F322: :SET_CASE( f3_t, f2_t, f2_t, @_f3 ); break;
-            case BKNIT_F323: :SET_CASE( f3_t, f2_t, f3_t, @_f3 ); break;
-            case BKNIT_F332: :SET_CASE( f3_t, f3_t, f2_t, @_f3 ); break;
-            case BKNIT_F333: :SET_CASE( f3_t, f3_t, f3_t, @_f3 ); break;
+            case BKNIT_F222: BHVM_SET_CASE( f2_t, f2_t, f2_t, @_f2 ); break;
+            case BKNIT_F223: BHVM_SET_CASE( f2_t, f2_t, f3_t, @_f3 ); break;
+            case BKNIT_F232: BHVM_SET_CASE( f2_t, f3_t, f2_t, @_f3 ); break;
+            case BKNIT_F233: BHVM_SET_CASE( f2_t, f3_t, f3_t, @_f3 ); break;
+            case BKNIT_F322: BHVM_SET_CASE( f3_t, f2_t, f2_t, @_f3 ); break;
+            case BKNIT_F323: BHVM_SET_CASE( f3_t, f2_t, f3_t, @_f3 ); break;
+            case BKNIT_F332: BHVM_SET_CASE( f3_t, f3_t, f2_t, @_f3 ); break;
+            case BKNIT_F333: BHVM_SET_CASE( f3_t, f3_t, f3_t, @_f3 ); break;
             default: BKNIT_FA3_ERR( a->v.type, b->v.type, r->v.type ); break;
         }
 
-        #undef :SET_CASE
+        #undef BHVM_SET_CASE
     };
 
     /// accumulates the target value: r += op( a, b )
@@ -331,7 +331,7 @@ group :ar2_eci =
         sz_t n = sz_gcd( sz_gcd( a->v.size, b->v.size ), r->v.size );
         sz_t m = sz_max( sz_max( a->v.size, b->v.size ), r->v.size ) / n;
 
-        #define :ACC_CASE( TA_T, TB_T, TR_T, FUNC ) \
+        #define BHVM_ACC_CASE( TA_T, TB_T, TR_T, FUNC ) \
         { \
             const TA_T *a0 = a->v.data, *a1 = a0; \
             const TB_T *b0 = b->v.data, *b1 = b0; \
@@ -347,18 +347,18 @@ group :ar2_eci =
 
         switch( BKNIT_FA3( a->v.type, b->v.type, r->v.type ) )
         {
-            case BKNIT_F222: :ACC_CASE( f2_t, f2_t, f2_t, @_f2 ); break;
-            case BKNIT_F223: :ACC_CASE( f2_t, f2_t, f3_t, @_f3 ); break;
-            case BKNIT_F232: :ACC_CASE( f2_t, f3_t, f2_t, @_f3 ); break;
-            case BKNIT_F233: :ACC_CASE( f2_t, f3_t, f3_t, @_f3 ); break;
-            case BKNIT_F322: :ACC_CASE( f3_t, f2_t, f2_t, @_f3 ); break;
-            case BKNIT_F323: :ACC_CASE( f3_t, f2_t, f3_t, @_f3 ); break;
-            case BKNIT_F332: :ACC_CASE( f3_t, f3_t, f2_t, @_f3 ); break;
-            case BKNIT_F333: :ACC_CASE( f3_t, f3_t, f3_t, @_f3 ); break;
+            case BKNIT_F222: BHVM_ACC_CASE( f2_t, f2_t, f2_t, @_f2 ); break;
+            case BKNIT_F223: BHVM_ACC_CASE( f2_t, f2_t, f3_t, @_f3 ); break;
+            case BKNIT_F232: BHVM_ACC_CASE( f2_t, f3_t, f2_t, @_f3 ); break;
+            case BKNIT_F233: BHVM_ACC_CASE( f2_t, f3_t, f3_t, @_f3 ); break;
+            case BKNIT_F322: BHVM_ACC_CASE( f3_t, f2_t, f2_t, @_f3 ); break;
+            case BKNIT_F323: BHVM_ACC_CASE( f3_t, f2_t, f3_t, @_f3 ); break;
+            case BKNIT_F332: BHVM_ACC_CASE( f3_t, f3_t, f2_t, @_f3 ); break;
+            case BKNIT_F333: BHVM_ACC_CASE( f3_t, f3_t, f3_t, @_f3 ); break;
             default: BKNIT_FA3_ERR( a->v.type, b->v.type, r->v.type ); break;
         }
 
-        #undef :ACC_CASE
+        #undef BHVM_ACC_CASE
     };
 
     /// axon pass --------------------------------------------------------------
@@ -539,7 +539,7 @@ group :ar3_eci =
         sz_t n = sz_gcd( a->v.size, sz_gcd( b->v.size, sz_gcd( c->v.size, r->v.size ) ) );
         sz_t m = sz_max( a->v.size, sz_max( b->v.size, sz_max( c->v.size, r->v.size ) ) ) / n;
 
-        #define :SET_CASE( TA_T, TB_T, TC_T, TR_T, FUNC ) \
+        #define BHVM_SET_CASE( TA_T, TB_T, TC_T, TR_T, FUNC ) \
         { \
             const TA_T *a0 = a->v.data, *a1 = a0; \
             const TB_T *b0 = b->v.data, *b1 = b0; \
@@ -557,26 +557,26 @@ group :ar3_eci =
 
         switch( BKNIT_FA4( a->v.type, b->v.type, c->v.type, r->v.type ) )
         {
-            case BKNIT_F2222: :SET_CASE( f2_t, f2_t, f2_t, f2_t, @_f2 ); break;
-            case BKNIT_F2223: :SET_CASE( f2_t, f2_t, f2_t, f3_t, @_f3 ); break;
-            case BKNIT_F2232: :SET_CASE( f2_t, f2_t, f3_t, f2_t, @_f3 ); break;
-            case BKNIT_F2233: :SET_CASE( f2_t, f2_t, f3_t, f3_t, @_f3 ); break;
-            case BKNIT_F2322: :SET_CASE( f2_t, f3_t, f2_t, f2_t, @_f3 ); break;
-            case BKNIT_F2323: :SET_CASE( f2_t, f3_t, f2_t, f3_t, @_f3 ); break;
-            case BKNIT_F2332: :SET_CASE( f2_t, f3_t, f3_t, f2_t, @_f3 ); break;
-            case BKNIT_F2333: :SET_CASE( f2_t, f3_t, f3_t, f3_t, @_f3 ); break;
-            case BKNIT_F3222: :SET_CASE( f3_t, f2_t, f2_t, f2_t, @_f3 ); break;
-            case BKNIT_F3223: :SET_CASE( f3_t, f2_t, f2_t, f3_t, @_f3 ); break;
-            case BKNIT_F3232: :SET_CASE( f3_t, f2_t, f3_t, f2_t, @_f3 ); break;
-            case BKNIT_F3233: :SET_CASE( f3_t, f2_t, f3_t, f3_t, @_f3 ); break;
-            case BKNIT_F3322: :SET_CASE( f3_t, f3_t, f2_t, f2_t, @_f3 ); break;
-            case BKNIT_F3323: :SET_CASE( f3_t, f3_t, f2_t, f3_t, @_f3 ); break;
-            case BKNIT_F3332: :SET_CASE( f3_t, f3_t, f3_t, f2_t, @_f3 ); break;
-            case BKNIT_F3333: :SET_CASE( f3_t, f3_t, f3_t, f3_t, @_f3 ); break;
+            case BKNIT_F2222: BHVM_SET_CASE( f2_t, f2_t, f2_t, f2_t, @_f2 ); break;
+            case BKNIT_F2223: BHVM_SET_CASE( f2_t, f2_t, f2_t, f3_t, @_f3 ); break;
+            case BKNIT_F2232: BHVM_SET_CASE( f2_t, f2_t, f3_t, f2_t, @_f3 ); break;
+            case BKNIT_F2233: BHVM_SET_CASE( f2_t, f2_t, f3_t, f3_t, @_f3 ); break;
+            case BKNIT_F2322: BHVM_SET_CASE( f2_t, f3_t, f2_t, f2_t, @_f3 ); break;
+            case BKNIT_F2323: BHVM_SET_CASE( f2_t, f3_t, f2_t, f3_t, @_f3 ); break;
+            case BKNIT_F2332: BHVM_SET_CASE( f2_t, f3_t, f3_t, f2_t, @_f3 ); break;
+            case BKNIT_F2333: BHVM_SET_CASE( f2_t, f3_t, f3_t, f3_t, @_f3 ); break;
+            case BKNIT_F3222: BHVM_SET_CASE( f3_t, f2_t, f2_t, f2_t, @_f3 ); break;
+            case BKNIT_F3223: BHVM_SET_CASE( f3_t, f2_t, f2_t, f3_t, @_f3 ); break;
+            case BKNIT_F3232: BHVM_SET_CASE( f3_t, f2_t, f3_t, f2_t, @_f3 ); break;
+            case BKNIT_F3233: BHVM_SET_CASE( f3_t, f2_t, f3_t, f3_t, @_f3 ); break;
+            case BKNIT_F3322: BHVM_SET_CASE( f3_t, f3_t, f2_t, f2_t, @_f3 ); break;
+            case BKNIT_F3323: BHVM_SET_CASE( f3_t, f3_t, f2_t, f3_t, @_f3 ); break;
+            case BKNIT_F3332: BHVM_SET_CASE( f3_t, f3_t, f3_t, f2_t, @_f3 ); break;
+            case BKNIT_F3333: BHVM_SET_CASE( f3_t, f3_t, f3_t, f3_t, @_f3 ); break;
             default: BKNIT_FA4_ERR( a->v.type, b->v.type, c->v.type, r->v.type ); break;
         }
 
-        #undef :SET_CASE
+        #undef BHVM_SET_CASE
     };
 
     /// accumulates the target value: r += op( a, b, c )
@@ -587,7 +587,7 @@ group :ar3_eci =
         sz_t n = sz_gcd( a->v.size, sz_gcd( b->v.size, sz_gcd( c->v.size, r->v.size ) ) );
         sz_t m = sz_max( a->v.size, sz_max( b->v.size, sz_max( c->v.size, r->v.size ) ) ) / n;
 
-        #define :ACC_CASE( TA_T, TB_T, TC_T, TR_T, FUNC ) \
+        #define BHVM_ACC_CASE( TA_T, TB_T, TC_T, TR_T, FUNC ) \
         { \
             const TA_T *a0 = a->v.data, *a1 = a0; \
             const TB_T *b0 = b->v.data, *b1 = b0; \
@@ -605,26 +605,26 @@ group :ar3_eci =
 
         switch( BKNIT_FA4( a->v.type, b->v.type, c->v.type, r->v.type ) )
         {
-            case BKNIT_F2222: :ACC_CASE( f2_t, f2_t, f2_t, f2_t, @_f2 ); break;
-            case BKNIT_F2223: :ACC_CASE( f2_t, f2_t, f2_t, f3_t, @_f3 ); break;
-            case BKNIT_F2232: :ACC_CASE( f2_t, f2_t, f3_t, f2_t, @_f3 ); break;
-            case BKNIT_F2233: :ACC_CASE( f2_t, f2_t, f3_t, f3_t, @_f3 ); break;
-            case BKNIT_F2322: :ACC_CASE( f2_t, f3_t, f2_t, f2_t, @_f3 ); break;
-            case BKNIT_F2323: :ACC_CASE( f2_t, f3_t, f2_t, f3_t, @_f3 ); break;
-            case BKNIT_F2332: :ACC_CASE( f2_t, f3_t, f3_t, f2_t, @_f3 ); break;
-            case BKNIT_F2333: :ACC_CASE( f2_t, f3_t, f3_t, f3_t, @_f3 ); break;
-            case BKNIT_F3222: :ACC_CASE( f3_t, f2_t, f2_t, f2_t, @_f3 ); break;
-            case BKNIT_F3223: :ACC_CASE( f3_t, f2_t, f2_t, f3_t, @_f3 ); break;
-            case BKNIT_F3232: :ACC_CASE( f3_t, f2_t, f3_t, f2_t, @_f3 ); break;
-            case BKNIT_F3233: :ACC_CASE( f3_t, f2_t, f3_t, f3_t, @_f3 ); break;
-            case BKNIT_F3322: :ACC_CASE( f3_t, f3_t, f2_t, f2_t, @_f3 ); break;
-            case BKNIT_F3323: :ACC_CASE( f3_t, f3_t, f2_t, f3_t, @_f3 ); break;
-            case BKNIT_F3332: :ACC_CASE( f3_t, f3_t, f3_t, f2_t, @_f3 ); break;
-            case BKNIT_F3333: :ACC_CASE( f3_t, f3_t, f3_t, f3_t, @_f3 ); break;
+            case BKNIT_F2222: BHVM_ACC_CASE( f2_t, f2_t, f2_t, f2_t, @_f2 ); break;
+            case BKNIT_F2223: BHVM_ACC_CASE( f2_t, f2_t, f2_t, f3_t, @_f3 ); break;
+            case BKNIT_F2232: BHVM_ACC_CASE( f2_t, f2_t, f3_t, f2_t, @_f3 ); break;
+            case BKNIT_F2233: BHVM_ACC_CASE( f2_t, f2_t, f3_t, f3_t, @_f3 ); break;
+            case BKNIT_F2322: BHVM_ACC_CASE( f2_t, f3_t, f2_t, f2_t, @_f3 ); break;
+            case BKNIT_F2323: BHVM_ACC_CASE( f2_t, f3_t, f2_t, f3_t, @_f3 ); break;
+            case BKNIT_F2332: BHVM_ACC_CASE( f2_t, f3_t, f3_t, f2_t, @_f3 ); break;
+            case BKNIT_F2333: BHVM_ACC_CASE( f2_t, f3_t, f3_t, f3_t, @_f3 ); break;
+            case BKNIT_F3222: BHVM_ACC_CASE( f3_t, f2_t, f2_t, f2_t, @_f3 ); break;
+            case BKNIT_F3223: BHVM_ACC_CASE( f3_t, f2_t, f2_t, f3_t, @_f3 ); break;
+            case BKNIT_F3232: BHVM_ACC_CASE( f3_t, f2_t, f3_t, f2_t, @_f3 ); break;
+            case BKNIT_F3233: BHVM_ACC_CASE( f3_t, f2_t, f3_t, f3_t, @_f3 ); break;
+            case BKNIT_F3322: BHVM_ACC_CASE( f3_t, f3_t, f2_t, f2_t, @_f3 ); break;
+            case BKNIT_F3323: BHVM_ACC_CASE( f3_t, f3_t, f2_t, f3_t, @_f3 ); break;
+            case BKNIT_F3332: BHVM_ACC_CASE( f3_t, f3_t, f3_t, f2_t, @_f3 ); break;
+            case BKNIT_F3333: BHVM_ACC_CASE( f3_t, f3_t, f3_t, f3_t, @_f3 ); break;
             default: BKNIT_FA4_ERR( a->v.type, b->v.type, c->v.type, r->v.type ); break;
         }
 
-        #undef :ACC_CASE
+        #undef BHVM_ACC_CASE
     };
 
     /// axon pass --------------------------------------------------------------
