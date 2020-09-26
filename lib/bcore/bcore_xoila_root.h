@@ -26,8 +26,8 @@
 
 /**********************************************************************************************************************/
 
-#ifdef TYPEOF_bcore_inexpandable
-XOILA_DEFINE_GROUP( bcore_inexpandable, bcore_inst )
+#ifdef TYPEOF_bcore_xoila_root
+XOILA_DEFINE_GROUP( bcore_xoila_root, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 set inexpandable;
@@ -57,11 +57,11 @@ type st_s;
 type sr_s;
 
 // perspectives - deprecated (declared as group below)
-type bcore_inst;
-type bcore_array;
-type bcore_via;
-type bcore_source;
-type bcore_sink;
+//type bcore_inst;
+//type bcore_array;
+//type bcore_via;
+//type bcore_source;
+//type bcore_sink;
 
 /// st_s
 group st = bcore_inst
@@ -75,7 +75,7 @@ group st = bcore_inst
     };
 };
 
-group bcore_inst   = : {};
+group bcore_inst   = bcore_inst {};
 group bcore_array  = bcore_inst {};
 group bcore_via    = bcore_inst {};
 group bcore_source = bcore_inst {};
@@ -87,28 +87,19 @@ group bcore_fp = bcore_inst
 };
 
 /// default functions in a stamp
-//group bcore_stamp_funcs = bcore_inst
-//{
-//    signature void init( mutable );
-//    signature void down( mutable );
-//    signature void copy( mutable, const @* src );
-//
-//    signature void discard( mutable );
-//    signature   @* clone(   const );
-//
-//    stump : = :
-//    {
-//        func : :init;
-//        func : :down;
-//        func : :copy;
-//        func : :discard;
-//        func : :clone;
-//    };
-//};
+group bcore_stamp_funcs = bcore_inst
+{
+    signature void init( mutable );
+    signature void down( mutable );
+    signature void copy( mutable, const @* src );
+
+    signature void discard( mutable );
+    signature   @* clone(   const );
+};
 
 #endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#endif // TYPEOF_bcore_bcore_inexpandable
+#endif // TYPEOF_bcore_xoila_root
 
 /**********************************************************************************************************************/
 

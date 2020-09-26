@@ -1,15 +1,15 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-09-25T12:04:12Z
+ *  Last File Update: 2020-09-26T16:50:26Z
  *
  *  Copyright and License of this File:
  *
  *  Generated code inherits the copyright and license of the underlying xoila source code.
  *  Source code defining this file is distributed across following files:
  *
+ *  bcore_xoila_root.h
  *  bcore_st.h
  *  bcore_file.h
- *  bcore_xoila_inexpandable.h
  *  bcore_spect_inst_call.h
  *  bcore_spect_via_call.h
  *  bcore_main.h
@@ -26,6 +26,10 @@
 #include "bcore_sr.h"
 #include "bcore_const_manager.h"
 
+
+/**********************************************************************************************************************/
+// source: bcore_xoila_root.h
+#include "bcore_xoila_root.h"
 
 /**********************************************************************************************************************/
 // source: bcore_st.h
@@ -56,10 +60,6 @@ void bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name )
         o->full = st_s_create_fa( "#<sc_t>/#<sc_t>", o->root->sc, o->name.sc );
     }
 }
-
-/**********************************************************************************************************************/
-// source: bcore_xoila_inexpandable.h
-#include "bcore_xoila_inexpandable.h"
 
 /**********************************************************************************************************************/
 // source: bcore_spect_inst_call.h
@@ -1011,6 +1011,9 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
         {
 
             // --------------------------------------------------------------------
+            // source: bcore_xoila_root.h
+
+            // --------------------------------------------------------------------
             // source: bcore_st.h
 
             // --------------------------------------------------------------------
@@ -1020,9 +1023,6 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bcore_via_call_source, bcore_file_path_s_source );
             BCORE_REGISTER_OBJECT( bcore_file_path_s );
             BCORE_REGISTER_TRAIT( bcore_file, bcore_inst );
-
-            // --------------------------------------------------------------------
-            // source: bcore_xoila_inexpandable.h
 
             // --------------------------------------------------------------------
             // source: bcore_spect_inst_call.h
@@ -1292,4 +1292,4 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOILA_OUT_SIGNATURE 0xFF89A7FF5D699B32ull
+// XOILA_OUT_SIGNATURE 0x4999F872D518BD99ull

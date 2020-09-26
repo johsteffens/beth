@@ -1,15 +1,15 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-09-25T12:04:12Z
+ *  Last File Update: 2020-09-26T16:50:26Z
  *
  *  Copyright and License of this File:
  *
  *  Generated code inherits the copyright and license of the underlying xoila source code.
  *  Source code defining this file is distributed across following files:
  *
+ *  bcore_xoila_root.h
  *  bcore_st.h
  *  bcore_file.h
- *  bcore_xoila_inexpandable.h
  *  bcore_spect_inst_call.h
  *  bcore_spect_via_call.h
  *  bcore_main.h
@@ -26,9 +26,12 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by xoico, reset the hash key value below to 0.
-#define HKEYOF_bcore_xoila_out 0xF8AFD6BD5FB85B43ull
+#define HKEYOF_bcore_xoila_out 0x8E1DA602AF06F30Cull
 
 #define TYPEOF_bcore_xoila_out 0xC52DA50A6069BDB1ull
+
+/**********************************************************************************************************************/
+// source: bcore_xoila_root.h
 
 /**********************************************************************************************************************/
 // source: bcore_st.h
@@ -57,9 +60,6 @@
   BCORE_FORWARD_OBJECT( bcore_file ); \
   BCORE_FORWARD_OBJECT( bcore_file_path_s ); \
   BETH_EXPAND_ITEM_bcore_file_path_s
-
-/**********************************************************************************************************************/
-// source: bcore_xoila_inexpandable.h
 
 /**********************************************************************************************************************/
 // source: bcore_spect_inst_call.h
@@ -708,4 +708,4 @@
 vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_XOILA_OUT_H
-// XOILA_OUT_SIGNATURE 0xB7722C1E02ACFCC0ull
+// XOILA_OUT_SIGNATURE 0x9FB0FAFF24F2A743ull

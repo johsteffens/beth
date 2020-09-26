@@ -56,7 +56,6 @@
 #include "bcore_txt_ml.h"
 #include "bcore_xoila.h"
 #include "bcore_xoila_out.h"
-#include "bcore_xoila_inexpandable.h"
 #include "bcore_spect_inst_call.h"
 #include "bcore_spect_via_call.h"
 #include "bcore_hmap_name.h"
@@ -143,7 +142,6 @@ vd_t bcore_general_signal_handler( const bcore_signal_s* o )
         bcore_folder_signal_handler,
         bcore_spect_hash_signal_handler,
         bcore_xoila_out_signal_handler,
-        bcore_xoila_inexpandable_signal_handler,
         bcore_spect_inst_call_signal_handler,
         bcore_spect_via_call_signal_handler,
         bcore_hmap_name_signal_handler,
