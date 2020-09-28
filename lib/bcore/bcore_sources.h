@@ -131,8 +131,12 @@ bcore_source_string_s* bcore_source_string_s_clone(   const bcore_source_string_
 
 bcore_source_string_s* bcore_source_string_s_create_from_string( const st_s* string );
 bcore_source_string_s* bcore_source_string_s_create_from_string_d(     st_s* string );
+bcore_source_string_s* bcore_source_string_s_create_from_sc(           sc_t sc ); // same as ...create_sc
 bcore_source_string_s* bcore_source_string_s_create_sc( sc_t sc );
-uz_t                   bcore_source_string_s_get_data(      bcore_source_string_s* o, vd_t data, uz_t size );
+bcore_source_string_s* bcore_source_string_s_create_fv( sc_t format, va_list args );
+bcore_source_string_s* bcore_source_string_s_create_fa( sc_t format, ... );
+
+uz_t                   bcore_source_string_s_get_data( bcore_source_string_s* o, vd_t data, uz_t size );
 
 /** Specifies an external supplier (source); supplier is not owned by this object.
  *  The supplier is automatically detached when empty.

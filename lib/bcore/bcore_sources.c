@@ -566,11 +566,36 @@ bcore_source_string_s* bcore_source_string_s_create_from_string_d( st_s* string 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bcore_source_string_s* bcore_source_string_s_create_sc( sc_t sc )
+bcore_source_string_s* bcore_source_string_s_create_from_sc( sc_t sc )
 {
     bcore_source_string_s* o = bcore_source_string_s_create();
     o->string = st_s_create_sc( sc );
     return o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bcore_source_string_s* bcore_source_string_s_create_sc( sc_t sc )
+{
+    return bcore_source_string_s_create_from_sc( sc );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bcore_source_string_s* bcore_source_string_s_create_fv( sc_t format, va_list args )
+{
+    return bcore_source_string_s_create_from_string_d( st_s_create_fv( format, args ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bcore_source_string_s* bcore_source_string_s_create_fa( sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    bcore_source_string_s* ret = bcore_source_string_s_create_fv( format, args );
+    va_end( args );
+    return ret;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
