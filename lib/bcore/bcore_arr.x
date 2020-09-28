@@ -68,10 +68,10 @@ group :uz = :
 
 group :sz = :
 {
-    signature @*   fill       ( mutable, uz_t size, uz_t v ); // creates filled array of size <size>
-    signature @*   step_fill  ( mutable, uz_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
-    signature void push       ( mutable, uz_t v );
-    signature @*   push_left  ( mutable, uz_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+    signature @*   fill       ( mutable, uz_t size, sz_t v ); // creates filled array of size <size>
+    signature @*   step_fill  ( mutable, sz_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
+    signature void push       ( mutable, sz_t v );
+    signature @*   push_left  ( mutable, sz_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature sz_t pop        ( mutable );
     signature uz_t find       ( const,   uz_t start, uz_t end, sz_t v ); // behaves like st_s_find_*
     signature sz_t max        ( const );

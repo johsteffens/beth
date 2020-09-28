@@ -1039,7 +1039,7 @@ uz_t bcore_hmap_tpuz_s_idx_val( const bcore_hmap_tpuz_s* o, uz_t idx )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static sr_s tpsz_s_get_data( const bcore_hmap_tpuz_s* o )
+static sr_s tpuz_s_get_data( const bcore_hmap_tpuz_s* o )
 {
     tp_t t_data = bcore_flect_type_parse_sc( "{ bcore_hnode_tpuz_s []; }" );
     tp_t t_node = typeof( "bcore_hnode_tpuz_s" );
@@ -1053,7 +1053,7 @@ static sr_s tpsz_s_get_data( const bcore_hmap_tpuz_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void tpsz_s_set_data( bcore_hmap_tpuz_s* o, sr_s data )
+static void tpuz_s_set_data( bcore_hmap_tpuz_s* o, sr_s data )
 {
     bcore_hmap_tpuz_s_clear( o );
     assert( sr_s_type( &data ) == bcore_flect_type_parse_sc( "{ bcore_hnode_tpuz_s []; }" ) );
@@ -1083,14 +1083,14 @@ static bcore_self_s* hmap_tpsz_s_create_self( void )
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpuz_s_init,    "bcore_fp_init",  "init"     );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpuz_s_down,    "bcore_fp_down",  "down"     );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpuz_s_copy,    "bcore_fp_copy",  "copy"     );
-    bcore_self_s_push_ns_func( self, ( fp_t )tpsz_s_get_data,           "bcore_fp_get",   "get_data" );
-    bcore_self_s_push_ns_func( self, ( fp_t )tpsz_s_set_data,           "bcore_fp_set",   "set_data" );
+    bcore_self_s_push_ns_func( self, ( fp_t )tpuz_s_get_data,           "bcore_fp_get",   "get_data" );
+    bcore_self_s_push_ns_func( self, ( fp_t )tpuz_s_set_data,           "bcore_fp_set",   "set_data" );
     return self;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static st_s* hmap_tpsz_s_status( bcore_hmap_tpuz_s* o )
+static st_s* hmap_tpuz_s_status( bcore_hmap_tpuz_s* o )
 {
     st_s* string = st_s_create();
     uz_t keys = bcore_hmap_tpuz_s_keys( o );
@@ -1102,7 +1102,7 @@ static st_s* hmap_tpsz_s_status( bcore_hmap_tpuz_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static st_s* hmap_tpsz_selftest( void )
+static st_s* hmap_tpuz_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
     st_s* log = st_s_createf( "== bcore_hmap_tpsz_selftest " );
@@ -1164,7 +1164,7 @@ static st_s* hmap_tpsz_selftest( void )
     time = clock() - time;
     st_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
 
-    st_s_push_st_d( log, hmap_tpsz_s_status( map ) );
+    st_s_push_st_d( log, hmap_tpuz_s_status( map ) );
 
     time = clock();
     bcore_hmap_tpuz_s* map2 = bcore_life_s_push_aware( l, bcore_hmap_tpuz_s_clone( map ) );
@@ -1222,7 +1222,7 @@ static st_s* hmap_tpsz_selftest( void )
     time = clock() - time;
     st_s_pushf( log, "(%5.3fs)\n", ( double )time/CLOCKS_PER_SEC );
 
-    st_s_push_st_d( log, hmap_tpsz_s_status( map ) );
+    st_s_push_st_d( log, hmap_tpuz_s_status( map ) );
 
     bcore_hmap_tpuz_s_discard( map );
     bcore_alloc( kvbuf, 0 );
@@ -3500,7 +3500,7 @@ vd_t bcore_hmap_signal_handler( const bcore_signal_s* o )
         {
             st_s* log = st_s_create();
             st_s_push_st_d( log, hmap_u3vd_selftest() );
-            st_s_push_st_d( log, hmap_tpsz_selftest() );
+            st_s_push_st_d( log, hmap_tpuz_selftest() );
             st_s_push_st_d( log, hmap_tpfp_selftest() );
             st_s_push_st_d( log, hmap_tptp_selftest() );
             st_s_push_st_d( log, hmap_tpvd_selftest() );

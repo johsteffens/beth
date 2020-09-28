@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-09-28T15:18:18Z
+ *  Last File Update: 2020-09-28T18:34:32Z
  *
  *  Copyright and License of this File:
  *
@@ -18,6 +18,7 @@
  *  bcore_error_manager.h
  *  bcore_prsg.h
  *  bcore_arr.x
+ *  bcore_hmap.x
  *
  */
 
@@ -27,7 +28,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by xoico, reset the hash key value below to 0.
-#define HKEYOF_bcore_xoila_out 0x51C926DEDE5D6A83ull
+#define HKEYOF_bcore_xoila_out 0xBA08B900C4A103DBull
 
 #define TYPEOF_bcore_xoila_out 0xC52DA50A6069BDB1ull
 
@@ -229,7 +230,15 @@
   { \
       aware_t _; \
       bcore_hmap_tp_sr_s map; \
-  };
+  }; \
+  tp_t bcore_hmap_name_s_set_st_c( bcore_hmap_name_s* o, const st_s* st ); \
+  tp_t bcore_hmap_name_s_set_st_d( bcore_hmap_name_s* o, st_s* st ); \
+  tp_t bcore_hmap_name_s_set_sc( bcore_hmap_name_s* o, sc_t sc ); \
+  st_s* bcore_hmap_name_s_get( const bcore_hmap_name_s* o, tp_t key ); \
+  sc_t bcore_hmap_name_s_get_sc( const bcore_hmap_name_s* o, tp_t key ); \
+  void bcore_hmap_name_s_remove( bcore_hmap_name_s* o, tp_t key ); \
+  bl_t bcore_hmap_name_s_exists( const bcore_hmap_name_s* o, tp_t key ); \
+  void bcore_hmap_name_s_clear( bcore_hmap_name_s* o );
 #define BETH_EXPAND_GROUP_bcore_hmap_name \
   BCORE_FORWARD_OBJECT( bcore_hmap_name ); \
   BCORE_FORWARD_OBJECT( bcore_hmap_name_s ); \
@@ -709,4 +718,4 @@
 vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_XOILA_OUT_H
-// XOILA_OUT_SIGNATURE 0x13422B0BF4DCFBC9ull
+// XOILA_OUT_SIGNATURE 0xD4431080547A54AAull

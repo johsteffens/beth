@@ -92,6 +92,7 @@ group bcore_stamp_funcs = bcore_inst
 };
 
 embed "bcore_arr.x";
+embed "bcore_hmap.x";
 
 #endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
