@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-09-26T16:50:26Z
+ *  Last File Update: 2020-09-28T15:18:18Z
  *
  *  Copyright and License of this File:
  *
@@ -17,6 +17,7 @@
  *  bcore_cday.h
  *  bcore_error_manager.h
  *  bcore_prsg.h
+ *  bcore_arr.x
  *
  */
 
@@ -1292,4 +1293,4 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOILA_OUT_SIGNATURE 0x4999F872D518BD99ull
+// XOILA_OUT_SIGNATURE 0x2BB1B2731093DEFEull

@@ -18,8 +18,8 @@
  *  It manages components, which have a low-level implementation: E.g. beth-system features.
  */
 
-#ifndef BCORE_XOILA_INEXPANDABLE_H
-#define BCORE_XOILA_INEXPANDABLE_H
+#ifndef BCORE_XOILA_ROOT_H
+#define BCORE_XOILA_ROOT_H
 
 #include "bcore_std.h"
 #include "bcore_xoila_out.h"
@@ -28,6 +28,7 @@
 
 #ifdef TYPEOF_bcore_xoila_root
 XOILA_DEFINE_GROUP( bcore_xoila_root, bcore_inst )
+
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 set inexpandable;
@@ -53,15 +54,7 @@ type sc_t;
 type sd_t;
 
 // objects
-type st_s;
 type sr_s;
-
-// perspectives - deprecated (declared as group below)
-//type bcore_inst;
-//type bcore_array;
-//type bcore_via;
-//type bcore_source;
-//type bcore_sink;
 
 /// st_s
 group st = bcore_inst
@@ -93,9 +86,12 @@ group bcore_stamp_funcs = bcore_inst
     signature void down( mutable );
     signature void copy( mutable, const @* src );
 
+    signature   @* create(  plain );
     signature void discard( mutable );
     signature   @* clone(   const );
 };
+
+embed "bcore_arr.x";
 
 #endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -103,8 +99,4 @@ group bcore_stamp_funcs = bcore_inst
 
 /**********************************************************************************************************************/
 
-vd_t bcore_xoila_inexpandable_signal_handler( const bcore_signal_s* o );
-
-/**********************************************************************************************************************/
-
-#endif  // BCORE_XOILA_INEXPANDABLE_H
+#endif  // BCORE_XOILA_ROOT_H

@@ -52,8 +52,8 @@ bcore_arr_uz_s* bcore_arr_uz_s_push_left(  bcore_arr_uz_s* o, uz_t v ); // exten
 uz_t            bcore_arr_uz_s_pop(        bcore_arr_uz_s* o );
 bcore_arr_uz_s* bcore_arr_uz_s_sort(       bcore_arr_uz_s* o, s2_t order ); // stable
 bcore_arr_uz_s* bcore_arr_uz_s_reorder(    bcore_arr_uz_s* o, const bcore_arr_uz_s* order );
-uz_t bcore_arr_uz_s_find( const bcore_arr_uz_s* o, uz_t start, uz_t end, uz_t v ); // behaves like st_s_find_*
 
+uz_t bcore_arr_uz_s_find( const bcore_arr_uz_s* o, uz_t start, uz_t end, uz_t v ); // behaves like st_s_find_*
 uz_t bcore_arr_uz_s_max(     const bcore_arr_uz_s* o );
 uz_t bcore_arr_uz_s_min(     const bcore_arr_uz_s* o );
 uz_t bcore_arr_uz_s_idx_max( const bcore_arr_uz_s* o );
@@ -83,8 +83,13 @@ bcore_arr_sz_s* bcore_arr_sz_s_push_left( bcore_arr_sz_s* o, sz_t v ); // extend
 sz_t            bcore_arr_sz_s_pop(       bcore_arr_sz_s* o );
 bcore_arr_sz_s* bcore_arr_sz_s_sort(      bcore_arr_sz_s* o, s2_t order ); // stable
 bcore_arr_sz_s* bcore_arr_sz_s_reorder(   bcore_arr_sz_s* o, const bcore_arr_uz_s* order );
-uz_t            bcore_arr_sz_s_count_equal( const bcore_arr_sz_s* o, sz_t val ); // number of occurrence
 
+uz_t bcore_arr_sz_s_find(    const bcore_arr_sz_s* o, uz_t start, uz_t end, sz_t v ); // behaves like st_s_find_*
+sz_t bcore_arr_sz_s_max(     const bcore_arr_sz_s* o );
+sz_t bcore_arr_sz_s_min(     const bcore_arr_sz_s* o );
+uz_t bcore_arr_sz_s_idx_max( const bcore_arr_sz_s* o );
+uz_t bcore_arr_sz_s_idx_min( const bcore_arr_sz_s* o );
+uz_t bcore_arr_sz_s_count_equal( const bcore_arr_sz_s* o, sz_t val ); // number of occurrence
 
 /**********************************************************************************************************************/
 
