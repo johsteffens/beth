@@ -39,38 +39,38 @@ XOILA_DEFINE_GROUP( bcore_prsg, bcore_inst )
  *  Active bits are right-bound (low order bits).
  *  Inactive bits are always zero.
  */
-feature strict 'a' sz_t bits(   const );
+feature strict sz_t bits(   const );
 
 /// maximum possible u3 value
-feature strict 'a' u3_t max_u3( const );
+feature strict u3_t max_u3( const );
 
 /// minimum possible u3 value
-feature strict 'a' u3_t min_u3( const );
+feature strict u3_t min_u3( const );
 
 /** Function state_* computes the return value from the current state.
  *  The state is not changed.
  */
-feature strict 'a' u3_t state_u3     ( const );
-feature strict 'a' u3_t state_bits_u3( const, sz_t bits ); // returns 'bits' bits of the random random state; value range range: [0, (2^bits)-1]
-feature strict 'a' f3_t state_f3     ( const, f3_t min, f3_t max ); // return value is evenly distributed withing the range [min,max]
-feature        'a' bl_t state_bl     ( const ) = { return :a_state_bits_u3( o, 1 ) ? true : false; };
+feature strict u3_t state_u3     ( const );
+feature strict u3_t state_bits_u3( const, sz_t bits ); // returns 'bits' bits of the random random state; value range range: [0, (2^bits)-1]
+feature strict f3_t state_f3     ( const, f3_t min, f3_t max ); // return value is evenly distributed withing the range [min,max]
+feature        bl_t state_bl     ( const ) = { return :a_state_bits_u3( o, 1 ) ? true : false; };
 
 /** Function gen* generates a subsequent state.
  *  A return value is computed from the new state according to function state*.
  */
-feature strict 'a' void gen        ( mutable );
-feature strict 'a' u3_t gen_bits_u3( mutable, sz_t bits );
-feature strict 'a' u3_t gen_u3     ( mutable );
-feature strict 'a' f3_t gen_f3     ( mutable, f3_t min, f3_t max );
-feature        'a' bl_t gen_bl     ( mutable ) = { return :a_gen_bits_u3( o, 1 ) ? true : false; };
+feature strict void gen        ( mutable );
+feature strict u3_t gen_bits_u3( mutable, sz_t bits );
+feature strict u3_t gen_u3     ( mutable );
+feature strict f3_t gen_f3     ( mutable, f3_t min, f3_t max );
+feature        bl_t gen_bl     ( mutable ) = { return :a_gen_bits_u3( o, 1 ) ? true : false; };
 
 /** Computes a new state derived from a u3_t seed.
  *  Note: Function state_u3 above does not necessarily return that seed value.
  */
-feature strict 'a' :* set_state_u3( mutable, u3_t seed );
+feature strict :* set_state_u3( mutable, u3_t seed );
 
 /// Computes a new state derived from state of a and b.
-feature 'a' :*  set_state_mix( mutable, const :* a, const :* b ) =
+feature :*  set_state_mix( mutable, const :* a, const :* b ) =
 {
     /* Different mixing methods are thinkable:
      * Adding, multiplying or xoring should all be suitable.
@@ -80,7 +80,7 @@ feature 'a' :*  set_state_mix( mutable, const :* a, const :* b ) =
 };
 
 /// deprecated: use set_state_u3
-feature 'a' void reseed( mutable, u3_t seed ) = { :a_set_state_u3( o, seed ); };
+feature void reseed( mutable, u3_t seed ) = { :a_set_state_u3( o, seed ); };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

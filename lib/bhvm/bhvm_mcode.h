@@ -44,7 +44,7 @@ stamp :op = aware :
 
     func bcore_inst_call : copy_x  = { o->p = o->vop ? ( bhvm_vop_spect_s* )bhvm_vop_spect_s_get_aware( o->vop ) : NULL; };
     func bcore_via_call  : mutated = { @_copy_x( o, NULL ); };
-    func bhvm_vop        : run = {{ assert( o->p ); assert( o->p->run ); o->p->run( (vc_t)o->vop, ah ); }};
+    func bhvm_vop        : run = {\C assert( o->p ); assert( o->p->run ); o->p->run( (vc_t)o->vop, ah ); };
 };
 
 signature sz_t vop_push_d( mutable,       bhvm_vop* vop );
@@ -126,17 +126,17 @@ stamp :nbase = aware bcore_array
 /// Holor meta data
 group :hmeta =
 {
-    feature 'a' tp_t get_name( const ) = { return 0; };
-    feature 'a' tp_t get_pclass( const )  = { return 0; };
+    feature tp_t get_name( const ) = { return 0; };
+    feature tp_t get_pclass( const )  = { return 0; };
 
-    feature 'a' ::node_s* get_node( const ) = { return NULL; };
-    feature 'a' void      set_node( mutable, ::node_s* node ) = {};
+    feature ::node_s* get_node( const ) = { return NULL; };
+    feature void      set_node( mutable, ::node_s* node ) = {};
 
-    feature 'a' bl_t is_rollable( const )  = { return false; }; // unrolling: holor need not be duplicated (e.g. const or adaptive)
-    feature 'a' bl_t is_active( const )    = { return true;  }; // holor is active
+    feature bl_t is_rollable( const )  = { return false; }; // unrolling: holor need not be duplicated (e.g. const or adaptive)
+    feature bl_t is_active( const )    = { return true;  }; // holor is active
 
-    feature 'a' bcore_inst* get_custom( const )                             = { return NULL; }; // retrieves custom data (if available)
-    feature 'a' bcore_inst* set_custom( mutable, const bcore_inst* custom ) = { return NULL; }; // sets custom data and returns custom copy (if supported)
+    feature bcore_inst* get_custom( const )                             = { return NULL; }; // retrieves custom data (if available)
+    feature bcore_inst* set_custom( mutable, const bcore_inst* custom ) = { return NULL; }; // sets custom data and returns custom copy (if supported)
 
     stamp :adl = aware bcore_array { aware : => []; };
 };

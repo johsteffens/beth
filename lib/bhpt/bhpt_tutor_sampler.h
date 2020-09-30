@@ -31,9 +31,9 @@
 XOILA_DEFINE_GROUP( bhpt_sampler, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-feature strict 'a' void fetch( const, bcore_prsg* prsg, bhvm_value_s* x, bhvm_value_s* y );
-feature strict 'a' sz_t get_size_en( const );
-feature strict 'a' sz_t get_size_ex( const );
+feature strict void fetch( const, bcore_prsg* prsg, bhvm_value_s* x, bhvm_value_s* y );
+feature strict sz_t get_size_en( const );
+feature strict sz_t get_size_ex( const );
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

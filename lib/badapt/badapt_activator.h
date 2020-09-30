@@ -98,15 +98,15 @@ XOILA_DEFINE_GROUP( badapt_activator, bcore_inst )
 #ifdef XOILA_SECTION
 
     /// activation function
-    feature 'a' const badapt_activation* get_activation( const )                    = { return NULL; };
-    feature 'a' void set_activation( mutable, const badapt_activation* activation ) = {};
+    feature const badapt_activation* get_activation( const )                    = { return NULL; };
+    feature void set_activation( mutable, const badapt_activation* activation ) = {};
 
     /// fast concurrent inference
-    feature strict 'a' void infer( const, const bmath_vf3_s* in, bmath_vf3_s* out );
+    feature strict void infer( const, const bmath_vf3_s* in, bmath_vf3_s* out );
 
     /// fast concurrent gradient backpropagation (no changing of state)
     /// grad_in and grad_out may refer to the same object
-    feature strict 'a' void bgrad( const, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out );
+    feature strict void bgrad( const, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out );
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

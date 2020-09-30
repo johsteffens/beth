@@ -27,7 +27,7 @@ XOILA_DEFINE_GROUP( badapt_dynamics, bcore_inst )
 #ifdef XOILA_SECTION
 
 /// updates weights if forward map is: in * w = out;
-feature strict 'a' void weights_adapt( const, const bmath_vf3_s* in, bmath_mf3_s* w, const bmath_vf3_s* grad_out, f3_t epsilon_factor );
+feature strict void weights_adapt( const, const bmath_vf3_s* in, bmath_mf3_s* w, const bmath_vf3_s* grad_out, f3_t epsilon_factor );
 
 stamp :std = aware :
 {
@@ -48,41 +48,41 @@ XOILA_DEFINE_GROUP( badapt_adaptive, bcore_inst )
     // ===== required features =====
 
     /// input vector size
-    feature strict 'a' sz_t get_in_size( const );
+    feature strict sz_t get_in_size( const );
 
     /// output vector size
-    feature strict 'a' sz_t get_out_size( const );
+    feature strict sz_t get_out_size( const );
 
     /// fast concurrent inference (can be omitted e.g. for recurrent networks)
-    feature        'a' void infer( const, const bmath_vf3_s* in, bmath_vf3_s* out );
+    feature        void infer( const, const bmath_vf3_s* in, bmath_vf3_s* out );
 
     /// mutable inference (used for training and recurrent nets)
-    feature strict 'a' void minfer( mutable, const bmath_vf3_s* in, bmath_vf3_s* out );
+    feature strict void minfer( mutable, const bmath_vf3_s* in, bmath_vf3_s* out );
 
     /// fast concurrent gradient backpropagation (no changing of state)
-    feature        'a' void bgrad( const, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out );
+    feature        void bgrad( const, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out );
 
     /// gradient backpropagation with adaptation; relates to after last call to minfer for given gradient; grad_in can be NULL
-    feature strict 'a' void bgrad_adapt( mutable, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out );
+    feature strict void bgrad_adapt( mutable, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out );
 
     // ===== optional features =====
 
     /// resets network to a defined internal state; (e.g. for recurrent networks )
-    feature        'a' void reset( mutable );
+    feature        void reset( mutable );
 
     /// retrieves min and max of weights
-    feature        'a' void get_weights_min_max( const, f3_t* min, f3_t* max );
+    feature        void get_weights_min_max( const, f3_t* min, f3_t* max );
 
-    feature 'a' void get_dynamics_std( const,         badapt_dynamics_std_s* dynamics );
-    feature 'a' void set_dynamics_std( mutable, const badapt_dynamics_std_s* dynamics );
+    feature void get_dynamics_std( const,         badapt_dynamics_std_s* dynamics );
+    feature void set_dynamics_std( mutable, const badapt_dynamics_std_s* dynamics );
 
     // ===== optional features with default implementation =====
 
     /// outputs architecture to text sink (for easy inspection)
-    feature 'a' void arc_to_sink( const, bcore_sink* sink ) = { bcore_txt_ml_a_to_sink( o, sink ); };
+    feature void arc_to_sink( const, bcore_sink* sink ) = { bcore_txt_ml_a_to_sink( o, sink ); };
 
     /// inference for scalar output
-    feature 'a' f3_t infer_f3( const, const bmath_vf3_s* in ) =
+    feature f3_t infer_f3( const, const bmath_vf3_s* in ) =
     {
         bmath_vf3_s v_out;
         f3_t out = 0;
@@ -92,7 +92,7 @@ XOILA_DEFINE_GROUP( badapt_adaptive, bcore_inst )
     };
 
     /// full adaption cycle based on loss function; adapt_loss_f3 returns estimates result
-    feature 'a' void adapt_loss( mutable, const badapt_loss* loss, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out ) =
+    feature void adapt_loss( mutable, const badapt_loss* loss, const bmath_vf3_s* in, const bmath_vf3_s* target, bmath_vf3_s* out ) =
     {
         ASSERT( out != NULL );
         bmath_vf3_s* grad = bmath_vf3_s_create();
@@ -103,7 +103,7 @@ XOILA_DEFINE_GROUP( badapt_adaptive, bcore_inst )
         bmath_vf3_s_discard( grad );
     };
 
-    feature 'a' f3_t adapt_loss_f3( mutable, const badapt_loss* loss, const bmath_vf3_s* in, f3_t target ) =
+    feature f3_t adapt_loss_f3( mutable, const badapt_loss* loss, const bmath_vf3_s* in, f3_t target ) =
     {
         bmath_vf3_s v_target, v_out;
         f3_t out = 0;
@@ -122,15 +122,15 @@ XOILA_DEFINE_GROUP( badapt_builder, bcore_inst )
 #ifdef XOILA_SECTION
 
     /// input vector size
-    feature strict 'a' sz_t get_in_size( const );
-    feature strict 'a' void set_in_size( mutable, sz_t size );
+    feature strict sz_t get_in_size( const );
+    feature strict void set_in_size( mutable, sz_t size );
 
     /// output vector size
-    feature strict 'a' sz_t get_out_size( const );
-    feature strict 'a' void set_out_size( mutable, sz_t size );
+    feature strict sz_t get_out_size( const );
+    feature strict void set_out_size( mutable, sz_t size );
 
     /// builds adaptive ready to be trained; passes ownership
-    feature strict 'a' badapt_adaptive* build( const );
+    feature strict badapt_adaptive* build( const );
 
 #endif // XOILA_SECTION
 

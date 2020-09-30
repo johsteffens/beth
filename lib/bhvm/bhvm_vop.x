@@ -26,27 +26,27 @@ stamp :arr = aware bcore_array { aware bhvm_vop => []; };
 
 feature 'ap' void run( const, bhvm_holor_s** ah );
 
-feature 'a' sz_t arity( const );
+feature sz_t arity( const );
 
 /// signature of operator (e.g. "ABY")
-feature 'a' sc_t sig( const );
+feature sc_t sig( const );
 
-feature 'a' sz_t* get_index_arr( mutable );
+feature sz_t* get_index_arr( mutable );
 
-feature 'a' sz_t get_index( const, sz_t index ) =
+feature sz_t get_index( const, sz_t index ) =
 {
     ASSERT( index  >= 0 && index <= :a_arity( o ) );
     return :a_get_index_arr( (:*)o )[ index ];
 };
 
-feature 'a' :* set_index( mutable, sz_t index, sz_t idx_val ) =
+feature :* set_index( mutable, sz_t index, sz_t idx_val ) =
 {
     ASSERT( index  >= 0 && index <= :a_arity( o ) );
     :a_get_index_arr( o )[ index ] = idx_val;
     return o;
 };
 
-feature 'a' :* set_index_arr( mutable, sz_t* idx_arr, sz_t size ) =
+feature :* set_index_arr( mutable, sz_t* idx_arr, sz_t size ) =
 {
     ASSERT( size == :a_arity( o ) + 1 );
     sz_t* o_idx_arr = :a_get_index_arr( o );
@@ -97,7 +97,7 @@ stamp :arr_ci = aware bcore_array
   * a-pass: a,b,c,d,e    y
   * d-pass: f,g,h,i,j    z
   */
-feature 'a' void set_arg( mutable, :ci_s* ci ) =
+feature void set_arg( mutable, :ci_s* ci ) =
 {
     sz_t size   = :a_arity( o ) + 1;
     sc_t  sig   = :a_sig( o );
@@ -114,7 +114,7 @@ feature 'a' void set_arg( mutable, :ci_s* ci ) =
     }
 };
 
-feature 'a' :* set_args( mutable, const :arr_ci_s* arr ) =
+feature :* set_args( mutable, const :arr_ci_s* arr ) =
 {
     for( sz_t i = 0; i < arr->size; i++ ) :a_set_arg( o, &arr->data[ i ] );
     return o;

@@ -73,8 +73,8 @@ group :adaptor =
         func : :rebind_axon  = { assert( o->size == src->size ); BFOR_EACH( i, o ) :node_s_rebind_axon( &o->data[ i ], &src->data[ i ] ); };
     };
 
-    feature 'a' void reset( mutable ); // resets all moments
-    feature 'a' void adapt( mutable, const :node_s* node );
+    feature void reset( mutable ); // resets all moments
+    feature void adapt( mutable, const :node_s* node );
 
     stamp :adl = aware bcore_array { aware : => []; };
 };
@@ -89,19 +89,19 @@ group :adaptor =
 group :adaptive =
 {
     /// retrieves entry-holor-format (shape & type); returns format
-    feature strict 'a' bhvm_holor_s* get_format_en( const, bhvm_holor_s* format );
+    feature strict bhvm_holor_s* get_format_en( const, bhvm_holor_s* format );
 
     /// retrieves exit-holor-format (shape & type); returns format
-    feature strict 'a' bhvm_holor_s* get_format_ex( const, bhvm_holor_s* format );
+    feature strict bhvm_holor_s* get_format_ex( const, bhvm_holor_s* format );
 
     /// axon-pass
-    feature 'a' void axon_pass( mutable, const bhvm_holor_s* ax_en, bhvm_holor_s* ax_ex ) = {};
+    feature void axon_pass( mutable, const bhvm_holor_s* ax_en, bhvm_holor_s* ax_ex ) = {};
 
     /// dendrite-pass (ag_en may be NULL)
-    feature 'a' void dendrite_pass( mutable, const bhvm_holor_s* ag_ex, bhvm_holor_s* ag_en ) = {};
+    feature void dendrite_pass( mutable, const bhvm_holor_s* ag_ex, bhvm_holor_s* ag_en ) = {};
 
     /// resets cyclic variables
-    feature 'a' void cyclic_reset( mutable ) = {};
+    feature void cyclic_reset( mutable ) = {};
 
     /** Obtains a holor-probe for accumulative gradients; returns probe
      *  The probe is to be deemed invalid after the adaptive has been modified
@@ -109,16 +109,16 @@ group :adaptive =
      *  rebind_holors must be executed afterwards.
      *  This function should execute fast.
      */
-    feature 'a' ::adaptor_probe_s* get_adaptor_probe( const, ::adaptor_probe_s* probe ) = { return probe; };
+    feature ::adaptor_probe_s* get_adaptor_probe( const, ::adaptor_probe_s* probe ) = { return probe; };
 
     /** Explicitly rebinds internal holorbase.
      *  This can be necessary when holors of a probe have been externally reallocated.
      *  Use with care!
      */
-    feature 'a' void rebind_holors( mutable );
+    feature void rebind_holors( mutable );
 
     /// outputs current status information to sink
-    feature 'a' void status_to_sink( const, sz_t verbosity, bcore_sink* sink ) = { if( verbosity > 0 ) bcore_txt_ml_a_to_sink( o, sink ); };
+    feature void status_to_sink( const, sz_t verbosity, bcore_sink* sink ) = { if( verbosity > 0 ) bcore_txt_ml_a_to_sink( o, sink ); };
 
 };
 
@@ -129,13 +129,13 @@ group :adaptive =
 group :builder =
 {
     /// defines entry-holor format (shape & type)
-    feature strict 'a' void set_format_en( mutable, const bhvm_holor_s* format );
+    feature strict void set_format_en( mutable, const bhvm_holor_s* format );
 
     /// defines exit-holor (shape & type)
-    feature strict 'a' void set_format_ex( mutable, const bhvm_holor_s* format );
+    feature strict void set_format_ex( mutable, const bhvm_holor_s* format );
 
     /// creates adaptive releasing ownership
-    feature strict 'a' ::adaptive* create_adaptive( const );
+    feature strict ::adaptive* create_adaptive( const );
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -147,26 +147,26 @@ group :builder =
 group :tutor =
 {
     /// creates adaptive via builder
-    feature strict 'a' ::adaptive* create_adaptive( const );
+    feature strict ::adaptive* create_adaptive( const );
 
     /// creates adaptor for adaptive
-    feature strict 'a' ::adaptor* create_adaptor( const );
+    feature strict ::adaptor* create_adaptor( const );
 
     /// resets the training session
-    feature 'a' void reset( mutable ) = {};
+    feature void reset( mutable ) = {};
 
     /// primes a specified adaptive (must be concurrent for tutor)
-    feature 'a' void prime( mutable, ::adaptive* adaptive ) = {};
+    feature void prime( mutable, ::adaptive* adaptive ) = {};
 
     /** Tests a specified adaptive (must be concurrent for tutor) and writes result to log;
      *  Testing may mutate the tutor, if necessary and done in a thread safe manner.
      *  Mutation is not desirable, though, and should never affect the reliability or interpretability
      *  of test results.
      */
-    feature 'a' void test( mutable, const ::adaptive* adaptive, sz_t verbosity, bcore_sink* log ) = {};
+    feature void test( mutable, const ::adaptive* adaptive, sz_t verbosity, bcore_sink* log ) = {};
 
     /// outputs current status information to sink
-    feature 'a' void status_to_sink( const, sz_t verbosity, bcore_sink* sink ) = { if( verbosity > 0 ) bcore_txt_ml_a_to_sink( o, sink ); };
+    feature void status_to_sink( const, sz_t verbosity, bcore_sink* sink ) = { if( verbosity > 0 ) bcore_txt_ml_a_to_sink( o, sink ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
