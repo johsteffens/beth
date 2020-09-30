@@ -204,8 +204,11 @@ void bcore_source_point_s_parse_msg_to_sink_fa( const bcore_source_point_s* o, b
 er_t bcore_source_point_s_parse_err_to_em_fv( const bcore_source_point_s* o, er_t err_id, sc_t format, va_list args );
 er_t bcore_source_point_s_parse_err_to_em_fa( const bcore_source_point_s* o, er_t err_id, sc_t format, ... );
 
-/// creates a cloned source pointing to the index positionof source point
+/// creates a cloned source pointing to the index position of source point
 bcore_source* bcore_source_point_s_clone_source( const bcore_source_point_s* o );
+
+/// write a source reference to sink in the form <file_path>:<line>:<col>
+void bcore_source_point_s_source_reference_to_sink( const bcore_source_point_s* o, bl_t file_name_only, bcore_sink* sink );
 
 /**********************************************************************************************************************/
 // syntactic sugar

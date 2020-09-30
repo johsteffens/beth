@@ -21,6 +21,7 @@
 #include "bcore_spect_interpreter.h"
 #include "bcore_life.h"
 #include "bcore_sinks.h"
+#include "bcore_file.h"
 #include "bcore_error_manager.h"
 
 #include <stdio.h>
@@ -1302,6 +1303,35 @@ bcore_source* bcore_source_point_s_clone_source( const bcore_source_point_s* o )
     bcore_source* source = bcore_source_a_clone( o->source );
     bcore_source_a_set_index( source, o->index );
     return source;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_source_point_s_source_reference_to_sink( const bcore_source_point_s* o, bl_t file_name_only, bcore_sink* sink )
+{
+    if( !o->source ) return;
+
+    BLM_INIT();
+    sz_t index = bcore_source_a_get_index( o->source );
+    bcore_source_a_set_index( o->source, o->index );
+
+    bcore_source_context_s* context = BLM_CREATE( bcore_source_context_s );
+    bcore_source_a_get_context( o->source, context );
+
+    if( context->file_path )
+    {
+        st_s* file = BLM_CLONE( st_s, context->file_path );
+        if( file_name_only )
+        {
+            st_s_copy( file, BLM_A_PUSH( st_s_create_sc( bcore_file_name( file->sc ) ) ) );
+        }
+        bcore_sink_a_push_fa( sink, "#<sc_t>", file->sc );
+    }
+
+    bcore_sink_a_push_fa( sink, ":#<sz_t>:#<sz_t>", context->line, context->col );
+
+    bcore_source_a_set_index( o->source, index );
+    BLM_DOWN();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
