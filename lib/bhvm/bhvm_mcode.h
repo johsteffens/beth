@@ -161,23 +161,23 @@ group :hbase =
 
         func  : :set_size =
         {
-            bhvm_holor_adl_s_set_size( &o->holor_adl, size );
-               ::hmeta_adl_s_set_size( &o->hmeta_adl, size );
+            o.holor_adl.set_size( size );
+            o.hmeta_adl.set_size( size );
             return o;
         };
 
         /// if(copy_size_limit >=0) holors beyond the limit are not copied or streamed
         sz_t copy_size_limit = -1;
-        func bcore_via_call : mutated = { if( o->copy_size_limit >= 0 ) @_set_size( o, o->copy_size_limit ); };
-        func bcore_inst_call : copy_x = { if( o->copy_size_limit >= 0 ) @_set_size( o, o->copy_size_limit ); };
+        func bcore_via_call : mutated = { if( o.copy_size_limit >= 0 ) o.set_size( o.copy_size_limit ); };
+        func bcore_inst_call : copy_x = { if( o.copy_size_limit >= 0 ) o.set_size( o.copy_size_limit ); };
 
-        func  : :get_size = { return o->holor_adl.size; };
+        func  : :get_size = { return o.holor_adl.size; };
 
         func :: :push_hm  =
         {
             sz_t idx = o->holor_adl.size;
-               ::hmeta_adl_s_push_c( &o->hmeta_adl, m );
-            bhvm_holor_adl_s_push_c( &o->holor_adl, h );
+            o.hmeta_adl.push_c( m );
+            o.holor_adl.push_c( h );
             return idx;
         };
 
@@ -186,23 +186,22 @@ group :hbase =
             bhvm_vop_ci_s ci;
             bhvm_vop_ci_s_init( &ci );
             ci.c = c;
-            ci.i = @_push_hm( o, h, m );
-            *bhvm_vop_arr_ci_s_push( arr_ci ) = ci;
+            ci.i = o.push_hm( h, m );
+            *arr_ci.push() = ci;
             return ci.i;
         };
 
         func :: :push_copy_from_index =
         {
-            assert( index >= 0 && index < o->holor_adl.size );
-
-            sz_t ret = o->holor_adl.size;
-               ::hmeta_adl_s_push_c( &o->hmeta_adl, o->hmeta_adl.data[ index ] );
-            bhvm_holor_adl_s_push_c( &o->holor_adl, o->holor_adl.data[ index ] );
+            assert( index >= 0 && index < o.holor_adl.size );
+            sz_t ret = o.holor_adl.size;
+            o->hmeta_adl.push_c( o->hmeta_adl.[ index ] );
+            o->holor_adl.push_c( o->holor_adl.[ index ] );
             return ret;
         };
 
-        func : :get_holor = { assert( index >= 0 && index < o->holor_adl.size ); return o->holor_adl.data[ index ]; };
-        func : :get_hmeta = { assert( index >= 0 && index < o->hmeta_adl.size ); return o->hmeta_adl.data[ index ]; };
+        func : :get_holor = { assert( index >= 0 && index < o.holor_adl.size ); return o.holor_adl.[ index ]; };
+        func : :get_hmeta = { assert( index >= 0 && index < o.hmeta_adl.size ); return o.hmeta_adl.[ index ]; };
     };
 };
 
@@ -213,15 +212,12 @@ stamp :track = aware bcore_array
     tp_t name;
     :op_s [];
 
-    func bhvm_vop : run =
-    {
-        BFOR_EACH( i, o ) :op_s_run( &o->data[ i ], ah );
-    };
+    func bhvm_vop : run = { BFOR_EACH( i, o ) o.[ i ].run( ah ); };
 
     func : : run_section =
     {
         assert( start >= 0 && start < o->size - size );
-        for( sz_t i = 0; i < size; i++ ) :op_s_run( &o->data[ i + start ], ah );
+        for( sz_t i = 0; i < size; i++ ) o.[ i + start ].run( ah );
     };
 
     func : :vop_push_d =
@@ -234,15 +230,12 @@ stamp :track = aware bcore_array
         return o->size - 1;
     };
 
-    func : :vop_push_c =
-    {
-        return @_vop_push_d( o, bhvm_vop_a_clone( vop ) );
-    };
+    func : :vop_push_c = { return o.vop_push_d( vop.clone() ); };
 
     func : :push_copy_from_index =
     {
         assert( index >= 0 && index < o->size );
-        return @_vop_push_d( o, bhvm_vop_a_clone( o->data[ index ].vop ) );
+        return o.vop_push_d( o->[ index ].vop.clone() );
     };
 };
 
@@ -271,63 +264,61 @@ stamp :lib = aware :
     :track_adl_s      arr;
     bcore_hmap_tpuz_s map; // name-index map
 
-    func : :clear = { :track_adl_s_clear( &o->arr ); bcore_hmap_tpuz_s_clear( &o->map ); };
-
-    func : :track_exists = { return bcore_hmap_tpuz_s_exists( &o->map, name ); };
+    func : :clear = { o.arr.clear(); o.map.clear(); };
+    func : :track_exists = { return o.map.exists( name ); };
 
     func : :track_get =
     {
-        uz_t* pidx = bcore_hmap_tpuz_s_get( &o->map, name );
-        if( !pidx ) return NULL;
-        return o->arr.data[ *pidx ];
+        uz_t* pidx = o.map.get( name );
+        return pidx ? o.arr.[ *pidx ] : NULL;
     };
 
     func : :track_get_or_new =
     {
-        if( bcore_hmap_tpuz_s_exists( &o->map, name ) ) return @_track_get( o, name );
-        bcore_hmap_tpuz_s_set( &o->map, name, o->arr.size );
-        :track_s* track = :track_adl_s_push( &o->arr );
-        track->name = name;
+        if( o.map.exists( name ) ) return o.track_get( name );
+        o.map.set( name, o.arr.size );
+        :track_s* track = o.arr.push();
+        track.name = name;
         return track;
     };
 
     func : :track_reset =
     {
-        :track_s* track = @_track_get_or_new( o, name );
-        :track_s_clear( track );
+        track := o.track_get_or_new( name );
+        track.clear();
         return track;
     };
 
-    func : :track_vop_push_c = { :track_s_vop_push_c( @_track_get_or_new( o, name ), vop ); };
-    func : :track_vop_push_d = { :track_s_vop_push_d( @_track_get_or_new( o, name ), vop ); };
+    func : :track_vop_push_c = { o.track_get_or_new( name ).vop_push_c( vop ); };
+    func : :track_vop_push_d = { o.track_get_or_new( name ).vop_push_d( vop ); };
 
     func : :track_vop_set_args_push_d =
     {
-        bhvm_vop_a_set_args( vop, arr_ci );
-        :track_s_vop_push_d( @_track_get_or_new( o, name ), vop );
+        vop.set_args( arr_ci );
+        o.track_get_or_new( name ).vop_push_d( vop );
     };
 
     func : :track_push =
     {
-        :track_s* src = @_track_get( o, src_name );
+        src := o.track_get( src_name );
         if( !src ) return;
-        :track_s* dst = @_track_get_or_new( o, name );
-        BFOR_EACH( i, src ) :track_s_vop_push_c( dst, src->data[ i ].vop );
+        dst := o.track_get_or_new( name );
+        BFOR_EACH( i, src ) dst.vop_push_c( src.[ i ].vop );
     };
 
     func : :track_remove =
     {
-        uz_t* pidx = bcore_hmap_tpuz_s_get( &o->map, name );
+        pidx := o.map.get( name );
         if( !pidx ) return;
         sz_t idx = *pidx;
-        :track_s_discard( o->arr.data[ idx ] );
-        o->arr.size--;
-        o->arr.data[ idx ] = o->arr.data[ o->arr.size ];
-        o->arr.data[ o->arr.size ] = NULL;
-        if( idx < o->arr.size ) bcore_hmap_tpuz_s_set( &o->map, o->arr.data[ idx ]->name, idx );
+        o.arr.[ idx ].discard();
+        o.arr.size--;
+        o.arr.[ idx ] = o.arr.[ o->arr.size ];
+        o.arr.[ o.arr.size ] = NULL;
+        if( idx < o.arr.size ) o.map.set( o.arr.[ idx ].name, cast( uz_t, idx ) );
     };
 
-    func : :track_run_ah = { :track_s* t = @_track_get( (@*)o, name ); if( t ) :track_s_run( t, ah ); };
+    func : :track_run_ah = { t := cast(@*,o).track_get( name ); if( t ) t.run( ah ); };
 
 };
 
@@ -342,18 +333,18 @@ stamp :frame = aware :
     func bcore_via_call : mutated;
     func bcore_inst_call : copy_x;
 
-    func : :track_get = { if( !o->lib ) return NULL; return :lib_s_track_get( o->lib, name ); };
+    func : :track_get = { return ( o.lib ) ? o.lib.track_get( name ) : NULL; };
 
-    func : :track_vop_push_c = { if( !o->lib ) o->lib = :lib_s_create(); :lib_s_track_vop_push_c( o->lib, name, vop ); };
-    func : :track_vop_push_d = { if( !o->lib ) o->lib = :lib_s_create(); :lib_s_track_vop_push_d( o->lib, name, vop ); };
+    func : :track_vop_push_c = { if( !o.lib ) o.lib = :lib_s_create(); o.lib.track_vop_push_c( name, vop ); };
+    func : :track_vop_push_d = { if( !o.lib ) o.lib = :lib_s_create(); o.lib.track_vop_push_d( name, vop ); };
 
-    func : :track_vop_set_args_push_d = { if( !o->lib ) o->lib = :lib_s_create(); :lib_s_track_vop_set_args_push_d( o->lib, name, vop, arr_ci ); };
+    func : :track_vop_set_args_push_d = { if( !o.lib ) o.lib = :lib_s_create(); o.lib.track_vop_set_args_push_d( name, vop, arr_ci ); };
 
-    func : :push_hm   = { if( !o->hbase ) o->hbase = :hbase_s_create(); return :hbase_s_push_hm(   o->hbase, h, m            ); };
-    func : :push_hmc  = { if( !o->hbase ) o->hbase = :hbase_s_create(); return :hbase_s_push_hmc(  o->hbase, h, m, c, arr_ci ); };
-    func : :push_node = { if( !o->nbase ) o->nbase = :nbase_s_create(); return :nbase_s_push_node( o->nbase                  ); };
+    func : :push_hm   = { if( !o->hbase ) o->hbase = :hbase_s_create(); return o.hbase.push_hm(  h, m            ); };
+    func : :push_hmc  = { if( !o->hbase ) o->hbase = :hbase_s_create(); return o.hbase.push_hmc( h, m, c, arr_ci ); };
+    func : :push_node = { if( !o->nbase ) o->nbase = :nbase_s_create(); return o.nbase.push_node(); };
 
-    func : :track_run = { if( !o->lib ) return; :lib_s_track_run_ah( o->lib, name, o->hbase->holor_adl.data ); };
+    func : :track_run = { if( !o->lib ) return; o.lib.track_run_ah( name, o.hbase.holor_adl.data ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
