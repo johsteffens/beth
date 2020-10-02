@@ -284,7 +284,7 @@ stamp :lib = aware :
 
     func : :track_reset =
     {
-        track := o.track_get_or_new( name );
+        :track_s* track = o.track_get_or_new( name );
         track.clear();
         return track;
     };
@@ -300,15 +300,15 @@ stamp :lib = aware :
 
     func : :track_push =
     {
-        src := o.track_get( src_name );
+        :track_s* src = o.track_get( src_name );
         if( !src ) return;
-        dst := o.track_get_or_new( name );
+        :track_s* dst = o.track_get_or_new( name );
         BFOR_EACH( i, src ) dst.vop_push_c( src.[ i ].vop );
     };
 
     func : :track_remove =
     {
-        pidx := o.map.get( name );
+        deduce pidx = o.map.get( name );
         if( !pidx ) return;
         sz_t idx = *pidx;
         o.arr.[ idx ].discard();
@@ -318,7 +318,7 @@ stamp :lib = aware :
         if( idx < o.arr.size ) o.map.set( o.arr.[ idx ].name, cast( uz_t, idx ) );
     };
 
-    func : :track_run_ah = { t := cast(@*,o).track_get( name ); if( t ) t.run( ah ); };
+    func : :track_run_ah = { deduce t = cast( @* ,o ).track_get( name ); if( t ) t.run( ah ); };
 
 };
 
