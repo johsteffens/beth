@@ -21,9 +21,13 @@
 
 /**********************************************************************************************************************/
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_life_s* __bcore_life = NULL;
 
 BCORE_DEFINE_FUNCTION_INIT_FLAT( bcore_life_item_s )
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_life_item_s_down( bcore_life_item_s* o )
 {
@@ -40,12 +44,18 @@ void bcore_life_item_s_down( bcore_life_item_s* o )
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 BCORE_DEFINE_FUNCTION_COPY_FLAT( bcore_life_item_s )
 BCORE_DEFINE_FUNCTION_CREATE(    bcore_life_item_s )
 BCORE_DEFINE_FUNCTION_DISCARD(   bcore_life_item_s )
 BCORE_DEFINE_FUNCTION_CLONE(     bcore_life_item_s )
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_life_s_init( struct bcore_life_s* o )
 {
@@ -53,14 +63,36 @@ void bcore_life_s_init( struct bcore_life_s* o )
     o->_ = TYPEOF_bcore_life_s;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_life_s_down( struct bcore_life_s* o )
 {
     assert( o );
     bcore_release_obj_arr( ( fp_t )bcore_life_item_s_down, o->data, o->size, sizeof( bcore_life_item_s ) );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 BCORE_DEFINE_FUNCTION_CREATE(  bcore_life_s )
 BCORE_DEFINE_FUNCTION_DISCARD( bcore_life_s )
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_life_s_setup( bcore_life_s* o, bcore_life_s* parent )
+{
+    o->nesting_level = ( parent ) ? parent->nesting_level + 1 : 0;
+    o->parent = parent;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_life_s_init_setup( bcore_life_s* o, bcore_life_s* parent )
+{
+    bcore_life_s_init( o );
+    bcore_life_s_setup( o, parent );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_life_item_s* bcore_life_s_push_item( bcore_life_s* o )
 {
@@ -81,6 +113,8 @@ bcore_life_item_s* bcore_life_s_push_item( bcore_life_s* o )
     return r;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 vd_t bcore_life_s_push( bcore_life_s* o, bcore_fp_discard discard, vd_t object )
 {
     bcore_life_item_s* item = bcore_life_s_push_item( o );
@@ -89,6 +123,8 @@ vd_t bcore_life_s_push( bcore_life_s* o, bcore_fp_discard discard, vd_t object )
     return object;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 vd_t bcore_life_s_push_typed( bcore_life_s* o, tp_t type, vd_t object )
 {
     bcore_life_item_s* item = bcore_life_s_push_item( o );
@@ -96,6 +132,8 @@ vd_t bcore_life_s_push_typed( bcore_life_s* o, tp_t type, vd_t object )
     item->object = object;
     return object;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 sr_s bcore_life_s_push_sr( bcore_life_s* o, sr_s object )
 {
@@ -109,6 +147,8 @@ sr_s bcore_life_s_push_sr( bcore_life_s* o, sr_s object )
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 vd_t bcore_life_s_push_aware( bcore_life_s* o, vd_t object )
 {
     bcore_life_item_s* item = bcore_life_s_push_item( o );
@@ -116,6 +156,8 @@ vd_t bcore_life_s_push_aware( bcore_life_s* o, vd_t object )
     item->object  = object;
     return object;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 vd_t bcore_life_s_push_free( bcore_life_s* o, vd_t object )
 {
@@ -125,10 +167,33 @@ vd_t bcore_life_s_push_free( bcore_life_s* o, vd_t object )
     return object;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 vd_t bcore_life_s_typed_create( bcore_life_s* o, tp_t type )
 {
     return bcore_life_s_push_typed( o, type, bcore_inst_t_create( type ) );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_life_s_down_zero( bcore_life_s** o )
+{
+    if( !o || !*o ) return;
+    bcore_life_s_down( *o );
+    *o = NULL;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_life_s_down_all( bcore_life_s* o )
+{
+    if( !o ) return;
+    bcore_life_s* parent = o->parent;
+    bcore_life_s_down( o );
+    bcore_life_s_down_all( parent );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_life_s_discard_all( bcore_life_s* o )
 {
@@ -138,15 +203,36 @@ void bcore_life_s_discard_all( bcore_life_s* o )
     bcore_life_s_discard_all( parent );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* life_s_create_self( void )
 {
-    bcore_self_s* self = bcore_self_s_build_parse_sc( " bcore_life_s =  bcore_inst { aware_t _; private vd_t parent; private vd_t data; private uz_t size; private uz_t space; }", sizeof( bcore_life_s ), alignof( bcore_life_s ) );
+    sc_t sc_def =
+    "bcore_life_s = bcore_inst"
+    "{"
+        "aware_t _;"
+        "private vd_t parent;"
+        "private sz_t nesting_level;"
+        "private vd_t data;"
+        "private uz_t size;"
+        "private uz_t space;"
+    "}";
+
+    bcore_self_s* self = bcore_self_s_build_parse_sc( sc_def, sizeof( bcore_life_s ), alignof( bcore_life_s ) );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_life_s_init, "bcore_fp_init",  "init" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_life_s_down, "bcore_fp_down",  "down" );
     return self;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 vd_t bcore_life_signal_handler( const bcore_signal_s* o )
 {
@@ -168,3 +254,8 @@ vd_t bcore_life_signal_handler( const bcore_signal_s* o )
 
     return NULL;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
