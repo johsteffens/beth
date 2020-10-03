@@ -105,15 +105,14 @@ void bmath_estimator_s_get_matrix( const bmath_estimator_s* o, bmath_mf3_s* mat 
 
 static vd_t selftest( void )
 {
-    BCORE_LIFE_INIT();
-    BCORE_LIFE_CREATE( bmath_estimator_s, est );
-    BCORE_LIFE_CREATE( bmath_mf3_s, m1 );
-    BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
-//    BCORE_LIFE_CREATE( bmath_mf3_s, m3 );
-    BCORE_LIFE_CREATE( bmath_vf3_s, v1 );
-    BCORE_LIFE_CREATE( bmath_vf3_s, v2 );
-    BCORE_LIFE_CREATE( bmath_vf3_s, v3 );
-    BCORE_LIFE_CREATE( bmath_vf3_s, v4 );
+    BLM_INIT();
+    bmath_estimator_s* est = BLM_CREATE( bmath_estimator_s );
+    bmath_mf3_s* m1 = BLM_CREATE( bmath_mf3_s );
+    bmath_mf3_s* m2 = BLM_CREATE( bmath_mf3_s );
+    bmath_vf3_s* v1 = BLM_CREATE( bmath_vf3_s );
+    bmath_vf3_s* v2 = BLM_CREATE( bmath_vf3_s );
+    bmath_vf3_s* v3 = BLM_CREATE( bmath_vf3_s );
+    bmath_vf3_s* v4 = BLM_CREATE( bmath_vf3_s );
 
     {
         u3_t rval = 1236;
@@ -148,7 +147,7 @@ static vd_t selftest( void )
     }
 //    bcore_txt_ml_a_to_stdout( p );
 
-    BCORE_LIFE_RETURNV( vd_t, NULL );
+    BLM_RETURNV( vd_t, NULL );
 }
 
 /**********************************************************************************************************************/

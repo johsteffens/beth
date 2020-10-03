@@ -213,7 +213,7 @@ badapt_adaptive* badapt_builder_mlp_funnel_s_build( const badapt_builder_mlp_fun
     ASSERT( o->input_size     > 0 );
     ASSERT( o->output_kernels > 0 );
 
-    BCORE_LIFE_INIT();
+    BLM_INIT();
 
     u3_t random_state = o->random_seed;
     badapt_mlp_s* mlp = badapt_mlp_s_create();
@@ -268,7 +268,7 @@ badapt_adaptive* badapt_builder_mlp_funnel_s_build( const badapt_builder_mlp_fun
 
     badapt_dynamics_std_s_copy( &mlp->dynamics, &o->dynamics );
 
-    BCORE_LIFE_RETURNV( badapt_adaptive*, ( badapt_adaptive* )mlp );
+    BLM_RETURNV( badapt_adaptive*, ( badapt_adaptive* )mlp );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -280,25 +280,25 @@ badapt_adaptive* badapt_builder_mlp_funnel_s_build( const badapt_builder_mlp_fun
 
 void badapt_mlp_s_run_training( badapt_supplier* problem, badapt_builder* builder, const badapt_trainer_batch_s* trainer )
 {
-    BCORE_LIFE_INIT();
-    badapt_training_state* state = BCORE_LIFE_A_PUSH( badapt_trainer_batch_s_create_state( trainer ) );
+    BLM_INIT();
+    badapt_training_state* state = BLM_A_PUSH( badapt_trainer_batch_s_create_state( trainer ) );
     badapt_supplier_a_setup_builder( problem, builder );
-    badapt_training_state_a_set_adaptive( state, BCORE_LIFE_A_PUSH( badapt_builder_a_build( builder ) ) );
+    badapt_training_state_a_set_adaptive( state, BLM_A_PUSH( badapt_builder_a_build( builder ) ) );
     badapt_training_state_a_set_supplier( state, problem );
-    badapt_training_state_a_set_guide( state, ( badapt_guide* )BCORE_LIFE_A_PUSH( badapt_guide_std_s_create() ) );
+    badapt_training_state_a_set_guide( state, ( badapt_guide* )BLM_A_PUSH( badapt_guide_std_s_create() ) );
     badapt_adaptive_a_arc_to_sink( badapt_training_state_a_get_adaptive( state ), BCORE_STDOUT );
     badapt_trainer_batch_s_run( trainer, ( badapt_training_state* )state );
-    BCORE_LIFE_RETURN();
+    BLM_RETURN();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 void badapt_mlp_s_test_sine_random()
 {
-    BCORE_LIFE_INIT();
-    BCORE_LIFE_CREATE( badapt_problem_sine_random_s, problem );
-    BCORE_LIFE_CREATE( badapt_builder_mlp_funnel_s,  builder );
-    BCORE_LIFE_CREATE( badapt_trainer_batch_s,       trainer );
+    BLM_INIT();
+    badapt_problem_sine_random_s* problem = BLM_CREATE( badapt_problem_sine_random_s );
+    badapt_builder_mlp_funnel_s*  builder = BLM_CREATE( badapt_builder_mlp_funnel_s);
+    badapt_trainer_batch_s*       trainer = BLM_CREATE( badapt_trainer_batch_s );
 
     problem->input_size = 32;
 
@@ -315,17 +315,17 @@ void badapt_mlp_s_test_sine_random()
     trainer->max_iterations = 10;
 
     badapt_mlp_s_run_training( ( badapt_supplier* )problem, ( badapt_builder* )builder, trainer );
-    BCORE_LIFE_RETURN();
+    BLM_RETURN();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 void badapt_mlp_s_test_binary_add()
 {
-    BCORE_LIFE_INIT();
-    BCORE_LIFE_CREATE( badapt_problem_binary_add_s, problem );
-    BCORE_LIFE_CREATE( badapt_builder_mlp_funnel_s, builder );
-    BCORE_LIFE_CREATE( badapt_trainer_batch_s,            trainer );
+    BLM_INIT();
+    badapt_problem_binary_add_s* problem = BLM_CREATE( badapt_problem_binary_add_s );
+    badapt_builder_mlp_funnel_s* builder = BLM_CREATE( badapt_builder_mlp_funnel_s );
+    badapt_trainer_batch_s*      trainer = BLM_CREATE( badapt_trainer_batch_s );
 
     problem->bits = 8;
 
@@ -344,17 +344,17 @@ void badapt_mlp_s_test_binary_add()
     trainer->max_iterations = 10;
 
     badapt_mlp_s_run_training( ( badapt_supplier* )problem, ( badapt_builder* )builder, trainer );
-    BCORE_LIFE_RETURN();
+    BLM_RETURN();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 void badapt_mlp_s_test_binary_mul()
 {
-    BCORE_LIFE_INIT();
-    BCORE_LIFE_CREATE( badapt_problem_binary_mul_s, problem );
-    BCORE_LIFE_CREATE( badapt_builder_mlp_funnel_s, builder );
-    BCORE_LIFE_CREATE( badapt_trainer_batch_s,            trainer );
+    BLM_INIT();
+    badapt_problem_binary_mul_s* problem = BLM_CREATE( badapt_problem_binary_mul_s );
+    badapt_builder_mlp_funnel_s* builder = BLM_CREATE( badapt_builder_mlp_funnel_s );
+    badapt_trainer_batch_s*      trainer = BLM_CREATE( badapt_trainer_batch_s );
 
     problem->bits = 5;
 
@@ -373,17 +373,17 @@ void badapt_mlp_s_test_binary_mul()
     trainer->max_iterations = 10;
 
     badapt_mlp_s_run_training( ( badapt_supplier* )problem, ( badapt_builder* )builder, trainer );
-    BCORE_LIFE_RETURN();
+    BLM_RETURN();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 void badapt_mlp_s_test_binary_xsg3()
 {
-    BCORE_LIFE_INIT();
-    BCORE_LIFE_CREATE( badapt_problem_binary_xsg3_s, problem );
-    BCORE_LIFE_CREATE( badapt_builder_mlp_funnel_s,  builder );
-    BCORE_LIFE_CREATE( badapt_trainer_batch_s,             trainer );
+    BLM_INIT();
+    badapt_problem_binary_xsg3_s* problem = BLM_CREATE( badapt_problem_binary_xsg3_s );
+    badapt_builder_mlp_funnel_s*  builder = BLM_CREATE( badapt_builder_mlp_funnel_s );
+    badapt_trainer_batch_s*       trainer = BLM_CREATE( badapt_trainer_batch_s );
 
     /// xsg3 <= 17 bits is learned very easily with 2 layers, while >= 18 bits seems extremely difficult for any configurations
     problem->bits = 17;
@@ -402,17 +402,17 @@ void badapt_mlp_s_test_binary_xsg3()
     trainer->max_iterations = 10;
 
     badapt_mlp_s_run_training( ( badapt_supplier* )problem, ( badapt_builder* )builder, trainer );
-    BCORE_LIFE_RETURN();
+    BLM_RETURN();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 void badapt_mlp_s_test_binary_hash()
 {
-    BCORE_LIFE_INIT();
-    BCORE_LIFE_CREATE( badapt_problem_binary_hash_s, problem );
-    BCORE_LIFE_CREATE( badapt_builder_mlp_funnel_s,  builder );
-    BCORE_LIFE_CREATE( badapt_trainer_batch_s,             trainer );
+    BLM_INIT();
+    badapt_problem_binary_hash_s* problem = BLM_CREATE( badapt_problem_binary_hash_s );
+    badapt_builder_mlp_funnel_s*  builder = BLM_CREATE( badapt_builder_mlp_funnel_s );
+    badapt_trainer_batch_s*       trainer = BLM_CREATE( badapt_trainer_batch_s );
 
     problem->bits = 9;
     problem->reverse = true;
@@ -432,17 +432,17 @@ void badapt_mlp_s_test_binary_hash()
     trainer->max_iterations = 10;
 
     badapt_mlp_s_run_training( ( badapt_supplier* )problem, ( badapt_builder* )builder, trainer );
-    BCORE_LIFE_RETURN();
+    BLM_RETURN();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 void badapt_mlp_s_test_polynom()
 {
-    BCORE_LIFE_INIT();
-    BCORE_LIFE_CREATE( badapt_problem_polynom_s,     problem );
-    BCORE_LIFE_CREATE( badapt_builder_mlp_funnel_s,  builder );
-    BCORE_LIFE_CREATE( badapt_trainer_batch_s,             trainer );
+    BLM_INIT();
+    badapt_problem_polynom_s*     problem = BLM_CREATE( badapt_problem_polynom_s );
+    badapt_builder_mlp_funnel_s*  builder = BLM_CREATE( badapt_builder_mlp_funnel_s );
+    badapt_trainer_batch_s*       trainer = BLM_CREATE( badapt_trainer_batch_s );
 
     problem->input_size  = 16;
     problem->output_size = 8;   // polynomial order + 1
@@ -466,7 +466,7 @@ void badapt_mlp_s_test_polynom()
     trainer->max_iterations = 10;
 
     badapt_mlp_s_run_training( ( badapt_supplier* )problem, ( badapt_builder* )builder, trainer );
-    BCORE_LIFE_RETURN();
+    BLM_RETURN();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

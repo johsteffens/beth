@@ -456,8 +456,8 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
  */
 static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s source )
 {
-    BCORE_LIFE_INIT();
-    sr_s src_l = BCORE_LIFE_X_PUSH( source );
+    BLM_INIT();
+    sr_s src_l = BLM_X_PUSH( source );
 
     sr_s interpreter_obj = sr_null();
 
@@ -487,7 +487,7 @@ static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s s
     }
 
     {
-        BCORE_LIFE_CREATE( st_s, log );
+        st_s* log = BLM_CREATE( st_s );
         if( !bcore_trait_satisfied_type( typeof( "bcore_interpreter" ), sr_s_type( &interpreter_obj ), log ) )
         {
             bcore_source_x_parse_err_fa
@@ -529,7 +529,7 @@ static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s s
 
     st_s_discard( st_file );
 
-    BCORE_LIFE_RETURNV( sr_s, obj );
+    BLM_RETURNV( sr_s, obj );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

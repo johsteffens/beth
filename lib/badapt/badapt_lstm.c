@@ -516,7 +516,7 @@ badapt_adaptive* badapt_lstm_builder_s_build( const badapt_lstm_builder_s* o )
     ASSERT( o->size_hidden   > 0 );
     ASSERT( o->size_unfolded > 1 );
 
-    BCORE_LIFE_INIT();
+    BLM_INIT();
 
     u3_t random_state = o->random_seed;
     badapt_lstm_s* lstm = badapt_lstm_s_create();
@@ -566,7 +566,7 @@ badapt_adaptive* badapt_lstm_builder_s_build( const badapt_lstm_builder_s* o )
     bmath_mf3_s_set_random_u3( &lstm->w_ih, false, false, 0, 1.0, -limit_rec, limit_rec, &random_state );
     bmath_mf3_s_set_random_u3( &lstm->w_qh, false, false, 0, 1.0, -limit_rec, limit_rec, &random_state );
 
-    BCORE_LIFE_RETURNV( badapt_adaptive*, ( badapt_adaptive* )lstm );
+    BLM_RETURNV( badapt_adaptive*, ( badapt_adaptive* )lstm );
 }
 
 #endif // TYPEOF_badapt_lstm_s

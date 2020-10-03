@@ -54,10 +54,10 @@ void badapt_trainer_batch_s_run( const badapt_trainer_batch_s* o, badapt_trainin
 
     ASSERT( loss != NULL );
 
-    BCORE_LIFE_INIT();
-    BCORE_LIFE_CREATE( badapt_arr_sample_batch_s, buffer_valid );
-    BCORE_LIFE_CREATE( badapt_arr_sample_batch_s, buffer_batch );
-    BCORE_LIFE_CREATE( bmath_vf3_s, out );
+    BLM_INIT();
+    badapt_arr_sample_batch_s* buffer_valid = BLM_CREATE( badapt_arr_sample_batch_s );
+    badapt_arr_sample_batch_s* buffer_batch = BLM_CREATE( badapt_arr_sample_batch_s );
+    bmath_vf3_s* out = BLM_CREATE( bmath_vf3_s );
 
     ASSERT( badapt_adaptive_a_get_in_size(  adaptive ) == badapt_supplier_a_get_in_size(  supplier ) );
     ASSERT( badapt_adaptive_a_get_out_size( adaptive ) == badapt_supplier_a_get_out_size( supplier ) );
@@ -148,7 +148,7 @@ void badapt_trainer_batch_s_run( const badapt_trainer_batch_s* o, badapt_trainin
         if( val_error > 0 && trn_error > 0 ) bias = log( val_error ) - log( trn_error );
     }
 
-    BCORE_LIFE_DOWN();
+    BLM_DOWN();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -158,10 +158,10 @@ void badapt_trainer_batch_s_run( const badapt_trainer_batch_s* o, badapt_trainin
 
 er_t badapt_trainer_main_s_main( badapt_trainer_main_s* o, bcore_main_frame_s* frame )
 {
-    BCORE_LIFE_INIT();
+    BLM_INIT();
 
     bl_t reset = false;
-    BCORE_LIFE_CREATE( st_s, backup_path );
+    st_s* backup_path = BLM_CREATE( st_s );
 
     if( frame->args.size > 0 )
     {
@@ -176,7 +176,7 @@ er_t badapt_trainer_main_s_main( badapt_trainer_main_s* o, bcore_main_frame_s* f
         }
     }
 
-    badapt_training_state* state = BCORE_LIFE_A_PUSH( badapt_trainer_a_create_state( o->trainer ) );
+    badapt_training_state* state = BLM_A_PUSH( badapt_trainer_a_create_state( o->trainer ) );
     if( badapt_training_state_a_defines_set_backup_path( state ) ) badapt_training_state_a_set_backup_path( state, backup_path->sc );
     if( !reset && badapt_training_state_a_recover( state ) )
     {
@@ -185,7 +185,7 @@ er_t badapt_trainer_main_s_main( badapt_trainer_main_s* o, bcore_main_frame_s* f
     else
     {
         badapt_supplier_a_setup_builder( o->problem, o->builder );
-        badapt_training_state_a_set_adaptive( state, BCORE_LIFE_A_PUSH( badapt_builder_a_build( o->builder ) ) );
+        badapt_training_state_a_set_adaptive( state, BLM_A_PUSH( badapt_builder_a_build( o->builder ) ) );
     }
 
     badapt_training_state_a_set_supplier( state, o->problem );
@@ -193,7 +193,7 @@ er_t badapt_trainer_main_s_main( badapt_trainer_main_s* o, bcore_main_frame_s* f
 
     badapt_adaptive_a_arc_to_sink( badapt_training_state_a_get_adaptive( state ), BCORE_STDOUT );
     badapt_trainer_a_run( o->trainer, state );
-    BCORE_LIFE_RETURNV( er_t, 0 );
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

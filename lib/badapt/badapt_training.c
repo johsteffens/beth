@@ -35,8 +35,8 @@ void badapt_supplier_setup_builder_default( const badapt_supplier* o, badapt_bui
 
 bl_t badapt_guide_std_s_callback( const badapt_guide_std_s* o, badapt_training_state* training_state )
 {
-    BCORE_LIFE_INIT();
-    BCORE_LIFE_CREATE( badapt_dynamics_std_s, dynamics );
+    BLM_INIT();
+    badapt_dynamics_std_s* dynamics = BLM_CREATE( badapt_dynamics_std_s );
 
     ASSERT( badapt_training_state_a_defines_get_adaptive( training_state ) );
     ASSERT( badapt_training_state_a_defines_get_progress( training_state ) );
@@ -65,7 +65,7 @@ bl_t badapt_guide_std_s_callback( const badapt_guide_std_s* o, badapt_training_s
     dynamics->epsilon *= o->annealing_factor;
     badapt_adaptive_a_set_dynamics_std( adaptive, dynamics );
 
-    BCORE_LIFE_RETURNV( bl_t, true );
+    BLM_RETURNV( bl_t, true );
     return true;
 }
 

@@ -38,14 +38,14 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_plot_s )
 
 s2_t bmath_plot_s_call_gnuplot( const bmath_plot_s* o, sc_t data_folder )
 {
-    BCORE_LIFE_INIT();
+    BLM_INIT();
 
     if( !data_folder ) data_folder = ".";
 
     ASSERT( o->data.o );
 
-    BCORE_LIFE_CREATE( st_s, data_file );
-    BCORE_LIFE_CREATE( st_s, title );
+    st_s* data_file = BLM_CREATE( st_s );
+    st_s* title = BLM_CREATE( st_s );
     st_s_copy( title, &o->title );
     st_s_set_lowercase( title );
     st_s_replace_char_sc( title, ' ', "" );
@@ -53,7 +53,7 @@ s2_t bmath_plot_s_call_gnuplot( const bmath_plot_s* o, sc_t data_folder )
     st_s_replace_char_sc( title, '\n', "" );
     st_s_push_fa( data_file, "#<sc_t>/__plotdata__#<sc_t>.dat", data_folder, title->sc );
 
-    BCORE_LIFE_CREATE( st_s, syscommand );
+    st_s* syscommand = BLM_CREATE( st_s );
     st_s_push_fa( syscommand, "gnuplot -p -e \"" );
 
     if( o->title.size > 0 )
@@ -211,7 +211,7 @@ s2_t bmath_plot_s_call_gnuplot( const bmath_plot_s* o, sc_t data_folder )
 
     bcore_file_delete( data_file->sc );
 
-    BCORE_LIFE_DOWN();
+    BLM_DOWN();
 
     return ret;
 }

@@ -183,7 +183,7 @@ badapt_adaptive* badapt_ern_builder_s_build( const badapt_ern_builder_s* o )
     ASSERT( o->size_input > 0 );
     ASSERT( o->size_output > 0 );
 
-    BCORE_LIFE_INIT();
+    BLM_INIT();
 
     u3_t random_state = o->random_seed;
     badapt_ern_s* ern = badapt_ern_s_create();
@@ -216,7 +216,7 @@ badapt_adaptive* badapt_ern_builder_s_build( const badapt_ern_builder_s* o )
     ern->a_h = badapt_activator_a_clone( o->a_h );
     ern->a_o = badapt_activator_a_clone( o->a_o );
 
-    BCORE_LIFE_RETURNV( badapt_adaptive*, ( badapt_adaptive* )ern );
+    BLM_RETURNV( badapt_adaptive*, ( badapt_adaptive* )ern );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

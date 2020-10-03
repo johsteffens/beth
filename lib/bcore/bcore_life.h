@@ -128,6 +128,7 @@ extern bcore_life_s* __bcore_life; // always NULL; needed to ingrain a life-chai
 #define BLM_CLONE(  tname, expr ) ( tname* )bcore_life_s_push_typed( BLM_INIT__, TYPEOF_##tname, tname##_clone( expr ) )
 #define BLM_A_PUSH(        expr ) bcore_life_s_push_aware( BLM_INIT__,       expr )
 #define BLM_T_PUSH( type,  expr ) bcore_life_s_push_typed( BLM_INIT__, type, expr )
+#define BLM_X_PUSH(        expr ) bcore_life_s_push_sr(    BLM_INIT__,       expr )
 #define BLM_A_CLONE(       expr ) bcore_life_s_push_aware( BLM_INIT__, bcore_inst_a_clone( ( bcore_inst* )expr ) )
 
 #define BLM_BREAK() \
@@ -169,17 +170,5 @@ extern bcore_life_s* __bcore_life; // always NULL; needed to ingrain a life-chai
 /// Error report in function with error management
 #define BLM_ERR_FA( ... ) \
 BLM_RETURNV( er_t, bcore_error_push_fa( TYPEOF_general_error, __VA_ARGS__ ) )
-
-/// Deprecated Macros. Preferably use BLM_... above;
-#define BCORE_LIFE_INIT() bcore_life_s* __life = bcore_life_s_create()
-#define BCORE_LIFE_DOWN() bcore_life_s_detach( &__life )
-#define BCORE_LIFE_CREATE( type_name, var_name ) type_name* var_name = bcore_life_s_push_typed( __life, TYPEOF_##type_name, type_name##_create() )
-#define BCORE_LIFE_CREATE_AUT( type_name, var_name ) type_name* var_name = bcore_life_s_push_typed( __life, typeof( #type_name ), type_name##_create() )
-#define BCORE_LIFE_A_PUSH(       expr ) bcore_life_s_push_aware( __life,       expr )
-#define BCORE_LIFE_T_PUSH( type, expr ) bcore_life_s_push_typed( __life, type, expr )
-#define BCORE_LIFE_X_PUSH(       expr ) bcore_life_s_push_sr(    __life,       expr )
-#define BCORE_LIFE_RETURNV( ret_type, expr ) { ret_type __retv = expr; BCORE_LIFE_DOWN(); return __retv; }
-#define BCORE_LIFE_RETURN()                  {                         BCORE_LIFE_DOWN(); return;        }
-
 
 #endif // BCORE_LIFE_H

@@ -208,19 +208,19 @@ void bmath_pmt_s_to_stdout( const bmath_pmt_s* o )
 
 static void selftest()
 {
-    BCORE_LIFE_INIT();
-    BCORE_LIFE_CREATE( bmath_pmt_s, p1 );
-    BCORE_LIFE_CREATE( bmath_pmt_s, p2 );
-    BCORE_LIFE_CREATE( bmath_pmt_s, p3 );
+    BLM_INIT();
+    bmath_pmt_s* p1 = BLM_CREATE( bmath_pmt_s );
+    bmath_pmt_s* p2 = BLM_CREATE( bmath_pmt_s );
+    bmath_pmt_s* p3 = BLM_CREATE( bmath_pmt_s );
 
-    BCORE_LIFE_CREATE( bmath_mf3_s, m1 );
-    BCORE_LIFE_CREATE( bmath_mf3_s, m2 );
-    BCORE_LIFE_CREATE( bmath_mf3_s, m3 );
-    BCORE_LIFE_CREATE( bmath_mf3_s, m4 );
+    bmath_mf3_s* m1 = BLM_CREATE( bmath_mf3_s );
+    bmath_mf3_s* m2 = BLM_CREATE( bmath_mf3_s );
+    bmath_mf3_s* m3 = BLM_CREATE( bmath_mf3_s );
+    bmath_mf3_s* m4 = BLM_CREATE( bmath_mf3_s );
 
-    BCORE_LIFE_CREATE( bmath_vf3_s, v1 );
-    BCORE_LIFE_CREATE( bmath_vf3_s, v2 );
-    BCORE_LIFE_CREATE( bmath_vf3_s, v3 );
+    bmath_vf3_s* v1 = BLM_CREATE( bmath_vf3_s );
+    bmath_vf3_s* v2 = BLM_CREATE( bmath_vf3_s );
+    bmath_vf3_s* v3 = BLM_CREATE( bmath_vf3_s );
 
     u3_t rval = 1234;
 
@@ -277,7 +277,7 @@ static void selftest()
     bmath_vf3_s_pmt_htp_mul( v2, p1, v3 );
     ASSERT( bmath_vf3_s_is_equ( v1, v3 ) );
 
-    BCORE_LIFE_DOWN();
+    BLM_DOWN();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

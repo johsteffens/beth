@@ -35,14 +35,14 @@ badapt_activator* badapt_activator_create_from_types( tp_t tp_activator, tp_t tp
 
 badapt_activator* badapt_activator_create_from_names( sc_t sc_activator, sc_t sc_activation )
 {
-    BCORE_LIFE_INIT();
-    tp_t tp_activator  = typeof( ( ( st_s* )BCORE_LIFE_A_PUSH( st_s_create_fa( "badapt_activator_#<sc_t>_s", sc_activator   ) ) )->sc );
+    BLM_INIT();
+    tp_t tp_activator  = typeof( ( ( st_s* )BLM_A_PUSH( st_s_create_fa( "badapt_activator_#<sc_t>_s", sc_activator   ) ) )->sc );
     tp_t tp_activation =
         sc_activation
-            ? typeof( ( ( st_s* )BCORE_LIFE_A_PUSH( st_s_create_fa( "badapt_activation_#<sc_t>_s", sc_activation ) ) )->sc )
+            ? typeof( ( ( st_s* )BLM_A_PUSH( st_s_create_fa( "badapt_activation_#<sc_t>_s", sc_activation ) ) )->sc )
             : 0;
     badapt_activator* activator = badapt_activator_create_from_types( tp_activator, tp_activation );
-    BCORE_LIFE_RETURNV( badapt_activator*, activator );
+    BLM_RETURNV( badapt_activator*, activator );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -66,20 +66,20 @@ void badapt_arr_layer_activator_s_push_from_types( badapt_arr_layer_activator_s*
 
 void badapt_arr_layer_activator_s_push_from_names( badapt_arr_layer_activator_s* o, sz_t layer, sc_t activator, sc_t activation )
 {
-    BCORE_LIFE_INIT();
-    tp_t tp_activator  = typeof( ( ( st_s* )BCORE_LIFE_A_PUSH( st_s_create_fa( "badapt_activator_#<sc_t>_s", activator   ) ) )->sc );
-    tp_t tp_activation = typeof( ( ( st_s* )BCORE_LIFE_A_PUSH( st_s_create_fa( "badapt_activation_#<sc_t>_s", activation ) ) )->sc );
+    BLM_INIT();
+    tp_t tp_activator  = typeof( ( ( st_s* )BLM_A_PUSH( st_s_create_fa( "badapt_activator_#<sc_t>_s", activator   ) ) )->sc );
+    tp_t tp_activation = typeof( ( ( st_s* )BLM_A_PUSH( st_s_create_fa( "badapt_activation_#<sc_t>_s", activation ) ) )->sc );
     badapt_arr_layer_activator_s_push_from_types( o, layer, tp_activator, tp_activation );
-    BCORE_LIFE_DOWN();
+    BLM_DOWN();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 void badapt_arr_activator_s_setup_from_arr_layer_activator( badapt_arr_activator_s* o, const badapt_arr_layer_activator_s* arg_arr, sz_t layers )
 {
-    BCORE_LIFE_INIT();
+    BLM_INIT();
 
-    badapt_arr_layer_activator_s* arr = BCORE_LIFE_A_PUSH( badapt_arr_layer_activator_s_clone( arg_arr ) );
+    badapt_arr_layer_activator_s* arr = BLM_A_PUSH( badapt_arr_layer_activator_s_clone( arg_arr ) );
     bcore_array_a_sort( ( bcore_array* )arr, 0, -1, 1 );
     badapt_arr_activator_s_set_size( o, layers );
 
@@ -126,7 +126,7 @@ void badapt_arr_activator_s_setup_from_arr_layer_activator( badapt_arr_activator
         if( !o->arr_data[ i ] ) ERR_fa( "Layer #<sz_t> could not be initialized.", i );
     }
 
-    BCORE_LIFE_DOWN();
+    BLM_DOWN();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
