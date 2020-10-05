@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-10-02T22:31:02Z
+ *  Last File Update: 2020-10-05T20:53:24Z
  *
  *  Copyright and License of this File:
  *
@@ -63,6 +63,11 @@ void bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name )
         o->full = st_s_create_fa( "#<sc_t>/#<sc_t>", o->root->sc, o->name.sc );
     }
 }
+
+XOILA_DEFINE_SPECT( bcore_inst, bcore_file )
+"{"
+    "bcore_spect_header_s header;"
+"}";
 
 /**********************************************************************************************************************/
 // source: bcore_spect_inst_call.h
@@ -157,6 +162,11 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_hmap_name_s )
     "bcore_hmap_tp_sr_s map;"
 "}";
 
+XOILA_DEFINE_SPECT( bcore_inst, bcore_hmap_name )
+"{"
+    "bcore_spect_header_s header;"
+"}";
+
 /**********************************************************************************************************************/
 // source: bcore_cday.h
 #include "bcore_cday.h"
@@ -177,6 +187,11 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_cday_utc_s )
 "{"
     "s2_t cday;"
     "s2_t ms;"
+"}";
+
+XOILA_DEFINE_SPECT( bcore_inst, bcore_cday )
+"{"
+    "bcore_spect_header_s header;"
 "}";
 
 /**********************************************************************************************************************/
@@ -206,6 +221,11 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_error_manager_context_s )
     "bcore_mutex_s mutex;"
 "}";
 
+XOILA_DEFINE_SPECT( bcore_inst, bcore_error_manager )
+"{"
+    "bcore_spect_header_s header;"
+"}";
+
 /**********************************************************************************************************************/
 // source: bcore_prsg.h
 #include "bcore_prsg.h"
@@ -222,19 +242,19 @@ XOILA_DEFINE_SPECT( bcore_inst, bcore_prsg )
     "feature strict aware bcore_prsg : state_u3;"
     "feature strict aware bcore_prsg : state_bits_u3;"
     "feature strict aware bcore_prsg : state_f3;"
-    "feature aware bcore_prsg : state_bl = bcore_prsg_state_bl__;"
+    "feature aware bcore_prsg : state_bl = bcore_prsg_state_bl_default;"
     "feature strict aware bcore_prsg : gen;"
     "feature strict aware bcore_prsg : gen_bits_u3;"
     "feature strict aware bcore_prsg : gen_u3;"
     "feature strict aware bcore_prsg : gen_f3;"
-    "feature aware bcore_prsg : gen_bl = bcore_prsg_gen_bl__;"
+    "feature aware bcore_prsg : gen_bl = bcore_prsg_gen_bl_default;"
     "feature strict aware bcore_prsg : set_state_u3;"
-    "feature aware bcore_prsg : set_state_mix = bcore_prsg_set_state_mix__;"
-    "feature aware bcore_prsg : reseed = bcore_prsg_reseed__;"
+    "feature aware bcore_prsg : set_state_mix = bcore_prsg_set_state_mix_default;"
+    "feature aware bcore_prsg : reseed = bcore_prsg_reseed_default;"
 "}";
 
 
-bcore_prsg* bcore_prsg_set_state_mix__( bcore_prsg* o, const bcore_prsg* a, const bcore_prsg* b )
+bcore_prsg* bcore_prsg_set_state_mix_default( bcore_prsg* o, const bcore_prsg* a, const bcore_prsg* b )
 {
     // bcore_prsg.h:74:1
     /* Different mixing methods are thinkable:
@@ -836,6 +856,11 @@ f3_t bcore_prsg_lcg_u3_03_s_gen_f3( bcore_prsg_lcg_u3_03_s* o, f3_t min, f3_t ma
     return bcore_prsg_lcg_u3_03_s_state_f3( o, min, max );
 }
 
+XOILA_DEFINE_SPECT( bcore_prsg, bcore_prsg_lcg )
+"{"
+    "bcore_spect_header_s header;"
+"}";
+
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_prsg_xsg
 
@@ -1075,6 +1100,11 @@ f3_t bcore_prsg_xsg_u2_03_s_gen_f3( bcore_prsg_xsg_u2_03_s* o, f3_t min, f3_t ma
     return bcore_prsg_xsg_u2_03_s_state_f3( o, min, max );
 }
 
+XOILA_DEFINE_SPECT( bcore_prsg, bcore_prsg_xsg )
+"{"
+    "bcore_spect_header_s header;"
+"}";
+
 /**********************************************************************************************************************/
 
 
@@ -1097,7 +1127,7 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
             // group: bcore_file
             BCORE_REGISTER_FFUNC( bcore_via_call_source, bcore_file_path_s_source );
             BCORE_REGISTER_OBJECT( bcore_file_path_s );
-            BCORE_REGISTER_TRAIT( bcore_file, bcore_inst );
+            XOILA_REGISTER_SPECT( bcore_file );
 
             // --------------------------------------------------------------------
             // source: bcore_spect_inst_call.h
@@ -1140,7 +1170,7 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
 
             // group: bcore_hmap_name
             BCORE_REGISTER_OBJECT( bcore_hmap_name_s );
-            BCORE_REGISTER_TRAIT( bcore_hmap_name, bcore_inst );
+            XOILA_REGISTER_SPECT( bcore_hmap_name );
 
             // --------------------------------------------------------------------
             // source: bcore_cday.h
@@ -1148,7 +1178,7 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
             // group: bcore_cday
             BCORE_REGISTER_OBJECT( bcore_cday_ymd_s );
             BCORE_REGISTER_OBJECT( bcore_cday_utc_s );
-            BCORE_REGISTER_TRAIT( bcore_cday, bcore_inst );
+            XOILA_REGISTER_SPECT( bcore_cday );
 
             // --------------------------------------------------------------------
             // source: bcore_error_manager.h
@@ -1161,7 +1191,7 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_NAME( parse_error );
             BCORE_REGISTER_NAME( plant_error );
             BCORE_REGISTER_NAME( error_stack );
-            BCORE_REGISTER_TRAIT( bcore_error_manager, bcore_inst );
+            XOILA_REGISTER_SPECT( bcore_error_manager );
 
             // --------------------------------------------------------------------
             // source: bcore_prsg.h
@@ -1174,18 +1204,18 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FEATURE( bcore_prsg_state_bits_u3 );
             BCORE_REGISTER_FEATURE( bcore_prsg_state_f3 );
             BCORE_REGISTER_FEATURE( bcore_prsg_state_bl );
-            BCORE_REGISTER_FFUNC( bcore_prsg_state_bl, bcore_prsg_state_bl__ );
+            BCORE_REGISTER_FFUNC( bcore_prsg_state_bl, bcore_prsg_state_bl_default );
             BCORE_REGISTER_FEATURE( bcore_prsg_gen );
             BCORE_REGISTER_FEATURE( bcore_prsg_gen_bits_u3 );
             BCORE_REGISTER_FEATURE( bcore_prsg_gen_u3 );
             BCORE_REGISTER_FEATURE( bcore_prsg_gen_f3 );
             BCORE_REGISTER_FEATURE( bcore_prsg_gen_bl );
-            BCORE_REGISTER_FFUNC( bcore_prsg_gen_bl, bcore_prsg_gen_bl__ );
+            BCORE_REGISTER_FFUNC( bcore_prsg_gen_bl, bcore_prsg_gen_bl_default );
             BCORE_REGISTER_FEATURE( bcore_prsg_set_state_u3 );
             BCORE_REGISTER_FEATURE( bcore_prsg_set_state_mix );
-            BCORE_REGISTER_FFUNC( bcore_prsg_set_state_mix, bcore_prsg_set_state_mix__ );
+            BCORE_REGISTER_FFUNC( bcore_prsg_set_state_mix, bcore_prsg_set_state_mix_default );
             BCORE_REGISTER_FEATURE( bcore_prsg_reseed );
-            BCORE_REGISTER_FFUNC( bcore_prsg_reseed, bcore_prsg_reseed__ );
+            BCORE_REGISTER_FFUNC( bcore_prsg_reseed, bcore_prsg_reseed_default );
             XOILA_REGISTER_SPECT( bcore_prsg );
 
             // group: bcore_prsg_lcg
@@ -1309,7 +1339,7 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bcore_prsg_set_state_u3, bcore_prsg_lcg_u3_03_s_set_state_u3 );
             BCORE_REGISTER_FFUNC( bcore_prsg_gen, bcore_prsg_lcg_u3_03_s_gen );
             BCORE_REGISTER_OBJECT( bcore_prsg_lcg_u3_03_s );
-            BCORE_REGISTER_TRAIT( bcore_prsg_lcg, bcore_prsg );
+            XOILA_REGISTER_SPECT( bcore_prsg_lcg );
 
             // group: bcore_prsg_xsg
             BCORE_REGISTER_FFUNC( bcore_prsg_gen_u3, bcore_prsg_xsg_u2_00_s_gen_u3 );
@@ -1360,11 +1390,11 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bcore_prsg_set_state_u3, bcore_prsg_xsg_u2_03_s_set_state_u3 );
             BCORE_REGISTER_FFUNC( bcore_prsg_gen, bcore_prsg_xsg_u2_03_s_gen );
             BCORE_REGISTER_OBJECT( bcore_prsg_xsg_u2_03_s );
-            BCORE_REGISTER_TRAIT( bcore_prsg_xsg, bcore_prsg );
+            XOILA_REGISTER_SPECT( bcore_prsg_xsg );
         }
         break;
         default: break;
     }
     return NULL;
 }
-// XOILA_OUT_SIGNATURE 0x8ED7378EBEEB4872ull
+// XOILA_OUT_SIGNATURE 0xBBB6D7E2F38D2D48ull
