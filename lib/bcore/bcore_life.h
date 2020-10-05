@@ -24,9 +24,16 @@
  *  Objects remain alive until the instance of bcore_life terminates.
  */
 
+typedef void (*bcore_fp_down_or_discard       )(            vd_t  o );
+typedef void (*bcore_fp_typed_down_or_discard )( tp_t type, vd_t  o );
+
 typedef struct bcore_life_item_s
 {
-    bcore_fp_discard discard;
+    union
+    {
+        bcore_fp_down_or_discard             down_or_discard;
+        bcore_fp_typed_down_or_discard typed_down_or_discard;
+    };
     tp_t type;  // 0 for untyped objects
     vd_t object;
 } bcore_life_item_s;
@@ -62,12 +69,20 @@ BCORE_DECLARE_FUNCTION_DETACH(  bcore_life_s )
 
 void bcore_life_s_init_setup( bcore_life_s* o, bcore_life_s* parent );
 void bcore_life_s_setup( bcore_life_s* o, bcore_life_s* parent );
+
+/// 'push': objects on heap ...
 vd_t bcore_life_s_push(         bcore_life_s* o, bcore_fp_discard discard, vd_t object ); // explicit discard
-vd_t bcore_life_s_push_typed(   bcore_life_s* o, tp_t type,    vd_t object ); // discard via bcore_inst_t_discard
-sr_s bcore_life_s_push_sr(      bcore_life_s* o,               sr_s object ); // assumes control in case reference is strong, returns weak reference
-vd_t bcore_life_s_push_aware(   bcore_life_s* o,               vd_t object ); // object is aware
-vd_t bcore_life_s_push_free(    bcore_life_s* o,               vd_t object ); // uses bcore_free as discard function
-vd_t bcore_life_s_typed_create( bcore_life_s* o, tp_t type                 ); // creates new object and manages its lifetime
+vd_t bcore_life_s_push_typed(   bcore_life_s* o, tp_t type,                vd_t object ); // discard via bcore_inst_t_discard
+sr_s bcore_life_s_push_sr(      bcore_life_s* o,                           sr_s object ); // assumes control in case reference is strong, returns weak reference
+vd_t bcore_life_s_push_aware(   bcore_life_s* o,                           vd_t object ); // object is aware (discard via inst_a_discard)
+vd_t bcore_life_s_push_free(    bcore_life_s* o,                           vd_t object ); // uses bcore_free as discard function
+
+/// 'spush' objects on stack ...
+vd_t bcore_life_s_spush(         bcore_life_s* o, bcore_fp_down down, vd_t object ); // explicit down
+vd_t bcore_life_s_spush_typed(   bcore_life_s* o, tp_t type,          vd_t object ); // down via bcore_inst_t_down
+vd_t bcore_life_s_spush_aware(   bcore_life_s* o,                     vd_t object ); // object is aware (discard via inst_a_down)
+
+vd_t bcore_life_s_typed_create( bcore_life_s* o, tp_t type ); // creates new object and manages its lifetime
 
 /// shuts down *o and zeros *o
 void bcore_life_s_down_zero( bcore_life_s** o );
