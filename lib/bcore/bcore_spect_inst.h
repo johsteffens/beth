@@ -188,18 +188,20 @@ static inline void bcore_inst_a_detach( bcore_inst** o )
     *o = NULL;
 }
 
-static inline void bcore_inst_t_attach( tp_t type, bcore_inst** o, bcore_inst* src )
+static inline bcore_inst* bcore_inst_t_attach( tp_t type, bcore_inst** o, bcore_inst* src )
 {
-    if( !o ) return;
+    if( !o ) return NULL;
     bcore_inst_t_discard( type, *o );
     *o = src;
+    return *o;
 }
 
-static inline void bcore_inst_a_attach( bcore_inst** o, bcore_inst* src )
+static inline bcore_inst* bcore_inst_a_attach( bcore_inst** o, bcore_inst* src )
 {
-    if( !o ) return;
+    if( !o ) return NULL;
     bcore_inst_a_discard( *o );
     *o = src;
+    return *o;
 }
 
 void bcore_inst_x_discard(      sr_s o ); // only discards when o is a strong reference; does nothing otherwise
@@ -207,26 +209,28 @@ sr_s bcore_inst_x_clone_sr(     sr_s o ); // returns perspective of o
 
 sr_s bcore_inst_r_clone_sr( const sr_s* o ); // returns perspective of o
 
-static inline void bcore_inst_p_replicate( const bcore_inst_s* p, bcore_inst** o, const bcore_inst* src )
+static inline bcore_inst* bcore_inst_p_replicate( const bcore_inst_s* p, bcore_inst** o, const bcore_inst* src )
 {
     assert( o );
     bcore_inst_p_discard( p, *o );
     *o = ( bcore_inst* )bcore_inst_p_clone( p, src );
+    return *o;
 }
 
-static inline void bcore_inst_t_replicate( tp_t t, bcore_inst** o, const bcore_inst* src )
+static inline bcore_inst* bcore_inst_t_replicate( tp_t t, bcore_inst** o, const bcore_inst* src )
 {
-    bcore_inst_p_replicate( bcore_inst_s_get_typed( t ), o, src );
+    return bcore_inst_p_replicate( bcore_inst_s_get_typed( t ), o, src );
 }
 
-static inline void bcore_inst_a_replicate( bcore_inst** o, const bcore_inst* src )
+static inline bcore_inst* bcore_inst_a_replicate( bcore_inst** o, const bcore_inst* src )
 {
     assert( o );
     bcore_inst_a_discard( *o );
     *o = ( bcore_inst* )bcore_inst_a_clone( src );
+    return *o;
 }
 
-static inline vd_t bcore_inst_x_clone( sr_s o                                     )
+static inline vd_t bcore_inst_x_clone( sr_s o )
 {
     if( !o.p ) return NULL;
     vd_t ret = bcore_inst_p_clone( ch_spect_p( o.p, TYPEOF_bcore_inst_s ), o.o );
@@ -361,12 +365,42 @@ name* name##_clone( const name* o ) \
 // virtual aware object
 
 #define BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( name ) \
-    typedef struct name { aware_t _; } name; \
-    static inline name* name##_a_clone( const name* o ) { return ( name* )bcore_inst_a_clone( ( bcore_inst* )o ); } \
-    static inline void name##_a_discard( name* o ) { bcore_inst_a_discard( ( bcore_inst* )o ); } \
-    static inline void name##_a_detach( name** o ) { if( !o ) return; bcore_inst_a_discard( ( bcore_inst* )*o ); *o = NULL; } \
-    static inline void name##_a_attach( name** o, name* src ) { if( src ) bcore_inst_a_attach( ( bcore_inst** )o, ( bcore_inst* )src ); } \
-    static inline void name##_a_replicate( name** o, const name* src ) { bcore_inst_a_replicate( ( bcore_inst** )o, ( bcore_inst* )src ); }
+\
+typedef struct name { aware_t _; } name; \
+\
+static inline name* name##_a_clone( const name* o ) \
+{ \
+    return ( name* )bcore_inst_a_clone( ( bcore_inst* )o ); \
+} \
+\
+static inline void name##_a_copy( name* o, const name* src ) \
+{ \
+    bcore_inst_a_copy( ( bcore_inst* )o, ( const bcore_inst* )src ); \
+} \
+\
+static inline void name##_a_discard( name* o ) \
+{ \
+    bcore_inst_a_discard( ( bcore_inst* )o ); \
+} \
+\
+static inline void name##_a_detach( name** o ) \
+{ \
+    if( !o ) return; \
+    bcore_inst_a_discard( ( bcore_inst* )*o ); \
+    *o = NULL; \
+} \
+\
+static inline name* name##_a_attach( name** o, name* src ) \
+{ \
+    bcore_inst_a_attach( ( bcore_inst** )o, ( bcore_inst* )src ); \
+    return o ? *o : NULL; \
+} \
+\
+static inline name* name##_a_replicate( name** o, const name* src ) \
+{ \
+    bcore_inst_a_replicate( ( bcore_inst** )o, ( bcore_inst* )src ); \
+    return o ? *o : NULL; \
+}
 
 /**********************************************************************************************************************/
 
