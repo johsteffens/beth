@@ -18,6 +18,7 @@
 
 #include "bcore_feature.h"
 #include "bcore_flect.h"
+#include "bcore_trait.h"
 #include "bcore_spect.h"
 #include "bcore_quicktypes.h"
 
@@ -368,13 +369,23 @@ name* name##_clone( const name* o ) \
 \
 typedef struct name { aware_t _; } name; \
 \
+static inline name* name##_t_create( tp_t t ) \
+{ \
+    bcore_trait_assert_satisfied_type( TYPEOF_##name, t ); \
+    return ( name* )bcore_inst_t_create( t ); \
+} \
+\
 static inline name* name##_a_clone( const name* o ) \
 { \
+    if( o ) bcore_trait_assert_satisfied_type( TYPEOF_##name, *(aware_t*)o ); \
     return ( name* )bcore_inst_a_clone( ( bcore_inst* )o ); \
 } \
 \
 static inline void name##_a_copy( name* o, const name* src ) \
 { \
+    assert( o ); \
+    assert( src ); \
+    bcore_trait_assert_satisfied_type( TYPEOF_##name, *(const aware_t*)src ); \
     bcore_inst_a_copy( ( bcore_inst* )o, ( const bcore_inst* )src ); \
 } \
 \
@@ -392,12 +403,14 @@ static inline void name##_a_detach( name** o ) \
 \
 static inline name* name##_a_attach( name** o, name* src ) \
 { \
+    if( src ) bcore_trait_assert_satisfied_type( TYPEOF_##name, *(aware_t*)src ); \
     bcore_inst_a_attach( ( bcore_inst** )o, ( bcore_inst* )src ); \
     return o ? *o : NULL; \
 } \
 \
 static inline name* name##_a_replicate( name** o, const name* src ) \
 { \
+    if( src ) bcore_trait_assert_satisfied_type( TYPEOF_##name, *(aware_t*)src ); \
     bcore_inst_a_replicate( ( bcore_inst** )o, ( bcore_inst* )src ); \
     return o ? *o : NULL; \
 }

@@ -15,8 +15,6 @@
 
 #include "bcore_spect_inst.h"
 #include "bcore_signal.h"
-#include "bcore_spect.h"
-#include "bcore_trait.h"
 #include "bcore_spect_compare.h"
 #include "bcore_spect_translator.h"
 #include "bcore_spect_interpreter.h"
