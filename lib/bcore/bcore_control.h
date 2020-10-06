@@ -186,6 +186,30 @@ static inline u2_t bcore_xsg2_u2( u2_t rval ) { rval ^= ( rval >>  5 ); rval ^= 
 static inline u2_t bcore_xsg3_u2( u2_t rval ) { rval ^= ( rval >> 17 ); rval ^= ( rval << 15 ); return rval ^ ( rval >> 23 ); }
 
 /**********************************************************************************************************************/
+/// Object generic functions
+
+/// if *o is NULL it is created otherwise just passed;
+static inline vd_t bcore_pass_create( vd_t* o, bcore_fp_create create )
+{
+    assert( o );
+    return ( *o ) ? *o : ( *o = create() );
+}
+
+/// if *o is NULL it is created otherwise just passed;
+static inline vd_t bcore_pass_test( vd_t o, sc_t f_name, sc_t file, int line )
+{
+    if( !o ) bcore_ext_err( f_name, file, line, "Evaluating a NULL pointer." );
+    return o;
+}
+
+/// if *o is NULL it is created otherwise just passed;
+static inline vd_t bcore_pass_bounds( vd_t o, sz_t size, sz_t index, sc_t f_name, sc_t file, int line )
+{
+    if( index < 0 || index >= size ) bcore_ext_err_fa( f_name, file, line, "Array subscript: index '#<sz_t>' is out of range.", index );
+    return o;
+}
+
+/**********************************************************************************************************************/
 
 vd_t bcore_control_signal_handler( const bcore_signal_s* o );
 
@@ -378,5 +402,14 @@ name* name##_clone( const name* o ) \
 // Body definition only
 #define BCORE_DECLARE_OBJECT_BODY( name ) \
     struct name
+
+#define BCORE_PASS_CREATE( type, expr ) \
+    ((type*)bcore_pass_create((vd_t*)&(expr),(bcore_fp_create)type##_create))
+
+#define BCORE_PASS_TEST( type, expr ) \
+    ((type*)bcore_pass_test((vd_t)(expr),__func__,__FILE__,__LINE__))
+
+#define BCORE_PASS_BOUNDS( type, expr, index ) \
+    ((type*)bcore_pass_bounds((vd_t)(expr),expr->size,index,__func__,__FILE__,__LINE__))
 
 #endif // BCORE_CONTROL_H
