@@ -31,7 +31,6 @@
 #include "bcore_function_manager.h"
 #include "bcore_st.h"
 #include "bcore_feature.h"
-#include "bcore_feature.h"
 
 /**********************************************************************************************************************/
 
