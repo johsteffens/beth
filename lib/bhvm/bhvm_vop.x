@@ -35,21 +35,21 @@ feature sz_t* get_index_arr( mutable );
 
 feature sz_t get_index( const, sz_t index ) =
 {
-    ASSERT( index  >= 0 && index <= :a_arity( o ) );
-    return :a_get_index_arr( (:*)o )[ index ];
+    ASSERT( index  >= 0 && index <= o.arity() );
+    return cast(:*,o).get_index_arr()[ index ];
 };
 
 feature :* set_index( mutable, sz_t index, sz_t idx_val ) =
 {
-    ASSERT( index  >= 0 && index <= :a_arity( o ) );
-    :a_get_index_arr( o )[ index ] = idx_val;
+    ASSERT( index >= 0 && index <= o.arity() );
+    o.get_index_arr()[ index ] = idx_val;
     return o;
 };
 
 feature :* set_index_arr( mutable, sz_t* idx_arr, sz_t size ) =
 {
-    ASSERT( size == :a_arity( o ) + 1 );
-    sz_t* o_idx_arr = :a_get_index_arr( o );
+    ASSERT( size == o.arity() + 1 );
+    sz_t* o_idx_arr = o.get_index_arr();
     BFOR_SIZE( i, size )
     {
         sz_t idx_val = idx_arr[ i ];
@@ -64,7 +64,7 @@ signature void push_ci( mutable, u0_t c, sz_t i );
 stamp :ci = bcore_inst
 {
     u0_t c; sz_t i;
-    func : :push_ci = { o->c = c; o->i = i; };
+    func : :push_ci = { o.c = c; o.i = i; };
 };
 
 signature sz_t i_of_c( const, u0_t c );
@@ -75,18 +75,18 @@ stamp :arr_ci = aware bcore_array
     :ci_s [];
     func : :push_ci =
     {
-        :ci_s_push_ci( @_push( o ), c, i );
+        :ci_s_push_ci( o.push(), c, i );
     };
 
     func : :i_of_c =
     {
-        BFOR_EACH( j, o ) if( o->data[ j ].c == c ) return o->data[ j ].i;
+        BFOR_EACH( j, o ) if( o.[ j ].c == c ) return o.[ j ].i;
         return -1;
     };
 
     func : :c_of_i =
     {
-        BFOR_EACH( j, o ) if( o->data[ j ].i == i ) return o->data[ j ].c;
+        BFOR_EACH( j, o ) if( o.[ j ].i == i ) return o.[ j ].c;
         return -1;
     };
 };
@@ -99,16 +99,16 @@ stamp :arr_ci = aware bcore_array
   */
 feature void set_arg( mutable, :ci_s* ci ) =
 {
-    sz_t size   = :a_arity( o ) + 1;
-    sc_t  sig   = :a_sig( o );
-    sz_t* index = :a_get_index_arr( o );
+    sz_t size   = o.arity() + 1;
+    sc_t  sig   = o.sig();
+    sz_t* index = o.get_index_arr();
     for( sz_t i = 0; i < size; i++ )
     {
         u0_t c = sig[ i ];
         ASSERT( c );
-        if( ci->c == c )
+        if( ci.c == c )
         {
-            index[ i ] = ci->i;
+            index[ i ] = ci.i;
             return;
         }
     }
@@ -125,13 +125,13 @@ feature :* set_args( mutable, const :arr_ci_s* arr ) =
 /// nullary operators
 group :ar0 =
 {
-    stamp :index = bcore_inst { sz_t [ 1 ] v; func bcore_inst_call : init_x = { o->v[0] = -1; }; };
+    stamp :index = bcore_inst { sz_t [ 1 ] v; func bcore_inst_call : init_x = { o.v[0] = -1; }; };
 
     extending stump verbatim :_ = aware :
     {
         :index_s i;
         func :: :arity = { return 0; };
-        func :: :get_index_arr = { return o->i.v; };
+        func :: :get_index_arr = { return o.i.v; };
     };
 
     /// axon pass --------------------------------------------------------------
@@ -139,8 +139,8 @@ group :ar0 =
     stamp :zro = { func :: :run = { bhvm_hop_ar0_zro_s_f( ah[o->i.v[0]] ); }; func :: :sig = { return "y"; }; };
     stamp :one = { func :: :run = { bhvm_hop_ar0_one_s_f( ah[o->i.v[0]] ); }; func :: :sig = { return "y"; }; };
 
-    stamp :determine = { func :: :run = { bhvm_holor_s_fit_size( ah[o->i.v[0]] ); }; func :: :sig = { return "y"; }; };
-    stamp :vacate    = { func :: :run = { bhvm_value_s_clear( &ah[o->i.v[0]]->v ); };  func :: :sig = { return "y"; }; };
+    stamp :determine = { func :: :run = { ah[o.i.v[0]].fit_size(); }; func :: :sig = { return "y"; }; };
+    stamp :vacate    = { func :: :run = { ah[o.i.v[0]].v.clear(); };  func :: :sig = { return "y"; }; };
 
     stamp :randomize =
     {
@@ -151,9 +151,9 @@ group :ar0 =
 
         func :: :run =
         {
-            sz_t i = o->i.v[ 0 ];
-            u3_t rval = o->rseed + i;
-            bhvm_value_s_set_random_u3( &ah[ i ]->v, o->density, o->min, o->max, &rval );
+            sz_t i = o.i.v[0];
+            u3_t rval = o.rseed + i;
+            ah[i].v.set_random_u3( o.density, o.min, o.max, &rval );
         };
 
         func :: :sig = { return "y"; };
@@ -182,10 +182,10 @@ group :ar0 =
 
         func :: :run =
         {
-            sz_t i = o->i.v[ 0 ];
+            sz_t i = o.i.v[0];
             u3_t* rval = ( u3_t* )&o->rval;
-            bcore_mutex_s* mutex = ( bcore_mutex_s* )&o->mutex;
-            bcore_mutex_s_lock( mutex );
+            bcore_mutex_s* mutex = cast( bcore_mutex_s*, &o->mutex );
+            mutex.lock();
             if( o->prsg )
             {
                 bhvm_value_s_set_random( &ah[ i ]->v, o->density, o->min, o->max, o->prsg );
@@ -194,7 +194,7 @@ group :ar0 =
             {
                 bhvm_value_s_set_random_u3( &ah[ i ]->v, o->density, o->min, o->max, rval );
             }
-            bcore_mutex_s_unlock( mutex );
+            mutex.unlock();
         };
 
         func :: :sig = { return "y"; };
@@ -207,70 +207,70 @@ group :ar0 =
 /// unary operators
 group :ar1 =
 {
-    stamp :index = bcore_inst { sz_t [ 2 ] v; func bcore_inst_call : init_x = { o->v[0] = o->v[1] = -1; }; };
+    stamp :index = bcore_inst { sz_t [ 2 ] v; func bcore_inst_call : init_x = { o.v[0] = o.v[1] = -1; }; };
 
     extending stump verbatim :_ = aware :
     {
         :index_s i;
         func :: :arity = { return 1; };
-        func :: :get_index_arr = { return o->i.v; };
+        func :: :get_index_arr = { return o.i.v; };
     };
 
     /// axon pass --------------------------------------------------------------
 
-    stamp :neg        = { func :: :run = { bhvm_hop_ar1_neg_s_f       ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
-    stamp :floor      = { func :: :run = { bhvm_hop_ar1_floor_s_f     ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
-    stamp :ceil       = { func :: :run = { bhvm_hop_ar1_ceil_s_f      ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
-    stamp :exp        = { func :: :run = { bhvm_hop_ar1_exp_s_f       ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
-    stamp :log        = { func :: :run = { bhvm_hop_ar1_log_s_f       ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
-    stamp :inv        = { func :: :run = { bhvm_hop_ar1_inv_s_f       ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
-    stamp :sqr        = { func :: :run = { bhvm_hop_ar1_sqr_s_f       ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
-    stamp :srt        = { func :: :run = { bhvm_hop_ar1_srt_s_f       ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
-    stamp :abs        = { func :: :run = { bhvm_hop_ar1_abs_s_f       ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
-    stamp :l1         = { func :: :run = { bhvm_hop_ar1_l1_s_f        ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
-    stamp :sigm       = { func :: :run = { bhvm_hop_ar1_sigm_s_f      ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
-    stamp :sigm_hard  = { func :: :run = { bhvm_hop_ar1_sigm_hard_s_f ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
-    stamp :sigm_leaky = { func :: :run = { bhvm_hop_ar1_sigm_leaky_s_f( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
-    stamp :tanh       = { func :: :run = { bhvm_hop_ar1_tanh_s_f      ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
-    stamp :tanh_hard  = { func :: :run = { bhvm_hop_ar1_tanh_hard_s_f ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
-    stamp :tanh_leaky = { func :: :run = { bhvm_hop_ar1_tanh_leaky_s_f( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
-    stamp :softplus   = { func :: :run = { bhvm_hop_ar1_softplus_s_f  ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
-    stamp :softmax    = { func :: :run = { bhvm_hop_ar1_softmax_s_f   ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
-    stamp :relu       = { func :: :run = { bhvm_hop_ar1_relu_s_f      ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
-    stamp :relu_leaky = { func :: :run = { bhvm_hop_ar1_relu_leaky_s_f( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :neg        = { func :: :run = { bhvm_hop_ar1_neg_s_f       ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :floor      = { func :: :run = { bhvm_hop_ar1_floor_s_f     ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :ceil       = { func :: :run = { bhvm_hop_ar1_ceil_s_f      ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :exp        = { func :: :run = { bhvm_hop_ar1_exp_s_f       ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :log        = { func :: :run = { bhvm_hop_ar1_log_s_f       ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :inv        = { func :: :run = { bhvm_hop_ar1_inv_s_f       ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :sqr        = { func :: :run = { bhvm_hop_ar1_sqr_s_f       ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :srt        = { func :: :run = { bhvm_hop_ar1_srt_s_f       ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :abs        = { func :: :run = { bhvm_hop_ar1_abs_s_f       ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :l1         = { func :: :run = { bhvm_hop_ar1_l1_s_f        ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :sigm       = { func :: :run = { bhvm_hop_ar1_sigm_s_f      ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :sigm_hard  = { func :: :run = { bhvm_hop_ar1_sigm_hard_s_f ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :sigm_leaky = { func :: :run = { bhvm_hop_ar1_sigm_leaky_s_f( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :tanh       = { func :: :run = { bhvm_hop_ar1_tanh_s_f      ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :tanh_hard  = { func :: :run = { bhvm_hop_ar1_tanh_hard_s_f ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :tanh_leaky = { func :: :run = { bhvm_hop_ar1_tanh_leaky_s_f( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :softplus   = { func :: :run = { bhvm_hop_ar1_softplus_s_f  ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :softmax    = { func :: :run = { bhvm_hop_ar1_softmax_s_f   ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :relu       = { func :: :run = { bhvm_hop_ar1_relu_s_f      ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
+    stamp :relu_leaky = { func :: :run = { bhvm_hop_ar1_relu_leaky_s_f( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "ay"; }; };
 
     stamp :order_inc =
     {
         sz_t dim;
-        func :: :run = { bhvm_holor_s_order_inc( ah[o->i.v[0]], o->dim, ah[o->i.v[1]] ); };
+        func :: :run = { ah[o->i.v[0]].order_inc( o.dim, ah[o.i.v[1]] ); };
         func :: :sig = { return "ay"; };
     };
 
     stamp :order_dec =
     {
         sz_t idx;
-        func :: :run = { bhvm_holor_s_order_dec( ah[o->i.v[0]], o->idx, ah[o->i.v[1]] ); };
+        func :: :run = { ah[o.i.v[0]].order_dec( o->idx, ah[o.i.v[1]] ); };
         func :: :sig = { return "ay"; };
     };
 
     stamp :order_dec_weak =
     {
         sz_t idx;
-        func :: :run = { bhvm_holor_s_order_dec_weak( ah[o->i.v[0]], o->idx, ah[o->i.v[1]] ); };
+        func :: :run = { ah[o.i.v[0]].order_dec_weak( o->idx, ah[o.i.v[1]] ); };
         func :: :sig = { return "ay"; };
     };
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :add_dp_a = { func :: :run = { bhvm_hop_ar1_eci_cpy_acc_s_f ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "zf"; }; };
-    stamp :add_dp_b = { func :: :run = { bhvm_hop_ar1_eci_cpy_acc_s_f ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "zg"; }; };
-    stamp :sub_dp_a = { func :: :run = { bhvm_hop_ar1_eci_cpy_acc_s_f ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "zf"; }; };
-    stamp :sub_dp_b = { func :: :run = { bhvm_hop_ar1_eci_neg_acc_s_f ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "zg"; }; };
-    stamp :neg_dp    = { func :: :run = { bhvm_hop_ar1_eci_neg_acc_s_f( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "zf"; }; };
-    stamp :cat_dp_a  = { func :: :run = { bhvm_hop_ar1_cat_dp_zf_s_f  ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "zf"; }; };
-    stamp :cat_dp_b  = { func :: :run = { bhvm_hop_ar1_cat_dp_zg_s_f  ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "zg"; }; };
-    stamp :ccat_dp_a = { func :: :run = { bhvm_hop_ar1_ccat_dp_zf_s_f ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "zf"; }; };
-    stamp :ccat_dp_b = { func :: :run = { bhvm_hop_ar1_ccat_dp_zg_s_f ( ah[o->i.v[0]], ah[o->i.v[1]] ); }; func :: :sig = { return "zg"; }; };
+    stamp :add_dp_a = { func :: :run = { bhvm_hop_ar1_eci_cpy_acc_s_f ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "zf"; }; };
+    stamp :add_dp_b = { func :: :run = { bhvm_hop_ar1_eci_cpy_acc_s_f ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "zg"; }; };
+    stamp :sub_dp_a = { func :: :run = { bhvm_hop_ar1_eci_cpy_acc_s_f ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "zf"; }; };
+    stamp :sub_dp_b = { func :: :run = { bhvm_hop_ar1_eci_neg_acc_s_f ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "zg"; }; };
+    stamp :neg_dp    = { func :: :run = { bhvm_hop_ar1_eci_neg_acc_s_f( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "zf"; }; };
+    stamp :cat_dp_a  = { func :: :run = { bhvm_hop_ar1_cat_dp_zf_s_f  ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "zf"; }; };
+    stamp :cat_dp_b  = { func :: :run = { bhvm_hop_ar1_cat_dp_zg_s_f  ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "zg"; }; };
+    stamp :ccat_dp_a = { func :: :run = { bhvm_hop_ar1_ccat_dp_zf_s_f ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "zf"; }; };
+    stamp :ccat_dp_b = { func :: :run = { bhvm_hop_ar1_ccat_dp_zg_s_f ( ah[o.i.v[0]], ah[o.i.v[1]] ); }; func :: :sig = { return "zg"; }; };
 
 
     /// copy special channel ---------------------------------------------------
@@ -278,14 +278,14 @@ group :ar1 =
     stamp :cpy =
     {
         func :: :sig = { return "ay"; };
-        func :: :run = { bhvm_hop_ar1_cpy_s_f( ah[o->i.v[0]], ah[o->i.v[1]] ); };
+        func :: :run = { bhvm_hop_ar1_cpy_s_f( ah[o.i.v[0]], ah[o.i.v[1]] ); };
     };
 
     /// accumulate: dendrite pass of copy
     stamp :acc =
     {
         func :: :sig = { return "zf"; };
-        func :: :run = { bhvm_hop_ar1_eci_cpy_acc_s_f( ah[o->i.v[0]], ah[o->i.v[1]] ); };
+        func :: :run = { bhvm_hop_ar1_eci_cpy_acc_s_f( ah[o.i.v[0]], ah[o.i.v[1]] ); };
     };
 
     /// cast -------------------------------------------------------------------
@@ -303,9 +303,9 @@ group :ar1 =
         func :: :sig = { return "ay"; };
         func :: :run =
         {
-            bhvm_holor_s* a = ah[o->i.v[0]];
-            bhvm_holor_s* y = ah[o->i.v[1]];
-            bhvm_holor_s_fork( y, a );
+            bhvm_holor_s* a = ah[o.i.v[0]];
+            bhvm_holor_s* y = ah[o.i.v[1]];
+            y.fork( a );
         };
     };
 
@@ -316,11 +316,11 @@ group :ar1 =
         func :: :sig = { return "ay"; };
         func :: :run =
         {
-            bhvm_holor_s* a = ah[o->i.v[0]];
-            bhvm_holor_s* y = ah[o->i.v[1]];
-            assert( bhvm_shape_s_get_volume( &o->shape ) ==  bhvm_shape_s_get_volume( &a->s ) );
-            bhvm_shape_s_copy( &y->s, &o->shape );
-            bhvm_value_s_fork( &y->v, &a->v );
+            bhvm_holor_s* a = ah[o.i.v[0]];
+            bhvm_holor_s* y = ah[o.i.v[1]];
+            assert( o.shape.get_volume() ==  a.s.get_volume() );
+            y.s.copy( &o.shape );
+            y.v.fork( &a.v );
         };
     };
 };
@@ -330,94 +330,94 @@ group :ar1 =
 /// binary operators
 group :ar2 =
 {
-    stamp :index = bcore_inst { sz_t [ 3 ] v; func bcore_inst_call : init_x = { o->v[0] = o->v[1] = o->v[2] = -1; }; };
+    stamp :index = bcore_inst { sz_t [ 3 ] v; func bcore_inst_call : init_x = { o.v[0] = o.v[1] = o.v[2] = -1; }; };
 
     extending stump verbatim :_ = aware :
     {
         :index_s i;
         func :: :arity = { return 2; };
-        func :: :get_index_arr = { return o->i.v; };
+        func :: :get_index_arr = { return o.i.v; };
     };
 
     /// axon pass --------------------------------------------------------------
 
-    stamp :cat  = { func :: :run = { bhvm_hop_ar2_cat_s_f ( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :ccat = { func :: :run = { bhvm_hop_ar2_ccat_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :cat  = { func :: :run = { bhvm_hop_ar2_cat_s_f ( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :ccat = { func :: :run = { bhvm_hop_ar2_ccat_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
 
-    stamp :add = { func :: :run = { bhvm_hop_ar2_eci_add_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :sub = { func :: :run = { bhvm_hop_ar2_eci_sub_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :mul = { func :: :run = { bhvm_hop_ar2_eci_mul_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :div = { func :: :run = { bhvm_hop_ar2_eci_div_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :pow = { func :: :run = { bhvm_hop_ar2_eci_pow_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :add = { func :: :run = { bhvm_hop_ar2_eci_add_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :sub = { func :: :run = { bhvm_hop_ar2_eci_sub_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :mul = { func :: :run = { bhvm_hop_ar2_eci_mul_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :div = { func :: :run = { bhvm_hop_ar2_eci_div_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :pow = { func :: :run = { bhvm_hop_ar2_eci_pow_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
 
-    stamp :mul_mvv = { func :: :run = { bhvm_hop_ar2_mul_mvv_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :mul_vmv = { func :: :run = { bhvm_hop_ar2_mul_vmv_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :mul_tvv = { func :: :run = { bhvm_hop_ar2_mul_tvv_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :mul_vtv = { func :: :run = { bhvm_hop_ar2_mul_vtv_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :mul_vvm = { func :: :run = { bhvm_hop_ar2_mul_vvm_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :mul_mmm = { func :: :run = { bhvm_hop_ar2_mul_mmm_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :mul_mtm = { func :: :run = { bhvm_hop_ar2_mul_mtm_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :mul_tmm = { func :: :run = { bhvm_hop_ar2_mul_tmm_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :mul_ttm = { func :: :run = { bhvm_hop_ar2_mul_ttm_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :mul_mvv = { func :: :run = { bhvm_hop_ar2_mul_mvv_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :mul_vmv = { func :: :run = { bhvm_hop_ar2_mul_vmv_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :mul_tvv = { func :: :run = { bhvm_hop_ar2_mul_tvv_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :mul_vtv = { func :: :run = { bhvm_hop_ar2_mul_vtv_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :mul_vvm = { func :: :run = { bhvm_hop_ar2_mul_vvm_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :mul_mmm = { func :: :run = { bhvm_hop_ar2_mul_mmm_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :mul_mtm = { func :: :run = { bhvm_hop_ar2_mul_mtm_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :mul_tmm = { func :: :run = { bhvm_hop_ar2_mul_tmm_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :mul_ttm = { func :: :run = { bhvm_hop_ar2_mul_ttm_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
 
     /// logic ------------------------------------------------------------------
 
-    stamp :logic_equal         = { func :: :run = { bhvm_hop_ar2_eci_logic_equal_s_f        ( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :logic_unequal       = { func :: :run = { bhvm_hop_ar2_eci_logic_unequal_s_f      ( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :logic_larger        = { func :: :run = { bhvm_hop_ar2_eci_logic_larger_s_f       ( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :logic_smaller       = { func :: :run = { bhvm_hop_ar2_eci_logic_smaller_s_f      ( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :logic_larger_equal  = { func :: :run = { bhvm_hop_ar2_eci_logic_larger_equal_s_f ( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :logic_smaller_equal = { func :: :run = { bhvm_hop_ar2_eci_logic_smaller_equal_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :logic_and           = { func :: :run = { bhvm_hop_ar2_eci_logic_and_s_f          ( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
-    stamp :logic_or            = { func :: :run = { bhvm_hop_ar2_eci_logic_or_s_f           ( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :logic_equal         = { func :: :run = { bhvm_hop_ar2_eci_logic_equal_s_f        ( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :logic_unequal       = { func :: :run = { bhvm_hop_ar2_eci_logic_unequal_s_f      ( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :logic_larger        = { func :: :run = { bhvm_hop_ar2_eci_logic_larger_s_f       ( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :logic_smaller       = { func :: :run = { bhvm_hop_ar2_eci_logic_smaller_s_f      ( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :logic_larger_equal  = { func :: :run = { bhvm_hop_ar2_eci_logic_larger_equal_s_f ( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :logic_smaller_equal = { func :: :run = { bhvm_hop_ar2_eci_logic_smaller_equal_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :logic_and           = { func :: :run = { bhvm_hop_ar2_eci_logic_and_s_f          ( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
+    stamp :logic_or            = { func :: :run = { bhvm_hop_ar2_eci_logic_or_s_f           ( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "aby"; }; };
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :mul_mvv_dp_a = { func :: :run = { bhvm_hop_ar2_mul_acc_vvm_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
-    stamp :mul_vmv_dp_a = { func :: :run = { bhvm_hop_ar2_mul_acc_vtv_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
-    stamp :mul_tvv_dp_a = { func :: :run = { bhvm_hop_ar2_mul_acc_vvm_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "bzf"; }; };
-    stamp :mul_vtv_dp_a = { func :: :run = { bhvm_hop_ar2_mul_acc_vmv_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
-    stamp :mul_vvm_dp_a = { func :: :run = { bhvm_hop_ar2_mul_acc_mvv_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
+    stamp :mul_mvv_dp_a = { func :: :run = { bhvm_hop_ar2_mul_acc_vvm_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
+    stamp :mul_vmv_dp_a = { func :: :run = { bhvm_hop_ar2_mul_acc_vtv_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
+    stamp :mul_tvv_dp_a = { func :: :run = { bhvm_hop_ar2_mul_acc_vvm_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "bzf"; }; };
+    stamp :mul_vtv_dp_a = { func :: :run = { bhvm_hop_ar2_mul_acc_vmv_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
+    stamp :mul_vvm_dp_a = { func :: :run = { bhvm_hop_ar2_mul_acc_mvv_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
 
-    stamp :mul_mvv_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_tvv_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "azg"; }; };
-    stamp :mul_vmv_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_vvm_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "azg"; }; };
-    stamp :mul_tvv_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_mvv_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "azg"; }; };
-    stamp :mul_vtv_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_vvm_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zag"; }; };
-    stamp :mul_vvm_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_vmv_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "azg"; }; };
+    stamp :mul_mvv_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_tvv_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "azg"; }; };
+    stamp :mul_vmv_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_vvm_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "azg"; }; };
+    stamp :mul_tvv_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_mvv_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "azg"; }; };
+    stamp :mul_vtv_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_vvm_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zag"; }; };
+    stamp :mul_vvm_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_vmv_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "azg"; }; };
 
-    stamp :mul_mmm_dp_a = { func :: :run = { bhvm_hop_ar2_mul_acc_mtm_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
-    stamp :mul_mtm_dp_a = { func :: :run = { bhvm_hop_ar2_mul_acc_mmm_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
-    stamp :mul_tmm_dp_a = { func :: :run = { bhvm_hop_ar2_mul_acc_mtm_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "bzf"; }; };
-    stamp :mul_ttm_dp_a = { func :: :run = { bhvm_hop_ar2_mul_acc_ttm_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "bzf"; }; };
+    stamp :mul_mmm_dp_a = { func :: :run = { bhvm_hop_ar2_mul_acc_mtm_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
+    stamp :mul_mtm_dp_a = { func :: :run = { bhvm_hop_ar2_mul_acc_mmm_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
+    stamp :mul_tmm_dp_a = { func :: :run = { bhvm_hop_ar2_mul_acc_mtm_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "bzf"; }; };
+    stamp :mul_ttm_dp_a = { func :: :run = { bhvm_hop_ar2_mul_acc_ttm_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "bzf"; }; };
 
-    stamp :mul_mmm_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_tmm_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "azg"; }; };
-    stamp :mul_mtm_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_tmm_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zag"; }; };
-    stamp :mul_tmm_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_mmm_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "azg"; }; };
-    stamp :mul_ttm_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_ttm_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zag"; }; };
+    stamp :mul_mmm_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_tmm_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "azg"; }; };
+    stamp :mul_mtm_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_tmm_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zag"; }; };
+    stamp :mul_tmm_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_mmm_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "azg"; }; };
+    stamp :mul_ttm_dp_b = { func :: :run = { bhvm_hop_ar2_mul_acc_ttm_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zag"; }; };
 
-    stamp :mul_dp_a     = { func :: :run = { bhvm_hop_ar2_eci_mul_acc_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
-    stamp :mul_dp_b     = { func :: :run = { bhvm_hop_ar2_eci_mul_acc_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zag"; }; };
-    stamp :div_dp_a     = { func :: :run = { bhvm_hop_ar2_eci_div_acc_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
+    stamp :mul_dp_a     = { func :: :run = { bhvm_hop_ar2_eci_mul_acc_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
+    stamp :mul_dp_b     = { func :: :run = { bhvm_hop_ar2_eci_mul_acc_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zag"; }; };
+    stamp :div_dp_a     = { func :: :run = { bhvm_hop_ar2_eci_div_acc_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zbf"; }; };
 
-    stamp :abs_dp        = { func :: :run = { bhvm_hop_ar2_abs_dp_zaf_s_f(        ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zaf"; }; };
-    stamp :exp_dp        = { func :: :run = { bhvm_hop_ar2_exp_dp_zyf_s_f(        ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
-    stamp :log_dp        = { func :: :run = { bhvm_hop_ar2_log_dp_zaf_s_f(        ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zaf"; }; };
-    stamp :inv_dp        = { func :: :run = { bhvm_hop_ar2_inv_dp_zyf_s_f(        ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
-    stamp :sqr_dp        = { func :: :run = { bhvm_hop_ar2_sqr_dp_zaf_s_f(        ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zaf"; }; };
-    stamp :srt_dp        = { func :: :run = { bhvm_hop_ar2_srt_dp_zyf_s_f(        ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
-    stamp :sigm_dp       = { func :: :run = { bhvm_hop_ar2_sigm_dp_zyf_s_f(       ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
-    stamp :sigm_hard_dp  = { func :: :run = { bhvm_hop_ar2_sigm_hard_dp_zyf_s_f(  ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
-    stamp :sigm_leaky_dp = { func :: :run = { bhvm_hop_ar2_sigm_leaky_dp_zyf_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
-    stamp :tanh_dp       = { func :: :run = { bhvm_hop_ar2_tanh_dp_zyf_s_f(       ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
-    stamp :tanh_hard_dp  = { func :: :run = { bhvm_hop_ar2_tanh_hard_dp_zyf_s_f(  ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
-    stamp :tanh_leaky_dp = { func :: :run = { bhvm_hop_ar2_tanh_leaky_dp_zyf_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
-    stamp :softplus_dp   = { func :: :run = { bhvm_hop_ar2_softplus_dp_zyf_s_f(   ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
-    stamp :softmax_dp    = { func :: :run = { bhvm_hop_ar2_softmax_dp_zyf_s_f(    ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
-    stamp :relu_dp       = { func :: :run = { bhvm_hop_ar2_relu_dp_zyf_s_f(       ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
-    stamp :relu_leaky_dp = { func :: :run = { bhvm_hop_ar2_relu_leaky_dp_zyf_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
+    stamp :abs_dp        = { func :: :run = { bhvm_hop_ar2_abs_dp_zaf_s_f(        ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zaf"; }; };
+    stamp :exp_dp        = { func :: :run = { bhvm_hop_ar2_exp_dp_zyf_s_f(        ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
+    stamp :log_dp        = { func :: :run = { bhvm_hop_ar2_log_dp_zaf_s_f(        ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zaf"; }; };
+    stamp :inv_dp        = { func :: :run = { bhvm_hop_ar2_inv_dp_zyf_s_f(        ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
+    stamp :sqr_dp        = { func :: :run = { bhvm_hop_ar2_sqr_dp_zaf_s_f(        ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zaf"; }; };
+    stamp :srt_dp        = { func :: :run = { bhvm_hop_ar2_srt_dp_zyf_s_f(        ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
+    stamp :sigm_dp       = { func :: :run = { bhvm_hop_ar2_sigm_dp_zyf_s_f(       ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
+    stamp :sigm_hard_dp  = { func :: :run = { bhvm_hop_ar2_sigm_hard_dp_zyf_s_f(  ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
+    stamp :sigm_leaky_dp = { func :: :run = { bhvm_hop_ar2_sigm_leaky_dp_zyf_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
+    stamp :tanh_dp       = { func :: :run = { bhvm_hop_ar2_tanh_dp_zyf_s_f(       ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
+    stamp :tanh_hard_dp  = { func :: :run = { bhvm_hop_ar2_tanh_hard_dp_zyf_s_f(  ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
+    stamp :tanh_leaky_dp = { func :: :run = { bhvm_hop_ar2_tanh_leaky_dp_zyf_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
+    stamp :softplus_dp   = { func :: :run = { bhvm_hop_ar2_softplus_dp_zyf_s_f(   ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
+    stamp :softmax_dp    = { func :: :run = { bhvm_hop_ar2_softmax_dp_zyf_s_f(    ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
+    stamp :relu_dp       = { func :: :run = { bhvm_hop_ar2_relu_dp_zyf_s_f(       ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
+    stamp :relu_leaky_dp = { func :: :run = { bhvm_hop_ar2_relu_leaky_dp_zyf_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "zyf"; }; };
 
-    stamp :iff_dp_b = { func :: :run = { bhvm_hop_ar2_eci_iff_dp_b_azg_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "azg"; }; };
-    stamp :iff_dp_c = { func :: :run = { bhvm_hop_ar2_eci_iff_dp_c_azh_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]] ); }; func :: :sig = { return "azh"; }; };
+    stamp :iff_dp_b = { func :: :run = { bhvm_hop_ar2_eci_iff_dp_b_azg_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "azg"; }; };
+    stamp :iff_dp_c = { func :: :run = { bhvm_hop_ar2_eci_iff_dp_c_azh_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); }; func :: :sig = { return "azh"; }; };
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -425,20 +425,20 @@ group :ar2 =
 /// ternary operators
 group :ar3 =
 {
-    stamp :index = bcore_inst { sz_t [ 4 ] v; func bcore_inst_call : init_x = { o->v[0] = o->v[1] = o->v[2] = o->v[3] = -1; }; };
+    stamp :index = bcore_inst { sz_t [ 4 ] v; func bcore_inst_call : init_x = { o.v[0] = o.v[1] = o.v[2] = o.v[3] = -1; }; };
 
     extending stump verbatim :_ = aware :
     {
         :index_s i;
         func :: :arity = { return 3; };
-        func :: :get_index_arr = { return o->i.v; };
+        func :: :get_index_arr = { return o.i.v; };
     };
 
     /// axon pass --------------------------------------------------------------
 
     stamp :iff =
     {
-        func :: :run = { bhvm_hop_ar3_eci_iff_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]], ah[o->i.v[3]] ); };
+        func :: :run = { bhvm_hop_ar3_eci_iff_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]], ah[o.i.v[3]] ); };
         func :: :sig = { return "abcy"; };
     };
 
@@ -446,19 +446,19 @@ group :ar3 =
 
     stamp :div_dp_b =
     {
-        func :: :run = { bhvm_hop_ar3_eci_div_dp_zabg_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]], ah[o->i.v[3]] ); };
+        func :: :run = { bhvm_hop_ar3_eci_div_dp_zabg_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]], ah[o.i.v[3]] ); };
         func :: :sig = { return "zabg"; };
     };
 
     stamp :pow_dp_a =
     {
-        func :: :run = { bhvm_hop_ar3_eci_pow_dp_abzf_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]], ah[o->i.v[3]] ); };
+        func :: :run = { bhvm_hop_ar3_eci_pow_dp_abzf_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]], ah[o.i.v[3]] ); };
         func :: :sig = { return "abzf"; };
     };
 
     stamp :pow_dp_b =
     {
-        func :: :run = { bhvm_hop_ar3_eci_pow_dp_ayzg_s_f( ah[o->i.v[0]], ah[o->i.v[1]], ah[o->i.v[2]], ah[o->i.v[3]] ); };
+        func :: :run = { bhvm_hop_ar3_eci_pow_dp_ayzg_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]], ah[o.i.v[3]] ); };
         func :: :sig = { return "ayzg"; };
     };
 };

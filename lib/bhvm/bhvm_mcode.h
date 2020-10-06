@@ -42,8 +42,8 @@ stamp :op = aware :
     aware bhvm_vop => vop;
     private bhvm_vop_spect_s* p; // perspective of vop
 
-    func bcore_inst_call : copy_x  = { o->p = o->vop ? ( bhvm_vop_spect_s* )bhvm_vop_spect_s_get_aware( o->vop ) : NULL; };
-    func bcore_via_call  : mutated = { @_copy_x( o, NULL ); };
+    func bcore_inst_call : copy_x  = { o.p = o.vop ? ( bhvm_vop_spect_s* )bhvm_vop_spect_s_get_aware( o.vop ) : NULL; };
+    func bcore_via_call  : mutated = { o.copy_x( NULL ); };
     func bhvm_vop        : run = {\C assert( o->p ); assert( o->p->run ); o->p->run( (vc_t)o->vop, ah ); };
 };
 
@@ -115,10 +115,10 @@ stamp :nbase = aware bcore_array
     :node_s => [];
     func : :push_node =
     {
-        sz_t nidx = o->size;
-        bcore_array_a_push( ( bcore_array* )o, sr_asd( :node_s_create() ) );
-        :node_s* node = o->data[ nidx ];
-        node->nidx = nidx;
+        sz_t nidx = o.size;
+        cast( bcore_array*, o).push( sr_asd( :node_s! ) );
+        :node_s* node = o.[ nidx ];
+        node.nidx = nidx;
         return node;
     };
 };
@@ -175,7 +175,7 @@ group :hbase =
 
         func :: :push_hm  =
         {
-            sz_t idx = o->holor_adl.size;
+            sz_t idx = o.holor_adl.size;
             o.hmeta_adl.push_c( m );
             o.holor_adl.push_c( h );
             return idx;
@@ -195,8 +195,8 @@ group :hbase =
         {
             assert( index >= 0 && index < o.holor_adl.size );
             sz_t ret = o.holor_adl.size;
-            o->hmeta_adl.push_c( o->hmeta_adl.[ index ] );
-            o->holor_adl.push_c( o->holor_adl.[ index ] );
+            o.hmeta_adl.push_c( o->hmeta_adl.[ index ] );
+            o.holor_adl.push_c( o->holor_adl.[ index ] );
             return ret;
         };
 
@@ -223,11 +223,11 @@ stamp :track = aware bcore_array
     func : :vop_push_d =
     {
         assert( vop );
-        :op_s* op = @_push( o );
-        op->vop = vop;
-        op->p = ( bhvm_vop_spect_s* )bhvm_vop_spect_s_get_aware( op->vop );
-        assert( op->p );
-        return o->size - 1;
+        :op_s* op = o.push();
+        op.vop = vop;
+        op.p = ( bhvm_vop_spect_s* )bhvm_vop_spect_s_get_aware( op->vop );
+        assert( op.p );
+        return o.size - 1;
     };
 
     func : :vop_push_c = { return o.vop_push_d( vop.clone() ); };

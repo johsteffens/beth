@@ -64,12 +64,12 @@ group :thread =
         :share_s             -> share;
         aware bhpt_adaptive  => adaptive; // local adaptive
 
-        func bcore_inst_call : down_e = { ASSERT( !o->running ); };
+        func bcore_inst_call : down_e = { ASSERT( !o.running ); };
 
         func : :loop;
         func : :loop_enter;
         func : :loop_exit;
-        func : :wait_while_locked = { bcore_mutex_s_lock( o->mutex ); bcore_mutex_s_unlock( o->mutex ); };
+        func : :wait_while_locked = { o.mutex.lock(); o.mutex.unlock(); };
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -91,8 +91,8 @@ group :thread =
         func : :tdown;
         func : :run;
 
-        func bcore_inst_call : down_e = { @_tdown( o ); };
-        func bcore_inst_call : copy_e = { @_tdown( o ); };
+        func bcore_inst_call : down_e = { o.tdown(); };
+        func bcore_inst_call : copy_e = { o.tdown(); };
     };
 };
 
@@ -156,7 +156,7 @@ stamp : = aware bcore_main
 
     func bcore_main : main;
 
-    func bcore_main : exit_required = { return bcore_main_frame_s_exit_required( o->main_frame ); };
+    func bcore_main : exit_required = { return o.main_frame.exit_required(); };
 
 };
 

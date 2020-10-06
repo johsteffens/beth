@@ -56,28 +56,11 @@ type sd_t;
 // objects
 type sr_s;
 
-/// st_s
-group st = bcore_inst
-{
-    stamp : = bcore_inst
-    {
-        sd_t data;
-        sc_t sc;
-        uz_t size;
-        uz_t space;
-    };
-};
-
 group bcore_inst   = bcore_inst {};
 group bcore_array  = bcore_inst {};
 group bcore_via    = bcore_inst {};
 group bcore_source = bcore_inst {};
 group bcore_sink   = bcore_inst {};
-
-group bcore_fp = bcore_inst
-{
-    feature '' void copy_typed( mutable, tp_t type, vc_t src );
-};
 
 /// default functions in a stamp
 group bcore_stamp_funcs = bcore_inst
@@ -89,6 +72,64 @@ group bcore_stamp_funcs = bcore_inst
     signature   @* create(  plain );
     signature void discard( mutable );
     signature   @* clone(   const );
+};
+
+group bcore_fp = bcore_inst
+{
+    feature '' void copy_typed( mutable, tp_t type, vc_t src );
+};
+
+/// st_s
+group st = bcore_inst
+{
+    stamp : = aware bcore_inst
+    {
+        sd_t data;
+        sc_t sc;
+        uz_t size;
+        uz_t space;
+    };
+};
+
+/// bcore_mutex_s
+group bcore_mutex = bcore_inst
+{
+    signature void lock(   mutable );
+    signature void unlock( mutable );
+
+    stamp : = bcore_inst
+    {
+        func : :lock;
+        func : :unlock;
+    };
+};
+
+/// bcore_condition_s
+group bcore_condition = bcore_inst
+{
+    signature void sleep   ( mutable, bcore_mutex_s* mutex );
+    signature void wake_one( mutable );
+    signature void wake_all( mutable );
+
+    stamp : = bcore_inst
+    {
+        func : :sleep;
+        func : :wake_one;
+        func : :wake_all;
+    };
+};
+
+/// bcore_thread_s
+group bcore_thread = bcore_inst
+{
+    signature void call( mutable, bcore_fp_thread func, vd_t arg );
+    signature vd_t join( mutable );
+
+    stamp : = bcore_inst
+    {
+        func : :call;
+        func : :join;
+    };
 };
 
 embed "bcore_arr.x";

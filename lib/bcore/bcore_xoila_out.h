@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-10-05T20:53:24Z
+ *  Last File Update: 2020-10-06T20:07:00Z
  *
  *  Copyright and License of this File:
  *
@@ -28,7 +28,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by xoico, reset the hash key value below to 0.
-#define HKEYOF_bcore_xoila_out 0x57A399AF150A6492ull
+#define HKEYOF_bcore_xoila_out 0xE0CA550076104BF3ull
 
 #define TYPEOF_bcore_xoila_out 0xC52DA50A6069BDB1ull
 
@@ -65,10 +65,7 @@
   { \
       bcore_spect_header_s header; \
   }; \
-  static inline bcore_file* bcore_file_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_file, t ); return ( bcore_file* )bcore_inst_t_create( t ); } \
-  static inline bl_t bcore_file_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_file ); } \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_file ) \
-  static inline bl_t bcore_file_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bcore_file ); } \
   BETH_EXPAND_ITEM_bcore_file_path_s
 
 /**********************************************************************************************************************/
@@ -100,10 +97,7 @@
       bcore_inst_call_copy_x copy_x; \
       bcore_inst_call_discard_e discard_e; \
   }; \
-  static inline bcore_inst_call* bcore_inst_call_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_inst_call, t ); return ( bcore_inst_call* )bcore_inst_t_create( t ); } \
-  static inline bl_t bcore_inst_call_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_inst_call ); } \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_inst_call ) \
-  static inline bl_t bcore_inst_call_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bcore_inst_call ); } \
   static inline void bcore_inst_call_p_init_x( const bcore_inst_call_spect_s* __p, bcore_inst_call* o ) { assert( __p->init_x ); __p->init_x( o ); } \
   static inline bl_t bcore_inst_call_p_defines_init_x( const bcore_inst_call_spect_s* __p ) { return __p->init_x != NULL; } \
   static inline void bcore_inst_call_p_down_e( const bcore_inst_call_spect_s* __p, bcore_inst_call* o ) { assert( __p->down_e ); __p->down_e( o ); } \
@@ -135,10 +129,7 @@
       bcore_via_call_mutated mutated; \
       bcore_via_call_shelve shelve; \
   }; \
-  static inline bcore_via_call* bcore_via_call_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_via_call, t ); return ( bcore_via_call* )bcore_inst_t_create( t ); } \
-  static inline bl_t bcore_via_call_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_via_call ); } \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_via_call ) \
-  static inline bl_t bcore_via_call_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bcore_via_call ); } \
   static inline void bcore_via_call_p_source( const bcore_via_call_spect_s* __p, bcore_via_call* o, bcore_source* source ) { assert( __p->source ); __p->source( o, source ); } \
   static inline void bcore_via_call_t_source( tp_t __t, bcore_via_call* o, bcore_source* source ) { const bcore_via_call_spect_s* p = bcore_via_call_spect_s_get_typed( __t ); assert( p->source ); p->source( o, source ); } \
   static inline void bcore_via_call_r_source( const sr_s* o, bcore_source* source ) { ASSERT( !sr_s_is_const( o ) ); const bcore_via_call_spect_s* p = (const bcore_via_call_spect_s*)ch_spect_p( o->p, TYPEOF_bcore_via_call_spect_s ); assert( p->source ); p->source( o->o, source ); } \
@@ -216,10 +207,7 @@
       bcore_spect_header_s header; \
       bcore_main_main main; \
   }; \
-  static inline bcore_main* bcore_main_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_main, t ); return ( bcore_main* )bcore_inst_t_create( t ); } \
-  static inline bl_t bcore_main_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_main ); } \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_main ) \
-  static inline bl_t bcore_main_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bcore_main ); } \
   BETH_EXPAND_ITEM_bcore_main_frame_s \
   static inline er_t bcore_main_a_main( bcore_main* o, bcore_main_frame_s* frame ) { const bcore_main_spect_s* p = bcore_main_spect_s_get_aware( o ); assert( p->main ); return p->main( o, frame ); } \
   static inline er_t bcore_main_r_main( const sr_s* o, bcore_main_frame_s* frame ) { ASSERT( !sr_s_is_const( o ) ); const bcore_main_spect_s* p = (const bcore_main_spect_s*)ch_spect_p( o->p, TYPEOF_bcore_main_spect_s ); assert( p->main ); return p->main( o->o, frame ); } \
@@ -258,10 +246,7 @@
   { \
       bcore_spect_header_s header; \
   }; \
-  static inline bcore_hmap_name* bcore_hmap_name_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_hmap_name, t ); return ( bcore_hmap_name* )bcore_inst_t_create( t ); } \
-  static inline bl_t bcore_hmap_name_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_hmap_name ); } \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_hmap_name ) \
-  static inline bl_t bcore_hmap_name_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bcore_hmap_name ); } \
   BETH_EXPAND_ITEM_bcore_hmap_name_s
 
 /**********************************************************************************************************************/
@@ -297,10 +282,7 @@
   { \
       bcore_spect_header_s header; \
   }; \
-  static inline bcore_cday* bcore_cday_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_cday, t ); return ( bcore_cday* )bcore_inst_t_create( t ); } \
-  static inline bl_t bcore_cday_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_cday ); } \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_cday ) \
-  static inline bl_t bcore_cday_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bcore_cday ); } \
   BETH_EXPAND_ITEM_bcore_cday_ymd_s \
   BETH_EXPAND_ITEM_bcore_cday_utc_s
 
@@ -358,10 +340,7 @@
   { \
       bcore_spect_header_s header; \
   }; \
-  static inline bcore_error_manager* bcore_error_manager_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_error_manager, t ); return ( bcore_error_manager* )bcore_inst_t_create( t ); } \
-  static inline bl_t bcore_error_manager_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_error_manager ); } \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_error_manager ) \
-  static inline bl_t bcore_error_manager_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bcore_error_manager ); } \
   BETH_EXPAND_ITEM_bcore_error_manager_error_s \
   BETH_EXPAND_ITEM_bcore_error_manager_error_adl_s \
   BETH_EXPAND_ITEM_bcore_error_manager_context_s
@@ -412,10 +391,7 @@
       bcore_prsg_set_state_mix set_state_mix; \
       bcore_prsg_reseed reseed; \
   }; \
-  static inline bcore_prsg* bcore_prsg_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_prsg, t ); return ( bcore_prsg* )bcore_inst_t_create( t ); } \
-  static inline bl_t bcore_prsg_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_prsg ); } \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_prsg ) \
-  static inline bl_t bcore_prsg_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bcore_prsg ); } \
   static inline sz_t bcore_prsg_a_bits( const bcore_prsg* o ) { const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->bits ); return p->bits( o ); } \
   static inline bl_t bcore_prsg_a_defines_bits( const bcore_prsg* o ) { return true; } \
   static inline u3_t bcore_prsg_a_max_u3( const bcore_prsg* o ) { const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->max_u3 ); return p->max_u3( o ); } \
@@ -654,10 +630,7 @@
   { \
       bcore_spect_header_s header; \
   }; \
-  static inline bcore_prsg_lcg* bcore_prsg_lcg_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_prsg_lcg, t ); return ( bcore_prsg_lcg* )bcore_inst_t_create( t ); } \
-  static inline bl_t bcore_prsg_lcg_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_prsg_lcg ); } \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_prsg_lcg ) \
-  static inline bl_t bcore_prsg_lcg_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bcore_prsg_lcg ); } \
   BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_00_s \
   BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_01_s \
   BETH_EXPAND_ITEM_bcore_prsg_lcg_u2_02_s \
@@ -756,10 +729,7 @@
   { \
       bcore_spect_header_s header; \
   }; \
-  static inline bcore_prsg_xsg* bcore_prsg_xsg_t_create( tp_t t ) { bcore_trait_assert_satisfied_type( TYPEOF_bcore_prsg_xsg, t ); return ( bcore_prsg_xsg* )bcore_inst_t_create( t ); } \
-  static inline bl_t bcore_prsg_xsg_t_is_trait_of( tp_t t ) { return bcore_trait_is_of( t, TYPEOF_bcore_prsg_xsg ); } \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_prsg_xsg ) \
-  static inline bl_t bcore_prsg_xsg_a_is_trait_of( vc_t o ) { return bcore_trait_is_of( o ? *(aware_t*)o : 0, TYPEOF_bcore_prsg_xsg ); } \
   BETH_EXPAND_ITEM_bcore_prsg_xsg_u2_00_s \
   BETH_EXPAND_ITEM_bcore_prsg_xsg_u2_01_s \
   BETH_EXPAND_ITEM_bcore_prsg_xsg_u2_02_s \
@@ -770,4 +740,4 @@
 vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_XOILA_OUT_H
-// XOILA_OUT_SIGNATURE 0x12DF70C365F85749ull
+// XOILA_OUT_SIGNATURE 0x242AE3EDFD85B590ull

@@ -49,43 +49,43 @@ group :ar1 =
 
     /// axon pass --------------------------------------------------------------
 
-    stamp :l1     = { func : :f = { assert( r->v.size == 1 ); bhvm_lop_ar1_l1_s_f    ( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, a->v.size ); }; };
-    stamp :sqrsum = { func : :f = { assert( r->v.size == 1 ); bhvm_lop_ar1_sqrsum_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, a->v.size ); }; };
+    stamp :l1     = { func : :f = { assert( r.v.size == 1 ); bhvm_lop_ar1_l1_s_f    ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, a.v.size ); }; };
+    stamp :sqrsum = { func : :f = { assert( r.v.size == 1 ); bhvm_lop_ar1_sqrsum_s_f( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, a.v.size ); }; };
 
-    stamp :cpy   = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_cpy_s_f  ( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
-    stamp :neg   = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_neg_s_f  ( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
-    stamp :floor = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_floor_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
-    stamp :ceil  = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_ceil_s_f ( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
-    stamp :exp   = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_exp_s_f  ( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
-    stamp :log   = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_log_s_f  ( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
-    stamp :inv   = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_inv_s_f  ( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
-    stamp :abs   = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_abs_s_f  ( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
-    stamp :sig   = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_sig_s_f  ( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
-    stamp :sqr   = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_sqr_s_f  ( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
-    stamp :srt   = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_srt_s_f  ( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
+    stamp :cpy   = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_cpy_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :neg   = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_neg_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :floor = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_floor_s_f( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :ceil  = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_ceil_s_f ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :exp   = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_exp_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :log   = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_log_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :inv   = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_inv_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :abs   = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_abs_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :sig   = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_sig_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :sqr   = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_sqr_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :srt   = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_srt_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
 
-    stamp :sigm       = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_sigm_s_f      ( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
-    stamp :sigm_hard  = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_sigm_hard_s_f ( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
-    stamp :sigm_leaky = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_sigm_leaky_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
+    stamp :sigm       = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_sigm_s_f      ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :sigm_hard  = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_sigm_hard_s_f ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :sigm_leaky = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_sigm_leaky_s_f( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
 
-    stamp :tanh       = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_tanh_s_f      ( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
-    stamp :tanh_hard  = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_tanh_hard_s_f ( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
-    stamp :tanh_leaky = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_tanh_leaky_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
+    stamp :tanh       = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_tanh_s_f      ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :tanh_hard  = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_tanh_hard_s_f ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :tanh_leaky = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_tanh_leaky_s_f( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
 
-    stamp :softplus   = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_softplus_s_f  ( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
-    stamp :relu       = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_relu_s_f      ( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
-    stamp :relu_leaky = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_relu_leaky_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
+    stamp :softplus   = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_softplus_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :relu       = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_relu_s_f      ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :relu_leaky = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_relu_leaky_s_f( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
 
     stamp :softmax    = { func : :f; };
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :neg_dp_zf      = { func : :f = { assert( a->v.size == r->v.size ); bhvm_lop_ar1_accn_s_f( BKNIT_FA2( a->v.type, r->v.type ), a->v.data, r->v.data, r->v.size ); }; };
+    stamp :neg_dp_zf  = { func : :f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_accn_s_f( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
 
-    stamp :cat_dp_zf  = { func : :f = { bhvm_value_s_acc_offs( &a->v, 0, &r->v, 0, r->v.size ); }; };
-    stamp :cat_dp_zg  = { func : :f = { bhvm_value_s_acc_offs( &a->v, a->v.size - r->v.size, &r->v, 0, r->v.size ); }; };
-    stamp :ccat_dp_zf = { func : :f = { bhvm_value_s_acc_offs( &a->v, 0, &r->v, 0, r->v.size ); }; };
-    stamp :ccat_dp_zg = { func : :f = { bhvm_value_s_acc_offs( &a->v, a->v.size - r->v.size, &r->v, 0, r->v.size ); }; };
+    stamp :cat_dp_zf  = { func : :f = { bhvm_value_s_acc_offs( &a.v, 0, &r.v, 0, r.v.size ); }; };
+    stamp :cat_dp_zg  = { func : :f = { bhvm_value_s_acc_offs( &a.v, a.v.size - r.v.size, &r.v, 0, r.v.size ); }; };
+    stamp :ccat_dp_zf = { func : :f = { bhvm_value_s_acc_offs( &a.v, 0, &r.v, 0, r.v.size ); }; };
+    stamp :ccat_dp_zg = { func : :f = { bhvm_value_s_acc_offs( &a.v, a.v.size - r.v.size, &r.v, 0, r.v.size ); }; };
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -102,9 +102,9 @@ group :ar1_eci =
     body body_acc =
     {
         assert( a != r );
-        assert(  sz_min( a->v.size, r->v.size ) > 0 );
-        sz_t n = sz_gcd( a->v.size, r->v.size );
-        sz_t m = sz_max( a->v.size, r->v.size ) / n;
+        assert(  sz_min( a.v.size, r.v.size ) > 0 );
+        sz_t n = sz_gcd( a.v.size, r.v.size );
+        sz_t m = sz_max( a.v.size, r.v.size ) / n;
 
 
         #define BHVM_ACC_CASE( TA_T, TR_T, FUNC ) \
@@ -119,13 +119,13 @@ group :ar1_eci =
             } \
         }
 
-        switch( BKNIT_FA2( a->v.type, r->v.type ) )
+        switch( BKNIT_FA2( a.v.type, r.v.type ) )
         {
             case BKNIT_F22: BHVM_ACC_CASE( f2_t, f2_t, @_f2 ); break;
             case BKNIT_F23: BHVM_ACC_CASE( f2_t, f3_t, @_f3 ); break;
             case BKNIT_F32: BHVM_ACC_CASE( f3_t, f2_t, @_f3 ); break;
             case BKNIT_F33: BHVM_ACC_CASE( f3_t, f3_t, @_f3 ); break;
-            default: BKNIT_FA2_ERR( a->v.type, r->v.type ); break;
+            default: BKNIT_FA2_ERR( a.v.type, r.v.type ); break;
         }
 
         #undef BHVM_ACC_CASE
@@ -143,14 +143,14 @@ group :ar1_eci =
         {
             if( a == r )
             {
-                bhvm_holor_s* buf = bhvm_holor_s_create();
-                :cpy_acc_s_f( a, bhvm_holor_s_fit_size( bhvm_holor_s_copy_shape_type( buf, r ) ) );
-                if( r->v.size ) bhvm_value_s_cpy( &buf->v, &r->v );
-                bhvm_holor_s_discard( buf );
+                bhvm_holor_s* buf = bhvm_holor_s!;
+                :cpy_acc_s_f( a, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
+                if( r.v.size ) buf->v.cpy( &r->v );
+                buf.discard();
             }
             else
             {
-                bhvm_value_s_zro( &r->v );
+                r.v.zro();
                 :cpy_acc_s_f( a, r );
             }
         };
@@ -164,14 +164,14 @@ group :ar1_eci =
         {
             if( a == r )
             {
-                bhvm_holor_s* buf = bhvm_holor_s_create();
-                :neg_acc_s_f( a, bhvm_holor_s_fit_size( bhvm_holor_s_copy_shape_type( buf, r ) ) );
-                if( r->v.size ) bhvm_value_s_cpy( &buf->v, &r->v );
-                bhvm_holor_s_discard( buf );
+                bhvm_holor_s* buf = bhvm_holor_s!;
+                :neg_acc_s_f( a, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
+                if( r.v.size ) buf.v.cpy( &r.v );
+                buf.discard();
             }
             else
             {
-                bhvm_value_s_zro( &r->v );
+                r.v.zro();
                 :neg_acc_s_f( a, r );
             }
         };
@@ -185,14 +185,14 @@ group :ar1_eci =
         {
             if( a == r )
             {
-                bhvm_holor_s* buf = bhvm_holor_s_create();
-                :inv_acc_s_f( a, bhvm_holor_s_fit_size( bhvm_holor_s_copy_shape_type( buf, r ) ) );
-                if( r->v.size ) bhvm_value_s_cpy( &buf->v, &r->v );
-                bhvm_holor_s_discard( buf );
+                bhvm_holor_s* buf = bhvm_holor_s!;
+                :inv_acc_s_f( a, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
+                if( r.v.size ) buf.v.cpy( &r->v );
+                buf.discard();
             }
             else
             {
-                bhvm_value_s_zro( &r->v );
+                r.v.zro();
                 :inv_acc_s_f( a, r );
             }
         };
@@ -209,46 +209,46 @@ group :ar2 =
 
     /// axon pass --------------------------------------------------------------
 
-    stamp :sub_sqrsum = { func : :f = { BODY_ASSERT_VVS; bhvm_lop_ar2_sub_sqrsum_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, a->v.size ); }; }; // r = ( a - b )^2
-    stamp :sub_l1     = { func : :f = { BODY_ASSERT_VVS; bhvm_lop_ar2_sub_l1_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, a->v.size ); }; }; // r = l1-norm of ( a - b )
+    stamp :sub_sqrsum = { func : :f = { BODY_ASSERT_VVS; bhvm_lop_ar2_sub_sqrsum_s_f( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, a.v.size ); }; }; // r = ( a - b )^2
+    stamp :sub_l1     = { func : :f = { BODY_ASSERT_VVS; bhvm_lop_ar2_sub_l1_s_f    ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, a.v.size ); }; }; // r = l1-norm of ( a - b )
 
     /// logic ------------------------------------------------------------------
 
-    stamp :equal         = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_equal_s_f        ( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :unequal       = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_unequal_s_f      ( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :larger        = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_larger_s_f       ( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :smaller       = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_smaller_s_f      ( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :larger_equal  = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_larger_equal_s_f ( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :smaller_equal = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_smaller_equal_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :logic_and     = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_logic_and_s_f    ( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :logic_or      = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_logic_or_s_f     ( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
+    stamp :equal         = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_equal_s_f        ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :unequal       = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_unequal_s_f      ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :larger        = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_larger_s_f       ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :smaller       = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_smaller_s_f      ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :larger_equal  = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_larger_equal_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :smaller_equal = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_smaller_equal_s_f( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :logic_and     = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_logic_and_s_f    ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :logic_or      = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_logic_or_s_f     ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :abs_dp_zaf        = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_abs_dp_zaf_s_f ( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :exp_dp_zyf        = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_exp_dp_zyf_s_f ( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :log_dp_zaf        = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_log_dp_zaf_s_f ( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :inv_dp_zyf        = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_inv_dp_zyf_s_f ( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :sqr_dp_zaf        = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_sqr_dp_zaf_s_f ( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :srt_dp_zyf        = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_srt_dp_zyf_s_f ( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :sigm_dp_zyf       = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_sigm_dp_zyf_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :sigm_hard_dp_zyf  = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_sigm_hard_dp_zyf_s_f ( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :sigm_leaky_dp_zyf = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_sigm_leaky_dp_zyf_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :tanh_dp_zyf       = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_tanh_dp_zyf_s_f      ( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :tanh_hard_dp_zyf  = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_tanh_hard_dp_zyf_s_f ( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :tanh_leaky_dp_zyf = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_tanh_leaky_dp_zyf_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :softplus_dp_zyf   = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_softplus_dp_zyf_s_f  ( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :relu_dp_zyf       = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_relu_dp_zyf_s_f      ( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
-    stamp :relu_leaky_dp_zyf = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_relu_leaky_dp_zyf_s_f( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->v.size ); }; };
+    stamp :abs_dp_zaf        = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_abs_dp_zaf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :exp_dp_zyf        = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_exp_dp_zyf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :log_dp_zaf        = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_log_dp_zaf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :inv_dp_zyf        = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_inv_dp_zyf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :sqr_dp_zaf        = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_sqr_dp_zaf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :srt_dp_zyf        = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_srt_dp_zyf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :sigm_dp_zyf       = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_sigm_dp_zyf_s_f( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :sigm_hard_dp_zyf  = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_sigm_hard_dp_zyf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :sigm_leaky_dp_zyf = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_sigm_leaky_dp_zyf_s_f( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :tanh_dp_zyf       = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_tanh_dp_zyf_s_f      ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :tanh_hard_dp_zyf  = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_tanh_hard_dp_zyf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :tanh_leaky_dp_zyf = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_tanh_leaky_dp_zyf_s_f( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :softplus_dp_zyf   = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_softplus_dp_zyf_s_f  ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :relu_dp_zyf       = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_relu_dp_zyf_s_f      ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :relu_leaky_dp_zyf = { func : :f = { BODY_ASSERT_VVV; bhvm_lop_ar2_relu_leaky_dp_zyf_s_f( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
     stamp :softmax_dp_zyf    = { func : :f; };
 
     /// mul axon pass ----------------------------------------------------------
 
-    stamp :mul_mvv = { func : :f = { BODY_ASSERT_MVV; bhvm_lop_ar2_mul_mvv_s_f_m( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, a->s.data[ 1 ], a->s.data[ 0 ] ); }; };
-    stamp :mul_vmv = { func : :f = { BODY_ASSERT_VMV; bhvm_lop_ar2_mul_vmv_s_f_m( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, b->s.data[ 1 ], b->s.data[ 0 ] ); }; };
-    stamp :mul_vvm = { func : :f = { BODY_ASSERT_VVM; bhvm_lop_ar2_mul_vvm_s_f_m( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->s.data[ 1 ], r->s.data[ 0 ] ); }; };
-    stamp :mul_tvv = { func : :f = { BODY_ASSERT_TVV; bhvm_lop_ar2_mul_vmv_s_f_m( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, a->s.data[ 1 ], a->s.data[ 0 ] ); }; };
-    stamp :mul_vtv = { func : :f = { BODY_ASSERT_VTV; bhvm_lop_ar2_mul_mvv_s_f_m( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, b->s.data[ 1 ], b->s.data[ 0 ] ); }; };
+    stamp :mul_mvv = { func : :f = { BODY_ASSERT_MVV; bhvm_lop_ar2_mul_mvv_s_f_m( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, a.s.[ 1 ], a.s.[ 0 ] ); }; };
+    stamp :mul_vmv = { func : :f = { BODY_ASSERT_VMV; bhvm_lop_ar2_mul_vmv_s_f_m( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, b.s.[ 1 ], b.s.[ 0 ] ); }; };
+    stamp :mul_vvm = { func : :f = { BODY_ASSERT_VVM; bhvm_lop_ar2_mul_vvm_s_f_m( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.s.[ 1 ], r.s.[ 0 ] ); }; };
+    stamp :mul_tvv = { func : :f = { BODY_ASSERT_TVV; bhvm_lop_ar2_mul_vmv_s_f_m( BKNIT_FA3( b.v.type, a.v.type, r.v.type ), b.v.data, a.v.data, r.v.data, a.s.[ 1 ], a.s.[ 0 ] ); }; };
+    stamp :mul_vtv = { func : :f = { BODY_ASSERT_VTV; bhvm_lop_ar2_mul_mvv_s_f_m( BKNIT_FA3( b.v.type, a.v.type, r.v.type ), b.v.data, a.v.data, r.v.data, b.s.[ 1 ], b.s.[ 0 ] ); }; };
 
     stamp :mul_mmm = { func : :f; };
     stamp :mul_mtm = { func : :f; };
@@ -257,11 +257,11 @@ group :ar2 =
 
     /// mul accumulate ---------------------------------------------------------
 
-    stamp :mul_acc_mvv = { func : :f = { BODY_ASSERT_MVV; bhvm_lop_ar2_mul_acc_mvv_s_f_m( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, a->s.data[ 1 ], a->s.data[ 0 ] ); }; };
-    stamp :mul_acc_vmv = { func : :f = { BODY_ASSERT_VMV; bhvm_lop_ar2_mul_acc_vmv_s_f_m( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, b->s.data[ 1 ], b->s.data[ 0 ] ); }; };
-    stamp :mul_acc_tvv = { func : :f = { BODY_ASSERT_TVV; bhvm_lop_ar2_mul_acc_vmv_s_f_m( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, a->s.data[ 1 ], a->s.data[ 0 ] ); }; };
-    stamp :mul_acc_vtv = { func : :f = { BODY_ASSERT_VTV; bhvm_lop_ar2_mul_acc_mvv_s_f_m( BKNIT_FA3( b->v.type, a->v.type, r->v.type ), b->v.data, a->v.data, r->v.data, b->s.data[ 1 ], b->s.data[ 0 ] ); }; };
-    stamp :mul_acc_vvm = { func : :f = { BODY_ASSERT_VVM; bhvm_lop_ar2_mul_acc_vvm_s_f_m( BKNIT_FA3( a->v.type, b->v.type, r->v.type ), a->v.data, b->v.data, r->v.data, r->s.data[ 1 ], r->s.data[ 0 ] ); }; };
+    stamp :mul_acc_mvv = { func : :f = { BODY_ASSERT_MVV; bhvm_lop_ar2_mul_acc_mvv_s_f_m( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, a.s.[ 1 ], a.s.[ 0 ] ); }; };
+    stamp :mul_acc_vmv = { func : :f = { BODY_ASSERT_VMV; bhvm_lop_ar2_mul_acc_vmv_s_f_m( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, b.s.[ 1 ], b.s.[ 0 ] ); }; };
+    stamp :mul_acc_tvv = { func : :f = { BODY_ASSERT_TVV; bhvm_lop_ar2_mul_acc_vmv_s_f_m( BKNIT_FA3( b.v.type, a.v.type, r.v.type ), b.v.data, a.v.data, r.v.data, a.s.[ 1 ], a.s.[ 0 ] ); }; };
+    stamp :mul_acc_vtv = { func : :f = { BODY_ASSERT_VTV; bhvm_lop_ar2_mul_acc_mvv_s_f_m( BKNIT_FA3( b.v.type, a.v.type, r.v.type ), b.v.data, a.v.data, r.v.data, b.s.[ 1 ], b.s.[ 0 ] ); }; };
+    stamp :mul_acc_vvm = { func : :f = { BODY_ASSERT_VVM; bhvm_lop_ar2_mul_acc_vvm_s_f_m( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.s.[ 1 ], r.s.[ 0 ] ); }; };
 
     stamp :mul_acc_mmm = { func : :f; };
     stamp :mul_acc_mtm = { func : :f; };
@@ -270,8 +270,8 @@ group :ar2 =
 
     /// other -----------------------------------------------------------------
 
-    stamp :cat  = { func : :f = { bhvm_holor_s_cat( a, b, r );  }; };
-    stamp :ccat = { func : :f = { bhvm_holor_s_ccat( a, b, r ); }; };
+    stamp :cat  = { func : :f = { a.cat ( b, r ); }; };
+    stamp :ccat = { func : :f = { a.ccat( b, r ); }; };
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -289,9 +289,9 @@ group :ar2_eci =
     body body_set =
     {
         assert( a != r && b != r );
-        assert(  sz_min( sz_min( a->v.size, b->v.size ), r->v.size ) > 0 );
-        sz_t n = sz_gcd( sz_gcd( a->v.size, b->v.size ), r->v.size );
-        sz_t m = sz_max( sz_max( a->v.size, b->v.size ), r->v.size ) / n;
+        assert(  sz_min( sz_min( a.v.size, b.v.size ), r.v.size ) > 0 );
+        sz_t n = sz_gcd( sz_gcd( a.v.size, b.v.size ), r.v.size );
+        sz_t m = sz_max( sz_max( a.v.size, b.v.size ), r.v.size ) / n;
 
         #define BHVM_SET_CASE( TA_T, TB_T, TR_T, FUNC ) \
         { \
@@ -307,7 +307,7 @@ group :ar2_eci =
             } \
         }
 
-        switch( BKNIT_FA3( a->v.type, b->v.type, r->v.type ) )
+        switch( BKNIT_FA3( a.v.type, b.v.type, r.v.type ) )
         {
             case BKNIT_F222: BHVM_SET_CASE( f2_t, f2_t, f2_t, @_f2 ); break;
             case BKNIT_F223: BHVM_SET_CASE( f2_t, f2_t, f3_t, @_f3 ); break;
@@ -317,7 +317,7 @@ group :ar2_eci =
             case BKNIT_F323: BHVM_SET_CASE( f3_t, f2_t, f3_t, @_f3 ); break;
             case BKNIT_F332: BHVM_SET_CASE( f3_t, f3_t, f2_t, @_f3 ); break;
             case BKNIT_F333: BHVM_SET_CASE( f3_t, f3_t, f3_t, @_f3 ); break;
-            default: BKNIT_FA3_ERR( a->v.type, b->v.type, r->v.type ); break;
+            default: BKNIT_FA3_ERR( a.v.type, b.v.type, r.v.type ); break;
         }
 
         #undef BHVM_SET_CASE
@@ -327,9 +327,9 @@ group :ar2_eci =
     body body_acc =
     {
         assert( a != r && b != r );
-        assert(  sz_min( sz_min( a->v.size, b->v.size ), r->v.size ) > 0 );
-        sz_t n = sz_gcd( sz_gcd( a->v.size, b->v.size ), r->v.size );
-        sz_t m = sz_max( sz_max( a->v.size, b->v.size ), r->v.size ) / n;
+        assert(  sz_min( sz_min( a.v.size, b.v.size ), r.v.size ) > 0 );
+        sz_t n = sz_gcd( sz_gcd( a.v.size, b.v.size ), r.v.size );
+        sz_t m = sz_max( sz_max( a.v.size, b.v.size ), r.v.size ) / n;
 
         #define BHVM_ACC_CASE( TA_T, TB_T, TR_T, FUNC ) \
         { \
@@ -345,7 +345,7 @@ group :ar2_eci =
             } \
         }
 
-        switch( BKNIT_FA3( a->v.type, b->v.type, r->v.type ) )
+        switch( BKNIT_FA3( a.v.type, b.v.type, r.v.type ) )
         {
             case BKNIT_F222: BHVM_ACC_CASE( f2_t, f2_t, f2_t, @_f2 ); break;
             case BKNIT_F223: BHVM_ACC_CASE( f2_t, f2_t, f3_t, @_f3 ); break;
@@ -355,7 +355,7 @@ group :ar2_eci =
             case BKNIT_F323: BHVM_ACC_CASE( f3_t, f2_t, f3_t, @_f3 ); break;
             case BKNIT_F332: BHVM_ACC_CASE( f3_t, f3_t, f2_t, @_f3 ); break;
             case BKNIT_F333: BHVM_ACC_CASE( f3_t, f3_t, f3_t, @_f3 ); break;
-            default: BKNIT_FA3_ERR( a->v.type, b->v.type, r->v.type ); break;
+            default: BKNIT_FA3_ERR( a.v.type, b.v.type, r.v.type ); break;
         }
 
         #undef BHVM_ACC_CASE
@@ -375,14 +375,14 @@ group :ar2_eci =
         {
             if( a == r || b == r )
             {
-                bhvm_holor_s* buf = bhvm_holor_s_create();
-                :add_acc_s_f( a, b, bhvm_holor_s_fit_size( bhvm_holor_s_copy_shape_type( buf, r ) ) );
-                if( r->v.size ) bhvm_value_s_cpy( &buf->v, &r->v );
-                bhvm_holor_s_discard( buf );
+                bhvm_holor_s* buf = bhvm_holor_s!;
+                :add_acc_s_f( a, b, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
+                if( r->v.size ) buf.v.cpy( &r.v );
+                buf.discard();
             }
             else
             {
-                bhvm_value_s_zro( &r->v );
+                r.v.zro();
                 :add_acc_s_f( a, b, r );
             }
         };
@@ -394,14 +394,14 @@ group :ar2_eci =
         {
             if( a == r || b == r )
             {
-                bhvm_holor_s* buf = bhvm_holor_s_create();
-                :sub_acc_s_f( a, b, bhvm_holor_s_fit_size( bhvm_holor_s_copy_shape_type( buf, r ) ) );
-                if( r->v.size ) bhvm_value_s_cpy( &buf->v, &r->v );
-                bhvm_holor_s_discard( buf );
+                bhvm_holor_s* buf = bhvm_holor_s!;
+                :sub_acc_s_f( a, b, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
+                if( r.v.size ) buf.v.cpy( &r.v );
+                buf.discard();
             }
             else
             {
-                bhvm_value_s_zro( &r->v );
+                 r.v.zro();
                 :sub_acc_s_f( a, b, r );
             }
         };
@@ -413,14 +413,14 @@ group :ar2_eci =
         {
             if( a == r || b == r )
             {
-                bhvm_holor_s* buf = bhvm_holor_s_create();
-                :mul_acc_s_f( a, b, bhvm_holor_s_fit_size( bhvm_holor_s_copy_shape_type( buf, r ) ) );
-                if( r->v.size ) bhvm_value_s_cpy( &buf->v, &r->v );
-                bhvm_holor_s_discard( buf );
+                bhvm_holor_s* buf = bhvm_holor_s!;
+                :mul_acc_s_f( a, b, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
+                if( r.v.size ) buf.v.cpy( &r.v );
+                buf.discard();
             }
             else
             {
-                bhvm_value_s_zro( &r->v );
+                r.v.zro();
                 :mul_acc_s_f( a, b, r );
             }
         };
@@ -432,14 +432,14 @@ group :ar2_eci =
         {
             if( a == r || b == r )
             {
-                bhvm_holor_s* buf = bhvm_holor_s_create();
-                :div_acc_s_f( a, b, bhvm_holor_s_fit_size( bhvm_holor_s_copy_shape_type( buf, r ) ) );
-                if( r->v.size ) bhvm_value_s_cpy( &buf->v, &r->v );
-                bhvm_holor_s_discard( buf );
+                bhvm_holor_s* buf = bhvm_holor_s!;
+                :div_acc_s_f( a, b, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
+                if( r.v.size ) buf.v.cpy( &r.v );
+                buf.discard();
             }
             else
             {
-                bhvm_value_s_zro( &r->v );
+                r.v.zro();
                 :div_acc_s_f( a, b, r );
             }
         };
@@ -451,14 +451,14 @@ group :ar2_eci =
         {
             if( a == r || b == r )
             {
-                bhvm_holor_s* buf = bhvm_holor_s_create();
-                :pow_acc_s_f( a, b, bhvm_holor_s_fit_size( bhvm_holor_s_copy_shape_type( buf, r ) ) );
-                if( r->v.size ) bhvm_value_s_cpy( &buf->v, &r->v );
-                bhvm_holor_s_discard( buf );
+                bhvm_holor_s* buf = bhvm_holor_s!;
+                :pow_acc_s_f( a, b, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
+                if( r.v.size ) buf.v.cpy( &r.v );
+                buf.discard();
             }
             else
             {
-                bhvm_value_s_zro( &r->v );
+                r.v.zro();
                 :pow_acc_s_f( a, b, r );
             }
         };
@@ -506,14 +506,6 @@ group :ar3 =
     extending stump verbatim :_ = aware : {};
     signature void f( plain, const bhvm_holor_s* a, const bhvm_holor_s* b, const bhvm_holor_s* c, bhvm_holor_s* r );
 
-//    body body_lop_vvvv =
-//    {
-//        assert( a->v.size == r->v.size );
-//        assert( b->v.size == r->v.size );
-//        assert( c->v.size == r->v.size );
-//        bhvm_lop_ar3_$R_s_f( BKNIT_FA4( a->v.type, b->v.type, c->v.type, r->v.type ), a->v.data, b->v.data, c->v.data, r->v.data, r->v.size );
-//    };
-
     /// axon pass --------------------------------------------------------------
 
     /// dendrite pass ----------------------------------------------------------
@@ -535,9 +527,9 @@ group :ar3_eci =
     body body_set =
     {
         assert( a != r && b != r && c != r );
-        assert(  sz_min( a->v.size, sz_min( b->v.size, sz_min( c->v.size, r->v.size ) ) ) > 0 );
-        sz_t n = sz_gcd( a->v.size, sz_gcd( b->v.size, sz_gcd( c->v.size, r->v.size ) ) );
-        sz_t m = sz_max( a->v.size, sz_max( b->v.size, sz_max( c->v.size, r->v.size ) ) ) / n;
+        assert(  sz_min( a.v.size, sz_min( b.v.size, sz_min( c.v.size, r.v.size ) ) ) > 0 );
+        sz_t n = sz_gcd( a.v.size, sz_gcd( b.v.size, sz_gcd( c.v.size, r.v.size ) ) );
+        sz_t m = sz_max( a.v.size, sz_max( b.v.size, sz_max( c.v.size, r.v.size ) ) ) / n;
 
         #define BHVM_SET_CASE( TA_T, TB_T, TC_T, TR_T, FUNC ) \
         { \
@@ -555,7 +547,7 @@ group :ar3_eci =
             } \
         }
 
-        switch( BKNIT_FA4( a->v.type, b->v.type, c->v.type, r->v.type ) )
+        switch( BKNIT_FA4( a.v.type, b.v.type, c.v.type, r.v.type ) )
         {
             case BKNIT_F2222: BHVM_SET_CASE( f2_t, f2_t, f2_t, f2_t, @_f2 ); break;
             case BKNIT_F2223: BHVM_SET_CASE( f2_t, f2_t, f2_t, f3_t, @_f3 ); break;
@@ -573,7 +565,7 @@ group :ar3_eci =
             case BKNIT_F3323: BHVM_SET_CASE( f3_t, f3_t, f2_t, f3_t, @_f3 ); break;
             case BKNIT_F3332: BHVM_SET_CASE( f3_t, f3_t, f3_t, f2_t, @_f3 ); break;
             case BKNIT_F3333: BHVM_SET_CASE( f3_t, f3_t, f3_t, f3_t, @_f3 ); break;
-            default: BKNIT_FA4_ERR( a->v.type, b->v.type, c->v.type, r->v.type ); break;
+            default: BKNIT_FA4_ERR( a.v.type, b.v.type, c.v.type, r.v.type ); break;
         }
 
         #undef BHVM_SET_CASE
@@ -583,9 +575,9 @@ group :ar3_eci =
     body body_acc =
     {
         assert( a != r && b != r && c != r );
-        assert(  sz_min( a->v.size, sz_min( b->v.size, sz_min( c->v.size, r->v.size ) ) ) > 0 );
-        sz_t n = sz_gcd( a->v.size, sz_gcd( b->v.size, sz_gcd( c->v.size, r->v.size ) ) );
-        sz_t m = sz_max( a->v.size, sz_max( b->v.size, sz_max( c->v.size, r->v.size ) ) ) / n;
+        assert(  sz_min( a.v.size, sz_min( b.v.size, sz_min( c.v.size, r.v.size ) ) ) > 0 );
+        sz_t n = sz_gcd( a.v.size, sz_gcd( b.v.size, sz_gcd( c.v.size, r.v.size ) ) );
+        sz_t m = sz_max( a.v.size, sz_max( b.v.size, sz_max( c.v.size, r.v.size ) ) ) / n;
 
         #define BHVM_ACC_CASE( TA_T, TB_T, TC_T, TR_T, FUNC ) \
         { \
@@ -603,7 +595,7 @@ group :ar3_eci =
             } \
         }
 
-        switch( BKNIT_FA4( a->v.type, b->v.type, c->v.type, r->v.type ) )
+        switch( BKNIT_FA4( a.v.type, b.v.type, c.v.type, r.v.type ) )
         {
             case BKNIT_F2222: BHVM_ACC_CASE( f2_t, f2_t, f2_t, f2_t, @_f2 ); break;
             case BKNIT_F2223: BHVM_ACC_CASE( f2_t, f2_t, f2_t, f3_t, @_f3 ); break;
@@ -621,7 +613,7 @@ group :ar3_eci =
             case BKNIT_F3323: BHVM_ACC_CASE( f3_t, f3_t, f2_t, f3_t, @_f3 ); break;
             case BKNIT_F3332: BHVM_ACC_CASE( f3_t, f3_t, f3_t, f2_t, @_f3 ); break;
             case BKNIT_F3333: BHVM_ACC_CASE( f3_t, f3_t, f3_t, f3_t, @_f3 ); break;
-            default: BKNIT_FA4_ERR( a->v.type, b->v.type, c->v.type, r->v.type ); break;
+            default: BKNIT_FA4_ERR( a.v.type, b.v.type, c.v.type, r.v.type ); break;
         }
 
         #undef BHVM_ACC_CASE

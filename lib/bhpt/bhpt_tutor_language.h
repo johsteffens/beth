@@ -81,16 +81,16 @@ stamp :utf8 = aware bhpt_tutor
 
     hidden bcore_mutex_s mutex;
 
-    func bhpt_tutor : reset = { bcore_prsg_a_attach( &o->prsg_priming, bcore_prsg_t_create( TYPEOF_bcore_prsg_lcg_u3_00_s ) ); };
+    func bhpt_tutor : reset = { o->prsg_priming =< bcore_prsg_lcg_u3_00_s!; };
     func bhpt_tutor : create_adaptive;
-    func bhpt_tutor : create_adaptor = { return bhpt_adaptor_a_clone( o->adaptor ); };
+    func bhpt_tutor : create_adaptor = { return o.adaptor.clone(); };
     func bhpt_tutor : prime;
     func bhpt_tutor : test;
     func bhpt_tutor : status_to_sink =
     {
         if( verbosity > 0 )
         {
-            bcore_sink_a_push_fa( sink, "#<sc_t>", ifnameof( o->_ ) );
+            bcore_sink_a_push_fa( sink, "#<sc_t>", ifnameof( o._ ) );
         }
     };
 };
