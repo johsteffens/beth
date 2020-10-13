@@ -308,7 +308,7 @@ stamp :lib = aware :
 
     func : :track_remove =
     {
-        deduce pidx = o.map.get( name );
+        uz_t* pidx = o.map.get( name );
         if( !pidx ) return;
         sz_t idx = *pidx;
         o.arr.[ idx ].discard();
@@ -318,7 +318,11 @@ stamp :lib = aware :
         if( idx < o.arr.size ) o.map.set( o.arr.[ idx ].name, cast( uz_t, idx ) );
     };
 
-    func : :track_run_ah = { deduce t = cast( @* ,o ).track_get( name ); if( t ) t.run( ah ); };
+    func : :track_run_ah =
+    {
+        :track_s* t = cast( @* ,o ).track_get( name );
+        if( t ) t.run( ah );
+    };
 
 };
 
