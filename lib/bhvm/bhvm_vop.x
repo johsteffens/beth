@@ -80,13 +80,13 @@ stamp :arr_ci = aware bcore_array
 
     func : :i_of_c =
     {
-        BFOR_EACH( j, o ) if( o.[ j ].c == c ) return o.[ j ].i;
+        foreach( $* e in o ) if( e.c == c ) return e.i;
         return -1;
     };
 
     func : :c_of_i =
     {
-        BFOR_EACH( j, o ) if( o.[ j ].i == i ) return o.[ j ].c;
+        foreach( $* e in o ) if( e.i == i ) return e.c;
         return -1;
     };
 };
@@ -116,7 +116,7 @@ feature void set_arg( mutable, :ci_s* ci ) =
 
 feature :* set_args( mutable, const :arr_ci_s* arr ) =
 {
-    for( sz_t i = 0; i < arr->size; i++ ) :a_set_arg( o, &arr.[ i ] );
+    foreach( $* e in arr ) :a_set_arg( o, e );
     return o;
 };
 
@@ -188,11 +188,11 @@ group :ar0 =
             mutex.lock();
             if( o->prsg )
             {
-                bhvm_value_s_set_random( &ah[ i ]->v, o->density, o->min, o->max, o->prsg );
+                ah[ i ].v.set_random( o->density, o->min, o->max, o->prsg );
             }
             else
             {
-                bhvm_value_s_set_random_u3( &ah[ i ]->v, o->density, o->min, o->max, rval );
+                ah[ i ].v.set_random_u3( o->density, o->min, o->max, rval );
             }
             mutex.unlock();
         };

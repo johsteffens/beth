@@ -212,7 +212,7 @@ stamp :track = aware bcore_array
     tp_t name;
     :op_s [];
 
-    func bhvm_vop : run = { BFOR_EACH( i, o ) o.[ i ].run( ah ); };
+    func bhvm_vop : run = { for( sz_t i = 0; i < o->size; i++ ) o.[i].run( ah ); };
 
     func : : run_section =
     {
@@ -303,7 +303,7 @@ stamp :lib = aware :
         :track_s* src = o.track_get( src_name );
         if( !src ) return;
         :track_s* dst = o.track_get_or_new( name );
-        BFOR_EACH( i, src ) dst.vop_push_c( src.[ i ].vop );
+        foreach( $* e in src ) dst.vop_push_c( e.vop );
     };
 
     func : :track_remove =
