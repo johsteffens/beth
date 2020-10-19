@@ -44,7 +44,7 @@ stamp :op = aware :
 
     func bcore_inst_call : copy_x  = { o.p = o.vop ? ( bhvm_vop_spect_s* )bhvm_vop_spect_s_get_aware( o.vop ) : NULL; };
     func bcore_via_call  : mutated = { o.copy_x( NULL ); };
-    func bhvm_vop        : run = {\C assert( o->p ); assert( o->p->run ); o->p->run( (vc_t)o->vop, ah ); };
+    func bhvm_vop        : run = { verbatim_C{ assert( o->p ); assert( o->p->run ); o->p->run( (vc_t)o->vop, ah ); } };
 };
 
 signature sz_t vop_push_d( mutable,       bhvm_vop* vop );

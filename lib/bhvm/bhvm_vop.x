@@ -183,7 +183,7 @@ group :ar0 =
         func :: :run =
         {
             sz_t i = o.i.v[0];
-            u3_t* rval = ( u3_t* )&o->rval;
+            u3_t* rval = cast( u3_t*, &o->rval );
             bcore_mutex_s* mutex = cast( bcore_mutex_s*, &o->mutex );
             mutex.lock();
             if( o->prsg )
