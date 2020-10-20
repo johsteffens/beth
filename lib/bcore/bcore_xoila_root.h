@@ -80,9 +80,9 @@ group bcore_fp = bcore_inst
 };
 
 /// st_s
-group st = bcore_inst
+group bcore_st = bcore_inst
 {
-    stamp : = aware bcore_inst
+    stamp st = aware bcore_inst
     {
         sd_t data;
         sc_t sc;
