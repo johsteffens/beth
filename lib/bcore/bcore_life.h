@@ -87,6 +87,9 @@ vd_t bcore_life_s_typed_create( bcore_life_s* o, tp_t type ); // creates new obj
 /// shuts down *o and zeros *o
 void bcore_life_s_down_zero( bcore_life_s** o );
 
+/// shuts down *o and all parents where nesting level >= nesting_level
+void bcore_life_s_down_level( bcore_life_s* o, sz_t nesting_level );
+
 /// down/discard o and all parents
 void bcore_life_s_down_all(    bcore_life_s* o );
 void bcore_life_s_discard_all( bcore_life_s* o );
@@ -144,7 +147,13 @@ extern bcore_life_s* __bcore_life; // always NULL; needed to ingrain a life-chai
     bcore_life_s  __bcore_life_on_stack; \
     bcore_life_s* __bcore_life = &__bcore_life_on_stack; \
     bcore_life_s_init_setup( __bcore_life, __bcore_life_curent ); \
-    __bcore_life_curent = __bcore_life
+    __bcore_life_curent = __bcore_life;
+
+/// explicitly sets an (incremental) nesting level
+#define BLM_INIT_LEVEL( nesting_level ) \
+    BLM_INIT(); \
+    assert( nesting_level >= __bcore_life_curent->nesting_level ); \
+    __bcore_life_curent->nesting_level = nesting_level;
 
 #define BLM_DOWN() bcore_life_s_down_zero( &__bcore_life_curent )
 #define BLM_CREATE( tname ) ( tname* )bcore_life_s_push_typed( __bcore_life_curent, TYPEOF_##tname, tname##_create() )
@@ -154,9 +163,19 @@ extern bcore_life_s* __bcore_life; // always NULL; needed to ingrain a life-chai
 #define BLM_X_PUSH(        expr ) bcore_life_s_push_sr(    __bcore_life_curent,       expr )
 #define BLM_A_CLONE(       expr ) bcore_life_s_push_aware( __bcore_life_curent, bcore_inst_a_clone( ( bcore_inst* )expr ) )
 
+/** breaks current nesting level (unsafe)
+ *  Preferably use BLM_BREAK_LEVEL( nesting_level ) to ensure all nested life managers are shut down
+ */
 #define BLM_BREAK() \
 { \
     bcore_life_s_down_zero( &__bcore_life_curent ); \
+    break; \
+}
+
+/// breaks all levels down to (including) nesting_level
+#define BLM_BREAK_LEVEL( nesting_level ) \
+{ \
+    bcore_life_s_down_level( &__bcore_life_curent, nesting_level ); \
     break; \
 }
 

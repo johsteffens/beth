@@ -227,6 +227,17 @@ void bcore_life_s_down_all( bcore_life_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bcore_life_s_down_level( bcore_life_s* o, sz_t nesting_level )
+{
+    if( !o ) return;
+    if( o->nesting_level < nesting_level ) return;
+    bcore_life_s* parent = o->parent;
+    bcore_life_s_down( o );
+    bcore_life_s_down_level( parent, nesting_level );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_life_s_discard_all( bcore_life_s* o )
 {
     if( !o ) return;
