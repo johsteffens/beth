@@ -43,14 +43,14 @@ signature void  clear(    mutable           ); // removes all entries and frees 
 stamp : = aware bcore_inst
 {
     bcore_hmap_tp_sr_s map;
-    func : :set_st_c;
-    func : :set_st_d;
-    func : :set_sc;
-    func : :get;
-    func : :get_sc;
-    func : :remove;
-    func : :exists;
-    func : :clear;
+    func : .set_st_c;
+    func : .set_st_d;
+    func : .set_sc;
+    func : .get;
+    func : .get_sc;
+    func : .remove;
+    func : .exists;
+    func : .clear;
 };
 
 #endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

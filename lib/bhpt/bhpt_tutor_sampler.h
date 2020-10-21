@@ -46,9 +46,9 @@ stamp :sine_random = aware :
     f3_t pos_tgt =  0.9;
     f3_t neg_tgt = -0.9;
 
-    func : : fetch;
-    func : : get_size_en = { return o.size_en; };
-    func : : get_size_ex = { return 1; };
+    func : . fetch;
+    func : . get_size_en = { return o.size_en; };
+    func : . get_size_ex = { return 1; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -62,9 +62,9 @@ stamp :binary_add = aware :
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
 
-    func : : fetch;
-    func : : get_size_en = { return o.bits * 2; };
-    func : : get_size_ex = { return o.bits + 1; };
+    func : . fetch;
+    func : . get_size_en = { return o.bits * 2; };
+    func : . get_size_ex = { return o.bits + 1; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -77,9 +77,9 @@ stamp :binary_mul = aware :
     sz_t bits  = 4; // input size = bits * 2; output size = bits * 2
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
-    func : : fetch;
-    func : : get_size_en = { return o.bits * 2; };
-    func : : get_size_ex = { return o.bits * 2; };
+    func : . fetch;
+    func : . get_size_en = { return o.bits * 2; };
+    func : . get_size_ex = { return o.bits * 2; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -92,9 +92,9 @@ stamp :binary_lcg00 = aware :
     sz_t bits  = 4; // input size = bits; output size = bits
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
-    func : : fetch;
-    func : : get_size_en = { return o.bits; };
-    func : : get_size_ex = { return o.bits; };
+    func : . fetch;
+    func : . get_size_en = { return o.bits; };
+    func : . get_size_ex = { return o.bits; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -108,9 +108,9 @@ stamp :binary_hash = aware :
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
     bl_t reverse = false;
-    func : : fetch;
-    func : : get_size_en = { return o.bits; };
-    func : : get_size_ex = { return o.bits; };
+    func : . fetch;
+    func : . get_size_en = { return o.bits; };
+    func : . get_size_ex = { return o.bits; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -124,9 +124,9 @@ stamp :polynom = aware :
     sz_t size_ex = 3;   // polynomial order + 1
     f3_t range   = 1.0; // +/- range of coefficients
     f3_t noise_level = 0;   // additive noise to input signal
-    func : : fetch;
-    func : : get_size_en = { return o.size_en; };
-    func : : get_size_ex = { return o.size_ex; };
+    func : . fetch;
+    func : . get_size_en = { return o.size_en; };
+    func : . get_size_ex = { return o.size_ex; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -159,12 +159,12 @@ stamp : = aware bhpt_tutor
 
     hidden bcore_mutex_s mutex;
 
-    func bhpt_tutor : reset = {};
-    func bhpt_tutor : create_adaptive;
-    func bhpt_tutor : create_adaptor = { return o.adaptor.clone(); };
-    func bhpt_tutor : prime;
-    func bhpt_tutor : test;
-    func bhpt_tutor : status_to_sink =
+    func bhpt_tutor . reset = {};
+    func bhpt_tutor . create_adaptive;
+    func bhpt_tutor . create_adaptor = { return o.adaptor.clone(); };
+    func bhpt_tutor . prime;
+    func bhpt_tutor . test;
+    func bhpt_tutor . status_to_sink =
     {
         if( verbosity > 0 )
         {

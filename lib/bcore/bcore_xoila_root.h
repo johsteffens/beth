@@ -99,8 +99,8 @@ group bcore_mutex = bcore_inst
 
     stamp : = bcore_inst
     {
-        func : :lock;
-        func : :unlock;
+        func : .lock;
+        func : .unlock;
     };
 };
 
@@ -113,9 +113,9 @@ group bcore_condition = bcore_inst
 
     stamp : = bcore_inst
     {
-        func : :sleep;
-        func : :wake_one;
-        func : :wake_all;
+        func : .sleep;
+        func : .wake_one;
+        func : .wake_all;
     };
 };
 
@@ -127,8 +127,8 @@ group bcore_thread = bcore_inst
 
     stamp : = bcore_inst
     {
-        func : :call;
-        func : :join;
+        func : .call;
+        func : .join;
     };
 };
 

@@ -45,22 +45,22 @@ group :uz = :
     stamp : = aware bcore_inst
     {
         uz_t [];
-        func :: :clear;
-        func :: :set_sapce;
-        func :: :set_size;
-        func :: :sort;
-        func :: :reorder;
-        func  : :fill;
-        func  : :step_fill;
-        func  : :push;
-        func  : :push_left;
-        func  : :pop;
-        func  : :find;
-        func  : :max;
-        func  : :min;
-        func  : :idx_max;
-        func  : :idx_min;
-        func  : :count_equal;
+        func :: .clear;
+        func :: .set_sapce;
+        func :: .set_size;
+        func :: .sort;
+        func :: .reorder;
+        func  : .fill;
+        func  : .step_fill;
+        func  : .push;
+        func  : .push_left;
+        func  : .pop;
+        func  : .find;
+        func  : .max;
+        func  : .min;
+        func  : .idx_max;
+        func  : .idx_min;
+        func  : .count_equal;
     };
 };
 
@@ -83,22 +83,22 @@ group :sz = :
     stamp : = aware bcore_inst
     {
         sz_t [];
-        func :: :clear;
-        func :: :set_sapce;
-        func :: :set_size;
-        func :: :sort;
-        func :: :reorder;
-        func  : :fill;
-        func  : :step_fill;
-        func  : :push;
-        func  : :push_left;
-        func  : :pop;
-        func  : :find;
-        func  : :max;
-        func  : :min;
-        func  : :idx_max;
-        func  : :idx_min;
-        func  : :count_equal;
+        func :: .clear;
+        func :: .set_sapce;
+        func :: .set_size;
+        func :: .sort;
+        func :: .reorder;
+        func  : .fill;
+        func  : .step_fill;
+        func  : .push;
+        func  : .push_left;
+        func  : .pop;
+        func  : .find;
+        func  : .max;
+        func  : .min;
+        func  : .idx_max;
+        func  : .idx_min;
+        func  : .count_equal;
     };
 };
 
@@ -116,17 +116,17 @@ group :u3 = :
     stamp : = aware bcore_inst
     {
         u3_t [];
-        func :: :clear;
-        func :: :set_sapce;
-        func :: :set_size;
-        func :: :sort;
-        func :: :reorder;
-        func  : :fill;
-        func  : :step_fill;
-        func  : :push;
-        func  : :push_left;
-        func  : :pop;
-        func  : :count_equal;
+        func :: .clear;
+        func :: .set_sapce;
+        func :: .set_size;
+        func :: .sort;
+        func :: .reorder;
+        func  : .fill;
+        func  : .step_fill;
+        func  : .push;
+        func  : .push_left;
+        func  : .pop;
+        func  : .count_equal;
     };
 };
 
@@ -144,17 +144,17 @@ group :tp = :
     stamp : = aware bcore_inst
     {
         tp_t [];
-        func :: :clear;
-        func :: :set_sapce;
-        func :: :set_size;
-        func :: :sort;
-        func :: :reorder;
-        func  : :fill;
-        func  : :step_fill;
-        func  : :push;
-        func  : :push_left;
-        func  : :pop;
-        func  : :count_equal;
+        func :: .clear;
+        func :: .set_sapce;
+        func :: .set_size;
+        func :: .sort;
+        func :: .reorder;
+        func  : .fill;
+        func  : .step_fill;
+        func  : .push;
+        func  : .push_left;
+        func  : .pop;
+        func  : .count_equal;
     };
 };
 
@@ -171,14 +171,14 @@ group :bl = :
     stamp : = aware bcore_inst
     {
         bl_t [];
-        func :: :clear;
-        func :: :set_sapce;
-        func :: :set_size;
-        func  : :fill;
-        func  : :push;
-        func  : :push_left;
-        func  : :pop;
-        func  : :count_equal;
+        func :: .clear;
+        func :: .set_sapce;
+        func :: .set_size;
+        func  : .fill;
+        func  : .push;
+        func  : .push_left;
+        func  : .pop;
+        func  : .count_equal;
     };
 };
 
@@ -195,16 +195,16 @@ group :st = :
     stamp : = aware bcore_inst
     {
         st_s => [];
-        func :: :clear;
-        func :: :set_sapce;
-        func :: :set_size;
-        func :: :sort;
-        func :: :reorder;
-        func  : :push_st;
-        func  : :push_st_d;
-        func  : :push_sc;
-        func  : :pop;
-        func  : :count_equal;
+        func :: .clear;
+        func :: .set_sapce;
+        func :: .set_size;
+        func :: .sort;
+        func :: .reorder;
+        func  : .push_st;
+        func  : .push_st_d;
+        func  : .push_sc;
+        func  : .pop;
+        func  : .count_equal;
     };
 };
 
@@ -221,15 +221,15 @@ group :vd = :
     stamp : = aware bcore_inst
     {
         vd_t [];
-        func :: :clear;
-        func :: :set_sapce;
-        func :: :set_size;
-        func :: :reorder;
-        func  : :fill;
-        func  : :push;
-        func  : :pop;
-        func  : :find;
-        func  : :count_equal;
+        func :: .clear;
+        func :: .set_sapce;
+        func :: .set_size;
+        func :: .reorder;
+        func  : .fill;
+        func  : .push;
+        func  : .pop;
+        func  : .find;
+        func  : .count_equal;
     };
 };
 
@@ -246,15 +246,15 @@ group :fp = :
     stamp : = aware bcore_inst
     {
         fp_t [];
-        func :: :clear;
-        func :: :set_sapce;
-        func :: :set_size;
-        func :: :reorder;
-        func  : :fill;
-        func  : :push;
-        func  : :pop;
-        func  : :find;
-        func  : :count_equal;
+        func :: .clear;
+        func :: .set_sapce;
+        func :: .set_size;
+        func :: .reorder;
+        func  : .fill;
+        func  : .push;
+        func  : .pop;
+        func  : .find;
+        func  : .count_equal;
     };
 };
 
@@ -270,14 +270,14 @@ group :sr = :
     stamp : = aware bcore_inst
     {
         sr_s [];
-        func :: :clear;
-        func :: :set_sapce;
-        func :: :set_size;
-        func :: :reorder;
-        func  : :push_sr;
-        func  : :push_tp;
-        func  : :pop;
-        func  : :set_spect;
+        func :: .clear;
+        func :: .set_sapce;
+        func :: .set_size;
+        func :: .reorder;
+        func  : .push_sr;
+        func  : .push_tp;
+        func  : .pop;
+        func  : .set_spect;
     };
 };
 

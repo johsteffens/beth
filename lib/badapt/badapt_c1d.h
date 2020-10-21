@@ -66,17 +66,17 @@ stamp badapt_c1d = badapt_adaptive
     // ==============================================================
 
     // === adaptive functions =======================================
-    func badapt_adaptive : get_in_size      = { return o->arr_layer.arr_size > 0 ? o->arr_layer.arr_data[ 0 ].input_size : 0; };
-    func badapt_adaptive : get_out_size     = { return o->arr_layer.arr_size > 0 ? o->arr_layer.arr_data[ o->arr_layer.arr_size - 1 ].kernels : 0; };
-    func badapt_adaptive : get_dynamics_std = { badapt_dynamics_std_s_copy( dynamics, &o->dynamics ); };
-    func badapt_adaptive : set_dynamics_std = { badapt_dynamics_std_s_copy( &o->dynamics, dynamics ); };
+    func badapt_adaptive . get_in_size      = { return o->arr_layer.arr_size > 0 ? o->arr_layer.arr_data[ 0 ].input_size : 0; };
+    func badapt_adaptive . get_out_size     = { return o->arr_layer.arr_size > 0 ? o->arr_layer.arr_data[ o->arr_layer.arr_size - 1 ].kernels : 0; };
+    func badapt_adaptive . get_dynamics_std = { badapt_dynamics_std_s_copy( dynamics, &o->dynamics ); };
+    func badapt_adaptive . set_dynamics_std = { badapt_dynamics_std_s_copy( &o->dynamics, dynamics ); };
 
-    func badapt_adaptive : arc_to_sink;
-    func badapt_adaptive : infer;
-    func badapt_adaptive : minfer;
+    func badapt_adaptive . arc_to_sink;
+    func badapt_adaptive . infer;
+    func badapt_adaptive . minfer;
 
-    func badapt_adaptive : bgrad;
-    func badapt_adaptive : bgrad_adapt;
+    func badapt_adaptive . bgrad;
+    func badapt_adaptive . bgrad_adapt;
     // ==============================================================
 };
 
@@ -104,15 +104,15 @@ stamp badapt_builder_c1d_funnel = badapt_builder
     // === builder functions =======================================
 
     /// input vector size
-    func ^ : get_in_size = { return o->input_size; };
-    func ^ : set_in_size = { o->input_size = size; };
+    func ^ . get_in_size = { return o->input_size; };
+    func ^ . set_in_size = { o->input_size = size; };
 
     /// output vector size
-    func ^ : get_out_size = { return o->output_kernels; };
-    func ^ : set_out_size = { o->output_kernels = size; };
+    func ^ . get_out_size = { return o->output_kernels; };
+    func ^ . set_out_size = { o->output_kernels = size; };
 
     /// builds adaptive ready to be trained; passes ownership
-    func ^ : build;
+    func ^ . build;
 
     // ==============================================================
 };

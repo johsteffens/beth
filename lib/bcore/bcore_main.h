@@ -70,7 +70,7 @@ XOILA_DEFINE_GROUP( bcore_main, bcore_inst )
         sc_t global_file;                 // global path to config file
 
         /// This implementation allows 'o' to be NULL in which case it returns always false.
-        func : :exit_required;
+        func : .exit_required;
     };
 
     feature strict 'ar' er_t main( mutable, :frame_s* frame );
@@ -80,7 +80,7 @@ XOILA_DEFINE_GROUP( bcore_main, bcore_inst )
     stamp :set = aware :
     {
         :arr_s arr;
-        func : : main =
+        func : . main =
         {
             er_t r = 0;
             BFOR_EACH( i, &o->arr )

@@ -50,11 +50,11 @@ group :adaptor =
     {
         private bhvm_holor_s* axon;
         private bhvm_holor_s* grad;
-        func : :get_min_max;
-        func : :acc_stats;
-        func : :zro_grad  = { o.grad.v.zro(); };
-        func : :acc_grad  =   { assert( o.grad.s.is_equal( &src.grad.s ) ); o.grad.v.acc( &src.grad.v ); };
-        func : :rebind_axon = { assert( o.axon.s.is_equal( &src.axon.s ) ); o.axon.v.weak( &src.axon.v ); };
+        func : .get_min_max;
+        func : .acc_stats;
+        func : .zro_grad  = { o.grad.v.zro(); };
+        func : .acc_grad  =   { assert( o.grad.s.is_equal( &src.grad.s ) ); o.grad.v.acc( &src.grad.v ); };
+        func : .rebind_axon = { assert( o.axon.s.is_equal( &src.axon.s ) ); o.axon.v.weak( &src.axon.v ); };
     };
 
     /** The probe is obtained via function get_adaptor_probe.
@@ -66,11 +66,11 @@ group :adaptor =
     stamp :probe = aware bcore_array
     {
         :node_s [];
-        func : :get_min_max;
-        func : :acc_stats = { BFOR_EACH( i, o ) o.[ i ].acc_stats( axon, grad ); };
-        func : :zro_grad  = { BFOR_EACH( i, o ) o.[ i ].zro_grad(); };
-        func : :acc_grad     = { assert( o.size == src.size ); BFOR_EACH( i, o ) o.[ i ].acc_grad( &src.[ i ] ); };
-        func : :rebind_axon  = { assert( o.size == src.size ); BFOR_EACH( i, o ) o.[ i ].rebind_axon( &src.[ i ] ); };
+        func : .get_min_max;
+        func : .acc_stats = { BFOR_EACH( i, o ) o.[ i ].acc_stats( axon, grad ); };
+        func : .zro_grad  = { BFOR_EACH( i, o ) o.[ i ].zro_grad(); };
+        func : .acc_grad     = { assert( o.size == src.size ); BFOR_EACH( i, o ) o.[ i ].acc_grad( &src.[ i ] ); };
+        func : .rebind_axon  = { assert( o.size == src.size ); BFOR_EACH( i, o ) o.[ i ].rebind_axon( &src.[ i ] ); };
     };
 
     feature void reset( mutable ); // resets all moments

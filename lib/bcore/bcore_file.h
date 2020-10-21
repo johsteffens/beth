@@ -46,9 +46,9 @@ stamp : path = aware bcore_inst
     st_s name; // absolute or relative path ( e.g. "../obj/myobj.txt" );
     hidden st_s => root; // root folder
     hidden st_s => full; // full path: source_folder / rel
-    func bcore_via_call : source;
-    func              : : get_sc = { return o->full ? o->full->sc : o->name.sc; };
-    func              : : set_sc =
+    func bcore_via_call . source;
+    func              : . get_sc = { return o->full ? o->full->sc : o->name.sc; };
+    func              : . set_sc =
     {
         st_s_detach( &o->full );
         st_s_copy_sc( &o->name, name );

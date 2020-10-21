@@ -35,8 +35,8 @@ XOILA_DEFINE_GROUP( bhpt_adaptor_stamp, bhpt_adaptor )
 stamp bhpt_adaptor_epsilon = aware bhpt_adaptor
 {
     f3_t epsilon;
-    func bhpt_adaptor : reset = {};
-    func bhpt_adaptor : adapt =
+    func bhpt_adaptor . reset = {};
+    func bhpt_adaptor . adapt =
     {
         assert( node.axon.s.is_equal( &node.grad.s ) );
         node.grad.v.mul_scl_f3_acc( o->epsilon, &node->axon->v );
@@ -49,15 +49,15 @@ stamp bhpt_adaptor_epsilon = aware bhpt_adaptor
 stamp bhpt_adaptor_reg_l2 = aware bhpt_adaptor
 {
     f3_t lambda;
-    func bhpt_adaptor : reset = {};
-    func bhpt_adaptor : adapt = { node.axon.v.mul_scl_f3_acc( -o->lambda, &node.axon.v ); };
+    func bhpt_adaptor . reset = {};
+    func bhpt_adaptor . adapt = { node.axon.v.mul_scl_f3_acc( -o->lambda, &node.axon.v ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 stamp bhpt_adaptor_zro_grad = aware bhpt_adaptor
 {
-    func bhpt_adaptor : adapt = { node.grad.v.zro(); };
+    func bhpt_adaptor . adapt = { node.grad.v.zro(); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -67,12 +67,12 @@ stamp bhpt_adaptor_list = aware bcore_array
 {
     aware bhpt_adaptor => [];
 
-    func bhpt_adaptor : reset =
+    func bhpt_adaptor . reset =
     {
         BFOR_SIZE( i, o->size ) o.[ i ].reset();
     };
 
-    func bhpt_adaptor : adapt =
+    func bhpt_adaptor . adapt =
     {
         BFOR_SIZE( i, o->size ) o.[ i ].adapt( node );
     };

@@ -36,15 +36,15 @@ XOILA_DEFINE_GROUP( badapt_loss, bcore_inst )
     // l2 loss function
     stamp :l2 = aware badapt_loss
     {
-        func badapt_loss:loss    = { return bmath_vf3_s_f3_sub_sqr( target, out ); };
-        func badapt_loss:loss_f3 = { return f3_sqr( target - out ); };
-        func badapt_loss:bgrad   = { bmath_vf3_s_sub( target, out, grad ); };
+        func badapt_loss.loss    = { return bmath_vf3_s_f3_sub_sqr( target, out ); };
+        func badapt_loss.loss_f3 = { return f3_sqr( target - out ); };
+        func badapt_loss.bgrad   = { bmath_vf3_s_sub( target, out, grad ); };
     };
 
     // logistic loss function
     stamp :log = aware badapt_loss
     {
-        func badapt_loss:loss =
+        func badapt_loss.loss =
         {
             assert( target->size == out->size );
             f3_t sum = 0;
@@ -55,12 +55,12 @@ XOILA_DEFINE_GROUP( badapt_loss, bcore_inst )
             return sum;
         };
 
-        func badapt_loss:loss_f3 =
+        func badapt_loss.loss_f3 =
         {
             return log( 1.0 + exp( -target * out ) );
         };
 
-        func badapt_loss:bgrad =
+        func badapt_loss.bgrad =
         {
             assert( target->size == out ->size );
             assert( target->size == grad->size );

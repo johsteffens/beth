@@ -64,12 +64,12 @@ group :thread =
         :share_s             -> share;
         aware bhpt_adaptive  => adaptive; // local adaptive
 
-        func bcore_inst_call : down_e = { ASSERT( !o.running ); };
+        func bcore_inst_call . down_e = { ASSERT( !o.running ); };
 
-        func : :loop;
-        func : :loop_enter;
-        func : :loop_exit;
-        func : :wait_while_locked = { o.mutex.lock(); o.mutex.unlock(); };
+        func : .loop;
+        func : .loop_enter;
+        func : .loop_exit;
+        func : .wait_while_locked = { o.mutex.lock(); o.mutex.unlock(); };
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -87,12 +87,12 @@ group :thread =
         :ads_s ads;
         :share_s => share;
 
-        func : :tsetup;
-        func : :tdown;
-        func : :run;
+        func : .tsetup;
+        func : .tdown;
+        func : .run;
 
-        func bcore_inst_call : down_e = { o.tdown(); };
-        func bcore_inst_call : copy_e = { o.tdown(); };
+        func bcore_inst_call . down_e = { o.tdown(); };
+        func bcore_inst_call . copy_e = { o.tdown(); };
     };
 };
 
@@ -154,9 +154,9 @@ stamp : = aware bcore_main
 
     hidden aware bcore_sink -> log;
 
-    func bcore_main : main;
+    func bcore_main . main;
 
-    func bcore_main : exit_required = { return o.main_frame.exit_required(); };
+    func bcore_main . exit_required = { return o.main_frame.exit_required(); };
 
 };
 

@@ -34,7 +34,7 @@ stamp :std = aware :
     f3_t epsilon;   // learning rate
     f3_t lambda_l1; // l1-regularization
     f3_t lambda_l2; // l2-regularization
-    func badapt_dynamics : weights_adapt;
+    func badapt_dynamics . weights_adapt;
 };
 
 #endif // XOILA_SECTION

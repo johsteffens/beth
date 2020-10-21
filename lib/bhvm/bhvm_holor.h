@@ -85,10 +85,10 @@ stamp :holor = aware bcore_inst
 {
     :shape_s s;
     :value_s v;
-    func bcore_fp : copy_typed;
+    func bcore_fp . copy_typed;
 };
 
-stamp :holor_adl = aware bcore_array { :holor_s     => [];  func bcore_fp : copy_typed; }; // dynamic array of links
+stamp :holor_adl = aware bcore_array { :holor_s     => [];  func bcore_fp . copy_typed; }; // dynamic array of links
 stamp :holor_ads = aware bcore_array { :holor_s        []; }; // dynamic array of solids
 stamp :holor_mdl = aware bcore_array { :holor_adl_s => []; }; // dynamic matrix of links
 

@@ -28,65 +28,65 @@ XOILA_DEFINE_GROUP( badapt_activation, bcore_inst )
     feature strict 'pa' f3_t dy( const, f3_t y ); // dy = d( y ) (derivative applied on y)
 
     // ======= (trivial activations) ============
-    stamp :zero   = aware : { func : :fx = { return 0.0; }; func : :dy = { return 0.0; }; };
-    stamp :one    = aware : { func : :fx = { return 1.0; }; func : :dy = { return 0.0; }; };
-    stamp :linear = aware : { func : :fx = { return   x; }; func : :dy = { return 1.0; }; };
+    stamp :zero   = aware : { func : .fx = { return 0.0; }; func : .dy = { return 0.0; }; };
+    stamp :one    = aware : { func : .fx = { return 1.0; }; func : .dy = { return 0.0; }; };
+    stamp :linear = aware : { func : .fx = { return   x; }; func : .dy = { return 1.0; }; };
 
     // ======= (logistic function) ============
     stamp :sigm = aware :
     {
-        func : :fx = { return ( x > -700 ) ? ( 1.0 / ( 1.0 + exp( -x ) ) ) : 0; };
-        func : :dy = { return y * ( 1.0 - y ); };
+        func : .fx = { return ( x > -700 ) ? ( 1.0 / ( 1.0 + exp( -x ) ) ) : 0; };
+        func : .dy = { return y * ( 1.0 - y ); };
     };
 
     stamp :sigm_hard = aware :
     {
-        func : :fx = { return ( x < -2.0 ) ? 0.0 : ( x > 2.0 ) ? 1.0 : 0.25 * ( x + 2.0 ); };
-        func : :dy = { return ( y <  0.0 ) ? 0.0 : ( y > 1.0 ) ? 0.0 : 0.25; };
+        func : .fx = { return ( x < -2.0 ) ? 0.0 : ( x > 2.0 ) ? 1.0 : 0.25 * ( x + 2.0 ); };
+        func : .dy = { return ( y <  0.0 ) ? 0.0 : ( y > 1.0 ) ? 0.0 : 0.25; };
     };
 
     stamp :sigm_leaky = aware :
     {
-        func : :fx = { return ( x < -2.0 ) ? 0.01 * ( x + 2.0 ) : ( x > 2.0 ) ? 1.0 + 0.01 * ( x - 2.0 ) : 0.25 * ( x + 2.0 ); };
-        func : :dy = { return ( y <  0.0 ) ? 0.01 : ( y > 1.0 ) ? 0.01 : 0.25; };
+        func : .fx = { return ( x < -2.0 ) ? 0.01 * ( x + 2.0 ) : ( x > 2.0 ) ? 1.0 + 0.01 * ( x - 2.0 ) : 0.25 * ( x + 2.0 ); };
+        func : .dy = { return ( y <  0.0 ) ? 0.01 : ( y > 1.0 ) ? 0.01 : 0.25; };
     };
 
     // ======= (tanh) =========================
     stamp :tanh = aware :
     {
-        func : :fx = { return ( x < 350 ) ? ( 1.0 - ( 2.0 / ( exp( 2.0 * x ) + 1.0 ) ) ) : 1.0; };
-        func : :dy = { return 1.0 - f3_sqr( y ); };
+        func : .fx = { return ( x < 350 ) ? ( 1.0 - ( 2.0 / ( exp( 2.0 * x ) + 1.0 ) ) ) : 1.0; };
+        func : .dy = { return 1.0 - f3_sqr( y ); };
     };
 
     stamp :tanh_hard = aware :
     {
-        func : :fx = { return ( x < -1.0 ) ? -1.0 : ( x > 1.0 ) ? 1.0 : x; };
-        func : :dy = { return ( y < -1.0 ) ?  0.0 : ( y > 1.0 ) ? 0.0 : 1.0; };
+        func : .fx = { return ( x < -1.0 ) ? -1.0 : ( x > 1.0 ) ? 1.0 : x; };
+        func : .dy = { return ( y < -1.0 ) ?  0.0 : ( y > 1.0 ) ? 0.0 : 1.0; };
     };
 
     stamp :tanh_leaky = aware :
     {
-        func : :fx = { return ( x < -1.0 ) ? -1.0 + 0.01 * ( x + 1.0 ) : ( x > 1.0 ) ? 1.0 + 0.01 * ( x - 1.0 ) : x; };
-        func : :dy = { return ( y < -1.0 ) ?  0.01 : ( y > 1.0 ) ? 0.01 : 1.0; };
+        func : .fx = { return ( x < -1.0 ) ? -1.0 + 0.01 * ( x + 1.0 ) : ( x > 1.0 ) ? 1.0 + 0.01 * ( x - 1.0 ) : x; };
+        func : .dy = { return ( y < -1.0 ) ?  0.01 : ( y > 1.0 ) ? 0.01 : 1.0; };
     };
 
     // ======= (softplus function) ============
     stamp :softplus = aware :
     {
-        func : :fx = { return ( x < 700 ) ? log( 1.0 + exp( x ) ) : x; };
-        func : :dy = { f3_t u = exp( y ); return ( u - 1.0 ) / u; };
+        func : .fx = { return ( x < 700 ) ? log( 1.0 + exp( x ) ) : x; };
+        func : .dy = { f3_t u = exp( y ); return ( u - 1.0 ) / u; };
     };
 
     stamp :relu = aware :
     {
-        func : :fx = { return x > 0 ? x : 0; };
-        func : :dy = { return y > 0 ? 1 : 0; };
+        func : .fx = { return x > 0 ? x : 0; };
+        func : .dy = { return y > 0 ? 1 : 0; };
     };
 
     stamp :leaky_relu = aware :
     {
-        func : :fx = { return x > 0 ? x : x * 0.01; };
-        func : :dy = { return y > 0 ? 1 : 0.01; };
+        func : .fx = { return x > 0 ? x : x * 0.01; };
+        func : .dy = { return y > 0 ? 1 : 0.01; };
     };
 
 #endif // XOILA_SECTION
@@ -115,7 +115,7 @@ XOILA_DEFINE_GROUP( badapt_activator, bcore_inst )
     {
         aware badapt_activation => activation;
 
-        func : :infer =
+        func : .infer =
         {
             assert( in->size == out->size );
             const badapt_activation_spect_s* activation_p = badapt_activation_spect_s_get_aware( o->activation );
@@ -125,7 +125,7 @@ XOILA_DEFINE_GROUP( badapt_activator, bcore_inst )
             }
         };
 
-        func : :bgrad =
+        func : .bgrad =
         {
             assert( grad_in->size == grad_out->size );
             assert( grad_in->size ==      out->size );
@@ -136,8 +136,8 @@ XOILA_DEFINE_GROUP( badapt_activator, bcore_inst )
             }
         };
 
-        func : :set_activation = { badapt_activation_a_replicate( &o->activation, activation ); };
-        func : :get_activation = { return o->activation; };
+        func : .set_activation = { badapt_activation_a_replicate( &o->activation, activation ); };
+        func : .get_activation = { return o->activation; };
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -145,7 +145,7 @@ XOILA_DEFINE_GROUP( badapt_activator, bcore_inst )
     /// softmax activator.
     stamp :softmax = aware :
     {
-        func : :infer =
+        func : .infer =
         {
             f3_t max = bmath_vf3_s_max( in );
             f3_t sum = 0;
@@ -158,7 +158,7 @@ XOILA_DEFINE_GROUP( badapt_activator, bcore_inst )
             bmath_vf3_s_mul_f3( out, 1.0 / sum, out );
         };
 
-        func : :bgrad =
+        func : .bgrad =
         {
             f3_t dpd = bmath_vf3_s_f3_mul_vec( grad_out, out );
             for( sz_t i = 0; i < grad_in->size; i++ )

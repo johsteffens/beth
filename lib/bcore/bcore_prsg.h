@@ -86,13 +86,13 @@ feature void reseed( mutable, u3_t seed ) = { :a_set_state_u3( o, seed ); };
 
 stump :general = aware :
 {
-    func ^ :gen_u3 =
+    func ^ .gen_u3 =
     {
         @_gen( o );
         return @_state_u3( o );
     };
 
-    func ^ :state_bits_u3 =
+    func ^ .state_bits_u3 =
     {
         assert( bits >= 0 && bits <= 64 );
         sz_t o_bits = @_bits( o );
@@ -106,18 +106,18 @@ stump :general = aware :
         }
     };
 
-    func ^ :gen_bits_u3 =
+    func ^ .gen_bits_u3 =
     {
         @_gen( o );
         return @_state_bits_u3( o, bits );
     };
 
-    func ^ :state_f3 =
+    func ^ .state_f3 =
     {
         return min + ( max - min ) * ( ( f3_t )( @_state_u3( o ) - @_min_u3( o ) ) / ( @_max_u3( o ) - @_min_u3( o ) ) );
     };
 
-    func ^ :gen_f3 =
+    func ^ .gen_f3 =
     {
         @_gen( o );
         return @_state_f3( o, min, max );
@@ -135,11 +135,11 @@ group :lcg =
     stump :u2 = extending ::general
     {
         u2_t state = 16437;
-        func ^ :bits   = { return 32; };
-        func ^ :max_u3 = { return 0xFFFFFFFFu; };
-        func ^ :min_u3 = { return 0; };
-        func ^ :state_u3 = { return o->state; };
-        func ^ :set_state_u3 = { o->state = seed ^ ( seed >> 32 ); return (::*)o; };
+        func ^ .bits   = { return 32; };
+        func ^ .max_u3 = { return 0xFFFFFFFFu; };
+        func ^ .min_u3 = { return 0; };
+        func ^ .state_u3 = { return o->state; };
+        func ^ .set_state_u3 = { o->state = seed ^ ( seed >> 32 ); return (::*)o; };
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -147,28 +147,28 @@ group :lcg =
     stump :u3 = extending ::general
     {
         u3_t state = 16437;
-        func ^ :bits   = { return 64; };
-        func ^ :max_u3 = { return 0xFFFFFFFFFFFFFFFFull; };
-        func ^ :min_u3 = { return 0; };
-        func ^ :state_u3 = { return o->state; };
-        func ^ :set_state_u3 = { o->state = seed; return (::*)o; };
+        func ^ .bits   = { return 64; };
+        func ^ .max_u3 = { return 0xFFFFFFFFFFFFFFFFull; };
+        func ^ .min_u3 = { return 0; };
+        func ^ .state_u3 = { return o->state; };
+        func ^ .set_state_u3 = { o->state = seed; return (::*)o; };
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    stamp :u2_00 = extending :u2 { func ^ :gen = { o->state = bcore_lcg00_u2( o->state ); }; };
-    stamp :u2_01 = extending :u2 { func ^ :gen = { o->state = bcore_lcg01_u2( o->state ); }; };
-    stamp :u2_02 = extending :u2 { func ^ :gen = { o->state = bcore_lcg02_u2( o->state ); }; };
-    stamp :u2_03 = extending :u2 { func ^ :gen = { o->state = bcore_lcg03_u2( o->state ); }; };
-    stamp :u2_04 = extending :u2 { func ^ :gen = { o->state = bcore_lcg04_u2( o->state ); }; };
-    stamp :u2_05 = extending :u2 { func ^ :gen = { o->state = bcore_lcg05_u2( o->state ); }; };
+    stamp :u2_00 = extending :u2 { func ^ .gen = { o->state = bcore_lcg00_u2( o->state ); }; };
+    stamp :u2_01 = extending :u2 { func ^ .gen = { o->state = bcore_lcg01_u2( o->state ); }; };
+    stamp :u2_02 = extending :u2 { func ^ .gen = { o->state = bcore_lcg02_u2( o->state ); }; };
+    stamp :u2_03 = extending :u2 { func ^ .gen = { o->state = bcore_lcg03_u2( o->state ); }; };
+    stamp :u2_04 = extending :u2 { func ^ .gen = { o->state = bcore_lcg04_u2( o->state ); }; };
+    stamp :u2_05 = extending :u2 { func ^ .gen = { o->state = bcore_lcg05_u2( o->state ); }; };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    stamp :u3_00 = extending :u3 { func ^ :gen = { o->state = bcore_lcg00_u3( o->state ); }; };
-    stamp :u3_01 = extending :u3 { func ^ :gen = { o->state = bcore_lcg01_u3( o->state ); }; };
-    stamp :u3_02 = extending :u3 { func ^ :gen = { o->state = bcore_lcg02_u3( o->state ); }; };
-    stamp :u3_03 = extending :u3 { func ^ :gen = { o->state = bcore_lcg03_u3( o->state ); }; };
+    stamp :u3_00 = extending :u3 { func ^ .gen = { o->state = bcore_lcg00_u3( o->state ); }; };
+    stamp :u3_01 = extending :u3 { func ^ .gen = { o->state = bcore_lcg01_u3( o->state ); }; };
+    stamp :u3_02 = extending :u3 { func ^ .gen = { o->state = bcore_lcg02_u3( o->state ); }; };
+    stamp :u3_03 = extending :u3 { func ^ .gen = { o->state = bcore_lcg03_u3( o->state ); }; };
 
 };
 
@@ -184,19 +184,19 @@ group :xsg =
     stump :u2 = extending ::general
     {
         u2_t state = 16432;
-        func ^ :bits   = { return 32; };
-        func ^ :max_u3 = { return 0xFFFFFFFFu; };
-        func ^ :min_u3 = { return 1; };
-        func ^ :state_u3 = { return o->state; };
-        func ^ :set_state_u3 = { o->state = u2_max( 1, seed ^ ( seed >> 32 ) ); return (::*)o; };
+        func ^ .bits   = { return 32; };
+        func ^ .max_u3 = { return 0xFFFFFFFFu; };
+        func ^ .min_u3 = { return 1; };
+        func ^ .state_u3 = { return o->state; };
+        func ^ .set_state_u3 = { o->state = u2_max( 1, seed ^ ( seed >> 32 ) ); return (::*)o; };
     };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    stamp :u2_00 = extending :u2 { func ^ :gen = { o->state = bcore_xsg_u2(  o->state ); }; };
-    stamp :u2_01 = extending :u2 { func ^ :gen = { o->state = bcore_xsg1_u2( o->state ); }; };
-    stamp :u2_02 = extending :u2 { func ^ :gen = { o->state = bcore_xsg2_u2( o->state ); }; };
-    stamp :u2_03 = extending :u2 { func ^ :gen = { o->state = bcore_xsg3_u2( o->state ); }; };
+    stamp :u2_00 = extending :u2 { func ^ .gen = { o->state = bcore_xsg_u2(  o->state ); }; };
+    stamp :u2_01 = extending :u2 { func ^ .gen = { o->state = bcore_xsg1_u2( o->state ); }; };
+    stamp :u2_02 = extending :u2 { func ^ .gen = { o->state = bcore_xsg2_u2( o->state ); }; };
+    stamp :u2_03 = extending :u2 { func ^ .gen = { o->state = bcore_xsg3_u2( o->state ); }; };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

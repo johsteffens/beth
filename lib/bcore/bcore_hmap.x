@@ -61,17 +61,17 @@ group bcore_hmap_tpuz = bcore_inst
         uz_t depth_limit;
         uz_t size_limit;
 
-        func  : :get;
-        func  : :fget;
-        func  : :set;
-        func  : :remove;
-        func :: :exists;
-        func :: :clear;
-        func :: :keys;
-        func :: :size;
-        func :: :idx_key;
-        func  : :idx_val;
-        func  : :from_array;
+        func  : .get;
+        func  : .fget;
+        func  : .set;
+        func  : .remove;
+        func :: .exists;
+        func :: .clear;
+        func :: .keys;
+        func :: .size;
+        func :: .idx_key;
+        func  : .idx_val;
+        func  : .from_array;
     };
 };
 
@@ -99,16 +99,16 @@ group bcore_hmap_tpfp = bcore_inst
         uz_t depth_limit;
         uz_t size_limit;
 
-        func  : :get;
-        func  : :fget;
-        func  : :set;
-        func  : :remove;
-        func :: :exists;
-        func :: :clear;
-        func :: :keys;
-        func :: :size;
-        func :: :idx_key;
-        func  : :idx_val;
+        func  : .get;
+        func  : .fget;
+        func  : .set;
+        func  : .remove;
+        func :: .exists;
+        func :: .clear;
+        func :: .keys;
+        func :: .size;
+        func :: .idx_key;
+        func  : .idx_val;
     };
 };
 
@@ -136,16 +136,16 @@ group bcore_hmap_tptp = bcore_inst
         uz_t depth_limit;
         uz_t size_limit;
 
-        func  : :get;
-        func  : :fget;
-        func  : :set;
-        func  : :remove;
-        func :: :exists;
-        func :: :clear;
-        func :: :keys;
-        func :: :size;
-        func :: :idx_key;
-        func  : :idx_val;
+        func  : .get;
+        func  : .fget;
+        func  : .set;
+        func  : .remove;
+        func :: .exists;
+        func :: .clear;
+        func :: .keys;
+        func :: .size;
+        func :: .idx_key;
+        func  : .idx_val;
     };
 };
 
@@ -173,16 +173,16 @@ group bcore_hmap_tpvd = bcore_inst
         uz_t depth_limit;
         uz_t size_limit;
 
-        func  : :get;
-        func  : :fget;
-        func  : :set;
-        func  : :remove;
-        func :: :exists;
-        func :: :clear;
-        func :: :keys;
-        func :: :size;
-        func :: :idx_key;
-        func  : :idx_val;
+        func  : .get;
+        func  : .fget;
+        func  : .set;
+        func  : .remove;
+        func :: .exists;
+        func :: .clear;
+        func :: .keys;
+        func :: .size;
+        func :: .idx_key;
+        func  : .idx_val;
     };
 };
 
@@ -213,18 +213,18 @@ group bcore_hmap_tpto = bcore_inst
         uz_t depth_limit;
         uz_t size_limit;
 
-        func  : :set_type;
-        func  : :get;
-        func  : :fget_d;
-        func  : :fget;
-        func  : :set_d;
-        func  : :remove;
-        func :: :exists;
-        func :: :clear;
-        func :: :keys;
-        func :: :size;
-        func :: :idx_key;
-        func  : :idx_val;
+        func  : .set_type;
+        func  : .get;
+        func  : .fget_d;
+        func  : .fget;
+        func  : .set_d;
+        func  : .remove;
+        func :: .exists;
+        func :: .clear;
+        func :: .keys;
+        func :: .size;
+        func :: .idx_key;
+        func  : .idx_val;
     };
 };
 
@@ -244,14 +244,14 @@ group bcore_hmap_tp = bcore_inst
         uz_t depth_limit;
         uz_t size_limit;
 
-        func  : :get;
-        func  : :set;
-        func  : :remove;
-        func :: :exists;
-        func :: :clear;
-        func :: :keys;
-        func :: :size;
-        func :: :idx_key;
+        func  : .get;
+        func  : .set;
+        func  : .remove;
+        func :: .exists;
+        func :: .clear;
+        func :: .keys;
+        func :: .size;
+        func :: .idx_key;
     };
 };
 
