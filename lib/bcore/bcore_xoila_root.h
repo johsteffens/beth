@@ -69,7 +69,7 @@ group bcore_stamp_funcs = bcore_inst
     signature void down( mutable );
     signature void copy( mutable, const @* src );
 
-    signature   @* create(  plain );
+    signature   @* create();
     signature void discard( mutable );
     signature   @* clone(   const );
 };

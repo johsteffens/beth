@@ -38,10 +38,10 @@ group :ar0 =
 {
     extending stump verbatim :_ = aware : {};
 
-    signature f2_t f2( plain );
-    signature f3_t f3( plain );
+    signature f2_t f2();
+    signature f3_t f3();
 
-    signature void f( plain, tp_t tknit, vd_t r, sz_t s );
+    signature void f( tp_t tknit, vd_t r, sz_t s );
 
     // vector
     body body_cv =
@@ -70,10 +70,10 @@ group :ar1 =
 {
     extending stump verbatim :_ = aware : {};
 
-    signature f2_t f2( plain, f2_t a );
-    signature f3_t f3( plain, f3_t a );
+    signature f2_t f2( f2_t a );
+    signature f3_t f3( f3_t a );
 
-    signature void f( plain, tp_t tknit, vc_t a, vd_t r, sz_t s );
+    signature void f( tp_t tknit, vc_t a, vd_t r, sz_t s );
 
     // vector <- vector
     body body_v_cv =
@@ -183,11 +183,11 @@ group :ar2 =
 {
     extending stump verbatim :_ = aware : {};
 
-    signature f2_t f2( plain, f2_t a, f2_t b );
-    signature f3_t f3( plain, f3_t a, f3_t b );
+    signature f2_t f2( f2_t a, f2_t b );
+    signature f3_t f3( f3_t a, f3_t b );
 
-    signature void f  ( plain, tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
-    signature void f_m( plain, tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t rows, sz_t cols );
+    signature void f  ( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t s );
+    signature void f_m( tp_t tknit, vc_t a, vc_t b, vd_t r, sz_t rows, sz_t cols );
 
     // vector <- vector <op> vector
     body body_vv_cv =
@@ -357,10 +357,10 @@ group :ar3 =
 {
     extending stump verbatim :_ = aware : {};
 
-    signature f2_t f2( plain, f2_t a, f2_t b, f2_t c );
-    signature f3_t f3( plain, f3_t a, f3_t b, f3_t c );
+    signature f2_t f2( f2_t a, f2_t b, f2_t c );
+    signature f3_t f3( f3_t a, f3_t b, f3_t c );
 
-    signature void f( plain, tp_t tknit, vc_t a, vc_t b, vc_t c, vd_t r, sz_t s );
+    signature void f( tp_t tknit, vc_t a, vc_t b, vc_t c, vd_t r, sz_t s );
 
     body body_vvv_cv =
     {
