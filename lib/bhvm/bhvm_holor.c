@@ -1896,18 +1896,6 @@ static void selftest( void )
     bhvm_holor_s_to_sink( h3, ( bcore_sink* )s );
     ASSERT( st_s_equal_sc( s, "f2_t(2:4)" ) );
 
-/*
-    bhvm_holor_s_set_size_na( h1, 3, 2, 2, 7 );
-    bhvm_holor_s_copy_size( h2, h1 );
-
-    u2_t rval = 123;
-    bhvm_holor_s_set_random_u3( h1, 1.0, 0, 1, &rval );
-    bhvm_holor_s_cpy( h1, h2 );
-
-    bhvm_holor_s_mul_scl_f3_add( h1, 2, h2, h2 );
-
-    ASSERT( f3_abs( ( bhvm_holor_s_f3_sum( h2 ) / bhvm_holor_s_f3_sum( h1 ) ) - 3.0 ) < 1E-10 );
-*/
     BLM_DOWN();
 }
 
@@ -1985,7 +1973,7 @@ void bhvm_stats_s_to_sink( const bhvm_stats_s* o, bcore_sink* sink )
     f3_t max = o->max;
     f3_t avg = bhvm_stats_s_get_avg( o );
     f3_t dev = bhvm_stats_s_get_dev( o );
-    bcore_sink_a_pushf( sink, "\xCE\xA3:%10zu \xCE\xB1:%6.3g \xCF\x89:%6.3g \xCE\xBC:%6.3g \xCF\x83:%6.3g", ( uz_t )o->size, min, max, avg, dev );
+    bcore_sink_a_push_fa( sink, "\xCE\xA3:#pl10 {#<sz_t>} \xCE\xB1:#p12 {#<f3_t>} \xCF\x89:#p12 {#<f3_t>} \xCE\xBC:#p12 {#<f3_t>} \xCF\x83:#p12 {#<f3_t>}", o->size, min, max, avg, dev );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

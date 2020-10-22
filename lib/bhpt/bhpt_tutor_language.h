@@ -81,12 +81,12 @@ stamp :utf8 = aware bhpt_tutor
 
     hidden bcore_mutex_s mutex;
 
-    func bhpt_tutor . reset = { o->prsg_priming =< bcore_prsg_lcg_u3_00_s!; };
-    func bhpt_tutor . create_adaptive;
-    func bhpt_tutor . create_adaptor = { return o.adaptor.clone(); };
-    func bhpt_tutor . prime;
-    func bhpt_tutor . test;
-    func bhpt_tutor . status_to_sink =
+    func bhpt_tutor.reset = { o->prsg_priming =< bcore_prsg_lcg_u3_00_s!; };
+    func bhpt_tutor.create_adaptive;
+    func bhpt_tutor.create_adaptor = { return o.adaptor.clone(); };
+    func bhpt_tutor.prime;
+    func bhpt_tutor.test;
+    func bhpt_tutor.status_to_sink =
     {
         if( verbosity > 0 )
         {
