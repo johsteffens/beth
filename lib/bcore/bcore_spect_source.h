@@ -72,6 +72,8 @@ BCORE_DECLARE_SPECT( bcore_source )
     bcore_source_fp_set_index       set_index;
 };
 
+BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_source )
+
 static inline
 u0_t bcore_source_default_get_u0( const bcore_source_s* p, bcore_source* o )
 {
@@ -177,9 +179,9 @@ er_t bcore_source_a_parse_err_to_em_fa( bcore_source* o, er_t err_id, sc_t forma
 bcore_source* bcore_source_t_create( tp_t type );
 void bcore_source_a_copy( bcore_source* o, const bcore_source* src );
 bcore_source* bcore_source_a_clone( const bcore_source* src );
-void bcore_source_a_discard( bcore_source* o );
-void bcore_source_a_detach( bcore_source** o );
-void bcore_source_a_attach( bcore_source** o, bcore_source* src );
+//void bcore_source_a_discard( bcore_source* o );
+//void bcore_source_a_detach( bcore_source** o );
+//void bcore_source_a_attach( bcore_source** o, bcore_source* src );
 
 vd_t bcore_spect_source_signal_handler( const bcore_signal_s* o );
 

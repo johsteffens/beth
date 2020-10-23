@@ -359,54 +359,54 @@ er_t bcore_source_a_parse_err_to_em_fa( bcore_source* o, er_t err_id, sc_t forma
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bcore_source* bcore_source_t_create( tp_t type )
-{
-    bcore_trait_assert_satisfied_type( TYPEOF_bcore_source, type );
-    return ( bcore_source* )bcore_inst_t_create( type );
-}
+//bcore_source* bcore_source_t_create( tp_t type )
+//{
+//    bcore_trait_assert_satisfied_type( TYPEOF_bcore_source, type );
+//    return ( bcore_source* )bcore_inst_t_create( type );
+//}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_source_a_copy( bcore_source* o, const bcore_source* src )
-{
-    ASSERT( src );
-    bcore_inst_a_copy( ( bcore_inst* )o, ( bcore_inst* )src );
-}
+//void bcore_source_a_copy( bcore_source* o, const bcore_source* src )
+//{
+//    ASSERT( src );
+//    bcore_inst_a_copy( ( bcore_inst* )o, ( bcore_inst* )src );
+//}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bcore_source* bcore_source_a_clone( const bcore_source* src )
-{
-    if( !src ) return NULL;
-    bcore_source* source = bcore_source_t_create( *( aware_t* )src );
-    bcore_source_a_copy( source, src );
-    return source;
-}
+//bcore_source* bcore_source_a_clone( const bcore_source* src )
+//{
+//    if( !src ) return NULL;
+//    bcore_source* source = bcore_source_t_create( *( aware_t* )src );
+//    bcore_source_a_copy( source, src );
+//    return source;
+//}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_source_a_discard( bcore_source* o )
-{
-    bcore_inst_a_discard( ( bcore_inst* )o );
-}
+//void bcore_source_a_discard( bcore_source* o )
+//{
+//    bcore_inst_a_discard( ( bcore_inst* )o );
+//}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_source_a_detach( bcore_source** o )
-{
-    if( !o ) return;
-    bcore_source_a_discard( *o );
-    *o = NULL;
-}
+//void bcore_source_a_detach( bcore_source** o )
+//{
+//    if( !o ) return;
+//    bcore_source_a_discard( *o );
+//    *o = NULL;
+//}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_source_a_attach( bcore_source** o, bcore_source* src )
-{
-    if( !o ) return;
-    bcore_source_a_discard( *o );
-    *o = src;
-}
+//void bcore_source_a_attach( bcore_source** o, bcore_source* src )
+//{
+//    if( !o ) return;
+//    bcore_source_a_discard( *o );
+//    *o = src;
+//}
 
 //----------------------------------------------------------------------------------------------------------------------
 
