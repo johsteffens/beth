@@ -77,6 +77,9 @@ sr_s bcore_life_s_push_sr(      bcore_life_s* o,                           sr_s 
 vd_t bcore_life_s_push_aware(   bcore_life_s* o,                           vd_t object ); // object is aware (discard via inst_a_discard)
 vd_t bcore_life_s_push_free(    bcore_life_s* o,                           vd_t object ); // uses bcore_free as discard function
 
+vd_t bcore_life_s_push_level_typed( bcore_life_s* o, tp_t type, sz_t nesting_level, vd_t object ); // discard via bcore_inst_t_discard
+vd_t bcore_life_s_push_level_aware( bcore_life_s* o,            sz_t nesting_level, vd_t object ); // object is aware (discard via inst_a_discard)
+
 /// 'spush' objects on stack ...
 vd_t bcore_life_s_spush(         bcore_life_s* o, bcore_fp_down down, vd_t object ); // explicit down
 vd_t bcore_life_s_spush_typed(   bcore_life_s* o, tp_t type,          vd_t object ); // down via bcore_inst_t_down
@@ -84,13 +87,13 @@ vd_t bcore_life_s_spush_aware(   bcore_life_s* o,                     vd_t objec
 
 vd_t bcore_life_s_typed_create( bcore_life_s* o, tp_t type ); // creates new object and manages its lifetime
 
-/// shuts down *o and zeros *o
+/// shuts down *o and zeros *o (o can be NULL)
 void bcore_life_s_down_zero( bcore_life_s** o );
 
-/// shuts down *o and all parents where nesting level >= nesting_level
+/// shuts down *o and all parents where nesting level >= nesting_level (o can be NULL)
 void bcore_life_s_down_level( bcore_life_s* o, sz_t nesting_level );
 
-/// down/discard o and all parents
+/// down/discard o and all parents (o can be NULL)
 void bcore_life_s_down_all(    bcore_life_s* o );
 void bcore_life_s_discard_all( bcore_life_s* o );
 
@@ -150,16 +153,20 @@ extern bcore_life_s* __bcore_life; // always NULL; needed to ingrain a life-chai
     __bcore_life_curent = __bcore_life;
 
 /// explicitly sets an (incremental) nesting level
-#define BLM_INIT_LEVEL( nesting_level ) \
+#define BLM_INIT_LEVEL( arg_nesting_level ) \
     BLM_INIT(); \
-    assert( nesting_level >= __bcore_life_curent->nesting_level ); \
-    __bcore_life_curent->nesting_level = nesting_level;
+    assert( arg_nesting_level >= __bcore_life_curent->nesting_level ); \
+    __bcore_life_curent->nesting_level = arg_nesting_level;
 
-#define BLM_DOWN() bcore_life_s_down_zero( &__bcore_life_curent )
+/// BLM_DOWN can be used even when __bcore_life is NULL
+#define BLM_DOWN() bcore_life_s_down_zero( &__bcore_life )
+
 #define BLM_CREATE( tname ) ( tname* )bcore_life_s_push_typed( __bcore_life_curent, TYPEOF_##tname, tname##_create() )
 #define BLM_CLONE(  tname, expr ) ( tname* )bcore_life_s_push_typed( __bcore_life_curent, TYPEOF_##tname, tname##_clone( expr ) )
 #define BLM_A_PUSH(        expr ) bcore_life_s_push_aware( __bcore_life_curent,       expr )
-#define BLM_T_PUSH( type,  expr ) bcore_life_s_push_typed( __bcore_life_curent, type, expr )
+#define BLM_T_PUSH( type,  expr ) bcore_life_s_push_typed( __bcore_life_curent, TYPEOF_##type, expr )
+#define BLM_LEVEL_A_PUSH( level,        expr ) bcore_life_s_push_level_aware( __bcore_life_curent, level,       expr )
+#define BLM_LEVEL_T_PUSH( level, type,  expr ) bcore_life_s_push_level_typed( __bcore_life_curent, level, TYPEOF_##type, expr )
 #define BLM_X_PUSH(        expr ) bcore_life_s_push_sr(    __bcore_life_curent,       expr )
 #define BLM_A_CLONE(       expr ) bcore_life_s_push_aware( __bcore_life_curent, bcore_inst_a_clone( ( bcore_inst* )expr ) )
 
@@ -168,27 +175,27 @@ extern bcore_life_s* __bcore_life; // always NULL; needed to ingrain a life-chai
  */
 #define BLM_BREAK() \
 { \
-    bcore_life_s_down_zero( &__bcore_life_curent ); \
+    bcore_life_s_down_zero( &__bcore_life ); \
     break; \
 }
 
 /// breaks all levels down to (including) nesting_level
 #define BLM_BREAK_LEVEL( nesting_level ) \
 { \
-    bcore_life_s_down_level( &__bcore_life_curent, nesting_level ); \
+    bcore_life_s_down_level( &__bcore_life, nesting_level ); \
     break; \
 }
 
 #define BLM_RETURN() \
 { \
-    bcore_life_s_down_all( __bcore_life_curent ); \
+    bcore_life_s_down_all( __bcore_life ); \
     return; \
 }
 
 #define BLM_RETURNV( ret_type, expr ) \
 { \
     ret_type __retv = expr;  \
-    bcore_life_s_down_all( __bcore_life_curent );  \
+    bcore_life_s_down_all( __bcore_life );  \
     return __retv;  \
 }
 

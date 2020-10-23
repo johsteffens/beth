@@ -94,23 +94,42 @@ void bcore_life_s_init_setup( bcore_life_s* o, bcore_life_s* parent )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+bcore_life_item_s* bcore_life_s_push_level_item( bcore_life_s* o, sz_t nesting_level )
+{
+    if( o->nesting_level == nesting_level )
+    {
+        assert( o );
+        if( !o->data )
+        {
+            o->space = 4;
+            o->data = bcore_alloc( NULL, o->space * sizeof( bcore_life_item_s ) );
+        }
+        else if( o->size == o->space )
+        {
+            o->space = o->space * 2;
+            o->data = bcore_alloc( o->data, o->space * sizeof( bcore_life_item_s ) );
+        }
+        bcore_life_item_s* r = &o->data[ o->size ];
+        o->size++;
+        bcore_life_item_s_init( r );
+        return r;
+    }
+    else if( o->parent )
+    {
+        return bcore_life_s_push_level_item( o->parent, nesting_level );
+    }
+    else
+    {
+        ERR_fa( "Found no manager at nesting-level #<sz_t>", nesting_level );
+    }
+    return NULL;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_life_item_s* bcore_life_s_push_item( bcore_life_s* o )
 {
-    assert( o );
-    if( !o->data )
-    {
-        o->space = 4;
-        o->data = bcore_alloc( NULL, o->space * sizeof( bcore_life_item_s ) );
-    }
-    else if( o->size == o->space )
-    {
-        o->space = o->space * 2;
-        o->data = bcore_alloc( o->data, o->space * sizeof( bcore_life_item_s ) );
-    }
-    bcore_life_item_s* r = &o->data[ o->size ];
-    o->size++;
-    bcore_life_item_s_init( r );
-    return r;
+    return bcore_life_s_push_level_item( o, o->nesting_level );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -138,6 +157,17 @@ vd_t bcore_life_s_spush( bcore_life_s* o, bcore_fp_down down, vd_t object )
 vd_t bcore_life_s_push_typed( bcore_life_s* o, tp_t type, vd_t object )
 {
     bcore_life_item_s* item = bcore_life_s_push_item( o );
+    item->type   = type;
+    item->object = object;
+    item->typed_down_or_discard = ( bcore_fp_typed_down_or_discard )bcore_inst_t_discard;
+    return object;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+vd_t bcore_life_s_push_level_typed( bcore_life_s* o, tp_t type, sz_t level, vd_t object )
+{
+    bcore_life_item_s* item = bcore_life_s_push_level_item( o, level );
     item->type   = type;
     item->object = object;
     item->typed_down_or_discard = ( bcore_fp_typed_down_or_discard )bcore_inst_t_discard;
@@ -174,6 +204,16 @@ sr_s bcore_life_s_push_sr( bcore_life_s* o, sr_s object )
 vd_t bcore_life_s_push_aware( bcore_life_s* o, vd_t object )
 {
     bcore_life_item_s* item = bcore_life_s_push_item( o );
+    item->down_or_discard = ( bcore_fp_down_or_discard )bcore_inst_a_discard;
+    item->object  = object;
+    return object;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+vd_t bcore_life_s_push_level_aware( bcore_life_s* o, sz_t level, vd_t object )
+{
+    bcore_life_item_s* item = bcore_life_s_push_level_item( o, level );
     item->down_or_discard = ( bcore_fp_down_or_discard )bcore_inst_a_discard;
     item->object  = object;
     return object;
