@@ -116,7 +116,7 @@ stamp :nbase = aware bcore_array
     func : .push_node =
     {
         sz_t nidx = o.size;
-        cast( bcore_array*, o).push( sr_asd( :node_s! ) );
+        cast( o, bcore_array* ).push( sr_asd( :node_s! ) );
         :node_s* node = o.[ nidx ];
         node.nidx = nidx;
         return node;
@@ -315,12 +315,12 @@ stamp :lib = aware :
         o.arr.size--;
         o.arr.[ idx ] = o.arr.[ o->arr.size ];
         o.arr.[ o.arr.size ] = NULL;
-        if( idx < o.arr.size ) o.map.set( o.arr.[ idx ].name, cast( uz_t, idx ) );
+        if( idx < o.arr.size ) o.map.set( o.arr.[ idx ].name, cast( idx, uz_t ) );
     };
 
     func : .track_run_ah =
     {
-        :track_s* t = cast( @* ,o ).track_get( name );
+        :track_s* t = cast( o, @* ).track_get( name );
         if( t ) t.run( ah );
     };
 

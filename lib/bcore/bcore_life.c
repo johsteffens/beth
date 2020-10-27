@@ -165,7 +165,7 @@ vd_t bcore_life_s_push_typed( bcore_life_s* o, tp_t type, vd_t object )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-vd_t bcore_life_s_push_level_typed( bcore_life_s* o, tp_t type, sz_t level, vd_t object )
+vd_t bcore_life_s_push_level_typed( bcore_life_s* o, sz_t level, tp_t type, vd_t object )
 {
     bcore_life_item_s* item = bcore_life_s_push_level_item( o, level );
     item->type   = type;

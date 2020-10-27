@@ -77,8 +77,8 @@ sr_s bcore_life_s_push_sr(      bcore_life_s* o,                           sr_s 
 vd_t bcore_life_s_push_aware(   bcore_life_s* o,                           vd_t object ); // object is aware (discard via inst_a_discard)
 vd_t bcore_life_s_push_free(    bcore_life_s* o,                           vd_t object ); // uses bcore_free as discard function
 
-vd_t bcore_life_s_push_level_typed( bcore_life_s* o, tp_t type, sz_t nesting_level, vd_t object ); // discard via bcore_inst_t_discard
-vd_t bcore_life_s_push_level_aware( bcore_life_s* o,            sz_t nesting_level, vd_t object ); // object is aware (discard via inst_a_discard)
+vd_t bcore_life_s_push_level_typed( bcore_life_s* o, sz_t nesting_level, tp_t type, vd_t object ); // discard via bcore_inst_t_discard
+vd_t bcore_life_s_push_level_aware( bcore_life_s* o, sz_t nesting_level,            vd_t object ); // object is aware (discard via inst_a_discard)
 
 /// 'spush' objects on stack ...
 vd_t bcore_life_s_spush(         bcore_life_s* o, bcore_fp_down down, vd_t object ); // explicit down

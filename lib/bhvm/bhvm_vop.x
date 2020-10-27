@@ -36,7 +36,7 @@ feature sz_t* get_index_arr( mutable );
 feature sz_t get_index( const, sz_t index ) =
 {
     ASSERT( index  >= 0 && index <= o.arity() );
-    return cast(:*,o).get_index_arr()[ index ];
+    return cast(o,:*).get_index_arr()[ index ];
 };
 
 feature :* set_index( mutable, sz_t index, sz_t idx_val ) =
@@ -183,8 +183,8 @@ group :ar0 =
         func :: .run =
         {
             sz_t i = o.i.v[0];
-            u3_t* rval = cast( u3_t*, &o->rval );
-            bcore_mutex_s* mutex = cast( bcore_mutex_s*, &o->mutex );
+            u3_t* rval = cast( &o->rval, u3_t* );
+            bcore_mutex_s* mutex = cast( &o->mutex, bcore_mutex_s* );
             mutex.lock();
             if( o->prsg )
             {
