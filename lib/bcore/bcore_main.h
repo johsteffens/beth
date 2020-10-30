@@ -82,12 +82,8 @@ XOILA_DEFINE_GROUP( bcore_main, bcore_inst )
         :arr_s arr;
         func : . main =
         {
-            er_t r = 0;
-            BFOR_EACH( i, &o->arr )
-            {
-                if( ( r = :a_main( o->arr.data[ i ], frame ) ) ) break;
-            }
-            return r;
+            foreach( $* e in o->arr ) try( e.main( frame ) );
+            return 0;
         };
     };
 

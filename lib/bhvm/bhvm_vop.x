@@ -305,7 +305,7 @@ group :ar1 =
         {
             bhvm_holor_s* a = ah[o.i.v[0]];
             bhvm_holor_s* y = ah[o.i.v[1]];
-            y.fork( a );
+            y.fork_from( a );
         };
     };
 
@@ -320,7 +320,7 @@ group :ar1 =
             bhvm_holor_s* y = ah[o.i.v[1]];
             assert( o.shape.get_volume() ==  a.s.get_volume() );
             y.s.copy( &o.shape );
-            y.v.fork( &a.v );
+            y.v.fork_from( &a.v );
         };
     };
 };

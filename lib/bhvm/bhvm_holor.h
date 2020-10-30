@@ -129,7 +129,7 @@ static inline void bhvm_shape_s_init_fork( bhvm_shape_s* o, sz_t* data, sz_t siz
 }
 
 /// forked reference if src is strong, otherwise weak reference
-static inline void bhvm_shape_s_fork( bhvm_shape_s* o, bhvm_shape_s* src )
+static inline void bhvm_shape_s_fork_from( bhvm_shape_s* o, bhvm_shape_s* src )
 {
     bhvm_shape_s_clear( o );
     assert( o->space == 0 );
@@ -205,7 +205,7 @@ static inline void bhvm_value_s_init_weak_from_value( bhvm_value_s* o, bhvm_valu
 }
 
 /// forked reference if src is strong, otherwise weak reference
-static inline void bhvm_value_s_fork( bhvm_value_s* o, bhvm_value_s* src )
+static inline void bhvm_value_s_fork_from( bhvm_value_s* o, bhvm_value_s* src )
 {
     bhvm_value_s_clear( o );
     assert( o->space == 0 );
@@ -247,7 +247,7 @@ void bhvm_value_s_zro( bhvm_value_s* o );
 void bhvm_value_s_set_data( bhvm_value_s* o, tp_t src_type, vc_t src_data, sz_t size );
 
 /// forks data (type = src_type)
-void bhvm_value_s_fork_data( bhvm_value_s* o, tp_t src_type, vd_t src_data, sz_t size );
+void bhvm_value_s_fork_from_data( bhvm_value_s* o, tp_t src_type, vd_t src_data, sz_t size );
 
 /// weakly references data (type = src_type)
 void bhvm_value_s_weak_data( bhvm_value_s* o, tp_t src_type, vd_t src_data, sz_t size );
@@ -365,17 +365,17 @@ static inline void bhvm_holor_s_init_weak_from_holor( bhvm_holor_s* o, bhvm_holo
 }
 
 /// forked reference; (shutdown required)
-static inline void bhvm_holor_s_fork( bhvm_holor_s* o, bhvm_holor_s* src )
+static inline void bhvm_holor_s_fork_from( bhvm_holor_s* o, bhvm_holor_s* src )
 {
-    bhvm_shape_s_fork( &o->s, &src->s );
-    bhvm_value_s_fork( &o->v, &src->v );
+    bhvm_shape_s_fork_from( &o->s, &src->s );
+    bhvm_value_s_fork_from( &o->v, &src->v );
 }
 
 /// fork or copy according to flags
-static inline void bhvm_holor_s_fork_copy( bhvm_holor_s* o, bhvm_holor_s* src, bl_t fork_shape, bl_t fork_value )
+static inline void bhvm_holor_s_fork_or_copy( bhvm_holor_s* o, bhvm_holor_s* src, bl_t fork_shape, bl_t fork_value )
 {
-    if( fork_shape ) bhvm_shape_s_fork( &o->s, &src->s ); else bhvm_shape_s_copy( &o->s, &src->s );
-    if( fork_value ) bhvm_value_s_fork( &o->v, &src->v ); else bhvm_shape_s_copy( &o->s, &src->s );
+    if( fork_shape ) bhvm_shape_s_fork_from( &o->s, &src->s ); else bhvm_shape_s_copy( &o->s, &src->s );
+    if( fork_value ) bhvm_value_s_fork_from( &o->v, &src->v ); else bhvm_shape_s_copy( &o->s, &src->s );
 }
 
 /// copies value and converts shape to vector
@@ -387,10 +387,10 @@ static inline bhvm_holor_s* bhvm_holor_s_copy_vector_isovol( bhvm_holor_s* o, co
 }
 
 /// forks value and converts shape to vector
-static inline bhvm_holor_s* bhvm_holor_s_fork_vector_isovol( bhvm_holor_s* o, bhvm_holor_s* src )
+static inline bhvm_holor_s* bhvm_holor_s_fork_from_vector_isovol( bhvm_holor_s* o, bhvm_holor_s* src )
 {
     bhvm_shape_s_copy_vector_isovol( &o->s, &src->s );
-    bhvm_value_s_fork( &o->v, &src->v );
+    bhvm_value_s_fork_from( &o->v, &src->v );
     return o;
 }
 

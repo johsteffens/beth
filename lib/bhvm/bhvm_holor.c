@@ -484,7 +484,7 @@ void bhvm_value_s_set_data( bhvm_value_s* o, tp_t src_type, vc_t data, sz_t size
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_value_s_fork_data( bhvm_value_s* o, tp_t src_type, vd_t src_data, sz_t size )
+void bhvm_value_s_fork_from_data( bhvm_value_s* o, tp_t src_type, vd_t src_data, sz_t size )
 {
     bhvm_value_s_clear( o );
     assert( o->space == 0 );
@@ -1252,7 +1252,7 @@ void bhvm_holor_s_inc_order( bhvm_holor_s* o, sz_t dim )
         BLM_INIT();
         bhvm_value_s_make_strong( &o->v );
         bhvm_value_s* v = BLM_CREATE( bhvm_value_s );
-        bhvm_value_s_fork( v, &o->v );
+        bhvm_value_s_fork_from( v, &o->v );
         bhvm_value_s_clear( &o->v );
         bhvm_holor_s_fit_size( o );
         ASSERT( o->v.size == v->size * dim );
@@ -1273,7 +1273,7 @@ void bhvm_holor_s_inc_order_prepend( bhvm_holor_s* o, sz_t dim )
         BLM_INIT();
         bhvm_value_s_make_strong( &o->v );
         bhvm_value_s* v = BLM_CREATE( bhvm_value_s );
-        bhvm_value_s_fork( v, &o->v );
+        bhvm_value_s_fork_from( v, &o->v );
         bhvm_value_s_clear( &o->v );
         bhvm_holor_s_fit_size( o );
         ASSERT( o->v.size == v->size * dim );
