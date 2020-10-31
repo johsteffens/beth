@@ -1324,7 +1324,7 @@ static void external_manager_s_release_obj( external_manager_s* o, fp_down_obj d
     {
         ext->rc_count--;
 
-        /* We only safe down instruction when the object is root.
+        /* We only safe 'down' instruction when the object is root.
          * Otherwise 'token' refers to a parent to which function down does not apply.
          * In that case shut down information is controlled by the parent object.
          */
@@ -1359,7 +1359,7 @@ static void external_manager_s_release_arg( external_manager_s* o, fp_down_arg d
     {
         ext->rc_count--;
 
-        /* We only safe down instruction when the object is root.
+        /* We only safe 'down' instruction when the object is root.
          * Otherwise shut down information is controlled by the parent object.
          */
         if( ptr_is_root )
@@ -1447,8 +1447,6 @@ static void external_manager_s_release_arg_arr( external_manager_s* o, fp_down_a
     vd_t* ext_p = bcore_btree_pp_s_val( o->ex_btree, ptr );
     if( !ext_p ) ERR( "Object is not root." );
     ext_s* ext = *ext_p;
-
-
 
     bl_t free_token  = true;
     bl_t direct_down = true;
