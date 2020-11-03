@@ -46,7 +46,7 @@ group :uz = :
     {
         uz_t [];
         func :: .clear;
-        func :: .set_sapce;
+        func :: .set_space;
         func :: .set_size;
         func :: .sort;
         func :: .reorder;
@@ -84,7 +84,7 @@ group :sz = :
     {
         sz_t [];
         func :: .clear;
-        func :: .set_sapce;
+        func :: .set_space;
         func :: .set_size;
         func :: .sort;
         func :: .reorder;
@@ -117,7 +117,7 @@ group :u3 = :
     {
         u3_t [];
         func :: .clear;
-        func :: .set_sapce;
+        func :: .set_space;
         func :: .set_size;
         func :: .sort;
         func :: .reorder;
@@ -145,7 +145,7 @@ group :tp = :
     {
         tp_t [];
         func :: .clear;
-        func :: .set_sapce;
+        func :: .set_space;
         func :: .set_size;
         func :: .sort;
         func :: .reorder;
@@ -172,7 +172,7 @@ group :bl = :
     {
         bl_t [];
         func :: .clear;
-        func :: .set_sapce;
+        func :: .set_space;
         func :: .set_size;
         func  : .fill;
         func  : .push;
@@ -196,7 +196,7 @@ group :st = :
     {
         st_s => [];
         func :: .clear;
-        func :: .set_sapce;
+        func :: .set_space;
         func :: .set_size;
         func :: .sort;
         func :: .reorder;
@@ -222,7 +222,7 @@ group :vd = :
     {
         vd_t [];
         func :: .clear;
-        func :: .set_sapce;
+        func :: .set_space;
         func :: .set_size;
         func :: .reorder;
         func  : .fill;
@@ -247,7 +247,7 @@ group :fp = :
     {
         fp_t [];
         func :: .clear;
-        func :: .set_sapce;
+        func :: .set_space;
         func :: .set_size;
         func :: .reorder;
         func  : .fill;
@@ -271,7 +271,7 @@ group :sr = :
     {
         sr_s [];
         func :: .clear;
-        func :: .set_sapce;
+        func :: .set_space;
         func :: .set_size;
         func :: .reorder;
         func  : .push_sr;
