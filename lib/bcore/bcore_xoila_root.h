@@ -49,12 +49,15 @@ type f3_t;
 type uz_t;
 type sz_t;
 type tp_t;
+type er_t;
 type aware_t;
 type sc_t;
 type sd_t;
 
 // objects
 type sr_s;
+type bcore_self_s;
+type bcore_self_item_s;
 
 group bcore_inst   = bcore_inst {};
 group bcore_array  = bcore_inst {};

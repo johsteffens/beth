@@ -201,8 +201,8 @@ void bcore_source_point_s_parse_msg_to_sink_fv( const bcore_source_point_s* o, b
 void bcore_source_point_s_parse_msg_to_sink_fa( const bcore_source_point_s* o, bcore_sink* sink, sc_t format, ... );
 
 /// generates a parse error message and pushes it to the error stack (see bcore_error_manager.h); returns err_id
-er_t bcore_source_point_s_parse_err_to_em_fv( const bcore_source_point_s* o, er_t err_id, sc_t format, va_list args );
-er_t bcore_source_point_s_parse_err_to_em_fa( const bcore_source_point_s* o, er_t err_id, sc_t format, ... );
+er_t bcore_source_point_s_parse_error_fv( const bcore_source_point_s* o, sc_t format, va_list args );
+er_t bcore_source_point_s_parse_error_fa( const bcore_source_point_s* o, sc_t format, ... );
 
 /// creates a cloned source pointing to the index position of source point
 bcore_source* bcore_source_point_s_clone_source( const bcore_source_point_s* o );

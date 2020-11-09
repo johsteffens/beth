@@ -343,13 +343,13 @@ void NPX(r_parse_msg_to_sink_fa)(                    const sr_s* o, bcore_sink* 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-er_t bcore_source_a_parse_err_to_em_fv( bcore_source* o, er_t err_id, sc_t format, va_list args )
+er_t bcore_source_a_parse_error_fv( bcore_source* o, sc_t format, va_list args )
 {
     st_s* s0 = st_s_create_fv( format, args );
     st_s* s1 = st_s_create();
 
     bcore_source_a_parse_msg_to_sink_fa( o, ( bcore_sink* )s1, "error: #<sc_t>", s0->sc );
-    bcore_error_push_sc( err_id, s1->sc );
+    er_t err_id = bcore_error_push_sc( TYPEOF_parse_error, s1->sc );
 
     st_s_discard( s0 );
     st_s_discard( s1 );
@@ -358,11 +358,11 @@ er_t bcore_source_a_parse_err_to_em_fv( bcore_source* o, er_t err_id, sc_t forma
 
 //----------------------------------------------------------------------------------------------------------------------
 
-er_t bcore_source_a_parse_err_to_em_fa( bcore_source* o, er_t err_id, sc_t format, ... )
+er_t bcore_source_a_parse_error_fa( bcore_source* o, sc_t format, ... )
 {
     va_list args;
     va_start( args, format );
-    er_t ret = bcore_source_a_parse_err_to_em_fv( o, err_id, format, args );
+    er_t ret = bcore_source_a_parse_error_fv( o, format, args );
     va_end( args );
     return ret;
 }

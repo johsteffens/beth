@@ -174,15 +174,12 @@ void bcore_source_r_parse_errf  ( const sr_s* o, sc_t format, ... );
 void bcore_source_r_parse_err_fa( const sr_s* o, sc_t format, ... );
 
 /// generates a parse error message and pushes it to the error stack (see bcore_error_manager.h); returns err_id
-er_t bcore_source_a_parse_err_to_em_fv( bcore_source* o, er_t err_id, sc_t format, va_list args );
-er_t bcore_source_a_parse_err_to_em_fa( bcore_source* o, er_t err_id, sc_t format, ... );
+er_t bcore_source_a_parse_error_fv( bcore_source* o, sc_t format, va_list args );
+er_t bcore_source_a_parse_error_fa( bcore_source* o, sc_t format, ... );
 
 bcore_source* bcore_source_t_create( tp_t type );
 void bcore_source_a_copy( bcore_source* o, const bcore_source* src );
 bcore_source* bcore_source_a_clone( const bcore_source* src );
-//void bcore_source_a_discard( bcore_source* o );
-//void bcore_source_a_detach( bcore_source** o );
-//void bcore_source_a_attach( bcore_source** o, bcore_source* src );
 
 vd_t bcore_spect_source_signal_handler( const bcore_signal_s* o );
 

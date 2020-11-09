@@ -1268,29 +1268,29 @@ void bcore_source_point_s_parse_msg_fa( const bcore_source_point_s* o, sc_t form
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-er_t bcore_source_point_s_parse_err_to_em_fv( const bcore_source_point_s* o, er_t err_id, sc_t format, va_list args )
+er_t bcore_source_point_s_parse_error_fv( const bcore_source_point_s* o, sc_t format, va_list args )
 {
     if( o->source )
     {
         s3_t index = bcore_source_a_get_index( o->source );
         bcore_source_a_set_index( o->source, o->index );
-        er_t ret = bcore_source_a_parse_err_to_em_fv( o->source, err_id, format, args );
+        er_t ret = bcore_source_a_parse_error_fv( o->source, format, args );
         bcore_source_a_set_index( o->source, index );
         return ret;
     }
     else
     {
-        return bcore_error_push_fv( err_id, format, args );
+        return bcore_error_push_fv( TYPEOF_parse_error, format, args );
     }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-er_t bcore_source_point_s_parse_err_to_em_fa( const bcore_source_point_s* o, er_t err_id, sc_t format, ... )
+er_t bcore_source_point_s_parse_error_fa( const bcore_source_point_s* o, sc_t format, ... )
 {
     va_list args;
     va_start( args, format );
-    er_t ret = bcore_source_point_s_parse_err_to_em_fv( o, err_id, format, args );
+    er_t ret = bcore_source_point_s_parse_error_fv( o, format, args );
     va_end( args );
     return ret;
 }
