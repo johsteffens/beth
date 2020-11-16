@@ -1,4 +1,4 @@
-/** Author and Copyright 2019 Johannes Bernhard Steffens
+/** Author and Copyright 2020 Johannes Bernhard Steffens
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -62,8 +62,6 @@ type bcore_self_item_s;
 group bcore_inst   = bcore_inst {};
 group bcore_array  = bcore_inst {};
 group bcore_via    = bcore_inst {};
-group bcore_source = bcore_inst {};
-group bcore_sink   = bcore_inst {};
 
 /// default functions in a stamp
 group bcore_stamp_funcs = bcore_inst
@@ -80,18 +78,6 @@ group bcore_stamp_funcs = bcore_inst
 group bcore_fp = bcore_inst
 {
     feature '' void copy_typed( mutable, tp_t type, vc_t src );
-};
-
-/// st_s
-group bcore_st = bcore_inst
-{
-    stamp st = aware bcore_inst
-    {
-        sd_t data;
-        sc_t sc;
-        uz_t size;
-        uz_t space;
-    };
 };
 
 /// bcore_mutex_s
@@ -135,6 +121,9 @@ group bcore_thread = bcore_inst
     };
 };
 
+embed "bcore_source.x";
+embed "bcore_sink.x";
+embed "bcore_st.x";
 embed "bcore_arr.x";
 embed "bcore_hmap.x";
 

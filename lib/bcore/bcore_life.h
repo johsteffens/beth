@@ -182,7 +182,7 @@ extern bcore_life_s* __bcore_life; // always NULL; needed to ingrain a life-chai
 /// breaks all levels down to (including) nesting_level
 #define BLM_BREAK_LEVEL( nesting_level ) \
 { \
-    bcore_life_s_down_level( &__bcore_life, nesting_level ); \
+    bcore_life_s_down_level( __bcore_life, nesting_level ); \
     break; \
 }
 

@@ -57,13 +57,10 @@ stamp : path = aware bcore_inst
             o->full = st_s_create_fa( "#<sc_t>/#<sc_t>", o->root->sc, o->name.sc );
         }
     };
+
+    func( @* create_sc( sc_t sc ) );
+    func( @* create_st( const st_s* st ) );
 };
-
-#endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#endif // TYPEOF_bcore_file
-
-bcore_file_path_s* bcore_file_path_s_create_sc( sc_t sc );
-bcore_file_path_s* bcore_file_path_s_create_st( const st_s* st );
 
 /**********************************************************************************************************************/
 /// file path manipulations using posix path scheme
@@ -76,42 +73,42 @@ bcore_file_path_s* bcore_file_path_s_create_st( const st_s* st );
  *    - current directory: '<expr1>/./<expr2>'        -> '<expr1>/<expr2>'
  *    - parent directory:  '<expr1>/<dir>/../<expr2>' -> '<expr1>/<expr2>'
  */
-st_s* bcore_file_path_minimized( sc_t path );
+func( st_s* path_minimized( sc_t path ) );
 
 /** Returns extension of path excluding '.'
  *  If path has no extension, returns ""
  */
-sc_t  bcore_file_extension( sc_t path );
+func( sc_t extension( sc_t path ) );
 
 /** Returns file-name of path, including extension, excluding preceding folders.
  *  If path has no preceding folder, returns path
  */
-sc_t  bcore_file_name( sc_t path );
+func( sc_t name( sc_t path ) );
 
 /** Returns string 'path' with extension removed.
  *  If path has no extension, returns path as is.
  *  Example: "mydir/myfile.cpp" -> "mydir/myfile"
  */
-st_s* bcore_file_strip_extension( sc_t path ); // path with extension (if any) removed
+func( st_s* strip_extension( sc_t path ) );
 
 /** Creates string with path up to last folder, excluding file-name.
  *  If path has no preceding folder, the function returns ""
  *  Example: "myroot/mydir/myfile.cpp" -> "myroot/mydir"
  *  Example: "myroot/mydir"            -> "myroot"
  */
-st_s* bcore_file_folder_path( sc_t path ); // creates string with path of folder
+func( st_s* folder_path( sc_t path ) );
 
 /** Creates string with last folder name, excluding file-name.
  *  If path has no preceding folder, returns ""
  */
-st_s* bcore_file_folder_name( sc_t path ); // creates string with name of folder
+func( st_s* folder_name( sc_t path ) );
 
 /**********************************************************************************************************************/
 
-bl_t bcore_file_exists( sc_t name ); // checks if file exists
-bl_t bcore_file_touch(  sc_t name ); // creates empty file if not existing; returns success (no effect if existing)
-bl_t bcore_file_delete( sc_t name ); // deletes file if existing; returns success
-bl_t bcore_file_rename( sc_t src_name, sc_t dst_name ); // renames file if existing; returns success
+func( bl_t exists( sc_t name ) ); // checks if file exists
+func( bl_t touch(  sc_t name ) ); // creates empty file if not existing; returns success (no effect if existing)
+func( bl_t delete( sc_t name ) ); // deletes file if existing; returns success
+func( bl_t rename( sc_t src_name, sc_t dst_name ) ); // renames file if existing; returns success
 
 /** Searches for a file <folder>/<name>, descending the tree through parent folders of <folder>.
  *  Returns false if not found.
@@ -129,14 +126,17 @@ bl_t bcore_file_rename( sc_t src_name, sc_t dst_name ); // renames file if exist
  *    If any matches, result holds the first matching path (e.g. "/home/module.cfg")
  *    and 'true' is returned. Otherwise 'false' is returned.
  */
-bl_t bcore_file_find_descend( sc_t folder, sc_t name, st_s* result );
+func( bl_t find_descend( sc_t folder, sc_t name, st_s* result ) );
 
 /// opens file-source (close it with bcore_source_a_discard)
-bcore_source* bcore_file_open_source( sc_t name );
-bcore_source* bcore_file_open_source_path( const bcore_file_path_s* path );
+func( bcore_source* open_source( sc_t name ) );
+func( bcore_source* open_source_path( const bcore_file_path_s* path ) );
 
 /// opens file-sink (close it with bcore_sink_a_discard)
-bcore_sink* bcore_file_open_sink( sc_t name );
+func( bcore_sink* open_sink( sc_t name ) );
+
+#endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#endif // TYPEOF_bcore_file
 
 /**********************************************************************************************************************/
 

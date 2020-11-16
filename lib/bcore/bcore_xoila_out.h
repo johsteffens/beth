@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-11-11T16:17:39Z
+ *  Last File Update: 2020-11-16T18:40:17Z
  *
  *  Copyright and License of this File:
  *
@@ -18,6 +18,9 @@
  *  bcore_prsg.h
  *  bcore_arr.x
  *  bcore_hmap.x
+ *  bcore_sink.x
+ *  bcore_source.x
+ *  bcore_st.x
  *
  */
 
@@ -27,7 +30,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by xoico, reset the hash key value below to 0.
-#define HKEYOF_bcore_xoila_out 0xB862B7B92526F2A8ull
+#define HKEYOF_bcore_xoila_out 0x3EB99EEFA91B815Dull
 
 #define TYPEOF_bcore_xoila_out 0xC52DA50A6069BDB1ull
 
@@ -54,10 +57,26 @@
   void bcore_file_path_s_source( bcore_file_path_s* o, bcore_source* source ); \
   static inline sc_t bcore_file_path_s_get_sc( const bcore_file_path_s* o ); \
   void bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name ); \
+  bcore_file_path_s* bcore_file_path_s_create_sc( sc_t sc ); \
+  bcore_file_path_s* bcore_file_path_s_create_st( const st_s* st ); \
   static inline sc_t bcore_file_path_s_get_sc( const bcore_file_path_s* o ){ return  o->full ? o->full->sc : o->name.sc;}
 #define BETH_EXPAND_GROUP_bcore_file \
   BCORE_FORWARD_OBJECT( bcore_file ); \
   BCORE_FORWARD_OBJECT( bcore_file_path_s ); \
+  st_s* bcore_file_path_minimized( sc_t path ); \
+  sc_t bcore_file_extension( sc_t path ); \
+  sc_t bcore_file_name( sc_t path ); \
+  st_s* bcore_file_strip_extension( sc_t path ); \
+  st_s* bcore_file_folder_path( sc_t path ); \
+  st_s* bcore_file_folder_name( sc_t path ); \
+  bl_t bcore_file_exists( sc_t name ); \
+  bl_t bcore_file_touch( sc_t name ); \
+  bl_t bcore_file_delete( sc_t name ); \
+  bl_t bcore_file_rename( sc_t src_name, sc_t dst_name ); \
+  bl_t bcore_file_find_descend( sc_t folder, sc_t name, st_s* result ); \
+  bcore_source* bcore_file_open_source( sc_t name ); \
+  bcore_source* bcore_file_open_source_path( const bcore_file_path_s* path ); \
+  bcore_sink* bcore_file_open_sink( sc_t name ); \
   XOILA_DECLARE_SPECT( bcore_file ) \
   { \
       bcore_spect_header_s header; \
@@ -821,4 +840,4 @@
 vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_XOILA_OUT_H
-// XOILA_OUT_SIGNATURE 0x481AF48D48A2FA7Eull
+// XOILA_OUT_SIGNATURE 0xE566212C8B9A4EC6ull

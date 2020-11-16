@@ -122,16 +122,13 @@ st_s* st_s_pushf(       st_s* o, sc_t format, ... );
 st_s* st_s_push_fv(     st_s* o, sc_t format, va_list args );
 st_s* st_s_push_fa(     st_s* o, sc_t format, ... );
 
-// returns last character of string
-static inline char st_s_last_char( st_s* o ) { return o->sc[ o->size ]; }
-
 /// comparison and equality (for return of comparison 'cmp' see bcore_strcmp)
 static inline s2_t st_s_cmp_sc(     const st_s* o, sc_t sc         ) { return bcore_strcmp( o ? o->sc : NULL, sc ); }
 static inline s2_t st_s_cmp_sc_n(   const st_s* o, sc_t sc, uz_t n ) { return bcore_strcmp_n( o ? o->sc : NULL, o ? o->size : 0, sc, n ); }
 static inline s2_t st_s_cmp_st(     const st_s* o, const st_s* st  ) { return bcore_strcmp( o ? o->sc : NULL, st ? st->sc : NULL ); }
-static inline bool st_s_equal_sc(   const st_s* o, sc_t sc         ) { return bcore_strcmp( o ? o->sc : NULL, sc ) == 0; }
-static inline bool st_s_equal_sc_n( const st_s* o, sc_t sc, uz_t n ) { return bcore_strcmp_n( o ? o->sc : NULL, o ? o->size : 0, sc, n ) == 0; }
-static inline bool st_s_equal_st(   const st_s* o, const st_s* st  ) { return bcore_strcmp( o ? o->sc : NULL, st ? st->sc : NULL ) == 0; }
+static inline bl_t st_s_equal_sc(   const st_s* o, sc_t sc         ) { return bcore_strcmp( o ? o->sc : NULL, sc ) == 0; }
+static inline bl_t st_s_equal_sc_n( const st_s* o, sc_t sc, uz_t n ) { return bcore_strcmp_n( o ? o->sc : NULL, o ? o->size : 0, sc, n ) == 0; }
+static inline bl_t st_s_equal_st(   const st_s* o, const st_s* st  ) { return bcore_strcmp( o ? o->sc : NULL, st ? st->sc : NULL ) == 0; }
 
 /** Search:
  *  Search involving positions between start to end in direction start --> end
