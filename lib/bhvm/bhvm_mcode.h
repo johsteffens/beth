@@ -184,10 +184,10 @@ group :hbase =
         func :: .push_hmc  =
         {
             bhvm_vop_ci_s ci;
-            bhvm_vop_ci_s_init( &ci );
+            bhvm_vop_ci_s_init( ci.1 );
             ci.c = c;
             ci.i = o.push_hm( h, m );
-            *arr_ci.push() = ci;
+            arr_ci.push_c( ci.1 );
             return ci.i;
         };
 
@@ -270,7 +270,7 @@ stamp :lib = aware :
     func : .track_get =
     {
         uz_t* pidx = o.map.get( name );
-        return pidx ? o.arr.[ *pidx ] : NULL;
+        return pidx ? o.arr.[ pidx.0 ] : NULL;
     };
 
     func : .track_get_or_new =
@@ -310,7 +310,7 @@ stamp :lib = aware :
     {
         uz_t* pidx = o.map.get( name );
         if( !pidx ) return;
-        sz_t idx = *pidx;
+        sz_t idx = pidx.0;
         o.arr.[ idx ].discard();
         o.arr.size--;
         o.arr.[ idx ] = o.arr.[ o->arr.size ];

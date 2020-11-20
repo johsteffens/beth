@@ -92,8 +92,8 @@ stamp : = aware badapt_adaptive
     // === adaptive functions =======================================
     func ^ . get_in_size      = { return o->size_input; };
     func ^ . get_out_size     = { return o->size_output; };
-    func ^ . get_dynamics_std = { badapt_dynamics_std_s_copy( dynamics, &o->dynamics ); };
-    func ^ . set_dynamics_std = { badapt_dynamics_std_s_copy( &o->dynamics, dynamics ); };
+    func ^ . get_dynamics_std = { dynamics.copy( o->dynamics ); };
+    func ^ . set_dynamics_std = { o.dynamics.copy( dynamics ); };
     func ^ . arc_to_sink;
     func ^ . minfer;
     func ^ . bgrad_adapt;

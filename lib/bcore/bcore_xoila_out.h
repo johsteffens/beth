@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-11-16T18:40:17Z
+ *  Last File Update: 2020-11-20T13:51:14Z
  *
  *  Copyright and License of this File:
  *
@@ -30,7 +30,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by xoico, reset the hash key value below to 0.
-#define HKEYOF_bcore_xoila_out 0x3EB99EEFA91B815Dull
+#define HKEYOF_bcore_xoila_out 0x1EF8ADBB065B5B30ull
 
 #define TYPEOF_bcore_xoila_out 0xC52DA50A6069BDB1ull
 
@@ -840,4 +840,4 @@
 vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o );
 
 #endif // BCORE_XOILA_OUT_H
-// XOILA_OUT_SIGNATURE 0xE566212C8B9A4EC6ull
+// XOILA_OUT_SIGNATURE 0x5B5AAFC6FE6E88BEull

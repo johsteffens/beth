@@ -153,7 +153,7 @@ group :ar0 =
         {
             sz_t i = o.i.v[0];
             u3_t rval = o.rseed + i;
-            ah[i].v.set_random_u3( o.density, o.min, o.max, &rval );
+            ah[i].v.set_random_u3( o.density, o.min, o.max, rval.1 );
         };
 
         func :: .sig = { return "y"; };
@@ -183,8 +183,8 @@ group :ar0 =
         func :: .run =
         {
             sz_t i = o.i.v[0];
-            u3_t* rval = cast( &o->rval, u3_t* );
-            bcore_mutex_s* mutex = cast( &o->mutex, bcore_mutex_s* );
+            u3_t* rval = o.rval.cast( u3_t* );
+            bcore_mutex_s* mutex = o.mutex.cast( bcore_mutex_s* );
             mutex.lock();
             if( o->prsg )
             {
@@ -319,8 +319,8 @@ group :ar1 =
             bhvm_holor_s* a = ah[o.i.v[0]];
             bhvm_holor_s* y = ah[o.i.v[1]];
             assert( o.shape.get_volume() ==  a.s.get_volume() );
-            y.s.copy( &o.shape );
-            y.v.fork_from( &a.v );
+            y.s.copy( o.shape );
+            y.v.fork_from( a.v.1 );
         };
     };
 };

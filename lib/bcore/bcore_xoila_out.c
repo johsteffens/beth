@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-11-16T18:40:17Z
+ *  Last File Update: 2020-11-20T13:51:14Z
  *
  *  Copyright and License of this File:
  *
@@ -55,8 +55,8 @@ void bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name )
 {
     // bcore_file.h:52:5
     
-    st_s_detach( &o->full );
-    st_s_copy_sc( &o->name,name );
+    st_s_attach( &(o->full ),  NULL);
+    st_s_copy_sc(&(o->name),name );
     if( name[ 0 ] != '/' && o->root != NULL )
     {
         o->full = st_s_create_fa("#<sc_t>/#<sc_t>", o->root->sc, o->name.sc );
@@ -1461,4 +1461,4 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOILA_OUT_SIGNATURE 0x0D5149E17CC93AA1ull
+// XOILA_OUT_SIGNATURE 0x6D8AC2DA83F47575ull

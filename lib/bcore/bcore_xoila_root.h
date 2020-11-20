@@ -53,6 +53,9 @@ type er_t;
 type aware_t;
 type sc_t;
 type sd_t;
+type bl_t;
+
+type bmath_vf3_s;
 
 // objects
 type sr_s;

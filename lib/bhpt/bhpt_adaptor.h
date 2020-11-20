@@ -38,8 +38,8 @@ stamp bhpt_adaptor_epsilon = aware bhpt_adaptor
     func bhpt_adaptor . reset = {};
     func bhpt_adaptor . adapt =
     {
-        assert( node.axon.s.is_equal( &node.grad.s ) );
-        node.grad.v.mul_scl_f3_acc( o->epsilon, &node->axon->v );
+        assert( node.axon.s.is_equal( node.grad.s.1 ) );
+        node.grad.v.mul_scl_f3_acc( o->epsilon, node.axon.v.1 );
     };
 };
 
@@ -50,7 +50,7 @@ stamp bhpt_adaptor_reg_l2 = aware bhpt_adaptor
 {
     f3_t lambda;
     func bhpt_adaptor . reset = {};
-    func bhpt_adaptor . adapt = { node.axon.v.mul_scl_f3_acc( -o->lambda, &node.axon.v ); };
+    func bhpt_adaptor . adapt = { node.axon.v.mul_scl_f3_acc( -o->lambda, node.axon.v.1 ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

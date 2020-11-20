@@ -86,8 +86,8 @@ XOILA_DEFINE_GROUP( badapt_adaptive, bcore_inst )
     {
         bmath_vf3_s v_out;
         f3_t out = 0;
-        bmath_vf3_s_init_weak( &v_out, &out, 1 );
-        badapt_adaptive_a_infer( o, in, &v_out );
+        bmath_vf3_s_init_weak( v_out.1, out.1, 1 );
+        badapt_adaptive_a_infer( o, in, v_out.1 );
         return out;
     };
 
@@ -105,11 +105,12 @@ XOILA_DEFINE_GROUP( badapt_adaptive, bcore_inst )
 
     feature f3_t adapt_loss_f3( mutable, const badapt_loss* loss, const bmath_vf3_s* in, f3_t target ) =
     {
-        bmath_vf3_s v_target, v_out;
+        bmath_vf3_s v_target;
+        bmath_vf3_s v_out;
         f3_t out = 0;
-        bmath_vf3_s_init_weak( &v_target, &target, 1 );
-        bmath_vf3_s_init_weak( &v_out, &out, 1 );
-        badapt_adaptive_a_adapt_loss( o, loss, in, &v_target, &v_out );
+        bmath_vf3_s_init_weak( v_target.1, target.1, 1 );
+        bmath_vf3_s_init_weak( v_out.1, out.1, 1 );
+        badapt_adaptive_a_adapt_loss( o, loss, in, v_target.1, v_out.1 );
         return out;
     };
 

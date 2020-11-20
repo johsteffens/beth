@@ -53,8 +53,8 @@ group :adaptor =
         func : .get_min_max;
         func : .acc_stats;
         func : .zro_grad  = { o.grad.v.zro(); };
-        func : .acc_grad  =   { assert( o.grad.s.is_equal( &src.grad.s ) ); o.grad.v.acc( &src.grad.v ); };
-        func : .rebind_axon = { assert( o.axon.s.is_equal( &src.axon.s ) ); o.axon.v.weak( &src.axon.v ); };
+        func : .acc_grad  =   { assert( o.grad.s.is_equal( src.grad.s.1 ) ); o.grad.v.acc( src.grad.v.1 ); };
+        func : .rebind_axon = { assert( o.axon.s.is_equal( src.axon.s.1 ) ); o.axon.v.weak( src.axon.v.1 ); };
     };
 
     /** The probe is obtained via function get_adaptor_probe.
@@ -69,8 +69,8 @@ group :adaptor =
         func : .get_min_max;
         func : .acc_stats = { BFOR_EACH( i, o ) o.[ i ].acc_stats( axon, grad ); };
         func : .zro_grad  = { BFOR_EACH( i, o ) o.[ i ].zro_grad(); };
-        func : .acc_grad     = { assert( o.size == src.size ); BFOR_EACH( i, o ) o.[ i ].acc_grad( &src.[ i ] ); };
-        func : .rebind_axon  = { assert( o.size == src.size ); BFOR_EACH( i, o ) o.[ i ].rebind_axon( &src.[ i ] ); };
+        func : .acc_grad     = { assert( o.size == src.size ); BFOR_EACH( i, o ) o.[ i ].acc_grad( src.[ i ].1 ); };
+        func : .rebind_axon  = { assert( o.size == src.size ); BFOR_EACH( i, o ) o.[ i ].rebind_axon( src.[ i ].1 ); };
     };
 
     feature void reset( mutable ); // resets all moments

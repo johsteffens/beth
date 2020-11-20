@@ -82,10 +82,10 @@ group :ar1 =
 
     stamp :neg_dp_zf  = { func : .f = { assert( a.v.size == r.v.size ); bhvm_lop_ar1_accn_s_f( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
 
-    stamp :cat_dp_zf  = { func : .f = { bhvm_value_s_acc_offs( &a.v, 0, &r.v, 0, r.v.size ); }; };
-    stamp :cat_dp_zg  = { func : .f = { bhvm_value_s_acc_offs( &a.v, a.v.size - r.v.size, &r.v, 0, r.v.size ); }; };
-    stamp :ccat_dp_zf = { func : .f = { bhvm_value_s_acc_offs( &a.v, 0, &r.v, 0, r.v.size ); }; };
-    stamp :ccat_dp_zg = { func : .f = { bhvm_value_s_acc_offs( &a.v, a.v.size - r.v.size, &r.v, 0, r.v.size ); }; };
+    stamp :cat_dp_zf  = { func : .f = { a.v.acc_offs( 0, r.v.1, 0, r.v.size ); }; };
+    stamp :cat_dp_zg  = { func : .f = { a.v.acc_offs( a.v.size - r.v.size, r.v.1, 0, r.v.size ); }; };
+    stamp :ccat_dp_zf = { func : .f = { a.v.acc_offs( 0, r.v.1, 0, r.v.size ); }; };
+    stamp :ccat_dp_zg = { func : .f = { a.v.acc_offs( a.v.size - r.v.size, r.v.1, 0, r.v.size ); }; };
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -145,7 +145,7 @@ group :ar1_eci =
             {
                 bhvm_holor_s* buf = bhvm_holor_s!;
                 :cpy_acc_s_f( a, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
-                if( r.v.size ) buf->v.cpy( &r->v );
+                if( r.v.size ) buf.v.cpy( r.v.1 );
                 buf.discard();
             }
             else
@@ -166,7 +166,7 @@ group :ar1_eci =
             {
                 bhvm_holor_s* buf = bhvm_holor_s!;
                 :neg_acc_s_f( a, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
-                if( r.v.size ) buf.v.cpy( &r.v );
+                if( r.v.size ) buf.v.cpy( r.v.1 );
                 buf.discard();
             }
             else
@@ -187,7 +187,7 @@ group :ar1_eci =
             {
                 bhvm_holor_s* buf = bhvm_holor_s!;
                 :inv_acc_s_f( a, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
-                if( r.v.size ) buf.v.cpy( &r->v );
+                if( r.v.size ) buf.v.cpy( r.v.1 );
                 buf.discard();
             }
             else
@@ -377,7 +377,7 @@ group :ar2_eci =
             {
                 bhvm_holor_s* buf = bhvm_holor_s!;
                 :add_acc_s_f( a, b, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
-                if( r->v.size ) buf.v.cpy( &r.v );
+                if( r->v.size ) buf.v.cpy( r.v.1 );
                 buf.discard();
             }
             else
@@ -396,7 +396,7 @@ group :ar2_eci =
             {
                 bhvm_holor_s* buf = bhvm_holor_s!;
                 :sub_acc_s_f( a, b, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
-                if( r.v.size ) buf.v.cpy( &r.v );
+                if( r.v.size ) buf.v.cpy( r.v.1 );
                 buf.discard();
             }
             else
@@ -415,7 +415,7 @@ group :ar2_eci =
             {
                 bhvm_holor_s* buf = bhvm_holor_s!;
                 :mul_acc_s_f( a, b, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
-                if( r.v.size ) buf.v.cpy( &r.v );
+                if( r.v.size ) buf.v.cpy( r.v.1 );
                 buf.discard();
             }
             else
@@ -434,7 +434,7 @@ group :ar2_eci =
             {
                 bhvm_holor_s* buf = bhvm_holor_s!;
                 :div_acc_s_f( a, b, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
-                if( r.v.size ) buf.v.cpy( &r.v );
+                if( r.v.size ) buf.v.cpy( r.v.1 );
                 buf.discard();
             }
             else
@@ -453,7 +453,7 @@ group :ar2_eci =
             {
                 bhvm_holor_s* buf = bhvm_holor_s!;
                 :pow_acc_s_f( a, b, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
-                if( r.v.size ) buf.v.cpy( &r.v );
+                if( r.v.size ) buf.v.cpy( r.v.1 );
                 buf.discard();
             }
             else

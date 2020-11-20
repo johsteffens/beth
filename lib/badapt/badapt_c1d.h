@@ -68,8 +68,8 @@ stamp badapt_c1d = badapt_adaptive
     // === adaptive functions =======================================
     func badapt_adaptive . get_in_size      = { return o->arr_layer.arr_size > 0 ? o->arr_layer.arr_data[ 0 ].input_size : 0; };
     func badapt_adaptive . get_out_size     = { return o->arr_layer.arr_size > 0 ? o->arr_layer.arr_data[ o->arr_layer.arr_size - 1 ].kernels : 0; };
-    func badapt_adaptive . get_dynamics_std = { badapt_dynamics_std_s_copy( dynamics, &o->dynamics ); };
-    func badapt_adaptive . set_dynamics_std = { badapt_dynamics_std_s_copy( &o->dynamics, dynamics ); };
+    func badapt_adaptive . get_dynamics_std = { dynamics.copy( o.dynamics ); };
+    func badapt_adaptive . set_dynamics_std = { o.dynamics.copy( dynamics ); };
 
     func badapt_adaptive . arc_to_sink;
     func badapt_adaptive . infer;

@@ -132,16 +132,16 @@ stamp badapt_training_state_std = aware badapt_training_state
 
     st_s backup_file_name;
 
-    func badapt_training_state . set_adaptive = { badapt_adaptive_a_replicate( &o->adaptive, adaptive ); };
+    func badapt_training_state . set_adaptive = { badapt_adaptive_a_replicate( o.adaptive.2, adaptive ); };
     func badapt_training_state . get_adaptive = { return o->adaptive; };
-    func badapt_training_state . set_supplier = { badapt_supplier_a_replicate( &o->supplier, supplier ); };
+    func badapt_training_state . set_supplier = { badapt_supplier_a_replicate( o.supplier.2, supplier ); };
     func badapt_training_state . get_supplier = { return o->supplier; };
-    func badapt_training_state . set_progress = { badapt_progress_s_copy( &o->progress, progress ); };
-    func badapt_training_state . get_progress = { return cast( &o->progress, badapt_progress_s* ); };
-    func badapt_training_state . set_guide    = { badapt_guide_a_replicate( &o->guide, guide ); };
-    func badapt_training_state . get_guide    = { return cast( o->guide, badapt_guide* ); };
-    func badapt_training_state . set_backup_path = { st_s_copy_sc( &o->backup_file_name, name ); };
-    func badapt_training_state . get_backup_path = { return o->backup_file_name.sc; };
+    func badapt_training_state . set_progress = { o.progress.copy( progress ); };
+    func badapt_training_state . get_progress = { return o.progress.cast( badapt_progress_s* ); };
+    func badapt_training_state . set_guide    = { badapt_guide_a_replicate( o.guide.2, guide ); };
+    func badapt_training_state . get_guide    = { return o.guide.cast( badapt_guide* ); };
+    func badapt_training_state . set_backup_path = { o.backup_file_name.copy_sc( name ); };
+    func badapt_training_state . get_backup_path = { return o.backup_file_name.sc; };
 
 
 };

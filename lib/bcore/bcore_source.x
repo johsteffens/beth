@@ -54,6 +54,29 @@ group bcore_source = bcore_inst
         func( @* create_fa( sc_t format, ... ) );
     };
 
+
+    stamp :point = aware :
+    {
+        /* format not disclosed */
+
+        func( void set( mutable, bcore_source* source ) );
+        func( void parse_err_fv( const, sc_t format, va_list args ) );
+        func( void parse_err_fa( const, sc_t format, ... ) );
+        func( void parse_msg_fv( const, sc_t format, va_list args ) );
+        func( void parse_msg_fa( const, sc_t format, ... ) );
+        func( void parse_msg_to_sink_fv( const, bcore_sink* sink, sc_t format, va_list args ) );
+        func( void parse_msg_to_sink_fa( const, bcore_sink* sink, sc_t format, ... ) );
+
+        /// generates a parse error message and pushes it to the error stack (see bcore_error_manager.h); returns err_id
+        func( er_t parse_error_fv( const, sc_t format, va_list args ) );
+        func( er_t parse_error_fa( const, sc_t format, ... ) );
+
+        /// creates a cloned source pointing to the index position of source point
+        func( bcore_source* clone_source( const ) );
+
+        /// write a source reference to sink in the form <file_path>:<line>:<col>
+        func( void source_reference_to_sink( const, bl_t file_name_only, bcore_sink* sink ) );
+    };
 };
 
 //----------------------------------------------------------------------------------------------------------------------

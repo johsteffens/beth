@@ -136,7 +136,7 @@ XOILA_DEFINE_GROUP( badapt_activator, bcore_inst )
             }
         };
 
-        func : .set_activation = { badapt_activation_a_replicate( &o->activation, activation ); };
+        func : .set_activation = { badapt_activation_a_replicate( o.activation.2, activation ); };
         func : .get_activation = { return o->activation; };
     };
 

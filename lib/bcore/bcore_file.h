@@ -50,8 +50,8 @@ stamp : path = aware bcore_inst
     func              : . get_sc = { return o->full ? o->full->sc : o->name.sc; };
     func              : . set_sc =
     {
-        st_s_detach( &o->full );
-        st_s_copy_sc( &o->name, name );
+        o.full =< NULL;
+        o.name.copy_sc( name );
         if( name[ 0 ] != '/' && o->root != NULL )
         {
             o->full = st_s_create_fa( "#<sc_t>/#<sc_t>", o->root->sc, o->name.sc );

@@ -1755,7 +1755,7 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
 
                 if( sres <= 0 )
                 {
-                    return st_s_parse_errorf( o, errfp, arg, idx, "Parsing type #%s failed.", ifnameof( type ) );
+                    return st_s_parse_errorf( o, errfp, arg, idx, "Parsing type '%s' failed.", ifnameof( type ) );
                 }
                 idx += size;
                 if( idx > end_l ) idx = end_l;
