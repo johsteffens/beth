@@ -55,6 +55,7 @@ type sc_t;
 type sd_t;
 type bl_t;
 
+///TODO: remove below (does not belong here)
 type bmath_vf3_s;
 
 // objects

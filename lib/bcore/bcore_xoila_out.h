@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-11-20T13:51:14Z
+ *  Last File Update: 2020-11-23T12:39:59Z
  *
  *  Copyright and License of this File:
  *
@@ -24,13 +24,13 @@
  *
  */
 
-#ifndef BCORE_XOILA_OUT_H
-#define BCORE_XOILA_OUT_H
+#ifndef __bcore_xoila_out_H
+#define __bcore_xoila_out_H
 
 #include "bcore_control.h"
 
 //To force a rebuild of this target by xoico, reset the hash key value below to 0.
-#define HKEYOF_bcore_xoila_out 0x1EF8ADBB065B5B30ull
+#define HKEYOF_bcore_xoila_out 0x34432585542F88D5ull
 
 #define TYPEOF_bcore_xoila_out 0xC52DA50A6069BDB1ull
 
@@ -422,7 +422,7 @@
   static inline bl_t bcore_prsg_a_defines_state_f3( const bcore_prsg* o ) { return true; } \
   static inline bl_t bcore_prsg_a_state_bl( const bcore_prsg* o ) { const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->state_bl ); return p->state_bl( o ); } \
   static inline bl_t bcore_prsg_a_defines_state_bl( const bcore_prsg* o ) { return true; } \
-  static inline bl_t bcore_prsg_state_bl_default( const bcore_prsg* o ){ return  bcore_prsg_a_state_bits_u3( o,1 ) ? true : false;} \
+  static inline bl_t bcore_prsg_state_bl__default( const bcore_prsg* o ){ return  bcore_prsg_a_state_bits_u3( o,1 ) ? true : false;} \
   static inline void bcore_prsg_a_gen( bcore_prsg* o ) { const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->gen ); p->gen( o ); } \
   static inline bl_t bcore_prsg_a_defines_gen( const bcore_prsg* o ) { return true; } \
   static inline u3_t bcore_prsg_a_gen_bits_u3( bcore_prsg* o, sz_t bits ) { const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->gen_bits_u3 ); return p->gen_bits_u3( o, bits ); } \
@@ -433,15 +433,15 @@
   static inline bl_t bcore_prsg_a_defines_gen_f3( const bcore_prsg* o ) { return true; } \
   static inline bl_t bcore_prsg_a_gen_bl( bcore_prsg* o ) { const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->gen_bl ); return p->gen_bl( o ); } \
   static inline bl_t bcore_prsg_a_defines_gen_bl( const bcore_prsg* o ) { return true; } \
-  static inline bl_t bcore_prsg_gen_bl_default( bcore_prsg* o ){ return  bcore_prsg_a_gen_bits_u3( o,1 ) ? true : false;} \
+  static inline bl_t bcore_prsg_gen_bl__default( bcore_prsg* o ){ return  bcore_prsg_a_gen_bits_u3( o,1 ) ? true : false;} \
   static inline bcore_prsg* bcore_prsg_a_set_state_u3( bcore_prsg* o, u3_t seed ) { const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->set_state_u3 ); return p->set_state_u3( o, seed ); } \
   static inline bl_t bcore_prsg_a_defines_set_state_u3( const bcore_prsg* o ) { return true; } \
   static inline bcore_prsg* bcore_prsg_a_set_state_mix( bcore_prsg* o, const bcore_prsg* a, const bcore_prsg* b ) { const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->set_state_mix ); return p->set_state_mix( o, a, b ); } \
   static inline bl_t bcore_prsg_a_defines_set_state_mix( const bcore_prsg* o ) { return true; } \
-  bcore_prsg* bcore_prsg_set_state_mix_default( bcore_prsg* o, const bcore_prsg* a, const bcore_prsg* b ); \
+  bcore_prsg* bcore_prsg_set_state_mix__default( bcore_prsg* o, const bcore_prsg* a, const bcore_prsg* b ); \
   static inline void bcore_prsg_a_reseed( bcore_prsg* o, u3_t seed ) { const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->reseed ); p->reseed( o, seed ); } \
   static inline bl_t bcore_prsg_a_defines_reseed( const bcore_prsg* o ) { return true; } \
-  static inline void bcore_prsg_reseed_default( bcore_prsg* o, u3_t seed ){ bcore_prsg_a_set_state_u3( o,seed );} \
+  static inline void bcore_prsg_reseed__default( bcore_prsg* o, u3_t seed ){ bcore_prsg_a_set_state_u3( o,seed );} \
   BETH_EXPAND_GROUP_bcore_prsg_lcg \
   BETH_EXPAND_GROUP_bcore_prsg_xsg
 
@@ -839,5 +839,5 @@
 
 vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o );
 
-#endif // BCORE_XOILA_OUT_H
-// XOILA_OUT_SIGNATURE 0x5B5AAFC6FE6E88BEull
+#endif // __bcore_xoila_out_H
+// XOILA_OUT_SIGNATURE 0xC4D2DE9EF7080CA5ull
