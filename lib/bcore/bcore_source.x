@@ -52,6 +52,7 @@ group bcore_source = bcore_inst
         func( @* create_from_sc( sc_t sc ) ); // same as ...create_sc
         func( @* create_sc( sc_t sc ) );
         func( @* create_fa( sc_t format, ... ) );
+        func( @* create_fv( sc_t format, va_list args ) );
     };
 
 
