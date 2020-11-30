@@ -63,9 +63,9 @@ type sr_s;
 type bcore_self_s;
 type bcore_self_item_s;
 
-group bcore_inst   = bcore_inst {};
-group bcore_array  = bcore_inst {};
-group bcore_via    = bcore_inst {};
+group bcore_inst  = bcore_inst {};
+group bcore_array = bcore_inst {};
+group bcore_via   = bcore_inst {};
 
 /// default functions in a stamp
 group bcore_stamp_funcs = bcore_inst
