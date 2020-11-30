@@ -202,8 +202,8 @@ For example:
    * The static association between objects and their interfaces forces
      an inhibiting rigidity onto the developer's code-architecture.
    * The limited means of genericity promotes boiler plate coding.
-   * The seemingly rampant increase of built-in features in recent years. <br>
-     (Of which only a fraction appears to be truly needed in any given code base.)
+   * The large increase of built-in features over the years. <br>
+     Of which only a fraction appears to be truly needed in any given code base.
    * Consequently rather slow compilation.
    
 More modern languages (e.g. Java, Python, Go) provide advanced features as well as 
