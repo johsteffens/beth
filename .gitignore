@@ -3,6 +3,10 @@
 *.xml
 *.backup
 beth.*
+*.xo.h
+*.xo.c
+!lib/bcore/*.xo.h
+!lib/bcore/*.xo.c
 bin
 obj
 out
