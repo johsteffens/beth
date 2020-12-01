@@ -76,7 +76,7 @@
     { \
         BLM_INIT(); \
         bcore_arr_fp_s* arr_fp = BLM_CREATE( bcore_arr_fp_s ); \
-        bcore_arr_fp_s_push( arr_fp, ( fp_t )target_name##_xoila_out_signal_handler );
+        bcore_arr_fp_s_push( arr_fp, ( fp_t )target_name##_xo_signal_handler );
 
 /// Inside *signal.c: Registering a source inside a given plant registry
 #define BETH_SIGNAL_USE_SOURCE( source_name ) \

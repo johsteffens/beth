@@ -17,7 +17,7 @@
 #define BADAPT_LOSS_H
 
 #include "bmath_std.h"
-#include "badapt_xoila_out.h"
+#include "badapt.xo.h"
 
 /**********************************************************************************************************************/
 

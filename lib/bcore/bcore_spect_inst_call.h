@@ -21,7 +21,7 @@
 #define BCORE_SPECT_INST_CALL_H
 
 #include "bcore_xoila.h"
-#include "bcore_xoila_out.h"
+#include "bcore.xo.h"
 #include "bcore_trait.h"
 
 /**********************************************************************************************************************/

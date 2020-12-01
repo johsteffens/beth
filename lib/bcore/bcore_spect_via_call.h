@@ -23,7 +23,7 @@
 #include "bcore_xoila.h"
 #include "bcore_spect.h"
 #include "bcore_spect_inst.h"
-#include "bcore_xoila_out.h"
+#include "bcore.xo.h"
 #include "bcore_trait.h"
 
 /**********************************************************************************************************************/

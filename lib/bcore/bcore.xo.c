@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-11-30T18:15:53Z
+ *  Last File Update: 2020-12-01T10:47:37Z
  *
  *  Copyright and License of this File:
  *
@@ -24,7 +24,7 @@
  *
  */
 
-#include "bcore_xoila_out.h"
+#include "bcore.xo.h"
 #include "bcore_spect.h"
 #include "bcore_spect_inst.h"
 #include "bcore_sr.h"
@@ -1175,9 +1175,9 @@ XOILA_DEFINE_SPECT( bcore_prsg, bcore_prsg_xsg )
 /**********************************************************************************************************************/
 
 
-vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
+vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
 {
-    switch( bcore_signal_s_handle_type( o, typeof( "bcore_xoila_out" ) ) )
+    switch( bcore_signal_s_handle_type( o, typeof( "bcore_xo" ) ) )
     {
         case TYPEOF_init1:
         {
@@ -1461,4 +1461,4 @@ vd_t bcore_xoila_out_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOILA_OUT_SIGNATURE 0xB4DEDD1B72763EC4ull
+// XOILA_OUT_SIGNATURE 0x447460D1C63853BCull

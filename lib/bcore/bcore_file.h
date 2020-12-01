@@ -20,7 +20,7 @@
 
 #include "bcore_control.h"
 #include "bcore_signal.h"
-#include "bcore_xoila_out.h"
+#include "bcore.xo.h"
 #include "bcore_spect_via_call.h"
 #include "bcore_xoila.h"
 

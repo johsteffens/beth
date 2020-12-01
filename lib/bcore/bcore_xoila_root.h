@@ -22,7 +22,7 @@
 #define BCORE_XOILA_ROOT_H
 
 #include "bcore_std.h"
-#include "bcore_xoila_out.h"
+#include "bcore.xo.h"
 
 /**********************************************************************************************************************/
 
