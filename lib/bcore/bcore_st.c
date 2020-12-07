@@ -713,6 +713,23 @@ st_s* st_s_push_fa( st_s* o, sc_t format, ... )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bl_t st_s_ends_in_st( const st_s* o, const st_s* st )
+{
+    if( o->size < st->size ) return false;
+    return bcore_strcmp( o->sc + o->size - st->size, st->sc ) == 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t st_s_ends_in_sc( const st_s* o, sc_t sc )
+{
+    uz_t sc_size = bcore_strlen( sc );
+    if( o->size < sc_size ) return false;
+    return bcore_strcmp( o->sc + o->size - sc_size, sc ) == 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 uz_t st_s_find_char( const st_s* o, uz_t start, uz_t end, char c )
 {
     if( end >= start )

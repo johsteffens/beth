@@ -78,6 +78,10 @@ group bcore_st = bcore_inst
         func( bl_t equal_sc_n( const, sc_t sc, uz_t n ) );
         func( bl_t equal_st(   const, const st_s* st  ) );
 
+        /// true in case the rightbound characters of o are equal to st
+        func( bl_t ends_in_st( const, const st_s* st ) );
+        func( bl_t ends_in_sc( const, sc_t sc ) );
+
         /** Search:
          *  Search involving positions between start to end in direction start --> end
          *  Detects first position nearest to start.

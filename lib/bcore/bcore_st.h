@@ -130,6 +130,10 @@ static inline bl_t st_s_equal_sc(   const st_s* o, sc_t sc         ) { return bc
 static inline bl_t st_s_equal_sc_n( const st_s* o, sc_t sc, uz_t n ) { return bcore_strcmp_n( o ? o->sc : NULL, o ? o->size : 0, sc, n ) == 0; }
 static inline bl_t st_s_equal_st(   const st_s* o, const st_s* st  ) { return bcore_strcmp( o ? o->sc : NULL, st ? st->sc : NULL ) == 0; }
 
+/// true in case the rightbound characters of o are equal to st
+bl_t st_s_ends_in_st( const st_s* o, const st_s* st );
+bl_t st_s_ends_in_sc( const st_s* o, sc_t sc );
+
 /** Search:
  *  Search involving positions between start to end in direction start --> end
  *  Detects first position nearest to start.

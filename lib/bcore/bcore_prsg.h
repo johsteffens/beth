@@ -132,7 +132,7 @@ group :lcg =
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    stump :u2_s = extending ::general
+    stump :u2_s = extending ::general_s
     {
         u2_t state = 16437;
         func ^ .bits   = { return 32; };
@@ -144,7 +144,7 @@ group :lcg =
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    stump :u3_s = extending ::general
+    stump :u3_s = extending ::general_s
     {
         u3_t state = 16437;
         func ^ .bits   = { return 64; };
@@ -156,19 +156,19 @@ group :lcg =
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    stamp :u2_00_s = extending :u2 { func ^ .gen = { o->state = bcore_lcg00_u2( o->state ); }; };
-    stamp :u2_01_s = extending :u2 { func ^ .gen = { o->state = bcore_lcg01_u2( o->state ); }; };
-    stamp :u2_02_s = extending :u2 { func ^ .gen = { o->state = bcore_lcg02_u2( o->state ); }; };
-    stamp :u2_03_s = extending :u2 { func ^ .gen = { o->state = bcore_lcg03_u2( o->state ); }; };
-    stamp :u2_04_s = extending :u2 { func ^ .gen = { o->state = bcore_lcg04_u2( o->state ); }; };
-    stamp :u2_05_s = extending :u2 { func ^ .gen = { o->state = bcore_lcg05_u2( o->state ); }; };
+    stamp :u2_00_s = extending :u2_s { func ^ .gen = { o->state = bcore_lcg00_u2( o->state ); }; };
+    stamp :u2_01_s = extending :u2_s { func ^ .gen = { o->state = bcore_lcg01_u2( o->state ); }; };
+    stamp :u2_02_s = extending :u2_s { func ^ .gen = { o->state = bcore_lcg02_u2( o->state ); }; };
+    stamp :u2_03_s = extending :u2_s { func ^ .gen = { o->state = bcore_lcg03_u2( o->state ); }; };
+    stamp :u2_04_s = extending :u2_s { func ^ .gen = { o->state = bcore_lcg04_u2( o->state ); }; };
+    stamp :u2_05_s = extending :u2_s { func ^ .gen = { o->state = bcore_lcg05_u2( o->state ); }; };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    stamp :u3_00_s = extending :u3 { func ^ .gen = { o->state = bcore_lcg00_u3( o->state ); }; };
-    stamp :u3_01_s = extending :u3 { func ^ .gen = { o->state = bcore_lcg01_u3( o->state ); }; };
-    stamp :u3_02_s = extending :u3 { func ^ .gen = { o->state = bcore_lcg02_u3( o->state ); }; };
-    stamp :u3_03_s = extending :u3 { func ^ .gen = { o->state = bcore_lcg03_u3( o->state ); }; };
+    stamp :u3_00_s = extending :u3_s { func ^ .gen = { o->state = bcore_lcg00_u3( o->state ); }; };
+    stamp :u3_01_s = extending :u3_s { func ^ .gen = { o->state = bcore_lcg01_u3( o->state ); }; };
+    stamp :u3_02_s = extending :u3_s { func ^ .gen = { o->state = bcore_lcg02_u3( o->state ); }; };
+    stamp :u3_03_s = extending :u3_s { func ^ .gen = { o->state = bcore_lcg03_u3( o->state ); }; };
 
 };
 
@@ -181,7 +181,7 @@ group :xsg =
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     /// internal state is u2_t
-    stump :u2_s = extending ::general
+    stump :u2_s = extending ::general_s
     {
         u2_t state = 16432;
         func ^ .bits   = { return 32; };
@@ -193,10 +193,10 @@ group :xsg =
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    stamp :u2_00_s = extending :u2 { func ^ .gen = { o->state = bcore_xsg_u2(  o->state ); }; };
-    stamp :u2_01_s = extending :u2 { func ^ .gen = { o->state = bcore_xsg1_u2( o->state ); }; };
-    stamp :u2_02_s = extending :u2 { func ^ .gen = { o->state = bcore_xsg2_u2( o->state ); }; };
-    stamp :u2_03_s = extending :u2 { func ^ .gen = { o->state = bcore_xsg3_u2( o->state ); }; };
+    stamp :u2_00_s = extending :u2_s { func ^ .gen = { o->state = bcore_xsg_u2(  o->state ); }; };
+    stamp :u2_01_s = extending :u2_s { func ^ .gen = { o->state = bcore_xsg1_u2( o->state ); }; };
+    stamp :u2_02_s = extending :u2_s { func ^ .gen = { o->state = bcore_xsg2_u2( o->state ); }; };
+    stamp :u2_03_s = extending :u2_s { func ^ .gen = { o->state = bcore_xsg3_u2( o->state ); }; };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
