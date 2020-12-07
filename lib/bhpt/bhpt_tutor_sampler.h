@@ -40,7 +40,7 @@ feature strict sz_t get_size_ex( const );
 /** Type: Classifier
  *  Problem: Distinguish between a sine wave of arbitrary amplitude and frequency from a random walk curve.
  */
-stamp :sine_random = aware :
+stamp :sine_random_s = aware :
 {
     sz_t size_en = 32;
     f3_t pos_tgt =  0.9;
@@ -56,7 +56,7 @@ stamp :sine_random = aware :
 /** Type: Encoder
  *  Problem: Add two unsigned integer variables.
  */
-stamp :binary_add = aware :
+stamp :binary_add_s = aware :
 {
     sz_t bits  = 4; // input size = bits * 2; output size = bits + 1
     f3_t val_h =  0.9;
@@ -72,7 +72,7 @@ stamp :binary_add = aware :
 /** Type: Encoder
  *  Problem: Multiply two unsigned integer variables.
  */
-stamp :binary_mul = aware :
+stamp :binary_mul_s = aware :
 {
     sz_t bits  = 4; // input size = bits * 2; output size = bits * 2
     f3_t val_h =  0.9;
@@ -87,7 +87,7 @@ stamp :binary_mul = aware :
 /** Type: Encoder
  *  Problem: Forward randomization.
  */
-stamp :binary_lcg00 = aware :
+stamp :binary_lcg00_s = aware :
 {
     sz_t bits  = 4; // input size = bits; output size = bits
     f3_t val_h =  0.9;
@@ -102,7 +102,7 @@ stamp :binary_lcg00 = aware :
 /** Type: Encoder
  *  Problem: (Reverse) Hashing.
  */
-stamp :binary_hash = aware :
+stamp :binary_hash_s = aware :
 {
     sz_t bits  = 4; // input size = bits; output size = bits
     f3_t val_h =  0.9;
@@ -118,7 +118,7 @@ stamp :binary_hash = aware :
 /** Type: Regression
  *  Problem: Estimate polynomial coefficients for a signal within range -1, 1.
  */
-stamp :polynom = aware :
+stamp :polynom_s = aware :
 {
     sz_t size_en = 32;
     sz_t size_ex = 3;   // polynomial order + 1
@@ -143,7 +143,7 @@ XOILA_DEFINE_GROUP( bhpt_tutor_sampler, bcore_inst )
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp : = aware bhpt_tutor
+stamp :s = aware bhpt_tutor
 {
     aware bhpt_builder => builder;
     aware bhpt_adaptor => adaptor;

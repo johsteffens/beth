@@ -1069,6 +1069,55 @@ static bcore_array_s* bcore_array_s_create_from_self( const bcore_self_s* self )
         default: ERR( "invalid type_caps %"PRIu32, ( u2_t )o->type_caps );
     }
 
+
+    // quick-access parameters
+    o->is_static   = false;
+    o->is_of_aware = false;
+    o->is_of_links = false;
+    o->is_mono_typed = false;
+
+    switch( o->type_caps )
+    {
+        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
+        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
+        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC:
+        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
+            o->is_static = true;
+            break;
+
+        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
+        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
+            o->is_of_aware = true;
+            break;
+
+        default:
+            break;
+    }
+
+    switch( o->type_caps )
+    {
+        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
+        case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
+        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
+        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
+        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
+            o->is_of_links = true;
+
+        default:
+            break;
+    }
+
+    switch( o->type_caps )
+    {
+        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
+        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
+            break;
+
+        default:
+            o->is_mono_typed = true;
+            break;
+    }
+
     return o;
 }
 
@@ -1113,35 +1162,6 @@ void bcore_array_default_set_uz     ( const bcore_array_s* p, bcore_array* o, uz
 void bcore_array_default_set_sc     ( const bcore_array_s* p, bcore_array* o, uz_t index, sc_t val ) { p->set( p, o, index, sr_twc( TYPEOF_sc_t, &val ) ); }
 void bcore_array_default_set_bl     ( const bcore_array_s* p, bcore_array* o, uz_t index, bl_t val ) { p->set( p, o, index, sr_twc( TYPEOF_bl_t, &val ) ); }
 
-bl_t bcore_array_p_is_fixed( const bcore_array_s* p )
-{
-    return p->size_fix > 0;
-}
-
-bl_t bcore_array_p_is_static( const bcore_array_s* p )
-{
-    switch( p->type_caps )
-    {
-        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return true;
-        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return true;
-        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return true;
-        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return true;
-        default: break;
-    }
-    return false;
-}
-
-bl_t bcore_array_p_is_mono_typed(  const bcore_array_s* p )
-{
-    switch( p->type_caps )
-    {
-        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE: return false;
-        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE: return false;
-        default: break;
-    }
-    return true;
-}
-
 bl_t bcore_array_p_is_mutable_mono_typed(  const bcore_array_s* p )
 {
     switch( p->type_caps )
@@ -1159,31 +1179,6 @@ bl_t bcore_array_p_is_multi_typed( const bcore_array_s* p )
     {
         case BCORE_CAPS_ARRAY_DYN_LINK_AWARE: return true;
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE: return true;
-        default: break;
-    }
-    return false;
-}
-
-bl_t bcore_array_p_is_of_aware( const bcore_array_s* p )
-{
-    switch( p->type_caps )
-    {
-        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE: return true;
-        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE: return true;
-        default: break;
-    }
-    return false;
-}
-
-bl_t bcore_array_p_is_of_links( const bcore_array_s* p )
-{
-    switch( p->type_caps )
-    {
-        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return true;
-        case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:   return true;
-        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:   return true;
-        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return true;
-        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return true;
         default: break;
     }
     return false;

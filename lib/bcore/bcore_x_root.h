@@ -18,18 +18,18 @@
  *  It manages components, which have a low-level implementation: E.g. beth-system features.
  */
 
-#ifndef BCORE_XOILA_ROOT_H
-#define BCORE_XOILA_ROOT_H
+#ifndef BCORE_X_ROOT_H
+#define BCORE_X_ROOT_H
 
 #include "bcore_std.h"
 #include "bcore.xo.h"
 
 /**********************************************************************************************************************/
 
-#ifdef TYPEOF_bcore_xoila_root
-XOILA_DEFINE_GROUP( bcore_xoila_root, bcore_inst )
+#ifdef TYPEOF_bcore_x_root
+XOILA_DEFINE_GROUP( bcore_x_root, bcore_inst )
 
-#ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#ifdef XOILA_SECTION
 
 set inexpandable;
 
@@ -90,7 +90,7 @@ group bcore_mutex = bcore_inst
     signature void lock(   mutable );
     signature void unlock( mutable );
 
-    stamp : = bcore_inst
+    stamp :s = bcore_inst
     {
         func : .lock;
         func : .unlock;
@@ -104,7 +104,7 @@ group bcore_condition = bcore_inst
     signature void wake_one( mutable );
     signature void wake_all( mutable );
 
-    stamp : = bcore_inst
+    stamp :s = bcore_inst
     {
         func : .sleep;
         func : .wake_one;
@@ -118,7 +118,7 @@ group bcore_thread = bcore_inst
     signature void call( mutable, bcore_fp_thread func, vd_t arg );
     signature vd_t join( mutable );
 
-    stamp : = bcore_inst
+    stamp :s = bcore_inst
     {
         func : .call;
         func : .join;
@@ -131,10 +131,10 @@ embed "bcore_st.x";
 embed "bcore_arr.x";
 embed "bcore_hmap.x";
 
-#endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#endif // XOILA_SECTION
 
-#endif // TYPEOF_bcore_xoila_root
+#endif // TYPEOF_bcore_x_root
 
 /**********************************************************************************************************************/
 
-#endif  // BCORE_XOILA_ROOT_H
+#endif  // BCORE_X_ROOT_H

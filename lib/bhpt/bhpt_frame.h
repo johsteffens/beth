@@ -38,7 +38,7 @@ XOILA_DEFINE_GROUP( bhpt_frame, bcore_inst )
 group :thread =
 {
     /// shared object in a thread base
-    stamp :share = aware :
+    stamp :share_s = aware :
     {
         aware bhpt_tutor    -> tutor;
         aware bhpt_adaptive -> adaptive;
@@ -55,7 +55,7 @@ group :thread =
     signature void wait_while_locked( mutable ); // lock-unlock in sequence (used to test if the item is unlocked and waits otherwise)
 
 
-    stamp :item = aware :
+    stamp :item_s = aware :
     {
         bl_t running = false;
         sz_t prime_cycles = 0; // number of prime cycles yet to be executed
@@ -74,7 +74,7 @@ group :thread =
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    stamp :ads = aware bcore_array { :item_s []; };
+    stamp :ads_s = aware bcore_array { :item_s []; };
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -82,7 +82,7 @@ group :thread =
     signature void tdown( mutable ); // thread function
     signature void run( mutable, sz_t cycles_per_thread );
 
-    stamp :base = aware :
+    stamp :base_s = aware :
     {
         :ads_s ads;
         :share_s => share;
@@ -98,7 +98,7 @@ group :thread =
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp :state = aware :
+stamp :state_s = aware :
 {
     sz_t cycle_number;
     sz_t last_cycle_adapt;
@@ -111,7 +111,7 @@ stamp :state = aware :
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /// Adaptive framework
-stamp : = aware bcore_main
+stamp :s = aware bcore_main
 {
     /// ========= parameters ================
     aware bhpt_tutor   => tutor;

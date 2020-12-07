@@ -1,13 +1,15 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-12-01T10:47:37Z
+ *  Last File Update: 2020-12-07T20:52:29Z
  *
  *  Copyright and License of this File:
  *
  *  Generated code inherits the copyright and license of the underlying xoila source code.
  *  Source code defining this file is distributed across following files:
  *
- *  bcore_xoila_root.h
+ *  bcore_x_root.h
+ *  bcore_x_inst.h
+ *  bcore_x_array.h
  *  bcore_file.h
  *  bcore_spect_inst_call.h
  *  bcore_spect_via_call.h
@@ -32,8 +34,112 @@
 
 
 /**********************************************************************************************************************/
-// source: bcore_xoila_root.h
-#include "bcore_xoila_root.h"
+// source: bcore_x_root.h
+#include "bcore_x_root.h"
+
+/**********************************************************************************************************************/
+// source: bcore_x_inst.h
+#include "bcore_x_inst.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_inst
+
+XOILA_DEFINE_SPECT( bcore_inst, x_inst )
+"{"
+    "bcore_spect_header_s header;"
+"}";
+
+/**********************************************************************************************************************/
+// source: bcore_x_array.h
+#include "bcore_x_array.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_array
+
+XOILA_DEFINE_SPECT( bcore_array, x_array )
+"{"
+    "bcore_spect_header_s header;"
+"}";
+
+x_inst* x_array_push_d( x_array* o, x_inst* v )
+{
+    // bcore_x_array.h:45:65
+    
+    const bcore_array_s* p = bcore_array_s_get_aware( o );
+    
+    if( p->item_p )
+    {
+        tp_t item_type = p->item_p->header.o_type;
+        bcore_array_p_push( p, ( bcore_array* )o, sr_tsd( item_type, v ) );
+    }
+    else
+    {
+        bcore_array_p_push( p, ( bcore_array* )o, sr_asd( v ) );
+    }
+    
+    if( p->is_of_links )
+    {
+        return v;
+    }
+    else
+    {
+        return bcore_array_p_get_last( p, ( bcore_array* )o ).o;
+    }
+}
+
+x_inst* x_array_push_c( x_array* o, const x_inst* v )
+{
+    // bcore_x_array.h:71:71
+    
+    const bcore_array_s* p = bcore_array_s_get_aware( o );
+    
+    if( p->item_p )
+    {
+        tp_t item_type = p->item_p->header.o_type;
+        bcore_array_p_push( p, ( bcore_array* )o, sr_twc( item_type, v ) );
+    }
+    else
+    {
+        bcore_array_p_push( p, ( bcore_array* )o, sr_awc( v ) );
+    }
+    
+    return bcore_array_p_get_last( p, ( bcore_array* )o ).o;
+}
+
+x_inst* x_array_push_t( x_array* o, tp_t type )
+{
+    // bcore_x_array.h:90:52
+    
+    const bcore_array_s* p = bcore_array_s_get_aware( o );
+    bcore_array_p_push( p, ( bcore_array* )o, sr_t_create( type ) );
+    return bcore_array_p_get_last( p, ( bcore_array* )o ).o;
+}
+
+x_inst* x_array_push( x_array* o )
+{
+    // bcore_x_array.h:99:39
+    
+    const bcore_array_s* p = bcore_array_s_get_aware( o );
+    
+    if( p->item_p )
+    {
+        if( p->is_of_links )
+        {
+            tp_t item_type = p->item_p->header.o_type;
+            bcore_array_p_push( p, ( bcore_array* )o, sr_t_create( item_type ) );
+        }
+        else
+        {
+            bcore_array_p_push( p, ( bcore_array* )o, sr_null() );
+        }
+    }
+    else
+    {
+        ERR_fa( "Unspecified push to a dynamically typed array. Use push_d or push_c." );
+    }
+    
+    return bcore_array_p_get_last( p, ( bcore_array* )o ).o;
+}
 
 /**********************************************************************************************************************/
 // source: bcore_file.h
@@ -128,7 +234,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_main_set_s )
 "aware bcore_main"
 "{"
     "bcore_main_arr_s arr;"
-    "func ^:main;"
+    "func bcore_main:main;"
 "}";
 
 er_t bcore_main_set_s_main( bcore_main_set_s* o, bcore_main_frame_s* frame )
@@ -267,17 +373,17 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_00_s )
 "aware bcore_prsg"
 "{"
     "u2_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
+    "func bcore_prsg:gen_u3;"
+    "func bcore_prsg:state_bits_u3;"
+    "func bcore_prsg:gen_bits_u3;"
+    "func bcore_prsg:state_f3;"
+    "func bcore_prsg:gen_f3;"
+    "func bcore_prsg:bits;"
+    "func bcore_prsg:max_u3;"
+    "func bcore_prsg:min_u3;"
+    "func bcore_prsg:state_u3;"
+    "func bcore_prsg:set_state_u3;"
+    "func bcore_prsg:gen;"
 "}";
 
 u3_t bcore_prsg_lcg_u2_00_s_gen_u3( bcore_prsg_lcg_u2_00_s* o )
@@ -331,17 +437,17 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_01_s )
 "aware bcore_prsg"
 "{"
     "u2_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
+    "func bcore_prsg:gen_u3;"
+    "func bcore_prsg:state_bits_u3;"
+    "func bcore_prsg:gen_bits_u3;"
+    "func bcore_prsg:state_f3;"
+    "func bcore_prsg:gen_f3;"
+    "func bcore_prsg:bits;"
+    "func bcore_prsg:max_u3;"
+    "func bcore_prsg:min_u3;"
+    "func bcore_prsg:state_u3;"
+    "func bcore_prsg:set_state_u3;"
+    "func bcore_prsg:gen;"
 "}";
 
 u3_t bcore_prsg_lcg_u2_01_s_gen_u3( bcore_prsg_lcg_u2_01_s* o )
@@ -395,17 +501,17 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_02_s )
 "aware bcore_prsg"
 "{"
     "u2_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
+    "func bcore_prsg:gen_u3;"
+    "func bcore_prsg:state_bits_u3;"
+    "func bcore_prsg:gen_bits_u3;"
+    "func bcore_prsg:state_f3;"
+    "func bcore_prsg:gen_f3;"
+    "func bcore_prsg:bits;"
+    "func bcore_prsg:max_u3;"
+    "func bcore_prsg:min_u3;"
+    "func bcore_prsg:state_u3;"
+    "func bcore_prsg:set_state_u3;"
+    "func bcore_prsg:gen;"
 "}";
 
 u3_t bcore_prsg_lcg_u2_02_s_gen_u3( bcore_prsg_lcg_u2_02_s* o )
@@ -459,17 +565,17 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_03_s )
 "aware bcore_prsg"
 "{"
     "u2_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
+    "func bcore_prsg:gen_u3;"
+    "func bcore_prsg:state_bits_u3;"
+    "func bcore_prsg:gen_bits_u3;"
+    "func bcore_prsg:state_f3;"
+    "func bcore_prsg:gen_f3;"
+    "func bcore_prsg:bits;"
+    "func bcore_prsg:max_u3;"
+    "func bcore_prsg:min_u3;"
+    "func bcore_prsg:state_u3;"
+    "func bcore_prsg:set_state_u3;"
+    "func bcore_prsg:gen;"
 "}";
 
 u3_t bcore_prsg_lcg_u2_03_s_gen_u3( bcore_prsg_lcg_u2_03_s* o )
@@ -523,17 +629,17 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_04_s )
 "aware bcore_prsg"
 "{"
     "u2_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
+    "func bcore_prsg:gen_u3;"
+    "func bcore_prsg:state_bits_u3;"
+    "func bcore_prsg:gen_bits_u3;"
+    "func bcore_prsg:state_f3;"
+    "func bcore_prsg:gen_f3;"
+    "func bcore_prsg:bits;"
+    "func bcore_prsg:max_u3;"
+    "func bcore_prsg:min_u3;"
+    "func bcore_prsg:state_u3;"
+    "func bcore_prsg:set_state_u3;"
+    "func bcore_prsg:gen;"
 "}";
 
 u3_t bcore_prsg_lcg_u2_04_s_gen_u3( bcore_prsg_lcg_u2_04_s* o )
@@ -587,17 +693,17 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_05_s )
 "aware bcore_prsg"
 "{"
     "u2_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
+    "func bcore_prsg:gen_u3;"
+    "func bcore_prsg:state_bits_u3;"
+    "func bcore_prsg:gen_bits_u3;"
+    "func bcore_prsg:state_f3;"
+    "func bcore_prsg:gen_f3;"
+    "func bcore_prsg:bits;"
+    "func bcore_prsg:max_u3;"
+    "func bcore_prsg:min_u3;"
+    "func bcore_prsg:state_u3;"
+    "func bcore_prsg:set_state_u3;"
+    "func bcore_prsg:gen;"
 "}";
 
 u3_t bcore_prsg_lcg_u2_05_s_gen_u3( bcore_prsg_lcg_u2_05_s* o )
@@ -651,17 +757,17 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_00_s )
 "aware bcore_prsg"
 "{"
     "u3_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
+    "func bcore_prsg:gen_u3;"
+    "func bcore_prsg:state_bits_u3;"
+    "func bcore_prsg:gen_bits_u3;"
+    "func bcore_prsg:state_f3;"
+    "func bcore_prsg:gen_f3;"
+    "func bcore_prsg:bits;"
+    "func bcore_prsg:max_u3;"
+    "func bcore_prsg:min_u3;"
+    "func bcore_prsg:state_u3;"
+    "func bcore_prsg:set_state_u3;"
+    "func bcore_prsg:gen;"
 "}";
 
 u3_t bcore_prsg_lcg_u3_00_s_gen_u3( bcore_prsg_lcg_u3_00_s* o )
@@ -715,17 +821,17 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_01_s )
 "aware bcore_prsg"
 "{"
     "u3_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
+    "func bcore_prsg:gen_u3;"
+    "func bcore_prsg:state_bits_u3;"
+    "func bcore_prsg:gen_bits_u3;"
+    "func bcore_prsg:state_f3;"
+    "func bcore_prsg:gen_f3;"
+    "func bcore_prsg:bits;"
+    "func bcore_prsg:max_u3;"
+    "func bcore_prsg:min_u3;"
+    "func bcore_prsg:state_u3;"
+    "func bcore_prsg:set_state_u3;"
+    "func bcore_prsg:gen;"
 "}";
 
 u3_t bcore_prsg_lcg_u3_01_s_gen_u3( bcore_prsg_lcg_u3_01_s* o )
@@ -779,17 +885,17 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_02_s )
 "aware bcore_prsg"
 "{"
     "u3_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
+    "func bcore_prsg:gen_u3;"
+    "func bcore_prsg:state_bits_u3;"
+    "func bcore_prsg:gen_bits_u3;"
+    "func bcore_prsg:state_f3;"
+    "func bcore_prsg:gen_f3;"
+    "func bcore_prsg:bits;"
+    "func bcore_prsg:max_u3;"
+    "func bcore_prsg:min_u3;"
+    "func bcore_prsg:state_u3;"
+    "func bcore_prsg:set_state_u3;"
+    "func bcore_prsg:gen;"
 "}";
 
 u3_t bcore_prsg_lcg_u3_02_s_gen_u3( bcore_prsg_lcg_u3_02_s* o )
@@ -843,17 +949,17 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_03_s )
 "aware bcore_prsg"
 "{"
     "u3_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
+    "func bcore_prsg:gen_u3;"
+    "func bcore_prsg:state_bits_u3;"
+    "func bcore_prsg:gen_bits_u3;"
+    "func bcore_prsg:state_f3;"
+    "func bcore_prsg:gen_f3;"
+    "func bcore_prsg:bits;"
+    "func bcore_prsg:max_u3;"
+    "func bcore_prsg:min_u3;"
+    "func bcore_prsg:state_u3;"
+    "func bcore_prsg:set_state_u3;"
+    "func bcore_prsg:gen;"
 "}";
 
 u3_t bcore_prsg_lcg_u3_03_s_gen_u3( bcore_prsg_lcg_u3_03_s* o )
@@ -915,17 +1021,17 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_00_s )
 "aware bcore_prsg"
 "{"
     "u2_t state = 16432;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
+    "func bcore_prsg:gen_u3;"
+    "func bcore_prsg:state_bits_u3;"
+    "func bcore_prsg:gen_bits_u3;"
+    "func bcore_prsg:state_f3;"
+    "func bcore_prsg:gen_f3;"
+    "func bcore_prsg:bits;"
+    "func bcore_prsg:max_u3;"
+    "func bcore_prsg:min_u3;"
+    "func bcore_prsg:state_u3;"
+    "func bcore_prsg:set_state_u3;"
+    "func bcore_prsg:gen;"
 "}";
 
 u3_t bcore_prsg_xsg_u2_00_s_gen_u3( bcore_prsg_xsg_u2_00_s* o )
@@ -979,17 +1085,17 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_01_s )
 "aware bcore_prsg"
 "{"
     "u2_t state = 16432;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
+    "func bcore_prsg:gen_u3;"
+    "func bcore_prsg:state_bits_u3;"
+    "func bcore_prsg:gen_bits_u3;"
+    "func bcore_prsg:state_f3;"
+    "func bcore_prsg:gen_f3;"
+    "func bcore_prsg:bits;"
+    "func bcore_prsg:max_u3;"
+    "func bcore_prsg:min_u3;"
+    "func bcore_prsg:state_u3;"
+    "func bcore_prsg:set_state_u3;"
+    "func bcore_prsg:gen;"
 "}";
 
 u3_t bcore_prsg_xsg_u2_01_s_gen_u3( bcore_prsg_xsg_u2_01_s* o )
@@ -1043,17 +1149,17 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_02_s )
 "aware bcore_prsg"
 "{"
     "u2_t state = 16432;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
+    "func bcore_prsg:gen_u3;"
+    "func bcore_prsg:state_bits_u3;"
+    "func bcore_prsg:gen_bits_u3;"
+    "func bcore_prsg:state_f3;"
+    "func bcore_prsg:gen_f3;"
+    "func bcore_prsg:bits;"
+    "func bcore_prsg:max_u3;"
+    "func bcore_prsg:min_u3;"
+    "func bcore_prsg:state_u3;"
+    "func bcore_prsg:set_state_u3;"
+    "func bcore_prsg:gen;"
 "}";
 
 u3_t bcore_prsg_xsg_u2_02_s_gen_u3( bcore_prsg_xsg_u2_02_s* o )
@@ -1107,17 +1213,17 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_03_s )
 "aware bcore_prsg"
 "{"
     "u2_t state = 16432;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
+    "func bcore_prsg:gen_u3;"
+    "func bcore_prsg:state_bits_u3;"
+    "func bcore_prsg:gen_bits_u3;"
+    "func bcore_prsg:state_f3;"
+    "func bcore_prsg:gen_f3;"
+    "func bcore_prsg:bits;"
+    "func bcore_prsg:max_u3;"
+    "func bcore_prsg:min_u3;"
+    "func bcore_prsg:state_u3;"
+    "func bcore_prsg:set_state_u3;"
+    "func bcore_prsg:gen;"
 "}";
 
 u3_t bcore_prsg_xsg_u2_03_s_gen_u3( bcore_prsg_xsg_u2_03_s* o )
@@ -1183,7 +1289,19 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
         {
 
             // --------------------------------------------------------------------
-            // source: bcore_xoila_root.h
+            // source: bcore_x_root.h
+
+            // --------------------------------------------------------------------
+            // source: bcore_x_inst.h
+
+            // group: x_inst
+            XOILA_REGISTER_SPECT( x_inst );
+
+            // --------------------------------------------------------------------
+            // source: bcore_x_array.h
+
+            // group: x_array
+            XOILA_REGISTER_SPECT( x_array );
 
             // --------------------------------------------------------------------
             // source: bcore_file.h
@@ -1461,4 +1579,4 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOILA_OUT_SIGNATURE 0x447460D1C63853BCull
+// XOILA_OUT_SIGNATURE 0xEB7323CFCE8179ECull

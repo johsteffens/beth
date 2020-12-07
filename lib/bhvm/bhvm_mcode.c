@@ -104,7 +104,7 @@ void bhvm_mcode_track_s_remove_unmapped_output( bhvm_mcode_track_s* o, bcore_arr
         }
     }
 
-    bhvm_mcode_track_s_set_size( o, k );
+    x_array_set_size( ( x_array* )o, k );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

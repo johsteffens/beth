@@ -27,7 +27,7 @@
 
 XOILA_DEFINE_GROUP( bmath_asmf3, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    stamp bmath_asmf3 = aware bcore_inst
+    stamp bmath_asmf3_s = aware bcore_inst
     {
         sz_t cols;     // values per row
         sz_t rows;     // number of rows

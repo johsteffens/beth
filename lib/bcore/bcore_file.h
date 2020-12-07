@@ -41,7 +41,7 @@ signature void set_sc( mutable, sc_t name );
  *  This object implements via_call:source, which is called during interpreting a source (e.g. object is read from a file).
  *  via_call:source provides bcore_path_s with a stream source from which a file location is obtained.
  */
-stamp : path = aware bcore_inst
+stamp :path_s = aware bcore_inst
 {
     st_s name; // absolute or relative path ( e.g. "../obj/myobj.txt" );
     hidden st_s => root; // root folder

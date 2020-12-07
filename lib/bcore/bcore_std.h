@@ -59,4 +59,7 @@
 #include "bcore_prsg.h"
 #include "bcore_cday.h"
 
+#include "bcore_x_inst.h"
+#include "bcore_x_array.h"
+
 #endif // BCORE_STD_H

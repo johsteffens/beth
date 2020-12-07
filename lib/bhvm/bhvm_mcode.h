@@ -37,7 +37,7 @@ XOILA_DEFINE_GROUP( bhvm_mcode, bcore_inst )
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // microcode operation with preset perspective
-stamp :op = aware :
+stamp :op_s = aware :
 {
     aware bhvm_vop => vop;
     private bhvm_vop_spect_s* p; // perspective of vop
@@ -58,7 +58,7 @@ name pclass_ag1; // alternate axon gradient
 signature sz_t get_pclass_idx( const, tp_t pclass );
 
 /// mcode node (indexing for a given hbase)
-stamp :node = aware :
+stamp :node_s = aware :
 {
     /// Index into nbase holding this node
     sz_t nidx = -1;
@@ -110,7 +110,7 @@ stamp :node = aware :
 
 signature :node_s* push_node( mutable );
 
-stamp :nbase = aware bcore_array
+stamp :nbase_s = aware bcore_array
 {
     :node_s => [];
     func : .push_node =
@@ -121,6 +121,10 @@ stamp :nbase = aware bcore_array
         node.nidx = nidx;
         return node;
     };
+//    func (      @* clear( mutable ))              = { return x_array_clear( o ); };
+//    func (:node_s* push( mutable ))               = { return x_array_push( o ); };
+//    func (:node_s* push_d( mutable, :node_s* v )) = { return x_array_push_d( o, v ); };
+//    func (:node_s* push_c( mutable, const :node_s* v )) = { return x_array_push_c( o, v ); };
 };
 
 /// Holor meta data
@@ -138,7 +142,7 @@ group :hmeta =
     feature bcore_inst* get_custom( const )                             = { return NULL; }; // retrieves custom data (if available)
     feature bcore_inst* set_custom( mutable, const bcore_inst* custom ) = { return NULL; }; // sets custom data and returns custom copy (if supported)
 
-    stamp :adl = aware bcore_array { aware : => []; };
+    stamp :adl_s = aware bcore_array { aware : => []; };
 };
 
 /// returns index to pushed holor;
@@ -154,7 +158,7 @@ group :hbase =
     signature  bhvm_holor_s* get_holor( const, sz_t index );
     signature  ::hmeta*      get_hmeta( const, sz_t index );
 
-    stamp : = aware :
+    stamp :s = aware :
     {
         bhvm_holor_adl_s holor_adl;
            ::hmeta_adl_s hmeta_adl;
@@ -207,7 +211,7 @@ group :hbase =
 
 signature void run_section( const, sz_t start, sz_t size, bhvm_holor_s** ah );
 
-stamp :track = aware bcore_array
+stamp :track_s = aware bcore_array
 {
     tp_t name;
     :op_s [];
@@ -237,9 +241,21 @@ stamp :track = aware bcore_array
         assert( index >= 0 && index < o->size );
         return o.vop_push_d( o->[ index ].vop.clone() );
     };
+
+//    func (   @* clear( mutable ))             = { return x_array_clear( o ); };
+//    func (:op_s* push( mutable ))             = { return x_array_push( o ); };
+//    func (:op_s* push_d( mutable, :op_s* v )) = { return x_array_push_d( o, v ); };
+//    func (:op_s* push_c( mutable, const :op_s* v )) = { return x_array_push_c( o, v ); };
 };
 
-stamp :track_adl = aware bcore_array { :track_s => []; };
+stamp :track_adl_s = aware x_array
+{
+    :track_s => [];
+//    func (      @* clear( mutable ))                = { return x_array_clear( o ); };
+//    func (:track_s* push( mutable ))                = { return x_array_push( o ); };
+//    func (:track_s* push_d( mutable, :track_s* v )) = { return x_array_push_d( o, v ); };
+    func (:track_s* push_c( mutable, const :track_s* v )) = { return x_array_push_c( o, v ); };
+};
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -259,7 +275,7 @@ signature      void track_run         (   const, tp_t name );
 signature void track_vop_set_args_push_d( mutable, tp_t name, bhvm_vop* vop, const bhvm_vop_arr_ci_s* arr_ci );
 
 // track library
-stamp :lib = aware :
+stamp :lib_s = aware :
 {
     :track_adl_s      arr;
     bcore_hmap_tpuz_s map; // name-index map
@@ -328,7 +344,7 @@ stamp :lib = aware :
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp :frame = aware :
+stamp :frame_s = aware :
 {
     :lib_s    => lib;
     :hbase_s  => hbase;

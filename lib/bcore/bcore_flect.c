@@ -1485,12 +1485,26 @@ const bcore_self_item_s* bcore_self_s_get_item( const bcore_self_s* o, uz_t inde
 
 const bcore_self_item_s* bcore_self_s_get_item_by_name( const bcore_self_s* o, tp_t name )
 {
-    if( !o->body ) return 0;
+    if( !o->body ) return NULL;
     ASSERT( o->body );
     for( uz_t i = 0; i < o->body->size; i++ )
     {
         const bcore_self_item_s* item = o->body->data[ i ];
         if( item->name == name ) return item;
+    }
+    return NULL;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+const bcore_self_item_s* bcore_self_s_get_first_array_item( const bcore_self_s* o )
+{
+    if( !o->body ) return NULL;
+    ASSERT( o->body );
+    for( uz_t i = 0; i < o->body->size; i++ )
+    {
+        const bcore_self_item_s* item = o->body->data[ i ];
+        if( bcore_flect_caps_is_array( item->caps ) ) return item;
     }
     return NULL;
 }

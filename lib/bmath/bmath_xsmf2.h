@@ -27,7 +27,7 @@
 
 XOILA_DEFINE_GROUP( bmath_xsmf2, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    stamp bmath_xsmf2 = aware bcore_inst
+    stamp bmath_xsmf2_s = aware bcore_inst
     {
         sz_t slos;   // values per xon
         sz_t xons;   // xons  per row

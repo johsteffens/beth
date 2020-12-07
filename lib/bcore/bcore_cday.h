@@ -47,8 +47,8 @@
 XOILA_DEFINE_GROUP( bcore_cday, bcore_inst )
 #ifdef XOILA_SECTION
 
-stamp :ymd = aware : { s2_t y; s2_t m; s2_t d; }; // year - month - day
-stamp :utc = aware : { s2_t cday; s2_t ms; };     // utc-time stamp: cday, milliseconds from 0:00 into the day
+stamp :ymd_s = aware : { s2_t y; s2_t m; s2_t d; }; // year - month - day
+stamp :utc_s = aware : { s2_t cday; s2_t ms; };     // utc-time stamp: cday, milliseconds from 0:00 into the day
 
 #endif // XOILA_SECTION
 #endif // TYPEOF_bcore_cday

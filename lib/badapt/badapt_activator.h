@@ -28,62 +28,62 @@ XOILA_DEFINE_GROUP( badapt_activation, bcore_inst )
     feature strict 'pa' f3_t dy( const, f3_t y ); // dy = d( y ) (derivative applied on y)
 
     // ======= (trivial activations) ============
-    stamp :zero   = aware : { func : .fx = { return 0.0; }; func : .dy = { return 0.0; }; };
-    stamp :one    = aware : { func : .fx = { return 1.0; }; func : .dy = { return 0.0; }; };
-    stamp :linear = aware : { func : .fx = { return   x; }; func : .dy = { return 1.0; }; };
+    stamp :zero_s   = aware : { func : .fx = { return 0.0; }; func : .dy = { return 0.0; }; };
+    stamp :one_s    = aware : { func : .fx = { return 1.0; }; func : .dy = { return 0.0; }; };
+    stamp :linear_s = aware : { func : .fx = { return   x; }; func : .dy = { return 1.0; }; };
 
     // ======= (logistic function) ============
-    stamp :sigm = aware :
+    stamp :sigm_s = aware :
     {
         func : .fx = { return ( x > -700 ) ? ( 1.0 / ( 1.0 + exp( -x ) ) ) : 0; };
         func : .dy = { return y * ( 1.0 - y ); };
     };
 
-    stamp :sigm_hard = aware :
+    stamp :sigm_hard_s = aware :
     {
         func : .fx = { return ( x < -2.0 ) ? 0.0 : ( x > 2.0 ) ? 1.0 : 0.25 * ( x + 2.0 ); };
         func : .dy = { return ( y <  0.0 ) ? 0.0 : ( y > 1.0 ) ? 0.0 : 0.25; };
     };
 
-    stamp :sigm_leaky = aware :
+    stamp :sigm_leaky_s = aware :
     {
         func : .fx = { return ( x < -2.0 ) ? 0.01 * ( x + 2.0 ) : ( x > 2.0 ) ? 1.0 + 0.01 * ( x - 2.0 ) : 0.25 * ( x + 2.0 ); };
         func : .dy = { return ( y <  0.0 ) ? 0.01 : ( y > 1.0 ) ? 0.01 : 0.25; };
     };
 
     // ======= (tanh) =========================
-    stamp :tanh = aware :
+    stamp :tanh_s = aware :
     {
         func : .fx = { return ( x < 350 ) ? ( 1.0 - ( 2.0 / ( exp( 2.0 * x ) + 1.0 ) ) ) : 1.0; };
         func : .dy = { return 1.0 - f3_sqr( y ); };
     };
 
-    stamp :tanh_hard = aware :
+    stamp :tanh_hard_s = aware :
     {
         func : .fx = { return ( x < -1.0 ) ? -1.0 : ( x > 1.0 ) ? 1.0 : x; };
         func : .dy = { return ( y < -1.0 ) ?  0.0 : ( y > 1.0 ) ? 0.0 : 1.0; };
     };
 
-    stamp :tanh_leaky = aware :
+    stamp :tanh_leaky_s = aware :
     {
         func : .fx = { return ( x < -1.0 ) ? -1.0 + 0.01 * ( x + 1.0 ) : ( x > 1.0 ) ? 1.0 + 0.01 * ( x - 1.0 ) : x; };
         func : .dy = { return ( y < -1.0 ) ?  0.01 : ( y > 1.0 ) ? 0.01 : 1.0; };
     };
 
     // ======= (softplus function) ============
-    stamp :softplus = aware :
+    stamp :softplus_s = aware :
     {
         func : .fx = { return ( x < 700 ) ? log( 1.0 + exp( x ) ) : x; };
         func : .dy = { f3_t u = exp( y ); return ( u - 1.0 ) / u; };
     };
 
-    stamp :relu = aware :
+    stamp :relu_s = aware :
     {
         func : .fx = { return x > 0 ? x : 0; };
         func : .dy = { return y > 0 ? 1 : 0; };
     };
 
-    stamp :leaky_relu = aware :
+    stamp :leaky_relu_s = aware :
     {
         func : .fx = { return x > 0 ? x : x * 0.01; };
         func : .dy = { return y > 0 ? 1 : 0.01; };
@@ -111,7 +111,7 @@ XOILA_DEFINE_GROUP( badapt_activator, bcore_inst )
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     /// Activator without bias.
-    stamp :plain = aware :
+    stamp :plain_s = aware :
     {
         aware badapt_activation => activation;
 
@@ -143,7 +143,7 @@ XOILA_DEFINE_GROUP( badapt_activator, bcore_inst )
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     /// softmax activator.
-    stamp :softmax = aware :
+    stamp :softmax_s = aware :
     {
         func : .infer =
         {
@@ -171,9 +171,9 @@ XOILA_DEFINE_GROUP( badapt_activator, bcore_inst )
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     /// specifies which activator is used for which layer; negative layer number means relative to last layer + 1
-    stamp badapt_layer_activator     = aware bcore_inst  { sz_t layer; aware badapt_activator => activator; };
-    stamp badapt_arr_layer_activator = aware bcore_array { badapt_layer_activator_s    [] arr; };
-    stamp badapt_arr_activator       = aware bcore_array { aware badapt_activator   => [] arr; };
+    stamp badapt_layer_activator_s     = aware bcore_inst  { sz_t layer; aware badapt_activator => activator; };
+    stamp badapt_arr_layer_activator_s = aware bcore_array { badapt_layer_activator_s    [] arr; };
+    stamp badapt_arr_activator_s       = aware bcore_array { aware badapt_activator   => [] arr; };
 
 #endif // XOILA_SECTION
 

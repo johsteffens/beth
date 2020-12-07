@@ -32,7 +32,7 @@ XOILA_DEFINE_GROUP( bhpt_adaptor_stamp, bhpt_adaptor )
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /// Adding gradient*epsilon to adaptive
-stamp bhpt_adaptor_epsilon = aware bhpt_adaptor
+stamp bhpt_adaptor_epsilon_s = aware bhpt_adaptor
 {
     f3_t epsilon;
     func bhpt_adaptor . reset = {};
@@ -46,7 +46,7 @@ stamp bhpt_adaptor_epsilon = aware bhpt_adaptor
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /// Applying l2-regularization (weight-decay) to weights: w -= w * lambda;
-stamp bhpt_adaptor_reg_l2 = aware bhpt_adaptor
+stamp bhpt_adaptor_reg_l2_s = aware bhpt_adaptor
 {
     f3_t lambda;
     func bhpt_adaptor . reset = {};
@@ -55,7 +55,7 @@ stamp bhpt_adaptor_reg_l2 = aware bhpt_adaptor
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp bhpt_adaptor_zro_grad = aware bhpt_adaptor
+stamp bhpt_adaptor_zro_grad_s = aware bhpt_adaptor
 {
     func bhpt_adaptor . adapt = { node.grad.v.zro(); };
 };
@@ -63,7 +63,7 @@ stamp bhpt_adaptor_zro_grad = aware bhpt_adaptor
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /// List of adaptors applied in sequence
-stamp bhpt_adaptor_list = aware bcore_array
+stamp bhpt_adaptor_list_s = aware bcore_array
 {
     aware bhpt_adaptor => [];
 

@@ -28,7 +28,7 @@ signature tp_t idx_key( const,   uz_t idx ); // returns indexed key (idx indexes
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp bcore_hnode_tpuz = bcore_inst
+stamp bcore_hnode_tpuz_s = bcore_inst
 {
     tp_t key;
     uz_t val;
@@ -53,7 +53,7 @@ group bcore_hmap_tpuz = bcore_inst
      */
     signature sz_t from_array( mutable, bcore_array* array, tp_t member_name );
 
-    stamp : = aware bcore_inst
+    stamp :s = aware bcore_inst
     {
         private bcore_hnode_tpuz_s* nodes;
         private bl_t* flags;
@@ -77,7 +77,7 @@ group bcore_hmap_tpuz = bcore_inst
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp bcore_hnode_tpfp = bcore_inst
+stamp bcore_hnode_tpfp_s = bcore_inst
 {
     tp_t key;
     fp_t val;
@@ -91,7 +91,7 @@ group bcore_hmap_tpfp = bcore_inst
     signature fp_t  remove(  mutable, tp_t key ); // removes key, returns copy of associated value if existing, 0 otherwise.
     signature fp_t  idx_val( const,   uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
 
-    stamp : = aware bcore_inst
+    stamp :s = aware bcore_inst
     {
         private bcore_hnode_tpfp_s* nodes;
         private bl_t* flags;
@@ -114,7 +114,7 @@ group bcore_hmap_tpfp = bcore_inst
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp bcore_hnode_tptp = bcore_inst
+stamp bcore_hnode_tptp_s = bcore_inst
 {
     tp_t key;
     tp_t val;
@@ -128,7 +128,7 @@ group bcore_hmap_tptp = bcore_inst
     signature tp_t  remove(  mutable, tp_t key ); // removes key, returns copy of associated value if existing, 0 otherwise.
     signature tp_t  idx_val( const,   uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
 
-    stamp : = aware bcore_inst
+    stamp :s = aware bcore_inst
     {
         private bcore_hnode_tptp_s* nodes;
         private bl_t* flags;
@@ -151,7 +151,7 @@ group bcore_hmap_tptp = bcore_inst
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp bcore_hnode_tpvd = bcore_inst
+stamp bcore_hnode_tpvd_s = bcore_inst
 {
     tp_t key;
     vd_t val;
@@ -165,7 +165,7 @@ group bcore_hmap_tpvd = bcore_inst
     signature vd_t  remove(  mutable, tp_t key ); // removes key, returns copy of associated value if existing, 0 otherwise.
     signature vd_t  idx_val( const,   uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
 
-    stamp : = aware bcore_inst
+    stamp :s = aware bcore_inst
     {
         private bcore_hnode_tpvd_s* nodes;
         private bl_t* flags;
@@ -188,7 +188,7 @@ group bcore_hmap_tpvd = bcore_inst
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp bcore_hnode_tpto = bcore_inst
+stamp bcore_hnode_tpto_s = bcore_inst
 {
     tp_t key;
     vd_t val;
@@ -204,7 +204,7 @@ group bcore_hmap_tpto = bcore_inst
     signature void  remove  ( mutable, tp_t key ); // removes key, destroys associated object (if present)
     signature vd_t  idx_val( const,    uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
 
-    stamp : = aware bcore_inst
+    stamp :s = aware bcore_inst
     {
         tp_t type;
         private bcore_hnode_tpto_s* nodes;
@@ -236,7 +236,7 @@ group bcore_hmap_tp = bcore_inst
     signature uz_t set(    mutable, tp_t key ); // sets new key if not already existing; returns index
     signature uz_t remove( mutable, tp_t key ); // removes key, returns old index
 
-    stamp : = aware bcore_inst
+    stamp :s = aware bcore_inst
     {
         private tp_t* keys;
         private bl_t* flags;

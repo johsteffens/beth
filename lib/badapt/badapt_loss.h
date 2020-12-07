@@ -34,7 +34,7 @@ XOILA_DEFINE_GROUP( badapt_loss, bcore_inst )
     feature strict 'pa' void bgrad( const, const bmath_vf3_s* out, const bmath_vf3_s* target, bmath_vf3_s* grad );
 
     // l2 loss function
-    stamp :l2 = aware badapt_loss
+    stamp :l2_s = aware badapt_loss
     {
         func badapt_loss.loss    = { return bmath_vf3_s_f3_sub_sqr( target, out ); };
         func badapt_loss.loss_f3 = { return f3_sqr( target - out ); };
@@ -42,7 +42,7 @@ XOILA_DEFINE_GROUP( badapt_loss, bcore_inst )
     };
 
     // logistic loss function
-    stamp :log = aware badapt_loss
+    stamp :log_s = aware badapt_loss
     {
         func badapt_loss.loss =
         {

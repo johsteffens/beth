@@ -71,29 +71,30 @@
 XOILA_DEFINE_GROUP( bhvm, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp :shape = bcore_array
+stamp :shape_s = bcore_array
 {
     sz_t [];
+    //func (sz_t* push( mutable )) = { return o.cast( x_array* ).push().cast( sz_t* ); };
 };
 
-stamp :value = bcore_array
+stamp :value_s = bcore_array
 {
     typed [];
 };
 
-stamp :holor = aware bcore_inst
+stamp :holor_s = aware bcore_inst
 {
     :shape_s s;
     :value_s v;
     func bcore_fp . copy_typed;
 };
 
-stamp :holor_adl = aware bcore_array { :holor_s     => [];  func bcore_fp . copy_typed; }; // dynamic array of links
-stamp :holor_ads = aware bcore_array { :holor_s        []; }; // dynamic array of solids
-stamp :holor_mdl = aware bcore_array { :holor_adl_s => []; }; // dynamic matrix of links
+stamp :holor_adl_s = aware bcore_array { :holor_s     => [];  func bcore_fp . copy_typed; }; // dynamic array of links
+stamp :holor_ads_s = aware bcore_array { :holor_s        []; }; // dynamic array of solids
+stamp :holor_mdl_s = aware bcore_array { :holor_adl_s => []; }; // dynamic matrix of links
 
 /// value statistics
-stamp :stats  = aware :
+stamp :stats_s  = aware :
 {
     f3_t min;
     f3_t max;

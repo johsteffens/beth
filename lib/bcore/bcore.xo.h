@@ -1,13 +1,15 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-12-01T10:47:37Z
+ *  Last File Update: 2020-12-07T20:52:29Z
  *
  *  Copyright and License of this File:
  *
  *  Generated code inherits the copyright and license of the underlying xoila source code.
  *  Source code defining this file is distributed across following files:
  *
- *  bcore_xoila_root.h
+ *  bcore_x_root.h
+ *  bcore_x_inst.h
+ *  bcore_x_array.h
  *  bcore_file.h
  *  bcore_spect_inst_call.h
  *  bcore_spect_via_call.h
@@ -30,12 +32,56 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by xoico, reset the hash key value below to 0.
-#define HKEYOF_bcore_xo 0x260230485EF63193ull
+#define HKEYOF_bcore_xo 0x745613AC1ED80334ull
 
 #define TYPEOF_bcore_xo 0x1F62CB4BA6F9D13Aull
 
 /**********************************************************************************************************************/
-// source: bcore_xoila_root.h
+// source: bcore_x_root.h
+
+/**********************************************************************************************************************/
+// source: bcore_x_inst.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_inst
+
+#define TYPEOF_x_inst 0xFC4EFF7569E22558ull
+#define TYPEOF_x_inst_spect_s 0x6B610F4B8E350C20ull
+#define BETH_EXPAND_GROUP_x_inst \
+  BCORE_FORWARD_OBJECT( x_inst ); \
+  XOILA_DECLARE_SPECT( x_inst ) \
+  { \
+      bcore_spect_header_s header; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_inst )
+
+/**********************************************************************************************************************/
+// source: bcore_x_array.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_array
+
+#define TYPEOF_x_array 0x213BA9DF948F1DC5ull
+#define TYPEOF_x_array_spect_s 0xD636C012F755E8E1ull
+#define BETH_EXPAND_GROUP_x_array \
+  BCORE_FORWARD_OBJECT( x_array ); \
+  static inline x_array* x_array_clear( x_array* o ); \
+  static inline x_array* x_array_set_size( x_array* o, sz_t size ); \
+  static inline x_array* x_array_set_space( x_array* o, sz_t space ); \
+  static inline x_array* x_array_sort( x_array* o, s2_t direction ); \
+  x_inst* x_array_push_d( x_array* o, x_inst* v ); \
+  x_inst* x_array_push_c( x_array* o, const x_inst* v ); \
+  x_inst* x_array_push_t( x_array* o, tp_t type ); \
+  x_inst* x_array_push( x_array* o ); \
+  XOILA_DECLARE_SPECT( x_array ) \
+  { \
+      bcore_spect_header_s header; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_array ) \
+  static inline x_array* x_array_clear( x_array* o ){ bcore_array_a_set_space( ((bcore_array*)(o)), 0 ); return  o;} \
+  static inline x_array* x_array_set_size( x_array* o, sz_t size ){ bcore_array_a_set_size ( ((bcore_array*)(o)), size  ); return  o;} \
+  static inline x_array* x_array_set_space( x_array* o, sz_t space ){ bcore_array_a_set_space( ((bcore_array*)(o)), space ); return  o;} \
+  static inline x_array* x_array_sort( x_array* o, s2_t direction ){ bcore_array_a_sort( ((bcore_array*)(o)), 0, -1, direction ); return  o;}
 
 /**********************************************************************************************************************/
 // source: bcore_file.h
@@ -840,4 +886,4 @@
 vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 #endif // __bcore_xo_H
-// XOILA_OUT_SIGNATURE 0xB3F538780D3385C2ull
+// XOILA_OUT_SIGNATURE 0x1A90B5153AA90A4Cull

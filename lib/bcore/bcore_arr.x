@@ -42,7 +42,7 @@ group :uz = :
     signature uz_t idx_min    ( const );
     signature uz_t count_equal( const,   uz_t val ); // number of occurrence
 
-    stamp : = aware bcore_inst
+    stamp :s = aware bcore_inst
     {
         uz_t [];
         func :: .clear;
@@ -80,7 +80,7 @@ group :sz = :
     signature uz_t idx_min    ( const );
     signature uz_t count_equal( const,   sz_t val ); // number of occurrence
 
-    stamp : = aware bcore_inst
+    stamp :s = aware bcore_inst
     {
         sz_t [];
         func :: .clear;
@@ -113,7 +113,7 @@ group :u3 = :
     signature u3_t pop        ( mutable );
     signature uz_t count_equal( const,   u3_t val ); // number of occurrence
 
-    stamp : = aware bcore_inst
+    stamp :s = aware bcore_inst
     {
         u3_t [];
         func :: .clear;
@@ -141,7 +141,7 @@ group :tp = :
     signature tp_t pop        ( mutable );
     signature uz_t count_equal( const,   tp_t val ); // number of occurrence
 
-    stamp : = aware bcore_inst
+    stamp :s = aware bcore_inst
     {
         tp_t [];
         func :: .clear;
@@ -168,7 +168,7 @@ group :bl = :
     signature bl_t pop        ( mutable );
     signature uz_t count_equal( const,   bl_t val ); // number of occurrence
 
-    stamp : = aware bcore_inst
+    stamp :s = aware bcore_inst
     {
         bl_t [];
         func :: .clear;
@@ -192,7 +192,7 @@ group :st = :
     signature void  pop        ( mutable );
     signature uz_t  count_equal( const,   const st_s* val ); // number of occurrence
 
-    stamp : = aware bcore_inst
+    stamp :s = aware bcore_inst
     {
         st_s => [];
         func :: .clear;
@@ -218,7 +218,7 @@ group :vd = :
     signature uz_t find       ( const,   uz_t start, uz_t end, vd_t v ); // behaves like st_s_find_*
     signature uz_t count_equal( const,   vd_t val ); // number of occurrence
 
-    stamp : = aware bcore_inst
+    stamp :s = aware bcore_inst
     {
         vd_t [];
         func :: .clear;
@@ -243,7 +243,7 @@ group :fp = :
     signature uz_t find       ( const,   uz_t start, uz_t end, fp_t v ); // behaves like st_s_find_*
     signature uz_t count_equal( const,   fp_t val ); // number of occurrence
 
-    stamp : = aware bcore_inst
+    stamp :s = aware bcore_inst
     {
         fp_t [];
         func :: .clear;
@@ -267,7 +267,7 @@ group :sr = :
     signature sr_s  pop      ( mutable );
     signature @*    set_spect( mutable, tp_t spect_type ); // switches perspective of all references to 'spect'
 
-    stamp : = aware bcore_inst
+    stamp :s = aware bcore_inst
     {
         sr_s [];
         func :: .clear;

@@ -54,7 +54,7 @@ XOILA_DEFINE_GROUP( bcore_main, bcore_inst )
     /// This function should be polled to determine if running routine is being required to exit.
     signature bl_t exit_required( const );
 
-    stamp :frame = aware bcore_inst
+    stamp :frame_s = aware bcore_inst
     {
         /// interpreter used to decode the config file
         aware bcore_interpreter => interpreter = bcore_txt_ml_interpreter_s;
@@ -75,9 +75,9 @@ XOILA_DEFINE_GROUP( bcore_main, bcore_inst )
 
     feature strict 'ar' er_t main( mutable, :frame_s* frame );
 
-    stamp :arr = aware bcore_array { aware : => []; };
+    stamp :arr_s = aware bcore_array { aware : => []; };
 
-    stamp :set = aware :
+    stamp :set_s = aware :
     {
         :arr_s arr;
         func : . main =

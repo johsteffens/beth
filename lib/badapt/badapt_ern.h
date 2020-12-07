@@ -40,7 +40,7 @@ XOILA_DEFINE_GROUP( badapt_ern, bcore_inst )
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp :layer = bcore_inst
+stamp :layer_s = bcore_inst
 {
     hidden bmath_vf3_s v_x;
     hidden bmath_vf3_s v_c;
@@ -49,11 +49,11 @@ stamp :layer = bcore_inst
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp :arr_layer = aware bcore_array { :layer_s => [] arr; };
+stamp :arr_layer_s = aware bcore_array { :layer_s => [] arr; };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp : = aware badapt_adaptive
+stamp :s = aware badapt_adaptive
 {
     // === architecture parameters ================================
     sz_t size_input;
@@ -103,7 +103,7 @@ stamp : = aware badapt_adaptive
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp :builder = aware badapt_builder
+stamp :builder_s = aware badapt_builder
 {
     sz_t size_input;
     sz_t size_hidden   = 8;

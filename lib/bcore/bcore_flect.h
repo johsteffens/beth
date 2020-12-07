@@ -288,6 +288,7 @@ BCORE_DECLARE_FUNCTION_REPLICATE( bcore_self_s )
 uz_t                     bcore_self_s_items_size( const bcore_self_s* o );
 const bcore_self_item_s* bcore_self_s_get_item( const bcore_self_s* o, uz_t index );
 const bcore_self_item_s* bcore_self_s_get_item_by_name( const bcore_self_s* o, tp_t name ); // returns NULL in case of no match
+const bcore_self_item_s* bcore_self_s_get_first_array_item( const bcore_self_s* o ); // returns first item where caps is an array or NULL in case of no match
 
 bcore_self_item_s* bcore_self_s_push( bcore_self_s* o, const bcore_self_item_s* item );
 bcore_self_item_s* bcore_self_s_push_d( bcore_self_s* o, bcore_self_item_s* item );

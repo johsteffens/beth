@@ -30,7 +30,7 @@ XOILA_DEFINE_GROUP( badapt_problem, bcore_inst )
 /** Type: Classifier
  *  Method: Differentiate between a sine wave of arbitrary amplitude and frequency from a random walk curve.
  */
-stamp :sine_random = aware badapt_supplier
+stamp :sine_random_s = aware badapt_supplier
 {
     sz_t input_size = 32;
     u3_t rval       = 1234;
@@ -50,7 +50,7 @@ stamp :sine_random = aware badapt_supplier
 /** Type: Encoder
  *  Method: learning to add two unsigned integer variables
  */
-stamp :binary_add = aware badapt_supplier
+stamp :binary_add_s = aware badapt_supplier
 {
     sz_t bits  = 4; // input size = bits * 2; output size = bits + 1
     u3_t rval  = 1234;
@@ -70,7 +70,7 @@ stamp :binary_add = aware badapt_supplier
 /** Type: Encoder
  *  Method: learning to multiply two unsigned integer variables
  */
-stamp :binary_mul = aware badapt_supplier
+stamp :binary_mul_s = aware badapt_supplier
 {
     sz_t bits  = 4; // input size = bits * 2; output size = bits * 2
     u3_t rval  = 1234;
@@ -90,7 +90,7 @@ stamp :binary_mul = aware badapt_supplier
 /** Type: Encoder
  *  Method: forward randomization
  */
-stamp :binary_xsg3 = aware badapt_supplier
+stamp :binary_xsg3_s = aware badapt_supplier
 {
     sz_t bits  = 4; // input size = bits; output size = bits
     u3_t rval  = 1234;
@@ -110,7 +110,7 @@ stamp :binary_xsg3 = aware badapt_supplier
 /** Type: Encoder
  *  Method: hashing
  */
-stamp :binary_hash = aware badapt_supplier
+stamp :binary_hash_s = aware badapt_supplier
 {
     sz_t bits  = 4; // input size = bits; output size = bits
     u3_t rval  = 1234;
@@ -131,7 +131,7 @@ stamp :binary_hash = aware badapt_supplier
 /** Type: Regression
  *  Method: Estimate polynomial coefficients for a signal within range -1, 1
  */
-stamp :polynom = aware badapt_supplier
+stamp :polynom_s = aware badapt_supplier
 {
     sz_t input_size  = 32;
     sz_t output_size = 3;   // polynomial order + 1

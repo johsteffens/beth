@@ -40,7 +40,7 @@ signature void  remove(   mutable, tp_t key ); // removes key if existing
 signature bl_t  exists(   const,   tp_t key ); // checks if key exists
 signature void  clear(    mutable           ); // removes all entries and frees memory
 
-stamp : = aware bcore_inst
+stamp :s = aware bcore_inst
 {
     bcore_hmap_tp_sr_s map;
     func : .set_st_c;

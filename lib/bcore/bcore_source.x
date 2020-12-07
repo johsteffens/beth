@@ -43,7 +43,7 @@ group bcore_source = bcore_inst
     feature void move_index( mutable, s3_t delta ); // set_index( get_index() + delta );
 
 
-    stamp :string = aware :
+    stamp :string_s = aware :
     {
         /* format not disclosed */
 
@@ -56,7 +56,7 @@ group bcore_source = bcore_inst
     };
 
 
-    stamp :point = aware :
+    stamp :point_s = aware :
     {
         /* format not disclosed */
 

@@ -28,7 +28,7 @@
 XOILA_DEFINE_GROUP( badapt_mlp, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp :layer = aware bcore_inst
+stamp :layer_s = aware bcore_inst
 {
     sz_t input_size;
     sz_t kernels;
@@ -40,11 +40,11 @@ stamp :layer = aware bcore_inst
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp :arr_layer = aware bcore_array { :layer_s [] arr; };
+stamp :arr_layer_s = aware bcore_array { :layer_s [] arr; };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp badapt_mlp = aware badapt_adaptive
+stamp badapt_mlp_s = aware badapt_adaptive
 {
     // === architecture parameters ================================
 
@@ -74,7 +74,7 @@ stamp badapt_mlp = aware badapt_adaptive
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /// Builder creating a funnel structure of kernels
-stamp badapt_builder_mlp_funnel = aware badapt_builder
+stamp badapt_builder_mlp_funnel_s = aware badapt_builder
 {
     sz_t input_size;               // input vector size
     sz_t input_kernels   = 8;      // kernels on input layer

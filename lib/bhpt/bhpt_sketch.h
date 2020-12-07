@@ -46,7 +46,7 @@ group :adaptor =
     signature void rebind_axon( mutable, @* src );
 
     /// The node weakly references adaptive axon and gradient holors.
-    stamp :node  = aware :
+    stamp :node_s  = aware :
     {
         private bhvm_holor_s* axon;
         private bhvm_holor_s* grad;
@@ -63,7 +63,7 @@ group :adaptor =
      *  If the probe is used to change holor bindings,
      *  adaptive_a_rebind_holors must be called.
      */
-    stamp :probe = aware bcore_array
+    stamp :probe_s = aware bcore_array
     {
         :node_s [];
         func : .get_min_max;
@@ -76,7 +76,7 @@ group :adaptor =
     feature void reset( mutable ); // resets all moments
     feature void adapt( mutable, const :node_s* node );
 
-    stamp :adl = aware bcore_array { aware : => []; };
+    stamp :adl_s = aware bcore_array { aware : => []; };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

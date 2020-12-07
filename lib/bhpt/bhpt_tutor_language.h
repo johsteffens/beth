@@ -34,7 +34,7 @@ XOILA_DEFINE_GROUP( bhpt_tutor_language, bcore_inst )
 
 /** Generates automatic text from a trigger
  */
-stamp :utf8_chatter = aware :
+stamp :utf8_chatter_s = aware :
 {
     bl_t cyclic_reset = false;
     st_s trigger    = "The chatter trigger:";
@@ -51,7 +51,7 @@ stamp :utf8_chatter = aware :
  *  "The Unreasonable Effectiveness of Recurrent Neural Networks", May, 2015,
  *  http://karpathy.github.io/2015/05/21/rnn-effectiveness/
  */
-stamp :utf8 = aware bhpt_tutor
+stamp :utf8_s = aware bhpt_tutor
 {
     aware bhpt_builder => builder;
     aware bhpt_adaptor => adaptor;

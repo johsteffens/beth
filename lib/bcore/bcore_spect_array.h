@@ -40,15 +40,19 @@ BCORE_DECLARE_SPECT( bcore_array )
     bcore_spect_header_s header;
 
     tp_t type_caps;
-
     uz_t size_fix; // >0 indicating fixed size array
-
     uz_t caps_offset;
+
     const bcore_inst_s* item_p;  // item-perspective; NULL for typed or aware arrays
 
     sr_s ( *get )( const bcore_array_s* p, vc_t o, uz_t index ); // returns indexed item; NULL reference if index is out of range or the linked item is NULL
     void ( *set )( const bcore_array_s* p, vd_t o, uz_t index, sr_s src ); // sets item at indexed position; if index is out of size, size is increased
 
+    /// quick-access state parameters
+    bl_t is_static;     // elements are static (type of elements need not be recorded)
+    bl_t is_of_aware;   // elements are all self-aware
+    bl_t is_of_links;   // elements are links (means they can be NULL);
+    bl_t is_mono_typed; // elements have all the same type
 };
 
 /**********************************************************************************************************************/
@@ -114,13 +118,14 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, push_array, sr_s, src ) // 
 BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP0( bcore_array, pop )                   // removes last element from array
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, set_gtype, tp_t, type ) // changes global item-type on empty arrays;
 
-bl_t bcore_array_p_is_fixed             ( const bcore_array_s* p ); // checks if array has fixed size
-bl_t bcore_array_p_is_static            ( const bcore_array_s* p ); // checks if elements are static (type of elements need not be recorded)
-bl_t bcore_array_p_is_mono_typed        ( const bcore_array_s* p ); // checks if elements have all the same type
+static inline bl_t bcore_array_p_is_fixed     ( const bcore_array_s* p ) { return p->size_fix > 0; }  // checks if array has fixed size
+static inline bl_t bcore_array_p_is_static    ( const bcore_array_s* p ) { return p->is_static; }     // checks if elements are static (type of elements need not be recorded)
+static inline bl_t bcore_array_p_is_of_aware  ( const bcore_array_s* p ) { return p->is_of_aware; }   // checks if elements are all self-aware
+static inline bl_t bcore_array_p_is_of_links  ( const bcore_array_s* p ) { return p->is_of_links; }   // checks if elements are links (means they can be NULL);
+static inline bl_t bcore_array_p_is_mono_typed( const bcore_array_s* p ) { return p->is_mono_typed; } // checks if elements have all the same type
+
 bl_t bcore_array_p_is_mutable_mono_typed( const bcore_array_s* p ); // checks if mono_typed and type can be changed (non-static)
 bl_t bcore_array_p_is_multi_typed       ( const bcore_array_s* p ); // checks if elements can have different types
-bl_t bcore_array_p_is_of_aware          ( const bcore_array_s* p ); // checks if elements are all self-aware
-bl_t bcore_array_p_is_of_links          ( const bcore_array_s* p ); // checks if elements are links (means they can be NULL);
 bl_t bcore_array_p_is_weak              ( const bcore_array_s* p, vc_t o ); // checks if array is a weak reference (defined by size > space)
 tp_t bcore_array_p_get_static_type      ( const bcore_array_s* p );         // returns type if static, 0 otherwise;
 tp_t bcore_array_p_get_mono_type        ( const bcore_array_s* p, vc_t o ); // returns type if monotyped, 0 otherwise;

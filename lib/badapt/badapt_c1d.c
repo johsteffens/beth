@@ -358,7 +358,7 @@ badapt_adaptive* badapt_builder_c1d_funnel_s_build( const badapt_builder_c1d_fun
 
     // first layer
     {
-        badapt_c1d_layer_s* layer = badapt_c1d_arr_layer_s_push( &c1d->arr_layer );
+        badapt_c1d_layer_s* layer = ( badapt_c1d_layer_s* )x_array_push( (x_array*)&c1d->arr_layer );
 
         layer->input_size  = o->input_size;
         layer->stride      = o->input_step;
@@ -372,7 +372,7 @@ badapt_adaptive* badapt_builder_c1d_funnel_s_build( const badapt_builder_c1d_fun
     while( prev_layer->steps > 1 )
     {
         kernels *= ( 1.0 + o->kernels_rate );
-        badapt_c1d_layer_s* layer = badapt_c1d_arr_layer_s_push( &c1d->arr_layer );
+        badapt_c1d_layer_s* layer = ( badapt_c1d_layer_s* )x_array_push( ( x_array* )&c1d->arr_layer );
 
         layer->input_size  = prev_layer->kernels * prev_layer->steps;
         layer->kernel_size = prev_layer->kernels * o->convolution_size;
@@ -402,7 +402,7 @@ badapt_adaptive* badapt_builder_c1d_funnel_s_build( const badapt_builder_c1d_fun
 
     // last layer (fully connected)
     {
-        badapt_c1d_layer_s* layer = badapt_c1d_arr_layer_s_push( &c1d->arr_layer );
+        badapt_c1d_layer_s* layer = ( badapt_c1d_layer_s* )x_array_push( ( x_array* )&c1d->arr_layer );
         layer->input_size  = prev_layer->kernels * prev_layer->steps;
         layer->kernel_size = layer->input_size;
         layer->kernels     = o->output_kernels;

@@ -33,18 +33,18 @@
 XOILA_DEFINE_GROUP( bcore_error_manager, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp :error = aware :
+stamp :error_s = aware :
 {
     er_t id;
     st_s msg; // error message
 };
 
-stamp :error_adl = aware bcore_array
+stamp :error_adl_s = aware bcore_array
 {
     :error_s => [];
 };
 
-stamp :context = aware :
+stamp :context_s = aware :
 {
     :error_adl_s adl;
     bcore_mutex_s mutex;
