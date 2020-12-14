@@ -71,20 +71,19 @@
 XOILA_DEFINE_GROUP( bhvm, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp :shape_s = bcore_array
+stamp :shape_s = x_array
 {
     sz_t [];
-//    func x_array.clear = { return ( @* )o.cast( x_array* ).t_clear( TYPEOF_@ ); };
-//    func x_array.push = { return o.cast( x_array* ).t_push( TYPEOF_@ ); };
-
-//    wrap x_array.clear;
-//    wrap x_array.set_size;
-//    wrap x_array.push;
+    func x_array.clear    = { return ( @*    )o.cast( x_array* ).t_clear( TYPEOF_@ ); };
+    func x_array.set_size = { return ( @*    )o.cast( x_array* ).t_set_size( TYPEOF_@, size ); };
+    func x_array.push     = { return ( sz_t* )o.cast( x_array* ).t_push( TYPEOF_@ ); };
 };
 
-stamp :value_s = bcore_array
+stamp :value_s = x_array
 {
     typed [];
+    func x_array.clear    = { return ( @*    )o.cast( x_array* ).t_clear( TYPEOF_@ ); };
+    func x_array.set_size = { return ( @*    )o.cast( x_array* ).t_set_size( TYPEOF_@, size ); };
 };
 
 stamp :holor_s = aware bcore_inst
@@ -94,9 +93,33 @@ stamp :holor_s = aware bcore_inst
     func bcore_fp . copy_typed;
 };
 
-stamp :holor_adl_s = aware bcore_array { :holor_s     => [];  func bcore_fp . copy_typed; }; // dynamic array of links
-stamp :holor_ads_s = aware bcore_array { :holor_s        []; }; // dynamic array of solids
-stamp :holor_mdl_s = aware bcore_array { :holor_adl_s => []; }; // dynamic matrix of links
+stamp :holor_adl_s = aware x_array
+{
+    :holor_s     => [];
+    func bcore_fp.copy_typed;
+    wrap x_array.set_size;
+    wrap x_array.clear;
+    wrap x_array.push_c;
+    wrap x_array.push_d;
+}; // dynamic array of links
+
+stamp :holor_ads_s = aware x_array
+{
+    :holor_s [];
+    wrap x_array.set_size;
+    wrap x_array.clear;
+    wrap x_array.push_c;
+    wrap x_array.push_d;
+}; // dynamic array of solids
+
+stamp :holor_mdl_s = aware x_array
+{
+    :holor_adl_s => [];
+    wrap x_array.set_size;
+    wrap x_array.clear;
+    wrap x_array.push_c;
+    wrap x_array.push_d;
+}; // dynamic matrix of links
 
 /// value statistics
 stamp :stats_s  = aware :

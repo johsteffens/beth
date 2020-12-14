@@ -33,15 +33,31 @@
 XOILA_DEFINE_GROUP( bcore_error_manager, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+include deferred "bcore_x_array.h";
+
 stamp :error_s = aware :
 {
     er_t id;
     st_s msg; // error message
 };
 
-stamp :error_adl_s = aware bcore_array
+stamp :error_adl_s = aware x_array
 {
     :error_s => [];
+    func x_array.set_size =
+    {
+        return x_array_set_size( o, size );
+    };
+
+    func x_array.clear =
+    {
+        return x_array_clear( o );
+    };
+
+    func x_array.push_d =
+    {
+        return x_array_push_d( o, v );
+    };
 };
 
 stamp :context_s = aware :

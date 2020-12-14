@@ -63,7 +63,7 @@ group :adaptor =
      *  If the probe is used to change holor bindings,
      *  adaptive_a_rebind_holors must be called.
      */
-    stamp :probe_s = aware bcore_array
+    stamp :probe_s = aware x_array
     {
         :node_s [];
         func : .get_min_max;
@@ -71,12 +71,17 @@ group :adaptor =
         func : .zro_grad  = { BFOR_EACH( i, o ) o.[ i ].zro_grad(); };
         func : .acc_grad     = { assert( o.size == src.size ); BFOR_EACH( i, o ) o.[ i ].acc_grad( src.[ i ].1 ); };
         func : .rebind_axon  = { assert( o.size == src.size ); BFOR_EACH( i, o ) o.[ i ].rebind_axon( src.[ i ].1 ); };
+        wrap x_array.set_size;
     };
 
     feature void reset( mutable ); // resets all moments
     feature void adapt( mutable, const :node_s* node );
 
-    stamp :adl_s = aware bcore_array { aware : => []; };
+    stamp :adl_s = aware x_array
+    {
+        aware : => [];
+        wrap x_array.set_size;
+    };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

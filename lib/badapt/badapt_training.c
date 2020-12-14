@@ -38,8 +38,8 @@ bl_t badapt_guide_std_s_callback( const badapt_guide_std_s* o, badapt_training_s
     BLM_INIT();
     badapt_dynamics_std_s* dynamics = BLM_CREATE( badapt_dynamics_std_s );
 
-    ASSERT( badapt_training_state_a_defines_get_adaptive( training_state ) );
-    ASSERT( badapt_training_state_a_defines_get_progress( training_state ) );
+    ASSERT( badapt_training_state_defines_get_adaptive( training_state ) );
+    ASSERT( badapt_training_state_defines_get_progress( training_state ) );
     badapt_adaptive*   adaptive = badapt_training_state_a_get_adaptive( training_state );
     badapt_progress_s* progress = badapt_training_state_a_get_progress( training_state );
 
@@ -54,7 +54,7 @@ bl_t badapt_guide_std_s_callback( const badapt_guide_std_s* o, badapt_training_s
         bcore_sink_a_pushf( o->log, "% 6zi: err%8.5f|improved %6.3f|bias %6.3f|log(epsilon) %5.3f", progress->iteration, progress->error, progress->improved, progress->bias, log( dynamics->epsilon ) );
     }
 
-    if( badapt_adaptive_a_defines_get_weights_min_max( adaptive ) )
+    if( badapt_adaptive_defines_get_weights_min_max( adaptive ) )
     {
         f3_t max = 0, min = 0;
         badapt_adaptive_a_get_weights_min_max( adaptive, &min, &max );

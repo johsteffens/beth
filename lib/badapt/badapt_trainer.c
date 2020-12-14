@@ -34,10 +34,10 @@ void badapt_trainer_batch_s_run( const badapt_trainer_batch_s* o, badapt_trainin
 {
     ASSERT( *(aware_t*)training_state == TYPEOF_badapt_training_state_std_s );
 
-    ASSERT( badapt_training_state_a_defines_set_supplier( training_state ) );
-    ASSERT( badapt_training_state_a_defines_get_adaptive( training_state ) );
-    ASSERT( badapt_training_state_a_defines_get_progress( training_state ) );
-    ASSERT( badapt_training_state_a_defines_get_guide( training_state ) );
+    ASSERT( badapt_training_state_defines_set_supplier( training_state ) );
+    ASSERT( badapt_training_state_defines_get_adaptive( training_state ) );
+    ASSERT( badapt_training_state_defines_get_progress( training_state ) );
+    ASSERT( badapt_training_state_defines_get_guide( training_state ) );
 
     badapt_supplier*   supplier = badapt_training_state_a_get_supplier( training_state );
     badapt_adaptive*   adaptive = badapt_training_state_a_get_adaptive( training_state );
@@ -47,7 +47,7 @@ void badapt_trainer_batch_s_run( const badapt_trainer_batch_s* o, badapt_trainin
     ASSERT( supplier != NULL );
 
     const badapt_loss* loss = o->loss;
-    if( !loss && badapt_supplier_a_defines_preferred_loss( supplier ) )
+    if( !loss && badapt_supplier_defines_preferred_loss( supplier ) )
     {
         loss = badapt_supplier_a_preferred_loss( supplier );
     }
@@ -84,7 +84,7 @@ void badapt_trainer_batch_s_run( const badapt_trainer_batch_s* o, badapt_trainin
         f3_t trn_weight = 0;
 
         {
-            bl_t use_infer = badapt_adaptive_a_defines_infer( adaptive );
+            bl_t use_infer = badapt_adaptive_defines_infer( adaptive );
             badapt_adaptive* adaptive_val = use_infer ? bcore_fork( adaptive ) : badapt_adaptive_a_clone( adaptive );
 
             for( sz_t i = 0; i < o->valid_size; i++ )
@@ -177,7 +177,7 @@ er_t badapt_trainer_main_s_main( badapt_trainer_main_s* o, bcore_main_frame_s* f
     }
 
     badapt_training_state* state = BLM_A_PUSH( badapt_trainer_a_create_state( o->trainer ) );
-    if( badapt_training_state_a_defines_set_backup_path( state ) ) badapt_training_state_a_set_backup_path( state, backup_path->sc );
+    if( badapt_training_state_defines_set_backup_path( state ) ) badapt_training_state_a_set_backup_path( state, backup_path->sc );
     if( !reset && badapt_training_state_a_recover( state ) )
     {
         bcore_msg_fa( "state recovered from '#<sc_t>'\n", badapt_training_state_a_get_backup_path( state ) );

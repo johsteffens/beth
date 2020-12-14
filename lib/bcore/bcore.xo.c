@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-12-14T15:39:52Z
+ *  Last File Update: 2020-12-14T18:44:27Z
  *
  *  Copyright and License of this File:
  *
@@ -284,7 +284,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_main_frame_s )
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_main_arr_s )
-"aware bcore_array"
+"aware x_array"
 "{"
     "aware bcore_main=> [];"
 "}";
@@ -298,7 +298,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_main_set_s )
 
 er_t bcore_main_set_s_main( bcore_main_set_s* o, bcore_main_frame_s* frame )
 {
-    // bcore_main.h:84:9
+    // bcore_main.h:87:9
     
     {const bcore_main_arr_s* __a=&(o->arr );if(__a)for(sz_t __i=0; __i<__a->size; __i++){bcore_main* e=__a->data[__i]; BLM_TRY(bcore_main_a_main(e,frame ) )
     }}return  0;
@@ -361,6 +361,7 @@ XOILA_DEFINE_SPECT( bcore_inst, bcore_cday )
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_error_manager
+#include "bcore_x_array.h"
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_error_manager_error_s )
 "aware bcore_error_manager"
@@ -370,10 +371,31 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_error_manager_error_s )
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_error_manager_error_adl_s )
-"aware bcore_array"
+"aware x_array"
 "{"
     "bcore_error_manager_error_s => [];"
 "}";
+
+bcore_error_manager_error_adl_s* bcore_error_manager_error_adl_s_set_size( bcore_error_manager_error_adl_s* o, sz_t size )
+{
+    // bcore_error_manager.h:48:5
+    
+    return  ((bcore_error_manager_error_adl_s*)(x_array_set_size(((x_array*)( o)),size )));
+}
+
+bcore_error_manager_error_adl_s* bcore_error_manager_error_adl_s_clear( bcore_error_manager_error_adl_s* o )
+{
+    // bcore_error_manager.h:53:5
+    
+    return  ((bcore_error_manager_error_adl_s*)(x_array_clear(((x_array*)( o )))));
+}
+
+bcore_error_manager_error_s* bcore_error_manager_error_adl_s_push_d( bcore_error_manager_error_adl_s* o, bcore_error_manager_error_s* v )
+{
+    // bcore_error_manager.h:58:5
+    
+    return  ((bcore_error_manager_error_s*)(x_array_push_d(((x_array*)( o)),((x_inst*)(v )))));
+}
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_error_manager_context_s )
 "aware bcore_error_manager"
@@ -1645,4 +1667,4 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOILA_OUT_SIGNATURE 0x525B8FDD1177A1D1ull
+// XOILA_OUT_SIGNATURE 0x41D4AD6B21737020ull

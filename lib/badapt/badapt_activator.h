@@ -171,9 +171,23 @@ XOILA_DEFINE_GROUP( badapt_activator, bcore_inst )
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     /// specifies which activator is used for which layer; negative layer number means relative to last layer + 1
-    stamp badapt_layer_activator_s     = aware bcore_inst  { sz_t layer; aware badapt_activator => activator; };
-    stamp badapt_arr_layer_activator_s = aware bcore_array { badapt_layer_activator_s    [] arr; };
-    stamp badapt_arr_activator_s       = aware bcore_array { aware badapt_activator   => [] arr; };
+    stamp badapt_layer_activator_s     = aware bcore_inst
+    {
+        sz_t layer;
+        aware badapt_activator => activator;
+    };
+
+    stamp badapt_arr_layer_activator_s = aware x_array
+    {
+        badapt_layer_activator_s [] arr;
+        wrap x_array.push_d;
+    };
+
+    stamp badapt_arr_activator_s = aware x_array
+    {
+        aware badapt_activator => [] arr;
+        wrap x_array.set_size;
+    };
 
 #endif // XOILA_SECTION
 

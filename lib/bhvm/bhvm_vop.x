@@ -22,14 +22,10 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-stamp :arr_s = aware bcore_array
+stamp :arr_s = aware x_array
 {
     aware bhvm_vop => [];
-//    func (   @* set_size( mutable, sz_t size ))     = { return x_array_set_size( o, size ); };
-//    func (      @* clear( mutable ))                = { return x_array_clear( o ); };
-//    func (bhvm_vop* push( mutable ))                = { return x_array_push( o ); };
-//    func (bhvm_vop* push_d( mutable, bhvm_vop* v )) = { return x_array_push_d( o, v ); };
-//    func (bhvm_vop* push_c( mutable, bhvm_vop* v )) = { return x_array_push_c( o, v ); };
+    wrap x_array.push_d;
 };
 
 feature 'ap' void run( const, bhvm_holor_s** ah );
@@ -78,7 +74,7 @@ stamp :ci_s = bcore_inst
 signature sz_t i_of_c( const, u0_t c );
 signature u0_t c_of_i( const, sz_t i );
 
-stamp :arr_ci_s = aware bcore_array
+stamp :arr_ci_s = aware x_array
 {
     :ci_s [];
     func : .push_ci =
@@ -98,11 +94,7 @@ stamp :arr_ci_s = aware bcore_array
         return -1;
     };
 
-//    func (   @* set_size( mutable, sz_t size )) = { return x_array_set_size( o, size ); };
-//    func (      @* clear( mutable ))            = { return x_array_clear( o ); };
-//    func (:ci_s* push( mutable ))               = { return x_array_push( o ); };
-//    func (:ci_s* push_d( mutable, :ci_s* v ))   = { return x_array_push_d( o, v ); };
-//    func (:ci_s* push_c( mutable, :ci_s* v ))   = { return x_array_push_c( o, v ); };
+    wrap x_array.set_size;
 };
 
 /** Sets arguments from index data according to signature

@@ -63,7 +63,7 @@ stamp bhpt_adaptor_zro_grad_s = aware bhpt_adaptor
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /// List of adaptors applied in sequence
-stamp bhpt_adaptor_list_s = aware bcore_array
+stamp bhpt_adaptor_list_s = aware x_array
 {
     aware bhpt_adaptor => [];
 

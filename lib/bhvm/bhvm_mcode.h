@@ -110,21 +110,16 @@ stamp :node_s = aware :
 
 signature :node_s* push_node( mutable );
 
-stamp :nbase_s = aware bcore_array
+stamp :nbase_s = aware x_array
 {
     :node_s => [];
     func : .push_node =
     {
         sz_t nidx = o.size;
-        cast( o, bcore_array* ).push( sr_asd( :node_s! ) );
-        :node_s* node = o.[ nidx ];
+        :node_s* node = o.push();
         node.nidx = nidx;
         return node;
     };
-//    func (      @* clear( mutable ))              = { return x_array_clear( o ); };
-//    func (:node_s* push( mutable ))               = { return x_array_push( o ); };
-//    func (:node_s* push_d( mutable, :node_s* v )) = { return x_array_push_d( o, v ); };
-//    func (:node_s* push_c( mutable, const :node_s* v )) = { return x_array_push_c( o, v ); };
 };
 
 /// Holor meta data
@@ -142,7 +137,7 @@ group :hmeta =
     feature bcore_inst* get_custom( const )                             = { return NULL; }; // retrieves custom data (if available)
     feature bcore_inst* set_custom( mutable, const bcore_inst* custom ) = { return NULL; }; // sets custom data and returns custom copy (if supported)
 
-    stamp :adl_s = aware bcore_array { aware : => []; };
+    stamp :adl_s = aware x_array { aware : => []; };
 };
 
 /// returns index to pushed holor;
@@ -211,7 +206,7 @@ group :hbase =
 
 signature void run_section( const, sz_t start, sz_t size, bhvm_holor_s** ah );
 
-stamp :track_s = aware bcore_array
+stamp :track_s = aware x_array
 {
     tp_t name;
     :op_s [];

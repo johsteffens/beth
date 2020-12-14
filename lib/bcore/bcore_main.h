@@ -75,7 +75,10 @@ XOILA_DEFINE_GROUP( bcore_main, bcore_inst )
 
     feature strict 'ar' er_t main( mutable, :frame_s* frame );
 
-    stamp :arr_s = aware bcore_array { aware : => []; };
+    stamp :arr_s = aware x_array
+    {
+        aware : => [];
+    };
 
     stamp :set_s = aware :
     {

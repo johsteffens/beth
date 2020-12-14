@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-12-14T15:39:52Z
+ *  Last File Update: 2020-12-14T18:44:27Z
  *
  *  Copyright and License of this File:
  *
@@ -33,7 +33,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by xoico, reset the hash key value below to 0.
-#define HKEYOF_bcore_xo 0x8B63E7FEF874255Cull
+#define HKEYOF_bcore_xo 0x4C3BD708391EB901ull
 
 #define TYPEOF_bcore_xo 0x1F62CB4BA6F9D13Aull
 
@@ -272,18 +272,7 @@
   { \
       aware_t _; \
       BCORE_ARRAY_DYN_LINK_STATIC_S( bcore_main, ); \
-  }; \
-  static inline bcore_main_arr_s* bcore_main_arr_s_set_space( bcore_main_arr_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bcore_main_arr_s, ( bcore_array* )o, size ); return o; } \
-  static inline bcore_main_arr_s* bcore_main_arr_s_set_size( bcore_main_arr_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bcore_main_arr_s, ( bcore_array* )o, size ); return o; } \
-  static inline bcore_main_arr_s* bcore_main_arr_s_clear( bcore_main_arr_s* o ) { bcore_array_t_set_space( TYPEOF_bcore_main_arr_s, ( bcore_array* )o, 0 ); return o; } \
-  static inline bcore_main* bcore_main_arr_s_push_c( bcore_main_arr_s* o, const bcore_main* v ) { bcore_array_t_push( TYPEOF_bcore_main_arr_s, ( bcore_array* )o, sr_awc( v ) ); return o->data[ o->size - 1 ]; } \
-  static inline bcore_main* bcore_main_arr_s_push_d( bcore_main_arr_s* o,       bcore_main* v ) { bcore_array_t_push( TYPEOF_bcore_main_arr_s, ( bcore_array* )o, sr_asd( v ) ); return o->data[ o->size - 1 ]; } \
-  static inline bcore_main* bcore_main_arr_s_push_t( bcore_main_arr_s* o, tp_t t ) \
-  { \
-      bcore_trait_assert_satisfied_type( TYPEOF_bcore_main, t ); \
-      bcore_array_t_push( TYPEOF_bcore_main_arr_s, ( bcore_array* )o, sr_t_create( t ) ); \
-      return o->data[ o->size - 1 ]; \
-  }
+  };
 #define TYPEOF_bcore_main_set_s 0x3503376AEC71546Full
 #define BETH_EXPAND_ITEM_bcore_main_set_s \
   BCORE_DECLARE_OBJECT( bcore_main_set_s ) \
@@ -306,7 +295,7 @@
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_main ) \
   BETH_EXPAND_ITEM_bcore_main_frame_s \
   static inline er_t bcore_main_a_main( bcore_main* o, bcore_main_frame_s* frame ){ const bcore_main_spect_s* p = bcore_main_spect_s_get_aware( o ); assert( p->main ); return p->main( o, frame );} \
-  static inline bl_t bcore_main_a_defines_main( const bcore_main* o ){ return  true;} \
+  static inline bl_t bcore_main_defines_main( const bcore_main* o ){ return  true;} \
   static inline er_t bcore_main_r_main( const sr_s* o, bcore_main_frame_s* frame ){ ASSERT( !sr_s_is_const( o ) ); const bcore_main_spect_s* p = (const bcore_main_spect_s*)ch_spect_p( o->p, TYPEOF_bcore_main_spect_s ); assert( p->main ); return p->main( o->o, frame );} \
   static inline bl_t bcore_main_r_defines_main( const sr_s* o ){ return  true;} \
   BETH_EXPAND_ITEM_bcore_main_arr_s \
@@ -405,16 +394,9 @@
       aware_t _; \
       BCORE_ARRAY_DYN_LINK_STATIC_S( bcore_error_manager_error_s, ); \
   }; \
-  static inline bcore_error_manager_error_adl_s* bcore_error_manager_error_adl_s_set_space( bcore_error_manager_error_adl_s* o, sz_t size ) { bcore_array_t_set_space( TYPEOF_bcore_error_manager_error_adl_s, ( bcore_array* )o, size ); return o; } \
-  static inline bcore_error_manager_error_adl_s* bcore_error_manager_error_adl_s_set_size( bcore_error_manager_error_adl_s* o, sz_t size ) { bcore_array_t_set_size( TYPEOF_bcore_error_manager_error_adl_s, ( bcore_array* )o, size ); return o; } \
-  static inline bcore_error_manager_error_adl_s* bcore_error_manager_error_adl_s_clear( bcore_error_manager_error_adl_s* o ) { bcore_array_t_set_space( TYPEOF_bcore_error_manager_error_adl_s, ( bcore_array* )o, 0 ); return o; } \
-  static inline bcore_error_manager_error_s* bcore_error_manager_error_adl_s_push_c( bcore_error_manager_error_adl_s* o, const bcore_error_manager_error_s* v ) { bcore_array_t_push( TYPEOF_bcore_error_manager_error_adl_s, ( bcore_array* )o, sr_twc( TYPEOF_bcore_error_manager_error_s, v ) ); return o->data[ o->size - 1 ]; } \
-  static inline bcore_error_manager_error_s* bcore_error_manager_error_adl_s_push_d( bcore_error_manager_error_adl_s* o,       bcore_error_manager_error_s* v ) { bcore_array_t_push( TYPEOF_bcore_error_manager_error_adl_s, ( bcore_array* )o, sr_tsd( TYPEOF_bcore_error_manager_error_s, v ) ); return o->data[ o->size - 1 ]; } \
-  static inline bcore_error_manager_error_s* bcore_error_manager_error_adl_s_push( bcore_error_manager_error_adl_s* o ) \
-  { \
-      bcore_array_t_push( TYPEOF_bcore_error_manager_error_adl_s, ( bcore_array* )o, sr_t_create( TYPEOF_bcore_error_manager_error_s ) ); \
-      return o->data[ o->size - 1 ]; \
-  }
+  bcore_error_manager_error_adl_s* bcore_error_manager_error_adl_s_set_size( bcore_error_manager_error_adl_s* o, sz_t size ); \
+  bcore_error_manager_error_adl_s* bcore_error_manager_error_adl_s_clear( bcore_error_manager_error_adl_s* o ); \
+  bcore_error_manager_error_s* bcore_error_manager_error_adl_s_push_d( bcore_error_manager_error_adl_s* o, bcore_error_manager_error_s* v );
 #define TYPEOF_bcore_error_manager_context_s 0x9EF599CE2C2E59C1ull
 #define BETH_EXPAND_ITEM_bcore_error_manager_context_s \
   BCORE_DECLARE_OBJECT( bcore_error_manager_context_s ) \
@@ -489,38 +471,38 @@
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_prsg ) \
   static inline sz_t bcore_prsg_a_bits( const bcore_prsg* o ){ const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->bits ); return p->bits( o );} \
-  static inline bl_t bcore_prsg_a_defines_bits( const bcore_prsg* o ){ return  true;} \
+  static inline bl_t bcore_prsg_defines_bits( const bcore_prsg* o ){ return  true;} \
   static inline u3_t bcore_prsg_a_max_u3( const bcore_prsg* o ){ const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->max_u3 ); return p->max_u3( o );} \
-  static inline bl_t bcore_prsg_a_defines_max_u3( const bcore_prsg* o ){ return  true;} \
+  static inline bl_t bcore_prsg_defines_max_u3( const bcore_prsg* o ){ return  true;} \
   static inline u3_t bcore_prsg_a_min_u3( const bcore_prsg* o ){ const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->min_u3 ); return p->min_u3( o );} \
-  static inline bl_t bcore_prsg_a_defines_min_u3( const bcore_prsg* o ){ return  true;} \
+  static inline bl_t bcore_prsg_defines_min_u3( const bcore_prsg* o ){ return  true;} \
   static inline u3_t bcore_prsg_a_state_u3( const bcore_prsg* o ){ const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->state_u3 ); return p->state_u3( o );} \
-  static inline bl_t bcore_prsg_a_defines_state_u3( const bcore_prsg* o ){ return  true;} \
+  static inline bl_t bcore_prsg_defines_state_u3( const bcore_prsg* o ){ return  true;} \
   static inline u3_t bcore_prsg_a_state_bits_u3( const bcore_prsg* o, sz_t bits ){ const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->state_bits_u3 ); return p->state_bits_u3( o, bits );} \
-  static inline bl_t bcore_prsg_a_defines_state_bits_u3( const bcore_prsg* o ){ return  true;} \
+  static inline bl_t bcore_prsg_defines_state_bits_u3( const bcore_prsg* o ){ return  true;} \
   static inline f3_t bcore_prsg_a_state_f3( const bcore_prsg* o, f3_t min, f3_t max ){ const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->state_f3 ); return p->state_f3( o, min, max );} \
-  static inline bl_t bcore_prsg_a_defines_state_f3( const bcore_prsg* o ){ return  true;} \
+  static inline bl_t bcore_prsg_defines_state_f3( const bcore_prsg* o ){ return  true;} \
   static inline bl_t bcore_prsg_a_state_bl( const bcore_prsg* o ){ const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->state_bl ); return p->state_bl( o );} \
-  static inline bl_t bcore_prsg_a_defines_state_bl( const bcore_prsg* o ){ return  true;} \
+  static inline bl_t bcore_prsg_defines_state_bl( const bcore_prsg* o ){ return  true;} \
   static inline bl_t bcore_prsg_state_bl_default( const bcore_prsg* o ){ return  bcore_prsg_a_state_bits_u3( o,1 ) ? true : false;} \
   static inline void bcore_prsg_a_gen( bcore_prsg* o ){ const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->gen ); p->gen( o );} \
-  static inline bl_t bcore_prsg_a_defines_gen( const bcore_prsg* o ){ return  true;} \
+  static inline bl_t bcore_prsg_defines_gen( const bcore_prsg* o ){ return  true;} \
   static inline u3_t bcore_prsg_a_gen_bits_u3( bcore_prsg* o, sz_t bits ){ const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->gen_bits_u3 ); return p->gen_bits_u3( o, bits );} \
-  static inline bl_t bcore_prsg_a_defines_gen_bits_u3( const bcore_prsg* o ){ return  true;} \
+  static inline bl_t bcore_prsg_defines_gen_bits_u3( const bcore_prsg* o ){ return  true;} \
   static inline u3_t bcore_prsg_a_gen_u3( bcore_prsg* o ){ const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->gen_u3 ); return p->gen_u3( o );} \
-  static inline bl_t bcore_prsg_a_defines_gen_u3( const bcore_prsg* o ){ return  true;} \
+  static inline bl_t bcore_prsg_defines_gen_u3( const bcore_prsg* o ){ return  true;} \
   static inline f3_t bcore_prsg_a_gen_f3( bcore_prsg* o, f3_t min, f3_t max ){ const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->gen_f3 ); return p->gen_f3( o, min, max );} \
-  static inline bl_t bcore_prsg_a_defines_gen_f3( const bcore_prsg* o ){ return  true;} \
+  static inline bl_t bcore_prsg_defines_gen_f3( const bcore_prsg* o ){ return  true;} \
   static inline bl_t bcore_prsg_a_gen_bl( bcore_prsg* o ){ const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->gen_bl ); return p->gen_bl( o );} \
-  static inline bl_t bcore_prsg_a_defines_gen_bl( const bcore_prsg* o ){ return  true;} \
+  static inline bl_t bcore_prsg_defines_gen_bl( const bcore_prsg* o ){ return  true;} \
   static inline bl_t bcore_prsg_gen_bl_default( bcore_prsg* o ){ return  bcore_prsg_a_gen_bits_u3( o,1 ) ? true : false;} \
   static inline bcore_prsg* bcore_prsg_a_set_state_u3( bcore_prsg* o, u3_t seed ){ const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->set_state_u3 ); return p->set_state_u3( o, seed );} \
-  static inline bl_t bcore_prsg_a_defines_set_state_u3( const bcore_prsg* o ){ return  true;} \
+  static inline bl_t bcore_prsg_defines_set_state_u3( const bcore_prsg* o ){ return  true;} \
   static inline bcore_prsg* bcore_prsg_a_set_state_mix( bcore_prsg* o, const bcore_prsg* a, const bcore_prsg* b ){ const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->set_state_mix ); return p->set_state_mix( o, a, b );} \
-  static inline bl_t bcore_prsg_a_defines_set_state_mix( const bcore_prsg* o ){ return  true;} \
+  static inline bl_t bcore_prsg_defines_set_state_mix( const bcore_prsg* o ){ return  true;} \
   bcore_prsg* bcore_prsg_set_state_mix_default( bcore_prsg* o, const bcore_prsg* a, const bcore_prsg* b ); \
   static inline void bcore_prsg_a_reseed( bcore_prsg* o, u3_t seed ){ const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->reseed ); p->reseed( o, seed );} \
-  static inline bl_t bcore_prsg_a_defines_reseed( const bcore_prsg* o ){ return  true;} \
+  static inline bl_t bcore_prsg_defines_reseed( const bcore_prsg* o ){ return  true;} \
   static inline void bcore_prsg_reseed_default( bcore_prsg* o, u3_t seed ){ bcore_prsg_a_set_state_u3( o,seed );} \
   BETH_EXPAND_GROUP_bcore_prsg_lcg \
   BETH_EXPAND_GROUP_bcore_prsg_xsg
@@ -920,4 +902,4 @@
 vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 #endif // __bcore_xo_H
-// XOILA_OUT_SIGNATURE 0xFDEF78A1C1A17A02ull
+// XOILA_OUT_SIGNATURE 0x974CF83859DB7B7Aull

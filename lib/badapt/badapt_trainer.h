@@ -48,8 +48,17 @@ stamp badapt_trainer_batch_s = aware badapt_trainer
     func badapt_trainer . create_state;
 };
 
-stamp badapt_sample_batch_s     = bcore_inst { bmath_vf3_s in; bmath_vf3_s out; };
-stamp badapt_arr_sample_batch_s = aware bcore_array { badapt_sample_batch_s [] arr; };
+stamp badapt_sample_batch_s     = bcore_inst
+{
+    bmath_vf3_s in;
+    bmath_vf3_s out;
+};
+
+stamp badapt_arr_sample_batch_s = aware x_array
+{
+    badapt_sample_batch_s [] arr;
+    wrap x_array.set_size;
+};
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
