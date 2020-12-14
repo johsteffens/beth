@@ -530,7 +530,7 @@ void bcore_array_default_set_size( const bcore_array_s* p, bcore_array* o, uz_t 
 static sr_s get_dyn_solid_static( const bcore_array_s* p, vc_t o, uz_t index )
 {
     const bcore_array_dyn_solid_static_s* arr = obj_vc( p, o );
-    return ( index < arr->size ) ? sr_twd( p->item_p->header.o_type, ( u0_t* )arr->data + p->item_p->size * index ) : sr_null();
+    return ( index < arr->size ) ? sr_pwd( p->item_p, ( u0_t* )arr->data + p->item_p->size * index ) : sr_null();
 }
 
 static sr_s get_dyn_solid_typed( const bcore_array_s* p, vc_t o, uz_t index )
@@ -549,7 +549,7 @@ static sr_s get_dyn_solid_typed( const bcore_array_s* p, vc_t o, uz_t index )
 static sr_s get_dyn_link_static( const bcore_array_s* p, vc_t o, uz_t index )
 {
     const bcore_array_dyn_link_static_s* arr = obj_vc( p, o );
-    return ( index < arr->size ) ? sr_twd( p->item_p->header.o_type, arr->data[ index ] ) : sr_null();
+    return ( index < arr->size ) ? sr_pwd( p->item_p, arr->data[ index ] ) : sr_null();
 }
 
 static sr_s get_dyn_link_typed( const bcore_array_s* p, vc_t o, uz_t index )
@@ -578,13 +578,13 @@ static sr_s get_dyn_link_aware( const bcore_array_s* p, vc_t o, uz_t index )
 
 static sr_s get_fix_solid_static( const bcore_array_s* p, vc_t o, uz_t index )
 {
-    return ( index < p->size_fix ) ? sr_twd( p->item_p->header.o_type, ( u0_t* )obj_vc( p, o ) + p->item_p->size * index ) : sr_null();
+    return ( index < p->size_fix ) ? sr_pwd( p->item_p, ( u0_t* )obj_vc( p, o ) + p->item_p->size * index ) : sr_null();
 }
 
 static sr_s get_fix_link_static( const bcore_array_s* p, vc_t o, uz_t index )
 {
     const vd_t* arr = obj_vc( p, o );
-    return ( index < p->size_fix ) ? sr_twd( p->item_p->header.o_type, arr[ index ] ) : sr_null();
+    return ( index < p->size_fix ) ? sr_pwd( p->item_p, arr[ index ] ) : sr_null();
 }
 
 static sr_s get_fix_link_aware( const bcore_array_s* p, vc_t o, uz_t index )
@@ -950,6 +950,120 @@ uz_t bcore_array_p_get_unit_size( const bcore_array_s* p, vc_t o )
         default: ERR( "invalid type_caps (%"PRIu32")", ( u2_t )p->type_caps );
     }
     return 0;
+}
+
+vd_t bcore_array_p_get_d_data_size( const bcore_array_s* p, vd_t o, uz_t* p_size )
+{
+    vd_t obj = obj_vd( p, o );
+    switch( p->type_caps )
+    {
+        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
+        {
+            bcore_array_dyn_solid_static_s* arr = obj;
+            *p_size = arr->size;
+            return arr->data;
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
+        {
+            bcore_array_dyn_solid_typed_s* arr = obj;
+            *p_size = arr->size;
+            return arr->data;
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
+        {
+            bcore_array_dyn_link_static_s* arr = obj;
+            *p_size = arr->size;
+            return arr->data;
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
+        {
+            bcore_array_dyn_link_typed_s* arr = obj;
+            *p_size = arr->size;
+            return arr->data;
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
+        {
+            bcore_array_dyn_link_aware_s* arr = obj;
+            *p_size = arr->size;
+            return arr->data;
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC:
+        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
+        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
+            *p_size = p->size_fix;
+            return obj;
+
+        default:
+            ERR( "invalid type_caps (%"PRIu32")", ( u2_t )p->type_caps );
+    }
+    return NULL;
+}
+
+vc_t bcore_array_p_get_c_data_size( const bcore_array_s* p, vc_t o, uz_t* p_size )
+{
+    vc_t obj = obj_vc( p, o );
+    switch( p->type_caps )
+    {
+        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
+        {
+            const bcore_array_dyn_solid_static_s* arr = obj;
+            *p_size = arr->size;
+            return arr->data;
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
+        {
+            const bcore_array_dyn_solid_typed_s* arr = obj;
+            *p_size = arr->size;
+            return arr->data;
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
+        {
+            const bcore_array_dyn_link_static_s* arr = obj;
+            *p_size = arr->size;
+            return arr->data;
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
+        {
+            const bcore_array_dyn_link_typed_s* arr = obj;
+            *p_size = arr->size;
+            return arr->data;
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
+        {
+            const bcore_array_dyn_link_aware_s* arr = obj;
+            *p_size = arr->size;
+            return arr->data;
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC:
+        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
+        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
+            *p_size = p->size_fix;
+            return obj;
+
+        default:
+            ERR( "invalid type_caps (%"PRIu32")", ( u2_t )p->type_caps );
+    }
+    return NULL;
 }
 
 /**********************************************************************************************************************/

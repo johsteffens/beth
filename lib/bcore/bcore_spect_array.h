@@ -136,6 +136,10 @@ vc_t bcore_array_p_get_c_data    ( const bcore_array_s* p, vc_t o ); // returns 
 vd_t bcore_array_p_get_d_data    ( const bcore_array_s* p, vd_t o ); // returns arr_caps->data (note that this is either vd_t or vd_t* depending on linkage-indirection
 uz_t bcore_array_p_get_unit_size ( const bcore_array_s* p, vc_t o ); // spacing between data elements (item_p->size or sizeof(vd_t))
 
+/// gets data and size at once (p_size muts point to a valid object)
+vc_t bcore_array_p_get_c_data_size( const bcore_array_s* p, vc_t o, uz_t* p_size );
+vd_t bcore_array_p_get_d_data_size( const bcore_array_s* p, vd_t o, uz_t* p_size );
+
 /** Array operations
  *  The specified limits cover the index range [start, end-1]
  *  When end is larger than the array size, it is truncated to the array size.
