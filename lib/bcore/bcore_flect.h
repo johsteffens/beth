@@ -102,9 +102,13 @@ u2_t bcore_flect_caps_e_u2( sc_t sc );
 bl_t bcore_flect_caps_is_array( u2_t caps );
 bl_t bcore_flect_caps_is_array_dyn( u2_t caps );
 bl_t bcore_flect_caps_is_array_fix( u2_t caps );
+bl_t bcore_flect_caps_is_array_of_links( u2_t caps );
 
 /// checks if encapsulation refers to aware types
 bl_t bcore_flect_caps_is_aware( u2_t caps );
+
+/// returns indirection of target type (0 for external functions)
+sz_t bcore_flect_caps_get_indirection( u2_t caps );
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -163,6 +167,7 @@ typedef struct bcore_flect_flags_s
 
 //----------------------------------------------------------------------------------------------------------------------
 
+typedef struct bcore_self_s bcore_self_s;
 typedef struct bcore_self_item_s bcore_self_item_s;
 typedef struct bcore_self_item_s
 {
@@ -206,6 +211,8 @@ uz_t bcore_self_item_s_inst_size( const bcore_self_item_s* o );
 
 /// returns instantiation alignments or 0 if value is not computable at this point
 uz_t bcore_self_item_s_inst_align( const bcore_self_item_s* o );
+
+er_t bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, const bcore_self_s* self, bl_t advanced_checks );
 
 void bcore_self_item_s_check_integrity( const bcore_self_item_s* o );
 
@@ -289,6 +296,7 @@ uz_t                     bcore_self_s_items_size( const bcore_self_s* o );
 const bcore_self_item_s* bcore_self_s_get_item( const bcore_self_s* o, uz_t index );
 const bcore_self_item_s* bcore_self_s_get_item_by_name( const bcore_self_s* o, tp_t name ); // returns NULL in case of no match
 const bcore_self_item_s* bcore_self_s_get_first_array_item( const bcore_self_s* o ); // returns first item where caps is an array or NULL in case of no match
+const bcore_self_item_s* bcore_self_s_get_first_anonymous_array_item( const bcore_self_s* o ); // returns first item where caps is an array and type == 0 or NULL in case of no match
 
 bcore_self_item_s* bcore_self_s_push( bcore_self_s* o, const bcore_self_item_s* item );
 bcore_self_item_s* bcore_self_s_push_d( bcore_self_s* o, bcore_self_item_s* item );

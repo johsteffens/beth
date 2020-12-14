@@ -1,13 +1,13 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-12-07T21:33:12Z
+ *  Last File Update: 2020-12-14T15:39:52Z
  *
  *  Copyright and License of this File:
  *
  *  Generated code inherits the copyright and license of the underlying xoila source code.
  *  Source code defining this file is distributed across following files:
  *
- *  bcore_x_root.h
+ *  bcore_x_root_inexpandable.h
  *  bcore_x_inst.h
  *  bcore_x_array.h
  *  bcore_file.h
@@ -18,11 +18,12 @@
  *  bcore_cday.h
  *  bcore_error_manager.h
  *  bcore_prsg.h
- *  bcore_arr.x
- *  bcore_hmap.x
- *  bcore_sink.x
- *  bcore_source.x
- *  bcore_st.x
+ *  bcore_arr_inexpandable.x
+ *  bcore_flect_inexpandable.x
+ *  bcore_hmap_inexpandable.x
+ *  bcore_sink_inexpandable.x
+ *  bcore_source_inexpandable.x
+ *  bcore_st_inexpandable.x
  *
  */
 
@@ -32,12 +33,26 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by xoico, reset the hash key value below to 0.
-#define HKEYOF_bcore_xo 0xDC00E3AE19BF11BAull
+#define HKEYOF_bcore_xo 0x8B63E7FEF874255Cull
 
 #define TYPEOF_bcore_xo 0x1F62CB4BA6F9D13Aull
 
 /**********************************************************************************************************************/
-// source: bcore_x_root.h
+// source: bcore_x_root_inexpandable.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_x_root_expandable
+
+#define TYPEOF_bcore_x_root_expandable 0xC8EB05E1BB5DDB27ull
+#define TYPEOF_bcore_x_root_expandable_spect_s 0x509717BBCE3C3A17ull
+#define TYPEOF_bcore_self_item_s 0x1A76AAC8B75A6B47ull
+#define BETH_EXPAND_GROUP_bcore_x_root_expandable \
+  BCORE_FORWARD_OBJECT( bcore_x_root_expandable ); \
+  XOILA_DECLARE_SPECT( bcore_x_root_expandable ) \
+  { \
+      bcore_spect_header_s header; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_x_root_expandable )
 
 /**********************************************************************************************************************/
 // source: bcore_x_inst.h
@@ -63,25 +78,44 @@
 
 #define TYPEOF_x_array 0x213BA9DF948F1DC5ull
 #define TYPEOF_x_array_spect_s 0xD636C012F755E8E1ull
+#define TYPEOF_size 0x4DEA9618E618AE3Cull
+#define TYPEOF_space 0x436CF28AB247E3E5ull
+#define TYPEOF_data 0x855B556730A34A05ull
 #define BETH_EXPAND_GROUP_x_array \
   BCORE_FORWARD_OBJECT( x_array ); \
+  static inline x_array* x_array_t_set_size( x_array* o, tp_t t, sz_t size ); \
+  static inline x_array* x_array_t_set_space( x_array* o, tp_t t, sz_t space ); \
+  static inline x_array* x_array_t_clear( x_array* o, tp_t t ); \
+  static inline x_array* x_array_t_sort( x_array* o, tp_t t, s2_t direction ); \
+  x_inst* x_array_t_push_d( x_array* o, tp_t t, x_inst* v ); \
+  x_inst* x_array_t_push_c( x_array* o, tp_t t, const x_inst* v ); \
+  x_inst* x_array_t_push_t( x_array* o, tp_t t, tp_t val_type ); \
+  x_inst* x_array_t_push( x_array* o, tp_t t ); \
   static inline x_array* x_array_clear( x_array* o ); \
   static inline x_array* x_array_set_size( x_array* o, sz_t size ); \
   static inline x_array* x_array_set_space( x_array* o, sz_t space ); \
   static inline x_array* x_array_sort( x_array* o, s2_t direction ); \
-  x_inst* x_array_push_d( x_array* o, x_inst* v ); \
-  x_inst* x_array_push_c( x_array* o, const x_inst* v ); \
-  x_inst* x_array_push_t( x_array* o, tp_t type ); \
-  x_inst* x_array_push( x_array* o ); \
+  static inline x_inst* x_array_push_d( x_array* o, x_inst* v ); \
+  static inline x_inst* x_array_push_c( x_array* o, const x_inst* v ); \
+  static inline x_inst* x_array_push_t( x_array* o, tp_t val_type ); \
+  static inline x_inst* x_array_push( x_array* o ); \
   XOILA_DECLARE_SPECT( x_array ) \
   { \
       bcore_spect_header_s header; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_array ) \
-  static inline x_array* x_array_clear( x_array* o ){ bcore_array_a_set_space( ((bcore_array*)(o)), 0 ); return  o;} \
-  static inline x_array* x_array_set_size( x_array* o, sz_t size ){ bcore_array_a_set_size ( ((bcore_array*)(o)), size  ); return  o;} \
-  static inline x_array* x_array_set_space( x_array* o, sz_t space ){ bcore_array_a_set_space( ((bcore_array*)(o)), space ); return  o;} \
-  static inline x_array* x_array_sort( x_array* o, s2_t direction ){ bcore_array_a_sort( ((bcore_array*)(o)), 0, -1, direction ); return  o;}
+  static inline x_array* x_array_t_set_size( x_array* o, tp_t t, sz_t size ){ bcore_array_t_set_size ( t, ((bcore_array*)(o)), size  ); return  o;} \
+  static inline x_array* x_array_t_set_space( x_array* o, tp_t t, sz_t space ){ bcore_array_t_set_space( t, ((bcore_array*)(o)), space ); return  o;} \
+  static inline x_array* x_array_t_clear( x_array* o, tp_t t ){ return  ((x_array*)(x_array_t_set_space(o,t, 0 )));} \
+  static inline x_array* x_array_t_sort( x_array* o, tp_t t, s2_t direction ){ bcore_array_t_sort( t, ((bcore_array*)(o)), 0, -1, direction ); return  o;} \
+  static inline x_array* x_array_clear( x_array* o ){ return  ((x_array*)(x_array_t_clear(o,o->_ )));} \
+  static inline x_array* x_array_set_size( x_array* o, sz_t size ){ return  ((x_array*)(x_array_t_set_size(o,o->_, size )));} \
+  static inline x_array* x_array_set_space( x_array* o, sz_t space ){ return  ((x_array*)(x_array_t_set_space(o,o->_, space )));} \
+  static inline x_array* x_array_sort( x_array* o, s2_t direction ){ return  ((x_array*)(x_array_t_sort(o,o->_, direction )));} \
+  static inline x_inst* x_array_push_d( x_array* o, x_inst* v ){ return  ((x_inst*)(x_array_t_push_d(o,o->_, v )));} \
+  static inline x_inst* x_array_push_c( x_array* o, const x_inst* v ){ return  ((x_inst*)(x_array_t_push_c(o,o->_, v )));} \
+  static inline x_inst* x_array_push_t( x_array* o, tp_t val_type ){ return  x_array_t_push_t(o,o->_, val_type );} \
+  static inline x_inst* x_array_push( x_array* o ){ return  x_array_t_push(o,o->_ );}
 
 /**********************************************************************************************************************/
 // source: bcore_file.h
@@ -161,15 +195,15 @@
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_inst_call ) \
   static inline void bcore_inst_call_p_init_x( const bcore_inst_call_spect_s* p, bcore_inst_call* o ){ assert( p->init_x ); p->init_x( o );} \
-  static inline bl_t bcore_inst_call_p_defines_init_x( const bcore_inst_call_spect_s* p ){ return  p->init_x != NULL;} \
+  static inline bl_t bcore_inst_call_p_defines_init_x( const bcore_inst_call_spect_s* p ){ return p->init_x != NULL;} \
   static inline void bcore_inst_call_p_down_e( const bcore_inst_call_spect_s* p, bcore_inst_call* o ){ assert( p->down_e ); p->down_e( o );} \
-  static inline bl_t bcore_inst_call_p_defines_down_e( const bcore_inst_call_spect_s* p ){ return  p->down_e != NULL;} \
+  static inline bl_t bcore_inst_call_p_defines_down_e( const bcore_inst_call_spect_s* p ){ return p->down_e != NULL;} \
   static inline void bcore_inst_call_p_copy_e( const bcore_inst_call_spect_s* p, bcore_inst_call* o, const bcore_inst_call* src ){ assert( p->copy_e ); p->copy_e( o, src );} \
-  static inline bl_t bcore_inst_call_p_defines_copy_e( const bcore_inst_call_spect_s* p ){ return  p->copy_e != NULL;} \
+  static inline bl_t bcore_inst_call_p_defines_copy_e( const bcore_inst_call_spect_s* p ){ return p->copy_e != NULL;} \
   static inline void bcore_inst_call_p_copy_x( const bcore_inst_call_spect_s* p, bcore_inst_call* o, const bcore_inst_call* src ){ assert( p->copy_x ); p->copy_x( o, src );} \
-  static inline bl_t bcore_inst_call_p_defines_copy_x( const bcore_inst_call_spect_s* p ){ return  p->copy_x != NULL;} \
+  static inline bl_t bcore_inst_call_p_defines_copy_x( const bcore_inst_call_spect_s* p ){ return p->copy_x != NULL;} \
   static inline void bcore_inst_call_p_discard_e( const bcore_inst_call_spect_s* p, bcore_inst_call* o ){ assert( p->discard_e ); p->discard_e( o );} \
-  static inline bl_t bcore_inst_call_p_defines_discard_e( const bcore_inst_call_spect_s* p ){ return  p->discard_e != NULL;}
+  static inline bl_t bcore_inst_call_p_defines_discard_e( const bcore_inst_call_spect_s* p ){ return p->discard_e != NULL;}
 
 /**********************************************************************************************************************/
 // source: bcore_spect_via_call.h
@@ -193,23 +227,23 @@
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_via_call ) \
   static inline void bcore_via_call_t_source( tp_t t, bcore_via_call* o, bcore_source* source ){ const bcore_via_call_spect_s* p = bcore_via_call_spect_s_get_typed( t ); assert( p->source ); p->source( o, source );} \
-  static inline bl_t bcore_via_call_t_defines_source( tp_t t ){ return  bcore_via_call_spect_s_get_typed( t )->source != NULL;} \
+  static inline bl_t bcore_via_call_t_defines_source( tp_t t ){ return bcore_via_call_spect_s_get_typed( t )->source != NULL;} \
   static inline void bcore_via_call_p_source( const bcore_via_call_spect_s* p, bcore_via_call* o, bcore_source* source ){ assert( p->source ); p->source( o, source );} \
-  static inline bl_t bcore_via_call_p_defines_source( const bcore_via_call_spect_s* p ){ return  p->source != NULL;} \
+  static inline bl_t bcore_via_call_p_defines_source( const bcore_via_call_spect_s* p ){ return p->source != NULL;} \
   static inline void bcore_via_call_r_source( const sr_s* o, bcore_source* source ){ ASSERT( !sr_s_is_const( o ) ); const bcore_via_call_spect_s* p = (const bcore_via_call_spect_s*)ch_spect_p( o->p, TYPEOF_bcore_via_call_spect_s ); assert( p->source ); p->source( o->o, source );} \
-  static inline bl_t bcore_via_call_r_defines_source( const sr_s* o ){ return  ( (bcore_via_call_spect_s*)ch_spect_p( o->p, TYPEOF_bcore_via_call_spect_s ) )->source != NULL;} \
+  static inline bl_t bcore_via_call_r_defines_source( const sr_s* o ){ return ( (bcore_via_call_spect_s*)ch_spect_p( o->p, TYPEOF_bcore_via_call_spect_s ) )->source != NULL;} \
   static inline void bcore_via_call_t_mutated( tp_t t, bcore_via_call* o ){ const bcore_via_call_spect_s* p = bcore_via_call_spect_s_get_typed( t ); assert( p->mutated ); p->mutated( o );} \
-  static inline bl_t bcore_via_call_t_defines_mutated( tp_t t ){ return  bcore_via_call_spect_s_get_typed( t )->mutated != NULL;} \
+  static inline bl_t bcore_via_call_t_defines_mutated( tp_t t ){ return bcore_via_call_spect_s_get_typed( t )->mutated != NULL;} \
   static inline void bcore_via_call_p_mutated( const bcore_via_call_spect_s* p, bcore_via_call* o ){ assert( p->mutated ); p->mutated( o );} \
-  static inline bl_t bcore_via_call_p_defines_mutated( const bcore_via_call_spect_s* p ){ return  p->mutated != NULL;} \
+  static inline bl_t bcore_via_call_p_defines_mutated( const bcore_via_call_spect_s* p ){ return p->mutated != NULL;} \
   static inline void bcore_via_call_r_mutated( const sr_s* o ){ ASSERT( !sr_s_is_const( o ) ); const bcore_via_call_spect_s* p = (const bcore_via_call_spect_s*)ch_spect_p( o->p, TYPEOF_bcore_via_call_spect_s ); assert( p->mutated ); p->mutated( o->o );} \
-  static inline bl_t bcore_via_call_r_defines_mutated( const sr_s* o ){ return  ( (bcore_via_call_spect_s*)ch_spect_p( o->p, TYPEOF_bcore_via_call_spect_s ) )->mutated != NULL;} \
+  static inline bl_t bcore_via_call_r_defines_mutated( const sr_s* o ){ return ( (bcore_via_call_spect_s*)ch_spect_p( o->p, TYPEOF_bcore_via_call_spect_s ) )->mutated != NULL;} \
   static inline void bcore_via_call_t_shelve( tp_t t, bcore_via_call* o ){ const bcore_via_call_spect_s* p = bcore_via_call_spect_s_get_typed( t ); assert( p->shelve ); p->shelve( o );} \
-  static inline bl_t bcore_via_call_t_defines_shelve( tp_t t ){ return  bcore_via_call_spect_s_get_typed( t )->shelve != NULL;} \
+  static inline bl_t bcore_via_call_t_defines_shelve( tp_t t ){ return bcore_via_call_spect_s_get_typed( t )->shelve != NULL;} \
   static inline void bcore_via_call_p_shelve( const bcore_via_call_spect_s* p, bcore_via_call* o ){ assert( p->shelve ); p->shelve( o );} \
-  static inline bl_t bcore_via_call_p_defines_shelve( const bcore_via_call_spect_s* p ){ return  p->shelve != NULL;} \
+  static inline bl_t bcore_via_call_p_defines_shelve( const bcore_via_call_spect_s* p ){ return p->shelve != NULL;} \
   static inline void bcore_via_call_r_shelve( const sr_s* o ){ ASSERT( !sr_s_is_const( o ) ); const bcore_via_call_spect_s* p = (const bcore_via_call_spect_s*)ch_spect_p( o->p, TYPEOF_bcore_via_call_spect_s ); assert( p->shelve ); p->shelve( o->o );} \
-  static inline bl_t bcore_via_call_r_defines_shelve( const sr_s* o ){ return  ( (bcore_via_call_spect_s*)ch_spect_p( o->p, TYPEOF_bcore_via_call_spect_s ) )->shelve != NULL;}
+  static inline bl_t bcore_via_call_r_defines_shelve( const sr_s* o ){ return ( (bcore_via_call_spect_s*)ch_spect_p( o->p, TYPEOF_bcore_via_call_spect_s ) )->shelve != NULL;}
 
 /**********************************************************************************************************************/
 // source: bcore_main.h
@@ -886,4 +920,4 @@
 vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 #endif // __bcore_xo_H
-// XOILA_OUT_SIGNATURE 0x8140DD2F485C1544ull
+// XOILA_OUT_SIGNATURE 0xFDEF78A1C1A17A02ull

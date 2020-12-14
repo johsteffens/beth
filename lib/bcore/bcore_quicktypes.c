@@ -37,7 +37,8 @@ static st_s* get_def_quicktype( hf hash, sr_s string, uz_t align )
 
 static sr_s leaf_typelist()
 {
-    sr_s list = bcore_inst_t_create_sr( bcore_flect_type_parse_fa( "{ st_s * [] arr; }" ) );
+    sr_s list = bcore_inst_t_create_sr( bcore_flect_type_parse_fa( "{ aware_t _; st_s => [] arr; }" ) );
+    bcore_array_r_push_sc( &list, "" );
     bcore_array_r_push_sc( &list, "char" );
     bcore_array_r_push_sc( &list, "s0_t" );
     bcore_array_r_push_sc( &list, "s1_t" );
@@ -91,7 +92,7 @@ static sr_s leaf_typelist()
 
 static sr_s object_typelist()
 {
-    sr_s list = bcore_inst_t_create_sr( bcore_flect_type_parse_fa( "{ aware_t _; st_s * [] arr; }" ) );
+    sr_s list = bcore_inst_t_create_sr( bcore_flect_type_parse_fa( "{ aware_t _; st_s => [] arr; }" ) );
     bcore_array_r_push_sc( &list, "bcore_self_s"    );
     bcore_array_r_push_sc( &list, "bcore_spect_header_s"  );
     bcore_array_r_push_sc( &list, "bcore_inst"            );

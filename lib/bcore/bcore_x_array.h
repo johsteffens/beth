@@ -35,21 +35,26 @@ XOILA_DEFINE_GROUP( x_array, bcore_array )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func ((TO) @* clear(     (TO) mutable             )) = { bcore_array_a_set_space( o.cast( bcore_array* ), 0 ); return o; };
-func ((TO) @* set_size ( (TO) mutable, sz_t size  )) = { bcore_array_a_set_size ( o.cast( bcore_array* ), size  ); return o; };
-func ((TO) @* set_space( (TO) mutable, sz_t space )) = { bcore_array_a_set_space( o.cast( bcore_array* ), space ); return o; };
-func ((TO) @* sort( (TO) mutable, s2_t direction  )) = { bcore_array_a_sort( o.cast( bcore_array* ), 0, -1, direction ); return o; };
+name size;
+name space;
+name data;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func ((TE) x_inst* push_d( mutable, unaware (TE) x_inst* v )) = (verbatim_C)
+func ((TO) @* t_set_size ((TO) mutable, tp_t t, sz_t size      )) = { bcore_array_t_set_size ( t, o.cast( bcore_array* ), size  ); return o; };
+func ((TO) @* t_set_space((TO) mutable, tp_t t, sz_t space     )) = { bcore_array_t_set_space( t, o.cast( bcore_array* ), space ); return o; };
+func ((TO) @* t_clear    ((TO) mutable, tp_t t                 )) = { return o.t_set_space( t, 0 ); };
+func ((TO) @* t_sort(     (TO) mutable, tp_t t, s2_t direction )) = { bcore_array_t_sort( t, o.cast( bcore_array* ), 0, -1, direction ); return o; };
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func ((TE) x_inst* t_push_d( mutable, tp_t t, unaware (TE) x_inst* v )) = (verbatim_C)
 {
-    const bcore_array_s* p = bcore_array_s_get_aware( o );
+    const bcore_array_s* p = bcore_array_s_get_typed( t );
 
     if( p->item_p )
     {
-        tp_t item_type = p->item_p->header.o_type;
-        bcore_array_p_push( p, ( bcore_array* )o, sr_tsd( item_type, v ) );
+        bcore_array_p_push( p, ( bcore_array* )o, sr_psd( p->item_p, v ) );
     }
     else
     {
@@ -60,6 +65,12 @@ func ((TE) x_inst* push_d( mutable, unaware (TE) x_inst* v )) = (verbatim_C)
     {
         return v;
     }
+    else if( p->is_static )
+    {
+        uz_t size = 0;
+        u0_t* data = bcore_array_p_get_d_data_size( p, o, &size );
+        return ( x_inst* )( data + p->item_p->size * ( size - 1 ) );
+    }
     else
     {
         return bcore_array_p_get_last( p, ( bcore_array* )o ).o;
@@ -68,37 +79,67 @@ func ((TE) x_inst* push_d( mutable, unaware (TE) x_inst* v )) = (verbatim_C)
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func ((TE) x_inst* push_c( mutable, const unaware (TE) x_inst* v )) = (verbatim_C)
+func ((TE) x_inst* t_push_c( mutable, tp_t t, const unaware (TE) x_inst* v )) = (verbatim_C)
 {
-    const bcore_array_s* p = bcore_array_s_get_aware( o );
+    const bcore_array_s* p = bcore_array_s_get_typed( t );
 
     if( p->item_p )
     {
-        tp_t item_type = p->item_p->header.o_type;
-        bcore_array_p_push( p, ( bcore_array* )o, sr_twc( item_type, v ) );
+        bcore_array_p_push( p, ( bcore_array* )o, sr_pwc( p->item_p, v ) );
     }
     else
     {
         bcore_array_p_push( p, ( bcore_array* )o, sr_awc( v ) );
     }
 
-    return bcore_array_p_get_last( p, ( bcore_array* )o ).o;
+    if( p->is_of_links )
+    {
+        uz_t size = 0;
+        x_inst** data = bcore_array_p_get_d_data_size( p, o, &size );
+        return data[ size - 1 ];
+    }
+    else if( p->is_static )
+    {
+        uz_t size = 0;
+        u0_t* data = bcore_array_p_get_d_data_size( p, o, &size );
+        return ( x_inst* )( data + p->item_p->size * ( size - 1 ) );
+    }
+    else
+    {
+        return bcore_array_p_get_last( p, ( bcore_array* )o ).o;
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func ((TE) x_inst* push_t( mutable, tp_t type )) = (verbatim_C)
+func ((TE) x_inst* t_push_t( mutable, tp_t t, tp_t val_type )) = (verbatim_C)
 {
-    const bcore_array_s* p = bcore_array_s_get_aware( o );
-    bcore_array_p_push( p, ( bcore_array* )o, sr_t_create( type ) );
-    return bcore_array_p_get_last( p, ( bcore_array* )o ).o;
+    const bcore_array_s* p = bcore_array_s_get_typed( t );
+    bcore_array_p_push( p, ( bcore_array* )o, sr_t_create( val_type ) );
+
+    if( p->is_of_links )
+    {
+        uz_t size = 0;
+        x_inst** data = bcore_array_p_get_d_data_size( p, o, &size );
+        return data[ size - 1 ];
+    }
+    else if( p->is_static )
+    {
+        uz_t size = 0;
+        u0_t* data = bcore_array_p_get_d_data_size( p, o, &size );
+        return ( x_inst* )( data + p->item_p->size * ( size - 1 ) );
+    }
+    else
+    {
+        return bcore_array_p_get_last( p, ( bcore_array* )o ).o;
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func ((TE) x_inst* push( mutable )) = (verbatim_C)
+func ((TE) x_inst* t_push( mutable, tp_t t )) = (verbatim_C)
 {
-    const bcore_array_s* p = bcore_array_s_get_aware( o );
+    const bcore_array_s* p = bcore_array_s_get_typed( t );
 
     if( p->item_p )
     {
@@ -114,13 +155,38 @@ func ((TE) x_inst* push( mutable )) = (verbatim_C)
     }
     else
     {
-        ERR_fa( "Unspecified push to a dynamically typed array. Use push_d or push_c." );
+        ERR_fa( "Unspecified push to a dynamically typed array. Use push_d, push_c or push_t." );
     }
 
-    return bcore_array_p_get_last( p, ( bcore_array* )o ).o;
+    if( p->is_of_links )
+    {
+        uz_t size = 0;
+        x_inst** data = bcore_array_p_get_d_data_size( p, o, &size );
+        return data[ size - 1 ];
+    }
+    else if( p->is_static )
+    {
+        uz_t size = 0;
+        u0_t* data = bcore_array_p_get_d_data_size( p, o, &size );
+        return ( x_inst* )( data + p->item_p->size * ( size - 1 ) );
+    }
+    else
+    {
+        return bcore_array_p_get_last( p, ( bcore_array* )o ).o;
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
+
+func ((TO) @* clear(     (TO) mutable                 )) = { return o.t_clear( o._ ); };
+func ((TO) @* set_size ( (TO) mutable, sz_t size      )) = { return o.t_set_size( o._, size ); };
+func ((TO) @* set_space( (TO) mutable, sz_t space     )) = { return o.t_set_space( o._, space ); };
+func ((TO) @* sort(      (TO) mutable, s2_t direction )) = { return o.t_sort( o._, direction ); };
+
+func ((TE) x_inst* push_d( mutable,       unaware (TE) x_inst* v )) = { return o.t_push_d( o._, v ); };
+func ((TE) x_inst* push_c( mutable, const unaware (TE) x_inst* v )) = { return o.t_push_c( o._, v ); };
+func ((TE) x_inst* push_t( mutable, tp_t val_type )) = { return o.t_push_t( o._, val_type ); };
+func ((TE) x_inst* push  ( mutable )) = { return o.t_push( o._ ); };
 
 #endif // XOILA_SECTION
 

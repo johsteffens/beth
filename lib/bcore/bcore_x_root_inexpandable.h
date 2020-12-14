@@ -18,8 +18,8 @@
  *  It manages components, which have a low-level implementation: E.g. beth-system features.
  */
 
-#ifndef BCORE_X_ROOT_H
-#define BCORE_X_ROOT_H
+#ifndef BCORE_X_ROOT_INEXPANDABLE_H
+#define BCORE_X_ROOT_INEXPANDABLE_H
 
 #include "bcore_std.h"
 #include "bcore.xo.h"
@@ -67,6 +67,8 @@ group bcore_inst  = bcore_inst {};
 group bcore_array = bcore_inst {};
 group bcore_via   = bcore_inst {};
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /// default functions in a stamp
 group bcore_stamp_funcs = bcore_inst
 {
@@ -79,10 +81,14 @@ group bcore_stamp_funcs = bcore_inst
     signature   @* clone(   const );
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
 group bcore_fp = bcore_inst
 {
     feature '' void copy_typed( mutable, tp_t type, vc_t src );
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /// bcore_mutex_s
 group bcore_mutex = bcore_inst
@@ -96,6 +102,8 @@ group bcore_mutex = bcore_inst
         func : .unlock;
     };
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /// bcore_condition_s
 group bcore_condition = bcore_inst
@@ -112,6 +120,8 @@ group bcore_condition = bcore_inst
     };
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /// bcore_thread_s
 group bcore_thread = bcore_inst
 {
@@ -125,11 +135,14 @@ group bcore_thread = bcore_inst
     };
 };
 
-embed "bcore_source.x";
-embed "bcore_sink.x";
-embed "bcore_st.x";
-embed "bcore_arr.x";
-embed "bcore_hmap.x";
+//----------------------------------------------------------------------------------------------------------------------
+
+embed "bcore_source_inexpandable.x";
+embed "bcore_sink_inexpandable.x";
+embed "bcore_st_inexpandable.x";
+embed "bcore_arr_inexpandable.x";
+embed "bcore_hmap_inexpandable.x";
+embed "bcore_flect_inexpandable.x";
 
 #endif // XOILA_SECTION
 
@@ -137,4 +150,16 @@ embed "bcore_hmap.x";
 
 /**********************************************************************************************************************/
 
-#endif  // BCORE_X_ROOT_H
+XOILA_DEFINE_GROUP( bcore_x_root_expandable, bcore_inst )
+
+#ifdef XOILA_SECTION
+
+name bcore_self_item_s;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+#endif // XOILA_SECTION
+
+/**********************************************************************************************************************/
+
+#endif  // BCORE_X_ROOT_INEXPANDABLE_H

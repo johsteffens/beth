@@ -3,6 +3,7 @@
  */
 
 // leaf types
+#define TYPEOF_                      0xCBF29CE484222325ull
 #define TYPEOF_ap_t                  0x7760D984346DD75Full
 #define TYPEOF_aware_t               0xC773B94E77217C02ull
 #define TYPEOF_bcore_fp_clone        0xA57F8AFB304BFA13ull

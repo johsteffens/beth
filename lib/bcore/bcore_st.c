@@ -2148,6 +2148,18 @@ static void parse_fv( st_s* o, sc_t format, va_list args )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static er_t parse_em_fv( st_s* o, sc_t format, va_list args )
+{
+    if( o->space > 0 ) ERR( "String is strong. Only weak strings can be used as flow-source." );
+    uz_t size = 0;
+    er_t er = st_s_parse_em_fv( o, 0, o->size, &size, format, args );
+    o->data += size;
+    o->size -= size;
+    return er;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static bl_t eos( const st_s* o )
 {
     if( o->space > 0 ) ERR( "String is strong. Only weak strings can be used as flow-source." );
@@ -2235,6 +2247,7 @@ static bcore_self_s* st_s_create_self( void )
     bcore_self_s_push_ns_func( self, ( fp_t )flow_src,          "bcore_fp_flow_src",        "flow_src"     );
     bcore_self_s_push_ns_func( self, ( fp_t )p_errorvf,         "bcore_fp_logvf",           "p_errorvf"    );
     bcore_self_s_push_ns_func( self, ( fp_t )parse_fv,          "bcore_source_fp_parse_fv", "parse_fv"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )parse_em_fv,       "bcore_source_fp_parse_em_fv", "parse_em_fv" );
     bcore_self_s_push_ns_func( self, ( fp_t )eos,               "bcore_source_fp_eos",      "eos"          );
     bcore_self_s_push_ns_func( self, ( fp_t )get_index,         "bcore_source_fp_get_index","get_index"    );
     bcore_self_s_push_ns_func( self, ( fp_t )set_index,         "bcore_source_fp_set_index","set_index"    );

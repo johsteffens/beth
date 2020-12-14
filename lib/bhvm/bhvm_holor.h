@@ -74,7 +74,12 @@ XOILA_DEFINE_GROUP( bhvm, bcore_inst )
 stamp :shape_s = bcore_array
 {
     sz_t [];
-    //func (sz_t* push( mutable )) = { return o.cast( x_array* ).push().cast( sz_t* ); };
+//    func x_array.clear = { return ( @* )o.cast( x_array* ).t_clear( TYPEOF_@ ); };
+//    func x_array.push = { return o.cast( x_array* ).t_push( TYPEOF_@ ); };
+
+//    wrap x_array.clear;
+//    wrap x_array.set_size;
+//    wrap x_array.push;
 };
 
 stamp :value_s = bcore_array

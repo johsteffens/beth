@@ -29,6 +29,7 @@
 #include "bcore_txt_ml.h"
 #include "bcore_sc.h"
 #include "bcore_const_manager.h"
+#include "bcore_error_manager.h"
 
 /**********************************************************************************************************************/
 
@@ -77,20 +78,6 @@ bl_t bcore_flect_caps_is_array( u2_t caps )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t bcore_flect_caps_is_aware( u2_t caps )
-{
-    switch( caps )
-    {
-        case BCORE_CAPS_LINK_AWARE:           return true;
-        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE: return true;
-        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE: return true;
-        default: break;
-    }
-    return false;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 bl_t bcore_flect_caps_is_array_dyn( u2_t caps )
 {
     switch( caps )
@@ -117,6 +104,62 @@ bl_t bcore_flect_caps_is_array_fix( u2_t caps )
         default: break;
     }
     return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t bcore_flect_caps_is_array_of_links( u2_t caps )
+{
+    switch( caps )
+    {
+        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
+        case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
+        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
+        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
+        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t bcore_flect_caps_is_aware( u2_t caps )
+{
+    switch( caps )
+    {
+        case BCORE_CAPS_LINK_AWARE:           return true;
+        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE: return true;
+        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE: return true;
+        default: break;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sz_t bcore_flect_caps_get_indirection( u2_t caps )
+{
+    switch( caps )
+    {
+        case BCORE_CAPS_SOLID_STATIC: return 0;
+        case BCORE_CAPS_LINK_STATIC:  return 1;
+        case BCORE_CAPS_LINK_TYPED:   return 1;
+        case BCORE_CAPS_LINK_AWARE:   return 1;
+        case BCORE_CAPS_POINTER:      return 1;
+        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC: return 0;
+        case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:  return 0;
+        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:  return 1;
+        case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:   return 1;
+        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:   return 1;
+        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC: return 0;
+        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:  return 1;
+        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:   return 1;
+        case BCORE_CAPS_EXTERNAL_FUNC:          return 0;
+        default: return -1;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -314,15 +357,15 @@ void bcore_self_item_s_check_integrity( const bcore_self_item_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, const bcore_self_s* self, bl_t advanced_checks )
+static er_t bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, const bcore_self_s* self, bl_t advanced_checks )
 {
-    bcore_life_s* l = bcore_life_s_create();
-    src = bcore_life_s_push_sr( l, sr_cp( src, TYPEOF_bcore_source_s ) );
+    BLM_INIT();
+    src = bcore_life_s_push_sr( __bcore_life_curent, sr_cp( src, TYPEOF_bcore_source_s ) );
 
     tp_t parent_type = self ? self->type : 0;
 
-    st_s* type_name = st_s_create_l( l );
-    st_s* item_name = st_s_create_l( l );
+    st_s* type_name = BLM_CREATE( st_s );
+    st_s* item_name = BLM_CREATE( st_s );
 
     bl_t f_private   = false;
     bl_t f_hidden    = false;
@@ -348,55 +391,55 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
         f_any_prefix = false;
         if( bcore_source_r_parse_bl_fa( &src, " #?w'private'" ) )
         {
-            if( f_private ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'private' occurs twice.", ifnameof( parent_type ) );
+            if( f_private ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefix 'private' occurs twice.", ifnameof( parent_type ) ) );
             f_any_prefix = f_private = true;
         }
 
         if( bcore_source_r_parse_bl_fa( &src, " #?w'hidden'"  ) )
         {
-            if( f_hidden ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'hidden' occurs twice.", ifnameof( parent_type ) );
+            if( f_hidden ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefix 'hidden' occurs twice.", ifnameof( parent_type ) ) );
             f_any_prefix = f_hidden = true;
         }
 
         if( bcore_source_r_parse_bl_fa( &src, " #?w'shell'"   ) )
         {
-            if( f_shell ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'shell' occurs twice.", ifnameof( parent_type ) );
+            if( f_shell ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefix 'shell' occurs twice.", ifnameof( parent_type ) ) );
             f_any_prefix = f_shell = true;
         }
 
         if( bcore_source_r_parse_bl_fa( &src, " #?w'spect'"   ) )
         {
-            if( f_spect ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'spect' occurs twice.", ifnameof( parent_type ) );
+            if( f_spect ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefix 'spect' occurs twice.", ifnameof( parent_type ) ) );
             f_any_prefix = f_spect = true;
         }
 
         if( bcore_source_r_parse_bl_fa( &src, " #?w'const'"   ) )
         {
-            if( f_const ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'const' occurs twice.", ifnameof( parent_type ) );
+            if( f_const ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefix 'const' occurs twice.", ifnameof( parent_type ) ) );
             f_any_prefix = f_const = true;
         }
 
         if( bcore_source_r_parse_bl_fa( &src, " #?w'feature'"   ) )
         {
-            if( f_feature ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'feature' occurs twice.", ifnameof( parent_type ) );
+            if( f_feature ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefix 'feature' occurs twice.", ifnameof( parent_type ) ) );
             f_any_prefix = f_feature = true;
         }
 
         if( bcore_source_r_parse_bl_fa( &src, " #?w'strict'"   ) )
         {
-            if( f_strict ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'strict' occurs twice.", ifnameof( parent_type ) );
+            if( f_strict ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefix 'strict' occurs twice.", ifnameof( parent_type ) ) );
             f_any_prefix = f_strict = true;
         }
 
         if( bcore_source_r_parse_bl_fa( &src, " #?w'aware'"   ) )
         {
-            if( f_typed || f_aware ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefixes 'aware' occurs twice or mixed with 'typed'.", ifnameof( parent_type ) );
+            if( f_typed || f_aware ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefixes 'aware' occurs twice or mixed with 'typed'.", ifnameof( parent_type ) ) );
             f_any_prefix = f_aware = true;
         }
 
         if( bcore_source_r_parse_bl_fa( &src, " #?w'typed'"   ) )
         {
-            if( f_typed || f_aware ) bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPrefix 'typed' occurs twice or mixed with 'aware'.", ifnameof( parent_type ) );
+            if( f_typed || f_aware ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefix 'typed' occurs twice or mixed with 'aware'.", ifnameof( parent_type ) ) );
             f_any_prefix = f_typed = true;
         }
     }
@@ -416,11 +459,11 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
     }
     else if( bcore_source_r_parse_bl_fa( &src, " #?([0]>='0'&&[0]<='9')" ) ) // type is specified by number
     {
-        bcore_source_r_parse_fa( &src, "#<tp_t*> ", &type_val );
+        BLM_TRY( bcore_source_r_parse_em_fa( &src, "#<tp_t*> ", &type_val ) );
     }
     else // type is specified by name
     {
-        bcore_source_r_parse_fa( &src, "#name #?':' ", type_name, &extend_type_name );
+        BLM_TRY( bcore_source_r_parse_em_fa( &src, "#name #?':' ", type_name, &extend_type_name ) );
     }
 
     if( bcore_source_r_parse_bl_fa( &src, "#?'*' " ) )
@@ -454,7 +497,7 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
     {
         if( f_treat_as_pointer )
         {
-            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nArray of pointers is not supported.", ifnameof( parent_type ) );
+            BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nArray of pointers is not supported.", ifnameof( parent_type ) ) );
         }
 
         if( bcore_source_r_parse_bl_fa( &src, "#?']' " ) )
@@ -464,19 +507,19 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
         else if( bcore_source_r_parse_bl_fa( &src, "#?([0]>='0'&&[0]<='9')" ) )
         {
             f_arr_fix = true;
-            bcore_source_r_parse_fa( &src, "#<uz_t*> ", &array_fix_size );
+            BLM_TRY( bcore_source_r_parse_em_fa( &src, "#<uz_t*> ", &array_fix_size ) );
             if( !bcore_source_r_parse_bl_fa( &src, "#?']' " ) )
             {
-                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n']' expected.", ifnameof( parent_type ) );
+                BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\n']' expected.", ifnameof( parent_type ) ) );
             }
         }
         else
         {
-            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n']' or array fixed-size expected.", ifnameof( parent_type ) );
+            BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\n']' or array fixed-size expected.", ifnameof( parent_type ) ) );
         }
     }
 
-    bcore_source_r_parse_fa( &src, "#name ", item_name );
+    BLM_TRY( bcore_source_r_parse_em_fa( &src, "#name ", item_name ) );
 
     if( extend_type_name )
     {
@@ -500,7 +543,7 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
 
     if( f_spect && ( !f_link || f_deep_copy ) )
     {
-        bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nPerspectives are shallow links. Use 'spect #<sc_t> ->' to clarify method of referencing.", ifnameof( parent_type ), type_name->sc );
+        BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPerspectives are shallow links. Use 'spect #<sc_t> ->' to clarify method of referencing.", ifnameof( parent_type ), type_name->sc ) );
     }
 
     if( f_treat_as_pointer )
@@ -513,7 +556,7 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
     {
         if( !f_link )
         {
-            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nSelf-aware object must be referenced by a link. Use 'aware *|=>|->' to clarify method of referencing.", ifnameof( parent_type ) );
+            BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nSelf-aware object must be referenced by a link. Use 'aware *|=>|->' to clarify method of referencing.", ifnameof( parent_type ) ) );
         }
         o->type = ( type_val > 0 ) ? type_val : ( type_name->size > 0 ? entypeof( type_name->sc ) : 0 );
         o->name = entypeof( item_name->sc );
@@ -523,12 +566,12 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
     {
         if( f_arr_fix )
         {
-            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nTyped objects not supported for fixed size arrays. Suggest dynamic arrays.", ifnameof( parent_type ) );
+            BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nTyped objects not supported for fixed size arrays. Suggest dynamic arrays.", ifnameof( parent_type ) ) );
         }
 
         if( !f_link && !f_arr_dyn )
         {
-            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nTyped objects cannot be nested. Use 'typed *|=>|->' to clarify method of referencing.", ifnameof( parent_type ) );
+            BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nTyped objects cannot be nested. Use 'typed *|=>|->' to clarify method of referencing.", ifnameof( parent_type ) ) );
         }
 
         o->type = ( type_val > 0 ) ? type_val : ( type_name->size > 0 ? entypeof( type_name->sc ) : 0 );
@@ -553,7 +596,7 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
     {
         if( o->caps != BCORE_CAPS_SOLID_STATIC )
         {
-            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'aware_t' can only be used in single solid static nesting.", ifnameof( parent_type ) );
+            BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\n'aware_t' can only be used in single solid static nesting.", ifnameof( parent_type ) ) );
         }
     }
 
@@ -601,13 +644,13 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
                 case TYPEOF_s1_t:
                 case TYPEOF_s2_t:
                 case TYPEOF_s3_t:
-                    bcore_source_r_parse_fa( &src, " #<s3_t*>", &o->default_s3 );
+                    BLM_TRY( bcore_source_r_parse_em_fa( &src, " #<s3_t*>", &o->default_s3 ) );
                     break;
                 case TYPEOF_u0_t:
                 case TYPEOF_u1_t:
                 case TYPEOF_u2_t:
                 case TYPEOF_u3_t:
-                    bcore_source_r_parse_fa( &src, " #<u3_t*>", &o->default_u3 );
+                    BLM_TRY( bcore_source_r_parse_em_fa( &src, " #<u3_t*>", &o->default_u3 ) );
                     break;
 
                 case TYPEOF_sz_t:
@@ -617,11 +660,11 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
                     // for these types scanning of negative numbers is allowed, which will be wrapped around u3.
                     if( bcore_source_r_parse_bl_fa( &src, " #=?'-'" ) )
                     {
-                        bcore_source_r_parse_fa( &src, " #<smax_t*>", &o->default_smax );
+                        BLM_TRY( bcore_source_r_parse_em_fa( &src, " #<smax_t*>", &o->default_smax ) );
                     }
                     else
                     {
-                        bcore_source_r_parse_fa( &src, " #<umax_t*>", &o->default_umax );
+                        BLM_TRY( bcore_source_r_parse_em_fa( &src, " #<umax_t*>", &o->default_umax ) );
                     }
                 }
                 break;
@@ -632,31 +675,31 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
                 {
                     if( bcore_source_r_parse_bl_fa( &src, " #?([0]>='0'&&[0]<='9')" ) )
                     {
-                        bcore_source_r_parse_fa( &src, " #<umax_t*>", &o->default_umax );
+                        BLM_TRY( bcore_source_r_parse_em_fa( &src, " #<umax_t*>", &o->default_umax ) );
                     }
                     else if( bcore_source_r_parse_bl_fa( &src, " #?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z'))" ) )
                     {
                         st_s* name = st_s_create();
-                        bcore_source_r_parse_fa( &src, "#name", name );
+                        BLM_TRY( bcore_source_r_parse_em_fa( &src, "#name", name ) );
                         o->default_tp = entypeof( name->sc );
                         st_s_discard( name );
                     }
                     else
                     {
-                        bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nCannot assign default value to type '#<sc_t>'", ifnameof( parent_type ), ifnameof( o->type ) );
+                        BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nCannot assign default value to type '#<sc_t>'", ifnameof( parent_type ), ifnameof( o->type ) ) );
                     }
                 }
                 break;
 
                 case TYPEOF_f2_t:
                 case TYPEOF_f3_t:
-                    bcore_source_r_parse_fa( &src, " #<f3_t*>", &o->default_f3 );
+                    BLM_TRY( bcore_source_r_parse_em_fa( &src, " #<f3_t*>", &o->default_f3 ) );
                     break;
 
                 case TYPEOF_bl_t:
                 {
                     bl_t flag = false;
-                    bcore_source_r_parse_fa( &src, " #<bl_t*>", &flag );
+                    BLM_TRY( bcore_source_r_parse_em_fa( &src, " #<bl_t*>", &flag ) );
                     o->default_u3 = flag;
                 }
                 break;
@@ -664,11 +707,11 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
                 case TYPEOF_fp_t:
                 {
                     st_s* name = st_s_create();
-                    bcore_source_r_parse_fa( &src, " #name", name );
+                    BLM_TRY( bcore_source_r_parse_em_fa( &src, " #name", name ) );
                     tp_t func_tp = typeof( name->sc );
                     if( !bcore_function_exists( func_tp ) )
                     {
-                        bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' is not a registered function.", ifnameof( parent_type ), name->sc );
+                        BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\n'#<sc_t>' is not a registered function.", ifnameof( parent_type ), name->sc ) );
                     }
                     st_s_discard( name );
                     o->default_tp = func_tp;
@@ -679,7 +722,7 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
                 case TYPEOF_st_s:
                 {
                     st_s* string = st_s_create();
-                    bcore_source_r_parse_fa( &src, " #string", string );
+                    BLM_TRY( bcore_source_r_parse_em_fa( &src, " #string", string ) );
                     o->default_tp = bcore_const_string_set_st_d( string ); // thread and collision safe
                 }
                 break;
@@ -689,19 +732,19 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
                     if( o->flags.f_fp ) // assume registered feature
                     {
                         st_s* name = st_s_create();
-                        bcore_source_r_parse_fa( &src, " #name", name );
+                        BLM_TRY( bcore_source_r_parse_em_fa( &src, " #name", name ) );
                         tp_t func_tp = typeof( name->sc );
 
                         if( !bcore_function_exists( func_tp ) )
                         {
-                            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' is not a registered function.", ifnameof( parent_type ), name->sc );
+                            BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\n'#<sc_t>' is not a registered function.", ifnameof( parent_type ), name->sc ) );
                         }
 
                         if( bcore_trait_exists( o->type ) )
                         {
                             if( !bcore_trait_is_of( func_tp, o->type ) )
                             {
-                                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nFunction '#<sc_t>' is not of feature '#<sc_t>'.", ifnameof( parent_type ), name->sc, ifnameof( o->type ) );
+                                BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nFunction '#<sc_t>' is not of feature '#<sc_t>'.", ifnameof( parent_type ), name->sc, ifnameof( o->type ) ) );
                             }
                         }
 
@@ -711,7 +754,7 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
                     }
                     else
                     {
-                        bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nCannot assign default value to type '#<sc_t>'", ifnameof( parent_type ), ifnameof( o->type ) );
+                        BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nCannot assign default value to type '#<sc_t>'", ifnameof( parent_type ), ifnameof( o->type ) ) );
                     }
                 }
             }
@@ -722,18 +765,18 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
             {
                 if( bcore_source_r_parse_bl_fa( &src, " #?([0]>='0'&&[0]<='9')" ) )
                 {
-                    bcore_source_r_parse_fa( &src, " #<umax_t*>", &o->default_umax );
+                    BLM_TRY( bcore_source_r_parse_em_fa( &src, " #<umax_t*>", &o->default_umax ) );
                 }
                 else if( bcore_source_r_parse_bl_fa( &src, " #?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z'))" ) )
                 {
                     st_s* name = st_s_create();
-                    bcore_source_r_parse_fa( &src, "#name", name );
+                    BLM_TRY( bcore_source_r_parse_em_fa( &src, "#name", name ) );
                     o->default_tp = entypeof( name->sc );
                     st_s_discard( name );
                 }
                 else
                 {
-                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nCannot assign default value to type '#<sc_t>'", ifnameof( parent_type ), ifnameof( o->type ) );
+                    BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nCannot assign default value to type '#<sc_t>'", ifnameof( parent_type ), ifnameof( o->type ) ) );
                 }
             }
             else
@@ -743,14 +786,14 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
                     case TYPEOF_st_s:
                     {
                         st_s* string = st_s_create();
-                        bcore_source_r_parse_fa( &src, " #string", string );
+                        BLM_TRY( bcore_source_r_parse_em_fa( &src, " #string", string ) );
                         o->default_tp = bcore_const_string_set_st_d( string ); // thread and collision safe
                     }
                     break;
 
                     default:
                     {
-                        bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nCannot assign default value to type '#<sc_t>'", ifnameof( parent_type ), ifnameof( o->type ) );
+                        BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nCannot assign default value to type '#<sc_t>'", ifnameof( parent_type ), ifnameof( o->type ) ) );
                     }
                 }
             }
@@ -758,10 +801,10 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
         else if( o->caps == BCORE_CAPS_LINK_AWARE )
         {
             st_s* name = st_s_create();
-            bcore_source_r_parse_fa( &src, " #name", name );
+            BLM_TRY( bcore_source_r_parse_em_fa( &src, " #name", name ) );
             if( name->size == 0 )
             {
-                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>': Default must be a type name.", ifnameof( parent_type ), name->sc );
+                BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>': Default must be a type name.", ifnameof( parent_type ), name->sc ) );
             }
 
             tp_t aware_tp = typeof( name->sc );
@@ -770,14 +813,14 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
             {
                 if( !bcore_flect_exists( aware_tp ) )
                 {
-                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' has no registered reflection.", ifnameof( parent_type ), name->sc );
+                    BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\n'#<sc_t>' has no registered reflection.", ifnameof( parent_type ), name->sc ) );
                 }
 
                 const bcore_self_s* self = bcore_flect_get_self( aware_tp );
 
                 if( !bcore_self_s_is_aware( self ) )
                 {
-                    bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\n'#<sc_t>' is not self-aware.", ifnameof( parent_type ), name->sc );
+                    BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\n'#<sc_t>' is not self-aware.", ifnameof( parent_type ), name->sc ) );
                 }
 
                 if( o->type != 0 ) // assume trait
@@ -805,31 +848,34 @@ static void bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
         }
         else
         {
-            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nAssignment of default value possible for:\n"
-                                               "  - single solid static nesting\n"
-                                               "  - strings\n"
-                                               "  - aware link nesting (default must be an aware type with reflection)\n"
-                                               "other nestings cannot receive a default value.", ifnameof( parent_type ) );
+            BLM_TRY
+            (
+                bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nAssignment of default value possible for:\n"
+                                                      "  - single solid static nesting\n"
+                                                      "  - strings\n"
+                                                      "  - aware link nesting (default must be an aware type with reflection)\n"
+                                                      "other nestings cannot receive a default value.", ifnameof( parent_type ) )
+            );
         }
     }
-    bcore_life_s_discard( l );
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_self_item_s_parse_func_src( bcore_self_item_s* o, sr_s src, const bcore_self_s* self, bl_t advanced_checks )
+static er_t bcore_self_item_s_parse_func_src( bcore_self_item_s* o, sr_s src, const bcore_self_s* self, bl_t advanced_checks )
 {
-    bcore_life_s* l = bcore_life_s_create();
-    src = bcore_life_s_push_sr( l, sr_cp( src, TYPEOF_bcore_source_s ) );
+    BLM_INIT();
+    src = bcore_life_s_push_sr( __bcore_life_curent, sr_cp( src, TYPEOF_bcore_source_s ) );
 
     tp_t parent_type = self ? self->type : 0;
 
-    st_s* type_name = st_s_create_l( l );
-    st_s* item_name = st_s_create_l( l );
+    st_s* type_name = BLM_CREATE( st_s );
+    st_s* item_name = BLM_CREATE( st_s );
 
     bl_t extend_type_name = false;
     bl_t use_trait = false;
-    bcore_source_r_parse_fa( &src, "#name #?'^' #?':' #name", type_name, &use_trait, &extend_type_name, item_name );
+    BLM_TRY( bcore_source_r_parse_em_fa( &src, "#name #?'^' #?':' #name", type_name, &use_trait, &extend_type_name, item_name ) );
 
     if( extend_type_name )
     {
@@ -837,7 +883,7 @@ static void bcore_self_item_s_parse_func_src( bcore_self_item_s* o, sr_s src, co
         {
             if( type_name->size != 0 )
             {
-                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nMisplaced type name '#<sc_t>'", ifnameof( parent_type ), type_name->sc );
+                BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nMisplaced type name '#<sc_t>'", ifnameof( parent_type ), type_name->sc ) );
             }
 
             if( self && self->trait )
@@ -846,12 +892,12 @@ static void bcore_self_item_s_parse_func_src( bcore_self_item_s* o, sr_s src, co
             }
             else
             {
-                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nFunction declaration with trait expansion: Parent has no trait.", ifnameof( parent_type ) );
+                BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nFunction declaration with trait expansion: Parent has no trait.", ifnameof( parent_type ) ) );
             }
         }
         else if( type_name->size == 0 )
         {
-//                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nType name expected.", ifnameof( parent_type ), type_name->sc );
+//                BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nType name expected.", ifnameof( parent_type ), type_name->sc ) );
         }
 
         st_s* type_prefix = st_s_clone( type_name );
@@ -860,17 +906,17 @@ static void bcore_self_item_s_parse_func_src( bcore_self_item_s* o, sr_s src, co
     }
     else if( use_trait )
     {
-        bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nMisplaced '^'", ifnameof( parent_type ) );
+        BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nMisplaced '^'", ifnameof( parent_type ) ) );
     }
 
     o->type = entypeof( type_name->sc );
     o->name = entypeof( item_name->sc );
     o->caps = BCORE_CAPS_EXTERNAL_FUNC;
-    st_s* assign_name = st_s_create_l( l );
+    st_s* assign_name = BLM_CREATE( st_s );
 
     if( bcore_source_r_parse_bl_fa( &src, " #?'=' " ) )
     {
-        bcore_source_r_parse_fa( &src, "#name", assign_name );
+        BLM_TRY( bcore_source_r_parse_em_fa( &src, "#name", assign_name ) );
     }
     else if( parent_type )
     {
@@ -882,7 +928,7 @@ static void bcore_self_item_s_parse_func_src( bcore_self_item_s* o, sr_s src, co
         tp_t func_tp = entypeof( assign_name->sc );
         if( advanced_checks && !bcore_function_exists( func_tp ) )
         {
-            bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nFunction '#<sc_t>' was not registered.", ifnameof( parent_type ), ifnameof( func_tp ) );
+            BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nFunction '#<sc_t>' was not registered.", ifnameof( parent_type ), ifnameof( func_tp ) ) );
         }
 
         o->default_tp = func_tp;
@@ -890,36 +936,42 @@ static void bcore_self_item_s_parse_func_src( bcore_self_item_s* o, sr_s src, co
         {
             if( !bcore_trait_is_of( func_tp, o->type ) )
             {
-                bcore_source_r_parse_err_fa( &src, "Parent '#<sc_t>':\nFunction '#<sc_t>' is not of feature '#<sc_t>'.", ifnameof( parent_type ), ifnameof( func_tp ), ifnameof( o->type ) );
+                BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nFunction '#<sc_t>' is not of feature '#<sc_t>'.", ifnameof( parent_type ), ifnameof( func_tp ), ifnameof( o->type ) ) );
             }
         }
     }
-    bcore_life_s_discard( l );
+    BLM_RETURNV( er_t, 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, const bcore_self_s* self, bl_t advanced_checks )
+er_t bcore_self_item_s_parse_src( bcore_self_item_s* o, sr_s src, const bcore_self_s* self, bl_t advanced_checks )
 {
     if( bcore_source_r_parse_bl_fa( &src, " #?w'func' " ) ) // function declaration
     {
-        bcore_self_item_s_parse_func_src( o, src, self, advanced_checks );
+        er_t er = bcore_self_item_s_parse_func_src( o, src, self, advanced_checks );
+        if( er ) return er;
     }
     else // data type declaration
     {
-        bcore_self_item_s_parse_data_src( o, src, self, advanced_checks );
+        er_t er = bcore_self_item_s_parse_data_src( o, src, self, advanced_checks );
+        if( er ) return er;
     }
 
     if( bcore_source_r_parse_bl_fa( &src, " #?'~>'"   ) ) // relating to
     {
         o->flags.f_feature = true;
         o->child_item = bcore_self_item_s_create();
-        bcore_self_item_s_parse_src( o->child_item, src, NULL, advanced_checks );
+        er_t er = bcore_self_item_s_parse_src( o->child_item, src, NULL, advanced_checks );
+        if( er ) return er;
     }
     else
     {
-        bcore_source_r_parse_fa( &src, " ; " );
+        er_t er = bcore_source_r_parse_em_fa( &src, " ; " );
+        if( er ) return er;
     }
+
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1247,7 +1299,11 @@ static void bcore_self_body_s_parse_src( bcore_self_body_s* o, sr_s src, const b
                 break;
             }
             bcore_self_item_s* item = bcore_self_item_s_create();
-            bcore_self_item_s_parse_src( item, src, self, advanced_checks );
+            if( bcore_self_item_s_parse_src( item, src, self, advanced_checks ) )
+            {
+                bcore_error_pop_all_to_stderr();
+                bcore_abort();
+            }
 
             if( item->type == typeof( "aware_t" ) )
             {
@@ -1505,6 +1561,20 @@ const bcore_self_item_s* bcore_self_s_get_first_array_item( const bcore_self_s* 
     {
         const bcore_self_item_s* item = o->body->data[ i ];
         if( bcore_flect_caps_is_array( item->caps ) ) return item;
+    }
+    return NULL;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+const bcore_self_item_s* bcore_self_s_get_first_anonymous_array_item( const bcore_self_s* o )
+{
+    if( !o->body ) return NULL;
+    ASSERT( o->body );
+    for( uz_t i = 0; i < o->body->size; i++ )
+    {
+        const bcore_self_item_s* item = o->body->data[ i ];
+        if( item->name == TYPEOF_ && bcore_flect_caps_is_array( item->caps ) ) return item;
     }
     return NULL;
 }

@@ -149,6 +149,9 @@ group bcore_st = bcore_inst
         func( er_t parse_em_fv( const, uz_t start, uz_t end, uz_t* out_idx, sc_t format, va_list args ) );
         func( er_t parse_em_fa( const, uz_t start, uz_t end, uz_t* out_idx, sc_t format, ... ) );
 
+        func( uz_t parse_fv( const, uz_t start, uz_t end, sc_t format, va_list args ));
+        func( uz_t parse_fa( const, uz_t start, uz_t end, sc_t format, ... ));
+
         /// constructs a double-line with a visible position indicator (useful for context messages/warnings/errors with highlighted position)
         func( @* show_line_context( const st_s* o, uz_t pos ) );
     };
