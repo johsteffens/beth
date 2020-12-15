@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-12-14T18:44:27Z
+ *  Last File Update: 2020-12-15T13:03:59Z
  *
  *  Copyright and License of this File:
  *
@@ -33,7 +33,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by xoico, reset the hash key value below to 0.
-#define HKEYOF_bcore_xo 0x4C3BD708391EB901ull
+#define HKEYOF_bcore_xo 0x3965C76E21045EA8ull
 
 #define TYPEOF_bcore_xo 0x1F62CB4BA6F9D13Aull
 
@@ -106,14 +106,14 @@
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_array ) \
   static inline x_array* x_array_t_set_size( x_array* o, tp_t t, sz_t size ){ bcore_array_t_set_size ( t, ((bcore_array*)(o)), size  ); return  o;} \
   static inline x_array* x_array_t_set_space( x_array* o, tp_t t, sz_t space ){ bcore_array_t_set_space( t, ((bcore_array*)(o)), space ); return  o;} \
-  static inline x_array* x_array_t_clear( x_array* o, tp_t t ){ return  ((x_array*)(x_array_t_set_space(o,t, 0 )));} \
+  static inline x_array* x_array_t_clear( x_array* o, tp_t t ){ return  x_array_t_set_space(o,t, 0 );} \
   static inline x_array* x_array_t_sort( x_array* o, tp_t t, s2_t direction ){ bcore_array_t_sort( t, ((bcore_array*)(o)), 0, -1, direction ); return  o;} \
-  static inline x_array* x_array_clear( x_array* o ){ return  ((x_array*)(x_array_t_clear(o,o->_ )));} \
-  static inline x_array* x_array_set_size( x_array* o, sz_t size ){ return  ((x_array*)(x_array_t_set_size(o,o->_, size )));} \
-  static inline x_array* x_array_set_space( x_array* o, sz_t space ){ return  ((x_array*)(x_array_t_set_space(o,o->_, space )));} \
-  static inline x_array* x_array_sort( x_array* o, s2_t direction ){ return  ((x_array*)(x_array_t_sort(o,o->_, direction )));} \
-  static inline x_inst* x_array_push_d( x_array* o, x_inst* v ){ return  ((x_inst*)(x_array_t_push_d(o,o->_, v )));} \
-  static inline x_inst* x_array_push_c( x_array* o, const x_inst* v ){ return  ((x_inst*)(x_array_t_push_c(o,o->_, v )));} \
+  static inline x_array* x_array_clear( x_array* o ){ return  x_array_t_clear(o,o->_ );} \
+  static inline x_array* x_array_set_size( x_array* o, sz_t size ){ return  x_array_t_set_size(o,o->_, size );} \
+  static inline x_array* x_array_set_space( x_array* o, sz_t space ){ return  x_array_t_set_space(o,o->_, space );} \
+  static inline x_array* x_array_sort( x_array* o, s2_t direction ){ return  x_array_t_sort(o,o->_, direction );} \
+  static inline x_inst* x_array_push_d( x_array* o, x_inst* v ){ return  x_array_t_push_d(o,o->_, v );} \
+  static inline x_inst* x_array_push_c( x_array* o, const x_inst* v ){ return  x_array_t_push_c(o,o->_, v );} \
   static inline x_inst* x_array_push_t( x_array* o, tp_t val_type ){ return  x_array_t_push_t(o,o->_, val_type );} \
   static inline x_inst* x_array_push( x_array* o ){ return  x_array_t_push(o,o->_ );}
 
@@ -902,4 +902,4 @@
 vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 #endif // __bcore_xo_H
-// XOILA_OUT_SIGNATURE 0x974CF83859DB7B7Aull
+// XOILA_OUT_SIGNATURE 0xBE716EB9EFAA40E8ull

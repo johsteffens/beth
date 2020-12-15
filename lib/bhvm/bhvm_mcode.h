@@ -32,9 +32,9 @@
 #ifdef TYPEOF_bhvm_mcode
 
 XOILA_DEFINE_GROUP( bhvm_mcode, bcore_inst )
-#ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#ifdef XOILA_SECTION
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ---------------------------------------------------------------------------------------------------------------------
 
 // microcode operation with preset perspective
 stamp :op_s = aware :
@@ -42,9 +42,9 @@ stamp :op_s = aware :
     aware bhvm_vop => vop;
     private bhvm_vop_spect_s* p; // perspective of vop
 
-    func bcore_inst_call . copy_x  = { o.p = o.vop ? ( bhvm_vop_spect_s* )bhvm_vop_spect_s_get_aware( o.vop ) : NULL; };
-    func bcore_via_call  . mutated = { o.copy_x( NULL ); };
-    func bhvm_vop        . run = { verbatim_C{ assert( o->p ); assert( o->p->run ); o->p->run( (vc_t)o->vop, ah ); } };
+    func bcore_inst_call.copy_x  = (verbatim_C) { o->p = o->vop ? ( bhvm_vop_spect_s* )bhvm_vop_spect_s_get_aware( o->vop ) : NULL; };
+    func bcore_via_call.mutated = { o.copy_x( NULL ); };
+    func bhvm_vop.run = (verbatim_C) { assert( o->p ); assert( o->p->run ); o->p->run( (vc_t)o->vop, ah ); };
 };
 
 signature sz_t vop_push_d( mutable,       bhvm_vop* vop );
@@ -56,6 +56,8 @@ name pclass_ax1; // alternate axon holor
 name pclass_ag1; // alternate axon gradient
 
 signature sz_t get_pclass_idx( const, tp_t pclass );
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 /// mcode node (indexing for a given hbase)
 stamp :node_s = aware :
@@ -94,26 +96,28 @@ stamp :node_s = aware :
     /// node is cyclic
     bl_t cyclic;
 
-    func : .get_pclass_idx =
+    func :.get_pclass_idx =
     {
         switch( pclass )
         {
-            case TYPEOF_pclass_ax0: return o->ax0;
-            case TYPEOF_pclass_ag0: return o->ag0;
-            case TYPEOF_pclass_ax1: return o->ax1;
-            case TYPEOF_pclass_ag1: return o->ag1;
+            case TYPEOF_pclass_ax0: return o.ax0;
+            case TYPEOF_pclass_ag0: return o.ag0;
+            case TYPEOF_pclass_ax1: return o.ax1;
+            case TYPEOF_pclass_ag1: return o.ag1;
             default: break;
         }
         return -1;
     };
 };
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 signature :node_s* push_node( mutable );
 
 stamp :nbase_s = aware x_array
 {
     :node_s => [];
-    func : .push_node =
+    func :.push_node =
     {
         sz_t nidx = o.size;
         :node_s* node = o.push();
@@ -122,23 +126,27 @@ stamp :nbase_s = aware x_array
     };
 };
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /// Holor meta data
 group :hmeta =
 {
     feature tp_t get_name( const ) = { return 0; };
-    feature tp_t get_pclass( const )  = { return 0; };
+    feature tp_t get_pclass( const ) = { return 0; };
 
     feature ::node_s* get_node( const ) = { return NULL; };
     feature void      set_node( mutable, ::node_s* node ) = {};
 
-    feature bl_t is_rollable( const )  = { return false; }; // unrolling: holor need not be duplicated (e.g. const or adaptive)
-    feature bl_t is_active( const )    = { return true;  }; // holor is active
+    feature bl_t is_rollable( const ) = { return false; }; // unrolling: holor need not be duplicated (e.g. const or adaptive)
+    feature bl_t is_active( const )   = { return true;  }; // holor is active
 
     feature bcore_inst* get_custom( const )                             = { return NULL; }; // retrieves custom data (if available)
     feature bcore_inst* set_custom( mutable, const bcore_inst* custom ) = { return NULL; }; // sets custom data and returns custom copy (if supported)
 
     stamp :adl_s = aware x_array { aware : => []; };
 };
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 /// returns index to pushed holor;
 signature sz_t push_hm ( mutable, const bhvm_holor_s* h, const :hmeta* m );
@@ -158,7 +166,7 @@ group :hbase =
         bhvm_holor_adl_s holor_adl;
            ::hmeta_adl_s hmeta_adl;
 
-        func  : .set_size =
+        func :.set_size =
         {
             o.holor_adl.set_size( size );
             o.hmeta_adl.set_size( size );
@@ -167,12 +175,12 @@ group :hbase =
 
         /// if(copy_size_limit >=0) holors beyond the limit are not copied or streamed
         sz_t copy_size_limit = -1;
-        func bcore_via_call . mutated = { if( o.copy_size_limit >= 0 ) o.set_size( o.copy_size_limit ); };
-        func bcore_inst_call . copy_x = { if( o.copy_size_limit >= 0 ) o.set_size( o.copy_size_limit ); };
+        func bcore_via_call.mutated = { if( o.copy_size_limit >= 0 ) o.set_size( o.copy_size_limit ); };
+        func bcore_inst_call.copy_x = { if( o.copy_size_limit >= 0 ) o.set_size( o.copy_size_limit ); };
 
-        func  : .get_size = { return o.holor_adl.size; };
+        func  :.get_size = { return o.holor_adl.size; };
 
-        func :: .push_hm  =
+        func ::.push_hm  =
         {
             sz_t idx = o.holor_adl.size;
             o.hmeta_adl.push_c( m );
@@ -180,7 +188,7 @@ group :hbase =
             return idx;
         };
 
-        func :: .push_hmc  =
+        func ::.push_hmc  =
         {
             bhvm_vop_ci_s ci;
             bhvm_vop_ci_s_init( ci.1 );
@@ -190,7 +198,7 @@ group :hbase =
             return ci.i;
         };
 
-        func :: .push_copy_from_index =
+        func ::.push_copy_from_index =
         {
             assert( index >= 0 && index < o.holor_adl.size );
             sz_t ret = o.holor_adl.size;
@@ -199,10 +207,12 @@ group :hbase =
             return ret;
         };
 
-        func : .get_holor = { assert( index >= 0 && index < o.holor_adl.size ); return o.holor_adl.[ index ]; };
-        func : .get_hmeta = { assert( index >= 0 && index < o.hmeta_adl.size ); return o.hmeta_adl.[ index ]; };
+        func :.get_holor = { assert( index >= 0 && index < o.holor_adl.size ); return o.holor_adl.[ index ]; };
+        func :.get_hmeta = { assert( index >= 0 && index < o.hmeta_adl.size ); return o.hmeta_adl.[ index ]; };
     };
 };
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 signature void run_section( const, sz_t start, sz_t size, bhvm_holor_s** ah );
 
@@ -211,15 +221,15 @@ stamp :track_s = aware x_array
     tp_t name;
     :op_s [];
 
-    func bhvm_vop . run = { for( sz_t i = 0; i < o->size; i++ ) o.[i].run( ah ); };
+    func bhvm_vop . run = { for( sz_t i = 0; i < o.size; i++ ) o.[i].run( ah ); };
 
-    func : . run_section =
+    func :. run_section =
     {
         assert( start >= 0 && start < o->size - size );
         for( sz_t i = 0; i < size; i++ ) o.[ i + start ].run( ah );
     };
 
-    func : .vop_push_d =
+    func :.vop_push_d =
     {
         assert( vop );
         :op_s* op = o.push();
@@ -229,30 +239,40 @@ stamp :track_s = aware x_array
         return o.size - 1;
     };
 
-    func : .vop_push_c = { return o.vop_push_d( vop.clone() ); };
+    func :.vop_push_c = { return o.vop_push_d( vop.clone() ); };
 
-    func : .push_copy_from_index =
+    func :.push_copy_from_index =
     {
         assert( index >= 0 && index < o->size );
-        return o.vop_push_d( o->[ index ].vop.clone() );
+        return o.vop_push_d( o.[ index ].vop.clone() );
     };
 
-//    func (   @* clear( mutable ))             = { return x_array_clear( o ); };
-//    func (:op_s* push( mutable ))             = { return x_array_push( o ); };
-//    func (:op_s* push_d( mutable, :op_s* v )) = { return x_array_push_d( o, v ); };
-//    func (:op_s* push_c( mutable, const :op_s* v )) = { return x_array_push_c( o, v ); };
+    /// fills index_arr with all holor references; each index occurring only once
+    func (void get_index_arr( const, bcore_arr_sz_s* index_arr ));
+
+    /// replaces all indices where index map yields an index >= 0
+    func (void replace_index_via_map( mutable, bcore_arr_sz_s* index_map ));
+
+    /**
+     *  Replaces all matching inputs until (including) cyclic_idx occurs as output.
+     *  Subsequent operators remain unchanged.
+     */
+    func (void cyclic_split_replace( mutable, sz_t idx, sz_t new_idx ));
+
+    /// remove all operations there the output index is not mapped
+    func( void remove_unmapped_output( mutable, bcore_arr_sz_s* index_map ));
+
 };
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 stamp :track_adl_s = aware x_array
 {
     :track_s => [];
-//    func (      @* clear( mutable ))                = { return x_array_clear( o ); };
-//    func (:track_s* push( mutable ))                = { return x_array_push( o ); };
-//    func (:track_s* push_d( mutable, :track_s* v )) = { return x_array_push_d( o, v ); };
-    func (:track_s* push_c( mutable, const :track_s* v )) = { return x_array_push_c( o, v ); };
+    wrap x_array.push_c;
 };
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ---------------------------------------------------------------------------------------------------------------------
 
 // track library functions
 signature      void clear             ( mutable            );
@@ -275,16 +295,16 @@ stamp :lib_s = aware :
     :track_adl_s      arr;
     bcore_hmap_tpuz_s map; // name-index map
 
-    func : .clear = { o.arr.clear(); o.map.clear(); };
-    func : .track_exists = { return o.map.exists( name ); };
+    func :.clear = { o.arr.clear(); o.map.clear(); };
+    func :.track_exists = { return o.map.exists( name ); };
 
-    func : .track_get =
+    func :.track_get =
     {
         uz_t* pidx = o.map.get( name );
         return pidx ? o.arr.[ pidx.0 ] : NULL;
     };
 
-    func : .track_get_or_new =
+    func :.track_get_or_new =
     {
         if( o.map.exists( name ) ) return o.track_get( name );
         o.map.set( name, o.arr.size );
@@ -293,23 +313,23 @@ stamp :lib_s = aware :
         return track;
     };
 
-    func : .track_reset =
+    func :.track_reset =
     {
         :track_s* track = o.track_get_or_new( name );
         track.clear();
         return track;
     };
 
-    func : .track_vop_push_c = { o.track_get_or_new( name ).vop_push_c( vop ); };
-    func : .track_vop_push_d = { o.track_get_or_new( name ).vop_push_d( vop ); };
+    func :.track_vop_push_c = { o.track_get_or_new( name ).vop_push_c( vop ); };
+    func :.track_vop_push_d = { o.track_get_or_new( name ).vop_push_d( vop ); };
 
-    func : .track_vop_set_args_push_d =
+    func :.track_vop_set_args_push_d =
     {
         vop.set_args( arr_ci );
         o.track_get_or_new( name ).vop_push_d( vop );
     };
 
-    func : .track_push =
+    func :.track_push =
     {
         :track_s* src = o.track_get( src_name );
         if( !src ) return;
@@ -317,7 +337,7 @@ stamp :lib_s = aware :
         foreach( $* e in src ) dst.vop_push_c( e.vop );
     };
 
-    func : .track_remove =
+    func :.track_remove =
     {
         uz_t* pidx = o.map.get( name );
         if( !pidx ) return;
@@ -329,7 +349,7 @@ stamp :lib_s = aware :
         if( idx < o.arr.size ) o.map.set( o.arr.[ idx ].name, cast( idx, uz_t ) );
     };
 
-    func : .track_run_ah =
+    func :.track_run_ah =
     {
         :track_s* t = cast( o, @* ).track_get( name );
         if( t ) t.run( ah );
@@ -337,7 +357,7 @@ stamp :lib_s = aware :
 
 };
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ---------------------------------------------------------------------------------------------------------------------
 
 stamp :frame_s = aware :
 {
@@ -348,40 +368,25 @@ stamp :frame_s = aware :
     func bcore_via_call . mutated;
     func bcore_inst_call . copy_x;
 
-    func : .track_get = { return ( o.lib ) ? o.lib.track_get( name ) : NULL; };
+    func :.track_get = { return ( o.lib ) ? o.lib.track_get( name ) : NULL; };
 
-    func : .track_vop_push_c = { if( !o.lib ) o.lib = :lib_s_create(); o.lib.track_vop_push_c( name, vop ); };
-    func : .track_vop_push_d = { if( !o.lib ) o.lib = :lib_s_create(); o.lib.track_vop_push_d( name, vop ); };
+    func :.track_vop_push_c = { if( !o.lib ) o.lib = :lib_s_create(); o.lib.track_vop_push_c( name, vop ); };
+    func :.track_vop_push_d = { if( !o.lib ) o.lib = :lib_s_create(); o.lib.track_vop_push_d( name, vop ); };
 
-    func : .track_vop_set_args_push_d = { if( !o.lib ) o.lib = :lib_s_create(); o.lib.track_vop_set_args_push_d( name, vop, arr_ci ); };
+    func :.track_vop_set_args_push_d = { if( !o.lib ) o.lib = :lib_s_create(); o.lib.track_vop_set_args_push_d( name, vop, arr_ci ); };
 
-    func : .push_hm   = { if( !o->hbase ) o->hbase = :hbase_s_create(); return o.hbase.push_hm(  h, m            ); };
-    func : .push_hmc  = { if( !o->hbase ) o->hbase = :hbase_s_create(); return o.hbase.push_hmc( h, m, c, arr_ci ); };
-    func : .push_node = { if( !o->nbase ) o->nbase = :nbase_s_create(); return o.nbase.push_node(); };
+    func :.push_hm   = { if( !o->hbase ) o->hbase = :hbase_s_create(); return o.hbase.push_hm(  h, m            ); };
+    func :.push_hmc  = { if( !o->hbase ) o->hbase = :hbase_s_create(); return o.hbase.push_hmc( h, m, c, arr_ci ); };
+    func :.push_node = { if( !o->nbase ) o->nbase = :nbase_s_create(); return o.nbase.push_node(); };
 
-    func : .track_run = { if( !o->lib ) return; o.lib.track_run_ah( name, o.hbase.holor_adl.data ); };
+    func :.track_run = { if( !o->lib ) return; o.lib.track_run_ah( name, o.hbase.holor_adl.data ); };
+
+    func (void check_integrity( const ));
 };
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ---------------------------------------------------------------------------------------------------------------------
 
-#endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-/// fills index_arr with all holor references; each index occurring only once
-void bhvm_mcode_track_s_get_index_arr( const bhvm_mcode_track_s* o, bcore_arr_sz_s* index_arr );
-
-/// replaces all indices where index map yields an index >= 0
-void bhvm_mcode_track_s_replace_index_via_map( bhvm_mcode_track_s* o, bcore_arr_sz_s* index_map );
-
-/**
- *  Replaces all matching inputs until (including) cyclic_idx occurs as output.
- *  Subsequent operators remain unchanged.
- */
-void bhvm_mcode_track_s_cyclic_split_replace( bhvm_mcode_track_s* o, sz_t idx, sz_t new_idx );
-
-/// remove all operations there the output index is not mapped
-void bhvm_mcode_track_s_remove_unmapped_output( bhvm_mcode_track_s* o, bcore_arr_sz_s* index_map );
-
-void bhvm_mcode_frame_s_check_integrity( const bhvm_mcode_frame_s* o );
+#endif // XOILA_SECTION
 
 #endif // TYPEOF_bhvm_mcode
 
