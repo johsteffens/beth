@@ -1,2 +1,3 @@
 *.x linguist-language=Xoila
+*.h linguist-language=C
 
