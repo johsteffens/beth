@@ -31,8 +31,6 @@
 
 XOILA_DEFINE_GROUP( bhvm_vop, bcore_inst, "bhvm_vop.x" )
 
-void bhvm_vop_a_to_sink( bhvm_vop* o, bcore_sink* sink );
-
 /**********************************************************************************************************************/
 
 vd_t bhvm_vop_signal_handler( const bcore_signal_s* o );

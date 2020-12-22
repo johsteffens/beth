@@ -21,13 +21,17 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_vop_a_to_sink( bhvm_vop* o, bcore_sink* sink )
+void bhvm_vop_to_sink( const bhvm_vop* o, bcore_sink* sink )
 {
     BLM_INIT();
     st_s* st_name = BLM_A_PUSH( st_s_create_sc( ifnameof( o->_ ) ) );
     st_s_replace_sc_sc( st_name, "bhvm_vop_", "" );
 
     bcore_sink_a_push_fa( sink, "#p24.{#<sc_t> } ", st_name->sc );
+    if( !bhvm_vop_defines_arity( o ) )
+    {
+        ERR_fa( "#<sc_t>.arity not defined.", ifnameof( o->_ ) );
+    }
     sz_t arity = bhvm_vop_a_arity( o );
     bcore_sink_a_push_fa( sink, "#pl3 {#<sz_t>}", bhvm_vop_a_get_index( o, arity ) );
     for( sz_t i = 0; i < arity; i++ )
