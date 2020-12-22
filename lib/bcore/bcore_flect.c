@@ -140,6 +140,20 @@ bl_t bcore_flect_caps_is_aware( u2_t caps )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bl_t bcore_flect_caps_is_typed( u2_t caps )
+{
+    switch( caps )
+    {
+        case BCORE_CAPS_LINK_TYPED:            return true;
+        case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED: return true;
+        case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:  return true;
+        default: break;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 sz_t bcore_flect_caps_get_indirection( u2_t caps )
 {
     switch( caps )

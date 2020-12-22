@@ -106,6 +106,7 @@ bl_t bcore_flect_caps_is_array_of_links( u2_t caps );
 
 /// checks if encapsulation refers to aware types
 bl_t bcore_flect_caps_is_aware( u2_t caps );
+bl_t bcore_flect_caps_is_typed( u2_t caps );
 
 /// returns indirection of target type (0 for external functions)
 sz_t bcore_flect_caps_get_indirection( u2_t caps );
