@@ -53,6 +53,13 @@ group bcore_source = bcore_inst
         func( @* create_sc( sc_t sc ) );
         func( @* create_fa( sc_t format, ... ) );
         func( @* create_fv( sc_t format, va_list args ) );
+
+        func( @* setup_from_string( mutable, const st_s* string ) );
+        func( @* setup_from_string_d( mutable, st_s* string ) );
+        func( @* setup_from_sc( mutable, sc_t sc ) ); // same as ...create_sc
+        func( @* setup_sc( mutable, sc_t sc ) );
+        func( @* setup_fa( mutable, sc_t format, ... ) );
+        func( @* setup_fv( mutable, sc_t format, va_list args ) );
     };
 
 
