@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-12-22T21:31:15Z
+ *  Last File Update: 2020-12-27T16:14:55Z
  *
  *  Copyright and License of this File:
  *
@@ -1090,7 +1090,7 @@ f3_t bcore_prsg_lcg_u3_03_s_gen_f3( bcore_prsg_lcg_u3_03_s* o, f3_t min, f3_t ma
     return  bcore_prsg_lcg_u3_03_s_state_f3( o,min, max );
 }
 
-XOILA_DEFINE_SPECT( bcore_inst, bcore_prsg_lcg )
+XOILA_DEFINE_SPECT( bcore_prsg, bcore_prsg_lcg )
 "{"
     "bcore_spect_header_s header;"
 "}";
@@ -1354,7 +1354,7 @@ f3_t bcore_prsg_xsg_u2_03_s_gen_f3( bcore_prsg_xsg_u2_03_s* o, f3_t min, f3_t ma
     return  bcore_prsg_xsg_u2_03_s_state_f3( o,min, max );
 }
 
-XOILA_DEFINE_SPECT( bcore_inst, bcore_prsg_xsg )
+XOILA_DEFINE_SPECT( bcore_prsg, bcore_prsg_xsg )
 "{"
     "bcore_spect_header_s header;"
 "}";
@@ -1667,4 +1667,4 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOILA_OUT_SIGNATURE 0xA04951FC54E85C4Aull
+// XOILA_OUT_SIGNATURE 0x7F3819D56E155742ull
