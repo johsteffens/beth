@@ -37,7 +37,7 @@ XOILA_DEFINE_GROUP( badapt_supplier, bcore_inst )
     feature const badapt_loss* preferred_loss( const );
 
     // sets up builder parameters where suitable
-    feature void setup_builder( const, badapt_builder* builder ) extern default;
+    feature void setup_builder( const, badapt_builder* builder ) extern setup_builder_default;
 #endif // XOILA_SECTION
 
 //----------------------------------------------------------------------------------------------------------------------
