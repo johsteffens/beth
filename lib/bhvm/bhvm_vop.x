@@ -131,7 +131,12 @@ feature :* set_args( mutable, const :arr_ci_s* arr ) =
 /// nullary operators
 group :ar0 =
 {
-    stamp :index_s = bcore_inst { sz_t [ 1 ] v; func bcore_inst_call . init_x = { o.v[0] = -1; }; };
+    stamp :index_s = bcore_inst { sz_t [ 1 ] v; func bcore_inst_call.init_x = { o.v[0] = -1; }; };
+
+    func ((TO) :* setup( (TO) mutable, sz_t idx0 )) =
+    {
+        return o.cast( ::* ).set_index_arr( verbatim_C{ ( sz_t[] ) { idx0 } }, 1 );
+    };
 
     extending stump verbatim :_s = aware :
     {
@@ -214,6 +219,11 @@ group :ar0 =
 group :ar1 =
 {
     stamp :index_s = bcore_inst { sz_t [ 2 ] v; func bcore_inst_call . init_x = { o.v[0] = o.v[1] = -1; }; };
+
+    func ((TO) :* setup( (TO) mutable, sz_t idx0, sz_t idx1 )) =
+    {
+        return o.cast( ::* ).set_index_arr( verbatim_C{ ( sz_t[] ) { idx0, idx1 } }, 2 );
+    };
 
     extending stump verbatim :_s = aware :
     {
@@ -338,6 +348,11 @@ group :ar2 =
 {
     stamp :index_s = bcore_inst { sz_t [ 3 ] v; func bcore_inst_call . init_x = { o.v[0] = o.v[1] = o.v[2] = -1; }; };
 
+    func ((TO) :* setup( (TO) mutable, sz_t idx0, sz_t idx1, sz_t idx2 )) =
+    {
+        return o.cast( ::* ).set_index_arr( verbatim_C{ ( sz_t[] ) { idx0, idx1, idx2 } }, 3 );
+    };
+
     extending stump verbatim :_s = aware :
     {
         :index_s i;
@@ -432,6 +447,11 @@ group :ar2 =
 group :ar3 =
 {
     stamp :index_s = bcore_inst { sz_t [ 4 ] v; func bcore_inst_call . init_x = { o.v[0] = o.v[1] = o.v[2] = o.v[3] = -1; }; };
+
+    func ((TO) :* setup( (TO) mutable, sz_t idx0, sz_t idx1, sz_t idx2, sz_t idx3 )) =
+    {
+        return o.cast( ::* ).set_index_arr( verbatim_C{ ( sz_t[] ) { idx0, idx1, idx2, idx3 } }, 4 );
+    };
 
     extending stump verbatim :_s = aware :
     {
