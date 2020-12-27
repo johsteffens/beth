@@ -129,12 +129,21 @@ bcore_source_string_s* bcore_source_string_s_create();
 void                   bcore_source_string_s_discard(       bcore_source_string_s* o );
 bcore_source_string_s* bcore_source_string_s_clone(   const bcore_source_string_s* o );
 
+bcore_source_string_s* bcore_source_string_s_reset( bcore_source_string_s* o );
+
 bcore_source_string_s* bcore_source_string_s_create_from_string( const st_s* string );
 bcore_source_string_s* bcore_source_string_s_create_from_string_d(     st_s* string );
 bcore_source_string_s* bcore_source_string_s_create_from_sc(           sc_t sc ); // same as ...create_sc
 bcore_source_string_s* bcore_source_string_s_create_sc( sc_t sc );
 bcore_source_string_s* bcore_source_string_s_create_fv( sc_t format, va_list args );
 bcore_source_string_s* bcore_source_string_s_create_fa( sc_t format, ... );
+
+bcore_source_string_s* bcore_source_string_s_setup_from_string(   bcore_source_string_s*, const st_s* string );
+bcore_source_string_s* bcore_source_string_s_setup_from_string_d( bcore_source_string_s*,       st_s* string );
+bcore_source_string_s* bcore_source_string_s_setup_from_sc( bcore_source_string_s*,  sc_t sc ); // same as ...create_sc
+bcore_source_string_s* bcore_source_string_s_setup_sc( bcore_source_string_s*, sc_t sc );
+bcore_source_string_s* bcore_source_string_s_setup_fv( bcore_source_string_s*, sc_t format, va_list args );
+bcore_source_string_s* bcore_source_string_s_setup_fa( bcore_source_string_s*, sc_t format, ... );
 
 uz_t                   bcore_source_string_s_get_data( bcore_source_string_s* o, vd_t data, uz_t size );
 

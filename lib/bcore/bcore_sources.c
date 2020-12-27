@@ -549,6 +549,16 @@ bcore_source_string_s* bcore_source_string_s_clone( const bcore_source_string_s*
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bcore_source_string_s* bcore_source_string_s_reset( bcore_source_string_s* o )
+{
+    st_s_detach( &o->string );
+    o->index = 0;
+    o->ext_supplier = NULL;
+    return o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 bcore_source_string_s* bcore_source_string_s_create_from_string( const st_s* string )
 {
     bcore_source_string_s* o = bcore_source_string_s_create();
@@ -600,6 +610,66 @@ bcore_source_string_s* bcore_source_string_s_create_fa( sc_t format, ... )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+
+
+
+bcore_source_string_s* bcore_source_string_s_setup_from_string( bcore_source_string_s* o, const st_s* string )
+{
+    bcore_source_string_s_reset( o );
+    o->string = st_s_clone( string );
+    return o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bcore_source_string_s* bcore_source_string_s_setup_from_string_d( bcore_source_string_s* o, st_s* string )
+{
+    bcore_source_string_s_reset( o );
+    o->string = string;
+    return o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bcore_source_string_s* bcore_source_string_s_setup_from_sc( bcore_source_string_s* o, sc_t sc )
+{
+    bcore_source_string_s_reset( o );
+    o->string = st_s_create_sc( sc );
+    return o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bcore_source_string_s* bcore_source_string_s_setup_sc( bcore_source_string_s* o, sc_t sc )
+{
+    return bcore_source_string_s_setup_from_sc( o, sc );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bcore_source_string_s* bcore_source_string_s_setup_fv( bcore_source_string_s* o, sc_t format, va_list args )
+{
+    return bcore_source_string_s_setup_from_string_d( o, st_s_create_fv( format, args ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bcore_source_string_s* bcore_source_string_s_setup_fa( bcore_source_string_s* o, sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    bcore_source_string_s* ret = bcore_source_string_s_setup_fv( o, format, args );
+    va_end( args );
+    return ret;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
 
 static void string_refill( bcore_source_string_s* o, uz_t min_remaining_size )
 {
