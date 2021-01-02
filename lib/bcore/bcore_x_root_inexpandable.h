@@ -27,7 +27,7 @@
 /**********************************************************************************************************************/
 
 #ifdef TYPEOF_bcore_x_root
-XOILA_DEFINE_GROUP( bcore_x_root, bcore_inst )
+XOILA_DEFINE_GROUP( bcore_x_root, x_inst )
 
 #ifdef XOILA_SECTION
 

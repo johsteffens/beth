@@ -17,7 +17,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-group bcore_hmap = bcore_inst
+group bcore_hmap = x_inst
 {
 
 signature bl_t exists(  const,   tp_t key ); // checks if key exists

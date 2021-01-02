@@ -24,7 +24,7 @@
 
 /**********************************************************************************************************************/
 
-XOILA_DEFINE_GROUP( x_array, bcore_array )
+XOILA_DEFINE_GROUP( x_array, x_inst )
 
 #ifdef XOILA_SECTION
 

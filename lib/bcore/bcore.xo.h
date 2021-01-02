@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-12-27T16:14:55Z
+ *  Last File Update: 2021-01-02T20:34:53Z
  *
  *  Copyright and License of this File:
  *
@@ -33,7 +33,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by xoico, reset the hash key value below to 0.
-#define HKEYOF_bcore_xo 0x91B82786E2105642ull
+#define HKEYOF_bcore_xo 0x8DABEB916E19003Bull
 
 #define TYPEOF_bcore_xo 0x1F62CB4BA6F9D13Aull
 
@@ -64,11 +64,15 @@
 #define TYPEOF_x_inst_spect_s 0x6B610F4B8E350C20ull
 #define BETH_EXPAND_GROUP_x_inst \
   BCORE_FORWARD_OBJECT( x_inst ); \
+  static inline x_inst* x_inst_ifd( x_inst* o, bl_t cond, x_inst* b ); \
+  static inline const x_inst* x_inst_ifc( const x_inst* o, bl_t cond, const x_inst* b ); \
   XOILA_DECLARE_SPECT( x_inst ) \
   { \
       bcore_spect_header_s header; \
   }; \
-  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_inst )
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_inst ) \
+  static inline x_inst* x_inst_ifd( x_inst* o, bl_t cond, x_inst* b ){ return  cond ? o : b;} \
+  static inline const x_inst* x_inst_ifc( const x_inst* o, bl_t cond, const x_inst* b ){ return  cond ? o : b;}
 
 /**********************************************************************************************************************/
 // source: bcore_x_array.h
@@ -179,11 +183,11 @@
 #define TYPEOF_bcore_inst_call_discard_e 0x58ADAED42247025Dull
 #define BETH_EXPAND_GROUP_bcore_inst_call \
   BCORE_FORWARD_OBJECT( bcore_inst_call ); \
-  typedef void (*bcore_inst_call_init_x)( bcore_inst_call* o ); \
-  typedef void (*bcore_inst_call_down_e)( bcore_inst_call* o ); \
-  typedef void (*bcore_inst_call_copy_e)( bcore_inst_call* o, const bcore_inst_call* src ); \
-  typedef void (*bcore_inst_call_copy_x)( bcore_inst_call* o, const bcore_inst_call* src ); \
-  typedef void (*bcore_inst_call_discard_e)( bcore_inst_call* o ); \
+  typedef void (*bcore_inst_call_init_x)(bcore_inst_call* o ); \
+  typedef void (*bcore_inst_call_down_e)(bcore_inst_call* o ); \
+  typedef void (*bcore_inst_call_copy_e)(bcore_inst_call* o, const bcore_inst_call* src ); \
+  typedef void (*bcore_inst_call_copy_x)(bcore_inst_call* o, const bcore_inst_call* src ); \
+  typedef void (*bcore_inst_call_discard_e)(bcore_inst_call* o ); \
   XOILA_DECLARE_SPECT( bcore_inst_call ) \
   { \
       bcore_spect_header_s header; \
@@ -215,9 +219,9 @@
 #define TYPEOF_bcore_via_call_spect_s 0xDDF677D8ACEB97A2ull
 #define BETH_EXPAND_GROUP_bcore_via_call \
   BCORE_FORWARD_OBJECT( bcore_via_call ); \
-  typedef void (*bcore_via_call_source)( bcore_via_call* o, bcore_source* source ); \
-  typedef void (*bcore_via_call_mutated)( bcore_via_call* o ); \
-  typedef void (*bcore_via_call_shelve)( bcore_via_call* o ); \
+  typedef void (*bcore_via_call_source)(bcore_via_call* o, bcore_source* source ); \
+  typedef void (*bcore_via_call_mutated)(bcore_via_call* o ); \
+  typedef void (*bcore_via_call_shelve)(bcore_via_call* o ); \
   XOILA_DECLARE_SPECT( bcore_via_call ) \
   { \
       bcore_spect_header_s header; \
@@ -286,7 +290,7 @@
   BCORE_FORWARD_OBJECT( bcore_main_frame_s ); \
   BCORE_FORWARD_OBJECT( bcore_main_arr_s ); \
   BCORE_FORWARD_OBJECT( bcore_main_set_s ); \
-  typedef er_t (*bcore_main_main)( bcore_main* o, bcore_main_frame_s* frame ); \
+  typedef er_t (*bcore_main_main)(bcore_main* o, bcore_main_frame_s* frame ); \
   XOILA_DECLARE_SPECT( bcore_main ) \
   { \
       bcore_spect_header_s header; \
@@ -435,21 +439,21 @@
   BCORE_FORWARD_OBJECT( bcore_prsg ); \
   BCORE_FORWARD_OBJECT( bcore_prsg_lcg ); \
   BCORE_FORWARD_OBJECT( bcore_prsg_xsg ); \
-  typedef sz_t (*bcore_prsg_bits)( const bcore_prsg* o ); \
-  typedef u3_t (*bcore_prsg_max_u3)( const bcore_prsg* o ); \
-  typedef u3_t (*bcore_prsg_min_u3)( const bcore_prsg* o ); \
-  typedef u3_t (*bcore_prsg_state_u3)( const bcore_prsg* o ); \
-  typedef u3_t (*bcore_prsg_state_bits_u3)( const bcore_prsg* o, sz_t bits ); \
-  typedef f3_t (*bcore_prsg_state_f3)( const bcore_prsg* o, f3_t min, f3_t max ); \
-  typedef bl_t (*bcore_prsg_state_bl)( const bcore_prsg* o ); \
-  typedef void (*bcore_prsg_gen)( bcore_prsg* o ); \
-  typedef u3_t (*bcore_prsg_gen_bits_u3)( bcore_prsg* o, sz_t bits ); \
-  typedef u3_t (*bcore_prsg_gen_u3)( bcore_prsg* o ); \
-  typedef f3_t (*bcore_prsg_gen_f3)( bcore_prsg* o, f3_t min, f3_t max ); \
-  typedef bl_t (*bcore_prsg_gen_bl)( bcore_prsg* o ); \
-  typedef bcore_prsg* (*bcore_prsg_set_state_u3)( bcore_prsg* o, u3_t seed ); \
-  typedef bcore_prsg* (*bcore_prsg_set_state_mix)( bcore_prsg* o, const bcore_prsg* a, const bcore_prsg* b ); \
-  typedef void (*bcore_prsg_reseed)( bcore_prsg* o, u3_t seed ); \
+  typedef sz_t (*bcore_prsg_bits)(const bcore_prsg* o ); \
+  typedef u3_t (*bcore_prsg_max_u3)(const bcore_prsg* o ); \
+  typedef u3_t (*bcore_prsg_min_u3)(const bcore_prsg* o ); \
+  typedef u3_t (*bcore_prsg_state_u3)(const bcore_prsg* o ); \
+  typedef u3_t (*bcore_prsg_state_bits_u3)(const bcore_prsg* o, sz_t bits ); \
+  typedef f3_t (*bcore_prsg_state_f3)(const bcore_prsg* o, f3_t min, f3_t max ); \
+  typedef bl_t (*bcore_prsg_state_bl)(const bcore_prsg* o ); \
+  typedef void (*bcore_prsg_gen)(bcore_prsg* o ); \
+  typedef u3_t (*bcore_prsg_gen_bits_u3)(bcore_prsg* o, sz_t bits ); \
+  typedef u3_t (*bcore_prsg_gen_u3)(bcore_prsg* o ); \
+  typedef f3_t (*bcore_prsg_gen_f3)(bcore_prsg* o, f3_t min, f3_t max ); \
+  typedef bl_t (*bcore_prsg_gen_bl)(bcore_prsg* o ); \
+  typedef bcore_prsg* (*bcore_prsg_set_state_u3)(bcore_prsg* o, u3_t seed ); \
+  typedef bcore_prsg* (*bcore_prsg_set_state_mix)(bcore_prsg* o, const bcore_prsg* a, const bcore_prsg* b ); \
+  typedef void (*bcore_prsg_reseed)(bcore_prsg* o, u3_t seed ); \
   XOILA_DECLARE_SPECT( bcore_prsg ) \
   { \
       bcore_spect_header_s header; \
@@ -902,4 +906,4 @@
 vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 #endif // __bcore_xo_H
-// XOILA_OUT_SIGNATURE 0xB9D710DAAFBC7FEAull
+// XOILA_OUT_SIGNATURE 0x0310A9A260441843ull

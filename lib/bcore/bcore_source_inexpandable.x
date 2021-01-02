@@ -17,7 +17,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-group bcore_source = bcore_inst
+group bcore_source = x_inst
 {
     feature uz_t get_data( mutable, vd_t data, uz_t size );
     feature uz_t inspect_data( mutable, vd_t data, uz_t size );
@@ -65,7 +65,8 @@ group bcore_source = bcore_inst
 
     stamp :point_s = aware :
     {
-        /* format not disclosed */
+        bcore_source -> source; // shallow reference
+        s3_t index;
 
         func( void set( mutable, bcore_source* source ) );
         func( void parse_err_fv( const, sc_t format, va_list args ) );

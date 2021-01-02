@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2020-12-27T16:14:55Z
+ *  Last File Update: 2021-01-02T20:34:53Z
  *
  *  Copyright and License of this File:
  *
@@ -65,7 +65,7 @@ XOILA_DEFINE_SPECT( bcore_inst, x_inst )
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_array
 
-XOILA_DEFINE_SPECT( bcore_array, x_array )
+XOILA_DEFINE_SPECT( x_inst, x_array )
 "{"
     "bcore_spect_header_s header;"
 "}";
@@ -1667,4 +1667,4 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOILA_OUT_SIGNATURE 0x7F3819D56E155742ull
+// XOILA_OUT_SIGNATURE 0x9629EAEF972219E3ull

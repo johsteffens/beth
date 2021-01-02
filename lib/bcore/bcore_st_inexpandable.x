@@ -17,9 +17,9 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-group bcore_st = bcore_inst
+group bcore_st = x_inst
 {
-    stamp st_s = aware bcore_inst
+    stamp st_s = aware x_inst
     {
         sd_t data;
         sc_t sc;

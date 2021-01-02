@@ -17,7 +17,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-group bcore_sink = bcore_inst
+group bcore_sink = x_inst
 {
     feature uz_t push_data( mutable, vc_t data, uz_t size );
     feature void flush( mutable );
