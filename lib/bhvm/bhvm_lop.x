@@ -49,8 +49,8 @@ group :ar0 =
         assert( s == 0 || r );
         switch( tknit )
         {
-            case BKNIT_F2: { f2_t v = @_f2(); for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]=v; } } break;
-            case BKNIT_F3: { f3_t v = @_f3(); for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]=v; } } break;
+            case BKNIT_F2: { f2_t v = @_f2(); for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]=v; } } break;
+            case BKNIT_F3: { f3_t v = @_f3(); for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]=v; } } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
     };
@@ -81,10 +81,10 @@ group :ar1 =
         assert( s == 0 || ( a && r ) );
         switch( tknit )
         {
-            case BKNIT_F22: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]=@_f2(cast(a,f2_t*)[i]); } break;
-            case BKNIT_F23: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]=@_f2(cast(a,f2_t*)[i]); } break;
-            case BKNIT_F32: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]=@_f3(cast(a,f3_t*)[i]); } break;
-            case BKNIT_F33: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]=@_f3(cast(a,f3_t*)[i]); } break;
+            case BKNIT_F22: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]=@_f2(cast(a,f2_t*)[i]); } break;
+            case BKNIT_F23: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]=@_f2(cast(a,f2_t*)[i]); } break;
+            case BKNIT_F32: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]=@_f3(cast(a,f3_t*)[i]); } break;
+            case BKNIT_F33: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]=@_f3(cast(a,f3_t*)[i]); } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
     };
@@ -95,10 +95,10 @@ group :ar1 =
         assert( s == 0 || ( a && r ) );
         switch( tknit )
         {
-            case BKNIT_F22: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]+=@_f2(cast(a,f2_t*)[i]); } break;
-            case BKNIT_F23: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]+=@_f2(cast(a,f2_t*)[i]); } break;
-            case BKNIT_F32: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]+=@_f3(cast(a,f3_t*)[i]); } break;
-            case BKNIT_F33: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]+=@_f3(cast(a,f3_t*)[i]); } break;
+            case BKNIT_F22: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]+=@_f2(cast(a,f2_t*)[i]); } break;
+            case BKNIT_F23: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]+=@_f2(cast(a,f2_t*)[i]); } break;
+            case BKNIT_F32: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]+=@_f3(cast(a,f3_t*)[i]); } break;
+            case BKNIT_F33: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]+=@_f3(cast(a,f3_t*)[i]); } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
     };
@@ -109,10 +109,10 @@ group :ar1 =
         assert( s == 0 || ( a && r ) );
         switch( tknit )
         {
-            case BKNIT_F22: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]=@_f2(cast(a,f2_t*)[0]); } break;
-            case BKNIT_F23: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]=@_f2(cast(a,f2_t*)[0]); } break;
-            case BKNIT_F32: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]=@_f3(cast(a,f3_t*)[0]); } break;
-            case BKNIT_F33: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]=@_f3(cast(a,f3_t*)[0]); } break;
+            case BKNIT_F22: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]=@_f2(cast(a,f2_t*)[0]); } break;
+            case BKNIT_F23: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]=@_f2(cast(a,f2_t*)[0]); } break;
+            case BKNIT_F32: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]=@_f3(cast(a,f3_t*)[0]); } break;
+            case BKNIT_F33: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]=@_f3(cast(a,f3_t*)[0]); } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
     };
@@ -123,10 +123,10 @@ group :ar1 =
         assert( a && r );
         switch( tknit )
         {
-            case BKNIT_F22: cast(r,f2_t*)[0] = 0; for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[0]+=@_f2(cast(a,f2_t*)[i]); } break;
-            case BKNIT_F23: cast(r,f3_t*)[0] = 0; for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[0]+=@_f2(cast(a,f2_t*)[i]); } break;
-            case BKNIT_F32: cast(r,f2_t*)[0] = 0; for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[0]+=@_f3(cast(a,f3_t*)[i]); } break;
-            case BKNIT_F33: cast(r,f3_t*)[0] = 0; for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[0]+=@_f3(cast(a,f3_t*)[i]); } break;
+            case BKNIT_F22: cast(r,f2_t*)[0] = 0; for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[0]+=@_f2(cast(a,f2_t*)[i]); } break;
+            case BKNIT_F23: cast(r,f3_t*)[0] = 0; for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[0]+=@_f2(cast(a,f2_t*)[i]); } break;
+            case BKNIT_F32: cast(r,f2_t*)[0] = 0; for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[0]+=@_f3(cast(a,f3_t*)[i]); } break;
+            case BKNIT_F33: cast(r,f3_t*)[0] = 0; for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[0]+=@_f3(cast(a,f3_t*)[i]); } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
     };
@@ -195,14 +195,14 @@ group :ar2 =
         assert( s == 0 || ( a && b && r ) );
         switch( tknit )
         {
-            case BKNIT_F222: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]=@_f2(cast(a,f2_t*)[i],cast(b,f2_t*)[i]); } break;
-            case BKNIT_F223: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]=@_f2(cast(a,f2_t*)[i],cast(b,f2_t*)[i]); } break;
-            case BKNIT_F232: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i]); } break;
-            case BKNIT_F233: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i]); } break;
-            case BKNIT_F322: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i]); } break;
-            case BKNIT_F323: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i]); } break;
-            case BKNIT_F332: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i]); } break;
-            case BKNIT_F333: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i]); } break;
+            case BKNIT_F222: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]=@_f2(cast(a,f2_t*)[i],cast(b,f2_t*)[i]); } break;
+            case BKNIT_F223: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]=@_f2(cast(a,f2_t*)[i],cast(b,f2_t*)[i]); } break;
+            case BKNIT_F232: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i]); } break;
+            case BKNIT_F233: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i]); } break;
+            case BKNIT_F322: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i]); } break;
+            case BKNIT_F323: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i]); } break;
+            case BKNIT_F332: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i]); } break;
+            case BKNIT_F333: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i]); } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
     };
@@ -213,14 +213,14 @@ group :ar2 =
         assert( s == 0 || ( a && b && r ) );
         switch( tknit )
         {
-            case BKNIT_F222: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]+=@_f2(cast(a,f2_t*)[i],cast(b,f2_t*)[i]); } break;
-            case BKNIT_F223: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]+=@_f2(cast(a,f2_t*)[i],cast(b,f2_t*)[i]); } break;
-            case BKNIT_F232: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]+=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i]); } break;
-            case BKNIT_F233: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]+=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i]); } break;
-            case BKNIT_F322: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i]); } break;
-            case BKNIT_F323: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i]); } break;
-            case BKNIT_F332: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i]); } break;
-            case BKNIT_F333: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i]); } break;
+            case BKNIT_F222: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]+=@_f2(cast(a,f2_t*)[i],cast(b,f2_t*)[i]); } break;
+            case BKNIT_F223: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]+=@_f2(cast(a,f2_t*)[i],cast(b,f2_t*)[i]); } break;
+            case BKNIT_F232: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]+=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i]); } break;
+            case BKNIT_F233: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]+=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i]); } break;
+            case BKNIT_F322: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i]); } break;
+            case BKNIT_F323: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i]); } break;
+            case BKNIT_F332: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i]); } break;
+            case BKNIT_F333: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i]); } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
     };
@@ -231,14 +231,14 @@ group :ar2 =
         assert( s == 0 || ( a && b && r ) );
         switch( tknit )
         {
-            case BKNIT_F222: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]+=@_f2(cast(a,f2_t*)[0],cast(b,f2_t*)[i]); } break;
-            case BKNIT_F223: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]+=@_f2(cast(a,f2_t*)[0],cast(b,f2_t*)[i]); } break;
-            case BKNIT_F232: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]+=@_f3(cast(a,f2_t*)[0],cast(b,f3_t*)[i]); } break;
-            case BKNIT_F233: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]+=@_f3(cast(a,f2_t*)[0],cast(b,f3_t*)[i]); } break;
-            case BKNIT_F322: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]+=@_f3(cast(a,f3_t*)[0],cast(b,f2_t*)[i]); } break;
-            case BKNIT_F323: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]+=@_f3(cast(a,f3_t*)[0],cast(b,f2_t*)[i]); } break;
-            case BKNIT_F332: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]+=@_f3(cast(a,f3_t*)[0],cast(b,f3_t*)[i]); } break;
-            case BKNIT_F333: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]+=@_f3(cast(a,f3_t*)[0],cast(b,f3_t*)[i]); } break;
+            case BKNIT_F222: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]+=@_f2(cast(a,f2_t*)[0],cast(b,f2_t*)[i]); } break;
+            case BKNIT_F223: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]+=@_f2(cast(a,f2_t*)[0],cast(b,f2_t*)[i]); } break;
+            case BKNIT_F232: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]+=@_f3(cast(a,f2_t*)[0],cast(b,f3_t*)[i]); } break;
+            case BKNIT_F233: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]+=@_f3(cast(a,f2_t*)[0],cast(b,f3_t*)[i]); } break;
+            case BKNIT_F322: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]+=@_f3(cast(a,f3_t*)[0],cast(b,f2_t*)[i]); } break;
+            case BKNIT_F323: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]+=@_f3(cast(a,f3_t*)[0],cast(b,f2_t*)[i]); } break;
+            case BKNIT_F332: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]+=@_f3(cast(a,f3_t*)[0],cast(b,f3_t*)[i]); } break;
+            case BKNIT_F333: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]+=@_f3(cast(a,f3_t*)[0],cast(b,f3_t*)[i]); } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
     };
@@ -367,22 +367,22 @@ group :ar3 =
         assert( s == 0 || ( a && b && c && r ) );
         switch( tknit )
         {
-            case BKNIT_F2222: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]=@_f2(cast(a,f2_t*)[i],cast(b,f2_t*)[i],cast(c,f2_t*)[i]); } break;
-            case BKNIT_F2223: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]=@_f2(cast(a,f2_t*)[i],cast(b,f2_t*)[i],cast(c,f2_t*)[i]); } break;
-            case BKNIT_F2232: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]=@_f3(cast(a,f2_t*)[i],cast(b,f2_t*)[i],cast(c,f3_t*)[i]); } break;
-            case BKNIT_F2233: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]=@_f3(cast(a,f2_t*)[i],cast(b,f2_t*)[i],cast(c,f3_t*)[i]); } break;
-            case BKNIT_F2322: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i],cast(c,f2_t*)[i]); } break;
-            case BKNIT_F2323: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i],cast(c,f2_t*)[i]); } break;
-            case BKNIT_F2332: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i],cast(c,f3_t*)[i]); } break;
-            case BKNIT_F2333: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i],cast(c,f3_t*)[i]); } break;
-            case BKNIT_F3222: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i],cast(c,f2_t*)[i]); } break;
-            case BKNIT_F3223: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i],cast(c,f2_t*)[i]); } break;
-            case BKNIT_F3232: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i],cast(c,f3_t*)[i]); } break;
-            case BKNIT_F3233: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i],cast(c,f3_t*)[i]); } break;
-            case BKNIT_F3322: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i],cast(c,f2_t*)[i]); } break;
-            case BKNIT_F3323: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i],cast(c,f2_t*)[i]); } break;
-            case BKNIT_F3332: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i],cast(c,f3_t*)[i]); } break;
-            case BKNIT_F3333: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i],cast(c,f3_t*)[i]); } break;
+            case BKNIT_F2222: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]=@_f2(cast(a,f2_t*)[i],cast(b,f2_t*)[i],cast(c,f2_t*)[i]); } break;
+            case BKNIT_F2223: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]=@_f2(cast(a,f2_t*)[i],cast(b,f2_t*)[i],cast(c,f2_t*)[i]); } break;
+            case BKNIT_F2232: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]=@_f3(cast(a,f2_t*)[i],cast(b,f2_t*)[i],cast(c,f3_t*)[i]); } break;
+            case BKNIT_F2233: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]=@_f3(cast(a,f2_t*)[i],cast(b,f2_t*)[i],cast(c,f3_t*)[i]); } break;
+            case BKNIT_F2322: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i],cast(c,f2_t*)[i]); } break;
+            case BKNIT_F2323: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i],cast(c,f2_t*)[i]); } break;
+            case BKNIT_F2332: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i],cast(c,f3_t*)[i]); } break;
+            case BKNIT_F2333: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i],cast(c,f3_t*)[i]); } break;
+            case BKNIT_F3222: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i],cast(c,f2_t*)[i]); } break;
+            case BKNIT_F3223: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i],cast(c,f2_t*)[i]); } break;
+            case BKNIT_F3232: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i],cast(c,f3_t*)[i]); } break;
+            case BKNIT_F3233: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i],cast(c,f3_t*)[i]); } break;
+            case BKNIT_F3322: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i],cast(c,f2_t*)[i]); } break;
+            case BKNIT_F3323: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i],cast(c,f2_t*)[i]); } break;
+            case BKNIT_F3332: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i],cast(c,f3_t*)[i]); } break;
+            case BKNIT_F3333: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i],cast(c,f3_t*)[i]); } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
     };
@@ -392,22 +392,22 @@ group :ar3 =
         assert( s == 0 || ( a && b && c && r ) );
         switch( tknit )
         {
-            case BKNIT_F2222: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]+=@_f2(cast(a,f2_t*)[i],cast(b,f2_t*)[i],cast(c,f2_t*)[i]); } break;
-            case BKNIT_F2223: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]+=@_f2(cast(a,f2_t*)[i],cast(b,f2_t*)[i],cast(c,f2_t*)[i]); } break;
-            case BKNIT_F2232: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]+=@_f3(cast(a,f2_t*)[i],cast(b,f2_t*)[i],cast(c,f3_t*)[i]); } break;
-            case BKNIT_F2233: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]+=@_f3(cast(a,f2_t*)[i],cast(b,f2_t*)[i],cast(c,f3_t*)[i]); } break;
-            case BKNIT_F2322: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]+=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i],cast(c,f2_t*)[i]); } break;
-            case BKNIT_F2323: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]+=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i],cast(c,f2_t*)[i]); } break;
-            case BKNIT_F2332: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]+=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i],cast(c,f3_t*)[i]); } break;
-            case BKNIT_F2333: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]+=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i],cast(c,f3_t*)[i]); } break;
-            case BKNIT_F3222: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i],cast(c,f2_t*)[i]); } break;
-            case BKNIT_F3223: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i],cast(c,f2_t*)[i]); } break;
-            case BKNIT_F3232: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i],cast(c,f3_t*)[i]); } break;
-            case BKNIT_F3233: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i],cast(c,f3_t*)[i]); } break;
-            case BKNIT_F3322: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i],cast(c,f2_t*)[i]); } break;
-            case BKNIT_F3323: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i],cast(c,f2_t*)[i]); } break;
-            case BKNIT_F3332: for(sz_t i=0; i<s; i++) { cast(r,f2_t*)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i],cast(c,f3_t*)[i]); } break;
-            case BKNIT_F3333: for(sz_t i=0; i<s; i++) { cast(r,f3_t*)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i],cast(c,f3_t*)[i]); } break;
+            case BKNIT_F2222: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]+=@_f2(cast(a,f2_t*)[i],cast(b,f2_t*)[i],cast(c,f2_t*)[i]); } break;
+            case BKNIT_F2223: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]+=@_f2(cast(a,f2_t*)[i],cast(b,f2_t*)[i],cast(c,f2_t*)[i]); } break;
+            case BKNIT_F2232: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]+=@_f3(cast(a,f2_t*)[i],cast(b,f2_t*)[i],cast(c,f3_t*)[i]); } break;
+            case BKNIT_F2233: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]+=@_f3(cast(a,f2_t*)[i],cast(b,f2_t*)[i],cast(c,f3_t*)[i]); } break;
+            case BKNIT_F2322: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]+=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i],cast(c,f2_t*)[i]); } break;
+            case BKNIT_F2323: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]+=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i],cast(c,f2_t*)[i]); } break;
+            case BKNIT_F2332: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]+=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i],cast(c,f3_t*)[i]); } break;
+            case BKNIT_F2333: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]+=@_f3(cast(a,f2_t*)[i],cast(b,f3_t*)[i],cast(c,f3_t*)[i]); } break;
+            case BKNIT_F3222: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i],cast(c,f2_t*)[i]); } break;
+            case BKNIT_F3223: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i],cast(c,f2_t*)[i]); } break;
+            case BKNIT_F3232: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i],cast(c,f3_t*)[i]); } break;
+            case BKNIT_F3233: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f2_t*)[i],cast(c,f3_t*)[i]); } break;
+            case BKNIT_F3322: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i],cast(c,f2_t*)[i]); } break;
+            case BKNIT_F3323: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i],cast(c,f2_t*)[i]); } break;
+            case BKNIT_F3332: for(sz_t i=0; i<s; i++) { cast(r,f2_t* restrict)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i],cast(c,f3_t*)[i]); } break;
+            case BKNIT_F3333: for(sz_t i=0; i<s; i++) { cast(r,f3_t* restrict)[i]+=@_f3(cast(a,f3_t*)[i],cast(b,f3_t*)[i],cast(c,f3_t*)[i]); } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
     };
