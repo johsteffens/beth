@@ -47,14 +47,14 @@ group bcore_source = x_inst
     {
         /* format not disclosed */
 
-        func( d @* create_from_string( const st_s* string ) );
+        func( d @* create_from_string( c st_s* string ) );
         func( d @* create_from_string_d( m st_s* string ) );
         func( d @* create_from_sc( sc_t sc ) ); // same as ...create_sc
         func( d @* create_sc( sc_t sc ) );
         func( d @* create_fa( sc_t format, ... ) );
         func( d @* create_fv( sc_t format, va_list args ) );
 
-        func( m @* setup_from_string( m @* o, const st_s* string ) );
+        func( m @* setup_from_string( m @* o, c st_s* string ) );
         func( m @* setup_from_string_d( m @* o, m st_s* string ) );
         func( m @* setup_from_sc( m @* o, sc_t sc ) ); // same as ...create_sc
         func( m @* setup_sc( m @* o, sc_t sc ) );

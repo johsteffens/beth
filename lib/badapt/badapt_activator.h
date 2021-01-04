@@ -98,7 +98,7 @@ XOILA_DEFINE_GROUP( badapt_activator, bcore_inst )
 #ifdef XOILA_SECTION
 
     /// activation function
-    feature const badapt_activation* get_activation( c @* o )                    = { return NULL; };
+    feature c badapt_activation* get_activation( c @* o )                  = { return NULL; };
     feature void set_activation( m @* o, c badapt_activation* activation ) = {};
 
     /// fast concurrent inference

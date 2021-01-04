@@ -24,7 +24,7 @@ signature m @* clear    ( m @* o ); // sets size to zero
 signature m @* set_space( m @* o, uz_t space );
 signature m @* set_size ( m @* o, uz_t size  ); // resize
 signature m @* sort     ( m @* o, s2_t order ); // stable
-signature m @* reorder  ( m @* o, const bcore_arr_uz_s* order );
+signature m @* reorder  ( m @* o, c bcore_arr_uz_s* order );
 
 //----------------------------------------------------------------------------------------------------------------------
 

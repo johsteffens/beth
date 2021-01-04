@@ -58,8 +58,8 @@ stamp :path_s = aware bcore_inst
         }
     };
 
-    func( d @* create_sc( sc_t sc ) );
-    func( d @* create_st( const st_s* st ) );
+    func( d @* create_sc(   sc_t  sc ) );
+    func( d @* create_st( c st_s* st ) );
 };
 
 /**********************************************************************************************************************/
@@ -130,7 +130,7 @@ func( bl_t find_descend( sc_t folder, sc_t name, m st_s* result ) );
 
 /// opens file-source (close it with bcore_source_a_discard)
 func( d bcore_source* open_source( sc_t name ) );
-func( d bcore_source* open_source_path( const bcore_file_path_s* path ) );
+func( d bcore_source* open_source_path( c bcore_file_path_s* path ) );
 
 /// opens file-sink (close it with bcore_sink_a_discard)
 func( d bcore_sink* open_sink( sc_t name ) );

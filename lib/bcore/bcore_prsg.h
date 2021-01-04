@@ -70,7 +70,7 @@ feature        bl_t gen_bl     ( m @* o ) = { return :a_gen_bits_u3( o, 1 ) ? tr
 feature strict m :* set_state_u3( m @* o, u3_t seed );
 
 /// Computes a new state derived from state of a and b.
-feature m :* set_state_mix( m @* o, const :* a, const :* b ) =
+feature m :* set_state_mix( m @* o, c :* a, c :* b ) =
 {
     /* Different mixing methods are thinkable:
      * Adding, multiplying or xoring should all be suitable.

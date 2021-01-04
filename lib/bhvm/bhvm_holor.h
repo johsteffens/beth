@@ -122,7 +122,7 @@ stamp :shape_s = x_array
     func (sz_t get_volume( c @* o )) = { sz_t v = 1; foreach( sz_t e in o ) v *= e; return v; };
 
     /// sets data by copying
-    func (void set_data(    m @* o, const sz_t* data, sz_t size ));
+    func (void set_data(    m @* o, c sz_t* data, sz_t size ));
     func (void set_data_nv( m @* o, sz_t size, va_list sz_t_args ));
     func (void set_data_na( m @* o, sz_t size, ... ));
 
@@ -134,10 +134,10 @@ stamp :shape_s = x_array
 
     /// status
     func (bl_t is_weak( c @* o )) = { return ( o.space == 0 ) && ( o.size > 0 ); };
-    func (bl_t is_equal( c @* o, const @* b ));
+    func (bl_t is_equal( c @* o, c @* b ));
 
     // b is a sub-shape of o
-    func (bl_t is_sub( c @* o, const @* b ));
+    func (bl_t is_sub( c @* o, c @* b ));
 
     /// constructive catenation
     func (bl_t cat_can(  c @* o, c @* b ));
@@ -230,13 +230,13 @@ stamp :value_s = x_array
     func (void push_data( m @* o, tp_t src_type, vc_t src_data, sz_t size ));
 
     /// pushes data of value converting to o->type
-    func (void push_value( m @* o, const @* src ));
+    func (void push_value( m @* o, c @* src ));
 
     /// status
     func (bl_t is_weak(   c @* o )) = { return ( o.space == 0 ) && ( o.size > 0 ); };
     func (bl_t is_vacant( c @* o )) = { return ( o.size == 0 ); };
     func (bl_t is_nan(    c @* o ));
-    func (bl_t is_equal(  c @* o, const @* b ));
+    func (bl_t is_equal(  c @* o, c @* b ));
 
     /// constructive (==conservative) concatenation
     func (bl_t cat_can ( c @* o, c @* b ));
@@ -273,7 +273,7 @@ stamp :value_s = x_array
     /** Frobenius Norm
      *  See bmath_mf3_fdev... for more details
      */
-    func (f3_t fdev_equ( c @* o, const @* b ));
+    func (f3_t fdev_equ( c @* o, c @* b ));
     func (f3_t fdev_zro( c @* o ));
 
     func (sz_t get_sz( c @* o, sz_t index ));
@@ -298,7 +298,7 @@ stamp :value_s = x_array
     /// general mathematics
 
     /// o[ i ] += a[ i ]
-    func (void acc( m @* o, const @* a ));
+    func (void acc( m @* o, c @* a ));
 
     /// returns sum{ ( o[i] ) }
     func (f3_t sum( c @* o ));
@@ -307,7 +307,7 @@ stamp :value_s = x_array
     func (f3_t sum_sqr( c @* o ));
 
     /// returns sum{ ( a[i] - b[i] )^2 }
-    func (f3_t sub_sqr_sum( c @* o, const @* b ));
+    func (f3_t sub_sqr_sum( c @* o, c @* b ));
 
     /// r[ i ] = a[ i ] * scl
     func (void mul_scl_f3( c @* o, f3_t scl, m @* r ));
@@ -385,10 +385,10 @@ stamp :holor_s = aware bcore_inst
     func (m @* copy_t( m @* o, tp_t type, vc_t src ));
 
     /// Copies shape; clears value
-    func (m @* copy_shape( m @* o, const bhvm_shape_s* src ));
+    func (m @* copy_shape( m @* o, c bhvm_shape_s* src ));
 
     /// Copies shape; clears value; copies type
-    func (m @* copy_shape_type( m @* o, const @* src ));
+    func (m @* copy_shape_type( m @* o, c @* src ));
 
     func (m @* set_type( m @* o, tp_t type ));
     func (m @* fit_size( m @* o ));
@@ -427,7 +427,7 @@ stamp :holor_s = aware bcore_inst
     func (d @* create_parse_st( c st_s* st ));
     func (d @* create_parse_sc( sc_t sc ));
 
-    func (bl_t is_equal( c @* o, const @* src )) =
+    func (bl_t is_equal( c @* o, c @* src )) =
     {
         if( !o.s.is_equal( src.s ) ) return false;
         if( !o.v.is_equal( src.v ) ) return false;
@@ -488,11 +488,11 @@ stamp :holor_s = aware bcore_inst
     func (f3_t sum_sqr( c @* o ));
 
     /// returns sum{ ( a[i] - b[i] )^2 }
-    func (f3_t sub_sqr_sum( c @* o, const @* b ));
+    func (f3_t sub_sqr_sum( c @* o, c @* b ));
 
     // o[i] += a[i];
-    func (void acc(     m @* o, const @* a ));
-    func (void acc_set( m @* o, const @* a )); // allocates value and initializes zero if necessary
+    func (void acc(     m @* o, c @* a ));
+    func (void acc_set( m @* o, c @* a )); // allocates value and initializes zero if necessary
 
     /**********************************************************************************************************************/
     /// holor specific operations
@@ -515,7 +515,7 @@ stamp :holor_s = aware bcore_inst
      *  * o->d_size == src->d_size || o->d_size == src->d_size + 1
      *  * src->d_data must match (lower significant) o->d_data
      */
-    func (void push( m @* o, const @* src ));
+    func (void push( m @* o, c @* src ));
 
     /** Constructive catenation of two holors.
      *  valua data is catenated from a b

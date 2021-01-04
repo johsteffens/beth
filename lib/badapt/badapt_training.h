@@ -34,7 +34,7 @@ XOILA_DEFINE_GROUP( badapt_supplier, bcore_inst )
     feature void fetch_sample_vio( m @* o, m bmath_vf3_s* in, m bmath_vf3_s* out ); // validation supervised
 
     // returns preferred loss function
-    feature const badapt_loss* preferred_loss( c @* o );
+    feature c badapt_loss* preferred_loss( c @* o );
 
     // sets up builder parameters where suitable
     feature void setup_builder( c @* o, m badapt_builder* builder ) extern setup_builder_default;
@@ -54,16 +54,16 @@ XOILA_DEFINE_GROUP( badapt_guide, bcore_inst )
 BCORE_FORWARD_OBJECT( badapt_progress_s );
 XOILA_DEFINE_GROUP( badapt_training_state, bcore_inst )
 #ifdef XOILA_SECTION
-    feature void set_adaptive( m @* o, const badapt_adaptive* adaptive );
+    feature void set_adaptive( m @* o, c badapt_adaptive* adaptive );
     feature m badapt_adaptive* get_adaptive( c @* o );
 
-    feature void set_supplier( m @* o, const badapt_supplier* supplier );
+    feature void set_supplier( m @* o, c badapt_supplier* supplier );
     feature m badapt_supplier* get_supplier( c @* o );
 
-    feature void set_progress( m @* o, const badapt_progress_s* progress );
+    feature void set_progress( m @* o, c badapt_progress_s* progress );
     feature m badapt_progress_s* get_progress( c @* o );
 
-    feature void set_guide( m @* o, const badapt_guide* guide );
+    feature void set_guide( m @* o, c badapt_guide* guide );
     feature m badapt_guide* get_guide( c @* o );
 
     feature void set_backup_path( m @* o, sc_t name );

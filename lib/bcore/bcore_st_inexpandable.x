@@ -99,7 +99,7 @@ group bcore_st = x_inst
         /// Counting matches (expects start >= end)
         func( uz_t count_char( c @* o, uz_t start, uz_t end, char c ) );
         func( uz_t count_sc(   c @* o, uz_t start, uz_t end, sc_t sc ) );
-        func( uz_t count_st(   c @* o, uz_t start, uz_t end, const st_s* st ) );
+        func( uz_t count_st(   c @* o, uz_t start, uz_t end, c st_s* st ) );
 
         /// Inserts at position <start>
         func( m @* insert_char( m @* o, uz_t start, char c ) );
@@ -112,7 +112,7 @@ group bcore_st = x_inst
         /// Replaces existing characters at position <start> (string length does not change)
         func( m @* replace_char( m @* o, uz_t start, char c ) );
         func( m @* replace_sc(   m @* o, uz_t start, sc_t sc ) );
-        func( m @* replace_st(   m @* o, uz_t start, const st_s* st ) );
+        func( m @* replace_st(   m @* o, uz_t start, c st_s* st ) );
         func( m @* replace_st_d( m @* o, uz_t start, m st_s* st ) ); // discards string
 
         /// Removes from position start: <size> characters. If not enough characters left, the entire tail is removed. Returns o.
@@ -153,7 +153,7 @@ group bcore_st = x_inst
         func( uz_t parse_fa( c @* o, uz_t start, uz_t end, sc_t format, ... ));
 
         /// constructs a double-line with a visible position indicator (useful for context messages/warnings/errors with highlighted position)
-        func( d @* show_line_context( const st_s* o, uz_t pos ) );
+        func( d @* show_line_context( c st_s* o, uz_t pos ) );
     };
 
 };

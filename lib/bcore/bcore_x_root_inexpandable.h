@@ -74,7 +74,7 @@ group bcore_stamp_funcs = bcore_inst
 {
     signature void init( m @* o );
     signature void down( m @* o );
-    signature void copy( m @* o, const @* src );
+    signature void copy( m @* o, c @* src );
 
     signature   m @* create();
     signature void discard( m @* o );

@@ -38,7 +38,7 @@ group :adaptor =
 {
     signature void get_min_max( c @* o, m f3_t* min, m f3_t* max );
     signature void zro_grad( m @* o );
-    signature void acc_grad( m @* o, const @* src );
+    signature void acc_grad( m @* o, c @* src );
 
     signature void acc_stats( c @* o, m bhvm_stats_s* axon, m bhvm_stats_s* grad );
 
@@ -75,7 +75,7 @@ group :adaptor =
     };
 
     feature void reset( m @* o ); // resets all moments
-    feature void adapt( m @* o, const :node_s* node );
+    feature void adapt( m @* o, c :node_s* node );
 
     stamp :adl_s = aware x_array
     {
@@ -100,10 +100,10 @@ group :adaptive =
     feature strict m bhvm_holor_s* get_format_ex( c @* o, m bhvm_holor_s* format );
 
     /// axon-pass
-    feature void axon_pass( m @* o, const bhvm_holor_s* ax_en, m bhvm_holor_s* ax_ex ) = {};
+    feature void axon_pass( m @* o, c bhvm_holor_s* ax_en, m bhvm_holor_s* ax_ex ) = {};
 
     /// dendrite-pass (ag_en may be NULL)
-    feature void dendrite_pass( m @* o, const bhvm_holor_s* ag_ex, m bhvm_holor_s* ag_en ) = {};
+    feature void dendrite_pass( m @* o, c bhvm_holor_s* ag_ex, m bhvm_holor_s* ag_en ) = {};
 
     /// resets cyclic variables
     feature void cyclic_reset( m @* o ) = {};
@@ -134,10 +134,10 @@ group :adaptive =
 group :builder =
 {
     /// defines entry-holor format (shape & type)
-    feature strict void set_format_en( m @* o, const bhvm_holor_s* format );
+    feature strict void set_format_en( m @* o, c bhvm_holor_s* format );
 
     /// defines exit-holor (shape & type)
-    feature strict void set_format_ex( m @* o, const bhvm_holor_s* format );
+    feature strict void set_format_ex( m @* o, c bhvm_holor_s* format );
 
     /// creates adaptive releasing ownership
     feature strict m ::adaptive* create_adaptive( c @* o );

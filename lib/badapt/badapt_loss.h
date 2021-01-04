@@ -25,7 +25,7 @@ XOILA_DEFINE_GROUP( badapt_loss, bcore_inst )
 #ifdef XOILA_SECTION
 
     // loss function
-    feature strict 'pa' f3_t loss( c @* o, const bmath_vf3_s* out, const bmath_vf3_s* target );
+    feature strict 'pa' f3_t loss( c @* o, c bmath_vf3_s* out, c bmath_vf3_s* target );
 
     // loss function on scalars
     feature strict 'pa' f3_t loss_f3( c @* o, f3_t out, f3_t target );

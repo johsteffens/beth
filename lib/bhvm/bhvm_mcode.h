@@ -141,7 +141,7 @@ group :hmeta =
     feature bl_t is_active( c @* o )   = { return true;  }; // holor is active
 
     feature m bcore_inst* get_custom( c @* o )                           = { return NULL; }; // retrieves custom data (if available)
-    feature m bcore_inst* set_custom( m @* o, const bcore_inst* custom ) = { return NULL; }; // sets custom data and returns custom copy (if supported)
+    feature m bcore_inst* set_custom( m @* o, c bcore_inst* custom ) = { return NULL; }; // sets custom data and returns custom copy (if supported)
 
     stamp :adl_s = aware x_array { aware : => []; };
 };
@@ -149,8 +149,8 @@ group :hmeta =
 // ---------------------------------------------------------------------------------------------------------------------
 
 /// returns index to pushed holor;
-signature sz_t push_hm ( m @* o, const bhvm_holor_s* h, const :hmeta* m );
-signature sz_t push_hmc( m @* o, const bhvm_holor_s* h, const :hmeta* m, char c, m bhvm_vop_arr_ci_s* arr_ci );
+signature sz_t push_hm ( m @* o, c bhvm_holor_s* h, c :hmeta* m );
+signature sz_t push_hmc( m @* o, c bhvm_holor_s* h, c :hmeta* m, char c, m bhvm_vop_arr_ci_s* arr_ci );
 signature sz_t push_copy_from_index( m @* o, sz_t index );
 
 group :hbase =
