@@ -41,14 +41,14 @@ name data;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (m (TO) @* t_set_size (m (TO) @* o, tp_t t, sz_t size      )) = { bcore_array_t_set_size ( t, o.cast( bcore_array* ), size  ); return o; };
-func (m (TO) @* t_set_space(m (TO) @* o, tp_t t, sz_t space     )) = { bcore_array_t_set_space( t, o.cast( bcore_array* ), space ); return o; };
+func (m (TO) @* t_set_size (m (TO) @* o, tp_t t, sz_t size      )) = { bcore_array_t_set_size ( t, o.cast( m bcore_array* ), size  ); return o; };
+func (m (TO) @* t_set_space(m (TO) @* o, tp_t t, sz_t space     )) = { bcore_array_t_set_space( t, o.cast( m bcore_array* ), space ); return o; };
 func (m (TO) @* t_clear    (m (TO) @* o, tp_t t                 )) = { return o.t_set_space( t, 0 ); };
-func (m (TO) @* t_sort(     m (TO) @* o, tp_t t, s2_t direction )) = { bcore_array_t_sort( t, o.cast( bcore_array* ), 0, -1, direction ); return o; };
+func (m (TO) @* t_sort(     m (TO) @* o, tp_t t, s2_t direction )) = { bcore_array_t_sort( t, o.cast( m bcore_array* ), 0, -1, direction ); return o; };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (m (TE) x_inst* t_push_d( m @* o, tp_t t, m unaware (TE) x_inst* v )) = (verbatim_C)
+func (m (TE) x_inst* t_push_d( m @* o, tp_t t, d unaware (TE) x_inst* v )) = (verbatim_C)
 {
     const bcore_array_s* p = bcore_array_s_get_typed( t );
 

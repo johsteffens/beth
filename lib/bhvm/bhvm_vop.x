@@ -40,7 +40,7 @@ feature m sz_t* get_index_arr( m @* o );
 feature sz_t get_index( c @* o, sz_t index ) =
 {
     ASSERT( index  >= 0 && index <= o.arity() );
-    return cast(o,:*).get_index_arr()[ index ];
+    return cast(o,m :*).get_index_arr()[ index ];
 };
 
 feature m :* set_index( m @* o, sz_t index, sz_t idx_val ) =
@@ -53,8 +53,8 @@ feature m :* set_index( m @* o, sz_t index, sz_t idx_val ) =
 feature m :* set_index_arr( m @* o, m sz_t* idx_arr, sz_t size ) =
 {
     ASSERT( size == o.arity() + 1 );
-    sz_t* o_idx_arr = o.get_index_arr();
-    BFOR_SIZE( i, size )
+    m sz_t* o_idx_arr = o.get_index_arr();
+    for( sz_t i = 0; i < size; i++ )
     {
         sz_t idx_val = idx_arr[ i ];
         ASSERT( idx_val >= 0 );
@@ -84,13 +84,13 @@ stamp :arr_ci_s = aware x_array
 
     func : .i_of_c =
     {
-        foreach( $* e in o ) if( e.c == c ) return e.i;
+        foreach( m $* e in o ) if( e.c == c ) return e.i;
         return -1;
     };
 
     func : .c_of_i =
     {
-        foreach( $* e in o ) if( e.i == i ) return e.c;
+        foreach( m $* e in o ) if( e.i == i ) return e.c;
         return -1;
     };
 
@@ -107,7 +107,7 @@ feature void set_arg( m @* o, m :ci_s* ci ) =
 {
     sz_t size   = o.arity() + 1;
     sc_t  sig   = o.sig();
-    sz_t* index = o.get_index_arr();
+    m sz_t* index = o.get_index_arr();
     for( sz_t i = 0; i < size; i++ )
     {
         u0_t c = sig[ i ];
@@ -122,7 +122,7 @@ feature void set_arg( m @* o, m :ci_s* ci ) =
 
 feature m :* set_args( m @* o, c :arr_ci_s* arr ) =
 {
-    foreach( $* e in arr ) :a_set_arg( o, e );
+    foreach( m $* e in arr ) :a_set_arg( o, e );
     return o;
 };
 
@@ -135,7 +135,7 @@ group :ar0 =
 
     func (m (TO) :* setup( m (TO) @* o, sz_t idx0 )) =
     {
-        return o.cast( ::* ).set_index_arr( verbatim_C{ ( sz_t[] ) { idx0 } }, 1 );
+        return o.cast( m ::* ).set_index_arr( verbatim_C{ ( sz_t[] ) { idx0 } }, 1 );
     };
 
     extending stump verbatim :_s = aware :
@@ -194,8 +194,8 @@ group :ar0 =
         func :: .run =
         {
             sz_t i = o.i.v[0];
-            u3_t* rval = o.rval.cast( u3_t* );
-            bcore_mutex_s* mutex = o.mutex.cast( bcore_mutex_s* );
+            m u3_t* rval = o.rval.cast( m u3_t* );
+            m bcore_mutex_s* mutex = o.mutex.cast( m bcore_mutex_s* );
             mutex.lock();
             if( o->prsg )
             {
@@ -222,7 +222,7 @@ group :ar1 =
 
     func (m (TO) :* setup( m (TO) @* o, sz_t idx0, sz_t idx1 )) =
     {
-        return o.cast( ::* ).set_index_arr( verbatim_C{ ( sz_t[] ) { idx0, idx1 } }, 2 );
+        return o.cast( m ::* ).set_index_arr( verbatim_C{ ( sz_t[] ) { idx0, idx1 } }, 2 );
     };
 
     extending stump verbatim :_s = aware :
@@ -319,8 +319,8 @@ group :ar1 =
         func :: .sig = { return "ay"; };
         func :: .run =
         {
-            bhvm_holor_s* a = ah[o.i.v[0]];
-            bhvm_holor_s* y = ah[o.i.v[1]];
+            m bhvm_holor_s* a = ah[o.i.v[0]];
+            m bhvm_holor_s* y = ah[o.i.v[1]];
             y.fork_from( a );
         };
     };
@@ -332,8 +332,8 @@ group :ar1 =
         func :: .sig = { return "ay"; };
         func :: .run =
         {
-            bhvm_holor_s* a = ah[o.i.v[0]];
-            bhvm_holor_s* y = ah[o.i.v[1]];
+            m bhvm_holor_s* a = ah[o.i.v[0]];
+            m bhvm_holor_s* y = ah[o.i.v[1]];
             assert( o.shape.get_volume() ==  a.s.get_volume() );
             y.s.copy( o.shape );
             y.v.fork_from( a.v.1 );
@@ -350,7 +350,7 @@ group :ar2 =
 
     func (m (TO) :* setup( m (TO) @* o, sz_t idx0, sz_t idx1, sz_t idx2 )) =
     {
-        return o.cast( ::* ).set_index_arr( verbatim_C{ ( sz_t[] ) { idx0, idx1, idx2 } }, 3 );
+        return o.cast( m ::* ).set_index_arr( verbatim_C{ ( sz_t[] ) { idx0, idx1, idx2 } }, 3 );
     };
 
     extending stump verbatim :_s = aware :
@@ -450,7 +450,7 @@ group :ar3 =
 
     func (m (TO) :* setup( m (TO) @* o, sz_t idx0, sz_t idx1, sz_t idx2, sz_t idx3 )) =
     {
-        return o.cast( ::* ).set_index_arr( verbatim_C{ ( sz_t[] ) { idx0, idx1, idx2, idx3 } }, 4 );
+        return o.cast( m ::* ).set_index_arr( verbatim_C{ ( sz_t[] ) { idx0, idx1, idx2, idx3 } }, 4 );
     };
 
     extending stump verbatim :_s = aware :

@@ -143,7 +143,7 @@ group :ar1_eci =
         {
             if( a == r )
             {
-                bhvm_holor_s* buf = bhvm_holor_s!;
+                d bhvm_holor_s* buf = bhvm_holor_s!;
                 :cpy_acc_s_f( a, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
                 if( r.v.size ) buf.v.cpy( r.v.1 );
                 buf.discard();
@@ -164,7 +164,7 @@ group :ar1_eci =
         {
             if( a == r )
             {
-                bhvm_holor_s* buf = bhvm_holor_s!;
+                d bhvm_holor_s* buf = bhvm_holor_s!;
                 :neg_acc_s_f( a, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
                 if( r.v.size ) buf.v.cpy( r.v.1 );
                 buf.discard();
@@ -185,7 +185,7 @@ group :ar1_eci =
         {
             if( a == r )
             {
-                bhvm_holor_s* buf = bhvm_holor_s!;
+                d bhvm_holor_s* buf = bhvm_holor_s!;
                 :inv_acc_s_f( a, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
                 if( r.v.size ) buf.v.cpy( r.v.1 );
                 buf.discard();
@@ -375,7 +375,7 @@ group :ar2_eci =
         {
             if( a == r || b == r )
             {
-                bhvm_holor_s* buf = bhvm_holor_s!;
+                d bhvm_holor_s* buf = bhvm_holor_s!;
                 :add_acc_s_f( a, b, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
                 if( r->v.size ) buf.v.cpy( r.v.1 );
                 buf.discard();
@@ -394,7 +394,7 @@ group :ar2_eci =
         {
             if( a == r || b == r )
             {
-                bhvm_holor_s* buf = bhvm_holor_s!;
+                d bhvm_holor_s* buf = bhvm_holor_s!;
                 :sub_acc_s_f( a, b, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
                 if( r.v.size ) buf.v.cpy( r.v.1 );
                 buf.discard();
@@ -413,7 +413,7 @@ group :ar2_eci =
         {
             if( a == r || b == r )
             {
-                bhvm_holor_s* buf = bhvm_holor_s!;
+                d bhvm_holor_s* buf = bhvm_holor_s!;
                 :mul_acc_s_f( a, b, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
                 if( r.v.size ) buf.v.cpy( r.v.1 );
                 buf.discard();
@@ -432,7 +432,7 @@ group :ar2_eci =
         {
             if( a == r || b == r )
             {
-                bhvm_holor_s* buf = bhvm_holor_s!;
+                d bhvm_holor_s* buf = bhvm_holor_s!;
                 :div_acc_s_f( a, b, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
                 if( r.v.size ) buf.v.cpy( r.v.1 );
                 buf.discard();
@@ -451,7 +451,7 @@ group :ar2_eci =
         {
             if( a == r || b == r )
             {
-                bhvm_holor_s* buf = bhvm_holor_s!;
+                d bhvm_holor_s* buf = bhvm_holor_s!;
                 :pow_acc_s_f( a, b, bhvm_holor_s_fit_size( buf.copy_shape_type( r ) ) );
                 if( r.v.size ) buf.v.cpy( r.v.1 );
                 buf.discard();

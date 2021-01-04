@@ -85,7 +85,7 @@ XOILA_DEFINE_GROUP( bcore_main, bcore_inst )
         :arr_s arr;
         func : . main =
         {
-            foreach( $* e in o->arr ) try( e.main( frame ) );
+            foreach( m $* e in o->arr ) try( e.main( frame ) );
             return 0;
         };
     };

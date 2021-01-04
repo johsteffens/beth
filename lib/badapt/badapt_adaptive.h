@@ -95,7 +95,7 @@ XOILA_DEFINE_GROUP( badapt_adaptive, bcore_inst )
     feature void adapt_loss( m @* o, c badapt_loss* loss, c bmath_vf3_s* in, c bmath_vf3_s* target, m bmath_vf3_s* out ) =
     {
         ASSERT( out != NULL );
-        bmath_vf3_s* grad = bmath_vf3_s_create();
+        m bmath_vf3_s* grad = bmath_vf3_s_create();
         bmath_vf3_s_set_size( grad, out->size );
         badapt_adaptive_a_minfer( o, in, out );
         badapt_loss_a_bgrad( loss, out, target, grad );

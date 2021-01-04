@@ -47,7 +47,7 @@ stamp :op_s = aware :
     func bhvm_vop.run = (verbatim_C) { assert( o->p ); assert( o->p->run ); o->p->run( (vc_t)o->vop, ah ); };
 };
 
-signature sz_t vop_push_d( m @* o, m bhvm_vop* vop );
+signature sz_t vop_push_d( m @* o, d bhvm_vop* vop );
 signature sz_t vop_push_c( m @* o, c bhvm_vop* vop );
 
 name pclass_ax0; // main axon holor
@@ -120,7 +120,7 @@ stamp :nbase_s = aware x_array
     func :.push_node =
     {
         sz_t nidx = o.size;
-        :node_s* node = o.push();
+        m :node_s* node = o.push();
         node.nidx = nidx;
         return node;
     };
@@ -232,7 +232,7 @@ stamp :track_s = aware x_array
     func :.vop_push_d =
     {
         assert( vop );
-        :op_s* op = o.push();
+        m :op_s* op = o.push();
         op.vop = vop;
         op.p = ( bhvm_vop_spect_s* )bhvm_vop_spect_s_get_aware( op->vop );
         assert( op.p );
@@ -287,7 +287,7 @@ signature        void track_remove      ( m @* o, tp_t name );                //
 signature        void track_run_ah      ( c @* o, tp_t name, m bhvm_holor_s** ah );
 signature        void track_run         ( c @* o, tp_t name );
 
-signature void track_vop_set_args_push_d( m @* o, tp_t name, m bhvm_vop* vop, c bhvm_vop_arr_ci_s* arr_ci );
+signature void track_vop_set_args_push_d( m @* o, tp_t name, d bhvm_vop* vop, c bhvm_vop_arr_ci_s* arr_ci );
 
 // track library
 stamp :lib_s = aware :
@@ -300,7 +300,7 @@ stamp :lib_s = aware :
 
     func :.track_get =
     {
-        uz_t* pidx = o.map.get( name );
+        m uz_t* pidx = o.map.get( name );
         return pidx ? o.arr.[ pidx.0 ] : NULL;
     };
 
@@ -308,14 +308,14 @@ stamp :lib_s = aware :
     {
         if( o.map.exists( name ) ) return o.track_get( name );
         o.map.set( name, o.arr.size );
-        :track_s* track = o.arr.push();
+        m :track_s* track = o.arr.push();
         track.name = name;
         return track;
     };
 
     func :.track_reset =
     {
-        :track_s* track = o.track_get_or_new( name );
+        m :track_s* track = o.track_get_or_new( name );
         track.clear();
         return track;
     };
@@ -331,15 +331,15 @@ stamp :lib_s = aware :
 
     func :.track_push =
     {
-        :track_s* src = o.track_get( src_name );
+        m :track_s* src = o.track_get( src_name );
         if( !src ) return;
-        :track_s* dst = o.track_get_or_new( name );
-        foreach( $* e in src ) dst.vop_push_c( e.vop );
+        m :track_s* dst = o.track_get_or_new( name );
+        foreach( m $* e in src ) dst.vop_push_c( e.vop );
     };
 
     func :.track_remove =
     {
-        uz_t* pidx = o.map.get( name );
+        m uz_t* pidx = o.map.get( name );
         if( !pidx ) return;
         sz_t idx = pidx.0;
         o.arr.[ idx ].discard();
@@ -351,7 +351,7 @@ stamp :lib_s = aware :
 
     func :.track_run_ah =
     {
-        :track_s* t = cast( o, @* ).track_get( name );
+        m :track_s* t = cast( o, m @* ).track_get( name );
         if( t ) t.run( ah );
     };
 

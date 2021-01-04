@@ -73,7 +73,7 @@ XOILA_DEFINE_GROUP( badapt_training_state, bcore_inst )
     {
         sc_t path = badapt_training_state_a_get_backup_path( o );
         if( !path[ 0 ] ) return false;
-        st_s* tmp = st_s_create_fa( "#<sc_t>.tmp", path );
+        m st_s* tmp = st_s_create_fa( "#<sc_t>.tmp", path );
         bcore_bin_ml_a_to_file( o, tmp->sc );
         bcore_file_rename( tmp->sc, path );
         st_s_discard( tmp );
@@ -137,9 +137,9 @@ stamp badapt_training_state_std_s = aware badapt_training_state
     func badapt_training_state . set_supplier = { badapt_supplier_a_replicate( o.supplier.2, supplier ); };
     func badapt_training_state . get_supplier = { return o->supplier; };
     func badapt_training_state . set_progress = { o.progress.copy( progress ); };
-    func badapt_training_state . get_progress = { return o.progress.cast( badapt_progress_s* ); };
+    func badapt_training_state . get_progress = { return o.progress.cast( m badapt_progress_s* ); };
     func badapt_training_state . set_guide    = { badapt_guide_a_replicate( o.guide.2, guide ); };
-    func badapt_training_state . get_guide    = { return o.guide.cast( badapt_guide* ); };
+    func badapt_training_state . get_guide    = { return o.guide.cast( m badapt_guide* ); };
     func badapt_training_state . set_backup_path = { o.backup_file_name.copy_sc( name ); };
     func badapt_training_state . get_backup_path = { return o.backup_file_name.sc; };
 

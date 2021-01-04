@@ -76,9 +76,9 @@ XOILA_DEFINE_GROUP( bhvm, bcore_inst )
 stamp :shape_s = x_array
 {
     sz_t [];
-    func x_array.clear    = { return ( @*    )o.cast( x_array* ).t_clear( TYPEOF_@ ); };
-    func x_array.set_size = { return ( @*    )o.cast( x_array* ).t_set_size( TYPEOF_@, size ); };
-    func x_array.push     = { return ( sz_t* )o.cast( x_array* ).t_push( TYPEOF_@ ); };
+    func x_array.clear    = { return ( @*    )o.cast( m x_array* ).t_clear( TYPEOF_@ ); };
+    func x_array.set_size = { return ( @*    )o.cast( m x_array* ).t_set_size( TYPEOF_@, size ); };
+    func x_array.push     = { return ( sz_t* )o.cast( m x_array* ).t_push( TYPEOF_@ ); };
 
 
     /// weak reference; no shutdown required
@@ -162,8 +162,8 @@ stamp :shape_s = x_array
 stamp :value_s = x_array
 {
     typed [];
-    func x_array.clear    = { return ( @* )o.cast( x_array* ).t_clear( TYPEOF_@ ); };
-    func x_array.set_size = { return ( @* )o.cast( x_array* ).t_set_size( TYPEOF_@, size ); };
+    func x_array.clear    = { return ( @* )o.cast( m x_array* ).t_clear( TYPEOF_@ ); };
+    func x_array.set_size = { return ( @* )o.cast( m x_array* ).t_set_size( TYPEOF_@, size ); };
 
     /// weak reference; no shutdown required
     func (void init_weak( m @* o, tp_t type, vd_t data, sz_t size )) =
