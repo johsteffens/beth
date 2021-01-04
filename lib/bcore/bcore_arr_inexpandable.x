@@ -20,27 +20,27 @@
 group bcore_arr = bcore_inst
 {
 
-signature @* clear    ( mutable ); // sets size to zero
-signature @* set_space( mutable, uz_t space );
-signature @* set_size ( mutable, uz_t size  ); // resize
-signature @* sort     ( mutable, s2_t order ); // stable
-signature @* reorder  ( mutable, const bcore_arr_uz_s* order );
+signature m @* clear    ( m @* o ); // sets size to zero
+signature m @* set_space( m @* o, uz_t space );
+signature m @* set_size ( m @* o, uz_t size  ); // resize
+signature m @* sort     ( m @* o, s2_t order ); // stable
+signature m @* reorder  ( m @* o, const bcore_arr_uz_s* order );
 
 //----------------------------------------------------------------------------------------------------------------------
 
 group :uz = :
 {
-    signature @*   fill       ( mutable, uz_t size, uz_t v ); // creates filled array of size <size>
-    signature @*   step_fill  ( mutable, uz_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
-    signature void push       ( mutable, uz_t v );
-    signature @*   push_left  ( mutable, uz_t v ); // extends array by one; moves all elements up one index and copies v to position 0
-    signature uz_t pop        ( mutable );
-    signature uz_t find       ( const,   uz_t start, uz_t end, uz_t v ); // behaves like st_s_find_*
-    signature uz_t max        ( const );
-    signature uz_t min        ( const );
-    signature uz_t idx_max    ( const );
-    signature uz_t idx_min    ( const );
-    signature uz_t count_equal( const,   uz_t val ); // number of occurrence
+    signature m @* fill       ( m @* o, uz_t size, uz_t v ); // creates filled array of size <size>
+    signature m @* step_fill  ( m @* o, uz_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
+    signature void push       ( m @* o, uz_t v );
+    signature m @* push_left  ( m @* o, uz_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+    signature uz_t pop        ( m @* o );
+    signature uz_t find       ( c @* o,   uz_t start, uz_t end, uz_t v ); // behaves like st_s_find_*
+    signature uz_t max        ( c @* o );
+    signature uz_t min        ( c @* o );
+    signature uz_t idx_max    ( c @* o );
+    signature uz_t idx_min    ( c @* o );
+    signature uz_t count_equal( c @* o,   uz_t val ); // number of occurrence
 
     stamp :s = aware bcore_inst
     {
@@ -68,17 +68,17 @@ group :uz = :
 
 group :sz = :
 {
-    signature @*   fill       ( mutable, uz_t size, sz_t v ); // creates filled array of size <size>
-    signature @*   step_fill  ( mutable, sz_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
-    signature void push       ( mutable, sz_t v );
-    signature @*   push_left  ( mutable, sz_t v ); // extends array by one; moves all elements up one index and copies v to position 0
-    signature sz_t pop        ( mutable );
-    signature uz_t find       ( const,   uz_t start, uz_t end, sz_t v ); // behaves like st_s_find_*
-    signature sz_t max        ( const );
-    signature sz_t min        ( const );
-    signature uz_t idx_max    ( const );
-    signature uz_t idx_min    ( const );
-    signature uz_t count_equal( const,   sz_t val ); // number of occurrence
+    signature m @* fill       ( m @* o, uz_t size, sz_t v ); // creates filled array of size <size>
+    signature m @* step_fill  ( m @* o, sz_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
+    signature void push       ( m @* o, sz_t v );
+    signature m @* push_left  ( m @* o, sz_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+    signature sz_t pop        ( m @* o );
+    signature uz_t find       ( c @* o,   uz_t start, uz_t end, sz_t v ); // behaves like st_s_find_*
+    signature sz_t max        ( c @* o );
+    signature sz_t min        ( c @* o );
+    signature uz_t idx_max    ( c @* o );
+    signature uz_t idx_min    ( c @* o );
+    signature uz_t count_equal( c @* o,   sz_t val ); // number of occurrence
 
     stamp :s = aware bcore_inst
     {
@@ -106,12 +106,12 @@ group :sz = :
 
 group :u3 = :
 {
-    signature @*   fill       ( mutable, uz_t size, u3_t v ); // creates filled array of size <size>
-    signature @*   step_fill  ( mutable, u3_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
-    signature void push       ( mutable, u3_t v );
-    signature @*   push_left  ( mutable, u3_t v ); // extends array by one; moves all elements up one index and copies v to position 0
-    signature u3_t pop        ( mutable );
-    signature uz_t count_equal( const,   u3_t val ); // number of occurrence
+    signature m @* fill       ( m @* o, uz_t size, u3_t v ); // creates filled array of size <size>
+    signature m @* step_fill  ( m @* o, u3_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
+    signature void push       ( m @* o, u3_t v );
+    signature m @* push_left  ( m @* o, u3_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+    signature u3_t pop        ( m @* o );
+    signature uz_t count_equal( c @* o,   u3_t val ); // number of occurrence
 
     stamp :s = aware bcore_inst
     {
@@ -134,12 +134,12 @@ group :u3 = :
 
 group :tp = :
 {
-    signature @*   fill       ( mutable, uz_t size, tp_t v ); // creates filled array of size <size>
-    signature @*   step_fill  ( mutable, tp_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
-    signature void push       ( mutable, tp_t v );
-    signature @*   push_left  ( mutable, tp_t v ); // extends array by one; moves all elements up one index and copies v to position 0
-    signature tp_t pop        ( mutable );
-    signature uz_t count_equal( const,   tp_t val ); // number of occurrence
+    signature m @* fill       ( m @* o, uz_t size, tp_t v ); // creates filled array of size <size>
+    signature m @* step_fill  ( m @* o, tp_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
+    signature void push       ( m @* o, tp_t v );
+    signature m @* push_left  ( m @* o, tp_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+    signature tp_t pop        ( m @* o );
+    signature uz_t count_equal( c @* o,   tp_t val ); // number of occurrence
 
     stamp :s = aware bcore_inst
     {
@@ -162,11 +162,11 @@ group :tp = :
 
 group :bl = :
 {
-    signature @*   fill       ( mutable, uz_t size, bl_t v ); // creates filled array of size <size>
-    signature void push       ( mutable, bl_t v );
-    signature @*   push_left  ( mutable, bl_t v ); // extends array by one; moves all elements up one index and copies v to position 0
-    signature bl_t pop        ( mutable );
-    signature uz_t count_equal( const,   bl_t val ); // number of occurrence
+    signature m @* fill       ( m @* o, uz_t size, bl_t v ); // creates filled array of size <size>
+    signature void push       ( m @* o, bl_t v );
+    signature m @* push_left  ( m @* o, bl_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+    signature bl_t pop        ( m @* o );
+    signature uz_t count_equal( c @* o,   bl_t val ); // number of occurrence
 
     stamp :s = aware bcore_inst
     {
@@ -186,11 +186,11 @@ group :bl = :
 
 group :st = :
 {
-    signature st_s* push_st    ( mutable, const st_s* st );
-    signature st_s* push_st_d  ( mutable, st_s* st );
-    signature st_s* push_sc    ( mutable, sc_t sc );
-    signature void  pop        ( mutable );
-    signature uz_t  count_equal( const,   const st_s* val ); // number of occurrence
+    signature m st_s* push_st  ( m @* o, c st_s* st );
+    signature m st_s* push_st_d( m @* o, m st_s* st );
+    signature m st_s* push_sc  ( m @* o, sc_t sc );
+    signature void pop        ( m @* o );
+    signature uz_t count_equal( c @* o, c st_s* val ); // number of occurrence
 
     stamp :s = aware bcore_inst
     {
@@ -212,11 +212,11 @@ group :st = :
 
 group :vd = :
 {
-    signature @*   fill       ( mutable, uz_t size, vd_t v ); // creates filled array of size <size>
-    signature void push       ( mutable, vd_t v );
-    signature vd_t pop        ( mutable );
-    signature uz_t find       ( const,   uz_t start, uz_t end, vd_t v ); // behaves like st_s_find_*
-    signature uz_t count_equal( const,   vd_t val ); // number of occurrence
+    signature m @* fill       ( m @* o, uz_t size, vd_t v ); // creates filled array of size <size>
+    signature void push       ( m @* o, vd_t v );
+    signature vd_t pop        ( m @* o );
+    signature uz_t find       ( c @* o, uz_t start, uz_t end, vd_t v ); // behaves like st_s_find_*
+    signature uz_t count_equal( c @* o, vd_t val ); // number of occurrence
 
     stamp :s = aware bcore_inst
     {
@@ -237,11 +237,11 @@ group :vd = :
 
 group :fp = :
 {
-    signature @*   fill       ( mutable, uz_t size, fp_t v ); // creates filled array of size <size>
-    signature void push       ( mutable, fp_t v );
-    signature fp_t pop        ( mutable );
-    signature uz_t find       ( const,   uz_t start, uz_t end, fp_t v ); // behaves like st_s_find_*
-    signature uz_t count_equal( const,   fp_t val ); // number of occurrence
+    signature m @* fill       ( m @* o, uz_t size, fp_t v ); // creates filled array of size <size>
+    signature void push       ( m @* o, fp_t v );
+    signature fp_t pop        ( m @* o );
+    signature uz_t find       ( c @* o, uz_t start, uz_t end, fp_t v ); // behaves like st_s_find_*
+    signature uz_t count_equal( c @* o, fp_t val ); // number of occurrence
 
     stamp :s = aware bcore_inst
     {
@@ -262,10 +262,10 @@ group :fp = :
 
 group :sr = :
 {
-    signature sr_s* push_sr  ( mutable, sr_s v );
-    signature sr_s* push_tp  ( mutable, tp_t type );
-    signature sr_s  pop      ( mutable );
-    signature @*    set_spect( mutable, tp_t spect_type ); // switches perspective of all references to 'spect'
+    signature m sr_s* push_sr( m @* o, sr_s v );
+    signature m sr_s* push_tp( m @* o, tp_t type );
+    signature sr_s pop      ( m @* o );
+    signature m @* set_spect( m @* o, tp_t spect_type ); // switches perspective of all references to 'spect'
 
     stamp :s = aware bcore_inst
     {

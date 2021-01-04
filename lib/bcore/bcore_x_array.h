@@ -41,14 +41,14 @@ name data;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func ((TO) @* t_set_size ((TO) mutable, tp_t t, sz_t size      )) = { bcore_array_t_set_size ( t, o.cast( bcore_array* ), size  ); return o; };
-func ((TO) @* t_set_space((TO) mutable, tp_t t, sz_t space     )) = { bcore_array_t_set_space( t, o.cast( bcore_array* ), space ); return o; };
-func ((TO) @* t_clear    ((TO) mutable, tp_t t                 )) = { return o.t_set_space( t, 0 ); };
-func ((TO) @* t_sort(     (TO) mutable, tp_t t, s2_t direction )) = { bcore_array_t_sort( t, o.cast( bcore_array* ), 0, -1, direction ); return o; };
+func (m (TO) @* t_set_size (m (TO) @* o, tp_t t, sz_t size      )) = { bcore_array_t_set_size ( t, o.cast( bcore_array* ), size  ); return o; };
+func (m (TO) @* t_set_space(m (TO) @* o, tp_t t, sz_t space     )) = { bcore_array_t_set_space( t, o.cast( bcore_array* ), space ); return o; };
+func (m (TO) @* t_clear    (m (TO) @* o, tp_t t                 )) = { return o.t_set_space( t, 0 ); };
+func (m (TO) @* t_sort(     m (TO) @* o, tp_t t, s2_t direction )) = { bcore_array_t_sort( t, o.cast( bcore_array* ), 0, -1, direction ); return o; };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func ((TE) x_inst* t_push_d( mutable, tp_t t, unaware (TE) x_inst* v )) = (verbatim_C)
+func (m (TE) x_inst* t_push_d( m @* o, tp_t t, m unaware (TE) x_inst* v )) = (verbatim_C)
 {
     const bcore_array_s* p = bcore_array_s_get_typed( t );
 
@@ -79,7 +79,7 @@ func ((TE) x_inst* t_push_d( mutable, tp_t t, unaware (TE) x_inst* v )) = (verba
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func ((TE) x_inst* t_push_c( mutable, tp_t t, const unaware (TE) x_inst* v )) = (verbatim_C)
+func (m (TE) x_inst* t_push_c( m @* o, tp_t t, c unaware (TE) x_inst* v )) = (verbatim_C)
 {
     const bcore_array_s* p = bcore_array_s_get_typed( t );
 
@@ -112,7 +112,7 @@ func ((TE) x_inst* t_push_c( mutable, tp_t t, const unaware (TE) x_inst* v )) = 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func ((TE) x_inst* t_push_t( mutable, tp_t t, tp_t val_type )) = (verbatim_C)
+func (m (TE) x_inst* t_push_t( m @* o, tp_t t, tp_t val_type )) = (verbatim_C)
 {
     const bcore_array_s* p = bcore_array_s_get_typed( t );
     bcore_array_p_push( p, ( bcore_array* )o, sr_t_create( val_type ) );
@@ -137,7 +137,7 @@ func ((TE) x_inst* t_push_t( mutable, tp_t t, tp_t val_type )) = (verbatim_C)
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func ((TE) x_inst* t_push( mutable, tp_t t )) = (verbatim_C)
+func (m (TE) x_inst* t_push( m @* o, tp_t t )) = (verbatim_C)
 {
     const bcore_array_s* p = bcore_array_s_get_typed( t );
 
@@ -178,15 +178,15 @@ func ((TE) x_inst* t_push( mutable, tp_t t )) = (verbatim_C)
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func ((TO) @* clear(     (TO) mutable                 )) = { return o.t_clear( o._ ); };
-func ((TO) @* set_size ( (TO) mutable, sz_t size      )) = { return o.t_set_size( o._, size ); };
-func ((TO) @* set_space( (TO) mutable, sz_t space     )) = { return o.t_set_space( o._, space ); };
-func ((TO) @* sort(      (TO) mutable, s2_t direction )) = { return o.t_sort( o._, direction ); };
+func (m (TO) @* clear(     m (TO) @* o                 )) = { return o.t_clear( o._ ); };
+func (m (TO) @* set_size ( m (TO) @* o, sz_t size      )) = { return o.t_set_size( o._, size ); };
+func (m (TO) @* set_space( m (TO) @* o, sz_t space     )) = { return o.t_set_space( o._, space ); };
+func (m (TO) @* sort(      m (TO) @* o, s2_t direction )) = { return o.t_sort( o._, direction ); };
 
-func ((TE) x_inst* push_d( mutable,       unaware (TE) x_inst* v )) = { return o.t_push_d( o._, v ); };
-func ((TE) x_inst* push_c( mutable, const unaware (TE) x_inst* v )) = { return o.t_push_c( o._, v ); };
-func ((TE) x_inst* push_t( mutable, tp_t val_type )) = { return o.t_push_t( o._, val_type ); };
-func ((TE) x_inst* push  ( mutable )) = { return o.t_push( o._ ); };
+func (m (TE) x_inst* push_d( m @* o, d unaware (TE) x_inst* v )) = { return o.t_push_d( o._, v ); };
+func (m (TE) x_inst* push_c( m @* o, c unaware (TE) x_inst* v )) = { return o.t_push_c( o._, v ); };
+func (m (TE) x_inst* push_t( m @* o, tp_t val_type )) = { return o.t_push_t( o._, val_type ); };
+func (m (TE) x_inst* push  ( m @* o )) = { return o.t_push( o._ ); };
 
 #endif // XOILA_SECTION
 

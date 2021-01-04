@@ -19,15 +19,15 @@
 
 group bcore_sink = x_inst
 {
-    feature uz_t push_data( mutable, vc_t data, uz_t size );
-    feature void flush( mutable );
-    feature void push_fv( mutable, sc_t format, va_list args );
-    feature void push_fa( mutable, sc_t format, ... );
-    feature void push_u0( mutable, u0_t u );
-    feature void push_char( mutable, char c );
-    feature void push_sc( mutable, sc_t sc );
-    feature void push_string( mutable, const st_s* string );
-    feature void push_string_d( mutable, st_s* string );
+    feature uz_t push_data( m @* o, vc_t data, uz_t size );
+    feature void flush( m @* o );
+    feature void push_fv( m @* o, sc_t format, va_list args );
+    feature void push_fa( m @* o, sc_t format, ... );
+    feature void push_u0( m @* o, u0_t u );
+    feature void push_char( m @* o, char c );
+    feature void push_sc(   m @* o, sc_t sc );
+    feature void push_string(   m @* o, c st_s* string );
+    feature void push_string_d( m @* o, m st_s* string );
 };
 
 //----------------------------------------------------------------------------------------------------------------------

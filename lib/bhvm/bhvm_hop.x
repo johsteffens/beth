@@ -27,7 +27,7 @@
 group :ar0 =
 {
     extending stump verbatim :_s = aware : {};
-    signature void f( bhvm_holor_s* r );
+    signature void f( m bhvm_holor_s* r );
 
     /// axon pass --------------------------------------------------------------
 
@@ -45,7 +45,7 @@ group :ar0 =
 group :ar1 =
 {
     extending stump verbatim :_s = aware : {};
-    signature void f( const bhvm_holor_s* a, bhvm_holor_s* r );
+    signature void f( const bhvm_holor_s* a, m bhvm_holor_s* r );
 
     /// axon pass --------------------------------------------------------------
 
@@ -97,7 +97,7 @@ group :ar1_eci =
 
     signature f2_t f2( f2_t a );
     signature f3_t f3( f3_t a );
-    signature void f( const bhvm_holor_s* a, bhvm_holor_s* r );
+    signature void f( const bhvm_holor_s* a, m bhvm_holor_s* r );
 
     body body_acc =
     {
@@ -205,7 +205,7 @@ group :ar1_eci =
 group :ar2 =
 {
     extending stump verbatim :_s = aware : {};
-    signature void f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
+    signature void f( c bhvm_holor_s* a, c bhvm_holor_s* b, m bhvm_holor_s* r );
 
     /// axon pass --------------------------------------------------------------
 
@@ -283,7 +283,7 @@ group :ar2_eci =
 
     signature f2_t f2( f2_t a, f2_t b );
     signature f3_t f3( f3_t a, f3_t b );
-    signature void f( const bhvm_holor_s* a, const bhvm_holor_s* b, bhvm_holor_s* r );
+    signature void f( c bhvm_holor_s* a, c bhvm_holor_s* b, m bhvm_holor_s* r );
 
     /// sets the target value: r = op( a, b )
     body body_set =
@@ -504,7 +504,7 @@ group :ar2_eci =
 group :ar3 =
 {
     extending stump verbatim :_s = aware : {};
-    signature void f( const bhvm_holor_s* a, const bhvm_holor_s* b, const bhvm_holor_s* c, bhvm_holor_s* r );
+    signature void f( c bhvm_holor_s* a, c bhvm_holor_s* b, c bhvm_holor_s* c, m bhvm_holor_s* r );
 
     /// axon pass --------------------------------------------------------------
 
@@ -521,7 +521,7 @@ group :ar3_eci =
 
     signature f2_t f2( f2_t a, f2_t b, f2_t c );
     signature f3_t f3( f3_t a, f3_t b, f3_t c );
-    signature void f( const bhvm_holor_s* a, const bhvm_holor_s* b, const bhvm_holor_s* c, bhvm_holor_s* r );
+    signature void f( c bhvm_holor_s* a, c bhvm_holor_s* b, c bhvm_holor_s* c, m bhvm_holor_s* r );
 
     /// sets the target value: r = op( a, b, c )
     body body_set =

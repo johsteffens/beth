@@ -74,11 +74,11 @@ group bcore_flect = x_inst
          */
         bcore_self_body_s => body;
 
-        func (uz_t items_size( const ));
-        func (const bcore_self_item_s* get_item( const, uz_t index ));
-        func (const bcore_self_item_s* get_item_by_name( const, tp_t name )); // returns NULL in case of no match
-        func (const bcore_self_item_s* get_first_array_item( const )); // returns first item where caps is an array or NULL in case of no match
-        func (const bcore_self_item_s* get_first_anonymous_array_item( const )); // returns first item where caps is an array and type == 0 or NULL in case of no match
+        func (uz_t items_size( c @* o ));
+        func (const bcore_self_item_s* get_item( c @* o, uz_t index ));
+        func (const bcore_self_item_s* get_item_by_name( c @* o, tp_t name )); // returns NULL in case of no match
+        func (const bcore_self_item_s* get_first_array_item( c @* o )); // returns first item where caps is an array or NULL in case of no match
+        func (const bcore_self_item_s* get_first_anonymous_array_item( c @* o )); // returns first item where caps is an array and type == 0 or NULL in case of no match
     };
 
 };

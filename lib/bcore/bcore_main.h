@@ -52,7 +52,7 @@ XOILA_DEFINE_GROUP( bcore_main, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     /// This function should be polled to determine if running routine is being required to exit.
-    signature bl_t exit_required( const );
+    signature bl_t exit_required( c @* o );
 
     stamp :frame_s = aware bcore_inst
     {
@@ -73,7 +73,7 @@ XOILA_DEFINE_GROUP( bcore_main, bcore_inst )
         func : .exit_required;
     };
 
-    feature strict 'ar' er_t main( mutable, :frame_s* frame );
+    feature strict 'ar' er_t main( m @* o, m :frame_s* frame );
 
     stamp :arr_s = aware x_array
     {

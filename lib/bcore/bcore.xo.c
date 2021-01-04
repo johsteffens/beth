@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2021-01-02T20:34:53Z
+ *  Last File Update: 2021-01-04T13:11:55Z
  *
  *  Copyright and License of this File:
  *
@@ -72,7 +72,7 @@ XOILA_DEFINE_SPECT( x_inst, x_array )
 
 x_inst* x_array_t_push_d( x_array* o, tp_t t, x_inst* v )
 {
-    // bcore_x_array.h:51:75
+    // bcore_x_array.h:51:78
     
     const bcore_array_s* p = bcore_array_s_get_typed( t );
     
@@ -103,7 +103,7 @@ x_inst* x_array_t_push_d( x_array* o, tp_t t, x_inst* v )
 
 x_inst* x_array_t_push_c( x_array* o, tp_t t, const x_inst* v )
 {
-    // bcore_x_array.h:82:81
+    // bcore_x_array.h:82:78
     
     const bcore_array_s* p = bcore_array_s_get_typed( t );
     
@@ -136,7 +136,7 @@ x_inst* x_array_t_push_c( x_array* o, tp_t t, const x_inst* v )
 
 x_inst* x_array_t_push_t( x_array* o, tp_t t, tp_t val_type )
 {
-    // bcore_x_array.h:115:66
+    // bcore_x_array.h:115:67
     
     const bcore_array_s* p = bcore_array_s_get_typed( t );
     bcore_array_p_push( p, ( bcore_array* )o, sr_t_create( val_type ) );
@@ -161,7 +161,7 @@ x_inst* x_array_t_push_t( x_array* o, tp_t t, tp_t val_type )
 
 x_inst* x_array_t_push( x_array* o, tp_t t )
 {
-    // bcore_x_array.h:140:49
+    // bcore_x_array.h:140:50
     
     const bcore_array_s* p = bcore_array_s_get_typed( t );
     
@@ -1667,4 +1667,4 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOILA_OUT_SIGNATURE 0x9629EAEF972219E3ull
+// XOILA_OUT_SIGNATURE 0xF5B064F28218F8BEull

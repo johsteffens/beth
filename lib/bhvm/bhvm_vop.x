@@ -28,29 +28,29 @@ stamp :arr_s = aware x_array
     wrap x_array.push_d;
 };
 
-feature 'ap' void run( const, bhvm_holor_s** ah );
+feature 'ap' void run( c @* o, m bhvm_holor_s** ah );
 
-feature sz_t arity( const );
+feature sz_t arity( c @* o );
 
 /// signature of operator (e.g. "ABY")
-feature sc_t sig( const );
+feature sc_t sig( c @* o );
 
-feature sz_t* get_index_arr( mutable );
+feature m sz_t* get_index_arr( m @* o );
 
-feature sz_t get_index( const, sz_t index ) =
+feature sz_t get_index( c @* o, sz_t index ) =
 {
     ASSERT( index  >= 0 && index <= o.arity() );
     return cast(o,:*).get_index_arr()[ index ];
 };
 
-feature :* set_index( mutable, sz_t index, sz_t idx_val ) =
+feature m :* set_index( m @* o, sz_t index, sz_t idx_val ) =
 {
     ASSERT( index >= 0 && index <= o.arity() );
     o.get_index_arr()[ index ] = idx_val;
     return o;
 };
 
-feature :* set_index_arr( mutable, sz_t* idx_arr, sz_t size ) =
+feature m :* set_index_arr( m @* o, m sz_t* idx_arr, sz_t size ) =
 {
     ASSERT( size == o.arity() + 1 );
     sz_t* o_idx_arr = o.get_index_arr();
@@ -63,7 +63,7 @@ feature :* set_index_arr( mutable, sz_t* idx_arr, sz_t size ) =
     return o;
 };
 
-signature void push_ci( mutable, u0_t c, sz_t i );
+signature void push_ci( m @* o, u0_t c, sz_t i );
 
 stamp :ci_s = bcore_inst
 {
@@ -71,8 +71,8 @@ stamp :ci_s = bcore_inst
     func : .push_ci = { o.c = c; o.i = i; };
 };
 
-signature sz_t i_of_c( const, u0_t c );
-signature u0_t c_of_i( const, sz_t i );
+signature sz_t i_of_c( c @* o, u0_t c );
+signature u0_t c_of_i( c @* o, sz_t i );
 
 stamp :arr_ci_s = aware x_array
 {
@@ -103,7 +103,7 @@ stamp :arr_ci_s = aware x_array
   * a-pass: a,b,c,d,e    y
   * d-pass: f,g,h,i,j    z
   */
-feature void set_arg( mutable, :ci_s* ci ) =
+feature void set_arg( m @* o, m :ci_s* ci ) =
 {
     sz_t size   = o.arity() + 1;
     sc_t  sig   = o.sig();
@@ -120,7 +120,7 @@ feature void set_arg( mutable, :ci_s* ci ) =
     }
 };
 
-feature :* set_args( mutable, const :arr_ci_s* arr ) =
+feature m :* set_args( m @* o, c :arr_ci_s* arr ) =
 {
     foreach( $* e in arr ) :a_set_arg( o, e );
     return o;
@@ -133,7 +133,7 @@ group :ar0 =
 {
     stamp :index_s = bcore_inst { sz_t [ 1 ] v; func bcore_inst_call.init_x = { o.v[0] = -1; }; };
 
-    func ((TO) :* setup( (TO) mutable, sz_t idx0 )) =
+    func (m (TO) :* setup( m (TO) @* o, sz_t idx0 )) =
     {
         return o.cast( ::* ).set_index_arr( verbatim_C{ ( sz_t[] ) { idx0 } }, 1 );
     };
@@ -220,7 +220,7 @@ group :ar1 =
 {
     stamp :index_s = bcore_inst { sz_t [ 2 ] v; func bcore_inst_call . init_x = { o.v[0] = o.v[1] = -1; }; };
 
-    func ((TO) :* setup( (TO) mutable, sz_t idx0, sz_t idx1 )) =
+    func (m (TO) :* setup( m (TO) @* o, sz_t idx0, sz_t idx1 )) =
     {
         return o.cast( ::* ).set_index_arr( verbatim_C{ ( sz_t[] ) { idx0, idx1 } }, 2 );
     };
@@ -348,7 +348,7 @@ group :ar2 =
 {
     stamp :index_s = bcore_inst { sz_t [ 3 ] v; func bcore_inst_call . init_x = { o.v[0] = o.v[1] = o.v[2] = -1; }; };
 
-    func ((TO) :* setup( (TO) mutable, sz_t idx0, sz_t idx1, sz_t idx2 )) =
+    func (m (TO) :* setup( m (TO) @* o, sz_t idx0, sz_t idx1, sz_t idx2 )) =
     {
         return o.cast( ::* ).set_index_arr( verbatim_C{ ( sz_t[] ) { idx0, idx1, idx2 } }, 3 );
     };
@@ -448,7 +448,7 @@ group :ar3 =
 {
     stamp :index_s = bcore_inst { sz_t [ 4 ] v; func bcore_inst_call . init_x = { o.v[0] = o.v[1] = o.v[2] = o.v[3] = -1; }; };
 
-    func ((TO) :* setup( (TO) mutable, sz_t idx0, sz_t idx1, sz_t idx2, sz_t idx3 )) =
+    func (m (TO) :* setup( m (TO) @* o, sz_t idx0, sz_t idx1, sz_t idx2, sz_t idx3 )) =
     {
         return o.cast( ::* ).set_index_arr( verbatim_C{ ( sz_t[] ) { idx0, idx1, idx2, idx3 } }, 4 );
     };
@@ -491,6 +491,6 @@ group :ar3 =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (void to_sink( const, bcore_sink* sink ) );
+func (void to_sink( c @* o, m bcore_sink* sink ) );
 
 // ---------------------------------------------------------------------------------------------------------------------

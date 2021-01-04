@@ -49,10 +49,10 @@ group :thread =
         sz_t finished_count  = 0;      // number is incremented by item when a task was finished
     };
 
-    signature vd_t loop(       mutable ); // thread function
-    signature void loop_enter( mutable );
-    signature void loop_exit(  mutable );
-    signature void wait_while_locked( mutable ); // lock-unlock in sequence (used to test if the item is unlocked and waits otherwise)
+    signature vd_t loop(       m @* o ); // thread function
+    signature void loop_enter( m @* o );
+    signature void loop_exit(  m @* o );
+    signature void wait_while_locked( m @* o ); // lock-unlock in sequence (used to test if the item is unlocked and waits otherwise)
 
 
     stamp :item_s = aware :
@@ -83,9 +83,9 @@ group :thread =
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    signature void tsetup( mutable, sz_t threads, bhpt_adaptive* adaptive, bhpt_tutor* tutor ); // thread function
-    signature void tdown( mutable ); // thread function
-    signature void run( mutable, sz_t cycles_per_thread );
+    signature void tsetup( m @* o, sz_t threads, m bhpt_adaptive* adaptive, m bhpt_tutor* tutor ); // thread function
+    signature void tdown( m @* o ); // thread function
+    signature void run( m @* o, sz_t cycles_per_thread );
 
     stamp :base_s = aware :
     {

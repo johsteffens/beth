@@ -25,13 +25,13 @@ XOILA_DEFINE_GROUP( badapt_loss, bcore_inst )
 #ifdef XOILA_SECTION
 
     // loss function
-    feature strict 'pa' f3_t loss( const, const bmath_vf3_s* out, const bmath_vf3_s* target );
+    feature strict 'pa' f3_t loss( c @* o, const bmath_vf3_s* out, const bmath_vf3_s* target );
 
     // loss function on scalars
-    feature strict 'pa' f3_t loss_f3( const, f3_t out, f3_t target );
+    feature strict 'pa' f3_t loss_f3( c @* o, f3_t out, f3_t target );
 
     // computes loss minimizing backward gradient of x
-    feature strict 'pa' void bgrad( const, const bmath_vf3_s* out, const bmath_vf3_s* target, bmath_vf3_s* grad );
+    feature strict 'pa' void bgrad( c @* o, c bmath_vf3_s* out, c bmath_vf3_s* target, m bmath_vf3_s* grad );
 
     // l2 loss function
     stamp :l2_s = aware badapt_loss

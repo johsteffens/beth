@@ -36,14 +36,14 @@ XOILA_DEFINE_GROUP( bhpt, bcore_inst )
  */
 group :adaptor =
 {
-    signature void get_min_max( const, f3_t* min, f3_t* max );
-    signature void zro_grad( mutable );
-    signature void acc_grad( mutable, const @* src );
+    signature void get_min_max( c @* o, m f3_t* min, m f3_t* max );
+    signature void zro_grad( m @* o );
+    signature void acc_grad( m @* o, const @* src );
 
-    signature void acc_stats( const, bhvm_stats_s* axon, bhvm_stats_s* grad );
+    signature void acc_stats( c @* o, m bhvm_stats_s* axon, m bhvm_stats_s* grad );
 
     /// Makes axon values of o reference axon values of src; run adaptive_a_rebind_holors afterwards
-    signature void rebind_axon( mutable, @* src );
+    signature void rebind_axon( m @* o, m @* src );
 
     /// The node weakly references adaptive axon and gradient holors.
     stamp :node_s  = aware :
@@ -74,8 +74,8 @@ group :adaptor =
         wrap x_array.set_size;
     };
 
-    feature void reset( mutable ); // resets all moments
-    feature void adapt( mutable, const :node_s* node );
+    feature void reset( m @* o ); // resets all moments
+    feature void adapt( m @* o, const :node_s* node );
 
     stamp :adl_s = aware x_array
     {
@@ -94,19 +94,19 @@ group :adaptor =
 group :adaptive =
 {
     /// retrieves entry-holor-format (shape & type); returns format
-    feature strict bhvm_holor_s* get_format_en( const, bhvm_holor_s* format );
+    feature strict m bhvm_holor_s* get_format_en( c @* o, m bhvm_holor_s* format );
 
     /// retrieves exit-holor-format (shape & type); returns format
-    feature strict bhvm_holor_s* get_format_ex( const, bhvm_holor_s* format );
+    feature strict m bhvm_holor_s* get_format_ex( c @* o, m bhvm_holor_s* format );
 
     /// axon-pass
-    feature void axon_pass( mutable, const bhvm_holor_s* ax_en, bhvm_holor_s* ax_ex ) = {};
+    feature void axon_pass( m @* o, const bhvm_holor_s* ax_en, m bhvm_holor_s* ax_ex ) = {};
 
     /// dendrite-pass (ag_en may be NULL)
-    feature void dendrite_pass( mutable, const bhvm_holor_s* ag_ex, bhvm_holor_s* ag_en ) = {};
+    feature void dendrite_pass( m @* o, const bhvm_holor_s* ag_ex, m bhvm_holor_s* ag_en ) = {};
 
     /// resets cyclic variables
-    feature void cyclic_reset( mutable ) = {};
+    feature void cyclic_reset( m @* o ) = {};
 
     /** Obtains a holor-probe for accumulative gradients; returns probe
      *  The probe is to be deemed invalid after the adaptive has been modified
@@ -114,16 +114,16 @@ group :adaptive =
      *  rebind_holors must be executed afterwards.
      *  This function should execute fast.
      */
-    feature ::adaptor_probe_s* get_adaptor_probe( const, ::adaptor_probe_s* probe ) = { return probe; };
+    feature m ::adaptor_probe_s* get_adaptor_probe( c @* o, m ::adaptor_probe_s* probe ) = { return probe; };
 
     /** Explicitly rebinds internal holorbase.
      *  This can be necessary when holors of a probe have been externally reallocated.
      *  Use with care!
      */
-    feature void rebind_holors( mutable );
+    feature void rebind_holors( m @* o );
 
     /// outputs current status information to sink
-    feature void status_to_sink( const, sz_t verbosity, bcore_sink* sink ) = { if( verbosity > 0 ) bcore_txt_ml_a_to_sink( o, sink ); };
+    feature void status_to_sink( c @* o, sz_t verbosity, m bcore_sink* sink ) = { if( verbosity > 0 ) bcore_txt_ml_a_to_sink( o, sink ); };
 
 };
 
@@ -134,13 +134,13 @@ group :adaptive =
 group :builder =
 {
     /// defines entry-holor format (shape & type)
-    feature strict void set_format_en( mutable, const bhvm_holor_s* format );
+    feature strict void set_format_en( m @* o, const bhvm_holor_s* format );
 
     /// defines exit-holor (shape & type)
-    feature strict void set_format_ex( mutable, const bhvm_holor_s* format );
+    feature strict void set_format_ex( m @* o, const bhvm_holor_s* format );
 
     /// creates adaptive releasing ownership
-    feature strict ::adaptive* create_adaptive( const );
+    feature strict m ::adaptive* create_adaptive( c @* o );
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -152,26 +152,26 @@ group :builder =
 group :tutor =
 {
     /// creates adaptive via builder
-    feature strict ::adaptive* create_adaptive( const );
+    feature strict d ::adaptive* create_adaptive( c @* o );
 
     /// creates adaptor for adaptive
-    feature strict ::adaptor* create_adaptor( const );
+    feature strict d ::adaptor* create_adaptor( c @* o );
 
     /// resets the training session
-    feature void reset( mutable ) = {};
+    feature void reset( m @* o ) = {};
 
     /// primes a specified adaptive (must be concurrent for tutor)
-    feature void prime( mutable, ::adaptive* adaptive ) = {};
+    feature void prime( m @* o, m ::adaptive* adaptive ) = {};
 
     /** Tests a specified adaptive (must be concurrent for tutor) and writes result to log;
      *  Testing may mutate the tutor, if necessary and done in a thread safe manner.
      *  Mutation is not desirable, though, and should never affect the reliability or interpretability
      *  of test results.
      */
-    feature void test( mutable, const ::adaptive* adaptive, sz_t verbosity, bcore_sink* log ) = {};
+    feature void test( m @* o, c ::adaptive* adaptive, sz_t verbosity, m bcore_sink* log ) = {};
 
     /// outputs current status information to sink
-    feature void status_to_sink( const, sz_t verbosity, bcore_sink* sink ) = { if( verbosity > 0 ) bcore_txt_ml_a_to_sink( o, sink ); };
+    feature void status_to_sink( c @* o, sz_t verbosity, m bcore_sink* sink ) = { if( verbosity > 0 ) bcore_txt_ml_a_to_sink( o, sink ); };
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

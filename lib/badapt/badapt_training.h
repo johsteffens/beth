@@ -25,19 +25,19 @@
 
 XOILA_DEFINE_GROUP( badapt_supplier, bcore_inst )
 #ifdef XOILA_SECTION
-    feature strict sz_t get_in_size(  const );
-    feature strict sz_t get_out_size( const );
+    feature strict sz_t get_in_size(  c @* o );
+    feature strict sz_t get_out_size( c @* o );
 
-    feature void fetch_sample_tin( mutable, bmath_vf3_s* in );                   // training autonomous
-    feature void fetch_sample_tio( mutable, bmath_vf3_s* in, bmath_vf3_s* out ); // training supervised
-    feature void fetch_sample_vin( mutable, bmath_vf3_s* in );                   // validation autonomous
-    feature void fetch_sample_vio( mutable, bmath_vf3_s* in, bmath_vf3_s* out ); // validation supervised
+    feature void fetch_sample_tin( m @* o, m bmath_vf3_s* in );                     // training autonomous
+    feature void fetch_sample_tio( m @* o, m bmath_vf3_s* in, m bmath_vf3_s* out ); // training supervised
+    feature void fetch_sample_vin( m @* o, m bmath_vf3_s* in );                     // validation autonomous
+    feature void fetch_sample_vio( m @* o, m bmath_vf3_s* in, m bmath_vf3_s* out ); // validation supervised
 
     // returns preferred loss function
-    feature const badapt_loss* preferred_loss( const );
+    feature const badapt_loss* preferred_loss( c @* o );
 
     // sets up builder parameters where suitable
-    feature void setup_builder( const, badapt_builder* builder ) extern setup_builder_default;
+    feature void setup_builder( c @* o, m badapt_builder* builder ) extern setup_builder_default;
 #endif // XOILA_SECTION
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -46,7 +46,7 @@ BCORE_FORWARD_OBJECT( badapt_training_state );
 XOILA_DEFINE_GROUP( badapt_guide, bcore_inst )
 #ifdef XOILA_SECTION
     // callback for training iterations; state can be changed; return value indicates if training shall continue
-    feature strict bl_t callback( const, badapt_training_state* state );
+    feature strict bl_t callback( c @* o, m badapt_training_state* state );
 #endif // XOILA_SECTION
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -54,22 +54,22 @@ XOILA_DEFINE_GROUP( badapt_guide, bcore_inst )
 BCORE_FORWARD_OBJECT( badapt_progress_s );
 XOILA_DEFINE_GROUP( badapt_training_state, bcore_inst )
 #ifdef XOILA_SECTION
-    feature void set_adaptive( mutable, const badapt_adaptive* adaptive );
-    feature badapt_adaptive* get_adaptive( const );
+    feature void set_adaptive( m @* o, const badapt_adaptive* adaptive );
+    feature m badapt_adaptive* get_adaptive( c @* o );
 
-    feature void set_supplier( mutable, const badapt_supplier* supplier );
-    feature badapt_supplier* get_supplier( const );
+    feature void set_supplier( m @* o, const badapt_supplier* supplier );
+    feature m badapt_supplier* get_supplier( c @* o );
 
-    feature void set_progress( mutable, const badapt_progress_s* progress );
-    feature badapt_progress_s* get_progress( const );
+    feature void set_progress( m @* o, const badapt_progress_s* progress );
+    feature m badapt_progress_s* get_progress( c @* o );
 
-    feature void set_guide( mutable, const badapt_guide* guide );
-    feature badapt_guide* get_guide( const );
+    feature void set_guide( m @* o, const badapt_guide* guide );
+    feature m badapt_guide* get_guide( c @* o );
 
-    feature void set_backup_path( mutable, sc_t name );
-    feature sc_t get_backup_path( const );
+    feature void set_backup_path( m @* o, sc_t name );
+    feature sc_t get_backup_path( c @* o );
 
-    feature bl_t backup( const ) =
+    feature bl_t backup( c @* o ) =
     {
         sc_t path = badapt_training_state_a_get_backup_path( o );
         if( !path[ 0 ] ) return false;
@@ -80,7 +80,7 @@ XOILA_DEFINE_GROUP( badapt_training_state, bcore_inst )
         return true;
     };
 
-    feature bl_t recover( mutable ) =
+    feature bl_t recover( m @* o ) =
     {
         sc_t path = badapt_training_state_a_get_backup_path( o );
         if( !path || !path[ 0 ]        ) return false;
@@ -96,8 +96,8 @@ XOILA_DEFINE_GROUP( badapt_training_state, bcore_inst )
 XOILA_DEFINE_GROUP( badapt_trainer, bcore_inst )
 #ifdef XOILA_SECTION
     // sets up builder parameters where suitable
-    feature strict void run( const, badapt_training_state* state );
-    feature strict badapt_training_state* create_state( const ); // creates initial state for given training
+    feature strict void run( c @* o, m badapt_training_state* state );
+    feature strict m badapt_training_state* create_state( c @* o ); // creates initial state for given training
 #endif // XOILA_SECTION
 
 //----------------------------------------------------------------------------------------------------------------------

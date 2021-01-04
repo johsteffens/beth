@@ -72,20 +72,20 @@ group bcore_via   = bcore_inst {};
 /// default functions in a stamp
 group bcore_stamp_funcs = bcore_inst
 {
-    signature void init( mutable );
-    signature void down( mutable );
-    signature void copy( mutable, const @* src );
+    signature void init( m @* o );
+    signature void down( m @* o );
+    signature void copy( m @* o, const @* src );
 
-    signature   @* create();
-    signature void discard( mutable );
-    signature   @* clone(   const );
+    signature   m @* create();
+    signature void discard( m @* o );
+    signature   m @* clone( c @* o );
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 group bcore_fp = bcore_inst
 {
-    feature '' void copy_typed( mutable, tp_t type, vc_t src );
+    feature '' void copy_typed( m @* o, tp_t type, vc_t src );
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -93,8 +93,8 @@ group bcore_fp = bcore_inst
 /// bcore_mutex_s
 group bcore_mutex = bcore_inst
 {
-    signature void lock(   mutable );
-    signature void unlock( mutable );
+    signature void lock(   m @* o );
+    signature void unlock( m @* o );
 
     stamp :s = bcore_inst
     {
@@ -108,9 +108,9 @@ group bcore_mutex = bcore_inst
 /// bcore_condition_s
 group bcore_condition = bcore_inst
 {
-    signature void sleep   ( mutable, bcore_mutex_s* mutex );
-    signature void wake_one( mutable );
-    signature void wake_all( mutable );
+    signature void sleep   ( m @* o, m bcore_mutex_s* mutex );
+    signature void wake_one( m @* o );
+    signature void wake_all( m @* o );
 
     stamp :s = bcore_inst
     {
@@ -125,8 +125,8 @@ group bcore_condition = bcore_inst
 /// bcore_thread_s
 group bcore_thread = bcore_inst
 {
-    signature void call( mutable, bcore_fp_thread func, vd_t arg );
-    signature vd_t join( mutable );
+    signature void call( m @* o, bcore_fp_thread func, vd_t arg );
+    signature vd_t join( m @* o );
 
     stamp :s = bcore_inst
     {

@@ -28,11 +28,11 @@
 
 XOILA_DEFINE_GROUP( bcore_inst_call, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    feature 'p' void init_x( mutable ); // called by bcore_inst when exiting initialization
-    feature 'p' void down_e( mutable ); // called by bcore_inst when entering shutdown
-    feature 'p' void copy_e( mutable, const @* src ); // called by bcore_inst when entering copy
-    feature 'p' void copy_x( mutable, const @* src ); // called by bcore_inst when exiting copy
-    feature 'p' void discard_e( mutable ); // called by bcore_inst when entering discard
+    feature 'p' void init_x( m @* o ); // called by bcore_inst when exiting initialization
+    feature 'p' void down_e( m @* o ); // called by bcore_inst when entering shutdown
+    feature 'p' void copy_e( m @* o, const @* src ); // called by bcore_inst when entering copy
+    feature 'p' void copy_x( m @* o, const @* src ); // called by bcore_inst when exiting copy
+    feature 'p' void discard_e( m @* o ); // called by bcore_inst when entering discard
 
     name :init_x;
     name :down_e;

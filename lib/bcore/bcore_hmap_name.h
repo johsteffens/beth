@@ -31,14 +31,14 @@
 XOILA_DEFINE_GROUP( bcore_hmap_name, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-signature tp_t  set_st_c( mutable, const st_s* st ); // copies string (no effect when already registered); collision test; returns key
-signature tp_t  set_st_d( mutable,       st_s* st ); // owns string (discards string when already registered); collision test; returns key
-signature tp_t  set_sc(   mutable,       sc_t  sc ); // copies string (no effect when already registered); collision test; returns key
-signature st_s* get(      const,   tp_t key ); // returns pointer to string or NULL when key does not exist
-signature sc_t  get_sc(   const,   tp_t key ); // returns sc_t or NULL when key does not exist
-signature void  remove(   mutable, tp_t key ); // removes key if existing
-signature bl_t  exists(   const,   tp_t key ); // checks if key exists
-signature void  clear(    mutable           ); // removes all entries and frees memory
+signature   tp_t  set_st_c( m @* o, c st_s* st ); // copies string (no effect when already registered); collision test; returns key
+signature   tp_t  set_st_d( m @* o, m st_s* st ); // owns string (discards string when already registered); collision test; returns key
+signature   tp_t  set_sc(   m @* o, sc_t  sc ); // copies string (no effect when already registered); collision test; returns key
+signature m st_s* get(      c @* o, tp_t key ); // returns pointer to string or NULL when key does not exist
+signature   sc_t  get_sc(   c @* o, tp_t key ); // returns sc_t or NULL when key does not exist
+signature   void  remove(   m @* o, tp_t key ); // removes key if existing
+signature   bl_t  exists(   c @* o, tp_t key ); // checks if key exists
+signature   void  clear(    m @* o           ); // removes all entries and frees memory
 
 stamp :s = aware bcore_inst
 {

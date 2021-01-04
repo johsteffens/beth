@@ -30,8 +30,8 @@ XOILA_DEFINE_GROUP( x_inst, bcore_inst )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (       (TO) :* ifd( mutable, bl_t cond,       (TO) :* b )) = { return cond ? o : b; };
-func ( const (TO) :* ifc( const,   bl_t cond, const (TO) :* b )) = { return cond ? o : b; };
+func ( m (TO) :* ifd( m @* o, bl_t cond, m (TO) :* b )) = { return cond ? o : b; };
+func ( c (TO) :* ifc( c @* o, bl_t cond, c (TO) :* b )) = { return cond ? o : b; };
 
 //----------------------------------------------------------------------------------------------------------------------
 

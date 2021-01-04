@@ -24,8 +24,8 @@
 /// activation function
 XOILA_DEFINE_GROUP( badapt_activation, bcore_inst )
 #ifdef XOILA_SECTION
-    feature strict 'pa' f3_t fx( const, f3_t x ); // y  = f( x )
-    feature strict 'pa' f3_t dy( const, f3_t y ); // dy = d( y ) (derivative applied on y)
+    feature strict 'pa' f3_t fx( c @* o, f3_t x ); // y  = f( x )
+    feature strict 'pa' f3_t dy( c @* o, f3_t y ); // dy = d( y ) (derivative applied on y)
 
     // ======= (trivial activations) ============
     stamp :zero_s   = aware : { func : .fx = { return 0.0; }; func : .dy = { return 0.0; }; };
@@ -98,15 +98,15 @@ XOILA_DEFINE_GROUP( badapt_activator, bcore_inst )
 #ifdef XOILA_SECTION
 
     /// activation function
-    feature const badapt_activation* get_activation( const )                    = { return NULL; };
-    feature void set_activation( mutable, const badapt_activation* activation ) = {};
+    feature const badapt_activation* get_activation( c @* o )                    = { return NULL; };
+    feature void set_activation( m @* o, c badapt_activation* activation ) = {};
 
     /// fast concurrent inference
-    feature strict void infer( const, const bmath_vf3_s* in, bmath_vf3_s* out );
+    feature strict void infer( c @* o, c bmath_vf3_s* in, m bmath_vf3_s* out );
 
     /// fast concurrent gradient backpropagation (no changing of state)
     /// grad_in and grad_out may refer to the same object
-    feature strict void bgrad( const, bmath_vf3_s* grad_in, const bmath_vf3_s* grad_out, const bmath_vf3_s* out );
+    feature strict void bgrad( c @* o, m bmath_vf3_s* grad_in, c bmath_vf3_s* grad_out, c bmath_vf3_s* out );
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

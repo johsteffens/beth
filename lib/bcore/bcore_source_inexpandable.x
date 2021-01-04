@@ -19,47 +19,47 @@
 
 group bcore_source = x_inst
 {
-    feature uz_t get_data( mutable, vd_t data, uz_t size );
-    feature uz_t inspect_data( mutable, vd_t data, uz_t size );
-    feature u0_t get_u0( mutable );
-    feature char get_char( mutable );
-    feature u0_t inspect_u0( mutable );
-    feature char inspect_char( mutable );
+    feature uz_t get_data( m @* o, vd_t data, uz_t size );
+    feature uz_t inspect_data( m @* o, vd_t data, uz_t size );
+    feature u0_t get_u0( m @* o );
+    feature char get_char( m @* o );
+    feature u0_t inspect_u0( m @* o );
+    feature char inspect_char( m @* o );
 
-    feature void parse_fv( mutable, sc_t format, va_list args );
-    feature void parse_fa( mutable, sc_t format, ... );
-    feature void parse_msg_fv( mutable, sc_t format, va_list args );
-    feature void parse_msg_fa( mutable, sc_t format, ... );
-    feature void parse_msg_to_sink_fa( mutable, bcore_sink* sink, sc_t format, ... );
-    feature void parse_err_fa( mutable, sc_t format, ... );
-    feature er_t parse_em_fa( mutable, sc_t format, ... );
-    feature er_t parse_error_fa( mutable, sc_t format, ... );
-    feature bl_t parse_bl( mutable, sc_t format );
+    feature void parse_fv( m @* o, sc_t format, va_list args );
+    feature void parse_fa( m @* o, sc_t format, ... );
+    feature void parse_msg_fv( m @* o, sc_t format, va_list args );
+    feature void parse_msg_fa( m @* o, sc_t format, ... );
+    feature void parse_msg_to_sink_fa( m @* o, m bcore_sink* sink, sc_t format, ... );
+    feature void parse_err_fa( m @* o, sc_t format, ... );
+    feature er_t parse_em_fa( m @* o, sc_t format, ... );
+    feature er_t parse_error_fa( m @* o, sc_t format, ... );
+    feature bl_t parse_bl( m @* o, sc_t format );
 
-    feature bl_t eos( const );
-    feature sc_t get_file( const );
-    feature s3_t get_index( const );
-    feature void set_index( mutable, s3_t index );
-    feature void move_index( mutable, s3_t delta ); // set_index( get_index() + delta );
+    feature bl_t eos( c @* o );
+    feature sc_t get_file( c @* o );
+    feature s3_t get_index( c @* o );
+    feature void set_index( m @* o, s3_t index );
+    feature void move_index( m @* o, s3_t delta ); // set_index( get_index() + delta );
 
 
     stamp :string_s = aware :
     {
         /* format not disclosed */
 
-        func( @* create_from_string( const st_s* string ) );
-        func( @* create_from_string_d( st_s* string ) );
-        func( @* create_from_sc( sc_t sc ) ); // same as ...create_sc
-        func( @* create_sc( sc_t sc ) );
-        func( @* create_fa( sc_t format, ... ) );
-        func( @* create_fv( sc_t format, va_list args ) );
+        func( d @* create_from_string( const st_s* string ) );
+        func( d @* create_from_string_d( m st_s* string ) );
+        func( d @* create_from_sc( sc_t sc ) ); // same as ...create_sc
+        func( d @* create_sc( sc_t sc ) );
+        func( d @* create_fa( sc_t format, ... ) );
+        func( d @* create_fv( sc_t format, va_list args ) );
 
-        func( @* setup_from_string( mutable, const st_s* string ) );
-        func( @* setup_from_string_d( mutable, st_s* string ) );
-        func( @* setup_from_sc( mutable, sc_t sc ) ); // same as ...create_sc
-        func( @* setup_sc( mutable, sc_t sc ) );
-        func( @* setup_fa( mutable, sc_t format, ... ) );
-        func( @* setup_fv( mutable, sc_t format, va_list args ) );
+        func( m @* setup_from_string( m @* o, const st_s* string ) );
+        func( m @* setup_from_string_d( m @* o, m st_s* string ) );
+        func( m @* setup_from_sc( m @* o, sc_t sc ) ); // same as ...create_sc
+        func( m @* setup_sc( m @* o, sc_t sc ) );
+        func( m @* setup_fa( m @* o, sc_t format, ... ) );
+        func( m @* setup_fv( m @* o, sc_t format, va_list args ) );
     };
 
 
@@ -68,23 +68,23 @@ group bcore_source = x_inst
         bcore_source -> source; // shallow reference
         s3_t index;
 
-        func( void set( mutable, bcore_source* source ) );
-        func( void parse_err_fv( const, sc_t format, va_list args ) );
-        func( void parse_err_fa( const, sc_t format, ... ) );
-        func( void parse_msg_fv( const, sc_t format, va_list args ) );
-        func( void parse_msg_fa( const, sc_t format, ... ) );
-        func( void parse_msg_to_sink_fv( const, bcore_sink* sink, sc_t format, va_list args ) );
-        func( void parse_msg_to_sink_fa( const, bcore_sink* sink, sc_t format, ... ) );
+        func( void set( m @* o, m bcore_source* source ) );
+        func( void parse_err_fv( c @* o, sc_t format, va_list args ) );
+        func( void parse_err_fa( c @* o, sc_t format, ... ) );
+        func( void parse_msg_fv( c @* o, sc_t format, va_list args ) );
+        func( void parse_msg_fa( c @* o, sc_t format, ... ) );
+        func( void parse_msg_to_sink_fv( c @* o, m bcore_sink* sink, sc_t format, va_list args ) );
+        func( void parse_msg_to_sink_fa( c @* o, m bcore_sink* sink, sc_t format, ... ) );
 
         /// generates a parse error message and pushes it to the error stack (see bcore_error_manager.h); returns err_id
-        func( er_t parse_error_fv( const, sc_t format, va_list args ) );
-        func( er_t parse_error_fa( const, sc_t format, ... ) );
+        func( er_t parse_error_fv( c @* o, sc_t format, va_list args ) );
+        func( er_t parse_error_fa( c @* o, sc_t format, ... ) );
 
         /// creates a cloned source pointing to the index position of source point
-        func( bcore_source* clone_source( const ) );
+        func( d bcore_source* clone_source( c @* o ) );
 
         /// write a source reference to sink in the form <file_path>:<line>:<col>
-        func( void source_reference_to_sink( const, bl_t file_name_only, bcore_sink* sink ) );
+        func( void source_reference_to_sink( c @* o, bl_t file_name_only, m bcore_sink* sink ) );
     };
 };
 
