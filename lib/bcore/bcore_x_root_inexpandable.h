@@ -76,9 +76,9 @@ group bcore_stamp_funcs = bcore_inst
     signature void down( m @* o );
     signature void copy( m @* o, c @* src );
 
-    signature   m @* create();
+    signature   d @* create();
     signature void discard( m @* o );
-    signature   m @* clone( c @* o );
+    signature   d @* clone( c @* o );
 };
 
 //----------------------------------------------------------------------------------------------------------------------

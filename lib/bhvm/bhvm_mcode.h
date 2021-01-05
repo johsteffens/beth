@@ -280,7 +280,7 @@ signature        bl_t track_exists      ( c @* o, tp_t name );
 signature m :track_s* track_get         ( m @* o, tp_t name ); // retrieves track if existing or returns NULL
 signature m :track_s* track_get_or_new  ( m @* o, tp_t name ); // creates track if not yet existing otherwise same as get
 signature m :track_s* track_reset       ( m @* o, tp_t name ); // creates track if not yet existing or sets its size to zero
-signature        void track_vop_push_d  ( m @* o, tp_t name, m bhvm_vop* vop );
+signature        void track_vop_push_d  ( m @* o, tp_t name, d bhvm_vop* vop );
 signature        void track_vop_push_c  ( m @* o, tp_t name, c bhvm_vop* vop );
 signature        void track_push        ( m @* o, tp_t name, tp_t src_name ); // appends track of src_name
 signature        void track_remove      ( m @* o, tp_t name );                // removes track if existing

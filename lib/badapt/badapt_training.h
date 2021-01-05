@@ -73,7 +73,7 @@ XOILA_DEFINE_GROUP( badapt_training_state, bcore_inst )
     {
         sc_t path = badapt_training_state_a_get_backup_path( o );
         if( !path[ 0 ] ) return false;
-        m st_s* tmp = st_s_create_fa( "#<sc_t>.tmp", path );
+        d st_s* tmp = st_s_create_fa( "#<sc_t>.tmp", path );
         bcore_bin_ml_a_to_file( o, tmp->sc );
         bcore_file_rename( tmp->sc, path );
         st_s_discard( tmp );
