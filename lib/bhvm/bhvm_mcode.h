@@ -342,7 +342,7 @@ stamp :lib_s = aware :
         m uz_t* pidx = o.map.get( name );
         if( !pidx ) return;
         sz_t idx = pidx.0;
-        o.arr.[ idx ].discard();
+        o.arr.[ idx ].cast( d $* ).discard();
         o.arr.size--;
         o.arr.[ idx ] = o.arr.[ o->arr.size ];
         o.arr.[ o.arr.size ] = NULL;

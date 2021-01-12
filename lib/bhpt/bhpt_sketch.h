@@ -140,7 +140,7 @@ group :builder =
     feature strict void set_format_ex( m @* o, c bhvm_holor_s* format );
 
     /// creates adaptive releasing ownership
-    feature strict m ::adaptive* create_adaptive( c @* o );
+    feature strict d ::adaptive* create_adaptive( c @* o );
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

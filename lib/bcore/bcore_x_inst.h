@@ -33,6 +33,11 @@ XOILA_DEFINE_GROUP( x_inst, bcore_inst )
 func ( m (TO) :* ifd( m @* o, bl_t cond, m (TO) :* b )) = { return cond ? o : b; };
 func ( c (TO) :* ifc( c @* o, bl_t cond, c (TO) :* b )) = { return cond ? o : b; };
 
+func ( b ifx( c @* o, bl_t cond, c (TO) :* b ) ) =
+{
+    return cond ? o : b;
+};
+
 //----------------------------------------------------------------------------------------------------------------------
 
 #endif // XOILA_SECTION

@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2021-01-05T15:25:49Z
+ *  Last File Update: 2021-01-12T17:14:00Z
  *
  *  Copyright and License of this File:
  *
@@ -33,7 +33,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by xoico, reset the hash key value below to 0.
-#define HKEYOF_bcore_xo 0xCEDB931363A8BAC0ull
+#define HKEYOF_bcore_xo 0x7CB7450640856CA8ull
 
 #define TYPEOF_bcore_xo 0x1F62CB4BA6F9D13Aull
 
@@ -66,6 +66,7 @@
   BCORE_FORWARD_OBJECT( x_inst ); \
   static inline x_inst* x_inst_ifd( x_inst* o, bl_t cond, x_inst* b ); \
   static inline const x_inst* x_inst_ifc( const x_inst* o, bl_t cond, const x_inst* b ); \
+  const x_inst* x_inst_ifx( const x_inst* o, bl_t cond, const x_inst* b ); \
   XOILA_DECLARE_SPECT( x_inst ) \
   { \
       bcore_spect_header_s header; \
@@ -906,4 +907,4 @@
 vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 #endif // __bcore_xo_H
-// XOILA_OUT_SIGNATURE 0xF292E3B0D19880C3ull
+// XOILA_OUT_SIGNATURE 0xF7C1E08459198164ull
