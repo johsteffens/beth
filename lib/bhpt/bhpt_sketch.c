@@ -60,30 +60,5 @@ void bhpt_adaptor_node_s_acc_stats( const bhpt_adaptor_node_s* o, bhvm_stats_s* 
 
 #endif // TYPEOF_bhpt
 
-vd_t bhpt_sketch_signal_handler( const bcore_signal_s* o )
-{
-    switch( bcore_signal_s_handle_type( o, typeof( "bhpt_sketch" ) ) )
-    {
-        case TYPEOF_init1:
-        {
-        }
-        break;
-
-        case TYPEOF_get_quicktypes:
-        {
-        }
-        break;
-
-        case TYPEOF_selftest:
-        {
-        }
-        break;
-
-        default: break;
-    }
-
-    return NULL;
-}
-
 /**********************************************************************************************************************/
 

@@ -309,30 +309,5 @@ void bhpt_tutor_sampler_s_test( bhpt_tutor_sampler_s* o, const bhpt_adaptive* ad
 
 #endif // TYPEOF_bhpt_tutor_sampler
 
-vd_t bhpt_tutor_sampler_signal_handler( const bcore_signal_s* o )
-{
-    switch( bcore_signal_s_handle_type( o, typeof( "bhpt_tutor_sampler" ) ) )
-    {
-        case TYPEOF_init1:
-        {
-        }
-        break;
-
-        case TYPEOF_get_quicktypes:
-        {
-        }
-        break;
-
-        case TYPEOF_selftest:
-        {
-        }
-        break;
-
-        default: break;
-    }
-
-    return NULL;
-}
-
 /**********************************************************************************************************************/
 

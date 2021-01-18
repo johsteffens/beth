@@ -19,7 +19,7 @@
 #define BHPT_STD_H
 
 #include "bhvm_std.h"
-#include "bhpt_signal.h"
+#include "bhpt_adaptor.h"
 #include "bhpt_sketch.h"
 #include "bhpt.xo.h"
 #include "bhpt_frame.h"

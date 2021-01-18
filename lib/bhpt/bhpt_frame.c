@@ -384,33 +384,3 @@ er_t bhpt_frame_s_main( bhpt_frame_s* o, bcore_main_frame_s* frame )
 #endif // TYPEOF_bhpt_frame
 
 /**********************************************************************************************************************/
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-vd_t bhpt_frame_signal_handler( const bcore_signal_s* o )
-{
-    switch( bcore_signal_s_handle_type( o, typeof( "bhpt_frame" ) ) )
-    {
-        case TYPEOF_init1:
-        {
-        }
-        break;
-
-        case TYPEOF_get_quicktypes:
-        {
-        }
-        break;
-
-        case TYPEOF_selftest:
-        {
-        }
-        break;
-
-        default: break;
-    }
-
-    return NULL;
-}
-
-/**********************************************************************************************************************/
-
