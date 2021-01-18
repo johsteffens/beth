@@ -36,7 +36,7 @@ XOILA_DEFINE_GROUP( bhpt, bcore_inst )
  */
 group :adaptor =
 {
-    signature void get_min_max( c @* o, m f3_t* min, m f3_t* max );
+    signature void acc_min_max( c @* o, m f3_t* min, m f3_t* max ); // updates min.0, max.0 only if new value exceeds range
     signature void zro_grad( m @* o );
     signature void acc_grad( m @* o, c @* src );
 
@@ -50,11 +50,25 @@ group :adaptor =
     {
         private bhvm_holor_s* axon;
         private bhvm_holor_s* grad;
-        func : .get_min_max;
-        func : .acc_stats;
+
         func : .zro_grad  = { o.grad.v.zro(); };
         func : .acc_grad  =   { assert( o.grad.s.is_equal( src.grad.s.1 ) ); o.grad.v.acc( src.grad.v.1 ); };
         func : .rebind_axon = { assert( o.axon.s.is_equal( src.axon.s.1 ) ); o.axon.v.weak( src.axon.v.1 ); };
+
+        func : .acc_min_max =
+        {
+            if( o.axon )
+            {
+                if( min.1 ) min.0 = f3_min( min.0, o.axon.v.get_min_f3() );
+                if( max.1 ) max.0 = f3_max( max.0, o.axon.v.get_max_f3() );
+            }
+        };
+
+        func : .acc_stats =
+        {
+            if( axon && o.axon ) o.axon.v.stats_acc( axon );
+            if( grad && o.grad ) o.grad.v.stats_acc( grad );
+        };
     };
 
     /** The probe is obtained via function get_adaptor_probe.
@@ -66,7 +80,7 @@ group :adaptor =
     stamp :probe_s = aware x_array
     {
         :node_s [];
-        func : .get_min_max;
+        func : .acc_min_max = { foreach( c $* e in o ) e.acc_min_max( min.1, max.1 ); };
         func : .acc_stats = { BFOR_EACH( i, o ) o.[ i ].acc_stats( axon, grad ); };
         func : .zro_grad  = { BFOR_EACH( i, o ) o.[ i ].zro_grad(); };
         func : .acc_grad     = { assert( o.size == src.size ); BFOR_EACH( i, o ) o.[ i ].acc_grad( src.[ i ].1 ); };
