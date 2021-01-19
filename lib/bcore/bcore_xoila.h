@@ -13,7 +13,7 @@
  *  limitations under the License.
  */
 
-/// beth-plant interface functions and macros
+/// beth-xoila interface functions and macros
 
 #ifndef BCORE_XOILA_H
 #define BCORE_XOILA_H
@@ -30,7 +30,7 @@
     #error "Keyword XOILA_SECTION is reserved for embedded xoila-code. Do not use it as macro."
 #endif
 
-/** Opening a plant section by defining a group in the header file.
+/** Opening a xoila section by defining a group in the header file.
  *  This macro also defines the signal_handler
  *  Note: The variadic list contain additional arguments: trait_name, optional_include_file which are
  *        evaluated by the xoila-compiler
@@ -70,7 +70,7 @@
 #define BETH_DECLARE_GENERAL_SIGNAL_HANDLER( target_name ) \
     vd_t target_name##_general_signal_handler( const bcore_signal_s* o );
 
-/// Inside *signal.c: Begin of a plant registry for a specific plane name
+/// Inside *signal.c: Begin of a xoila registry for a specific plane name
 #define BETH_SIGNAL_OPEN( target_name ) \
     vd_t target_name##_general_signal_handler( const bcore_signal_s* o ) \
     { \
@@ -78,11 +78,11 @@
         bcore_arr_fp_s* arr_fp = BLM_CREATE( bcore_arr_fp_s ); \
         bcore_arr_fp_s_push( arr_fp, ( fp_t )target_name##_xo_signal_handler );
 
-/// Inside *signal.c: Registering a source inside a given plant registry
+/// Inside *signal.c: Registering a source inside a given xoila registry
 #define BETH_SIGNAL_USE_SOURCE( source_name ) \
     bcore_arr_fp_s_push( arr_fp, ( fp_t )source_name##_signal_handler );
 
-/// Inside *signal.c: End of a plant registry for a specific plane name
+/// Inside *signal.c: End of a xoila registry for a specific plane name
 #define BETH_SIGNAL_CLOSE() \
         BLM_RETURNV( vd_t, bcore_signal_s_broadcast( o, ( bcore_fp_signal_handler* )arr_fp->data, arr_fp->size ) ); \
     }
@@ -91,10 +91,10 @@
     BETH_SIGNAL_OPEN( target_name ) \
     BETH_SIGNAL_CLOSE()
 
-/// Beginning of main function: registering plant signal handler
-#define BETH_USE( plant_name ) \
-    BETH_DECLARE_GENERAL_SIGNAL_HANDLER( plant_name ) \
-    bcore_register_signal_handler_with_deep_dependencies( plant_name##_general_signal_handler );
+/// Beginning of main function: registering target signal handler
+#define BETH_USE( target_name ) \
+    BETH_DECLARE_GENERAL_SIGNAL_HANDLER( target_name ) \
+    bcore_register_signal_handler_with_deep_dependencies( target_name##_general_signal_handler );
 
 /// general closer (end of main)
 #define BETH_CLOSEV( verbose ) \
