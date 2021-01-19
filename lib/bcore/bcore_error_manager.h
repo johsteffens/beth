@@ -33,7 +33,7 @@
 XOILA_DEFINE_GROUP( bcore_error_manager, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-include deferred "bcore_x_array.h";
+include 'c' "bcore_x_array.h";
 
 stamp :error_s = aware :
 {
