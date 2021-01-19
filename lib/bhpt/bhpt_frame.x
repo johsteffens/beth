@@ -15,6 +15,144 @@
 
 /**********************************************************************************************************************/
 
+/// Adaptive Framework
+
+include 'h' "bmath_std.h";
+include 'h' "bhvm_std.h";
+
+/**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+group :thread =
+{
+    /// shared object in a thread base
+    stamp :share_s = aware :
+    {
+        aware bhpt_tutor    -> tutor;
+        aware bhpt_adaptive -> adaptive;
+
+        bcore_condition_s    => condition_item;
+        bcore_mutex_s        => mutex; // mutex for share
+
+        sz_t finished_count  = 0;      // number is incremented by item when a task was finished
+    };
+
+    signature vd_t loop(       m @* o ); // thread function
+    signature void loop_enter( m @* o );
+    signature void loop_exit(  m @* o );
+    signature void wait_while_locked( m @* o ); // lock-unlock in sequence (used to test if the item is unlocked and waits otherwise)
+
+    stamp :item_s = aware :
+    {
+        bl_t running = false;
+        sz_t prime_cycles = 0; // number of prime cycles yet to be executed
+        bcore_thread_s       => thread;
+        bcore_mutex_s        => mutex;
+        :share_s             -> share;
+        aware bhpt_adaptive  => adaptive; // local adaptive
+
+        func bcore_inst_call.down_e = { ASSERT( !o.running ); };
+
+        func :.loop;
+        func :.loop_enter;
+        func :.loop_exit;
+        func :.wait_while_locked = { o.mutex.lock(); o.mutex.unlock(); };
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    stamp :ads_s = aware x_array
+    {
+        :item_s [];
+        wrap x_array.set_size;
+        wrap x_array.clear;
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    signature void tsetup( m @* o, sz_t threads, m bhpt_adaptive* adaptive, m bhpt_tutor* tutor ); // thread function
+    signature void tdown( m @* o ); // thread function
+    signature void run( m @* o, sz_t cycles_per_thread );
+
+    stamp :base_s = aware :
+    {
+        :ads_s ads;
+        :share_s => share;
+
+        func :.tsetup;
+        func :.tdown;
+        func :.run;
+
+        func bcore_inst_call.down_e = { o.tdown(); };
+        func bcore_inst_call.copy_e = { o.tdown(); };
+    };
+};
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+stamp :state_s = aware :
+{
+    sz_t cycle_number;
+    sz_t last_cycle_adapt;
+    sz_t last_cycle_test;
+    sz_t last_cycle_backup;
+    aware bhpt_adaptive => adaptive;
+    bhpt_adaptor_adl_s => adaptor_adl;
+};
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// Adaptive framework
+stamp :s = aware bcore_main
+{
+    /// ========= parameters ================
+    aware bhpt_tutor   => tutor;
+    hidden :thread_base_s => thread_base;
+
+    private bcore_main_frame_s* main_frame;
+
+    // A single single cycle represents an adaptive primimg
+
+    // number of threads to run a minibatch (0 means single threaded)
+    sz_t threads = 1;
+
+    /** Requested cycle number at which the network is adapted.
+     *  The actual number is the nearest within [1, cycle_adapt]
+     *  divisible by max( threads, 1 )
+     */
+    sz_t cycle_adapt  = 1;
+
+    // cycle number at which the network is tested
+    sz_t cycle_test   = 1000;
+
+    // cycle number at which a new backup is generated
+    sz_t cycle_backup = 1000;
+
+    // cycle number at which training ends
+    sz_t cycle_finish = 1000000;
+
+    // log verbosity
+    sz_t verbosity = 1;
+
+    /// ========= end parameters  ==========
+
+    /// current state of frame
+    hidden :state_s => state;
+
+    /// statistics
+    hidden bhvm_stats_s stats_grad;
+
+    st_s state_path; // backup file for state
+
+    hidden aware bcore_sink -> log;
+
+    func bcore_main.main;
+
+    func bcore_main.exit_required = { return o.main_frame.exit_required(); };
+
+};
+
 // ---------------------------------------------------------------------------------------------------------------------
 
 func (:thread_item_s) :.loop =
@@ -269,9 +407,7 @@ func (:s) bcore_main.main = (try)
 
     bl_t reset = false;
 
-    if( !o.log   ) o.log   = bcore_fork( BCORE_STDOUT );
-
-    o.state!;
+    if( !o.log ) o.log = bcore_fork( BCORE_STDOUT );
 
     c bcore_arr_st_s* args = frame.args;
 

@@ -18,10 +18,7 @@
 #ifndef BHPT_STD_H
 #define BHPT_STD_H
 
+#include "bhpt.h"
 #include "bhvm_std.h"
-#include "bhpt_adaptor.h"
-#include "bhpt_sketch.h"
-#include "bhpt.xo.h"
-#include "bhpt_frame.h"
 
 #endif // BHPT_STD_H

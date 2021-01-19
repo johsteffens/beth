@@ -15,21 +15,14 @@
 
  /// Collection of bhpt_adaptor stamps
 
-#ifndef BHPT_ADAPTOR_H
-#define BHPT_ADAPTOR_H
+/**********************************************************************************************************************/
+
+include "bmath_std.h";
+include "bhvm_std.h";
 
 /**********************************************************************************************************************/
 
-#include "bmath_std.h"
-#include "bhvm_std.h"
-#include "bhpt_sketch.h"
-
-/**********************************************************************************************************************/
-
-XOILA_DEFINE_GROUP( bhpt_adaptor_stamp, bhpt_adaptor )
-#ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ---------------------------------------------------------------------------------------------------------------------
 
 /// Adding gradient*epsilon to adaptive
 stamp bhpt_adaptor_epsilon_s = aware bhpt_adaptor
@@ -39,49 +32,37 @@ stamp bhpt_adaptor_epsilon_s = aware bhpt_adaptor
     func bhpt_adaptor . adapt =
     {
         assert( node.axon.s.is_equal( node.grad.s.1 ) );
-        node.grad.v.mul_scl_f3_acc( o->epsilon, node.axon.v.1 );
+        node.grad.v.mul_scl_f3_acc( o.epsilon, node.axon.v.1 );
     };
 };
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ---------------------------------------------------------------------------------------------------------------------
 
 /// Applying l2-regularization (weight-decay) to weights: w -= w * lambda;
 stamp bhpt_adaptor_reg_l2_s = aware bhpt_adaptor
 {
     f3_t lambda;
     func bhpt_adaptor . reset = {};
-    func bhpt_adaptor . adapt = { node.axon.v.mul_scl_f3_acc( -o->lambda, node.axon.v.1 ); };
+    func bhpt_adaptor . adapt = { node.axon.v.mul_scl_f3_acc( -o.lambda, node.axon.v.1 ); };
 };
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ---------------------------------------------------------------------------------------------------------------------
 
 stamp bhpt_adaptor_zro_grad_s = aware bhpt_adaptor
 {
     func bhpt_adaptor . adapt = { node.grad.v.zro(); };
 };
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ---------------------------------------------------------------------------------------------------------------------
 
 /// List of adaptors applied in sequence
 stamp bhpt_adaptor_list_s = aware x_array
 {
     aware bhpt_adaptor => [];
-
-    func bhpt_adaptor . reset =
-    {
-        BFOR_SIZE( i, o->size ) o.[ i ].reset();
-    };
-
-    func bhpt_adaptor . adapt =
-    {
-        BFOR_SIZE( i, o->size ) o.[ i ].adapt( node );
-    };
+    func bhpt_adaptor.reset = { foreach( m$* e in o ) e.reset(); };
+    func bhpt_adaptor.adapt = { foreach( m$* e in o ) e.adapt( node ); };
 };
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
-
-#endif // BHPT_ADAPTOR_H
