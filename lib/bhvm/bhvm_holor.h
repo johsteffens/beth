@@ -154,7 +154,13 @@ stamp :shape_s = x_array
     func (void ccat_set(  c @* o, c @* b, m @* r ));
 
     /// isovolumetric conversion to a vector (order 1); o == src allowed
-    func (m @* copy_vector_isovol( m @* o, c @* src ));
+    func (o copy_vector_isovol( m @* o, c @* src )) =
+    {
+        sz_t volume = src.get_volume();
+        o.set_data( volume.1, 1 );
+        return o;
+    };
+
 };
 
 /**********************************************************************************************************************/
@@ -359,7 +365,7 @@ stamp :holor_s = aware bcore_inst
     };
 
     /// copies value and converts shape to vector
-    func (m @* copy_vector_isovol( m @* o, c @* src )) =
+    func (o copy_vector_isovol( m @* o, c @* src )) =
     {
         o.s.copy_vector_isovol( src.s );
         o.v.copy( src.v );
@@ -367,7 +373,7 @@ stamp :holor_s = aware bcore_inst
     };
 
     /// forks value and converts shape to vector
-    func (m @* fork_from_vector_isovol( m @* o, m @* src )) =
+    func (o fork_from_vector_isovol( m @* o, m @* src )) =
     {
         o.s.copy_vector_isovol( src.s );
         o.v.fork_from( src.v );
@@ -375,24 +381,32 @@ stamp :holor_s = aware bcore_inst
     };
 
     /// clears entire holor
-    func (m @* clear( m @* o )) =
+    func (o clear( m @* o )) = { o.s.clear();  o.v.clear(); return o; };
+    func (o copy_t( m @* o, tp_t type, vc_t src )) = { o.copy_typed( type, src ); return o; };
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+    /// Copies shape; clears value
+    func (o copy_shape( m @* o, c bhvm_shape_s* src )) = { o.s.copy( src ); o.v.clear(); return o; };
+
+    /// Copies shape; clears value; copies type
+    func (o copy_shape_type( m @* o, c @* src )) = { o.copy_shape( src.s ); o.v.set_type( src.v.type ); return o; };
+
+    func (o set_type( m @* o, tp_t type )) =  { o.v.set_type( type ); return o; };
+    func (o fit_size( m @* o )) =
     {
-        o.s.clear();
-        o.v.clear();
+        if( o.v.size == 0 )
+        {
+            o.v.set_type_size( o.v.type ? o.v.type : TYPEOF_f3_t, o.s.get_volume() );
+        }
+        else
+        {
+            ASSERT( o.v.size == o.s.get_volume() );
+        }
         return o;
     };
 
-    func (m @* copy_t( m @* o, tp_t type, vc_t src ));
-
-    /// Copies shape; clears value
-    func (m @* copy_shape( m @* o, c bhvm_shape_s* src ));
-
-    /// Copies shape; clears value; copies type
-    func (m @* copy_shape_type( m @* o, c @* src ));
-
-    func (m @* set_type( m @* o, tp_t type ));
-    func (m @* fit_size( m @* o ));
-    func (m @* fit_type_size( m @* o, tp_t t ));
+    func (o fit_type_size( m @* o, tp_t t )) = { o.v.set_type_size( t, o.s.get_volume() ); return o; };
 
     /// sets holor to scalar with given value or to vacant scalar
     func (void set_type_scalar_pf( m @* o, tp_t t, tp_t t_src, vc_t v ));
@@ -409,19 +423,19 @@ stamp :holor_s = aware bcore_inst
     func (void set_type_scalar( m @* o, tp_t t, f3_t v )) = { o.set_type_scalar_pf( t, TYPEOF_f3_t, &v ); };
 
     /// sets holor to vacant scalar or vector
-    func (m @* set_type_scalar_vacant( m @* o, tp_t type ));
-    func (m @* set_type_vector_vacant( m @* o, tp_t type, sz_t dim ));
+    func (o set_type_scalar_vacant( m @* o, tp_t t )) = { o.s.set_scalar(); o.v.clear().set_type( t ); return o; };
+    func (o set_type_vector_vacant( m @* o, tp_t t, sz_t dim )) = { o.s.set_vector( dim ); o.v.clear().set_type( t ); return o; };
 
     /// Overall consistency; all valid states return true;
     func (bl_t is_consistent( c @* o ));
 
     /// Overall consistency; Invalid state produces an error.
-    func (void check_integrity( c @* o ));
+    func (o check_integrity( c @* o ));
 
     /// sets holor from text source
-    func (m @* parse(    m @* o, m bcore_source* source ));
-    func (m @* parse_st( m @* o, c st_s* st ));
-    func (m @* parse_sc( m @* o, sc_t sc ));
+    func (o parse(    m @* o, m bcore_source* source ));
+    func (o parse_st( m @* o, c st_s* st ));
+    func (o parse_sc( m @* o, sc_t sc ));
 
     func (d @* create_parse(    m bcore_source* source ));
     func (d @* create_parse_st( c st_s* st ));
@@ -478,8 +492,10 @@ stamp :holor_s = aware bcore_inst
     /// general mathematics
 
     /// sets all values zero
-    func (void zro(     m @* o ));
-    func (void zro_set( m @* o )); // allocates o->v if necessary
+    func (o zro( m @* o )) = { assert( o.v.size > 0 ); o.v.zro(); return o; };
+
+    /// zro: allocates o->v if necessary
+    func (o zro_set( m @* o )) = { if( o.v.size == 0 ) o.v.set_size( o.s.get_volume() ); return o.zro(); };
 
     /// returns sum{ ( o[i] ) }
     func (f3_t sum( c @* o ));

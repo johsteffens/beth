@@ -35,13 +35,14 @@ bl_t bhvm_shape_s_is_consistent( const bhvm_shape_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_shape_s_check_integrity( const bhvm_shape_s* o )
+const bhvm_shape_s* bhvm_shape_s_check_integrity( const bhvm_shape_s* o )
 {
     if( ( o->data == NULL ) && ( o->size != 0 ) ) ERR_fa( "size == #<sz_t> but data not allocated.", o->size );
     BFOR_EACH( i, o )
     {
         if( o->data[ i ] <= 0 ) ERR_fa( "Dimension '#<sz_t>' is '#<sz_t>'", i, o->data[ i ] );
     }
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -317,15 +318,6 @@ void bhvm_shape_s_ccat_set( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_s
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bhvm_shape_s* bhvm_shape_s_copy_vector_isovol( bhvm_shape_s* o, const bhvm_shape_s* src )
-{
-    sz_t volume = bhvm_shape_s_get_volume( src );
-    bhvm_shape_s_set_data( o, &volume, 1 );
-    return o;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
 /**********************************************************************************************************************/
 /// value
 
@@ -352,7 +344,7 @@ bl_t bhvm_value_s_is_consistent( const bhvm_value_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_value_s_check_integrity( const bhvm_value_s* o )
+const bhvm_value_s* bhvm_value_s_check_integrity( const bhvm_value_s* o )
 {
     if
     (
@@ -368,6 +360,7 @@ void bhvm_value_s_check_integrity( const bhvm_value_s* o )
         if( o->data == NULL )          ERR_fa( "size == #<sz_t> but data not allocated.", o->size );
         if( bhvm_value_s_is_nan( o ) ) ERR_fa( "Value is NAN." );
     }
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -975,12 +968,13 @@ bl_t bhvm_holor_s_is_consistent( const bhvm_holor_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_holor_s_check_integrity( const bhvm_holor_s* o )
+const bhvm_holor_s* bhvm_holor_s_check_integrity( const bhvm_holor_s* o )
 {
     bhvm_shape_s_check_integrity( &o->s );
     bhvm_value_s_check_integrity( &o->v );
     sz_t volume = bhvm_shape_s_get_volume( &o->s );
     if( o->v.size != 0 && o->v.size != volume ) ERR_fa( "( volume == #<sz_t> ) != ( v.size == #<sz_t> )", volume, o->v.size );
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1071,82 +1065,6 @@ void bhvm_holor_s_copy_typed( bhvm_holor_s* o, tp_t type, vc_t src )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bhvm_holor_s* bhvm_holor_s_copy_t( bhvm_holor_s* o, tp_t type, vc_t src )
-{
-    bhvm_holor_s_copy_typed( o, type, src );
-    return o;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-bhvm_holor_s* bhvm_holor_s_copy_shape( bhvm_holor_s* o, const bhvm_shape_s* src )
-{
-    bhvm_shape_s_copy( &o->s, src );
-    bhvm_value_s_clear( &o->v );
-    return o;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-bhvm_holor_s* bhvm_holor_s_copy_shape_type( bhvm_holor_s* o, const bhvm_holor_s* src )
-{
-    bhvm_holor_s_copy_shape( o, &src->s );
-    bhvm_value_s_set_type( &o->v, src->v.type );
-    return o;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-bhvm_holor_s* bhvm_holor_s_set_type( bhvm_holor_s* o, tp_t type )
-{
-    bhvm_value_s_set_type( &o->v, type );
-    return o;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-bhvm_holor_s* bhvm_holor_s_fit_size( bhvm_holor_s* o )
-{
-    if( o->v.size == 0 )
-    {
-        bhvm_value_s_set_type_size( &o->v, o->v.type ? o->v.type : TYPEOF_f3_t, bhvm_shape_s_get_volume( &o->s ) );
-    }
-    else
-    {
-        ASSERT( o->v.size == bhvm_shape_s_get_volume( &o->s ) );
-    }
-    return o;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-bhvm_holor_s* bhvm_holor_s_fit_type_size( bhvm_holor_s* o, tp_t t )
-{
-    bhvm_value_s_set_type_size( &o->v, t, bhvm_shape_s_get_volume( &o->s ) ); return o;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-bhvm_holor_s* bhvm_holor_s_set_type_scalar_vacant( bhvm_holor_s* o, tp_t t )
-{
-    bhvm_shape_s_set_scalar( &o->s );
-    bhvm_value_s_clear( &o->v );
-    bhvm_value_s_set_type( &o->v, t );
-    return o;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-bhvm_holor_s* bhvm_holor_s_set_type_vector_vacant( bhvm_holor_s* o, tp_t t, sz_t dim )
-{
-    bhvm_shape_s_set_vector( &o->s, dim );
-    bhvm_value_s_clear( &o->v );
-    bhvm_value_s_set_type( &o->v, t );
-    return o;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
 void bhvm_holor_s_set_type_scalar_pf( bhvm_holor_s* o, tp_t t, tp_t t_src, vc_t v )
 {
     bhvm_shape_s_set_scalar( &o->s );
@@ -1179,22 +1097,6 @@ void bhvm_holor_s_set_scalar_pf( bhvm_holor_s* o, tp_t t_src, vc_t v )
 
 /**********************************************************************************************************************/
 /// general mathematics
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bhvm_holor_s_zro( bhvm_holor_s* o )
-{
-    assert( o->v.size > 0 );
-    bhvm_value_s_zro( &o->v );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bhvm_holor_s_zro_set( bhvm_holor_s* o )
-{
-    if( o->v.size == 0 ) bhvm_value_s_set_size( &o->v, bhvm_shape_s_get_volume( &o->s ) );
-    bhvm_holor_s_zro( o );
-}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
