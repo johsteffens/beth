@@ -28,7 +28,6 @@
 #include "bmath_signal.h"
 #include "badapt_signal.h"
 #include "bhvm_signal.h"
-#include "bhpt_signal.h"
 
 void selftest( const char* name )
 {
