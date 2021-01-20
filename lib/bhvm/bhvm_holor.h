@@ -80,7 +80,6 @@ stamp :shape_s = x_array
     func x_array.set_size = { return ( @*    )o.cast( m x_array* ).t_set_size( TYPEOF_@, size ); };
     func x_array.push     = { return ( sz_t* )o.cast( m x_array* ).t_push( TYPEOF_@ ); };
 
-
     /// weak reference; no shutdown required
     func (void init_weak( m @* o, m sz_t* data, sz_t size )) =
     {
@@ -118,40 +117,71 @@ stamp :shape_s = x_array
         o.size = src.size;
     };
 
-    func (void make_strong( m @* o )) = { bcore_array_t_make_strong( TYPEOF_@, ( bcore_array* )o ); };
+    func (o make_strong( m @* o )) = { bcore_array_t_make_strong( TYPEOF_@, ( bcore_array* )o ); return o; };
     func (sz_t get_volume( c @* o )) = { sz_t v = 1; foreach( sz_t e in o ) v *= e; return v; };
 
     /// sets data by copying
-    func (void set_data(    m @* o, c sz_t* data, sz_t size ));
-    func (void set_data_nv( m @* o, sz_t size, va_list sz_t_args ));
-    func (void set_data_na( m @* o, sz_t size, ... ));
+    func (o set_data( m @* o, c sz_t* data, sz_t size )) =
+    {
+        o.set_size( size );
+        for( sz_t i = 0; i < o.size; i++ ) o.[ i ] = data[ i ];
+        return o;
+    };
+
+    func (o set_data_nv( m @* o, sz_t size, va_list sz_t_args ));
+    func (o set_data_na( m @* o, sz_t size, ... ));
+
+    func (o inc_order( m@* o, sz_t dim )) =
+    {
+        o.make_strong().set_size( o.size + 1 );
+        o.[ o.size - 1 ] = dim;
+        return o;
+    };
+
+    func (o inc_order_prepend( m@* o, sz_t dim )) =
+    {
+        o.make_strong().set_size( o.size + 1 );
+        for( sz_t i = o.size - 1; i > 0; i-- ) o.[ i ] = o.[ i - 1 ];
+        o.data[ 0 ] = dim;
+        return o;
+    };
 
     /// sets shape to scalar
-    func (void set_scalar( m @* o ));
+    func (o set_scalar( m @* o )) = { return o.set_size( 0 ); };
 
     /// sets shape to vector ( dim [ #)
-    func (void set_vector( m @* o, sz_t dim ));
+    func (o set_vector( m @* o, sz_t dim )) = { return o.set_data_na( 1, dim ); };
 
     /// status
     func (bl_t is_weak( c @* o )) = { return ( o.space == 0 ) && ( o.size > 0 ); };
-    func (bl_t is_equal( c @* o, c @* b ));
+    func (bl_t is_equal( c @* o, c @* b )) =
+    {
+        if( o.size != b.size ) return false;
+        for( sz_t i = 0; i < o.size; i++ ) if( o.[ i ] != b.[ i ] ) return false;
+        return true;
+    };
 
     // b is a sub-shape of o
-    func (bl_t is_sub( c @* o, c @* b ));
+    func (bl_t is_sub( c @* o, c @* b )) =
+    {
+        if( o.size < b.size ) return false;
+        for( sz_t i = 0; i < b.size; i++ ) if( o.[ i ] != b.[ i ] ) return false;
+        return true;
+    };
 
     /// constructive catenation
     func (bl_t cat_can(  c @* o, c @* b ));
     func (bl_t cat_fits( c @* o, c @* b, c @* r ));
     func (bl_t is_cat(   c @* o, c @* b, c @* r ));
-    func (void cat(      c @* o, c @* b, m @* r ));
-    func (void cat_set(  c @* o, c @* b, m @* r ));
+    func (r cat(      c @* o, c @* b, m @* r ));
+    func (r cat_set(  c @* o, c @* b, m @* r ));
 
     /// conservative catenation
     func (bl_t ccat_can(  c @* o, c @* b ));
     func (bl_t ccat_fits( c @* o, c @* b, c @* r ));
     func (bl_t is_ccat(   c @* o, c @* b, c @* r ));
-    func (void ccat(      c @* o, c @* b, m @* r ));
-    func (void ccat_set(  c @* o, c @* b, m @* r ));
+    func (r ccat(      c @* o, c @* b, m @* r ));
+    func (r ccat_set(  c @* o, c @* b, m @* r ));
 
     /// isovolumetric conversion to a vector (order 1); o == src allowed
     func (o copy_vector_isovol( m @* o, c @* src )) =
@@ -204,27 +234,31 @@ stamp :value_s = x_array
         o.size = src.size;
     };
 
-    func (void make_strong( m @* o )) = { bcore_array_t_make_strong( TYPEOF_@, ( bcore_array* )o ); };
+    func (o make_strong( m @* o )) = { bcore_array_t_make_strong( TYPEOF_@, ( bcore_array* )o ); return o; };
 
 
     /// sets type; preexisting type (if any) is converted
-    func (void set_type( m @* o, tp_t type ));
+    func (o set_type( m @* o, tp_t type ));
 
     /// sets type and size
-    func (void set_type_size( m @* o, tp_t type, sz_t size ));
+    func (o set_type_size( m @* o, tp_t type, sz_t size )) = { return o.set_type( type ).set_size( size ); };
 
     /// sets type and data by copying/converting
-    func (void set_type_data( m @* o, tp_t dst_type, tp_t src_type, vc_t src_data, sz_t size ));
+    func (o set_type_data( m @* o, tp_t dst_type, tp_t src_type, vc_t src_data, sz_t size ));
 
     /// copies data in place; converts type; no allocation; o->type must exits
-    func (void cpy_data( m @* o, tp_t src_type, vc_t src_data, sz_t size ));
-    func (void cpy( c @* o, m @* dst )) = { dst.cpy_data( o.type, o.data, o.size ); };
+    func (o cpy_data( m @* o, tp_t src_type, vc_t src_data, sz_t size ));
+    func (dst cpy( c @* o, m @* dst )) = { return dst.cpy_data( o.type, o.data, o.size ); };
 
     /// sets all values zero
-    func (void zro( m @* o ));
+    func (o zro( m @* o ));
 
     /// sets data by converting to holor type (sets target type if not set)
-    func (void set_data( m @* o, tp_t src_type, vc_t src_data, sz_t size ));
+    func (o set_data( m @* o, tp_t src_type, vc_t src_data, sz_t size )) =
+    {
+        if( !o.type ) o->type = src_type;
+        return o.set_size( size ).cpy_data( src_type, src_data, size );
+    };
 
     /// forks data (type = src_type)
     func (void fork_from_data( m @* o, tp_t src_type, vd_t src_data, sz_t size ));
@@ -233,10 +267,10 @@ stamp :value_s = x_array
     func (void weak_data( m @* o, tp_t src_type, vd_t src_data, sz_t size ));
 
     /// pushes data by converting to o->type
-    func (void push_data( m @* o, tp_t src_type, vc_t src_data, sz_t size ));
+    func (o push_data( m @* o, tp_t src_type, vc_t src_data, sz_t size ));
 
     /// pushes data of value converting to o->type
-    func (void push_value( m @* o, c @* src ));
+    func (o push_value( m @* o, c @* src )) = { return o.push_data( src.type, src.data, src.size ); };
 
     /// status
     func (bl_t is_weak(   c @* o )) = { return ( o.space == 0 ) && ( o.size > 0 ); };
@@ -245,10 +279,15 @@ stamp :value_s = x_array
     func (bl_t is_equal(  c @* o, c @* b ));
 
     /// constructive (==conservative) concatenation
-    func (bl_t cat_can ( c @* o, c @* b ));
-    func (bl_t cat_fits( c @* o, c @* b, c @* r ));
-    func (void cat     ( c @* o, c @* b, m @* r ));
-    func (void cat_set ( c @* o, c @* b, m @* r ));
+    func (bl_t cat_can ( c @* o, c @* b )) = { return true; };
+    func (bl_t cat_fits( c @* o, c @* b, c @* r )) =
+    {
+        if( !o.cat_can( b ) ) return false;
+        return ( r.size == o.size + b.size );
+    };
+
+    func (r cat    ( c @* o, c @* b, m @* r ));
+    func (r cat_set( c @* o, c @* b, m @* r ));
 
     /// value -> vector
     func (bmath_vf2_s get_weak_vf2( c @* o )) =
@@ -273,8 +312,8 @@ stamp :value_s = x_array
      *     density (range [0.0, 1.0]) specifies the rate at which the random generator
      *     creates a non-zero value.
      */
-    func (void set_random(    m @* o, f3_t density, f3_t min, f3_t max, m bcore_prsg* prsg ));
-    func (void set_random_u3( m @* o, f3_t density, f3_t min, f3_t max, m u3_t* p_rval ));
+    func (o set_random(    m @* o, f3_t density, f3_t min, f3_t max, m bcore_prsg* prsg ));
+    func (o set_random_u3( m @* o, f3_t density, f3_t min, f3_t max, m u3_t* p_rval ));
 
     /** Frobenius Norm
      *  See bmath_mf3_fdev... for more details
@@ -518,12 +557,12 @@ stamp :holor_s = aware bcore_inst
     /** Canonic increment of order by appending one dimension 'dim' :
      *  If the holder holds data, the data is duplicated 'dim' times.
      */
-    func (void inc_order( m @* o, sz_t dim ));
+    func (o inc_order( m @* o, sz_t dim ));
 
     /** Canonic increment of order by prepending one dimension 'dim' :
      *  If the holder holds data, the data is duplicated on element-level 'dim' times.
      */
-    func (void inc_order_prepend( m @* o, sz_t dim ));
+    func (o inc_order_prepend( m @* o, sz_t dim ));
 
     /** Canonic data append of a sub-holor
      *  Requirements (checked):
@@ -531,7 +570,7 @@ stamp :holor_s = aware bcore_inst
      *  * o->d_size == src->d_size || o->d_size == src->d_size + 1
      *  * src->d_data must match (lower significant) o->d_data
      */
-    func (void push( m @* o, c @* src ));
+    func (o push( m @* o, c @* src ));
 
     /** Constructive catenation of two holors.
      *  valua data is catenated from a b

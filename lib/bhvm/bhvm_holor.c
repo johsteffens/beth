@@ -47,15 +47,7 @@ const bhvm_shape_s* bhvm_shape_s_check_integrity( const bhvm_shape_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_shape_s_set_data( bhvm_shape_s* o, const sz_t* data, sz_t size )
-{
-    bhvm_shape_s_set_size( o, size );
-    BFOR_EACH( i, o ) o->data[ i ] = data[ i ];
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bhvm_shape_s_set_data_nv( bhvm_shape_s* o, sz_t size, va_list sz_t_args )
+bhvm_shape_s* bhvm_shape_s_set_data_nv( bhvm_shape_s* o, sz_t size, va_list sz_t_args )
 {
     bhvm_shape_s_set_size( o, size );
     BFOR_EACH( i, o )
@@ -65,67 +57,18 @@ void bhvm_shape_s_set_data_nv( bhvm_shape_s* o, sz_t size, va_list sz_t_args )
         if( !BHVM_SHAPE_DIM_VALID( v ) ) ERR_fa( "Dimension '#<sz_t>' is '#<sz_t>', with is out of range.", i, v );
         o->data[ i ] = v;
     }
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_shape_s_set_data_na( bhvm_shape_s* o, sz_t size, ... )
+bhvm_shape_s* bhvm_shape_s_set_data_na( bhvm_shape_s* o, sz_t size, ... )
 {
     va_list args;
     va_start( args, size );
     bhvm_shape_s_set_data_nv( o, size, args );
     va_end( args );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bhvm_shape_s_set_scalar( bhvm_shape_s* o )
-{
-    bhvm_shape_s_set_size( o, 0 );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bhvm_shape_s_set_vector( bhvm_shape_s* o, sz_t dim )
-{
-    bhvm_shape_s_set_data_na( o, 1, dim );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-bl_t bhvm_shape_s_is_equal( const bhvm_shape_s* o, const bhvm_shape_s* b )
-{
-    if( o->size != b->size ) return false;
-    BFOR_EACH( i, o ) if( o->data[ i ] != b->data[ i ] ) return false;
-    return true;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-bl_t bhvm_shape_s_is_sub( const bhvm_shape_s* o, const bhvm_shape_s* b )
-{
-    if( o->size < b->size ) return false;
-    BFOR_EACH( i, b ) if( o->data[ i ] != b->data[ i ] ) return false;
-    return true;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bhvm_shape_s_inc_order( bhvm_shape_s* o, sz_t dim )
-{
-    bhvm_shape_s_make_strong( o );
-    bhvm_shape_s_set_size( o, o->size + 1 );
-    o->data[ o->size - 1 ] = dim;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bhvm_shape_s_inc_order_prepend( bhvm_shape_s* o, sz_t dim )
-{
-    bhvm_shape_s_make_strong( o );
-    bhvm_shape_s_set_size( o, o->size + 1 );
-    for( sz_t i = o->size - 1; i > 0; i-- ) o->data[ i ] = o->data[ i - 1 ];
-    o->data[ 0 ] = dim;
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -198,7 +141,7 @@ bl_t bhvm_shape_s_is_cat( const bhvm_shape_s* a, const bhvm_shape_s* b, const bh
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_shape_s_cat( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_shape_s* r )
+bhvm_shape_s* bhvm_shape_s_cat( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_shape_s* r )
 {
     ASSERT( bhvm_shape_s_cat_can( a, b ) );
 
@@ -220,11 +163,12 @@ void bhvm_shape_s_cat( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_shape_
         BFOR_EACH( i, a ) r->data[ i ] = a->data[ i ];
         r->data[ r->size - 1 ] = b->data[ b->size - 1 ] + 1;
     }
+    return r;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_shape_s_cat_set( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_shape_s* r )
+bhvm_shape_s* bhvm_shape_s_cat_set( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_shape_s* r )
 {
     if( a == r || b == r )
     {
@@ -232,7 +176,7 @@ void bhvm_shape_s_cat_set( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_sh
         bhvm_shape_s_cat_set( a, b, buf );
         bhvm_shape_s_copy( r, buf );
         bhvm_shape_s_discard( buf );
-        return;
+        return r;
     }
 
     ASSERT( bhvm_shape_s_cat_can( a, b ) );
@@ -255,6 +199,8 @@ void bhvm_shape_s_cat_set( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_sh
         bcore_u_memcpy( sizeof( sz_t ), r->data, b->data, b->size );
         r->data[ r->size - 1 ] += 1;
     }
+
+    return r;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -290,17 +236,18 @@ bl_t bhvm_shape_s_is_ccat( const bhvm_shape_s* a, const bhvm_shape_s* b, const b
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_shape_s_ccat( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_shape_s* r )
+bhvm_shape_s* bhvm_shape_s_ccat( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_shape_s* r )
 {
     ASSERT( bhvm_shape_s_ccat_can( a, b ) );
     ASSERT( r->size == a->size );
     for( sz_t i = 0; i < a->size - 1; i++ ) r->data[ i ] = a->data[ i ];
     r->data[ a->size - 1 ] = a->data[ a->size - 1 ] + b->data[ a->size - 1 ];
+    return r;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_shape_s_ccat_set( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_shape_s* r )
+bhvm_shape_s* bhvm_shape_s_ccat_set( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_shape_s* r )
 {
     if( a == r || b == r )
     {
@@ -308,12 +255,13 @@ void bhvm_shape_s_ccat_set( const bhvm_shape_s* a, const bhvm_shape_s* b, bhvm_s
         bhvm_shape_s_ccat_set( a, b, buf );
         bhvm_shape_s_copy( r, buf );
         bhvm_shape_s_discard( buf );
-        return;
+        return r;
     }
 
     assert( bhvm_shape_s_ccat_can( a, b ) );
     bhvm_shape_s_set_size( r, a->size );
     bhvm_shape_s_ccat( a, b, r );
+    return r;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -365,14 +313,14 @@ const bhvm_value_s* bhvm_value_s_check_integrity( const bhvm_value_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_value_s_set_type( bhvm_value_s* o, tp_t type )
+bhvm_value_s* bhvm_value_s_set_type( bhvm_value_s* o, tp_t type )
 {
-    if( o->type == type ) return;
+    if( o->type == type ) return o;
     if( o->type == 0 )
     {
         bhvm_value_s_clear( o );
         o->type = type;
-        return;
+        return o;
     }
 
     if( o->space == 0 )
@@ -384,7 +332,7 @@ void bhvm_value_s_set_type( bhvm_value_s* o, tp_t type )
         else
         {
             o->type = type;
-            return;
+            return o;
         }
     }
 
@@ -396,7 +344,7 @@ void bhvm_value_s_set_type( bhvm_value_s* o, tp_t type )
         for( sz_t i = 0; i < o->size; i++ ) dst[ i ] = src[ i ];
         o->space *= sizeof( f3_t ) / sizeof( f2_t );
         o->type = type;
-        return;
+        return o;
     }
 
     if( type == TYPEOF_f3_t ) // Reallocate even if space would be sufficient. This enforces correct alignment.
@@ -407,23 +355,17 @@ void bhvm_value_s_set_type( bhvm_value_s* o, tp_t type )
         for( sz_t i = 0; i < o->size; i++ ) dst[ i ] = src[ i ];
         bcore_free( src );
         o->type = type;
-        return;
+        return o;
     }
 
     ERR_fa( "Array has invalid type '#<sc_t>'.", ifnameof( o->type ) );
+
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_value_s_set_type_size( bhvm_value_s* o, tp_t type, sz_t size )
-{
-    bhvm_value_s_set_type( o, type );
-    bhvm_value_s_set_size( o, size );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bhvm_value_s_set_type_data( bhvm_value_s* o, tp_t dst_type, tp_t src_type, vc_t data, sz_t size )
+bhvm_value_s* bhvm_value_s_set_type_data( bhvm_value_s* o, tp_t dst_type, tp_t src_type, vc_t data, sz_t size )
 {
     bhvm_value_s_set_type( o, dst_type );
     bhvm_value_s_set_size( o, size );
@@ -435,11 +377,12 @@ void bhvm_value_s_set_type_data( bhvm_value_s* o, tp_t dst_type, tp_t src_type, 
         case BKNIT_F33: BFOR_EACH( i, o ) ( ( f3_t* )o->data )[ i ] = ( ( f3_t* )data )[ i ]; break;
         default: BKNIT_FA2_ERR( dst_type, src_type ); break;
     }
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_value_s_cpy_data( bhvm_value_s* o, tp_t src_type, vc_t data, sz_t size )
+bhvm_value_s* bhvm_value_s_cpy_data( bhvm_value_s* o, tp_t src_type, vc_t data, sz_t size )
 {
     assert( o->type );
     assert( o->size == size );
@@ -451,28 +394,21 @@ void bhvm_value_s_cpy_data( bhvm_value_s* o, tp_t src_type, vc_t data, sz_t size
         case BKNIT_F33: BFOR_EACH( i, o ) ( ( f3_t* )o->data )[ i ] = ( ( f3_t* )data )[ i ]; break;
         default: BKNIT_FA2_ERR( o->type, src_type ); break;
     }
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_value_s_zro( bhvm_value_s* o )
+bhvm_value_s* bhvm_value_s_zro( bhvm_value_s* o )
 {
-    if( o->size == 0 ) return;
+    if( o->size == 0 ) return o;
     switch( BKNIT_FA1( o->type ) )
     {
         case BKNIT_F2: BFOR_EACH( i, o ) ( ( f2_t* )o->data )[ i ] = 0; break;
         case BKNIT_F3: BFOR_EACH( i, o ) ( ( f3_t* )o->data )[ i ] = 0; break;
         default: BKNIT_FA1_ERR( o->type ); break;
     }
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bhvm_value_s_set_data( bhvm_value_s* o, tp_t src_type, vc_t data, sz_t size )
-{
-    if( !o->type ) o->type = src_type;
-    bhvm_value_s_set_size( o, size );
-    bhvm_value_s_cpy_data( o, src_type, data, size );
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -500,7 +436,7 @@ void bhvm_value_s_weak_data( bhvm_value_s* o, tp_t src_type, vd_t src_data, sz_t
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_value_s_push_data( bhvm_value_s* o, tp_t src_type, vc_t data, sz_t size )
+bhvm_value_s* bhvm_value_s_push_data( bhvm_value_s* o, tp_t src_type, vc_t data, sz_t size )
 {
     if( !o->type ) o->type = src_type;
     sz_t size0 = o->size;
@@ -513,13 +449,7 @@ void bhvm_value_s_push_data( bhvm_value_s* o, tp_t src_type, vc_t data, sz_t siz
         case BKNIT_F33: for( sz_t i = 0; i < size; i++ ) ( ( f3_t* )o->data )[ i + size0 ] = ( ( f3_t* )data )[ i ]; break;
         default: BKNIT_FA2_ERR( o->type, src_type ); break;
     }
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bhvm_value_s_push_value( bhvm_value_s* o, const bhvm_value_s* src )
-{
-    bhvm_value_s_push_data( o, src->type, src->data, src->size );
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -554,25 +484,10 @@ bl_t bhvm_value_s_is_equal( const bhvm_value_s* o, const bhvm_value_s* b )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bl_t bhvm_value_s_cat_can( const bhvm_value_s* a, const bhvm_value_s* b )
-{
-    return true;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-bl_t bhvm_value_s_cat_fits( const bhvm_value_s* a, const bhvm_value_s* b, const bhvm_value_s* r )
-{
-    if( !bhvm_value_s_cat_can( a, b ) ) return false;
-    return ( r->size == a->size + b->size );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bhvm_value_s_cat( const bhvm_value_s* a, const bhvm_value_s* b, bhvm_value_s* r )
+bhvm_value_s* bhvm_value_s_cat( const bhvm_value_s* a, const bhvm_value_s* b, bhvm_value_s* r )
 {
     ASSERT( bhvm_value_s_cat_fits( a, b, r ) );
-    if( r->size == 0 ) return;
+    if( r->size == 0 ) return r;
 
     switch( BKNIT_FA3( a->type, b->type, r->type ) )
     {
@@ -586,11 +501,12 @@ void bhvm_value_s_cat( const bhvm_value_s* a, const bhvm_value_s* b, bhvm_value_
         case BKNIT_F333: for( sz_t i = 0; i < r->size; i++ ) ( ( f3_t* )r->data )[ i ] = i < a->size ? ( ( f3_t* )a->data )[ i ] : ( ( f3_t* )b->data )[ i - a->size ]; break;
         default: BKNIT_FA3_ERR( a->type, b->type, r->type ); break;
     }
+    return r;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_value_s_cat_set( const bhvm_value_s* a, const bhvm_value_s* b, bhvm_value_s* r )
+bhvm_value_s* bhvm_value_s_cat_set( const bhvm_value_s* a, const bhvm_value_s* b, bhvm_value_s* r )
 {
     if( a == r || b == r )
     {
@@ -598,7 +514,7 @@ void bhvm_value_s_cat_set( const bhvm_value_s* a, const bhvm_value_s* b, bhvm_va
         bhvm_value_s_cat_set( a, b, buf );
         bhvm_value_s_copy( r, buf );
         bhvm_value_s_discard( buf );
-        return;
+        return r;
     }
 
     ASSERT( bhvm_value_s_cat_can( a, b ) );
@@ -608,11 +524,12 @@ void bhvm_value_s_cat_set( const bhvm_value_s* a, const bhvm_value_s* b, bhvm_va
 
     bhvm_value_s_set_type_size( r, r_type, r_size );
     if( r_size > 0 ) bhvm_value_s_cat( a, b, r );
+    return r;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_value_s_set_random( bhvm_value_s* o, f3_t density, f3_t min, f3_t max, bcore_prsg* prsg )
+bhvm_value_s* bhvm_value_s_set_random( bhvm_value_s* o, f3_t density, f3_t min, f3_t max, bcore_prsg* prsg )
 {
     switch( o->type )
     {
@@ -620,11 +537,12 @@ void bhvm_value_s_set_random( bhvm_value_s* o, f3_t density, f3_t min, f3_t max,
         case TYPEOF_f3_t: { bmath_vf3_s v = bhvm_value_s_get_weak_vf3( o ); bmath_vf3_s_set_random( &v, density, min, max, prsg ); }; break;
         default: break;
     }
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bhvm_value_s_set_random_u3( bhvm_value_s* o, f3_t density, f3_t min, f3_t max, u3_t* p_rval )
+bhvm_value_s* bhvm_value_s_set_random_u3( bhvm_value_s* o, f3_t density, f3_t min, f3_t max, u3_t* p_rval )
 {
     switch( o->type )
     {
@@ -632,6 +550,7 @@ void bhvm_value_s_set_random_u3( bhvm_value_s* o, f3_t density, f3_t min, f3_t m
         case TYPEOF_f3_t: { bmath_vf3_s v = bhvm_value_s_get_weak_vf3( o ); bmath_vf3_s_set_random_u3( &v, density, min, max, p_rval ); }; break;
         default: break;
     }
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1145,7 +1064,7 @@ void bhvm_holor_s_acc_set( bhvm_holor_s* o, const bhvm_holor_s* a )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_holor_s_inc_order( bhvm_holor_s* o, sz_t dim )
+bhvm_holor_s* bhvm_holor_s_inc_order( bhvm_holor_s* o, sz_t dim )
 {
     ASSERT( dim > 0 );
     bhvm_shape_s_inc_order( &o->s, dim );
@@ -1162,11 +1081,12 @@ void bhvm_holor_s_inc_order( bhvm_holor_s* o, sz_t dim )
         for( sz_t i = 0; i < dim; i++ ) bcore_u_memcpy( u_size, ( u0_t* )o->v.data + v->size * u_size * i, v->data, v->size );
         BLM_DOWN();
     }
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_holor_s_inc_order_prepend( bhvm_holor_s* o, sz_t dim )
+bhvm_holor_s* bhvm_holor_s_inc_order_prepend( bhvm_holor_s* o, sz_t dim )
 {
     ASSERT( dim > 0 );
     bhvm_shape_s_inc_order_prepend( &o->s, dim );
@@ -1188,11 +1108,12 @@ void bhvm_holor_s_inc_order_prepend( bhvm_holor_s* o, sz_t dim )
         }
         BLM_DOWN();
     }
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_holor_s_push( bhvm_holor_s* o, const bhvm_holor_s* src )
+bhvm_holor_s* bhvm_holor_s_push( bhvm_holor_s* o, const bhvm_holor_s* src )
 {
     ASSERT( ( src->s.size == o->s.size     ) ||
             ( src->s.size == o->s.size - 1 ) );
@@ -1209,6 +1130,7 @@ void bhvm_holor_s_push( bhvm_holor_s* o, const bhvm_holor_s* src )
     {
         ASSERT( src->v.size == 0 );
     }
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
