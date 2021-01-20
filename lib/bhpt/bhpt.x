@@ -73,11 +73,11 @@ group :adaptor =
     stamp :probe_s = aware x_array
     {
         :node_s [];
-        func : .acc_min_max = { foreach( c $* e in o ) e.acc_min_max( min.1, max.1 ); };
-        func : .acc_stats = { BFOR_EACH( i, o ) o.[ i ].acc_stats( axon, grad ); };
-        func : .zro_grad  = { BFOR_EACH( i, o ) o.[ i ].zro_grad(); };
-        func : .acc_grad     = { assert( o.size == src.size ); BFOR_EACH( i, o ) o.[ i ].acc_grad( src.[ i ].1 ); };
-        func : .rebind_axon  = { assert( o.size == src.size ); BFOR_EACH( i, o ) o.[ i ].rebind_axon( src.[ i ].1 ); };
+        func : .acc_min_max =  { foreach( c$* e in o ) e.acc_min_max( min.1, max.1 ); };
+        func : .acc_stats =    { foreach( c$* e in o ) e.acc_stats( axon, grad ); };
+        func : .zro_grad  =    { foreach( m$* e in o ) e.zro_grad(); };
+        func : .acc_grad     = { assert( o.size == src.size ); foreach( m$* e in o ) e.acc_grad( src.[ __i ].1 ); };
+        func : .rebind_axon  = { assert( o.size == src.size ); foreach( m$* e in o ) e.rebind_axon( src.[ __i ].1 ); };
         wrap x_array.set_size;
     };
 
@@ -171,8 +171,8 @@ group :tutor =
     feature void prime( m @* o, m ::adaptive* adaptive ) = {};
 
     /** Tests a specified adaptive (must be concurrent for tutor) and writes result to log;
-     *  Testing may mutate the tutor, if necessary and done in a thread safe manner.
-     *  Mutation is not desirable, though, and should never affect the reliability or interpretability
+     *  Testing may mutate the tutor if necessary and done in a thread safe manner.
+     *  Mutation is not desirable. It should never affect the reliability or interpretability
      *  of test results.
      */
     feature void test( m @* o, c ::adaptive* adaptive, sz_t verbosity, m bcore_sink* log ) = {};
