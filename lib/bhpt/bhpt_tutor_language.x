@@ -195,10 +195,8 @@ func (:utf8_s) bhpt_tutor.prime =
 
 func (:utf8_chatter_s) (void run( c@* o, c :utf8_s* tutor, m bhpt_adaptive* adaptive, m bcore_sink* log )) =
 {
-    m bhvm_holor_s* hx = adaptive.get_format_en( bhvm_holor_s!^ );
-    m bhvm_holor_s* hy = adaptive.get_format_ex( bhvm_holor_s!^ );
-    hx.fit_size().zro();
-    hy.fit_size().zro();
+    m bhvm_holor_s* hx = adaptive.get_format_en( bhvm_holor_s!^ ).fit_size().zro();
+    m bhvm_holor_s* hy = adaptive.get_format_ex( bhvm_holor_s!^ ).fit_size().zro();
 
     if( o.cyclic_reset ) adaptive.cyclic_reset();
 
@@ -300,11 +298,8 @@ func (:utf8_chatter_s) (void run( c@* o, c :utf8_s* tutor, m bhpt_adaptive* adap
 func (:utf8_s) bhpt_tutor.test =
 {
     m bhpt_adaptive* adaptive_test = adaptive.clone()^;
-    m bhvm_holor_s* hx = adaptive_test.get_format_en( bhvm_holor_s!^ );
-    m bhvm_holor_s* hy = adaptive_test.get_format_ex( bhvm_holor_s!^ );
-
-    hx.fit_size().zro();
-    hy.fit_size().zro();
+    m bhvm_holor_s* hx = adaptive_test.get_format_en( bhvm_holor_s!^ ).fit_size().zro();
+    m bhvm_holor_s* hy = adaptive_test.get_format_ex( bhvm_holor_s!^ ).fit_size().zro();
     m bhvm_holor_s* hf  = hy.clone()^;
     m bhvm_holor_s* hd  = hy.clone()^; // y - f
     m bhvm_holor_s* hsd = hy.clone()^; // y - f

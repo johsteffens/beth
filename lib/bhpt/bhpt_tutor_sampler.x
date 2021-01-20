@@ -338,14 +338,11 @@ stamp bhpt_tutor_sampler_s = aware bhpt_tutor
 func (bhpt_tutor_sampler_s) bhpt_tutor.test =
 {
     m bhpt_adaptive* adaptive_test = adaptive.clone()^;
-    m bhvm_holor_s* hx = adaptive_test.get_format_en( bhvm_holor_s!^ );
-    m bhvm_holor_s* hy = adaptive_test.get_format_ex( bhvm_holor_s!^ );
-
-    hx.fit_size().zro();
-    hy.fit_size().zro();
+    m bhvm_holor_s* hx = adaptive_test.get_format_en( bhvm_holor_s!^ ).fit_size().zro();
+    m bhvm_holor_s* hy = adaptive_test.get_format_ex( bhvm_holor_s!^ ).fit_size().zro();
     m bhvm_holor_s* hf  = hy.clone()^;
     m bhvm_holor_s* hd  = hy.clone()^; // y - f
-    m bhvm_holor_s* hsd = hy.clone()^; // y - f
+    m bhvm_holor_s* hsd = hy.clone()^;
 
     sz_t dimy = hy->v.size;
 
