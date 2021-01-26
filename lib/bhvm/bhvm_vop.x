@@ -491,6 +491,22 @@ group :ar3 =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (void to_sink( c @* o, m bcore_sink* sink ) );
+func (void to_sink( c @* o, m bcore_sink* sink ) ) =
+{
+    st_s^ st_name.copy_sc( ifnameof( o->_ ) );
+    st_name.replace_sc_sc( "bhvm_vop_", "" );
+
+    sink.push_fa( "#p24.{#<sc_t> } ", st_name.sc );
+    if( !o.defines_arity() ) ERR_fa( "#<sc_t>.arity not defined.", ifnameof( o->_ ) );
+    sz_t arity = o.arity();
+    sink.push_fa( "#pl3 {#<sz_t>}", o.get_index( arity ) );
+    for( sz_t i = 0; i < arity; i++ )
+    {
+        sink.push_fa( ( i == 0 ) ? " <- " : "," );
+        sink.push_fa( "#pl3 {#<sz_t>}", bhvm_vop_a_get_index( o, i ) );
+    }
+};
 
 // ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/

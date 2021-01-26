@@ -19,9 +19,6 @@
 #include "bhvm_vop.xo.h"
 #include "bhvm_lop.h"
 #include "bhvm_holor.h"
-#include "bhvm_hop.h"
-#include "bhvm_vop.h"
-#include "bhvm_mcode.h"
 
 vd_t bhvm_general_signal_handler( const bcore_signal_s* o )
 {
@@ -44,9 +41,6 @@ vd_t bhvm_general_signal_handler( const bcore_signal_s* o )
             bhvm_vop_xo_signal_handler,
             bhvm_lop_signal_handler,
             bhvm_holor_signal_handler,
-            bhvm_hop_signal_handler,
-            bhvm_vop_signal_handler,
-            bhvm_mcode_signal_handler,
         };
 
         ret = bcore_signal_s_broadcast( o, arr, sizeof( arr ) / sizeof( bcore_fp_signal_handler ) );
