@@ -152,6 +152,16 @@ group :builder =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+/** Test result is an object containing results of a adaptive test.
+ *  Multiple test can be stored in a database to monitor training progress.
+ */
+group :test_result =
+{
+    feature o to_sink( c @* o, sz_t verbosity, m bcore_sink* sink );
+};
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 /** The tutor defines an adaptive and a training task.
  *  It provides routines for adaptive generation, priming and testing.
  *  Priming and testing may mutate the tutor in a concurrent fashion.
@@ -170,12 +180,12 @@ group :tutor =
     /// primes a specified adaptive (must be concurrent for tutor)
     feature void prime( m @* o, m ::adaptive* adaptive ) = {};
 
-    /** Tests a specified adaptive (must be concurrent for tutor) and writes result to log;
+    /** Tests a specified adaptive (must be concurrent for tutor) and creates a test result;
      *  Testing may mutate the tutor if necessary and done in a thread safe manner.
      *  Mutation is not desirable. It should never affect the reliability or interpretability
      *  of test results.
      */
-    feature void test( m @* o, c ::adaptive* adaptive, sz_t verbosity, m bcore_sink* log ) = {};
+    feature d ::test_result* test( m @* o, c ::adaptive* adaptive ) = { return NULL; };
 
     /// outputs current status information to sink
     feature void status_to_sink( c @* o, sz_t verbosity, m bcore_sink* sink ) = { if( verbosity > 0 ) bcore_txt_ml_a_to_sink( o, sink ); };

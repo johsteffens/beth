@@ -23,12 +23,11 @@
 
 /**********************************************************************************************************************/
 
-XOILA_DEFINE_GROUP( bhpt      ,          bcore_inst,   "bhpt.x"         )
-XOILA_DEFINE_GROUP( bhpt_frame,          bcore_inst,   "bhpt_frame.x"   )
+XOILA_DEFINE_GROUP( bhpt      ,          x_inst,       "bhpt.x"         )
+XOILA_DEFINE_GROUP( bhpt_frame,          x_inst,       "bhpt_frame.x"   )
 XOILA_DEFINE_GROUP( bhpt_adaptor_stamp,  bhpt_adaptor, "bhpt_adaptor.x" )
-XOILA_DEFINE_GROUP( bhpt_tutor_language, bcore_inst,   "bhpt_tutor_language.x" )
-XOILA_DEFINE_GROUP( bhpt_sampler,        bcore_inst,   "bhpt_tutor_sampler.x" )
-
+XOILA_DEFINE_GROUP( bhpt_tutor_language, x_inst,       "bhpt_tutor_language.x" )
+XOILA_DEFINE_GROUP( bhpt_sampler,        x_inst,       "bhpt_tutor_sampler.x" )
 
 /**********************************************************************************************************************/
 

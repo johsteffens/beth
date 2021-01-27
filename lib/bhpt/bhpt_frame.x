@@ -307,28 +307,63 @@ func (:s) (void adapt( m @* o )) =
 func (:s) (void backup( m@* o )) =
 {
     sc_t path = o.state_path.sc;
-    if( path[ 0 ] ) bcore_bin_ml_a_to_file( o.state, path );
+    if( path[ 0 ] ) o.state.to_file_bin_ml( path );
+};
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+stamp :test_resul_s = aware bhpt_test_result
+{
+    sz_t cycle_number;
+    aware bhpt_test_result => test_result;
+    bhvm_stats_s => stats_axon;
+    bhvm_stats_s => stats_grad;
+
+    func bhpt_test_result.to_sink =
+    {
+        if( verbosity == 0 ) return o;
+        sink.push_fa( "#pl10 {#<sz_t>}: ", o.cycle_number );
+
+        if( o.test_result )
+        {
+            o.test_result.to_sink( verbosity, sink );
+        }
+
+        if( o.stats_axon )
+        {
+            sink.push_fa( ", axon{ " );
+            o.stats_axon.to_sink( sink );
+            sink.push_fa( " }" );
+        }
+
+        if( o.stats_grad )
+        {
+            sink.push_fa( ", grad{ " );
+            o.stats_grad.to_sink( sink );
+            sink.push_fa( " }" );
+        }
+
+        return o;
+    };
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 func (:s) (void test( m@* o )) =
 {
-    if( o.verbosity > 0 ) o.log.push_fa( "#pl10 {#<sz_t>}: ", o.state.cycle_number );
-    o.tutor.test( o.state.adaptive, o.verbosity, o.log );
+    :test_resul_s^ test_result;
+    test_result.cycle_number = o.state.cycle_number;
+    test_result.test_result =< o.tutor.test( o.state.adaptive );
+    o.state.adaptive.get_adaptor_probe( bhpt_adaptor_probe_s!^ ).acc_stats( test_result.stats_axon!, NULL );
+    test_result.stats_grad =< o.stats_grad.clone();
+
     if( o.verbosity > 0 )
     {
-        m $* probe = o.state.adaptive.get_adaptor_probe( bhpt_adaptor_probe_s!^ );
-        m $* stats_axon = bhvm_stats_s!^;
-        probe.acc_stats( stats_axon, NULL );
-        o.log.push_fa( ", axon{ " );
-        stats_axon.to_sink( o.log );
-        o.log.push_fa( " }" );
-        o.log.push_fa( ", grad{ " );
-        o.stats_grad.to_sink( o.log );
+        test_result.to_sink( o.verbosity, o.log );
         o.log.push_fa( " }\n" );
-        o.stats_grad.clear();
     }
+
+    o.stats_grad.clear();
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -426,8 +461,7 @@ func (:s) bcore_main.main = (try)
         sc_t path = o.state_path.sc;
         if( path[ 0 ] && bcore_file_exists( path ) )
         {
-            o.state =< bhpt_frame_state_s!;
-            bcore_bin_ml_a_from_file( o.state, path );
+            o.state =< bhpt_frame_state_s!.from_file_bin_ml( path );
             o.log.push_fa( "State recovered from '#<sc_t>'\n", path );
         }
         else

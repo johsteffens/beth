@@ -295,6 +295,28 @@ func (:utf8_chatter_s) (void run( c@* o, c :utf8_s* tutor, m bhpt_adaptive* adap
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+stamp :test_result_s = aware bhpt_test_result
+{
+    f3_t error;
+    f3_t bias;
+    sz_t db_size;
+    st_s => chatter;
+
+    func bhpt_test_result.to_sink =
+    {
+        if( verbosity > 1 )
+        {
+            if( o.chatter ) sink.push_sc( o.chatter.sc );
+            sink.pushf( "db-size: %5.3fM, ", o.db_size * 1E-6 );
+        }
+
+        sink.pushf( "err: %5.3f, bias: %7.5f", o.error, o.bias );
+        return o;
+    };
+};
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 func (:utf8_s) bhpt_tutor.test =
 {
     m bhpt_adaptive* adaptive_test = adaptive.clone()^;
@@ -365,13 +387,13 @@ func (:utf8_s) bhpt_tutor.test =
 
     f3_t bias = f3_srt( eb2 * f3_inv( vy ) );
 
-    if( verbosity > 1 )
-    {
-        if( o.chatter ) o.chatter.run( o, adaptive_test, log );
-        log.pushf( "db-size: %5.3fM, ", o.st.size * 1E-6 );
-    }
+    d$* test_result = :test_result_s!;
+    test_result.error = error;
+    test_result.bias  = bias;
+    test_result.db_size = o.st.size;
+    if( o.chatter ) o.chatter.run( o, adaptive_test, test_result.chatter! );
 
-    if( verbosity > 0 ) log.pushf( "err: %5.3f, bias: %7.5f", error, bias );
+    return test_result;
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
