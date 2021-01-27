@@ -19,7 +19,9 @@
 #ifndef BCORE_X_INST_H
 #define BCORE_X_INST_H
 
-#include "bcore_std.h"
+#include "bcore_txt_ml.h"
+#include "bcore_bin_ml.h"
+#include "bcore_file.h"
 #include "bcore.xo.h"
 
 /**********************************************************************************************************************/
@@ -33,10 +35,17 @@ XOILA_DEFINE_GROUP( x_inst, bcore_inst )
 func ( m (TO) :* ifd( m @* o, bl_t cond, m (TO) :* b )) = { return cond ? o : b; };
 func ( c (TO) :* ifc( c @* o, bl_t cond, c (TO) :* b )) = { return cond ? o : b; };
 
-func ( b ifx( c @* o, bl_t cond, c (TO) :* b ) ) =
-{
-    return cond ? o : b;
-};
+//----------------------------------------------------------------------------------------------------------------------
+
+func ( o to_sink_txt_ml( c @* o, m bcore_sink* sink )) = { bcore_txt_ml_a_to_sink( o, sink ); return o; };
+func ( o to_sink_bin_ml( c @* o, m bcore_sink* sink )) = { bcore_bin_ml_a_to_sink( o, sink ); return o; };
+func ( o from_source_txt_ml( m @* o, m bcore_source* source )) = { bcore_txt_ml_a_from_source( o, source ); return o; };
+func ( o from_source_bin_ml( m @* o, m bcore_source* source )) = { bcore_bin_ml_a_from_source( o, source ); return o; };
+
+func ( o to_file_txt_ml( c @* o, sc_t path )) = { return o.to_sink_txt_ml( bcore_file_open_sink( path )^ ); };
+func ( o to_file_bin_ml( c @* o, sc_t path )) = { return o.to_sink_bin_ml( bcore_file_open_sink( path )^ ); };
+func ( o from_file_txt_ml( m @* o, sc_t path )) = { return o.from_source_txt_ml( bcore_file_open_source( path )^ ); };
+func ( o from_file_bin_ml( m @* o, sc_t path )) = { return o.from_source_bin_ml( bcore_file_open_source( path )^ ); };
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2021-01-20T14:31:38Z
+ *  Last File Update: 2021-01-27T11:32:28Z
  *
  *  Copyright and License of this File:
  *
@@ -57,13 +57,6 @@ XOILA_DEFINE_SPECT( bcore_inst, x_inst )
 "{"
     "bcore_spect_header_s header;"
 "}";
-
-const x_inst* x_inst_ifx( const x_inst* o, bl_t cond, const x_inst* b )
-{
-    // bcore_x_inst.h:37:1
-    
-    return  cond ? o : b;
-}
 
 /**********************************************************************************************************************/
 // source: bcore_x_array.h
@@ -1674,4 +1667,4 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOILA_OUT_SIGNATURE 0x653A53D612A49DD3ull
+// XOILA_OUT_SIGNATURE 0xD474EAED7949E694ull

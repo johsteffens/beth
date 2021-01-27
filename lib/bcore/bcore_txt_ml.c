@@ -555,6 +555,25 @@ static bcore_self_s* interpreter_s_create_self( void )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+sr_s bcore_txt_ml_from_source( bcore_source* source )
+{
+    bcore_txt_ml_interpreter_s* interpreter = bcore_txt_ml_interpreter_s_create();
+    sr_s ret = interpret( interpreter, sr_null(), sr_awd( source ) );
+    bcore_txt_ml_interpreter_s_discard( interpreter );
+    return ret;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_txt_ml_a_from_source( vd_t o, bcore_source* source )
+{
+    sr_s sr = bcore_txt_ml_from_source( source );
+    bcore_inst_t_copy_typed( *(aware_t*)o, o, sr_s_type( &sr ), sr.o );
+    sr_down( sr );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 sr_s bcore_txt_ml_from_file( sc_t file )
 {
     sr_s chain = sr_asd( bcore_source_chain_s_create() );

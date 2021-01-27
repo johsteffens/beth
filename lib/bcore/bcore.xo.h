@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2021-01-20T14:31:38Z
+ *  Last File Update: 2021-01-27T11:32:28Z
  *
  *  Copyright and License of this File:
  *
@@ -33,7 +33,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by xoico, reset the hash key value below to 0.
-#define HKEYOF_bcore 0x08C43261851F3DFEull
+#define HKEYOF_bcore 0xC77B2708004813E2ull
 
 #define TYPEOF_bcore 0x52C4008F456A6C1Eull
 
@@ -66,14 +66,29 @@
   BCORE_FORWARD_OBJECT( x_inst ); \
   static inline x_inst* x_inst_ifd( x_inst* o, bl_t cond, x_inst* b ); \
   static inline const x_inst* x_inst_ifc( const x_inst* o, bl_t cond, const x_inst* b ); \
-  const x_inst* x_inst_ifx( const x_inst* o, bl_t cond, const x_inst* b ); \
+  static inline const x_inst* x_inst_to_sink_txt_ml( const x_inst* o, bcore_sink* sink ); \
+  static inline const x_inst* x_inst_to_sink_bin_ml( const x_inst* o, bcore_sink* sink ); \
+  static inline x_inst* x_inst_from_source_txt_ml( x_inst* o, bcore_source* source ); \
+  static inline x_inst* x_inst_from_source_bin_ml( x_inst* o, bcore_source* source ); \
+  static inline const x_inst* x_inst_to_file_txt_ml( const x_inst* o, sc_t path ); \
+  static inline const x_inst* x_inst_to_file_bin_ml( const x_inst* o, sc_t path ); \
+  static inline x_inst* x_inst_from_file_txt_ml( x_inst* o, sc_t path ); \
+  static inline x_inst* x_inst_from_file_bin_ml( x_inst* o, sc_t path ); \
   XOILA_DECLARE_SPECT( x_inst ) \
   { \
       bcore_spect_header_s header; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_inst ) \
   static inline x_inst* x_inst_ifd( x_inst* o, bl_t cond, x_inst* b ){ return  cond ? o : b;} \
-  static inline const x_inst* x_inst_ifc( const x_inst* o, bl_t cond, const x_inst* b ){ return  cond ? o : b;}
+  static inline const x_inst* x_inst_ifc( const x_inst* o, bl_t cond, const x_inst* b ){ return  cond ? o : b;} \
+  static inline const x_inst* x_inst_to_sink_txt_ml( const x_inst* o, bcore_sink* sink ){ bcore_txt_ml_a_to_sink( o, sink ); return  o;} \
+  static inline const x_inst* x_inst_to_sink_bin_ml( const x_inst* o, bcore_sink* sink ){ bcore_bin_ml_a_to_sink( o, sink ); return  o;} \
+  static inline x_inst* x_inst_from_source_txt_ml( x_inst* o, bcore_source* source ){ bcore_txt_ml_a_from_source( o, source ); return  o;} \
+  static inline x_inst* x_inst_from_source_bin_ml( x_inst* o, bcore_source* source ){ bcore_bin_ml_a_from_source( o, source ); return  o;} \
+  static inline const x_inst* x_inst_to_file_txt_ml( const x_inst* o, sc_t path ){BLM_INIT_LEVEL(0); BLM_RETURNV(const x_inst*, ((const x_inst*)(x_inst_to_sink_txt_ml(o,((bcore_sink*)BLM_LEVEL_A_PUSH(0,bcore_file_open_sink(path ))) ))))} \
+  static inline const x_inst* x_inst_to_file_bin_ml( const x_inst* o, sc_t path ){BLM_INIT_LEVEL(0); BLM_RETURNV(const x_inst*, ((const x_inst*)(x_inst_to_sink_bin_ml(o,((bcore_sink*)BLM_LEVEL_A_PUSH(0,bcore_file_open_sink(path ))) ))))} \
+  static inline x_inst* x_inst_from_file_txt_ml( x_inst* o, sc_t path ){BLM_INIT_LEVEL(0); BLM_RETURNV(x_inst*, ((x_inst*)(x_inst_from_source_txt_ml(o,((bcore_source*)BLM_LEVEL_A_PUSH(0,bcore_file_open_source(path ))) ))))} \
+  static inline x_inst* x_inst_from_file_bin_ml( x_inst* o, sc_t path ){BLM_INIT_LEVEL(0); BLM_RETURNV(x_inst*, ((x_inst*)(x_inst_from_source_bin_ml(o,((bcore_source*)BLM_LEVEL_A_PUSH(0,bcore_file_open_source(path ))) ))))}
 
 /**********************************************************************************************************************/
 // source: bcore_x_array.h
@@ -907,4 +922,4 @@
 vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 #endif // __bcore_xo_H
-// XOILA_OUT_SIGNATURE 0x364F817F34E70AE0ull
+// XOILA_OUT_SIGNATURE 0x822F464C4CD7F227ull

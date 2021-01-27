@@ -92,10 +92,12 @@ sr_s bcore_txt_ml_interpreter_s_interpret( const bcore_txt_ml_interpreter_s* o, 
 /**********************************************************************************************************************/
 
 /// syntactic sugar
+sr_s bcore_txt_ml_from_source( bcore_source* source );
 sr_s bcore_txt_ml_from_file( sc_t file );
 sr_s bcore_txt_ml_from_string( const st_s* string );
 sr_s bcore_txt_ml_from_sc(           sc_t  sc );
-void bcore_txt_ml_a_from_file( vd_t o,  sc_t file );
+void bcore_txt_ml_a_from_file(   vd_t o,  sc_t file );
+void bcore_txt_ml_a_from_source( vd_t o, bcore_source* source );
 void bcore_txt_ml_r_from_file( sr_s* o, sc_t file );
 void bcore_txt_ml_t_from_file( tp_t t, vd_t o, sc_t file );
 

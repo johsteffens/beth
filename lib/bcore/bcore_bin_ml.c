@@ -333,10 +333,15 @@ static bcore_self_s* interpreter_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-sr_s bcore_bin_ml_from_source( sr_s source )
+sr_s bcore_bin_ml_from_source( bcore_source* source )
 {
-    return bcore_interpret_x( bcore_inst_t_create_sr( TYPEOF_bcore_bin_ml_interpreter_s ), source );
+    bcore_bin_ml_interpreter_s* interpreter = bcore_bin_ml_interpreter_s_create();
+    sr_s ret = interpret( interpreter, sr_null(), sr_awd( source ) );
+    bcore_bin_ml_interpreter_s_discard( interpreter );
+    return ret;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 sr_s bcore_bin_ml_from_file( sc_t file )
 {
@@ -366,7 +371,7 @@ void bcore_bin_ml_t_from_file( tp_t t, vd_t o, sc_t file )
 
 void bcore_bin_ml_a_from_source( vd_t o, bcore_source* source )
 {
-    sr_s sr = bcore_bin_ml_from_source( sr_awd( source ) );
+    sr_s sr = bcore_bin_ml_from_source( source );
     bcore_inst_t_copy_typed( *(aware_t*)o, o, sr_s_type( &sr ), sr.o );
     sr_down( sr );
 }
@@ -379,8 +384,8 @@ sr_s bcore_bin_ml_transfer( sr_s obj )
     obj = bcore_life_s_push_sr( l, obj );
 
     bcore_sink_buffer_s* sink_buffer = bcore_life_s_push_sr( l, bcore_bin_ml_x_to_sink_buffer( obj ) ).o;
-    bcore_source_buffer_s* source_buffer = bcore_source_buffer_s_create_from_data( sink_buffer->data, sink_buffer->size );
-    sr_s out_sr = bcore_bin_ml_from_source( sr_asd( source_buffer ) );
+    bcore_source_buffer_s* source_buffer = bcore_life_s_push_aware( l, bcore_source_buffer_s_create_from_data( sink_buffer->data, sink_buffer->size ) );
+    sr_s out_sr = bcore_bin_ml_from_source( ( bcore_source* )source_buffer );
     bcore_life_s_discard( l );
     return out_sr;
 }

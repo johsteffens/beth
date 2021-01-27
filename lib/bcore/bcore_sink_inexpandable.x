@@ -23,6 +23,7 @@ group bcore_sink = x_inst
     feature void flush( m @* o );
     feature void push_fv( m @* o, sc_t format, va_list args );
     feature void push_fa( m @* o, sc_t format, ... );
+    feature void pushf(   m @* o, sc_t format, ... );
     feature void push_u0( m @* o, u0_t u );
     feature void push_char( m @* o, char c );
     feature void push_sc(   m @* o, sc_t sc );
