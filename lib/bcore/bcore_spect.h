@@ -41,6 +41,8 @@ typedef bl_t          (*bcore_spect_fp_supports         )( const bcore_self_s* s
 
 /**********************************************************************************************************************/
 
+typedef struct bcore_spect bcore_spect;
+
 /// common header of all perspectives
 typedef struct bcore_spect_header_s
 {
