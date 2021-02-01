@@ -107,7 +107,7 @@ XOILA_DEFINE_GROUP( badapt_training_objects, bcore_inst )
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp badapt_progress_s = bcore_inst
+stamp badapt_progress_s = obliv bcore_inst
 {
     sz_t iteration = 0;
     f3_t error     = 0;

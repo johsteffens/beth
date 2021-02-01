@@ -56,8 +56,8 @@ XOILA_DEFINE_GROUP( bcore_main, bcore_inst )
 
     stamp :frame_s = aware bcore_inst
     {
-        /// interpreter used to decode the config file
-        aware bcore_interpreter => interpreter = bcore_txt_ml_interpreter_s;
+        /// interpreter used to decode the config file; If NULL, frame tries to guess the correct interpreter form the file's content
+        aware bcore_interpreter => interpreter;
 
         /// program arguments
         bcore_arr_st_s args;
@@ -65,7 +65,7 @@ XOILA_DEFINE_GROUP( bcore_main, bcore_inst )
         hidden bcore_mutex_s mutex;
 
         /// The following criteria are processed in given order until one matches or all fail
-        bl_t use_first_argument = true;   // path to config file is expected as first argument
+        bl_t first_argument_is_path_to_config = true;   // path to config file is expected as first argument
         sc_t local_file = "beth.config";  // config file in current folder
         sc_t global_file;                 // global path to config file
 

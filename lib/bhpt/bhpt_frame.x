@@ -99,6 +99,9 @@ stamp :state_s = aware :
     sz_t last_cycle_backup;
     aware bhpt_adaptive => adaptive;
     bhpt_adaptor_adl_s => adaptor_adl;
+    bhpt_test_result_adl_s => test_result_adl;
+
+    func bcore_main.main;
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -312,7 +315,7 @@ func (:s) (void backup( m@* o )) =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-stamp :test_resul_s = aware bhpt_test_result
+stamp :test_result_s = aware bhpt_test_result
 {
     sz_t cycle_number;
     aware bhpt_test_result => test_result;
@@ -351,7 +354,7 @@ stamp :test_resul_s = aware bhpt_test_result
 
 func (:s) (void test( m@* o )) =
 {
-    :test_resul_s^ test_result;
+    :test_result_s^ test_result;
     test_result.cycle_number = o.state.cycle_number;
     test_result.test_result =< o.tutor.test( o.state.adaptive );
     o.state.adaptive.get_adaptor_probe( bhpt_adaptor_probe_s!^ ).acc_stats( test_result.stats_axon!, NULL );
@@ -362,6 +365,8 @@ func (:s) (void test( m@* o )) =
         test_result.to_sink( o.verbosity, o.log );
         o.log.push_fa( " }\n" );
     }
+
+    o.state.test_result_adl!.push_c( test_result );
 
     o.stats_grad.clear();
 };
@@ -436,6 +441,15 @@ func (:s) (void run_multi_threaded( m@* o )) =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+func (:s) (void help_to_sink( m bcore_sink* sink )) =
+{
+    sink.push_fa( "-help:  Prints this help information.\n" );
+    sink.push_fa( "-reset: Resets training. Discards previous training results.\n" );
+    sink.push_fa( "-continue: (Default) Continues training from last saved training state.\n" );
+};
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 func (:s) bcore_main.main = (try)
 {
     o.main_frame = frame;
@@ -448,11 +462,29 @@ func (:s) bcore_main.main = (try)
 
     if( args )
     {
-        foreach( c st_s* arg in args ) if( arg.equal_sc( "-reset" ) ) reset = true;
-
-        if( args.size > 1 )
+        foreach( c st_s* arg in args )
         {
-            o.state_path.push_fa( "#<sc_t>.state", args.[ 1 ].sc );
+            if( __i < 2 )
+            {
+                if( __i == 1 ) o.state_path.push_fa( "#<sc_t>.state", arg.sc );
+            }
+            else if( arg.equal_sc( "-help" ) )
+            {
+                o.help_to_sink( BCORE_STDOUT );
+                return 0;
+            }
+            else if( arg.equal_sc( "-reset" ) )
+            {
+                reset = true;
+            }
+            else if( arg.equal_sc( "-continue" ) )
+            {
+                reset = false;
+            }
+            else
+            {
+                return bcore_error_push_fa( TYPEOF_general_error, "Invalid argument '#<sc_t>'", arg.sc );
+            }
         }
     }
 
@@ -507,6 +539,57 @@ func (:s) bcore_main.main = (try)
         o.log.push_fa( "\nSaving state at cycle #<sz_t>\n", o->state->cycle_number );
         o.backup();
         o.log.push_fa( "Exiting cleanly.\n" );
+    }
+
+    return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:state_s) (void help_to_sink( m bcore_sink* sink )) =
+{
+    sink.push_fa( "-help:  Prints this help information.\n" );
+    sink.push_fa( "-table [-h] name [...]: creates a comma separated utf8-table of numeric array items. -h: outputs header line.\n" );
+};
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+func (:state_s) (void table_to_sink( c bcore_hmap_name_s* hmap_name, c bcore_arr_tp_s* arr_tp, bl_t header, m bcore_sink* sink )) =
+{
+
+};
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+func (:state_s) bcore_main.main =
+{
+    c bcore_arr_st_s* args = frame.args;
+    if( /*frame.args.size == 0 && */ o.test_result_adl )
+    {
+        if( args.size > 2 )
+        {
+            if( args.[ 2 ].equal_sc( "-help" ) )
+            {
+                o.help_to_sink( BCORE_STDOUT );
+                return 0;
+            }
+            else if( args.[ 2 ].equal_sc( "-table" ) )
+            {
+                bl_t header = false;
+                sz_t idx = 2;
+                if( idx < args.size && args.[ idx ].equal_sc( "-h" ) ) { idx++; header = true; }
+                if( args.size == idx ) return bcore_error_push_fa( TYPEOF_general_error, "Element name expected." );
+                bcore_hmap_name_s^ hmap_name;
+                bcore_arr_tp_s^ arr_tp;
+                for( ; idx < args.size; idx++ ) arr_tp.push( hmap_name.set_sc( args.[idx].sc ) );
+                o.table_to_sink( hmap_name, arr_tp, header, BCORE_STDOUT );
+                return 0;
+            }
+        }
+
+
+        o.test_result_adl.to_sink( 1, BCORE_STDOUT );
+        bcore_sink_a_push_fa( BCORE_STDOUT, "Current cycle number: #<sz_t>\n", o.cycle_number );
     }
 
     return 0;

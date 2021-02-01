@@ -101,6 +101,9 @@ void bcore_txt_ml_a_from_source( vd_t o, bcore_source* source );
 void bcore_txt_ml_r_from_file( sr_s* o, sc_t file );
 void bcore_txt_ml_t_from_file( tp_t t, vd_t o, sc_t file );
 
+/// Tests if a file starts with a txt-ml syntax (does not consume characters from source)
+bl_t bcore_txt_ml_contains_valid_syntax( bcore_source* source );
+
 /**********************************************************************************************************************/
 // testing, debugging
 

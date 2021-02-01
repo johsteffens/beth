@@ -48,7 +48,7 @@ func (m (TO) @* t_sort(     m (TO) @* o, tp_t t, s2_t direction )) = { bcore_arr
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (m (TE) x_inst* t_push_d( m @* o, tp_t t, d unaware (TE) x_inst* v )) = (verbatim_C)
+func (m (TE) x_inst* t_push_d( m @* o, tp_t t, d obliv (TE) x_inst* v )) = (verbatim_C)
 {
     const bcore_array_s* p = bcore_array_s_get_typed( t );
 
@@ -79,7 +79,7 @@ func (m (TE) x_inst* t_push_d( m @* o, tp_t t, d unaware (TE) x_inst* v )) = (ve
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (m (TE) x_inst* t_push_c( m @* o, tp_t t, c unaware (TE) x_inst* v )) = (verbatim_C)
+func (m (TE) x_inst* t_push_c( m @* o, tp_t t, c obliv (TE) x_inst* v )) = (verbatim_C)
 {
     const bcore_array_s* p = bcore_array_s_get_typed( t );
 
@@ -183,10 +183,12 @@ func (m (TO) @* set_size ( m (TO) @* o, sz_t size      )) = { return o.t_set_siz
 func (m (TO) @* set_space( m (TO) @* o, sz_t space     )) = { return o.t_set_space( o._, space ); };
 func (m (TO) @* sort(      m (TO) @* o, s2_t direction )) = { return o.t_sort( o._, direction ); };
 
-func (m (TE) x_inst* push_d( m @* o, d unaware (TE) x_inst* v )) = { return o.t_push_d( o._, v ); };
-func (m (TE) x_inst* push_c( m @* o, c unaware (TE) x_inst* v )) = { return o.t_push_c( o._, v ); };
+func (m (TE) x_inst* push_d( m @* o, d obliv (TE) x_inst* v )) = { return o.t_push_d( o._, v ); };
+func (m (TE) x_inst* push_c( m @* o, c obliv (TE) x_inst* v )) = { return o.t_push_c( o._, v ); };
 func (m (TE) x_inst* push_t( m @* o, tp_t val_type )) = { return o.t_push_t( o._, val_type ); };
 func (m (TE) x_inst* push  ( m @* o )) = { return o.t_push( o._ ); };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 #endif // XOILA_SECTION
 

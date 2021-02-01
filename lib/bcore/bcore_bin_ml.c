@@ -278,7 +278,7 @@ static sr_s interpret( const bcore_bin_ml_interpreter_s* o, sr_s obj, sr_s sourc
             if( bcore_via_x_is_pure_array( obj_l ) )
             {
                 sr_s arr_l = sr_cp( obj_l, TYPEOF_bcore_array_s );
-                if( bcore_array_x_is_mutable_mono_typed( arr_l ) ) bcore_array_x_set_gtype( arr_l, sr_tp_sr( interpret( o, sr_null(), src_l ) ) );
+                if( bcore_array_x_is_mutable_mono_typed( arr_l ) ) bcore_array_x_set_gtype( arr_l, sr_to_tp( interpret( o, sr_null(), src_l ) ) );
                 bcore_array_x_set_size( arr_l, size );
                 for( uz_t i = 0; i < size; i++ ) bcore_array_x_set( arr_l, i, interpret( o, sr_null(), src_l ) );
             }

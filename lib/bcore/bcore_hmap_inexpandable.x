@@ -28,7 +28,7 @@ signature tp_t idx_key( c @* o, uz_t idx ); // returns indexed key (idx indexes 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp bcore_hnode_tpuz_s = bcore_inst
+stamp bcore_hnode_tpuz_s = obliv bcore_inst
 {
     tp_t key;
     uz_t val;
@@ -77,7 +77,7 @@ group bcore_hmap_tpuz = bcore_inst
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp bcore_hnode_tpfp_s = bcore_inst
+stamp bcore_hnode_tpfp_s = obliv bcore_inst
 {
     tp_t key;
     fp_t val;
@@ -114,7 +114,7 @@ group bcore_hmap_tpfp = bcore_inst
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp bcore_hnode_tptp_s = bcore_inst
+stamp bcore_hnode_tptp_s = obliv bcore_inst
 {
     tp_t key;
     tp_t val;
@@ -151,7 +151,7 @@ group bcore_hmap_tptp = bcore_inst
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp bcore_hnode_tpvd_s = bcore_inst
+stamp bcore_hnode_tpvd_s = obliv bcore_inst
 {
     tp_t key;
     vd_t val;
@@ -188,7 +188,7 @@ group bcore_hmap_tpvd = bcore_inst
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp bcore_hnode_tpto_s = bcore_inst
+stamp bcore_hnode_tpto_s = obliv bcore_inst
 {
     tp_t key;
     vd_t val;

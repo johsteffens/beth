@@ -369,7 +369,7 @@ static sr_s interpret( const bcore_txt_ml_interpreter_s* o, sr_s obj, sr_s sourc
                     tp_t type = 0;
                     if( bcore_source_r_parse_bl_fa( &src_l, "#?'type:'" ) )
                     {
-                        type = sr_tp_sr( interpret( o, sr_null(), src_l ) );
+                        type = sr_to_tp( interpret( o, sr_null(), src_l ) );
                     }
                     bcore_array_x_set_gtype( arr_l, type );
                 }
@@ -625,6 +625,39 @@ void bcore_txt_ml_t_from_file( tp_t t, vd_t o, sc_t file )
     sr_s sr = bcore_txt_ml_from_file( file );
     bcore_inst_t_copy_typed( t, o, sr_s_type( &sr ), sr.o );
     sr_down( sr );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bl_t bcore_txt_ml_contains_valid_syntax( bcore_source* source )
+{
+    BLM_INIT();
+    sz_t index = bcore_source_a_get_index( source );
+
+    if( !bcore_source_a_parse_bl( source, " #?'<'" ) )
+    {
+        bcore_source_a_set_index( source, index );
+        BLM_RETURNV( bl_t, false );
+    }
+
+    st_s* name = BLM_A_PUSH( st_s_create() );
+
+    bcore_source_a_parse_fa( source, "#name", name );
+
+    if( name->size == 0 )
+    {
+        bcore_source_a_set_index( source, index );
+        BLM_RETURNV( bl_t, false );
+    }
+
+    if( !bcore_source_a_parse_bl( source, "#?'>'" ) )
+    {
+        bcore_source_a_set_index( source, index );
+        BLM_RETURNV( bl_t, false );
+    }
+
+    bcore_source_a_set_index( source, index );
+    BLM_RETURNV( bl_t, true );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

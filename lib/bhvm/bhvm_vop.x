@@ -65,7 +65,7 @@ feature o set_index_arr( m @* o, m sz_t* idx_arr, sz_t size ) =
 
 signature void push_ci( m @* o, u0_t c, sz_t i );
 
-stamp :ci_s = bcore_inst
+stamp :ci_s = obliv bcore_inst
 {
     u0_t c; sz_t i;
     func : .push_ci = { o.c = c; o.i = i; };
@@ -131,7 +131,7 @@ feature o set_args( m @* o, c :arr_ci_s* arr ) =
 /// nullary operators
 group :ar0 =
 {
-    stamp :index_s = bcore_inst { sz_t [ 1 ] v; func bcore_inst_call.init_x = { o.v[0] = -1; }; };
+    stamp :index_s = obliv bcore_inst { sz_t [ 1 ] v; func bcore_inst_call.init_x = { o.v[0] = -1; }; };
 
     func (o setup( m (TO) @* o, sz_t idx0 )) =
     {
@@ -218,7 +218,7 @@ group :ar0 =
 /// unary operators
 group :ar1 =
 {
-    stamp :index_s = bcore_inst { sz_t [ 2 ] v; func bcore_inst_call . init_x = { o.v[0] = o.v[1] = -1; }; };
+    stamp :index_s = obliv bcore_inst { sz_t [ 2 ] v; func bcore_inst_call . init_x = { o.v[0] = o.v[1] = -1; }; };
 
     func (o setup( m (TO) @* o, sz_t idx0, sz_t idx1 )) =
     {
@@ -346,7 +346,7 @@ group :ar1 =
 /// binary operators
 group :ar2 =
 {
-    stamp :index_s = bcore_inst { sz_t [ 3 ] v; func bcore_inst_call . init_x = { o.v[0] = o.v[1] = o.v[2] = -1; }; };
+    stamp :index_s = obliv bcore_inst { sz_t [ 3 ] v; func bcore_inst_call . init_x = { o.v[0] = o.v[1] = o.v[2] = -1; }; };
 
     func (o setup( m (TO) @* o, sz_t idx0, sz_t idx1, sz_t idx2 )) =
     {
@@ -446,7 +446,7 @@ group :ar2 =
 /// ternary operators
 group :ar3 =
 {
-    stamp :index_s = bcore_inst { sz_t [ 4 ] v; func bcore_inst_call . init_x = { o.v[0] = o.v[1] = o.v[2] = o.v[3] = -1; }; };
+    stamp :index_s = obliv bcore_inst { sz_t [ 4 ] v; func bcore_inst_call . init_x = { o.v[0] = o.v[1] = o.v[2] = o.v[3] = -1; }; };
 
     func (o setup( m (TO) @* o, sz_t idx0, sz_t idx1, sz_t idx2, sz_t idx3 )) =
     {

@@ -20,7 +20,7 @@
 group bcore_flect = x_inst
 {
 
-    stamp bcore_self_item_s = :
+    stamp bcore_self_item_s = obliv :
     {
         tp_t type; // hash of type
         tp_t name; // hash of name

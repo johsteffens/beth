@@ -40,7 +40,7 @@ XOILA_DEFINE_GROUP( badapt_ern, bcore_inst )
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp :layer_s = bcore_inst
+stamp :layer_s = obliv bcore_inst
 {
     hidden bmath_vf3_s v_x;
     hidden bmath_vf3_s v_c;

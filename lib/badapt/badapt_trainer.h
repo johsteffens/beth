@@ -48,7 +48,7 @@ stamp badapt_trainer_batch_s = aware badapt_trainer
     func badapt_trainer . create_state;
 };
 
-stamp badapt_sample_batch_s     = bcore_inst
+stamp badapt_sample_batch_s = obliv bcore_inst
 {
     bmath_vf3_s in;
     bmath_vf3_s out;

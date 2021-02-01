@@ -266,8 +266,7 @@ static inline bl_t v_test_idx( const bcore_via_s* p, tp_t name )
 static inline uz_t vidx( const bcore_via_s* p, tp_t name )
 {
     for( uz_t i = 0; i < p->size; i++ ) if( p->vitem_arr[ i ].name == name ) return i;
-    ERR( "object '%s' has no element of name '%s'", ifnameof( p->header.o_type ), ifnameof( name ) );
-    return 0;
+    return ( uz_t )-1;
 }
 
 bl_t                 NPX(default_nexists      )( const NPX(s)* p, const bcore_via* o, tp_t n           ) { return v_test_idx( p, n ); }
@@ -282,6 +281,7 @@ void                 NPX(default_nset_uz      )( const NPX(s)* p,       bcore_vi
 void                 NPX(default_nset_sc      )( const NPX(s)* p,       bcore_via* o, tp_t n, sc_t val ) {        NPX(default_iset_sc    )( p, o, vidx( p, n ), val    ); }
 void                 NPX(default_nset_bl      )( const NPX(s)* p,       bcore_via* o, tp_t n, bl_t val ) {        NPX(default_iset_bl    )( p, o, vidx( p, n ), val    ); }
 void                 NPX(default_nset_tp      )( const NPX(s)* p,       bcore_via* o, tp_t n, tp_t val ) {        NPX(default_iset_tp    )( p, o, vidx( p, n ), val    ); }
+tp_t                 NPX(default_nget_type    )( const NPX(s)* p, const bcore_via* o, tp_t n           ) { return NPX(default_iget_type  )( p, o, vidx( p, n )         ); }
 const bcore_vitem_s* NPX(default_nget_vitem   )( const NPX(s)* p, const bcore_via* o, tp_t n           ) { return NPX(default_iget_vitem )( p, o, vidx( p, n )         ); }
 const NPX(s)*        NPX(default_nget_via     )( const NPX(s)* p, const bcore_via* o, tp_t n           ) { return NPX(default_iget_via   )( p, o, vidx( p, n )         ); }
 const bcore_array_s* NPX(default_nget_array   )( const NPX(s)* p, const bcore_via* o, tp_t n           ) { return NPX(default_iget_array )( p, o, vidx( p, n )         ); }
@@ -517,10 +517,10 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_via )
 sr_s bcore_spect_via_create_zoo( uz_t size )
 {
     bcore_life_s* l = bcore_life_s_create();
-                      bcore_flect_type_parse_sc( "vectors = { st_s => [ 2 ] data1; u3_t [ 3 ] data2; }" );
-    tp_t t_animal   = bcore_flect_type_parse_sc( "animal = { st_s => type; f3_t weight; st_s => [] features; vectors vdata; }" );
-    tp_t t_compound = bcore_flect_type_parse_sc( "compound = { u3_t id; uz_t area; animal => [] animals; }" );
-    tp_t t_zoo      = bcore_flect_type_parse_sc( "zoo = { st_s => name; typed => [] compounds; }" );
+                      bcore_flect_type_parse_sc( "vectors = aware { st_s => [ 2 ] data1; u3_t [ 3 ] data2; }" );
+    tp_t t_animal   = bcore_flect_type_parse_sc( "animal = aware { st_s => type; f3_t weight; st_s => [] features; vectors vdata; }" );
+    tp_t t_compound = bcore_flect_type_parse_sc( "compound = aware { u3_t id; uz_t area; animal => [] animals; }" );
+    tp_t t_zoo      = bcore_flect_type_parse_sc( "zoo = aware { st_s => name; typed => [] compounds; }" );
 
     sr_s ret = bcore_inst_t_create_sr( t_zoo );
     sr_s zoo = sr_cw( ret );

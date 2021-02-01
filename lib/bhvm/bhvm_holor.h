@@ -73,7 +73,7 @@ XOILA_DEFINE_GROUP( bhvm, bcore_inst )
 
 /**********************************************************************************************************************/
 
-stamp :shape_s = x_array
+stamp :shape_s = obliv x_array
 {
     sz_t [];
     func x_array.clear    = { return ( @*    )o.cast( m x_array* ).t_clear( TYPEOF_@ ); };
@@ -195,7 +195,7 @@ stamp :shape_s = x_array
 
 /**********************************************************************************************************************/
 
-stamp :value_s = x_array
+stamp :value_s = obliv x_array
 {
     typed [];
     func x_array.clear    = { return ( @* )o.cast( m x_array* ).t_clear( TYPEOF_@ ); };

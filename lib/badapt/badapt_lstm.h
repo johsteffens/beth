@@ -113,7 +113,7 @@
 XOILA_DEFINE_GROUP( badapt_lstm, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp :layer_s = bcore_inst
+stamp :layer_s = obliv bcore_inst
 {
     bmath_vf3_s v_x;
     bmath_vf3_s v_f;

@@ -28,9 +28,8 @@
 XOILA_DEFINE_GROUP( badapt_c1d, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp :layer_s = bcore_inst
+stamp :layer_s = aware bcore_inst
 {
-    aware_t _;
     sz_t input_size;  // input vector size
     sz_t stride;      // convolution step size (stride of spliced matrix)
     sz_t steps;       // number of convolution steps
@@ -49,10 +48,8 @@ stamp :arr_layer_s = aware x_array { :layer_s [] arr; };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp badapt_c1d_s = badapt_adaptive
+stamp badapt_c1d_s = aware badapt_adaptive
 {
-    aware_t _;
-
     // === architecture parameters ================================
 
     badapt_dynamics_std_s  dynamics;
@@ -83,10 +80,8 @@ stamp badapt_c1d_s = badapt_adaptive
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /// Builder creating a funnel structure of kernels
-stamp badapt_builder_c1d_funnel_s = badapt_builder
+stamp badapt_builder_c1d_funnel_s = aware badapt_builder
 {
-    aware_t _;
-
     sz_t input_size                ; // input vector size
     sz_t input_step             = 1; // input vector stepping
     sz_t input_convolution_size = 2; // first layer convolution

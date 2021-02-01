@@ -17,6 +17,7 @@
 #include "bcore_name_manager.h"
 #include "bcore_signal.h"
 #include "bcore_spect.h"
+#include "bcore_x_via.h"
 #include "bcore_quicktypes.h"
 #include "bclos_quicktypes.h"
 #include "bmath_quicktypes.h"
@@ -56,60 +57,62 @@ int main( void )
 //    bclos_quicktypes_to_stdout( NULL ); return 0;
 //    bmath_quicktypes_to_stdout( NULL ); return 0;
 
-    selftest( "bcore_spect_inst" );
+    x_via_selftest();
 
-    selftest( "bcore_hmap" );
-    selftest( "bcore_tp_fastmap" );
-    selftest( "bcore_hmap_tp_sr" );
-
-    selftest( "bcore_st" );
-    selftest( "bcore_prsg" );
-    selftest( "bcore_sources" );
-
-    selftest( "bhvm_holor" );
-
-    selftest( "bmath_matrix" );
-    selftest( "bmath_complex" );
-    selftest( "bmath_spect_algebraic" );
-    selftest( "bmath_spect_vector" );
-
-    selftest( "bmath_mf2" );
-    selftest( "bmath_mf3" );
-    selftest( "bmath_asmf2" );
-    selftest( "bmath_asmf2" );
-    selftest( "bmath_xsmf3" );
-    selftest( "bmath_xsmf3" );
-    selftest( "bmath_vf2" );
-    selftest( "bmath_vf3" );
-    selftest( "bmath_arr_vf2" );
-    selftest( "bmath_arr_vf3" );
-    selftest( "bmath_cf2" );
-    selftest( "bmath_cf3" );
-    selftest( "bmath_fourier_f2" );
-    selftest( "bmath_fourier_f3" );
-    selftest( "bmath_vcf2" );
-    selftest( "bmath_vcf3" );
-
-    selftest( "bcore_cday" );
-    selftest( "bcore_plant_sample" );
-
-    selftest( "bclos_procedure" );
-    selftest( "bclos_machine" );
-
-    selftest( "bcore_folder" );
-    selftest( "bcore_flect" );
-    selftest( "bcore_name_manager" );
-    selftest( "bcore_spect_array" );
-    selftest( "bcore_spect_via" );
-    selftest( "bcore_spect_compare" );
-    selftest( "bcore_txt_ml" );
-    selftest( "bcore_bin_ml" );
-
-    selftest( "bcore_btree" );
-    selftest( "bcore_arr" );
-    selftest( "bcore_img" );
-    selftest( "bcore_spect_hash" );
-    selftest( "bcore_tbman" );
+//    selftest( "bcore_spect_inst" );
+//
+//    selftest( "bcore_hmap" );
+//    selftest( "bcore_tp_fastmap" );
+//    selftest( "bcore_hmap_tp_sr" );
+//
+//    selftest( "bcore_st" );
+//    selftest( "bcore_prsg" );
+//    selftest( "bcore_sources" );
+//
+//    selftest( "bhvm_holor" );
+//
+//    selftest( "bmath_matrix" );
+//    selftest( "bmath_complex" );
+//    selftest( "bmath_spect_algebraic" );
+//    selftest( "bmath_spect_vector" );
+//
+//    selftest( "bmath_mf2" );
+//    selftest( "bmath_mf3" );
+//    selftest( "bmath_asmf2" );
+//    selftest( "bmath_asmf2" );
+//    selftest( "bmath_xsmf3" );
+//    selftest( "bmath_xsmf3" );
+//    selftest( "bmath_vf2" );
+//    selftest( "bmath_vf3" );
+//    selftest( "bmath_arr_vf2" );
+//    selftest( "bmath_arr_vf3" );
+//    selftest( "bmath_cf2" );
+//    selftest( "bmath_cf3" );
+//    selftest( "bmath_fourier_f2" );
+//    selftest( "bmath_fourier_f3" );
+//    selftest( "bmath_vcf2" );
+//    selftest( "bmath_vcf3" );
+//
+//    selftest( "bcore_cday" );
+//    selftest( "bcore_plant_sample" );
+//
+//    selftest( "bclos_procedure" );
+//    selftest( "bclos_machine" );
+//
+//    selftest( "bcore_folder" );
+//    selftest( "bcore_flect" );
+//    selftest( "bcore_name_manager" );
+//    selftest( "bcore_spect_array" );
+//    selftest( "bcore_spect_via" );
+//    selftest( "bcore_spect_compare" );
+//    selftest( "bcore_txt_ml" );
+//    selftest( "bcore_bin_ml" );
+//
+//    selftest( "bcore_btree" );
+//    selftest( "bcore_arr" );
+//    selftest( "bcore_img" );
+//    selftest( "bcore_spect_hash" );
+//    selftest( "bcore_tbman" );
 
     st_s_print_d( bcore_spect_status() );
 

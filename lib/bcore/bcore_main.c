@@ -54,7 +54,7 @@ er_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, char** argv )
     for( sz_t i = 0; i < argc; i++ ) bcore_arr_st_s_push_sc( &o->args, argv[ i ] );
     er_t error = 0;
     sc_t file = NULL;
-    if( o->use_first_argument && o->args.size > 1 )
+    if( o->first_argument_is_path_to_config && o->args.size > 1 )
     {
         file = o->args.data[ 1 ]->sc;
         if( !bcore_file_exists( file ) ) file = NULL;
@@ -79,7 +79,26 @@ er_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, char** argv )
         signal( SIGINT , signal_callabck );
         signal( SIGTERM, signal_callabck );
 
-        sr_s sr_object = bcore_interpret_x( sr_awd( o->interpreter ), sr_asd( bcore_file_open_source( file ) ) );
+        sr_s sr_object = sr_null();
+        bcore_source* source = bcore_file_open_source( file );
+
+        bcore_interpreter* interpreter = NULL;
+        if( o->interpreter )
+        {
+            interpreter = bcore_fork( o->interpreter );
+        }
+        else if( bcore_txt_ml_contains_valid_syntax( source ) )
+        {
+            interpreter = ( bcore_interpreter* )bcore_txt_ml_interpreter_s_create();
+        }
+        else
+        {
+            interpreter = ( bcore_interpreter* )bcore_bin_ml_interpreter_s_create();
+        }
+        sr_object = bcore_interpret_x( sr_awd( interpreter ), sr_awd( source ) );
+        bcore_inst_a_detach( (bcore_inst** )&interpreter );
+        bcore_inst_a_detach( (bcore_inst** )&source );
+
         error = bcore_main_r_main( &sr_object, o );
         sr_down( sr_object );
 

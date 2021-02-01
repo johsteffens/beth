@@ -153,11 +153,17 @@ group :builder =
 // ---------------------------------------------------------------------------------------------------------------------
 
 /** Test result is an object containing results of a adaptive test.
- *  Multiple test can be stored in a database to monitor training progress.
+ *  Multiple test can be stored in a database to monitor the training progress.
  */
 group :test_result =
 {
     feature o to_sink( c @* o, sz_t verbosity, m bcore_sink* sink );
+
+    stamp :adl_s = aware x_array
+    {
+        aware : => [];
+        func :.to_sink = { foreach( c$* e in o ) { e.to_sink( verbosity, sink ); sink.push_sc( "\n" ); } return o; };
+    };
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -184,11 +190,12 @@ group :tutor =
      *  Testing may mutate the tutor if necessary and done in a thread safe manner.
      *  Mutation is not desirable. It should never affect the reliability or interpretability
      *  of test results.
+     *  Simple use: o.test( <adaptive> )^.to_sink( <verbosity>, <sink> );
      */
     feature d ::test_result* test( m @* o, c ::adaptive* adaptive ) = { return NULL; };
 
     /// outputs current status information to sink
-    feature void status_to_sink( c @* o, sz_t verbosity, m bcore_sink* sink ) = { if( verbosity > 0 ) bcore_txt_ml_a_to_sink( o, sink ); };
+    feature void status_to_sink( c @* o, sz_t verbosity, m bcore_sink* sink ) = { if( verbosity > 0 ) o.to_sink_txt_ml( sink ); };
 };
 
 // ---------------------------------------------------------------------------------------------------------------------

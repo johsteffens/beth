@@ -59,13 +59,12 @@ type bl_t;
 type bmath_vf3_s;
 
 // objects
-type sr_s;
 type bcore_self_s;
 type bcore_self_item_s;
 
 group bcore_inst  = bcore_inst {};
 group bcore_array = bcore_inst {};
-group bcore_via   = bcore_inst {};
+group bcore_spect = bcore_inst {};
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -96,7 +95,7 @@ group bcore_mutex = bcore_inst
     signature void lock(   m @* o );
     signature void unlock( m @* o );
 
-    stamp :s = bcore_inst
+    stamp :s = obliv bcore_inst
     {
         func : .lock;
         func : .unlock;
@@ -112,7 +111,7 @@ group bcore_condition = bcore_inst
     signature void wake_one( m @* o );
     signature void wake_all( m @* o );
 
-    stamp :s = bcore_inst
+    stamp :s = obliv bcore_inst
     {
         func : .sleep;
         func : .wake_one;
@@ -128,7 +127,7 @@ group bcore_thread = bcore_inst
     signature void call( m @* o, bcore_fp_thread func, vd_t arg );
     signature vd_t join( m @* o );
 
-    stamp :s = bcore_inst
+    stamp :s = obliv bcore_inst
     {
         func : .call;
         func : .join;
@@ -143,6 +142,8 @@ embed "bcore_st_inexpandable.x";
 embed "bcore_arr_inexpandable.x";
 embed "bcore_hmap_inexpandable.x";
 embed "bcore_flect_inexpandable.x";
+embed "bcore_via_inexpandable.x";
+embed "bcore_sr_inexpandable.x";
 
 #endif // XOILA_SECTION
 
