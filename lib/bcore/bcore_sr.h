@@ -29,7 +29,7 @@
 // Termination may formally be done for any state to be sure capturing the strong ones.
 // A sr_s is terminated by passing it to another function by value;
 
-// After termination the content sr_s is deemed invalid if it was a strong reference.
+// After termination, the content sr_s is deemed invalid if it was a strong reference.
 // Termination can be skipped when the reference is 'weak'
 
 /// smart perspective based reference
@@ -62,7 +62,7 @@ vd_t bcore_fork( vd_t ptr );
 #define CONST_f  ((tp_t)1)  // const reference
 #define STRONG_f ((tp_t)2)  // strong reference (receiver assumes responsibility for managing lifetime)
 
-static inline sr_s sr_null(                                             ) { return ( sr_s ){ .o = NULL, .p = NULL, .f = 0                                }; }
+static inline sr_s sr_null(                                             ) { return ( sr_s ){ .o = NULL, .p = NULL, .f = 0 }; }
 static inline sr_s sr_pocs( vc_t p, vd_t o, bl_t const_f, bl_t strong_f ) { return ( sr_s ){ .o = o, .p = p, .f = ( const_f * CONST_f ) | ( strong_f * STRONG_f ) }; }
 
 static inline sr_s sr_twc( tp_t t, vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed_wrap( t )         : NULL, .f = CONST_f  }; }
@@ -71,12 +71,12 @@ static inline sr_s sr_tsd( tp_t t, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .
 static inline sr_s sr_awc(         vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed_wrap( *(tp_t*)o ) : NULL, .f = CONST_f  }; }
 static inline sr_s sr_awd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed_wrap( *(tp_t*)o ) : NULL, .f = 0        }; }
 static inline sr_s sr_asd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed_wrap( *(tp_t*)o ) : NULL, .f = STRONG_f }; }
-static inline sr_s sr_qwc(         vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = *(vc_t*)o                                     , .f = CONST_f  }; }
-static inline sr_s sr_qwd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = *(vc_t*)o                                     , .f = 0        }; }
-static inline sr_s sr_qsd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = *(vc_t*)o                                     , .f = STRONG_f }; }
-static inline sr_s sr_pwc( vc_t p, vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p                                             , .f = CONST_f  }; }
-static inline sr_s sr_pwd( vc_t p, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p                                             , .f = 0        }; }
-static inline sr_s sr_psd( vc_t p, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p                                             , .f = STRONG_f }; }
+static inline sr_s sr_qwc(         vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = *(vc_t*)o , .f = CONST_f  }; }
+static inline sr_s sr_qwd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = *(vc_t*)o , .f = 0        }; }
+static inline sr_s sr_qsd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = *(vc_t*)o , .f = STRONG_f }; }
+static inline sr_s sr_pwc( vc_t p, vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p         , .f = CONST_f  }; }
+static inline sr_s sr_pwd( vc_t p, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p         , .f = 0        }; }
+static inline sr_s sr_psd( vc_t p, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p         , .f = STRONG_f }; }
 
 static inline sr_s sr_cw( sr_s o ) { o.f &= ~STRONG_f; return o; } // turns a reference into a weak one;
 static inline sr_s sr_cc( sr_s o ) { o.f |=  CONST_f; return o; } // turns a reference into a const one;
@@ -98,6 +98,10 @@ static inline
 sr_s sr_t_create( tp_t t ) { return sr_tsd( t, bcore_inst_t_create_wrap( t ) ); }
 sr_s sr_p_create( vc_t p );
 
+/** XOILA-versions of t_create and p_create */
+static inline sr_s sr_create_from_type( tp_t type ) { return sr_tsd( type, bcore_inst_t_create_wrap( type ) ); }
+static inline sr_s sr_create_from_spect( vc_t spect ) { return sr_p_create( spect ); }
+
 /// creates a strong reference of a typed object (by cloning the object)
 sr_s sr_create_strong_typed( tp_t type, vc_t obj );
 
@@ -116,18 +120,6 @@ sr_s sr_sz( sz_t v );
 sr_s sr_uz( uz_t v );
 sr_s sr_tp( tp_t v );
 sr_s sr_bl( bl_t v );
-
-/// converts a reference to a leaf type
-f3_t sr_f3_sr_s( const sr_s* o );
-u3_t sr_u3_sr_s( const sr_s* o );
-s3_t sr_s3_sr_s( const sr_s* o );
-bl_t sr_bl_sr_s( const sr_s* o );
-tp_t sr_tp_sr_s( const sr_s* o );
-static inline f3_t sr_f3_sr( sr_s o ) { f3_t r = sr_f3_sr_s( &o ); sr_down( o ); return r; }
-static inline u3_t sr_u3_sr( sr_s o ) { u3_t r = sr_u3_sr_s( &o ); sr_down( o ); return r; }
-static inline s3_t sr_s3_sr( sr_s o ) { s3_t r = sr_s3_sr_s( &o ); sr_down( o ); return r; }
-static inline bl_t sr_bl_sr( sr_s o ) { bl_t r = sr_bl_sr_s( &o ); sr_down( o ); return r; }
-static inline tp_t sr_tp_sr( sr_s o ) { tp_t r = sr_tp_sr_s( &o ); sr_down( o ); return r; }
 
 sr_s sr_string_sc( sc_t v ); // converts to st_s
 
@@ -180,6 +172,19 @@ static inline uz_t sr_s_references( const sr_s* o ) { return o->o ? bcore_refere
  *  The original object is always referenced (never copied).
  */
 static inline sr_s sr_s_fork( sr_s* o ) { return ( sr_s ) { .o = bcore_fork( o->o ), .p = o->p, .f = o->f | STRONG_f }; }
+
+/// converts a reference to a leaf type
+f3_t sr_s_to_f3( const sr_s* o );
+u3_t sr_s_to_u3( const sr_s* o );
+s3_t sr_s_to_s3( const sr_s* o );
+bl_t sr_s_to_bl( const sr_s* o );
+tp_t sr_s_to_tp( const sr_s* o );
+
+static inline f3_t sr_to_f3( sr_s o ) { f3_t r = sr_s_to_f3( &o ); sr_down( o ); return r; }
+static inline u3_t sr_to_u3( sr_s o ) { u3_t r = sr_s_to_u3( &o ); sr_down( o ); return r; }
+static inline s3_t sr_to_s3( sr_s o ) { s3_t r = sr_s_to_s3( &o ); sr_down( o ); return r; }
+static inline bl_t sr_to_bl( sr_s o ) { bl_t r = sr_s_to_bl( &o ); sr_down( o ); return r; }
+static inline tp_t sr_to_tp( sr_s o ) { tp_t r = sr_s_to_tp( &o ); sr_down( o ); return r; }
 
 /**********************************************************************************************************************/
 

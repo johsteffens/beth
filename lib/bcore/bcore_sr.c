@@ -172,7 +172,7 @@ static bcore_self_s* sr_s_create_self( void )
     return self;
 }
 
-f3_t sr_f3_sr_s( const sr_s* o )
+f3_t sr_s_to_f3( const sr_s* o )
 {
     f3_t v = 0;
     switch( sr_s_type( o ) )
@@ -193,7 +193,7 @@ f3_t sr_f3_sr_s( const sr_s* o )
     return v;
 }
 
-u3_t sr_u3_sr_s( const sr_s* o )
+u3_t sr_s_to_u3( const sr_s* o )
 {
     u3_t v = 0;
     switch( sr_s_type( o ) )
@@ -215,7 +215,7 @@ u3_t sr_u3_sr_s( const sr_s* o )
     return v;
 }
 
-s3_t sr_s3_sr_s( const sr_s* o )
+s3_t sr_s_to_s3( const sr_s* o )
 {
     s3_t v = 0;
     switch( sr_s_type( o ) )
@@ -237,7 +237,7 @@ s3_t sr_s3_sr_s( const sr_s* o )
     return v;
 }
 
-bl_t sr_bl_sr_s( const sr_s* o )
+bl_t sr_s_to_bl( const sr_s* o )
 {
     bl_t v = 0;
     switch( sr_s_type( o ) )
@@ -259,7 +259,7 @@ bl_t sr_bl_sr_s( const sr_s* o )
     return v;
 }
 
-tp_t sr_tp_sr_s( const sr_s* o )
+tp_t sr_s_to_tp( const sr_s* o )
 {
     tp_t v = 0;
     switch( sr_s_type( o ) )
