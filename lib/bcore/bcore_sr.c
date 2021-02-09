@@ -188,6 +188,8 @@ f3_t sr_s_to_f3( const sr_s* o )
         case TYPEOF_f2_t: v = *( f2_t* )o->o; break;
         case TYPEOF_f3_t: v = *( f3_t* )o->o; break;
         case TYPEOF_bl_t: v = *( bl_t* )o->o; break;
+        case TYPEOF_tp_t: v = *( tp_t* )o->o; break;
+        case TYPEOF_aware_t: v = *( aware_t* )o->o; break;
         default: ERR_fa( "Cannot convert '#<sc_t>' to f3_t.", ifnameof( sr_s_type( o ) ) );
     }
     return v;
@@ -210,6 +212,7 @@ u3_t sr_s_to_u3( const sr_s* o )
         case TYPEOF_f3_t: v = *( f3_t* )o->o; break;
         case TYPEOF_bl_t: v = *( bl_t* )o->o; break;
         case TYPEOF_tp_t: v = *( tp_t* )o->o; break;
+        case TYPEOF_aware_t: v = *( aware_t* )o->o; break;
         default: ERR_fa( "Cannot convert '#<sc_t>' to u3_t.", ifnameof( sr_s_type( o ) ) );
     }
     return v;
@@ -232,6 +235,7 @@ s3_t sr_s_to_s3( const sr_s* o )
         case TYPEOF_f3_t: v = *( f3_t* )o->o; break;
         case TYPEOF_bl_t: v = *( bl_t* )o->o; break;
         case TYPEOF_tp_t: v = *( tp_t* )o->o; break;
+        case TYPEOF_aware_t: v = *( aware_t* )o->o; break;
         default: ERR_fa( "Cannot convert '#<sc_t>' to s3_t.", ifnameof( sr_s_type( o ) ) );
     }
     return v;
@@ -254,6 +258,7 @@ bl_t sr_s_to_bl( const sr_s* o )
         case TYPEOF_f3_t: v = *( f3_t* )o->o; break;
         case TYPEOF_bl_t: v = *( bl_t* )o->o; break;
         case TYPEOF_tp_t: v = *( tp_t* )o->o; break;
+        case TYPEOF_aware_t: v = *( aware_t* )o->o; break;
         default: ERR_fa( "Cannot convert '#<sc_t>' to bl_t.", ifnameof( sr_s_type( o ) ) );
     }
     return v;
@@ -273,6 +278,7 @@ tp_t sr_s_to_tp( const sr_s* o )
         case TYPEOF_s2_t: v = *( s2_t* )o->o; break;
         case TYPEOF_s3_t: v = *( s3_t* )o->o; break;
         case TYPEOF_tp_t: v = *( tp_t* )o->o; break;
+        case TYPEOF_aware_t: v = *( aware_t* )o->o; break;
         default: ERR_fa( "Cannot convert '#<sc_t>' to tp_t.", ifnameof( sr_s_type( o ) ) );
     }
     return v;
