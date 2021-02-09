@@ -19,6 +19,38 @@
 
 /**********************************************************************************************************************/
 
+
+//----------------------------------------------------------------------------------------------------------------------
+
+tp_t bcore_tp_is_numeric( tp_t t )
+{
+    switch( t )
+    {
+        case TYPEOF_s3_t: return true;
+        case TYPEOF_s2_t: return true;
+        case TYPEOF_s1_t: return true;
+        case TYPEOF_s0_t: return true;
+        case TYPEOF_u3_t: return true;
+        case TYPEOF_u2_t: return true;
+        case TYPEOF_u1_t: return true;
+        case TYPEOF_u0_t: return true;
+        case TYPEOF_f3_t: return true;
+        case TYPEOF_f2_t: return true;
+        case TYPEOF_sz_t: return true;
+        case TYPEOF_uz_t: return true;
+        case TYPEOF_tp_t: return true;
+        case TYPEOF_bl_t: return true;
+        case TYPEOF_aware_t: return true;
+        default: return false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
 vd_t bcore_tp_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bcore_tp" ) ) )

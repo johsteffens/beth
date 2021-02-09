@@ -50,6 +50,9 @@ static inline tp_t bcore_tp_fold_sz( tp_t o, sz_t v ) { return bcore_tp_fold_vc(
 static inline tp_t bcore_tp_hash_sc( sc_t v ) { return bcore_tp_fold_sc( bcore_tp_init(), v ); }
 static inline tp_t bcore_tp_hash_vc( vc_t a, uz_t n ) { return bcore_tp_fold_vc( bcore_tp_init(), a, n ); }
 
+/** Checks if t represents a numeric type; A numeric type in this context is a type that can be converted to a number. */
+tp_t bcore_tp_is_numeric( tp_t t );
+
 vd_t bcore_tp_signal_handler( const bcore_signal_s* o );
 
 #endif //BCORE_TP_H
