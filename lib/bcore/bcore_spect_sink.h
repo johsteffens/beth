@@ -46,8 +46,8 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP1( bcore_sink, set_consumer,      vd_t, con
 
 void bcore_sink_p_pushf   ( const bcore_sink_s* p, vd_t o, sc_t format, ... );
 void bcore_sink_p_push_fa ( const bcore_sink_s* p, vd_t o, sc_t format, ... );
-void bcore_sink_a_pushf   ( bcore_sink* o, sc_t format, ... );
-void bcore_sink_a_push_fa ( bcore_sink* o, sc_t format, ... );
+bcore_sink* bcore_sink_a_pushf   ( bcore_sink* o, sc_t format, ... );
+bcore_sink* bcore_sink_a_push_fa ( bcore_sink* o, sc_t format, ... );
 void bcore_sink_x_pushf   ( sr_s o, sc_t format, ... );
 void bcore_sink_x_push_fa ( sr_s o, sc_t format, ... );
 void bcore_sink_r_pushf   ( const sr_s* o, sc_t format, ... );

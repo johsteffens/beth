@@ -60,12 +60,13 @@ void bcore_sink_default_push_fv( const bcore_sink_s* p, bcore_sink* o, sc_t form
     st_s_discard( s );
 }
 
-void bcore_sink_default_push_fa( const bcore_sink_s* p, bcore_sink* o, sc_t f, ... )
+bcore_sink* bcore_sink_default_push_fa( const bcore_sink_s* p, bcore_sink* o, sc_t f, ... )
 {
     va_list a;
     va_start( a, f );
     bcore_sink_default_push_fv( p, o, f, a );
     va_end( a );
+    return o;
 }
 
 void bcore_sink_default_push_u0( const bcore_sink_s* p, bcore_sink* o, u0_t u )
@@ -131,8 +132,8 @@ static bcore_self_s* sink_s_create_self( void )
 
 /**********************************************************************************************************************/
 
-void bcore_sink_a_pushf   ( bcore_sink* o, sc_t f, ... ) { va_list a; va_start( a, f ); bcore_sink_a_pushvf(  o, f, a ); va_end( a ); }
-void bcore_sink_a_push_fa ( bcore_sink* o, sc_t f, ... ) { va_list a; va_start( a, f ); bcore_sink_a_push_fv( o, f, a ); va_end( a ); }
+bcore_sink* bcore_sink_a_pushf   ( bcore_sink* o, sc_t f, ... ) { va_list a; va_start( a, f ); bcore_sink_a_pushvf(  o, f, a ); va_end( a ); return o; }
+bcore_sink* bcore_sink_a_push_fa ( bcore_sink* o, sc_t f, ... ) { va_list a; va_start( a, f ); bcore_sink_a_push_fv( o, f, a ); va_end( a ); return o; }
 void bcore_sink_x_pushf   ( sr_s o, sc_t f, ... )        { va_list a; va_start( a, f ); bcore_sink_x_pushvf(  o, f, a ); va_end( a ); }
 void bcore_sink_x_push_fa ( sr_s o, sc_t f, ... )        { va_list a; va_start( a, f ); bcore_sink_x_push_fv( o, f, a ); va_end( a ); }
 void bcore_sink_r_pushf   ( const sr_s* o, sc_t f, ... ) { va_list a; va_start( a, f ); bcore_sink_r_pushvf ( o, f, a ); va_end( a ); }
