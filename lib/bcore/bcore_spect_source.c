@@ -320,7 +320,7 @@ void NPX(p_parse_errf  )( const NPX(s)* p, bcore_source* o, sc_t f, ... ) { va_l
 void NPX(p_parse_msgf  )( const NPX(s)* p, bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(p_parse_msgvf )( p, o, f, a ); va_end( a ); }
 void NPX(p_parse_err_fa)( const NPX(s)* p, bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(p_parse_err_fv)( p, o, f, a ); va_end( a ); }
 void NPX(p_parse_msg_fa)( const NPX(s)* p, bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(p_parse_msg_fv)( p, o, f, a ); va_end( a ); }
-void NPX(a_parse_fa    )( bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(a_parse_fv    )( o, f, a ); va_end( a ); }
+bcore_source* NPX(a_parse_fa )( bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(a_parse_fv    )( o, f, a ); va_end( a ); return o; }
 er_t NPX(a_parse_em_fa )( bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); er_t r = NPX(a_parse_em_fv )( o, f, a ); va_end( a ); return r; }
 void NPX(a_parse_errf  )( bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(a_parse_errvf )( o, f, a ); va_end( a ); }
 void NPX(a_parse_err_fa)( bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(a_parse_err_fv)( o, f, a ); va_end( a ); }

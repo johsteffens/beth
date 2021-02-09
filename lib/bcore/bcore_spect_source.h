@@ -162,7 +162,7 @@ void bcore_source_p_parse_errf  ( const bcore_source_s* p, bcore_source* o, sc_t
 void bcore_source_p_parse_fa    ( const bcore_source_s* p, bcore_source* o, sc_t format, ... );
 er_t bcore_source_p_parse_em_fa ( const bcore_source_s* p, bcore_source* o, sc_t format, ... );
 void bcore_source_a_parse_err_fa( bcore_source* o, sc_t format, ... );
-void bcore_source_a_parse_fa    ( bcore_source* o, sc_t format, ... );
+bcore_source* bcore_source_a_parse_fa( bcore_source* o, sc_t format, ... );
 er_t bcore_source_a_parse_em_fa ( bcore_source* o, sc_t format, ... );
 void bcore_source_x_parse_fa    ( sr_s o, sc_t format, ... );
 er_t bcore_source_x_parse_em_fa ( sr_s o, sc_t format, ... );
