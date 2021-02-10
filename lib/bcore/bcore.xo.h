@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2021-02-01T18:32:04Z
+ *  Last File Update: 2021-02-09T14:33:06Z
  *
  *  Copyright and License of this File:
  *
@@ -36,7 +36,7 @@
 #include "bcore_control.h"
 
 //To force a rebuild of this target by xoico, reset the hash key value below to 0.
-#define HKEYOF_bcore 0x5BEE77ADF2930288ull
+#define HKEYOF_bcore 0x400E0FF0E42033A2ull
 
 #define TYPEOF_bcore 0x52C4008F456A6C1Eull
 
@@ -167,24 +167,44 @@
   static inline void x_via_path_s_push( x_via_path_s* o, tp_t tp ); \
   void x_via_path_s_push_index( x_via_path_s* o, sz_t index ); \
   static inline x_via_path_s* x_via_path_s_parse_sc( x_via_path_s* o, sc_t sc ); \
-  static inline sr_s x_via_path_s_get_sr_in( const x_via_path_s* o, const x_inst* inst ); \
   static inline bl_t x_via_path_s_exists_in( const x_via_path_s* o, const x_inst* inst ); \
   static inline bl_t x_via_path_s_exists_in_t( const x_via_path_s* o, tp_t t, const x_inst* inst ); \
+  static inline tp_t x_via_path_s_type_in( const x_via_path_s* o, const x_inst* inst ); \
+  static inline tp_t x_via_path_s_type_in_t( const x_via_path_s* o, tp_t t, const x_inst* inst ); \
+  static inline sr_s x_via_path_s_get_sr_in( const x_via_path_s* o, const x_inst* inst ); \
   static inline const x_inst* x_via_path_s_c_get_in( const x_via_path_s* o, const x_inst* inst ); \
   static inline x_inst* x_via_path_s_m_get_in( const x_via_path_s* o, x_inst* inst ); \
+  static inline sr_s x_via_path_s_set_sr_in( const x_via_path_s* o, x_inst* inst, sr_s sr_src ); \
+  static inline x_inst* x_via_path_s_set_c_in( const x_via_path_s* o, x_inst* inst, const x_inst* src ); \
+  static inline x_inst* x_via_path_s_set_d_in( const x_via_path_s* o, x_inst* inst, x_inst* src ); \
+  const x_via_path_s* x_via_path_s_to_sink( const x_via_path_s* o, bcore_sink* sink ); \
   x_via_path_s* x_via_path_s_parse( x_via_path_s* o, bcore_source* source ); \
   sr_s x_via_path_s_get_sr_in_t( const x_via_path_s* o, tp_t t, const x_inst* inst ); \
+  sr_s x_via_path_s_set_sr_in_t( const x_via_path_s* o, tp_t t, x_inst* inst, sr_s sr_src ); \
   static inline x_via_path_s* x_via_path_s_clear( x_via_path_s* o ){ x_array_clear(((x_array*)(o))); return  o;} \
   static inline void x_via_path_s_push( x_via_path_s* o, tp_t tp ){ x_array_push_c(((x_array*)(o)),((const x_inst*)(&(tp))) );} \
   static inline x_via_path_s* x_via_path_s_parse_sc( x_via_path_s* o, sc_t sc ){BLM_INIT_LEVEL(0); BLM_RETURNV(x_via_path_s*, ((x_via_path_s*)(x_via_path_s_parse(o,((bcore_source*)(((bcore_source_string_s*)BLM_LEVEL_T_PUSH(0,bcore_source_string_s,bcore_source_string_s_create_sc(sc ))) ))))))} \
-  static inline sr_s x_via_path_s_get_sr_in( const x_via_path_s* o, const x_inst* inst ){ return  x_via_path_s_get_sr_in_t(o,inst->_, inst );} \
   static inline bl_t x_via_path_s_exists_in( const x_via_path_s* o, const x_inst* inst ){ return  x_via_path_s_exists_in_t(o,inst->_, inst );} \
-  static inline bl_t x_via_path_s_exists_in_t( const x_via_path_s* o, tp_t t, const x_inst* inst ){BLM_INIT_LEVEL(0); sr_s sr;BLM_T_INIT_SPUSH(sr_s, &sr);; BLM_RETURNV(bl_t, ( sr = x_via_path_s_get_sr_in_t(o,t, inst ) ).o != NULL)} \
+  static inline bl_t x_via_path_s_exists_in_t( const x_via_path_s* o, tp_t t, const x_inst* inst ){BLM_INIT_LEVEL(0); sr_s sr;BLM_T_INIT_SPUSH(sr_s, &sr);; sr = x_via_path_s_get_sr_in_t(o,t, inst ); BLM_RETURNV(bl_t, sr.o != NULL)} \
+  static inline tp_t x_via_path_s_type_in( const x_via_path_s* o, const x_inst* inst ){ return  x_via_path_s_type_in_t(o,inst->_, inst );} \
+  static inline tp_t x_via_path_s_type_in_t( const x_via_path_s* o, tp_t t, const x_inst* inst ){BLM_INIT_LEVEL(0); sr_s sr;BLM_T_INIT_SPUSH(sr_s, &sr);; sr = x_via_path_s_get_sr_in_t(o,t, inst ); BLM_RETURNV(tp_t, sr_s_type(&(sr)))} \
+  static inline sr_s x_via_path_s_get_sr_in( const x_via_path_s* o, const x_inst* inst ){ return  x_via_path_s_get_sr_in_t(o,inst->_, inst );} \
   static inline const x_inst* x_via_path_s_c_get_in( const x_via_path_s* o, const x_inst* inst ){ sr_s sr = x_via_path_s_get_sr_in(o,inst ); if( sr_s_is_strong(&(sr)) ) sr_s_clear(&(sr)); return  ((const x_inst*)(sr.o));} \
-  static inline x_inst* x_via_path_s_m_get_in( const x_via_path_s* o, x_inst* inst ){ sr_s sr = x_via_path_s_get_sr_in(o,inst ); if( sr_s_is_strong(&(sr)) ) sr_s_clear(&(sr)); return  ((x_inst*)(sr.o));}
+  static inline x_inst* x_via_path_s_m_get_in( const x_via_path_s* o, x_inst* inst ){ sr_s sr = x_via_path_s_get_sr_in(o,inst ); if( sr_s_is_strong(&(sr)) ) sr_s_clear(&(sr)); return  ((x_inst*)(sr.o));} \
+  static inline sr_s x_via_path_s_set_sr_in( const x_via_path_s* o, x_inst* inst, sr_s sr_src ){ return  x_via_path_s_set_sr_in_t(o,inst->_, inst, sr_src );} \
+  static inline x_inst* x_via_path_s_set_c_in( const x_via_path_s* o, x_inst* inst, const x_inst* src ){ return  x_via_path_s_set_sr_in(o,inst, sr_awc( src ) ).o;} \
+  static inline x_inst* x_via_path_s_set_d_in( const x_via_path_s* o, x_inst* inst, x_inst* src ){ return  x_via_path_s_set_sr_in(o,inst, sr_asd( src ) ).o;}
+#define TYPEOF_x_via_path_adl_s 0xC4349DCCC08A7378ull
+#define BETH_EXPAND_ITEM_x_via_path_adl_s \
+  BCORE_DECLARE_OBJECT( x_via_path_adl_s ) \
+  { \
+      aware_t _; \
+      BCORE_ARRAY_DYN_LINK_STATIC_S( x_via_path_s, ); \
+  };
 #define BETH_EXPAND_GROUP_x_via \
   BCORE_FORWARD_OBJECT( x_via ); \
   BCORE_FORWARD_OBJECT( x_via_path_s ); \
+  BCORE_FORWARD_OBJECT( x_via_path_adl_s ); \
   static inline sz_t x_via_size( const x_via* o ); \
   static inline sz_t x_via_t_size( tp_t t, const x_via* o ); \
   static inline tp_t x_via_name( const x_via* o, sz_t index ); \
@@ -210,6 +230,7 @@
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_via ) \
   BETH_EXPAND_ITEM_x_via_path_s \
+  BETH_EXPAND_ITEM_x_via_path_adl_s \
   static inline sz_t x_via_size( const x_via* o ){ return  bcore_via_a_get_size(    ((const bcore_via*)(o)) );} \
   static inline sz_t x_via_t_size( tp_t t, const x_via* o ){ return  bcore_via_t_get_size( t, ((const bcore_via*)(o)) );} \
   static inline tp_t x_via_name( const x_via* o, sz_t index ){ return  bcore_via_a_iget_name(    ((const bcore_via*)(o)),index );} \
@@ -1011,4 +1032,4 @@
 vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 #endif // __bcore_xo_H
-// XOILA_OUT_SIGNATURE 0x142683654C2AC848ull
+// XOILA_OUT_SIGNATURE 0x653AE73B0051AC40ull

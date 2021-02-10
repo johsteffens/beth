@@ -93,7 +93,7 @@ group :thread =
 
 stamp :state_s = aware :
 {
-    sz_t cycle_number;
+    sz_t cycle;
     sz_t last_cycle_adapt;
     sz_t last_cycle_test;
     sz_t last_cycle_backup;
@@ -317,7 +317,7 @@ func (:s) (void backup( m@* o )) =
 
 stamp :test_result_s = aware bhpt_test_result
 {
-    sz_t cycle_number;
+    sz_t cycle;
     aware bhpt_test_result => test_result;
     bhvm_stats_s => stats_axon;
     bhvm_stats_s => stats_grad;
@@ -325,7 +325,7 @@ stamp :test_result_s = aware bhpt_test_result
     func bhpt_test_result.to_sink =
     {
         if( verbosity == 0 ) return o;
-        sink.push_fa( "#pl10 {#<sz_t>}: ", o.cycle_number );
+        sink.push_fa( "#pl10 {#<sz_t>}: ", o.cycle );
 
         if( o.test_result )
         {
@@ -355,7 +355,7 @@ stamp :test_result_s = aware bhpt_test_result
 func (:s) (void test( m@* o )) =
 {
     :test_result_s^ test_result;
-    test_result.cycle_number = o.state.cycle_number;
+    test_result.cycle = o.state.cycle;
     test_result.test_result =< o.tutor.test( o.state.adaptive );
     o.state.adaptive.get_adaptor_probe( bhpt_adaptor_probe_s!^ ).acc_stats( test_result.stats_axon!, NULL );
     test_result.stats_grad =< o.stats_grad.clone();
@@ -379,26 +379,26 @@ func (:s) (void run_single_threaded( m@* o )) =
 
     sz_t cycle_adapt = sz_max( o.cycle_adapt, 1 );
 
-    while( state.cycle_number < o.cycle_finish && !o.exit_required() )
+    while( state.cycle < o.cycle_finish && !o.exit_required() )
     {
-        if( state.cycle_number == 0 || state.cycle_number - state.last_cycle_test >= o.cycle_test )
+        if( state.cycle == 0 || state.cycle - state.last_cycle_test >= o.cycle_test )
         {
-            state.last_cycle_test = state.cycle_number;
+            state.last_cycle_test = state.cycle;
             o.test();
         }
 
         o.tutor.prime( state.adaptive );
-        state.cycle_number++;
+        state.cycle++;
 
-        if( state.cycle_number - state.last_cycle_adapt >= cycle_adapt )
+        if( state.cycle - state.last_cycle_adapt >= cycle_adapt )
         {
-            state.last_cycle_adapt = state.cycle_number;
+            state.last_cycle_adapt = state.cycle;
             o.adapt();
         }
 
-        if( state.cycle_number - state.last_cycle_backup >= o.cycle_backup )
+        if( state.cycle - state.last_cycle_backup >= o.cycle_backup )
         {
-            state.last_cycle_backup = state.cycle_number;
+            state.last_cycle_backup = state.cycle;
             o.backup();
         }
     }
@@ -415,23 +415,23 @@ func (:s) (void run_multi_threaded( m@* o )) =
     sz_t prime_cycles_per_thread = sz_max( o->cycle_adapt / sz_max( o.threads, 1 ), 1 );
     sz_t cycle_adapt = o.threads * prime_cycles_per_thread;
 
-    while( state.cycle_number < o.cycle_finish && !o.exit_required() )
+    while( state.cycle < o.cycle_finish && !o.exit_required() )
     {
-        if( state.cycle_number == 0 || state.cycle_number - state.last_cycle_test >= o.cycle_test )
+        if( state.cycle == 0 || state.cycle - state.last_cycle_test >= o.cycle_test )
         {
-            state.last_cycle_test = state.cycle_number;
+            state.last_cycle_test = state.cycle;
             o.test();
         }
 
         o.thread_base.run( prime_cycles_per_thread );
 
-        state.cycle_number += cycle_adapt;
+        state.cycle += cycle_adapt;
         o.adapt();
-        state.last_cycle_adapt = state.cycle_number;
+        state.last_cycle_adapt = state.cycle;
 
-        if( state.cycle_number - state.last_cycle_backup >= o.cycle_backup )
+        if( state.cycle - state.last_cycle_backup >= o.cycle_backup )
         {
-            state.last_cycle_backup = state.cycle_number;
+            state.last_cycle_backup = state.cycle;
             o.backup();
         }
     }
@@ -536,7 +536,7 @@ func (:s) bcore_main.main = (try)
 
     if( o.exit_required() )
     {
-        o.log.push_fa( "\nSaving state at cycle #<sz_t>\n", o->state->cycle_number );
+        o.log.push_fa( "\nSaving state at cycle #<sz_t>\n", o->state->cycle );
         o.backup();
         o.log.push_fa( "Exiting cleanly.\n" );
     }
@@ -546,25 +546,65 @@ func (:s) bcore_main.main = (try)
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:state_s) (void help_to_sink( m bcore_sink* sink )) =
+func (:state_s) (er_t table_to_sink(:state_s* o, bcore_hmap_name_s* hmap_name, x_via_path_adl_s* path_adl, m bcore_sink* sink )) =
 {
-    sink.push_fa( "-help:  Prints this help information.\n" );
-    sink.push_fa( "-table [-h] name [...]: creates a comma separated utf8-table of numeric array items. -h: outputs header line.\n" );
+    foreach( $* path in path_adl )
+    {
+        if( __i > 0 ) sink.push_sc( "," );
+        path.to_sink( sink );
+    }
+
+    sink.push_sc( "\n" );
+
+    foreach( $* test_result in o.test_result_adl )
+    {
+        foreach( $* path in path_adl )
+        {
+            if( __i > 0 ) sink.push_sc( "," );
+
+            tp_t type = path.type_in( test_result );
+
+            if( type == 0 )
+            {
+                st_s^ msg;
+                msg.push_sc( "Path '" );
+                path.to_sink( msg );
+                msg.push_fa( "' not found in '#<sc_t>'.\n", bnameof( test_result._ ) );
+                return bcore_error_push_sc( TYPEOF_general_error, msg.sc );
+            }
+
+            if( !bcore_tp_is_numeric( type ) )
+            {
+                st_s^ msg;
+                msg.push_sc( "Path '" );
+                path.to_sink( msg );
+                msg.push_fa( "': '<#sc_t>' is not a numeric type.", bnameof( type ) );
+                return bcore_error_push_sc( TYPEOF_general_error, msg.sc );
+            }
+
+            f3_t val = sr_to_f3( path.get_sr_in( test_result ) );
+            sink.push_fa( "#<f3_t>", val );
+        }
+        sink.push_sc( "\n" );
+    }
+    return 0;
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:state_s) (void table_to_sink( c bcore_hmap_name_s* hmap_name, c bcore_arr_tp_s* arr_tp, bl_t header, m bcore_sink* sink )) =
+func (:state_s) (void help_to_sink( m bcore_sink* sink )) =
 {
-
+    sink.push_fa( "-help:  Prints this help information.\n" );
+    sink.push_fa( "-csv name1 name2 ... : creates comma-separated-values table of selected numeric array items.\n" );
+    sink.push_fa( "   Example: csv  \n" );
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 func (:state_s) bcore_main.main =
 {
-    c bcore_arr_st_s* args = frame.args;
-    if( /*frame.args.size == 0 && */ o.test_result_adl )
+    bcore_arr_st_s* args = frame.args;
+    if( o.test_result_adl )
     {
         if( args.size > 2 )
         {
@@ -573,23 +613,28 @@ func (:state_s) bcore_main.main =
                 o.help_to_sink( BCORE_STDOUT );
                 return 0;
             }
-            else if( args.[ 2 ].equal_sc( "-table" ) )
+            else if( args.[ 2 ].equal_sc( "-csv" ) )
             {
-                bl_t header = false;
-                sz_t idx = 2;
-                if( idx < args.size && args.[ idx ].equal_sc( "-h" ) ) { idx++; header = true; }
-                if( args.size == idx ) return bcore_error_push_fa( TYPEOF_general_error, "Element name expected." );
+                sz_t idx = 3;
+                if( idx == args.size ) return bcore_error_push_fa( TYPEOF_general_error, "Element name expected." );
+                x_via_path_adl_s^ path_adl;
+                while( idx < args.size )
+                {
+                    path_adl.push_d( x_via_path_s!.parse_sc( args.[ idx++ ].sc ) );
+                }
+
                 bcore_hmap_name_s^ hmap_name;
                 bcore_arr_tp_s^ arr_tp;
                 for( ; idx < args.size; idx++ ) arr_tp.push( hmap_name.set_sc( args.[idx].sc ) );
-                o.table_to_sink( hmap_name, arr_tp, header, BCORE_STDOUT );
+                o.table_to_sink( hmap_name, path_adl, BCORE_STDOUT ).try();
                 return 0;
             }
         }
-
-
-        o.test_result_adl.to_sink( 1, BCORE_STDOUT );
-        bcore_sink_a_push_fa( BCORE_STDOUT, "Current cycle number: #<sz_t>\n", o.cycle_number );
+        else
+        {
+            o.test_result_adl.to_sink( 1, BCORE_STDOUT );
+            bcore_sink_a_push_fa( BCORE_STDOUT, "Current cycle number: #<sz_t>\n", o.cycle );
+        }
     }
 
     return 0;
