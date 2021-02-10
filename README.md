@@ -186,7 +186,7 @@ A stamp is defined inside a `group`.
 
 Xoila uses a simple hierarchical namespace-scheme.
 
-The language is still in developmenet. Once it
+The language is still in development. Once it
 reaches (sufficient) feature-completeness, it will be better documented.
 
 # Motivation
