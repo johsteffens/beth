@@ -187,6 +187,10 @@ f3_t sr_s_to_f3( const sr_s* o )
         case TYPEOF_s3_t: v = *( s3_t* )o->o; break;
         case TYPEOF_f2_t: v = *( f2_t* )o->o; break;
         case TYPEOF_f3_t: v = *( f3_t* )o->o; break;
+
+        case TYPEOF_uz_t: v = *( uz_t* )o->o; break;
+        case TYPEOF_sz_t: v = *( sz_t* )o->o; break;
+
         case TYPEOF_bl_t: v = *( bl_t* )o->o; break;
         case TYPEOF_tp_t: v = *( tp_t* )o->o; break;
         case TYPEOF_aware_t: v = *( aware_t* )o->o; break;
@@ -210,6 +214,9 @@ u3_t sr_s_to_u3( const sr_s* o )
         case TYPEOF_s3_t: v = *( s3_t* )o->o; break;
         case TYPEOF_f2_t: v = *( f2_t* )o->o; break;
         case TYPEOF_f3_t: v = *( f3_t* )o->o; break;
+        case TYPEOF_uz_t: v = *( uz_t* )o->o; break;
+        case TYPEOF_sz_t: v = *( sz_t* )o->o; break;
+
         case TYPEOF_bl_t: v = *( bl_t* )o->o; break;
         case TYPEOF_tp_t: v = *( tp_t* )o->o; break;
         case TYPEOF_aware_t: v = *( aware_t* )o->o; break;
@@ -233,6 +240,8 @@ s3_t sr_s_to_s3( const sr_s* o )
         case TYPEOF_s3_t: v = *( s3_t* )o->o; break;
         case TYPEOF_f2_t: v = *( f2_t* )o->o; break;
         case TYPEOF_f3_t: v = *( f3_t* )o->o; break;
+        case TYPEOF_uz_t: v = *( uz_t* )o->o; break;
+        case TYPEOF_sz_t: v = *( sz_t* )o->o; break;
         case TYPEOF_bl_t: v = *( bl_t* )o->o; break;
         case TYPEOF_tp_t: v = *( tp_t* )o->o; break;
         case TYPEOF_aware_t: v = *( aware_t* )o->o; break;
@@ -256,6 +265,8 @@ bl_t sr_s_to_bl( const sr_s* o )
         case TYPEOF_s3_t: v = *( s3_t* )o->o; break;
         case TYPEOF_f2_t: v = *( f2_t* )o->o; break;
         case TYPEOF_f3_t: v = *( f3_t* )o->o; break;
+        case TYPEOF_uz_t: v = *( uz_t* )o->o; break;
+        case TYPEOF_sz_t: v = *( sz_t* )o->o; break;
         case TYPEOF_bl_t: v = *( bl_t* )o->o; break;
         case TYPEOF_tp_t: v = *( tp_t* )o->o; break;
         case TYPEOF_aware_t: v = *( aware_t* )o->o; break;
@@ -277,6 +288,8 @@ tp_t sr_s_to_tp( const sr_s* o )
         case TYPEOF_s1_t: v = *( s1_t* )o->o; break;
         case TYPEOF_s2_t: v = *( s2_t* )o->o; break;
         case TYPEOF_s3_t: v = *( s3_t* )o->o; break;
+        case TYPEOF_uz_t: v = *( uz_t* )o->o; break;
+        case TYPEOF_sz_t: v = *( sz_t* )o->o; break;
         case TYPEOF_tp_t: v = *( tp_t* )o->o; break;
         case TYPEOF_aware_t: v = *( aware_t* )o->o; break;
         default: ERR_fa( "Cannot convert '#<sc_t>' to tp_t.", ifnameof( sr_s_type( o ) ) );
