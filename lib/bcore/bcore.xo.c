@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 J.B.Steffens
- *  Last File Update: 2021-02-09T14:33:06Z
+ *  Last File Update: 2021-02-10T11:21:01Z
  *
  *  Copyright and License of this File:
  *
@@ -451,20 +451,15 @@ void x_via_selftest( void )
     
     x_inst* zoo = ((x_inst*)BLM_LEVEL_A_PUSH(0,((x_inst*)(bcore_spect_via_create_zoo( 2 ).o))));
     
-    //zoo.to_sink_txt_ml( x_inst_stdout() );
-    
-    //x_via_path_s!^.parse_sc( "[0]" ).c_get_in( zoo )?.to_sink_txt_ml( x_inst_stdout() );
-    
     sr_s sr = sr_null();
     
     sr = x_via_path_s_get_sr_in(((x_via_path_s*)(x_via_path_s_parse_sc(((x_via_path_s*)BLM_LEVEL_T_PUSH(0,x_via_path_s,x_via_path_s_create())),"[0].[1].vdata.data2.[1]" ))),zoo );
-    if( sr.o ) bcore_txt_ml_x_to_sink( sr, x_inst_stdout() );
+    ASSERT( sr_s_type(&(sr)) == TYPEOF_u3_t );
+    ASSERT( sr_s_to_u3(&(sr)) == 0 );
     
     sr = x_via_path_s_set_sr_in(((x_via_path_s*)(x_via_path_s_parse_sc(((x_via_path_s*)BLM_LEVEL_T_PUSH(0,x_via_path_s,x_via_path_s_create())),"[0].[1].vdata.data2.[1]" ))),zoo, sr_u3(20 ) );
-    if( sr.o ) bcore_txt_ml_x_to_sink( sr, x_inst_stdout() );
-    
-    sr = x_via_path_s_get_sr_in(((x_via_path_s*)(x_via_path_s_parse_sc(((x_via_path_s*)BLM_LEVEL_T_PUSH(0,x_via_path_s,x_via_path_s_create())),"[0].[1].vdata" ))),zoo );
-    if( sr.o ) bcore_txt_ml_x_to_sink( sr, x_inst_stdout() );
+    ASSERT( sr_s_type(&(sr)) == TYPEOF_u3_t );
+    ASSERT( sr_s_to_u3(&(sr)) == 20 );
     BLM_DOWN();
 }
 
@@ -1945,4 +1940,4 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOILA_OUT_SIGNATURE 0xF03A88238DABDC98ull
+// XOILA_OUT_SIGNATURE 0x8551BAF5EFEE51C0ull

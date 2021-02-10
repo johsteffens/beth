@@ -356,20 +356,15 @@ func (void selftest() ) =
 
     m x_inst* zoo = cast( bcore_spect_via_create_zoo( 2 ).o, d x_inst* )^;
 
-    //zoo.to_sink_txt_ml( x_inst_stdout() );
-
-    //x_via_path_s!^.parse_sc( "[0]" ).c_get_in( zoo )?.to_sink_txt_ml( x_inst_stdout() );
-
     sr_s sr = sr_null();
 
     sr = x_via_path_s!^.parse_sc( "[0].[1].vdata.data2.[1]" ).get_sr_in( zoo );
-    if( sr.o ) bcore_txt_ml_x_to_sink( sr, x_inst_stdout() );
+    ASSERT( sr.type() == TYPEOF_u3_t );
+    ASSERT( sr.to_u3() == 0 );
 
     sr = x_via_path_s!^.parse_sc( "[0].[1].vdata.data2.[1]" ).set_sr_in( zoo, sr_u3( 20 ) );
-    if( sr.o ) bcore_txt_ml_x_to_sink( sr, x_inst_stdout() );
-
-    sr = x_via_path_s!^.parse_sc( "[0].[1].vdata" ).get_sr_in( zoo );
-    if( sr.o ) bcore_txt_ml_x_to_sink( sr, x_inst_stdout() );
+    ASSERT( sr.type() == TYPEOF_u3_t );
+    ASSERT( sr.to_u3() == 20 );
 };
 
 //----------------------------------------------------------------------------------------------------------------------
