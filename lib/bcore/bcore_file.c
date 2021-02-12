@@ -109,6 +109,7 @@ sc_t bcore_file_extension( sc_t path )
 {
     st_s* s = st_s_create_sc( path );
     sz_t idx = st_s_find_char( s, -1, 0, '.' );
+    if( s->data[ idx ] == '.' ) idx++;
     st_s_discard( s );
     return path + idx;
 }
