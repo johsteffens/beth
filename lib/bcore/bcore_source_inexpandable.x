@@ -56,7 +56,7 @@ group bcore_source = x_inst
 
         func( m @* setup_from_string( m @* o, c st_s* string ) );
         func( m @* setup_from_string_d( m @* o, m st_s* string ) );
-        func( m @* setup_from_sc( m @* o, sc_t sc ) ); // same as ...create_sc
+        func( m @* setup_from_sc( m @* o, sc_t sc ) ); // same as ...setup_sc
         func( m @* setup_sc( m @* o, sc_t sc ) );
         func( m @* setup_fa( m @* o, sc_t format, ... ) );
         func( m @* setup_fv( m @* o, sc_t format, va_list args ) );
