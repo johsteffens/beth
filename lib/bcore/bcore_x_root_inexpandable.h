@@ -54,6 +54,9 @@ type aware_t;
 type sc_t;
 type sd_t;
 type bl_t;
+type vd_t;
+type vc_t;
+type char;
 
 ///TODO: remove below (does not belong here)
 type bmath_vf3_s;
