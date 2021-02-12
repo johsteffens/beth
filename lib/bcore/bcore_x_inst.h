@@ -19,9 +19,6 @@
 #ifndef BCORE_X_INST_H
 #define BCORE_X_INST_H
 
-#include "bcore_txt_ml.h"
-#include "bcore_bin_ml.h"
-#include "bcore_file.h"
 #include "bcore.xo.h"
 
 /**********************************************************************************************************************/
@@ -30,7 +27,19 @@ XOILA_DEFINE_GROUP( x_inst, bcore_inst )
 
 #ifdef XOILA_SECTION
 
+include "bcore_txt_ml.h";
+include "bcore_bin_ml.h";
+include "bcore_arr.h";
+
 //----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+/** Main function
+ *  Implementing a function with this signature causes xoico to generate the main function of a program:
+ *  int main( int argc, char** argv)
+ */
+signature s2_t main( bcore_arr_st_s* args );
 
 /**********************************************************************************************************************/
 /// copying
