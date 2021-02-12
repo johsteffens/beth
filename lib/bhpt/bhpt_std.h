@@ -18,7 +18,7 @@
 #ifndef BHPT_STD_H
 #define BHPT_STD_H
 
-#include "bhpt.h"
+#include "bhpt.xo.h"
 #include "bhvm_std.h"
 
 #endif // BHPT_STD_H
