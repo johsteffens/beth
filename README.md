@@ -167,15 +167,16 @@ was spun-off into a stand-alone solution in project [tbman](https://github.com/j
 
 <a name = "xoila"></a>
 ### Xoila
-Xoila is a meta language intended to reduce boilerplate coding.
-It allows expressing key aspects of reflections and perspectives in a well-readable,
-compact and simple style.
+Xoila was initially a meta language conceived for beth to reduce boilerplate coding. Meanwhile it has
+grown into a full fletched (stand-alone) programming language.
 
-The language is defined by the compiler [xoico](https://github.com/johsteffens/xoico).
-Xoico and Beth form an ecosystem.
+The language allows expressing key aspects of reflections and perspectives in a well-readable,
+compact and simple style. It is defined by the compiler [xoico](https://github.com/johsteffens/xoico), 
+which is itself 100% coded in xoila. Xoico and Beth form an ecosystem.
 
-Xoila-code is embedded in c-code as non-parseable section, 
-initiated by macro `XOILA_DEFINE_GROUP( <group-name>, <trait-name> )`. 
+Xoila-code can be embedded in c-code as non-parseable section, 
+initiated by macro `XOILA_DEFINE_GROUP( <group-name>, <trait-name> )`.
+Alternatively it used in dedicated files with extension *.x.
 
 Key components of the xoila language are `stamp`, `group` and `feature`.
 
