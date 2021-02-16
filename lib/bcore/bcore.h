@@ -31,6 +31,7 @@ void bcore_register_signal_handler( bcore_fp_signal_handler signal_handler );
  *  Recursion through all declared dependencies which are also registered.
  */
 void bcore_register_signal_handler_with_deep_dependencies( bcore_fp_signal_handler signal_handler );
+void bcore_register_signal_handler_with_deep_dependencies2( bcore_fp_signal_handler signal_handler );
 
 /// signal handler for all registered libraries (do not send init or down signals by this function)
 vd_t bcore_global_signal_handler( const bcore_signal_s* signal );

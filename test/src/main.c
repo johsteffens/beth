@@ -28,7 +28,7 @@
 #include "bclos_signal.h"
 #include "bmath_signal.h"
 #include "badapt_signal.h"
-#include "bhvm_signal.h"
+#include "bhvm_holor.h"
 
 void selftest( const char* name )
 {
@@ -69,7 +69,7 @@ int main( void )
 
     x_via_selftest();
 
-    selftest( "bhvm_holor" );
+    bhvm_holor_selftest();
 
     selftest( "bmath_matrix" );
     selftest( "bmath_complex" );

@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 ... 2021 J.B.Steffens
- *  Last File Update: 2021-02-12T15:01:57Z
+ *  Last File Update: 2021-02-16T11:49:30Z
  *
  *  Copyright and License of this File:
  *
@@ -37,7 +37,7 @@
 #include "bcore_xoila.h"
 
 //To force a rebuild of this target by xoico, reset the hash key value below to 0.
-#define HKEYOF_bcore 0xD9609CF45C1A621Cull
+#define HKEYOF_bcore 0x43A2221C00BAD9ECull
 
 #define TYPEOF_bcore 0x52C4008F456A6C1Eull
 
@@ -399,7 +399,8 @@
       sc_t local_file; \
       sc_t global_file; \
   }; \
-  bl_t bcore_main_frame_s_exit_required( const bcore_main_frame_s* o );
+  bl_t bcore_main_frame_s_exit_required( const bcore_main_frame_s* o ); \
+  er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args );
 #define TYPEOF_bcore_main_arr_s 0xAB5CAE6CCF6EDB68ull
 #define BETH_EXPAND_ITEM_bcore_main_arr_s \
   BCORE_DECLARE_OBJECT( bcore_main_arr_s ) \
@@ -1040,4 +1041,4 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOILA_OUT_SIGNATURE 0x46DB0BC5C702CC6Cull
+// XOILA_OUT_SIGNATURE 0x6A3E004206E9121Eull

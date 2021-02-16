@@ -51,44 +51,48 @@
 XOILA_DEFINE_GROUP( bcore_main, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    /// This function should be polled to determine if running routine is being required to exit.
-    signature bl_t exit_required( c @* o );
+/// This function should be polled to determine if running routine is being required to exit.
+signature bl_t exit_required( c @* o );
 
-    stamp :frame_s = aware bcore_inst
+stamp :frame_s = aware bcore_inst
+{
+    /// interpreter used to decode the config file; If NULL, frame tries to guess the correct interpreter form the file's content
+    aware bcore_interpreter => interpreter;
+
+    /// program arguments
+    bcore_arr_st_s args;
+
+    hidden bcore_mutex_s mutex;
+
+    /// The following criteria are processed in given order until one matches or all fail
+    bl_t first_argument_is_path_to_config = true;   // path to config file is expected as first argument
+    sc_t local_file = "beth.config";  // config file in current folder
+    sc_t global_file;                 // global path to config file
+
+    /// This implementation allows 'o' to be NULL in which case it returns always false.
+    func :.exit_required;
+
+    func (er_t exec( m @* o, bcore_arr_st_s* args ));
+};
+
+feature strict 'ar' er_t main( m @* o, m :frame_s* frame );
+
+stamp :arr_s = aware x_array
+{
+    aware : => [];
+};
+
+stamp :set_s = aware :
+{
+    :arr_s arr;
+    func : . main =
     {
-        /// interpreter used to decode the config file; If NULL, frame tries to guess the correct interpreter form the file's content
-        aware bcore_interpreter => interpreter;
-
-        /// program arguments
-        bcore_arr_st_s args;
-
-        hidden bcore_mutex_s mutex;
-
-        /// The following criteria are processed in given order until one matches or all fail
-        bl_t first_argument_is_path_to_config = true;   // path to config file is expected as first argument
-        sc_t local_file = "beth.config";  // config file in current folder
-        sc_t global_file;                 // global path to config file
-
-        /// This implementation allows 'o' to be NULL in which case it returns always false.
-        func : .exit_required;
+        foreach( m $* e in o->arr ) try( e.main( frame ) );
+        return 0;
     };
+};
 
-    feature strict 'ar' er_t main( m @* o, m :frame_s* frame );
-
-    stamp :arr_s = aware x_array
-    {
-        aware : => [];
-    };
-
-    stamp :set_s = aware :
-    {
-        :arr_s arr;
-        func : . main =
-        {
-            foreach( m $* e in o->arr ) try( e.main( frame ) );
-            return 0;
-        };
-    };
+//----------------------------------------------------------------------------------------------------------------------
 
 #endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

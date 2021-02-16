@@ -48,10 +48,9 @@ bl_t bcore_main_frame_s_exit_required( const bcore_main_frame_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-er_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, char** argv )
+er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args )
 {
-    bcore_arr_st_s_clear( &o->args );
-    for( sz_t i = 0; i < argc; i++ ) bcore_arr_st_s_push_sc( &o->args, argv[ i ] );
+    bcore_arr_st_s_copy( &o->args, args );
     er_t error = 0;
     sc_t file = NULL;
     if( o->first_argument_is_path_to_config && o->args.size > 1 )
@@ -112,6 +111,17 @@ er_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, char** argv )
     }
 
     return error;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+er_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, char** argv )
+{
+    bcore_arr_st_s* args = bcore_arr_st_s_create();
+    for( sz_t i = 0; i < argc; i++ ) bcore_arr_st_s_push_sc( args, argv[ i ] );
+    er_t retv = bcore_main_frame_s_exec( o, args );
+    bcore_arr_st_s_detach( &args );
+    return retv;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

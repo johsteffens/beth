@@ -101,21 +101,26 @@ static void bcore_push_dependencies( bcore_fp_signal_handler signal_handler, bco
 /** Creates a complete and unique list of dependencies of signal_handler
  *  Cycle-safe
  */
-static void bcore_push_dependencies_unique_recursive( bcore_fp_signal_handler signal_handler, bcore_arr_fp_s* arr )
+static void bcore_push_signal_handler_with_dependencies_unique_recursive
+(
+    bcore_fp_signal_handler signal_handler,
+    bcore_arr_fp_s* arr
+)
 {
     if( !signal_handler ) return;
-    bcore_arr_fp_s* arr1 = bcore_arr_fp_s_create();
-    bcore_push_dependencies( signal_handler, arr1 );
-    BFOR_EACH( i, arr1 )
+
+    if( bcore_arr_fp_s_find( arr, 0, -1, ( fp_t )signal_handler ) == arr->size ) // if not yet registered
     {
-        fp_t fp = arr1->data[ i ];
-        if( bcore_arr_fp_s_find( arr, 0, -1, fp ) == arr->size ) // if not yet registered
+        bcore_arr_fp_s* arr1 = bcore_arr_fp_s_create();
+        bcore_push_dependencies( signal_handler, arr1 );
+        BFOR_EACH( i, arr1 )
         {
-            bcore_arr_fp_s_push( arr, fp );
-            bcore_push_dependencies_unique_recursive( ( bcore_fp_signal_handler )fp, arr );
+            bcore_push_signal_handler_with_dependencies_unique_recursive( ( bcore_fp_signal_handler )arr1->data[ i ], arr );
         }
+
+        bcore_arr_fp_s_push( arr, ( fp_t )signal_handler );
+        bcore_arr_fp_s_discard( arr1 );
     }
-    bcore_arr_fp_s_discard( arr1 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -127,9 +132,8 @@ void bcore_register_signal_handler_with_deep_dependencies( bcore_fp_signal_handl
     init();
     if( !signal_handler ) return;
     bcore_arr_fp_s* arr = bcore_arr_fp_s_create();
-    bcore_arr_fp_s_push( arr, ( fp_t )signal_handler );
-    bcore_push_dependencies_unique_recursive( signal_handler, arr );
-    for( sz_t i = arr->size - 1; i >= 0; i-- )
+    bcore_push_signal_handler_with_dependencies_unique_recursive( signal_handler, arr );
+    for( sz_t i = 0; i < arr->size; i++ )
     {
         bcore_register_signal_handler( ( bcore_fp_signal_handler )arr->data[ i ] );
     }

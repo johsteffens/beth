@@ -1,6 +1,6 @@
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 ... 2021 J.B.Steffens
- *  Last File Update: 2021-02-12T15:01:57Z
+ *  Last File Update: 2021-02-16T11:49:30Z
  *
  *  Copyright and License of this File:
  *
@@ -561,7 +561,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_main_set_s )
 
 er_t bcore_main_set_s_main( bcore_main_set_s* o, bcore_main_frame_s* frame )
 {
-    // bcore_main.h:87:9
+    // bcore_main.h:89:5
     
     {const bcore_main_arr_s* __a=&(o->arr );if(__a)for(sz_t __i=0; __i<__a->size; __i++){bcore_main* e=__a->data[__i]; BLM_TRY(bcore_main_a_main(e,frame ) )
     }}return  0;
@@ -1940,4 +1940,4 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOILA_OUT_SIGNATURE 0xBF2CAD7C4A9A7D64ull
+// XOILA_OUT_SIGNATURE 0x86E7776CA48C2DF9ull
