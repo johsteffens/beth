@@ -19,7 +19,6 @@
 #define BHVM_STD_H
 
 #include "bmath_std.h"
-#include "bhvm_signal.h"
 #include "bhvm_holor.h"
 #include "bhvm_mcode.h"
 #include "bhvm_vop.h"

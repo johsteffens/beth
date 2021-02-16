@@ -1695,7 +1695,7 @@ void bhvm_holor_adl_s_copy_typed( bhvm_holor_adl_s* o, tp_t type, vc_t src )
 
 /**********************************************************************************************************************/
 
-static void selftest( void )
+void bhvm_holor_selftest( void )
 {
     BLM_INIT();
 
@@ -1807,32 +1807,6 @@ void bhvm_stats_s_to_sink( const bhvm_stats_s* o, bcore_sink* sink )
 // ---------------------------------------------------------------------------------------------------------------------
 
 #endif // TYPEOF_bhvm_h
-
-vd_t bhvm_holor_signal_handler( const bcore_signal_s* o )
-{
-    switch( bcore_signal_s_handle_type( o, typeof( "bhvm_holor" ) ) )
-    {
-        case TYPEOF_init1:
-        {
-        }
-        break;
-
-        case TYPEOF_get_quicktypes:
-        {
-        }
-        break;
-
-        case TYPEOF_selftest:
-        {
-            selftest();
-        }
-        break;
-
-        default: break;
-    }
-
-    return NULL;
-}
 
 /**********************************************************************************************************************/
 
