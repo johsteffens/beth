@@ -23,6 +23,7 @@ group bcore_arr = x_inst
 signature m @* clear    ( m @* o ); // sets size to zero
 signature m @* set_space( m @* o, uz_t space );
 signature m @* set_size ( m @* o, uz_t size  ); // resize
+signature s2_t cmp      (   @* o, @* b );
 signature m @* sort     ( m @* o, s2_t order ); // stable
 signature m @* reorder  ( m @* o, c bcore_arr_uz_s* order );
 
@@ -55,6 +56,7 @@ group :uz = :
         func  : .push;
         func  : .push_left;
         func  : .pop;
+        func :: .cmp;
         func  : .find;
         func  : .max;
         func  : .min;
@@ -93,6 +95,7 @@ group :sz = :
         func  : .push;
         func  : .push_left;
         func  : .pop;
+        func :: .cmp;
         func  : .find;
         func  : .max;
         func  : .min;
@@ -126,6 +129,7 @@ group :u3 = :
         func  : .push;
         func  : .push_left;
         func  : .pop;
+        func :: .cmp;
         func  : .count_equal;
     };
 };
@@ -154,6 +158,7 @@ group :tp = :
         func  : .push;
         func  : .push_left;
         func  : .pop;
+        func :: .cmp;
         func  : .count_equal;
     };
 };
@@ -178,6 +183,7 @@ group :bl = :
         func  : .push;
         func  : .push_left;
         func  : .pop;
+        func :: .cmp;
         func  : .count_equal;
     };
 };
