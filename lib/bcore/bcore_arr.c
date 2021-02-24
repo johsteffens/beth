@@ -20,6 +20,7 @@
 #include "bcore_sr.h"
 #include "bcore_spect_compare.h"
 #include "bcore_signal.h"
+#include "bcore_leaf.h"
 
 /**********************************************************************************************************************/
 // bcore_arr_uz_s
@@ -173,6 +174,20 @@ uz_t bcore_arr_uz_s_pop( bcore_arr_uz_s* o )
     if( o->size == 0 ) return 0;
     o->size--;
     return o->data[ o->size ];
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+s2_t bcore_arr_uz_s_cmp( const bcore_arr_uz_s* o, const bcore_arr_uz_s* b )
+{
+    if( o->size == 0 ) return ( b->size == 0 ) ? 0 :  1;
+    if( b->size == 0 ) return -1;
+    uz_t min_size = uz_min( o->size, b->size );
+    for( sz_t i = 0; i < min_size; i++ )
+    {
+        if( o->data[ i ] != b->data[ i ] ) return ( o->data[ i ] < b->data[ i ] ) ? 2 : -2;
+    }
+    return ( o->size == b->size ) ? 0 : ( o->size < b->size ) ? +1 : -1;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -482,6 +497,20 @@ sz_t bcore_arr_sz_s_pop( bcore_arr_sz_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+s2_t bcore_arr_sz_s_cmp( const bcore_arr_sz_s* o, const bcore_arr_sz_s* b )
+{
+    if( o->size == 0 ) return ( b->size == 0 ) ? 0 :  1;
+    if( b->size == 0 ) return -1;
+    uz_t min_size = uz_min( o->size, b->size );
+    for( sz_t i = 0; i < min_size; i++ )
+    {
+        if( o->data[ i ] != b->data[ i ] ) return ( o->data[ i ] < b->data[ i ] ) ? 2 : -2;
+    }
+    return ( o->size == b->size ) ? 0 : ( o->size < b->size ) ? +1 : -1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void sz_sort( sz_t* data, uz_t size, sz_t* buf, s2_t order )
 {
     if( size < 2 ) return;
@@ -767,6 +796,20 @@ u3_t bcore_arr_u3_s_pop( bcore_arr_u3_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+s2_t bcore_arr_u3_s_cmp( const bcore_arr_u3_s* o, const bcore_arr_u3_s* b )
+{
+    if( o->size == 0 ) return ( b->size == 0 ) ? 0 :  1;
+    if( b->size == 0 ) return -1;
+    uz_t min_size = uz_min( o->size, b->size );
+    for( sz_t i = 0; i < min_size; i++ )
+    {
+        if( o->data[ i ] != b->data[ i ] ) return ( o->data[ i ] < b->data[ i ] ) ? 2 : -2;
+    }
+    return ( o->size == b->size ) ? 0 : ( o->size < b->size ) ? +1 : -1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void u3_sort( u3_t* data, uz_t size, u3_t* buf, s2_t order )
 {
     if( size < 2 ) return;
@@ -969,6 +1012,20 @@ tp_t bcore_arr_tp_s_pop( bcore_arr_tp_s* o )
     if( o->size == 0 ) return 0;
     o->size--;
     return o->data[ o->size ];
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+s2_t bcore_arr_tp_s_cmp( const bcore_arr_tp_s* o, const bcore_arr_tp_s* b )
+{
+    if( o->size == 0 ) return ( b->size == 0 ) ? 0 :  1;
+    if( b->size == 0 ) return -1;
+    uz_t min_size = uz_min( o->size, b->size );
+    for( sz_t i = 0; i < min_size; i++ )
+    {
+        if( o->data[ i ] != b->data[ i ] ) return ( o->data[ i ] < b->data[ i ] ) ? 2 : -2;
+    }
+    return ( o->size == b->size ) ? 0 : ( o->size < b->size ) ? +1 : -1;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1202,6 +1259,20 @@ uz_t bcore_arr_bl_s_count_equal( const bcore_arr_bl_s* o, bl_t val )
     uz_t count = 0;
     for( uz_t i = 0; i < o->size; i++ ) count += ( o->data[ i ] == val );
     return count;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+s2_t bcore_arr_bl_s_cmp( const bcore_arr_bl_s* o, const bcore_arr_bl_s* b )
+{
+    if( o->size == 0 ) return ( b->size == 0 ) ? 0 :  1;
+    if( b->size == 0 ) return -1;
+    uz_t min_size = uz_min( o->size, b->size );
+    for( sz_t i = 0; i < min_size; i++ )
+    {
+        if( o->data[ i ] != b->data[ i ] ) return ( o->data[ i ] < b->data[ i ] ) ? 2 : -2;
+    }
+    return ( o->size == b->size ) ? 0 : ( o->size < b->size ) ? +1 : -1;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
