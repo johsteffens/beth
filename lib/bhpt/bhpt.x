@@ -174,7 +174,7 @@ group :test_result =
  */
 group :tutor =
 {
-    /// creates adaptive via builder
+    /// creates adaptive (typically from internal builder)
     feature strict d ::adaptive* create_adaptive( c @* o );
 
     /// creates adaptor for adaptive

@@ -20,7 +20,7 @@
 
 #include "bmath_std.h"
 #include "bhvm_holor.h"
-#include "bhvm_mcode.h"
+#include "bhvm.xo.h"
 #include "bhvm_vop.h"
 
 #endif // BHVM_STD_H

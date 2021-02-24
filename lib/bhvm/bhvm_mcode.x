@@ -123,7 +123,8 @@ group :hmeta =
     feature bl_t is_rollable( c @* o ) = { return false; }; // unrolling: holor need not be duplicated (e.g. const or adaptive)
     feature bl_t is_active( c @* o )   = { return true;  }; // holor is active
 
-    feature m bcore_inst* get_custom( c @* o )                           = { return NULL; }; // retrieves custom data (if available)
+    feature bcore_inst* get_custom( @* o ) = { return NULL; }; // retrieves custom data (if available)
+    feature bcore_inst* get_sem_id( @* o ) = { return NULL; }; // retrieves semantic id (if available)
     feature m bcore_inst* set_custom( m @* o, c bcore_inst* custom ) = { return NULL; }; // sets custom data and returns custom copy (if supported)
 
     stamp :adl_s = aware x_array { aware : => []; };

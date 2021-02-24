@@ -25,11 +25,11 @@ include "bhvm_std.h";
 // ---------------------------------------------------------------------------------------------------------------------
 
 /// Adding gradient*epsilon to adaptive
-stamp bhpt_adaptor_epsilon_s = aware bhpt_adaptor
+stamp :epsilon_s = :
 {
     f3_t epsilon;
-    func bhpt_adaptor . reset = {};
-    func bhpt_adaptor . adapt =
+    func :.reset = {};
+    func :.adapt =
     {
         assert( node.axon.s.is_equal( node.grad.s.1 ) );
         node.grad.v.mul_scl_f3_acc( o.epsilon, node.axon.v.1 );
@@ -39,28 +39,28 @@ stamp bhpt_adaptor_epsilon_s = aware bhpt_adaptor
 // ---------------------------------------------------------------------------------------------------------------------
 
 /// Applying l2-regularization (weight-decay) to weights: w -= w * lambda;
-stamp bhpt_adaptor_reg_l2_s = aware bhpt_adaptor
+stamp :reg_l2_s = :
 {
     f3_t lambda;
-    func bhpt_adaptor . reset = {};
-    func bhpt_adaptor . adapt = { node.axon.v.mul_scl_f3_acc( -o.lambda, node.axon.v.1 ); };
+    func :.reset = {};
+    func :.adapt = { node.axon.v.mul_scl_f3_acc( -o.lambda, node.axon.v.1 ); };
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-stamp bhpt_adaptor_zro_grad_s = aware bhpt_adaptor
+stamp :zro_grad_s = :
 {
-    func bhpt_adaptor . adapt = { node.grad.v.zro(); };
+    func :.adapt = { node.grad.v.zro(); };
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 /// List of adaptors applied in sequence
-stamp bhpt_adaptor_list_s = aware x_array
+stamp :list_s = x_array
 {
-    aware bhpt_adaptor => [];
-    func bhpt_adaptor.reset = { foreach( m$* e in o ) e.reset(); };
-    func bhpt_adaptor.adapt = { foreach( m$* e in o ) e.adapt( node ); };
+    aware : => [];
+    func :.reset = { foreach( m$* e in o ) e.reset(); };
+    func :.adapt = { foreach( m$* e in o ) e.adapt( node ); };
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
