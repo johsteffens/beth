@@ -45,6 +45,9 @@ signature sz_t get_pclass_idx( c @* o, tp_t pclass );
 /// mcode node (indexing for a given hbase)
 stamp :node_s = aware :
 {
+    /// Semantic ID
+    aware x_inst => sem_id;
+
     /// Index into nbase holding this node
     sz_t nidx = -1;
 
