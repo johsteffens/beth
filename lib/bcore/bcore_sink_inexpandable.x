@@ -29,6 +29,29 @@ group bcore_sink = x_inst
     feature void push_sc(   m @* o, sc_t sc );
     feature void push_string(   m @* o, c st_s* string );
     feature void push_string_d( m @* o, m st_s* string );
+
+
+    stamp :buffer_s =
+    {
+        /* format not disclosed */
+
+        func :.flush;
+        func :.push_data;
+    };
+
+    stamp :file_s =
+    {
+        /* format not disclosed */
+
+        func (m@* create_name( sc_t name )); // file is opened lazily when needed
+        func (sc_t get_name( @* o ));
+        func (void open(  m @* o )); // (re)opens file
+        func (void close( m @* o )); // closes file if open
+        func :.flush;
+        func :.push_data;
+    };
+
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------

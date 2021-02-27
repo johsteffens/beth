@@ -33,9 +33,9 @@ XOILA_DEFINE_GROUP( bcore_x_root, x_inst )
 
 set inexpandable;
 
-// External types
+// External types and identifiers
 
-// primitives
+// primitive types
 type u0_t;
 type u1_t;
 type u2_t;
@@ -57,13 +57,96 @@ type bl_t;
 type vd_t;
 type vc_t;
 type char;
-
-///TODO: remove below (does not belong here)
-type bmath_vf3_s;
+type void;
+type clock_t;
 
 // objects
 type bcore_self_s;
 type bcore_self_item_s;
+
+type va_list;
+
+identifier NULL;
+identifier __DATE__;
+identifier __TIME__;
+identifier ERR_fa;
+identifier WRN_fa;
+identifier ASSERT;
+identifier ifnameof;
+identifier btypeof;
+identifier bentypeof;
+identifier bnameof;
+identifier assert;
+identifier tanh;
+identifier sizeof;
+identifier const;
+identifier ABS_TIME_OF;
+identifier CLOCKS_PER_SEC;
+identifier clock;
+identifier sc_t_cmp;
+identifier bcore_run_signal_selftest;
+
+identifier bcore_self_item_s_parse_src;
+identifier bcore_self_s_parse_source;
+identifier bcore_flect_caps_is_array;
+
+identifier bcore_name_push_all;
+
+identifier BCORE_CAPS_EXTERNAL_FUNC;
+
+identifier bcore_error_push_fa;
+identifier bcore_error_push_sc;
+identifier bcore_error_pop_st;
+identifier bcore_error_pop_to_sink;
+identifier bcore_error_stack_size;
+identifier bcore_error_pop_all_to_stderr;
+
+identifier bcore_folder_get_current;
+
+identifier sz_max;
+identifier sz_min;
+
+identifier sc_t_equal;
+
+identifier va_start;
+identifier va_end;
+identifier bcore_push_traits_of_ancestor;
+identifier bcore_msg_fa;
+
+identifier bcore_tp_init;
+identifier bcore_tp_fold_tp;
+identifier bcore_tp_fold_bl;
+identifier bcore_tp_fold_sc;
+identifier bcore_tp_fold_sz;
+identifier bcore_tp_fold_u0;
+identifier bcore_tp_fold_u1;
+identifier bcore_tp_fold_u2;
+identifier bcore_tp_fold_u3;
+
+identifier bcore_lcg00_u3;
+
+identifier bcore_err_fv;
+identifier bcore_strlen;
+
+identifier bcore_bin_ml_a_copy;
+
+identifier bcore_cday_utc_s_from_system;
+identifier bcore_cday_utc_s_to_sink;
+
+identifier bcore_life_s_push_aware;
+
+identifier f3_srt;
+identifier f3_abs;
+identifier f3_max;
+identifier f3_min;
+
+///TODO: move below to bmath_x_root_inexpandable
+type bmath_vf3_s;
+type bmath_mf2_s;
+type bmath_mf3_s;
+type bmath_vf2_s;
+
+//----------------------------------------------------------------------------------------------------------------------
 
 group bcore_inst  = bcore_inst {};
 group bcore_array = bcore_inst {};
