@@ -115,7 +115,7 @@ er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-er_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, char** argv )
+er_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, const char** argv )
 {
     bcore_arr_st_s* args = bcore_arr_st_s_create();
     for( sz_t i = 0; i < argc; i++ ) bcore_arr_st_s_push_sc( args, argv[ i ] );

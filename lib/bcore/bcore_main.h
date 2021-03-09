@@ -56,7 +56,7 @@ signature bl_t exit_required( c @* o );
 
 stamp :frame_s = aware bcore_inst
 {
-    /// interpreter used to decode the config file; If NULL, frame tries to guess the correct interpreter form the file's content
+    /// interpreter used to decode the config file; If NULL, frame tries to guess the correct interpreter from the file's content
     aware bcore_interpreter => interpreter;
 
     /// program arguments
@@ -73,6 +73,9 @@ stamp :frame_s = aware bcore_inst
     func :.exit_required;
 
     func (er_t exec( m @* o, bcore_arr_st_s* args ));
+
+    /// to be called from main function
+    func (er_t main( mutable bcore_main_frame_s* o, sz_t argc, char** argv ));
 };
 
 feature strict 'ar' er_t main( m @* o, m :frame_s* frame );
@@ -95,8 +98,6 @@ stamp :set_s = aware :
 //----------------------------------------------------------------------------------------------------------------------
 
 #endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-er_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, char** argv );
 
 /**********************************************************************************************************************/
 
