@@ -190,16 +190,22 @@ void bcore_source_default_parse_err_fv( const bcore_source_s* p, bcore_source* o
 void bcore_source_default_parse_msg_to_sink_fv( const bcore_source_s* p, bcore_source* o, bcore_sink* sink, sc_t format, va_list args )
 {
     if( !sink ) return;
-    st_s* s0 = st_s_create_fv( format, args );
-    bcore_source_context_s* context = bcore_source_context_s_create();
-    bcore_source_p_get_context( p, o, context );
-
-    st_s* s1 = st_s_create();
-    bcore_source_context_s_get_msg_fa( context, s1, "#<sc_t>", s0->sc );
-    bcore_sink_a_push_fa( sink, "#<sc_t>", s1->sc );
-    st_s_discard( s0 );
-    st_s_discard( s1 );
-    bcore_source_context_s_discard( context );
+    if( p->get_context )
+    {
+        bcore_source_context_s* context = bcore_source_context_s_create();
+        bcore_source_p_get_context( p, o, context );
+        st_s* s0 = st_s_create_fv( format, args );
+        st_s* s1 = st_s_create();
+        bcore_source_context_s_get_msg_fa( context, s1, "#<sc_t>", s0->sc );
+        bcore_sink_a_push_fa( sink, "#<sc_t>", s1->sc );
+        st_s_discard( s0 );
+        st_s_discard( s1 );
+        bcore_source_context_s_discard( context );
+    }
+    else
+    {
+        bcore_sink_a_push_fv( sink, format, args );
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
