@@ -13,6 +13,7 @@
  *  limitations under the License.
  */
 
+#include "bcore.h"
 #include "bcore_sources.h"
 #include "bcore_spect_inst.h"
 #include "bcore_signal.h"
@@ -384,7 +385,10 @@ static uz_t buffer_flow_src( bcore_source_buffer_s* o, vd_t data, uz_t size )
     }
     o->size = bcore_source_a_get_data( o->ext_supplier, o->data, o->prefetch_size );
 
-    if( o->size < o->prefetch_size ) o->ext_supplier = NULL;
+    if( o->size < o->prefetch_size )
+    {
+        if( bcore_source_a_eos( o->ext_supplier ) ) o->ext_supplier = NULL;
+    }
 
     if( size < o->size )
     {
@@ -611,9 +615,6 @@ bcore_source_string_s* bcore_source_string_s_create_fa( sc_t format, ... )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-
-
-
 bcore_source_string_s* bcore_source_string_s_setup_from_string( bcore_source_string_s* o, const st_s* string )
 {
     bcore_source_string_s_reset( o );
@@ -666,11 +667,6 @@ bcore_source_string_s* bcore_source_string_s_setup_fa( bcore_source_string_s* o,
 
 //----------------------------------------------------------------------------------------------------------------------
 
-
-
-
-
-
 static void string_refill( bcore_source_string_s* o, uz_t min_remaining_size )
 {
     if( !o->string ) o->string = st_s_create();
@@ -686,7 +682,10 @@ static void string_refill( bcore_source_string_s* o, uz_t min_remaining_size )
         uz_t refill_size = min_remaining_size - o->string->size > o->prefetch_size ? min_remaining_size - o->string->size : o->prefetch_size;
         st_s_set_min_space( o->string, o->string->size + refill_size + 1 );
         uz_t bytes_received = bcore_source_a_get_data( o->ext_supplier, o->string->data + o->string->size, refill_size );
-        if( bytes_received < refill_size ) o->ext_supplier = NULL; // detach supplier when empty
+        if( bytes_received < refill_size )
+        {
+            if( bcore_source_a_eos( o->ext_supplier ) ) o->ext_supplier = NULL; // detach supplier when empty
+        }
         o->string->size += bytes_received;
         o->string->data[ o->string->size ] = 0;
     }
@@ -824,7 +823,8 @@ static uz_t string_s_parse_err( vd_t arg, const st_s* string, uz_t idx, st_s* ex
     bcore_source_context_s_discard( context );
     st_s_discard( msg );
 
-    bcore_exit( 1 );
+    bcore_down_exit( -1, 1 );
+
     return idx;
 }
 
@@ -832,7 +832,10 @@ static uz_t string_s_parse_err( vd_t arg, const st_s* string, uz_t idx, st_s* ex
 
 static void string_parse_fv( bcore_source_string_s* o, sc_t format, va_list args )
 {
-    if( o->ext_supplier ) string_refill( o, o->refill_limit );
+    if( o->ext_supplier )
+    {
+        string_refill( o, o->refill_limit );
+    }
     if( !o->string ) ERR( "No string defined." );
     o->index = st_s_parse_efv( o->string, o->index, o->string->size, string_s_parse_err, o, format, args );
 }
@@ -1238,6 +1241,206 @@ static bcore_self_s* file_s_create_self( void )
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+/// bcore_source_stdin_s
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bcore_source* bcore_source_stdin_g = NULL;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+BCORE_DEFINE_OBJECT_INST_AUT( bcore_source, bcore_source_stdin_s )
+"{"
+    "aware_t _;"
+    "s3_t base_index;" // base index (start of buffer)
+    "s3_t buf_index;"  // buffer index  (total index is base_index + buf_index)
+    "sz_t buf_limit = 65536;"
+    "st_s buf;"
+    "func bcore_fp_flow_src   get_data = bcore_source_stdin_s_get_data;"
+    "func bcore_source_fp_eos eos      = bcore_source_stdin_s_eos;"
+    "func bcore_source_fp_get_file get_file   = bcore_source_stdin_s_get_file;"
+    "func bcore_source_fp_get_index get_index = bcore_source_stdin_s_get_index;"
+    "func bcore_source_fp_set_index set_index = bcore_source_stdin_s_set_index;"
+    "func bcore_source_fp_parse_fv parse_fv       = bcore_source_stdin_s_parse_fv;"
+    "func bcore_source_fp_parse_em_fv parse_em_fv = bcore_source_stdin_s_parse_em_fv;"
+"}";
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void bcore_source_stdin_s_push_char( bcore_source_stdin_s* o, char c )
+{
+    st_s_push_char( &o->buf, c );
+
+    if( o->buf.size >= o->buf_limit )
+    {
+        sz_t block_size = o->buf_limit >> 1;
+        if( o->buf_index >= o->buf.size - block_size )
+        {
+            for( sz_t i = 0; i < block_size; i++ ) o->buf.data[ i ] = o->buf.data[ o->buf.size - block_size + i ];
+            for( sz_t i = block_size; i < o->buf.size; i++ ) o->buf.data[ i ] = 0;
+            o->base_index += o->buf.size - block_size;
+            o->buf_index  -= o->buf.size - block_size;
+            o->buf.size = block_size;
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+uz_t bcore_source_stdin_s_get_data( bcore_source_stdin_s* o, vd_t data, uz_t size )
+{
+    for( uz_t i = 0; i < size; i++ )
+    {
+        if( o->buf_index < o->buf.size )
+        {
+            ( ( u0_t* )data )[ i ] = o->buf.data[ o->buf_index++ ];
+        }
+        else
+        {
+            s2_t c = fgetc( stdin );
+            if( feof( stdin ) ) return i;
+            ( ( u0_t* )data )[ i ] = c;
+            bcore_source_stdin_s_push_char( o, c );
+            o->buf_index = o->buf.size;
+        }
+    }
+
+    return size;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_source_stdin_s_push_until_newline_or_eos( bcore_source_stdin_s* o )
+{
+    for(;;)
+    {
+        s2_t c = fgetc( stdin );
+        if( feof( stdin ) ) break;
+        bcore_source_stdin_s_push_char( o, c );
+        if( c == '\n' ) break;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_source_stdin_s_consume_whitechars( bcore_source_stdin_s* o )
+{
+    for(;;)
+    {
+        if( o->buf_index < o->buf.size )
+        {
+            char c = o->buf.data[ o->buf_index ];
+            if( c == ' ' || c == '\t' || c == '\r' || c == '\n' )
+            {
+                o->buf_index++;
+            }
+            else
+            {
+                break;
+            }
+        }
+        else
+        {
+            if( feof( stdin ) ) break;
+            bcore_source_stdin_s_push_until_newline_or_eos( o );
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static uz_t stdin_s_parse_em_err( vd_t arg, const st_s* string, uz_t idx, st_s* ext_msg )
+{
+    struct { er_t er; st_s* msg; }* er_arg = arg;
+    er_arg->er = TYPEOF_parse_error;
+    st_s_attach( &er_arg->msg, st_s_clone( ext_msg ) );
+    return idx;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+er_t bcore_source_stdin_s_parse_em_fv( bcore_source_stdin_s* o, sc_t format, va_list args )
+{
+    if( !format ) return 0;
+    if( format[ 0 ] == 0 ) return 0;
+    if( format[ 0 ] == ' ' ) bcore_source_stdin_s_consume_whitechars( o );
+    if( bcore_source_stdin_s_eos( o ) ) return bcore_error_push_sc( TYPEOF_parse_error, "stdin: Unexpected end of stream reached." );
+    if( o->buf_index == o->buf.size ) bcore_source_stdin_s_push_until_newline_or_eos( o );
+
+    struct { er_t er; st_s* msg; } er_arg;
+    er_arg.er = 0;
+    er_arg.msg = NULL;
+    sz_t index = st_s_parse_efv( &o->buf, o->buf_index, o->buf.size, stdin_s_parse_em_err, &er_arg, format, args );
+
+    if( er_arg.er )
+    {
+        BLM_INIT();
+        st_s* msg_main    = BLM_CREATE( st_s );
+        st_s* msg_context = BLM_CREATE( st_s );
+        if( er_arg.msg ) BLM_A_PUSH( er_arg.msg );
+
+        msg_context = BLM_A_PUSH( st_s_show_line_context( &o->buf, o->buf_index ) );
+
+        st_s_push_fa( msg_main, "error: #<sc_t>\n", er_arg.msg ? er_arg.msg->sc : "" );
+        st_s_push_fa( msg_main, "#<sc_t>\n", msg_context->sc );
+
+        bcore_error_push_sc( er_arg.er, msg_main->sc );
+        BLM_DOWN();
+    }
+    o->buf_index = index;
+    return er_arg.er;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_source_stdin_s_parse_fv( bcore_source_stdin_s* o, sc_t format, va_list args )
+{
+    er_t er = bcore_source_stdin_s_parse_em_fv( o, format, args );
+    if( er )
+    {
+        bcore_error_pop_to_stderr();
+        bcore_down_exit( -1, er );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t bcore_source_stdin_s_eos( const bcore_source_stdin_s* o )
+{
+    return ( o->buf_index == o->buf.size ) && feof( stdin );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sc_t bcore_source_stdin_s_get_file(  const bcore_source_stdin_s* o )
+{
+    return "";
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+s3_t bcore_source_stdin_s_get_index( const bcore_source_stdin_s* o )
+{
+    return o->base_index + o->buf_index;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_source_stdin_s_set_index( bcore_source_stdin_s* o, s3_t index )
+{
+    sz_t new_buf_index = index - o->base_index;
+    if( new_buf_index < 0 || new_buf_index > o->buf.size )
+    {
+        ERR_fa( "Buffer index '<s3_t>' is out of range.", index );
+    }
+
+    o->buf_index = new_buf_index;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 /// bcore_source_point_s
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1422,6 +1625,13 @@ bcore_source_chain_s* bcore_source_open_file( sc_t file_name )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bcore_source_stdin_s* bcore_source_open_stdin( void )
+{
+    return bcore_source_stdin_s_create();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 /// Testing
 /**********************************************************************************************************************/
@@ -1430,8 +1640,37 @@ bcore_source_chain_s* bcore_source_open_file( sc_t file_name )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void sources_selftest_stdin( void )
+{
+    BLM_INIT();
+    bcore_msg_fa( "sources_selftest_stdin:\n" );
+
+    bcore_source* source = BLM_A_PUSH( bcore_source_open_stdin() );
+
+//    while( !bcore_source_a_eos( source ) )
+//    {
+//        s2_t c = bcore_source_a_get_char( source );
+//        bcore_msg_fa( "#<s2_t>\n", c );
+//    }
+
+    st_s* st = BLM_CREATE( st_s );
+
+    while( !bcore_source_a_eos( source ) )
+    {
+        bcore_source_a_parse_fa( source, " #name", st );
+        if( st->size == 0 ) bcore_source_a_parse_err_fa( source, "Name expected\n" );
+        bcore_msg_fa( "name: #<st_s*>\n", st );
+    }
+
+    BLM_DOWN();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static st_s* sources_selftest( void )
 {
+    //sources_selftest_stdin();
+
     st_s* msg = st_s_create();
     bcore_life_s* l = bcore_life_s_create();
 
@@ -1533,7 +1772,23 @@ vd_t bcore_sources_signal_handler( const bcore_signal_s* o )
             bcore_flect_define_creator( typeof( "bcore_source_file_s"    ), file_s_create_self   );
             bcore_flect_define_creator( typeof( "bcore_source_chain_s"   ), chain_s_create_self  );
 
+            BCORE_REGISTER_FFUNC( bcore_fp_flow_src, bcore_source_stdin_s_get_data );
+            BCORE_REGISTER_FFUNC( bcore_source_fp_eos, bcore_source_stdin_s_eos );
+            BCORE_REGISTER_FFUNC( bcore_source_fp_get_file, bcore_source_stdin_s_get_file );
+            BCORE_REGISTER_FFUNC( bcore_source_fp_get_index, bcore_source_stdin_s_get_index );
+            BCORE_REGISTER_FFUNC( bcore_source_fp_set_index, bcore_source_stdin_s_set_index );
+            BCORE_REGISTER_FFUNC( bcore_source_fp_parse_fv, bcore_source_stdin_s_parse_fv );
+            BCORE_REGISTER_FFUNC( bcore_source_fp_parse_em_fv, bcore_source_stdin_s_parse_em_fv );
+            BCORE_REGISTER_OBJECT( bcore_source_stdin_s );
             BCORE_REGISTER_OBJECT( bcore_source_point_s );
+
+            bcore_source_stdin_g = ( bcore_source* )bcore_source_open_stdin();
+        }
+        break;
+
+        case TYPEOF_down1:
+        {
+             bcore_source_a_detach( &bcore_source_stdin_g );
         }
         break;
 

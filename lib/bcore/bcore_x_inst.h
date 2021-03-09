@@ -42,6 +42,15 @@ include "bcore_arr.h";
 signature s2_t main( bcore_arr_st_s* args );
 
 /**********************************************************************************************************************/
+/// existence, creation
+
+// checks existence of type
+func (bl_t exists( tp_t type )) = { return bcore_flect_exists( type ); };
+
+// creates instance from type; error in case type does not exist (check with 'exists')
+func (d x_inst* create( tp_t type )) = { return bcore_inst_t_create( type ); };
+
+/**********************************************************************************************************************/
 /// copying
 
 func (o copy_typed( m@* o, tp_t type, c@* src )) = { bcore_inst_a_copy_typed( o.cast( m bcore_inst* ), type, src ); return o; };
@@ -70,10 +79,11 @@ func (o from_file_bin_ml( m@* o, sc_t path )) = { return o.from_source_bin_ml( b
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
-/// global sinks
+/// standard streams
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (m bcore_source* stdin()) = { return BCORE_STDIN; };
 func (m bcore_sink* stdout()) = { return BCORE_STDOUT; };
 func (m bcore_sink* stderr()) = { return BCORE_STDERR; };
 

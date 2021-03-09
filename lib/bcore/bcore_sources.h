@@ -117,7 +117,7 @@ typedef struct bcore_source_string_s
     st_s* string;
     uz_t index;
     vd_t ext_supplier;       // optional external supplier (source) turning this source into a buffer; (ext_supplier is not owned by bcore_source_string_s)
-    uz_t refill_limit;       // size size limit to request refill from supplier (if present)
+    uz_t refill_limit;       // size limit to request refill from supplier (if present)
     uz_t prefetch_size;      // data amount prefetched from supplier (if present)
     bcore_source_chain_s* parent; // governing chain (if any)
 } bcore_source_string_s;
@@ -189,6 +189,35 @@ void bcore_source_file_s_get_line_col_context( bcore_source_file_s* o, s3_t inde
 /// See bcore_file.h for file system related functions
 
 /**********************************************************************************************************************/
+// stdin source
+
+/** stdin source wrapper
+ *  Maintains its own buffer and can be used for text and binary streaming.
+ *  (no deed to chain with another source buffer).
+ *  Text streaming and buffering is optimized for interactive I/O:
+ *  New data is fetched from stdin only when the buffer is empty, was previously completely consumed or
+ *  the format string begins with a space and the remaining buffer content holds only whitespaces.
+ */
+BCORE_DECLARE_OBJECT( bcore_source_stdin_s )
+{
+    aware_t _;
+    s3_t base_index; // base index (start of buffer)
+    s3_t buf_index;  // buffer index  (total index is base_index + buf_index)
+    sz_t buf_limit;  // buffer limit (default: 65536)
+    st_s buf;
+};
+
+uz_t bcore_source_stdin_s_get_data(        bcore_source_stdin_s* o, vd_t data, uz_t size );
+bl_t bcore_source_stdin_s_eos(       const bcore_source_stdin_s* o );
+sc_t bcore_source_stdin_s_get_file(  const bcore_source_stdin_s* o );
+s3_t bcore_source_stdin_s_get_index( const bcore_source_stdin_s* o );
+void bcore_source_stdin_s_set_index(       bcore_source_stdin_s* o, s3_t index );
+er_t bcore_source_stdin_s_parse_em_fv(     bcore_source_stdin_s* o, sc_t format, va_list args );
+
+extern bcore_source* bcore_source_stdin_g;
+#define BCORE_STDIN bcore_source_stdin_g
+
+/**********************************************************************************************************************/
 
 /** bcore_source_point_s represents a source (by weak reference) and an index.
  *  It is intended to be used to traceback a specific source location.
@@ -224,6 +253,9 @@ void bcore_source_point_s_source_reference_to_sink( const bcore_source_point_s* 
 
 /// opens a (string-)buffered file for reading
 bcore_source_chain_s* bcore_source_open_file( sc_t file_name );
+
+/// opens stdin for reading
+bcore_source_stdin_s* bcore_source_open_stdin( void );
 
 /**********************************************************************************************************************/
 
