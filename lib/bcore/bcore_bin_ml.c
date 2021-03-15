@@ -154,6 +154,21 @@ sr_s bcore_bin_ml_x_to_sink_buffer( sr_s obj )
     return sr_asd( buffer );
 }
 
+void bcore_bin_ml_x_to_sink( sr_s obj, bcore_sink* sink )
+{
+    bcore_translate_x( sr_asd( bcore_bin_ml_translator_s_create() ), obj, sr_awd( sink ) );
+}
+
+void bcore_bin_ml_x_to_stdout( sr_s obj )
+{
+    bcore_translate_x( sr_asd( bcore_bin_ml_translator_s_create() ), obj, sr_awd( BCORE_STDOUT ) );
+}
+
+void bcore_bin_ml_x_to_string( sr_s obj, st_s* string )
+{
+    bcore_translate_x( sr_asd( bcore_bin_ml_translator_s_create() ), obj, sr_awd( string ) );
+}
+
 void bcore_bin_ml_x_to_file( sr_s obj, sc_t file )
 {
     bcore_life_s* l = bcore_life_s_create();
@@ -169,25 +184,25 @@ sr_s bcore_bin_ml_a_to_sink_buffer( vc_t obj )
     return bcore_bin_ml_x_to_sink_buffer( sr_awc( obj ) );
 }
 
-void bcore_bin_ml_a_to_file( vc_t obj, sc_t file )
-{
-    bcore_bin_ml_x_to_file( sr_awc( obj ), file );
-}
+void bcore_bin_ml_r_to_sink( const sr_s* obj, bcore_sink* sink ) { bcore_bin_ml_x_to_sink( sr_cw( *obj ),  sink ); }
+void bcore_bin_ml_a_to_sink( vc_t o,          bcore_sink* sink ) { bcore_bin_ml_x_to_sink( sr_awc( o ),    sink ); }
+void bcore_bin_ml_t_to_sink( tp_t t, vc_t o,  bcore_sink* sink ) { bcore_bin_ml_x_to_sink( sr_twc( t, o ), sink ); }
+void bcore_bin_ml_default_to_sink( tp_t t,    bcore_sink* sink ) { bcore_bin_ml_x_to_sink( sr_create( t ), sink ); }
 
-void bcore_bin_ml_r_to_file( const sr_s* obj, sc_t file )
-{
-    bcore_bin_ml_x_to_file( sr_cw( *obj ), file );
-}
+void bcore_bin_ml_r_to_stdout( const sr_s* obj ) { bcore_bin_ml_x_to_stdout( sr_cw( *obj ) ); }
+void bcore_bin_ml_a_to_stdout( vc_t o          ) { bcore_bin_ml_x_to_stdout( sr_awc( o ) ); }
+void bcore_bin_ml_t_to_stdout( tp_t t, vc_t o  ) { bcore_bin_ml_x_to_stdout( sr_twc( t, o ) ); }
+void bcore_bin_ml_default_to_stdout( tp_t t )    { bcore_bin_ml_x_to_stdout( sr_create( t ) ); }
 
-void bcore_bin_ml_t_to_file( tp_t t, vc_t o, sc_t file  )
-{
-    bcore_bin_ml_x_to_file( sr_twc( t, o ), file );
-}
+void bcore_bin_ml_r_to_file( const sr_s* obj, sc_t file ) { bcore_bin_ml_x_to_file( sr_cw( *obj ),  file ); }
+void bcore_bin_ml_a_to_file( vc_t o, sc_t file          ) { bcore_bin_ml_x_to_file( sr_awc( o ),    file ); }
+void bcore_bin_ml_t_to_file( tp_t t, vc_t o, sc_t file  ) { bcore_bin_ml_x_to_file( sr_twc( t, o ), file ); }
+void bcore_bin_ml_default_to_file( tp_t t, sc_t file    ) { bcore_bin_ml_x_to_file( sr_create( t ), file ); }
 
-void bcore_bin_ml_a_to_sink( vc_t o, bcore_sink* sink )
-{
-    bcore_translate_x( sr_asd( bcore_bin_ml_translator_s_create() ), sr_awc( o ), sr_awd( sink ) );
-}
+void bcore_bin_ml_r_to_string( const sr_s* obj, st_s* string ) { bcore_bin_ml_x_to_string( sr_cw( *obj ),  string ); }
+void bcore_bin_ml_a_to_string( vc_t o, st_s* string          ) { bcore_bin_ml_x_to_string( sr_awc( o ),    string ); }
+void bcore_bin_ml_t_to_string( tp_t t, vc_t o, st_s* string  ) { bcore_bin_ml_x_to_string( sr_twc( t, o ), string ); }
+void bcore_bin_ml_default_to_string( tp_t t, st_s* string    ) { bcore_bin_ml_x_to_string( sr_create( t ), string ); }
 
 /**********************************************************************************************************************/
 /// bcore_bin_ml_interpreter
