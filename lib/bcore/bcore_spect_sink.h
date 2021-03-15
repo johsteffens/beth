@@ -23,7 +23,7 @@
 
 /// optional sink features:
 typedef void (*bcore_sink_fp_set_consumer)( vd_t o, vd_t consumer );  // to create a chain of sink units
-typedef void (*bcore_sink_fp_flush       )( vd_t o                );  // flushes buffers
+typedef vd_t (*bcore_sink_fp_flush       )( vd_t o                );  // flushes buffers
 
 BCORE_DECLARE_SPECT( bcore_sink )
 {
@@ -34,24 +34,24 @@ BCORE_DECLARE_SPECT( bcore_sink )
 };
 
 BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP1( bcore_sink, push_data, uz_t, vc_t, data, uz_t, size ) // returns number of bytes written
-BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP1( bcore_sink, flush )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_sink, pushvf,   sc_t, format, va_list, args )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_sink, push_fv,  sc_t, format, va_list, args )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_sink, push_u0,           u0_t, u )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_sink, push_char,         char, c )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_sink, push_sc,           sc_t, sc )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_sink, push_string, const st_s*, string )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_sink, push_string_d,     st_s*, string )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP1( bcore_sink, set_consumer,      vd_t, consumer )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG0_MAP1( bcore_sink, flush,   bcore_sink* )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_sink, pushvf,  bcore_sink*, sc_t, format, va_list, args )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_sink, push_fv, bcore_sink*, sc_t, format, va_list, args )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG1_MAP0( bcore_sink, push_u0, bcore_sink*, u0_t, u )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG1_MAP0( bcore_sink, push_char, bcore_sink*, char, c )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG1_MAP0( bcore_sink, push_sc, bcore_sink*, sc_t, sc )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG1_MAP0( bcore_sink, push_string,   bcore_sink*, const st_s*, string )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG1_MAP0( bcore_sink, push_string_d, bcore_sink*,       st_s*, string )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP1( bcore_sink, set_consumer, vd_t, consumer )
 
-void bcore_sink_p_pushf   ( const bcore_sink_s* p, vd_t o, sc_t format, ... );
-void bcore_sink_p_push_fa ( const bcore_sink_s* p, vd_t o, sc_t format, ... );
+bcore_sink* bcore_sink_p_pushf   ( const bcore_sink_s* p, vd_t o, sc_t format, ... );
+bcore_sink* bcore_sink_p_push_fa ( const bcore_sink_s* p, vd_t o, sc_t format, ... );
 bcore_sink* bcore_sink_a_pushf   ( bcore_sink* o, sc_t format, ... );
 bcore_sink* bcore_sink_a_push_fa ( bcore_sink* o, sc_t format, ... );
-void bcore_sink_x_pushf   ( sr_s o, sc_t format, ... );
-void bcore_sink_x_push_fa ( sr_s o, sc_t format, ... );
-void bcore_sink_r_pushf   ( const sr_s* o, sc_t format, ... );
-void bcore_sink_r_push_fa ( const sr_s* o, sc_t format, ... );
+bcore_sink* bcore_sink_x_pushf   ( sr_s o, sc_t format, ... );
+bcore_sink* bcore_sink_x_push_fa ( sr_s o, sc_t format, ... );
+bcore_sink* bcore_sink_r_pushf   ( const sr_s* o, sc_t format, ... );
+bcore_sink* bcore_sink_r_push_fa ( const sr_s* o, sc_t format, ... );
 
 bcore_sink* bcore_sink_t_clone( tp_t type );
 void bcore_sink_a_discard( bcore_sink* o );

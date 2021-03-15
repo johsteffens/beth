@@ -51,7 +51,7 @@ void                bcore_sink_chain_s_discard(      bcore_sink_chain_s* o );
 bcore_sink_chain_s* bcore_sink_chain_s_clone(  const bcore_sink_chain_s* o );
 void                bcore_sink_chain_s_push_d(       bcore_sink_chain_s* o, vd_t sink );
 void                bcore_sink_chain_s_push_type(    bcore_sink_chain_s* o, tp_t type );
-void                bcore_sink_chain_s_flush(        bcore_sink_chain_s* o );
+bcore_sink_chain_s* bcore_sink_chain_s_flush(        bcore_sink_chain_s* o );
 uz_t                bcore_sink_chain_s_push_data(    bcore_sink_chain_s* o, vc_t data, uz_t size );
 void                bcore_sink_chain_s_set_consumer( bcore_sink_chain_s* o, vd_t consumer );
 
@@ -84,7 +84,7 @@ void                 bcore_sink_buffer_s_copy(        bcore_sink_buffer_s* o, co
 bcore_sink_buffer_s* bcore_sink_buffer_s_create();
 void                 bcore_sink_buffer_s_discard(     bcore_sink_buffer_s* o );
 bcore_sink_buffer_s* bcore_sink_buffer_s_clone( const bcore_sink_buffer_s* o );
-void                 bcore_sink_buffer_s_flush(       bcore_sink_buffer_s* o );
+bcore_sink_buffer_s* bcore_sink_buffer_s_flush(       bcore_sink_buffer_s* o );
 uz_t                 bcore_sink_buffer_s_push_data(   bcore_sink_buffer_s* o, vc_t data, uz_t size );
 
 /// Specifies an external consumer (sink); consumer is not owned by this object
@@ -114,24 +114,24 @@ void                bcore_sink_file_s_discard(     bcore_sink_file_s* o );
 bcore_sink_file_s*  bcore_sink_file_s_clone( const bcore_sink_file_s* o );
 void                bcore_sink_file_s_open(        bcore_sink_file_s* o ); // (re)opens file
 void                bcore_sink_file_s_close(       bcore_sink_file_s* o ); // closes file if open
-void                bcore_sink_file_s_flush(       bcore_sink_file_s* o );
+bcore_sink_file_s*  bcore_sink_file_s_flush(       bcore_sink_file_s* o );
 uz_t                bcore_sink_file_s_push_data(   bcore_sink_file_s* o, vc_t data, uz_t size );
 
 /**********************************************************************************************************************/
 
 // stdout sink
 BCORE_DECLARE_OBJECT( bcore_sink_stdout_s ) { aware_t _; };
-void bcore_sink_stdout_s_flush(      bcore_sink_stdout_s* o );
+bcore_sink_stdout_s* bcore_sink_stdout_s_flush( bcore_sink_stdout_s* o );
 uz_t bcore_sink_stdout_s_push_data(  bcore_sink_stdout_s* o, vc_t data, uz_t size );
 
 // stderr sink
 BCORE_DECLARE_OBJECT( bcore_sink_stderr_s ) { aware_t _; };
-void bcore_sink_stderr_s_flush(      bcore_sink_stderr_s* o );
+bcore_sink_stderr_s* bcore_sink_stderr_s_flush( bcore_sink_stderr_s* o );
 uz_t bcore_sink_stderr_s_push_data(  bcore_sink_stderr_s* o, vc_t data, uz_t size );
 
 // nul sink
 BCORE_DECLARE_OBJECT( bcore_sink_nul_s ) { aware_t _; };
-void bcore_sink_nul_s_flush(      bcore_sink_nul_s* o );
+bcore_sink_nul_s* bcore_sink_nul_s_flush( bcore_sink_nul_s* o );
 uz_t bcore_sink_nul_s_push_data(  bcore_sink_nul_s* o, vc_t data, uz_t size );
 
 extern bcore_sink_stdout_s* bcore_sink_stdout_g;

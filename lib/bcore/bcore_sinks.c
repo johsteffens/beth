@@ -123,9 +123,10 @@ void bcore_sink_chain_s_push_type( bcore_sink_chain_s* o, tp_t type )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_sink_chain_s_flush( bcore_sink_chain_s* o )
+bcore_sink_chain_s* bcore_sink_chain_s_flush( bcore_sink_chain_s* o )
 {
     for( uz_t i = o->size; i > 0; i-- ) bcore_sink_a_flush( o->data[ i - 1 ] );
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -220,7 +221,7 @@ bcore_sink_buffer_s* bcore_sink_buffer_s_clone( const bcore_sink_buffer_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_sink_buffer_s_flush( bcore_sink_buffer_s* o )
+bcore_sink_buffer_s* bcore_sink_buffer_s_flush( bcore_sink_buffer_s* o )
 {
     if( o->consumer && o->size > 0 )
     {
@@ -228,6 +229,7 @@ void bcore_sink_buffer_s_flush( bcore_sink_buffer_s* o )
         if( pushed_size != o->size ) ERR( "Consumer accepted %zu of %zu bytes.", pushed_size, o->size );
         o->size = 0;
     }
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -428,9 +430,9 @@ void bcore_sink_file_s_close( bcore_sink_file_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_sink_file_s_flush( bcore_sink_file_s* o )
+bcore_sink_file_s* bcore_sink_file_s_flush( bcore_sink_file_s* o )
 {
-    if( !o->handle ) return;
+    if( !o->handle ) return o;
     if( fflush( o->handle ) != 0 )
     {
         st_s* msg = st_s_createf( "Error flushing file %s:\n", o->name->sc );
@@ -438,6 +440,7 @@ void bcore_sink_file_s_flush( bcore_sink_file_s* o )
         st_s_discard( msg );
         bcore_abort();
     }
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -522,13 +525,18 @@ bcore_sink_chain_s* bcore_sink_open_file( sc_t file_name )
 /// bcore_sink_stdout_s
 /**********************************************************************************************************************/
 
-BCORE_DEFINE_OBJECT_INST_AUT( bcore_sink, bcore_sink_stdout_s ) "{ aware_t _; func bcore_fp_flow_snk push_data = bcore_sink_stdout_s_push_data; }";
+BCORE_DEFINE_OBJECT_INST_AUT( bcore_sink, bcore_sink_stdout_s )
+"{"
+    "aware_t _;"
+    "func bcore_fp_flow_snk push_data = bcore_sink_stdout_s_push_data;"
+    "func bcore_sink_fp_flush flush = bcore_sink_stdout_s_flush;"
+"}";
 
 bcore_sink_stdout_s* bcore_sink_stdout_g = NULL;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_sink_stdout_s_flush( bcore_sink_stdout_s* o )
+bcore_sink_stdout_s* bcore_sink_stdout_s_flush( bcore_sink_stdout_s* o )
 {
     if( fflush( stdout ) != 0 )
     {
@@ -537,6 +545,7 @@ void bcore_sink_stdout_s_flush( bcore_sink_stdout_s* o )
         st_s_discard( msg );
         bcore_abort();
     }
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -555,13 +564,18 @@ uz_t bcore_sink_stdout_s_push_data( bcore_sink_stdout_s* o, vc_t data, uz_t size
 /// bcore_sink_stderr_s
 /**********************************************************************************************************************/
 
-BCORE_DEFINE_OBJECT_INST_AUT( bcore_sink, bcore_sink_stderr_s ) "{ aware_t _; func bcore_fp_flow_snk push_data = bcore_sink_stderr_s_push_data; }";
+BCORE_DEFINE_OBJECT_INST_AUT( bcore_sink, bcore_sink_stderr_s )
+"{"
+    "aware_t _;"
+    "func bcore_fp_flow_snk push_data = bcore_sink_stderr_s_push_data;"
+    "func bcore_sink_fp_flush flush = bcore_sink_stderr_s_flush;"
+"}";
 
 bcore_sink_stderr_s* bcore_sink_stderr_g = NULL;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_sink_stderr_s_flush( bcore_sink_stderr_s* o )
+bcore_sink_stderr_s* bcore_sink_stderr_s_flush( bcore_sink_stderr_s* o )
 {
     if( fflush( stderr ) != 0 )
     {
@@ -570,6 +584,7 @@ void bcore_sink_stderr_s_flush( bcore_sink_stderr_s* o )
         st_s_discard( msg );
         bcore_abort();
     }
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -588,13 +603,18 @@ uz_t bcore_sink_stderr_s_push_data( bcore_sink_stderr_s* o, vc_t data, uz_t size
 /// bcore_sink_nul_s
 /**********************************************************************************************************************/
 
-BCORE_DEFINE_OBJECT_INST_AUT( bcore_sink, bcore_sink_nul_s ) "{ aware_t _; func bcore_fp_flow_snk push_data = bcore_sink_nul_s_push_data; }";
+BCORE_DEFINE_OBJECT_INST_AUT( bcore_sink, bcore_sink_nul_s )
+"{"
+    "aware_t _;"
+    "func bcore_fp_flow_snk push_data = bcore_sink_nul_s_push_data;"
+    "func bcore_sink_fp_flush flush = bcore_sink_nul_s_flush;"
+"}";
 
 bcore_sink_nul_s* bcore_sink_nul_g = NULL;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_sink_nul_s_flush( bcore_sink_nul_s* o ) { /* nothing */ }
+bcore_sink_nul_s* bcore_sink_nul_s_flush( bcore_sink_nul_s* o ) { return o; }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -617,10 +637,13 @@ vd_t bcore_sinks_signal_handler( const bcore_signal_s* o )
             bcore_flect_define_creator( typeof( "bcore_sink_chain_s"  ), chain_s_create_self  );
 
             BCORE_REGISTER_FFUNC( bcore_fp_flow_snk, bcore_sink_stdout_s_push_data );
+            BCORE_REGISTER_FFUNC( bcore_sink_fp_flush, bcore_sink_stdout_s_flush );
             BCORE_REGISTER_OBJECT( bcore_sink_stdout_s );
             BCORE_REGISTER_FFUNC( bcore_fp_flow_snk, bcore_sink_stderr_s_push_data );
+            BCORE_REGISTER_FFUNC( bcore_sink_fp_flush, bcore_sink_stderr_s_flush );
             BCORE_REGISTER_OBJECT( bcore_sink_stderr_s );
             BCORE_REGISTER_FFUNC( bcore_fp_flow_snk, bcore_sink_nul_s_push_data );
+            BCORE_REGISTER_FFUNC( bcore_sink_fp_flush, bcore_sink_nul_s_flush );
             BCORE_REGISTER_OBJECT( bcore_sink_nul_s );
 
             bcore_sink_stdout_g = bcore_sink_stdout_s_create();

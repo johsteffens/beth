@@ -20,15 +20,15 @@
 group bcore_sink = x_inst
 {
     feature uz_t push_data( m @* o, vc_t data, uz_t size );
-    feature void flush( m @* o );
-    feature void push_fv( m @* o, sc_t format, va_list args );
-    feature void push_fa( m @* o, sc_t format, ... );
-    feature void pushf(   m @* o, sc_t format, ... );
-    feature void push_u0( m @* o, u0_t u );
-    feature void push_char( m @* o, char c );
-    feature void push_sc(   m @* o, sc_t sc );
-    feature void push_string(   m @* o, c st_s* string );
-    feature void push_string_d( m @* o, m st_s* string );
+    feature o flush( m @* o );
+    feature o push_fv( m @* o, sc_t format, va_list args );
+    feature o push_fa( m @* o, sc_t format, ... );
+    feature o pushf(   m @* o, sc_t format, ... );
+    feature o push_u0( m @* o, u0_t u );
+    feature o push_char( m @* o, char c );
+    feature o push_sc(   m @* o, sc_t sc );
+    feature o push_string(   m @* o, c st_s* string );
+    feature o push_string_d( m @* o, m st_s* string );
 
 
     stamp :buffer_s =
