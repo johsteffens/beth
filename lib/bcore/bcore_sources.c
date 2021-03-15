@@ -1365,7 +1365,6 @@ er_t bcore_source_stdin_s_parse_em_fv( bcore_source_stdin_s* o, sc_t format, va_
     if( !format ) return 0;
     if( format[ 0 ] == 0 ) return 0;
     if( format[ 0 ] == ' ' ) bcore_source_stdin_s_consume_whitechars( o );
-    if( bcore_source_stdin_s_eos( o ) ) return bcore_error_push_sc( TYPEOF_parse_error, "stdin: Unexpected end of stream reached." );
     if( o->buf_index == o->buf.size ) bcore_source_stdin_s_push_until_newline_or_eos( o );
 
     struct { er_t er; st_s* msg; } er_arg;
@@ -1670,6 +1669,7 @@ void sources_selftest_stdin( void )
 static st_s* sources_selftest( void )
 {
     //sources_selftest_stdin();
+
 
     st_s* msg = st_s_create();
     bcore_life_s* l = bcore_life_s_create();
