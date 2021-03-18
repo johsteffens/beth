@@ -2001,7 +2001,8 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                 }
                 while( o->sc[ idx ] != char_l && o->sc[ idx ] != 0 )
                 {
-                    if( string ) st_s_push_char( string, o->sc[ idx++ ] );
+                    if( string ) st_s_push_char( string, o->sc[ idx ] );
+                    idx++;
                 }
             }
             else
