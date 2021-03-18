@@ -51,26 +51,33 @@
 XOILA_DEFINE_GROUP( bcore_main, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-/// This function should be polled to determine if running routine is being required to exit.
-signature bl_t exit_required( c @* o );
-
 stamp :frame_s = aware bcore_inst
 {
+    /// ==== Parameters ====
+
     /// interpreter used to decode the config file; If NULL, frame tries to guess the correct interpreter from the file's content
     aware bcore_interpreter => interpreter;
 
-    /// program arguments
-    bcore_arr_st_s args;
-
-    hidden bcore_mutex_s mutex;
-
     /// The following criteria are processed in given order until one matches or all fail
-    bl_t first_argument_is_path_to_config = true;   // path to config file is expected as first argument
+    bl_t  first_argument_is_path_to_object = true; // path to object's config file is expected as first argument
+    bl_t second_argument_is_path_to_script = true; // path to scipt file file is expected as first argument (only when feature 'main_parse' is implemented)
     sc_t local_file = "beth.config";  // config file in current folder
     sc_t global_file;                 // global path to config file
 
-    /// This implementation allows 'o' to be NULL in which case it returns always false.
-    func :.exit_required;
+    /// ==== Internal data ====
+
+    /// program arguments
+    bcore_arr_st_s args;
+    hidden bcore_mutex_s mutex;
+
+    /// source for parsing or interactivity
+    hidden aware bcore_source -> source;
+
+    /// sink for general runtime output or interactivity
+    hidden aware bcore_sink -> sink;
+
+    /// object wrapped by this frame
+    sr_s object_sr;
 
     func (er_t exec( m @* o, bcore_arr_st_s* args ));
 
@@ -78,7 +85,25 @@ stamp :frame_s = aware bcore_inst
     func (er_t main( mutable bcore_main_frame_s* o, sz_t argc, char** argv ));
 };
 
-feature strict 'ar' er_t main( m @* o, m :frame_s* frame );
+/// If available, this feature is called by function frame_s_main after loading the object.
+feature 'ar' er_t main( m @* o, m :frame_s* frame );
+
+/** On exit is called when a exit is required (typically when SIGTERM was received)
+ *  The implementation should return 'true' when the signal was handled and consumed.
+ */
+feature 'ar' bl_t on_termination( mutable @* o, :frame_s* frame ) = { return false; };
+
+/** On interrupt is called on SIGINT (C-c).
+ *  This is typically used to cleanly exit and close the program.
+ *  The implementation should return 'true' when the signal was handled and consumed.
+ */
+feature 'ar' bl_t on_interrupt( mutable @* o, :frame_s* frame ) = { return false; };
+
+/** On suspend is called on SIGTSTP (C-z).
+ *  This is typically used to cleanly leave a long running function for interactive purposes.
+ *  The implementation should return 'true' when the signal was handled and consumed.
+ */
+feature 'ar' bl_t on_suspend( mutable @* o, :frame_s* frame ) = { return false; };
 
 stamp :arr_s = aware x_array
 {
@@ -88,14 +113,46 @@ stamp :arr_s = aware x_array
 stamp :set_s = aware :
 {
     :arr_s arr;
-    func : . main =
+
+    private :* current_object;
+    bcore_mutex_s mutex_current_object;
+
+    func :.main =
     {
-        foreach( m $* e in o->arr ) try( e.main( frame ) );
+        foreach( m $* e in o->arr )
+        {
+            {
+                bcore_lock_s^ lock.set( o.mutex_current_object );
+                o.current_object = e;
+            }
+            try( e.main( frame ) );
+        };
+        o.current_object = NULL;
         return 0;
+    };
+
+    func :.on_termination =
+    {
+        bcore_lock_s^ lock.set( o.mutex_current_object );
+        return o.current_object ? o.current_object.on_termination( frame ) : false;
+    };
+
+    func :.on_interrupt =
+    {
+        bcore_lock_s^ lock.set( o.mutex_current_object );
+        return o.current_object ? o.current_object.on_interrupt( frame ) : false;
+    };
+
+    func :.on_suspend =
+    {
+        bcore_lock_s^ lock.set( o.mutex_current_object );
+        return o.current_object ? o.current_object.on_suspend( frame ) : false;
     };
 };
 
 //----------------------------------------------------------------------------------------------------------------------
+
+embed "bcore_main.x";
 
 #endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
