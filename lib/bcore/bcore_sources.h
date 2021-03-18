@@ -137,6 +137,7 @@ bcore_source_string_s* bcore_source_string_s_create_from_sc(           sc_t sc )
 bcore_source_string_s* bcore_source_string_s_create_sc( sc_t sc );
 bcore_source_string_s* bcore_source_string_s_create_fv( sc_t format, va_list args );
 bcore_source_string_s* bcore_source_string_s_create_fa( sc_t format, ... );
+bcore_source_string_s* bcore_source_string_s_create_parse_line( bcore_source* source );
 
 bcore_source_string_s* bcore_source_string_s_setup_from_string(   bcore_source_string_s*, const st_s* string );
 bcore_source_string_s* bcore_source_string_s_setup_from_string_d( bcore_source_string_s*,       st_s* string );
@@ -145,7 +146,10 @@ bcore_source_string_s* bcore_source_string_s_setup_sc( bcore_source_string_s*, s
 bcore_source_string_s* bcore_source_string_s_setup_fv( bcore_source_string_s*, sc_t format, va_list args );
 bcore_source_string_s* bcore_source_string_s_setup_fa( bcore_source_string_s*, sc_t format, ... );
 
-uz_t                   bcore_source_string_s_get_data( bcore_source_string_s* o, vd_t data, uz_t size );
+/// parses source til the end of line or eos
+bcore_source_string_s* bcore_source_string_s_setup_parse_line( bcore_source_string_s*, bcore_source* source );
+
+uz_t bcore_source_string_s_get_data( bcore_source_string_s* o, vd_t data, uz_t size );
 
 /** Specifies an external supplier (source); supplier is not owned by this object.
  *  The supplier is automatically detached when empty.

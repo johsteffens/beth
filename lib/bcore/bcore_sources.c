@@ -615,6 +615,13 @@ bcore_source_string_s* bcore_source_string_s_create_fa( sc_t format, ... )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bcore_source_string_s* bcore_source_string_s_create_parse_line( bcore_source* source )
+{
+    return bcore_source_string_s_setup_parse_line( bcore_source_string_s_create(), source );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 bcore_source_string_s* bcore_source_string_s_setup_from_string( bcore_source_string_s* o, const st_s* string )
 {
     bcore_source_string_s_reset( o );
@@ -663,6 +670,15 @@ bcore_source_string_s* bcore_source_string_s_setup_fa( bcore_source_string_s* o,
     bcore_source_string_s* ret = bcore_source_string_s_setup_fv( o, format, args );
     va_end( args );
     return ret;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bcore_source_string_s* bcore_source_string_s_setup_parse_line( bcore_source_string_s* o, bcore_source* source )
+{
+    st_s* st = st_s_create();
+    bcore_source_a_parse_fa( source, "#until'\n'", st );
+    return bcore_source_string_s_setup_from_string_d( o, st );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
