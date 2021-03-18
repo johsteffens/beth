@@ -62,6 +62,7 @@ BCORE_DECLARE_SPECT( bcore_via )
     const bcore_via_call_spect_s* via_call_p; // via callback perspective of this item
     uz_t  size;                 // number of elements
     bl_t  is_leaf;
+    bl_t  is_aware;
     bcore_vitem_s* vitem_arr;   // array of vitem
 };
 
@@ -131,6 +132,7 @@ BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nget_array, const bcore_array
 BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAP0( bcore_via, nget_spect,                 vc_t, tp_t, name, tp_t, spect_type )
 
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_via, is_leaf,       bl_t )              // Leaf type according to function bcore_type_is_leaf
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_via, is_aware,      bl_t )              // Aware type (first element in reflection is aware_t)
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_via, is_pure_array, bl_t )              // Checks if object is an array without additional elements (pure arrays are not leafs)
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_array,     bl_t, uz_t, index ) // Checks if element is an array
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_static,    bl_t, uz_t, index ) // Checks if element is static (type need not be recorded)

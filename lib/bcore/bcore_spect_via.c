@@ -292,6 +292,11 @@ bl_t bcore_via_default_is_leaf( const bcore_via_s* p, const bcore_via* o )
     return p->is_leaf;
 }
 
+bl_t bcore_via_default_is_aware( const bcore_via_s* p, const bcore_via* o )
+{
+    return p->is_aware;
+}
+
 bl_t bcore_via_default_is_pure_array( const bcore_via_s* p, const bcore_via* o )
 {
     return ( ( p->size == 1 ) && bcore_via_default_iis_array( p, o, 0 ) );
@@ -391,13 +396,19 @@ static bcore_via_s* bcore_via_s_create_from_self( const bcore_self_s* self )
     {
         const bcore_self_item_s* self_item = bcore_self_s_get_item( self, i );
 
-        if( self_item->flags.f_hidden                   ) continue; // hidden items are not accessible in via
-        if( i == 0 && self_item->type == TYPEOF_aware_t ) continue; // self-aware type is not accessible in via
+        if( self_item->flags.f_hidden ) continue; // hidden items are not accessible in via
+        if( self_item->flags.f_const  ) continue; // constants are not accessible in via
+
+        // self-aware type is not directly accessible in via but can be queried from flag 'is_aware'
+        if( i == 0 && self_item->type == TYPEOF_aware_t )
+        {
+            o->is_aware = true;
+            continue;
+        }
 
         const bcore_inst_item_s* inst_item = bcore_inst_s_get_item_from_self_item( inst_p, self_item );
 
         if( inst_item && inst_item->no_trace ) continue; // instance no-trace items (private, external, ...) are not accessible in via
-        if( self_item->flags.f_const ) continue; // constants are not accessible in via
 
         bcore_vitem_s vitem;
         bcore_memzero( &vitem, sizeof( bcore_vitem_s ) );
@@ -504,8 +515,9 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_via )
     "bcore_spect_header_s header;"
     "private bcore_inst_s* inst_p;"
     "private bcore_via_call_spect_s* via_call_p;"
-    "private uz_t  size;"
-    "private bl_t  is_leaf;"
+    "private uz_t size;"
+    "private bl_t is_leaf;"
+    "private bl_t is_aware;"
     "private vd_t vitem_arr;"
 
     "func bcore_spect_fp:create_from_self;"

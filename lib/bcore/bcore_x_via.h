@@ -34,18 +34,25 @@ XOILA_DEFINE_GROUP( x_via, x_inst )
 //----------------------------------------------------------------------------------------------------------------------
 
 /// returns number of elements available
-func (sz_t   size(         c aware @* o )) = { return bcore_via_a_get_size(    o.cast( c bcore_via* ) ); };
-func (sz_t t_size( tp_t t, c obliv @* o )) = { return bcore_via_t_get_size( t, o.cast( c bcore_via* ) ); };
+func (sz_t   size( c aware @* o )) = { return bcore_via_a_get_size( o.cast( c bcore_via* ) ); };
+func (sz_t t_size( tp_t t )) = { return bcore_via_t_get_size( t, NULL ); };
+
+/// checks if t is a leaf-type (note that leaf types are not self-aware)
+func (bl_t t_is_leaf( tp_t t )) = { return bcore_via_t_is_leaf( t, NULL ); };
+
+/// checks if object is aware
+func (bl_t   is_aware( c aware @* o )) = { return bcore_via_a_is_aware( o.cast( c bcore_via* ) ); };
+func (bl_t t_is_aware( tp_t t )) = { return bcore_via_t_is_aware( t, NULL ); };
 
 /// returns name of indexed element
-func (tp_t   name(         c aware @* o, sz_t index )) = { return bcore_via_a_iget_name(    o.cast( c bcore_via* ), index ); };
-func (tp_t t_name( tp_t t, c obliv @* o, sz_t index )) = { return bcore_via_t_iget_name( t, o.cast( c bcore_via* ), index ); };
+func (tp_t   name( c aware @* o, sz_t index )) = { return bcore_via_a_iget_name( o.cast( c bcore_via* ), index ); };
+func (tp_t t_name( tp_t t,       sz_t index )) = { return bcore_via_t_iget_name( t, NULL, index ); };
 
 /// checks if given name exists
-func (bl_t   exists(         c aware @* o, tp_t name )) = { return bcore_via_a_nexists(    o.cast( c bcore_via* ), name ); };
-func (bl_t t_exists( tp_t t, c obliv @* o, tp_t name )) = { return bcore_via_t_nexists( t, o.cast( c bcore_via* ), name ); };
+func (bl_t   exists( c aware @* o, tp_t name )) = { return bcore_via_a_nexists(    o.cast( c bcore_via* ), name ); };
+func (bl_t t_exists( tp_t t,       tp_t name )) = { return bcore_via_t_nexists( t, NULL, name ); };
 
-/// returns type of element
+/// returns type of element (not that the type might be defined at runtime, hence the object o is always required)
 func (tp_t   type(         c aware @* o, tp_t name )) = { return bcore_via_a_nget_type(    o.cast( c bcore_via* ), name ); };
 func (tp_t t_type( tp_t t, c obliv @* o, tp_t name )) = { return bcore_via_t_nget_type( t, o.cast( c bcore_via* ), name ); };
 
