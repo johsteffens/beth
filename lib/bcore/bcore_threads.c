@@ -79,12 +79,144 @@ void bcore_mutex_s_unlock( bcore_mutex_s* o )
     if( ern ) ERR( "function returned error %i", ern );
 }
 
+bcore_lock_s* bcore_mutex_s_create_lock( bcore_mutex_s* o )
+{
+    bcore_lock_s* lock = bcore_lock_s_create();
+    bcore_lock_s_set( lock, o );
+    return lock;
+}
+
+bcore_unlock_s* bcore_mutex_s_create_unlock( bcore_mutex_s* o )
+{
+    bcore_unlock_s* unlock = bcore_unlock_s_create();
+    bcore_unlock_s_set( unlock, o );
+    return unlock;
+}
+
 static bcore_self_s* bcore_mutex_s_create_self( void )
 {
     bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_mutex_s = { ... }", bcore_mutex_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_mutex_s_init, "bcore_fp_init", "init" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_mutex_s_down, "bcore_fp_down", "down" );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_mutex_s_copy, "bcore_fp_copy", "copy" );
+    return self;
+}
+
+/**********************************************************************************************************************/
+// lock
+
+void bcore_lock_s_init( bcore_lock_s* o )
+{
+    bcore_memzero( o, sizeof( *o  ) );
+    o->_ = TYPEOF_bcore_lock_s;
+}
+
+void bcore_lock_s_down( bcore_lock_s* o )
+{
+    bcore_lock_s_release( o );
+}
+
+void bcore_lock_s_copy( bcore_lock_s* o, const bcore_lock_s* src )
+{
+    // nothing to do
+}
+
+void bcore_lock_s_attach( bcore_lock_s** o, bcore_lock_s* src )
+{
+    if( !o ) return;
+    bcore_lock_s_discard( *o );
+    *o = src;
+}
+
+void bcore_lock_s_detach( bcore_lock_s** o )
+{
+    if( o )
+    {
+        bcore_lock_s_discard( *o );
+        *o = NULL;
+    }
+}
+
+BCORE_DEFINE_FUNCTIONS_CDC( bcore_lock_s )
+
+void bcore_lock_s_set( bcore_lock_s* o, bcore_mutex_s* mutex )
+{
+    bcore_lock_s_release( o );
+    o->mutex = mutex;
+    bcore_mutex_s_lock( o->mutex );
+}
+
+void bcore_lock_s_release( bcore_lock_s* o )
+{
+    if( o->mutex ) bcore_mutex_s_unlock( o->mutex );
+    o->mutex = NULL;
+}
+
+static bcore_self_s* bcore_lock_s_create_self( void )
+{
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_lock_s = { aware_t _; private bcore_mutex_s* mutex; }", bcore_lock_s );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_lock_s_init, "bcore_fp_init", "init" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_lock_s_down, "bcore_fp_down", "down" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_lock_s_copy, "bcore_fp_copy", "copy" );
+    return self;
+}
+
+/**********************************************************************************************************************/
+// unlock
+
+void bcore_unlock_s_init( bcore_unlock_s* o )
+{
+    bcore_memzero( o, sizeof( *o  ) );
+    o->_ = TYPEOF_bcore_unlock_s;
+}
+
+void bcore_unlock_s_down( bcore_unlock_s* o )
+{
+    bcore_unlock_s_release( o );
+}
+
+void bcore_unlock_s_copy( bcore_unlock_s* o, const bcore_unlock_s* src )
+{
+    // nothing to do
+}
+
+void bcore_unlock_s_attach( bcore_unlock_s** o, bcore_unlock_s* src )
+{
+    if( !o ) return;
+    bcore_unlock_s_discard( *o );
+    *o = src;
+}
+
+void bcore_unlock_s_detach( bcore_unlock_s** o )
+{
+    if( o )
+    {
+        bcore_unlock_s_discard( *o );
+        *o = NULL;
+    }
+}
+
+BCORE_DEFINE_FUNCTIONS_CDC( bcore_unlock_s )
+
+void bcore_unlock_s_set( bcore_unlock_s* o, bcore_mutex_s* mutex )
+{
+    bcore_unlock_s_release( o );
+    o->mutex = mutex;
+    bcore_mutex_s_unlock( o->mutex );
+}
+
+void bcore_unlock_s_release( bcore_unlock_s* o )
+{
+    if( o->mutex ) bcore_mutex_s_lock( o->mutex );
+    o->mutex = NULL;
+}
+
+static bcore_self_s* bcore_unlock_s_create_self( void )
+{
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_unlock_s = { aware_t _; private bcore_mutex_s* mutex; }", bcore_unlock_s );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_unlock_s_init, "bcore_fp_init", "init" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_unlock_s_down, "bcore_fp_down", "down" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_unlock_s_copy, "bcore_fp_copy", "copy" );
     return self;
 }
 
@@ -340,11 +472,23 @@ vd_t bcore_threads_signal_handler( const bcore_signal_s* o )
         case TYPEOF_init1:
         {
             BCORE_REGISTER_OBJECT( bcore_mutex_s );
+            BCORE_REGISTER_OBJECT( bcore_lock_s );
+            BCORE_REGISTER_OBJECT( bcore_unlock_s );
             BCORE_REGISTER_OBJECT( bcore_condition_s );
             BCORE_REGISTER_OBJECT( bcore_thread_s );
             BCORE_REGISTER_OBJECT( bcore_thread_arr_s );
         }
         break;
+
+        case TYPEOF_get_quicktypes:
+        {
+            BCORE_REGISTER_QUICKTYPE( bcore_mutex_s );
+            BCORE_REGISTER_QUICKTYPE( bcore_lock_s );
+            BCORE_REGISTER_QUICKTYPE( bcore_unlock_s );
+            BCORE_REGISTER_QUICKTYPE( bcore_condition_s );
+            BCORE_REGISTER_QUICKTYPE( bcore_thread_s );
+            BCORE_REGISTER_QUICKTYPE( bcore_thread_arr_s );
+        };
 
         default: break;
     }

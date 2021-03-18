@@ -25,6 +25,9 @@
 /**********************************************************************************************************************/
 // mutex
 
+typedef struct bcore_lock_s bcore_lock_s;
+typedef struct bcore_unlock_s bcore_unlock_s;
+
 typedef struct bcore_mutex_s
 {
     pthread_mutex_t _mutex; // do not access directly
@@ -43,6 +46,68 @@ void bcore_mutex_s_detach( bcore_mutex_s** o );
 
 void bcore_mutex_s_lock(   bcore_mutex_s* o );
 void bcore_mutex_s_unlock( bcore_mutex_s* o );
+
+/// locks mutex for the lifetime of the returned object
+bcore_lock_s* bcore_mutex_s_create_lock( bcore_mutex_s* o );
+
+/// unlocks mutex for the lifetime of the returned object
+bcore_unlock_s* bcore_mutex_s_create_unlock( bcore_mutex_s* o );
+
+/**********************************************************************************************************************/
+// lock (locks a mutex during lifetime)
+
+typedef struct bcore_lock_s
+{
+    aware_t _;
+
+    /// pointer to associated mutx
+    bcore_mutex_s* mutex;
+} bcore_lock_s;
+
+void bcore_lock_s_init( bcore_lock_s* o );
+void bcore_lock_s_down( bcore_lock_s* o );
+void bcore_lock_s_copy( bcore_lock_s* o, const bcore_lock_s* src ); // does not do anything
+
+bcore_lock_s* bcore_lock_s_create();
+void          bcore_lock_s_discard( bcore_lock_s* o );
+bcore_lock_s* bcore_lock_s_clone( const bcore_lock_s* src ); // clone behaves like create (src is not evaluated)
+
+void bcore_lock_s_attach( bcore_lock_s** o, bcore_lock_s* src );
+void bcore_lock_s_detach( bcore_lock_s** o );
+
+/// sets lock on given mutex
+void bcore_lock_s_set( bcore_lock_s* o, bcore_mutex_s* mutex );
+
+/// releases lock if set; nothing otherwise; this function is also called by bcore_lock_s_down;
+void bcore_lock_s_release( bcore_lock_s* o );
+
+/**********************************************************************************************************************/
+// unlock (unlocks a mutex during lifetime)
+
+typedef struct bcore_unlock_s
+{
+    aware_t _;
+
+    /// pointer to associated mutx
+    bcore_mutex_s* mutex;
+} bcore_unlock_s;
+
+void bcore_unlock_s_init( bcore_unlock_s* o );
+void bcore_unlock_s_down( bcore_unlock_s* o );
+void bcore_unlock_s_copy( bcore_unlock_s* o, const bcore_unlock_s* src ); // does not do anything
+
+bcore_unlock_s* bcore_unlock_s_create();
+void          bcore_unlock_s_discard( bcore_unlock_s* o );
+bcore_unlock_s* bcore_unlock_s_clone( const bcore_unlock_s* src ); // clone behaves like create (src is not evaluated)
+
+void bcore_unlock_s_attach( bcore_unlock_s** o, bcore_unlock_s* src );
+void bcore_unlock_s_detach( bcore_unlock_s** o );
+
+/// sets lock on given mutex
+void bcore_unlock_s_set( bcore_unlock_s* o, bcore_mutex_s* mutex );
+
+/// releases lock if set; nothing otherwise; this function is also called by bcore_unlock_s_down;
+void bcore_unlock_s_release( bcore_unlock_s* o );
 
 /**********************************************************************************************************************/
 // once
@@ -88,7 +153,6 @@ void bcore_condition_s_wake_all( bcore_condition_s* o );
 
 typedef vd_t ( *bcore_fp_thread )( vd_t );
 
-#define TYPEOF_bcore_thread_s typeof( "bcore_thread_s" )
 typedef struct bcore_thread_s
 {
     pthread_t _thread; // do not access directly
@@ -128,7 +192,6 @@ vd_t bcore_thread_join( bcore_thread_s o );
 /**********************************************************************************************************************/
 // thread array
 
-#define TYPEOF_bcore_thread_arr_s typeof( "bcore_thread_arr_s" )
 typedef struct bcore_thread_arr_s bcore_thread_arr_s;
 
 void bcore_thread_arr_s_init( bcore_thread_arr_s* o );
