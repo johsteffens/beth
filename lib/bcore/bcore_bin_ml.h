@@ -92,6 +92,7 @@ void bcore_bin_ml_a_from_file( vd_t o,  sc_t file );
 void bcore_bin_ml_r_from_file( sr_s* o, sc_t file );
 void bcore_bin_ml_t_from_file( tp_t t, vd_t o, sc_t file );
 void bcore_bin_ml_a_from_source( vd_t o, bcore_source* source );
+void bcore_bin_ml_t_from_source( tp_t t, vd_t o, bcore_source* source );
 
 /**********************************************************************************************************************/
 // testing, debugging

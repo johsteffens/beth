@@ -391,6 +391,13 @@ void bcore_bin_ml_a_from_source( vd_t o, bcore_source* source )
     sr_down( sr );
 }
 
+void bcore_bin_ml_t_from_source( tp_t t, vd_t o, bcore_source* source )
+{
+    sr_s sr = bcore_bin_ml_from_source( source );
+    bcore_inst_t_copy_typed( t, o, sr_s_type( &sr ), sr.o );
+    sr_down( sr );
+}
+
 /**********************************************************************************************************************/
 
 sr_s bcore_bin_ml_transfer( sr_s obj )

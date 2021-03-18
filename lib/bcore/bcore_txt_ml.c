@@ -574,6 +574,15 @@ void bcore_txt_ml_a_from_source( vd_t o, bcore_source* source )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bcore_txt_ml_t_from_source( tp_t t, vd_t o, bcore_source* source )
+{
+    sr_s sr = bcore_txt_ml_from_source( source );
+    bcore_inst_t_copy_typed( t, o, sr_s_type( &sr ), sr.o );
+    sr_down( sr );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 sr_s bcore_txt_ml_from_file( sc_t file )
 {
     sr_s chain = sr_asd( bcore_source_chain_s_create() );
