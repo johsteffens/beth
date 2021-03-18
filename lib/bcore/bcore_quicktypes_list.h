@@ -66,6 +66,7 @@
 #define TYPEOF_bcore_bin_ml_translator_s  0xE2A6A0BD6400DF95ull
 #define TYPEOF_bcore_compare              0xAD6BC3D11F90CA92ull
 #define TYPEOF_bcore_compare_s            0xEDBB859D079DEB2Cull
+#define TYPEOF_bcore_condition_s          0x63A1E406AFF0F566ull
 #define TYPEOF_bcore_folder_s             0x580BAD7E7F4F9391ull
 #define TYPEOF_bcore_hash                 0x67E7FEA390F4D133ull
 #define TYPEOF_bcore_hash_s               0x57EF6EA4EFC111B5ull
@@ -85,7 +86,9 @@
 #define TYPEOF_bcore_interpreter          0xC47915FCFE5ABDE7ull
 #define TYPEOF_bcore_interpreter_s        0x629D5AC4AE32E121ull
 #define TYPEOF_bcore_life_s               0x4798F9B01947D28Bull
+#define TYPEOF_bcore_lock_s               0x5F28C34C85940EBEull
 #define TYPEOF_bcore_matrix_s             0x0719BB15FFE93568ull
+#define TYPEOF_bcore_mutex_s              0xB5D5ECFEE89DA7A8ull
 #define TYPEOF_bcore_name_map_s           0xA40643058045AF7Bull
 #define TYPEOF_bcore_name_s               0xBF7AAC7961652142ull
 #define TYPEOF_bcore_self_s               0xFB48F920952F560Full
@@ -103,10 +106,13 @@
 #define TYPEOF_bcore_source_s             0xF817116464B44558ull
 #define TYPEOF_bcore_source_string_s      0x857BE9A80F30A3C0ull
 #define TYPEOF_bcore_spect_header_s       0x83EA1BA1B4578512ull
+#define TYPEOF_bcore_thread_arr_s         0x6E9457C2993D0391ull
+#define TYPEOF_bcore_thread_s             0x946AE8CD490B058Dull
 #define TYPEOF_bcore_translator           0x12122BA989F4FC99ull
 #define TYPEOF_bcore_translator_s         0xEBFBDA654DEB4DB3ull
 #define TYPEOF_bcore_txt_ml_interpreter_s 0x2A141542C016DC6Cull
 #define TYPEOF_bcore_txt_ml_translator_s  0x83B8775B2F7F01E4ull
+#define TYPEOF_bcore_unlock_s             0x8DA4EE0A705BA36Dull
 #define TYPEOF_bcore_via                  0x18B9A68C9B5CD219ull
 #define TYPEOF_bcore_via_s                0x541D0401D4DCFF33ull
 #define TYPEOF_down0                      0x965FAAAB1186C79Full
@@ -119,3 +125,4 @@
 #define TYPEOF_push_dependencies          0x2C61B4D51672DB73ull
 #define TYPEOF_selftest                   0x7EE758BBFCED33E3ull
 #define TYPEOF_st_s                       0xAFC24F191E3D18FCull
+

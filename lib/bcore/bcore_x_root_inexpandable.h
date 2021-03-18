@@ -181,10 +181,53 @@ group bcore_mutex = bcore_inst
     signature void lock(   m @* o );
     signature void unlock( m @* o );
 
+    signature d bcore_lock_s*   create_lock( m @* o );
+    signature d bcore_unlock_s* create_unlock( m @* o );
+
     stamp :s = obliv bcore_inst
     {
         func : .lock;
         func : .unlock;
+        func : .create_lock;
+        func : .create_unlock;
+    };
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// bcore_lock_s
+group bcore_lock = bcore_inst
+{
+    /** Sets lock on given mutex;
+     *  The lock is released on function release or when lock is shut down.
+     */
+    signature void set( m @* o, mutable bcore_mutex_s* mutex );
+    signature void release( m @* o );
+
+    stamp :s = aware bcore_inst
+    {
+        private bcore_mutex* mutex;
+        func :.set;
+        func :.release;
+    };
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// bcore_unlock_s
+group bcore_unlock = bcore_inst
+{
+    /** Sets lock on given mutex;
+     *  The lock is released on function release or when lock is shut down.
+     */
+    signature void set( m @* o, mutable bcore_mutex_s* mutex );
+    signature void release( m @* o );
+
+    stamp :s = aware bcore_inst
+    {
+        private bcore_mutex* mutex;
+        func :.set;
+        func :.release;
     };
 };
 

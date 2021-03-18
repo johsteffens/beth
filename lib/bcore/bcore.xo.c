@@ -1,6 +1,6 @@
+//  Last update: 2021-03-18T11:08:32Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 ... 2021 J.B.Steffens
- *  Last File Update: 2021-03-06T17:34:01Z
  *
  *  Copyright and License of this File:
  *
@@ -22,6 +22,7 @@
  *  bcore_arr_inexpandable.x
  *  bcore_flect_inexpandable.x
  *  bcore_hmap_inexpandable.x
+ *  bcore_main.x
  *  bcore_sink_inexpandable.x
  *  bcore_source_inexpandable.x
  *  bcore_sr_inexpandable.x
@@ -36,6 +37,8 @@
 #include "bcore_sr.h"
 #include "bcore_const_manager.h"
 
+// To force a rebuild of this target by xoico, reset the hash key value below to 0.
+// HKEYOF_bcore 0xF7DFF0478DC5F154ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -218,7 +221,7 @@ BCORE_DEFINE_OBJECT_INST_P( x_via_path_s )
 
 void x_via_path_s_push_index( x_via_path_s* o, sz_t index )
 {
-    // bcore_x_via.h:91:5
+    // bcore_x_via.h:98:5
     
     x_via_path_s_push(o,TYPEOF_x_via_path_s_array_index );
     x_via_path_s_push(o,index );
@@ -226,7 +229,7 @@ void x_via_path_s_push_index( x_via_path_s* o, sz_t index )
 
 const x_via_path_s* x_via_path_s_to_sink( const x_via_path_s* o, bcore_sink* sink )
 {
-    // bcore_x_via.h:134:1
+    // bcore_x_via.h:141:1
     
     for(sz_t i = 0; i < o->size; i++ )
     {
@@ -246,7 +249,7 @@ const x_via_path_s* x_via_path_s_to_sink( const x_via_path_s* o, bcore_sink* sin
 
 x_via_path_s* x_via_path_s_parse( x_via_path_s* o, bcore_source* source )
 {
-    // bcore_x_via.h:154:1
+    // bcore_x_via.h:161:1
     BLM_INIT_LEVEL(0);
     ((x_via_path_s*)(x_via_path_s_clear(o)));
     st_s name;BLM_T_INIT_SPUSH(st_s, &name);;
@@ -275,7 +278,7 @@ x_via_path_s* x_via_path_s_parse( x_via_path_s* o, bcore_source* source )
 
 sr_s x_via_path_s_get_sr_in_t( const x_via_path_s* o, tp_t t, const x_inst* inst )
 {
-    // bcore_x_via.h:184:1
+    // bcore_x_via.h:191:1
     
     sr_s sr0 = sr_twc(t, inst );
     if( !sr0.o ) return  sr_null();
@@ -323,7 +326,7 @@ sr_s x_via_path_s_get_sr_in_t( const x_via_path_s* o, tp_t t, const x_inst* inst
 
 sr_s x_via_path_s_set_sr_in_t( const x_via_path_s* o, tp_t t, x_inst* inst, sr_s sr_src )
 {
-    // bcore_x_via.h:233:1
+    // bcore_x_via.h:240:1
     BLM_INIT_LEVEL(0);
     sr_s sr0 = sr_twc(t, inst );
     
@@ -396,7 +399,7 @@ XOILA_DEFINE_SPECT( x_inst, x_via )
 
 sr_s x_via_t_m_get_sr( tp_t t, x_via* o, tp_t name )
 {
-    // bcore_x_via.h:299:1
+    // bcore_x_via.h:306:1
     
     const bcore_via_s* p = bcore_via_s_get_typed( t );
     sz_t index = bcore_via_p_nget_index( p, ((const bcore_via*)(o)), name );
@@ -406,7 +409,7 @@ sr_s x_via_t_m_get_sr( tp_t t, x_via* o, tp_t name )
 
 sr_s x_via_t_set_sr( tp_t t, x_via* o, tp_t name, sr_s sr_src )
 {
-    // bcore_x_via.h:310:1
+    // bcore_x_via.h:317:1
     
     const bcore_via_s* p = bcore_via_s_get_typed( t );
     sz_t index = bcore_via_p_nget_index( p, ((const bcore_via*)(o)), name );
@@ -423,7 +426,7 @@ sr_s x_via_t_set_sr( tp_t t, x_via* o, tp_t name, sr_s sr_src )
 
 sr_s x_via_t_c_get_sr( tp_t t, const x_via* o, tp_t name )
 {
-    // bcore_x_via.h:328:1
+    // bcore_x_via.h:335:1
     
     sr_s sr = x_via_t_m_get_sr(t, ((x_via*)(o)), name );
     if( sr_s_is_weak(&(sr)) ) sr_s_set_const(&(sr),true );
@@ -432,7 +435,7 @@ sr_s x_via_t_c_get_sr( tp_t t, const x_via* o, tp_t name )
 
 void x_via_selftest( void )
 {
-    // bcore_x_via.h:341:1
+    // bcore_x_via.h:348:1
     BLM_INIT_LEVEL(0);
     bcore_prsg_lcg_u3_00_s lcg;BLM_T_INIT_SPUSH(bcore_prsg_lcg_u3_00_s, &lcg);;
     
@@ -533,17 +536,21 @@ XOILA_DEFINE_SPECT( bcore_inst, bcore_via_call )
 #include "bcore_main.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bcore_main
+// group: bcore_main; embeds: bcore_main.x
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_main_frame_s )
 "aware bcore_inst"
 "{"
     "aware bcore_interpreter => interpreter;"
-    "bcore_arr_st_s args;"
-    "hidden bcore_mutex_s mutex;"
-    "bl_t first_argument_is_path_to_config = true;"
+    "bl_t first_argument_is_path_to_object = true;"
+    "bl_t second_argument_is_path_to_script = true;"
     "sc_t local_file = \"beth.config\";"
     "sc_t global_file;"
+    "bcore_arr_st_s args;"
+    "hidden bcore_mutex_s mutex;"
+    "hidden aware bcore_source -> source;"
+    "hidden aware bcore_sink -> sink;"
+    "sr_s object_sr;"
 "}";
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_main_arr_s )
@@ -556,21 +563,256 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_main_set_s )
 "aware bcore_main"
 "{"
     "bcore_main_arr_s arr;"
+    "private bcore_main* current_object;"
+    "bcore_mutex_s mutex_current_object;"
     "func ^:main;"
+    "func ^:on_termination;"
+    "func ^:on_interrupt;"
+    "func ^:on_suspend;"
 "}";
 
 er_t bcore_main_set_s_main( bcore_main_set_s* o, bcore_main_frame_s* frame )
 {
-    // bcore_main.h:92:5
+    // bcore_main.h:121:5
     
-    {const bcore_main_arr_s* __a=&(o->arr );if(__a)for(sz_t __i=0; __i<__a->size; __i++){bcore_main* e=__a->data[__i]; BLM_TRY(bcore_main_a_main(e,frame ) )
-    }}return  0;
+    {const bcore_main_arr_s* __a=&(o->arr );if(__a)for(sz_t __i=0; __i<__a->size; __i++){bcore_main* e=__a->data[__i];
+    {
+        {BLM_INIT_LEVEL(4);
+            bcore_lock_s lock;BLM_T_INIT_SPUSH(bcore_lock_s, &lock);bcore_lock_s_set(&(lock),&(o->mutex_current_object ));
+            o->current_object = e;
+        BLM_DOWN();}
+        BLM_TRY(bcore_main_a_main(e,frame ) )
+    };}}
+    o->current_object = NULL;
+    return  0;
+}
+
+bl_t bcore_main_set_s_on_termination( bcore_main_set_s* o, const bcore_main_frame_s* frame )
+{
+    // bcore_main.h:135:5
+    BLM_INIT_LEVEL(0);
+    bcore_lock_s lock;BLM_T_INIT_SPUSH(bcore_lock_s, &lock);bcore_lock_s_set(&(lock),&(o->mutex_current_object ));
+    BLM_RETURNV(bl_t, o->current_object ? bcore_main_a_on_termination(o->current_object,frame ) : false)
+}
+
+bl_t bcore_main_set_s_on_interrupt( bcore_main_set_s* o, const bcore_main_frame_s* frame )
+{
+    // bcore_main.h:141:5
+    BLM_INIT_LEVEL(0);
+    bcore_lock_s lock;BLM_T_INIT_SPUSH(bcore_lock_s, &lock);bcore_lock_s_set(&(lock),&(o->mutex_current_object ));
+    BLM_RETURNV(bl_t, o->current_object ? bcore_main_a_on_interrupt(o->current_object,frame ) : false)
+}
+
+bl_t bcore_main_set_s_on_suspend( bcore_main_set_s* o, const bcore_main_frame_s* frame )
+{
+    // bcore_main.h:147:5
+    BLM_INIT_LEVEL(0);
+    bcore_lock_s lock;BLM_T_INIT_SPUSH(bcore_lock_s, &lock);bcore_lock_s_set(&(lock),&(o->mutex_current_object ));
+    BLM_RETURNV(bl_t, o->current_object ? bcore_main_a_on_suspend(o->current_object,frame ) : false)
 }
 
 XOILA_DEFINE_SPECT( bcore_inst, bcore_main )
 "{"
     "bcore_spect_header_s header;"
-    "feature strict aware bcore_main : main;"
+    "feature aware bcore_main : main;"
+    "feature aware bcore_main : on_termination = bcore_main_on_termination_default;"
+    "feature aware bcore_main : on_interrupt = bcore_main_on_interrupt_default;"
+    "feature aware bcore_main : on_suspend = bcore_main_on_suspend_default;"
+    "feature aware bcore_main : shell = bcore_main_shell_default;"
+    "feature aware bcore_main : shell_help = bcore_main_shell_help_default;"
+"}";
+
+er_t bcore_main_shell_loop( bcore_main* o, const bcore_main_frame_s* frame, bcore_source* source, bcore_sink* sink, bcore_main_control* control )
+{
+    // bcore_main.x:79:1
+    BLM_INIT_LEVEL(0);
+    if( !control ) control =((bcore_main_control*)( ((bcore_main_control_s*)BLM_LEVEL_T_PUSH(0,bcore_main_control_s,bcore_main_control_s_create()))));
+    
+    while( !bcore_source_a_eos(source) )
+    {
+        bcore_sink_a_flush(bcore_sink_a_push_fa(sink,"\n(#<sc_t>)> ", bnameof( o->_ ) ));
+        bcore_source_a_parse_fa(source," " );
+    
+        bcore_main_control_a_reset(control);
+    
+        if( bcore_main_a_shell(o,frame, source, sink, control ) )
+        {
+            if( bcore_main_control_a_exit_loop(control) ) break;
+        }
+        else if( bcore_source_a_parse_bl(source,"#?w'xo'" ) )
+        {
+            break;
+        }
+        else if( bcore_source_a_parse_bl(source,"#?w'exit'" ) )
+        {
+            break;
+        }
+        else if( bcore_source_a_parse_bl(source,"#?'?'" ) || bcore_source_a_parse_bl(source,"#?'help'" ) )
+        {BLM_INIT_LEVEL(3);
+            bcore_main_helper_s_to_sink(((bcore_main_helper_s*)(bcore_main_helper_s_setup(((bcore_main_helper_s*)BLM_LEVEL_T_PUSH(3,bcore_main_helper_s,bcore_main_helper_s_create())),o ))),sink );
+        BLM_DOWN();}
+        else
+        {BLM_INIT_LEVEL(2);
+            bcore_source_a_parse_fa(source,"#-until'\n'" );
+            bcore_sink_a_push_fa(sink,"Invalid command.\n\n" );
+            bcore_sink_a_push_fa(sink,"List of available commands:\n" );
+            bcore_main_helper_s_to_sink(((bcore_main_helper_s*)(bcore_main_helper_s_setup(((bcore_main_helper_s*)BLM_LEVEL_T_PUSH(2,bcore_main_helper_s,bcore_main_helper_s_create())),o ))),sink );
+        BLM_DOWN();}
+    }
+    
+    BLM_RETURNV(er_t, 0)
+}
+
+bl_t bcore_main_shell_default( bcore_main* o, const bcore_main_frame_s* frame, bcore_source* source, bcore_sink* sink, bcore_main_control* control )
+{
+    // bcore_main.x:120:1
+    
+    if( bcore_source_a_parse_bl(source,"#?w'ls'" ) )
+    {BLM_INIT_LEVEL(1);
+        bcore_source_a_parse_fa(source,"#skip' '" );
+    
+        bl_t extensive = bcore_source_a_parse_bl(source,"#?'-l'" );
+    
+        x_via_path_s path;BLM_T_INIT_SPUSH(x_via_path_s, &path);((x_via_path_s*)(x_via_path_s_parse(&(path),((bcore_source*)(((bcore_source_string_s*)BLM_LEVEL_T_PUSH(1,bcore_source_string_s,bcore_source_string_s_create_parse_line(source ))) )))));
+        sr_s sr = x_via_path_s_get_sr_in(&(path),((const x_inst*)(o )));
+    
+        if( sr.o )
+        {
+            if( extensive )
+            {
+                ((x_inst*)(x_inst_t_to_sink_txt_ml(sr_s_type(&( sr )), sr.o, sink )));
+            }
+            else
+            {
+                tp_t t = sr_s_type(&( sr ));
+                const x_via* v =((const x_via*)( sr.o));
+                sz_t size = x_via_t_size(t );
+                for(sz_t i = 0; i < size; i++ )
+                {
+                    tp_t name = x_via_t_name(t, i );
+                    tp_t type = x_via_t_type(t, v, name );
+                    bcore_sink_a_push_fa(sink,"#<sc_t>: #<sc_t>\n", bnameof( name ), bnameof( type ) );
+                }
+            }
+        }
+        else
+        {
+            bcore_sink_a_push_fa(sink,"Path not found.\n" );
+        }
+        BLM_RETURNV(bl_t, true)
+    BLM_DOWN();}
+    else if( bcore_source_a_parse_bl(source,"#?w'eo'" ) )
+    {BLM_INIT_LEVEL(2);
+        bcore_source_a_parse_fa(source,"#skip' '" );
+    
+        x_via_path_s path;BLM_T_INIT_SPUSH(x_via_path_s, &path);((x_via_path_s*)(x_via_path_s_parse(&(path),((bcore_source*)(((bcore_source_string_s*)BLM_LEVEL_T_PUSH(2,bcore_source_string_s,bcore_source_string_s_create_parse_line(source ))) )))));
+        sr_s sr = x_via_path_s_get_sr_in(&(path),((const x_inst*)(o )));
+    
+        if( sr.o )
+        {
+            tp_t t = sr_s_type(&( sr ));
+            if( !x_via_t_is_aware(t ) )
+            {
+                bcore_sink_a_push_fa(sink,"Selected object '#<sc_t>' is oblivious.\n", bnameof( t ) );
+                BLM_RETURNV(bl_t, true)
+            }
+    
+            bcore_main* mo =((bcore_main*)( sr.o));
+            bcore_main_shell_loop(mo,frame, source, sink, NULL );
+        }
+        else
+        {
+            bcore_sink_a_push_fa(sink,"Path not found.\n" );
+        }
+    
+        BLM_RETURNV(bl_t, true)
+    BLM_DOWN();}
+    return  false;
+}
+
+void bcore_main_shell_help_default( const bcore_main* o, bcore_main_helper* helper )
+{
+    // bcore_main.x:187:1
+    BLM_INIT_LEVEL(0);
+    bcore_main_helper_a_push(helper,"?, help",        "Prints this help message." );
+    bcore_main_helper_a_push(helper,"ls [-l] <path>", "Lists all visible members. -l: txt_ml to stdout" );
+    bcore_main_helper_a_push(helper,"eo <path>",      "(Enter Object): Enters interactive loop in specified object." );
+    bcore_main_helper_a_push(helper,"xo, exit",       st_s_push_fa(((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create())),"(Exit Object):  Leaves interactive loop in '#<sc_t>'.", bnameof( o->_ ) )->sc );
+    BLM_DOWN();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_main_control
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_main_control_s )
+"aware bcore_main_control"
+"{"
+    "bl_t exit_loop;"
+    "func ^:reset;"
+    "func ^:request_exit_loop;"
+    "func ^:exit_loop;"
+"}";
+
+XOILA_DEFINE_SPECT( bcore_main, bcore_main_control )
+"{"
+    "bcore_spect_header_s header;"
+    "feature aware bcore_main_control : request_exit_loop;"
+    "feature aware bcore_main_control : exit_loop;"
+    "feature aware bcore_main_control : reset;"
+"}";
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_main_helper
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_main_helper_item_s )
+"aware bcore_main_helper"
+"{"
+    "st_s command;"
+    "st_s description;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_main_helper_items_s )
+"aware x_array"
+"{"
+    "bcore_main_helper_item_s => [];"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( bcore_main_helper_s )
+"aware bcore_main_helper"
+"{"
+    "bcore_main_helper_items_s items;"
+    "func ^:push;"
+    "func ^:to_sink;"
+"}";
+
+void bcore_main_helper_s_push( const bcore_main_helper_s* o, sc_t command, sc_t description )
+{
+    // bcore_main.x:58:9
+    BLM_INIT_LEVEL(0);
+    bcore_main_helper_item_s item;BLM_T_INIT_SPUSH(bcore_main_helper_item_s, &item);;
+    st_s_copy_sc(&(item.command),command );
+    st_s_copy_sc(&(item.description),description );
+    ((bcore_main_helper_item_s*)(x_array_push_c(((x_array*)(&(o->items))),((const x_inst*)(&(item ))))));
+    BLM_DOWN();
+}
+
+void bcore_main_helper_s_to_sink( const bcore_main_helper_s* o, bcore_sink* sink )
+{
+    // bcore_main.x:66:9
+    
+    sz_t size_cmd = 0; {const bcore_main_helper_items_s* __a=&(o->items );if(__a)for(sz_t __i=0; __i<__a->size; __i++){const bcore_main_helper_item_s* e=__a->data[__i]; size_cmd = sz_max( size_cmd, e->command.size );}}
+    {const bcore_main_helper_items_s* __a=&(o->items );if(__a)for(sz_t __i=0; __i<__a->size; __i++){const bcore_main_helper_item_s* e=__a->data[__i];
+    {
+        bcore_sink_a_push_fa(sink,"#pn' '{#<st_s*>}   #<st_s*>\n", size_cmd, (&(e->command)), (&(e->description)) );
+    }
+    }}
+}
+
+XOILA_DEFINE_SPECT( bcore_main, bcore_main_helper )
+"{"
+    "bcore_spect_header_s header;"
+    "feature aware bcore_main_helper : push;"
+    "feature aware bcore_main_helper : to_sink;"
 "}";
 
 /**********************************************************************************************************************/
@@ -1703,10 +1945,43 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             // group: bcore_main
             BCORE_REGISTER_OBJECT( bcore_main_frame_s );
             BCORE_REGISTER_FEATURE( bcore_main_main );
+            BCORE_REGISTER_FEATURE( bcore_main_on_termination );
+            BCORE_REGISTER_FFUNC( bcore_main_on_termination, bcore_main_on_termination_default );
+            BCORE_REGISTER_FEATURE( bcore_main_on_interrupt );
+            BCORE_REGISTER_FFUNC( bcore_main_on_interrupt, bcore_main_on_interrupt_default );
+            BCORE_REGISTER_FEATURE( bcore_main_on_suspend );
+            BCORE_REGISTER_FFUNC( bcore_main_on_suspend, bcore_main_on_suspend_default );
             BCORE_REGISTER_OBJECT( bcore_main_arr_s );
             BCORE_REGISTER_FFUNC( bcore_main_main, bcore_main_set_s_main );
+            BCORE_REGISTER_FFUNC( bcore_main_on_termination, bcore_main_set_s_on_termination );
+            BCORE_REGISTER_FFUNC( bcore_main_on_interrupt, bcore_main_set_s_on_interrupt );
+            BCORE_REGISTER_FFUNC( bcore_main_on_suspend, bcore_main_set_s_on_suspend );
             BCORE_REGISTER_OBJECT( bcore_main_set_s );
+            BCORE_REGISTER_FEATURE( bcore_main_shell );
+            BCORE_REGISTER_FFUNC( bcore_main_shell, bcore_main_shell_default );
+            BCORE_REGISTER_FEATURE( bcore_main_shell_help );
+            BCORE_REGISTER_FFUNC( bcore_main_shell_help, bcore_main_shell_help_default );
             XOILA_REGISTER_SPECT( bcore_main );
+
+            // group: bcore_main_control
+            BCORE_REGISTER_FEATURE( bcore_main_control_request_exit_loop );
+            BCORE_REGISTER_FEATURE( bcore_main_control_exit_loop );
+            BCORE_REGISTER_FEATURE( bcore_main_control_reset );
+            BCORE_REGISTER_FFUNC( bcore_main_control_reset, bcore_main_control_s_reset );
+            BCORE_REGISTER_FFUNC( bcore_main_control_request_exit_loop, bcore_main_control_s_request_exit_loop );
+            BCORE_REGISTER_FFUNC( bcore_main_control_exit_loop, bcore_main_control_s_exit_loop );
+            BCORE_REGISTER_OBJECT( bcore_main_control_s );
+            XOILA_REGISTER_SPECT( bcore_main_control );
+
+            // group: bcore_main_helper
+            BCORE_REGISTER_FEATURE( bcore_main_helper_push );
+            BCORE_REGISTER_FEATURE( bcore_main_helper_to_sink );
+            BCORE_REGISTER_OBJECT( bcore_main_helper_item_s );
+            BCORE_REGISTER_OBJECT( bcore_main_helper_items_s );
+            BCORE_REGISTER_FFUNC( bcore_main_helper_push, bcore_main_helper_s_push );
+            BCORE_REGISTER_FFUNC( bcore_main_helper_to_sink, bcore_main_helper_s_to_sink );
+            BCORE_REGISTER_OBJECT( bcore_main_helper_s );
+            XOILA_REGISTER_SPECT( bcore_main_helper );
 
             // --------------------------------------------------------------------
             // source: bcore_hmap_name.h
@@ -1940,4 +2215,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOILA_OUT_SIGNATURE 0xE12D4F63A4028ACFull
+// XOICO_BODY_SIGNATURE 0xB2BF1A202AF84453
+// XOICO_FILE_SIGNATURE 0x8E6C6EDAC5618DE5

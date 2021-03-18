@@ -132,6 +132,12 @@ group :adaptive =
     /// outputs current status information to sink
     feature void status_to_sink( c @* o, sz_t verbosity, m bcore_sink* sink ) = { if( verbosity > 0 ) bcore_txt_ml_a_to_sink( o, sink ); };
 
+    /// command-line interface TODO: implement bcore_main feature instead
+    feature er_t run_command( m@* o, sc_t command ) =
+    {
+        return bcore_error_push_fa( TYPEOF_general_error, "Command '#<sc_t>': run_command is not implemented in '#<sc_t>'.", command, bnameof( o._ ) );
+    };
+
 };
 
 // ---------------------------------------------------------------------------------------------------------------------

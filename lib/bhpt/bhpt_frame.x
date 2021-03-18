@@ -138,10 +138,12 @@ stamp :s = aware bcore_main
     // log verbosity
     sz_t verbosity = 1;
 
-    /// ========= end parameters  ==========
+    /// ========= semi parameters  =========
 
     /// current state of frame
-    hidden :state_s => state;
+    :state_s => state;
+
+    /// ========= end parameters  ==========
 
     /// statistics
     hidden bhvm_stats_s stats_grad;
@@ -150,10 +152,29 @@ stamp :s = aware bcore_main
 
     hidden aware bcore_sink -> log;
 
+    hidden bl_t flag_exit_required;
+    hidden bl_t flag_suspend_requested;
+    hidden bl_t flag_interrupt_requested;
+    hidden bcore_mutex_s flag_mutex;
+
+    func (void run_training_single_threaded( m@* o ));
+    func (void run_training_multi_threaded( m@* o ));
+    func (void run_training( m@* o ));
+    func (bl_t exit_training( m@* o )) = { o.flag_mutex.create_lock()^; return o.flag_suspend_requested || o.flag_interrupt_requested || o.flag_exit_required; };
+
+    //func (void run_interactive( m@* o, bcore_main_frame_s* main_frame ));
+
     func bcore_main.main;
+    func bcore_main.shell;
+    func bcore_main.shell_help;
 
-    func bcore_main.exit_required = { return o.main_frame.exit_required(); };
+    func bcore_main.on_suspend     = { o.flag_mutex.create_lock()^; o.flag_suspend_requested   = true; return true; };
+    func bcore_main.on_interrupt   = { o.flag_mutex.create_lock()^; o.flag_interrupt_requested = true; o.flag_exit_required = true; return true; };
+    func bcore_main.on_termination = { o.flag_mutex.create_lock()^; o.flag_exit_required       = true; return true; };
 
+    func (void clear_flags( m @* o )) = { o.flag_mutex.create_lock()^; o.flag_suspend_requested = o.flag_interrupt_requested = o.flag_exit_required = false; };
+
+    func ( bl_t exit_required( @* o ) ) = { o.cast( m $* ).flag_mutex.create_lock()^; return o.flag_exit_required; };
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -163,7 +184,7 @@ func (:thread_item_s) :.loop =
     m $* probe_item  = bhpt_adaptor_probe_s!^;
     m $* probe_share = bhpt_adaptor_probe_s!^;
 
-    o.mutex.lock();
+    o.mutex.create_lock()^;
 
     while( o.running )
     {
@@ -175,18 +196,20 @@ func (:thread_item_s) :.loop =
             for( sz_t i = 0; i < o.prime_cycles; i++ ) o.share.tutor.prime( o.adaptive );
 
             o.adaptive.get_adaptor_probe( probe_item );
-            o.share.mutex.lock();
-            o.share.adaptive.get_adaptor_probe( probe_share );
-            probe_share.acc_grad( probe_item );
-            o.share.finished_count++;
-            o.share.mutex.unlock();
+
+            {
+                o.share.mutex.create_lock()^;
+                o.share.adaptive.get_adaptor_probe( probe_share );
+                probe_share.acc_grad( probe_item );
+                o.share.finished_count++;
+            }
+
             o.prime_cycles = 0;
         }
 
         o.share.condition_item.sleep( o.mutex );
     }
 
-    o.mutex.unlock();
     return NULL;
 };
 
@@ -268,9 +291,8 @@ func (:thread_base_s) :.run =
 
     foreach( m $* e in o.ads )
     {
-        e.mutex.lock();
+        bcore_lock_s^ _.set( e.mutex );
         e.prime_cycles = cycles_per_thread;
-        e.mutex.unlock();
     }
 
     o.share.condition_item.wake_all();
@@ -373,13 +395,13 @@ func (:s) (void test( m@* o )) =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:s) (void run_single_threaded( m@* o )) =
+func (:s) run_training_single_threaded =
 {
     m bhpt_frame_state_s* state = o.state;
 
     sz_t cycle_adapt = sz_max( o.cycle_adapt, 1 );
 
-    while( state.cycle < o.cycle_finish && !o.exit_required() )
+    while( state.cycle < o.cycle_finish && !o.exit_training() )
     {
         if( state.cycle == 0 || state.cycle - state.last_cycle_test >= o.cycle_test )
         {
@@ -407,7 +429,7 @@ func (:s) (void run_single_threaded( m@* o )) =
 // ---------------------------------------------------------------------------------------------------------------------
 
 /// multi threaded run
-func (:s) (void run_multi_threaded( m@* o )) =
+func (:s) run_training_multi_threaded =
 {
     m bhpt_frame_state_s* state = o.state;
     o.thread_base!.tsetup( o.threads, state.adaptive, o.tutor );
@@ -415,7 +437,7 @@ func (:s) (void run_multi_threaded( m@* o )) =
     sz_t prime_cycles_per_thread = sz_max( o->cycle_adapt / sz_max( o.threads, 1 ), 1 );
     sz_t cycle_adapt = o.threads * prime_cycles_per_thread;
 
-    while( state.cycle < o.cycle_finish && !o.exit_required() )
+    while( state.cycle < o.cycle_finish && !o.exit_training() )
     {
         if( state.cycle == 0 || state.cycle - state.last_cycle_test >= o.cycle_test )
         {
@@ -441,6 +463,22 @@ func (:s) (void run_multi_threaded( m@* o )) =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+func (:s) run_training =
+{
+    o.log.push_fa( "Running training... (C-z: interactive mode; C-c: save and quit)\n", o->state->cycle );
+    o.clear_flags();
+    if( o.threads < 1 )
+    {
+        o.run_training_single_threaded();
+    }
+    else
+    {
+        o.run_training_multi_threaded();
+    }
+};
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 func (:s) (void help_to_sink( m bcore_sink* sink )) =
 {
     sink.push_fa( "-help:  Prints this help information.\n" );
@@ -450,11 +488,47 @@ func (:s) (void help_to_sink( m bcore_sink* sink )) =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+func (:s) shell =
+{
+    if( source.parse_bl( "#?w's'" ) || source.parse_bl( "#?w'start'" ) )
+    {
+        o.run_training();
+        if( o.exit_required() ) control.request_exit_loop();
+        return true;
+    }
+
+    if( source.parse_bl( "#?w'safe'" ) )
+    {
+        sink.push_fa( "Saving state at cycle #<sz_t>\n", o->state->cycle );
+        o.backup();
+        return true;
+    }
+
+    if( o.shell_default( frame, source, sink, control ) )
+    {
+        return true;
+    }
+
+    return false;
+};
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+func (:s) shell_help =
+{
+    helper.push( "s, start", "Starts/Continues training (C-z: interactive exit; C-c: terminating exit)." );
+    helper.push( "safe",     "Saves current status." );
+    o.shell_help_default( helper );
+};
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 func (:s) bcore_main.main = (try)
 {
     o.main_frame = frame;
 
-    bl_t reset = false;
+    bl_t flag_reset = false;
+    bl_t flag_start = false;
 
     if( !o.log ) o.log = bcore_fork( BCORE_STDOUT );
 
@@ -475,11 +549,11 @@ func (:s) bcore_main.main = (try)
             }
             else if( arg.equal_sc( "-reset" ) )
             {
-                reset = true;
+                flag_reset = true;
             }
-            else if( arg.equal_sc( "-continue" ) )
+            else if( arg.equal_sc( "-start" ) || arg.equal_sc( "-continue" ) )
             {
-                reset = false;
+                flag_start = true;
             }
             else
             {
@@ -488,7 +562,7 @@ func (:s) bcore_main.main = (try)
         }
     }
 
-    if( !reset )
+    if( !flag_reset )
     {
         sc_t path = o.state_path.sc;
         if( path[ 0 ] && bcore_file_exists( path ) )
@@ -498,13 +572,13 @@ func (:s) bcore_main.main = (try)
         }
         else
         {
-            reset = true;
+            flag_reset = true;
         }
     }
 
     assert( o.tutor );
 
-    if( reset )
+    if( flag_reset )
     {
         o.state =< bhpt_frame_state_s!;
         o.state.adaptive = o.tutor.create_adaptive();
@@ -525,21 +599,19 @@ func (:s) bcore_main.main = (try)
     o.state.adaptive.status_to_sink( o.verbosity, o.log );
     o.log.push_fa( "\n" );
 
-    if( o.threads < 1 )
+    if( flag_start )
     {
-        o.run_single_threaded();
-    }
-    else
-    {
-        o.run_multi_threaded();
+        o.run_training();
     }
 
-    if( o.exit_required() )
+    if( !o.exit_required() )
     {
-        o.log.push_fa( "\nSaving state at cycle #<sz_t>\n", o->state->cycle );
-        o.backup();
-        o.log.push_fa( "Exiting cleanly.\n" );
+        o.shell_loop( frame, frame.source, frame.sink, NULL );
     }
+
+    o.log.push_fa( "\nSaving state at cycle #<sz_t>\n", o->state->cycle );
+    o.backup();
+    o.log.push_fa( "Exiting cleanly.\n" );
 
     return 0;
 };
@@ -596,24 +668,27 @@ func (:state_s) (void help_to_sink( m bcore_sink* sink )) =
 {
     sink.push_fa( "-help:  Prints this help information.\n" );
     sink.push_fa( "-csv name1 name2 ... : creates comma-separated-values table of selected numeric array items.\n" );
-    sink.push_fa( "   Example: csv  \n" );
+    sink.push_fa( "   Example: -csv cycle, test_result.error, test_result.bias \n" );
+    sink.push_fa( "-adaptive '<command string>': Passes a command string to the adaptive.\n" );
+    sink.push_fa( "   Example: -csv cycle, test_result.error, test_result.bias \n" );
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:state_s) bcore_main.main =
+func (:state_s) bcore_main.main = (try)
 {
     bcore_arr_st_s* args = frame.args;
     if( o.test_result_adl )
     {
         if( args.size > 2 )
         {
-            if( args.[ 2 ].equal_sc( "-help" ) )
+            st_s* cmd = args.[ 2 ];
+            if( cmd.equal_sc( "-help" ) )
             {
                 o.help_to_sink( BCORE_STDOUT );
                 return 0;
             }
-            else if( args.[ 2 ].equal_sc( "-csv" ) )
+            else if( cmd.equal_sc( "-csv" ) )
             {
                 sz_t idx = 3;
                 if( idx == args.size ) return bcore_error_push_fa( TYPEOF_general_error, "Element name expected." );
@@ -628,6 +703,18 @@ func (:state_s) bcore_main.main =
                 for( ; idx < args.size; idx++ ) arr_tp.push( hmap_name.set_sc( args.[idx].sc ) );
                 o.table_to_sink( hmap_name, path_adl, BCORE_STDOUT ).try();
                 return 0;
+            }
+            else if( cmd.equal_sc( "-adaptive" ) )
+            {
+                if( args.size > 3 )
+                {
+                    st_s* sub_cmd = args.[ 3 ];
+                    o.adaptive?.run_command( sub_cmd.sc );
+                }
+            }
+            else
+            {
+                return bcore_error_push_fa( TYPEOF_general_error, "Invalid command '#<sc_t>'", cmd.sc );
             }
         }
         else
