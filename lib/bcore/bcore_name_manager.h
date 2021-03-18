@@ -105,9 +105,9 @@ tp_t btypeof_fa( sc_t format, ... );
 tp_t bentypeof_fv( sc_t format, va_list args );
 tp_t bentypeof_fa( sc_t format, ... );
 
-static inline sc_t    bnameof(   tp_t type ) { return bcore_name_get_name( type ); }
+static inline sc_t    bnameof(   tp_t type ) { return bcore_name_try_name( type ); }
 static inline sc_t  bifnameof(   tp_t type ) { sc_t n = bcore_name_try_name( type ); return n ? n : ""; }
-static inline st_s*   bnameof_s( tp_t type ) { return bcore_name_get_name_s( type ); }
+static inline st_s*   bnameof_s( tp_t type ) { return bcore_name_try_name_s( type ); }
 static inline st_s* bifnameof_s( tp_t type ) { st_s* n = bcore_name_try_name_s( type ); return n ? n : st_s_create(); }
 
 /// statistics
