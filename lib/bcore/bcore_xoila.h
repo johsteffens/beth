@@ -21,6 +21,29 @@
 #include "bcore_trait.h"
 #include "bcore_spect.h"
 #include "bcore_spect_inst.h"
+#include "bcore_hmap.h"
+#include "bcore_arr.h"
+
+/**********************************************************************************************************************/
+
+/** group-stamp map
+ *  This map allows retrieving all stamps that have a specified group in their trait-line.
+ *  Requirement: the group must be 'retrievable'
+ *  The map is a const object. Changes are only allowed during init or down cycles.
+ */
+bcore_hmap_tpto_s* bcore_xoila_get_group_stamp_map( void );
+
+/** group-stamp list
+ *  List of all stamps that have 'group' in their traitline.
+ *  Retruns null in case group is not 'retrievable' or does not exist
+ */
+static inline const bcore_arr_tp_s* bcore_xoila_get_arr_traitline_stamps( tp_t group )
+{
+    vd_t* ptr = bcore_hmap_tpto_s_get( bcore_xoila_get_group_stamp_map(), group );
+    return ptr ? *ptr : NULL;
+}
+
+void bcore_xoila_set_arr_traitline_stamps_d( tp_t group, bcore_arr_tp_s* arr );
 
 /**********************************************************************************************************************/
 
