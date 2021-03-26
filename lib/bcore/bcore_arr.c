@@ -169,6 +169,21 @@ bcore_arr_uz_s* bcore_arr_uz_s_push_left( bcore_arr_uz_s* o, uz_t v )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+bcore_arr_uz_s* bcore_arr_uz_s_push_arr( bcore_arr_uz_s* o, const bcore_arr_uz_s* arr )
+{
+    if( arr->size == 0 ) return o;
+    if( o->size > o->space ) bcore_arr_uz_s_make_strong( o );
+    if( o->size + arr->size >= o->space )
+    {
+        uz_t new_space = uz_max( o->space * 2, o->size + arr->size );
+        o->data = bcore_un_alloc( sizeof( uz_t ), o->data, o->space, new_space, &o->space );
+    }
+    for( sz_t i = 0; i < arr->size; i++ ) o->data[ o->size++ ] = arr->data[ i ];
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_arr_uz_s_pop( bcore_arr_uz_s* o )
 {
     if( o->size == 0 ) return 0;
@@ -488,6 +503,31 @@ void bcore_arr_sz_s_push( bcore_arr_sz_s* o, sz_t v )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+bcore_arr_sz_s* bcore_arr_sz_s_push_left( bcore_arr_sz_s* o, sz_t v )
+{
+    bcore_arr_sz_s_push( o, 0 );
+    for( sz_t i = o->size - 1; i > 0; i-- ) o->data[ i ] = o->data[ i - 1 ];
+    o->data[ 0 ] = v;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_sz_s* bcore_arr_sz_s_push_arr( bcore_arr_sz_s* o, const bcore_arr_sz_s* arr )
+{
+    if( arr->size == 0 ) return o;
+    if( o->size > o->space ) bcore_arr_sz_s_make_strong( o );
+    if( o->size + arr->size >= o->space )
+    {
+        uz_t new_space = uz_max( o->space * 2, o->size + arr->size );
+        o->data = bcore_un_alloc( sizeof( tp_t ), o->data, o->space, new_space, &o->space );
+    }
+    for( sz_t i = 0; i < arr->size; i++ ) o->data[ o->size++ ] = arr->data[ i ];
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 sz_t bcore_arr_sz_s_pop( bcore_arr_sz_s* o )
 {
     if( o->size == 0 ) return 0;
@@ -787,6 +827,31 @@ bcore_arr_u3_s* bcore_arr_u3_s_push( bcore_arr_u3_s* o, u3_t v )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+bcore_arr_u3_s* bcore_arr_u3_s_push_left( bcore_arr_u3_s* o, u3_t v )
+{
+    bcore_arr_u3_s_push( o, 0 );
+    for( sz_t i = o->size - 1; i > 0; i-- ) o->data[ i ] = o->data[ i - 1 ];
+    o->data[ 0 ] = v;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_u3_s* bcore_arr_u3_s_push_arr( bcore_arr_u3_s* o, const bcore_arr_u3_s* arr )
+{
+    if( arr->size == 0 ) return o;
+    if( o->size > o->space ) bcore_arr_u3_s_make_strong( o );
+    if( o->size + arr->size >= o->space )
+    {
+        uz_t new_space = uz_max( o->space * 2, o->size + arr->size );
+        o->data = bcore_un_alloc( sizeof( tp_t ), o->data, o->space, new_space, &o->space );
+    }
+    for( sz_t i = 0; i < arr->size; i++ ) o->data[ o->size++ ] = arr->data[ i ];
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 u3_t bcore_arr_u3_s_pop( bcore_arr_u3_s* o )
 {
     if( o->size == 0 ) return 0;
@@ -1002,6 +1067,21 @@ bcore_arr_tp_s* bcore_arr_tp_s_push_left( bcore_arr_tp_s* o, tp_t v )
     bcore_arr_tp_s_push( o, 0 );
     for( sz_t i = o->size - 1; i > 0; i-- ) o->data[ i ] = o->data[ i - 1 ];
     o->data[ 0 ] = v;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_tp_s* bcore_arr_tp_s_push_arr( bcore_arr_tp_s* o, const bcore_arr_tp_s* arr )
+{
+    if( arr->size == 0 ) return o;
+    if( o->size > o->space ) bcore_arr_tp_s_make_strong( o );
+    if( o->size + arr->size >= o->space )
+    {
+        uz_t new_space = uz_max( o->space * 2, o->size + arr->size );
+        o->data = bcore_un_alloc( sizeof( tp_t ), o->data, o->space, new_space, &o->space );
+    }
+    for( sz_t i = 0; i < arr->size; i++ ) o->data[ o->size++ ] = arr->data[ i ];
     return o;
 }
 
@@ -1240,6 +1320,21 @@ bcore_arr_bl_s* bcore_arr_bl_s_push_left( bcore_arr_bl_s* o, bl_t v )
     bcore_arr_bl_s_push( o, false );
     for( sz_t i = o->size - 1; i > 0; i-- ) o->data[ i ] = o->data[ i - 1 ];
     o->data[ 0 ] = v;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_bl_s* bcore_arr_bl_s_push_arr( bcore_arr_bl_s* o, const bcore_arr_bl_s* arr )
+{
+    if( arr->size == 0 ) return o;
+    if( o->size > o->space ) bcore_arr_bl_s_make_strong( o );
+    if( o->size + arr->size >= o->space )
+    {
+        uz_t new_space = uz_max( o->space * 2, o->size + arr->size );
+        o->data = bcore_un_alloc( sizeof( tp_t ), o->data, o->space, new_space, &o->space );
+    }
+    for( sz_t i = 0; i < arr->size; i++ ) o->data[ o->size++ ] = arr->data[ i ];
     return o;
 }
 

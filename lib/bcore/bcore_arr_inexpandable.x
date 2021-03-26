@@ -26,6 +26,7 @@ signature m @* set_size ( m @* o, uz_t size  ); // resize
 signature s2_t cmp      (   @* o, @* b );
 signature m @* sort     ( m @* o, s2_t order ); // stable
 signature m @* reorder  ( m @* o, c bcore_arr_uz_s* order );
+signature m @* push_arr ( m @* o, c @* arr ); // appends array
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -55,6 +56,7 @@ group :uz = :
         func  : .step_fill;
         func  : .push;
         func  : .push_left;
+        func :: .push_arr;
         func  : .pop;
         func :: .cmp;
         func  : .find;
@@ -94,6 +96,7 @@ group :sz = :
         func  : .step_fill;
         func  : .push;
         func  : .push_left;
+        func :: .push_arr;
         func  : .pop;
         func :: .cmp;
         func  : .find;
@@ -128,6 +131,7 @@ group :u3 = :
         func  : .step_fill;
         func  : .push;
         func  : .push_left;
+        func :: .push_arr;
         func  : .pop;
         func :: .cmp;
         func  : .count_equal;
@@ -143,7 +147,9 @@ group :tp = :
     signature void push       ( m @* o, tp_t v );
     signature m @* push_left  ( m @* o, tp_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature tp_t pop        ( m @* o );
-    signature uz_t count_equal( c @* o,   tp_t val ); // number of occurrence
+    signature uz_t find       ( c @* o, uz_t start, uz_t end, tp_t v ); // behaves like st_s_find_*
+    signature bl_t exists     ( c @* o, tp_t v );
+    signature uz_t count_equal( c @* o, tp_t val ); // number of occurrence
 
     stamp :s = aware x_inst
     {
@@ -157,8 +163,10 @@ group :tp = :
         func  : .step_fill;
         func  : .push;
         func  : .push_left;
+        func :: .push_arr;
         func  : .pop;
         func :: .cmp;
+        func  : .exists;
         func  : .count_equal;
     };
 };
@@ -182,6 +190,7 @@ group :bl = :
         func  : .fill;
         func  : .push;
         func  : .push_left;
+        func :: .push_arr;
         func  : .pop;
         func :: .cmp;
         func  : .count_equal;

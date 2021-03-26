@@ -57,6 +57,7 @@ bcore_arr_uz_s* bcore_arr_uz_s_fill(      bcore_arr_uz_s* o, uz_t size, uz_t v )
 bcore_arr_uz_s* bcore_arr_uz_s_step_fill( bcore_arr_uz_s* o, uz_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
 void            bcore_arr_uz_s_push(      bcore_arr_uz_s* o, uz_t v );
 bcore_arr_uz_s* bcore_arr_uz_s_push_left( bcore_arr_uz_s* o, uz_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+bcore_arr_uz_s* bcore_arr_uz_s_push_arr(  bcore_arr_uz_s* o, const bcore_arr_uz_s* arr );
 uz_t            bcore_arr_uz_s_pop(       bcore_arr_uz_s* o );
 s2_t            bcore_arr_uz_s_cmp( const bcore_arr_uz_s* o, const bcore_arr_uz_s* b ); // see comment cmp( o, b ) above
 bcore_arr_uz_s* bcore_arr_uz_s_sort(      bcore_arr_uz_s* o, s2_t order ); // stable
@@ -89,6 +90,7 @@ bcore_arr_sz_s* bcore_arr_sz_s_fill(      bcore_arr_sz_s* o, uz_t size, sz_t v )
 bcore_arr_sz_s* bcore_arr_sz_s_step_fill( bcore_arr_sz_s* o, sz_t v_start, sz_t step, uz_t size ); // creates filled array according to stepping
 void            bcore_arr_sz_s_push(      bcore_arr_sz_s* o, sz_t v );
 bcore_arr_sz_s* bcore_arr_sz_s_push_left( bcore_arr_sz_s* o, sz_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+bcore_arr_sz_s* bcore_arr_sz_s_push_arr(  bcore_arr_sz_s* o, const bcore_arr_sz_s* arr ); // appends arr
 sz_t            bcore_arr_sz_s_pop(       bcore_arr_sz_s* o );
 s2_t            bcore_arr_sz_s_cmp( const bcore_arr_sz_s* o, const bcore_arr_sz_s* b ); // see comment cmp( o, b ) above
 bcore_arr_sz_s* bcore_arr_sz_s_sort(      bcore_arr_sz_s* o, s2_t order ); // stable
@@ -118,6 +120,7 @@ bcore_arr_u3_s* bcore_arr_u3_s_fill(      bcore_arr_u3_s* o, uz_t size, u3_t v )
 bcore_arr_u3_s* bcore_arr_u3_s_step_fill( bcore_arr_u3_s* o, u3_t v_start, u3_t step, uz_t size ); // creates filled array according to stepping
 bcore_arr_u3_s* bcore_arr_u3_s_push(      bcore_arr_u3_s* o, u3_t v );
 bcore_arr_u3_s* bcore_arr_u3_s_push_left( bcore_arr_u3_s* o, u3_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+bcore_arr_u3_s* bcore_arr_u3_s_push_arr(  bcore_arr_u3_s* o, const bcore_arr_u3_s* arr ); // appends arr
 u3_t bcore_arr_u3_s_pop(       bcore_arr_u3_s* o );
 s2_t            bcore_arr_u3_s_cmp( const bcore_arr_u3_s* o, const bcore_arr_u3_s* b ); // see comment cmp( o, b ) above
 bcore_arr_u3_s* bcore_arr_u3_s_sort(      bcore_arr_u3_s* o, s2_t order ); // stable
@@ -140,12 +143,18 @@ bcore_arr_tp_s* bcore_arr_tp_s_set_size(  bcore_arr_tp_s* o, uz_t size ); // res
 bcore_arr_tp_s* bcore_arr_tp_s_fill(      bcore_arr_tp_s* o, uz_t size, tp_t v ); // creates filled array of size <size>
 bcore_arr_tp_s* bcore_arr_tp_s_push(      bcore_arr_tp_s* o, tp_t v );
 bcore_arr_tp_s* bcore_arr_tp_s_push_left( bcore_arr_tp_s* o, tp_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+bcore_arr_tp_s* bcore_arr_tp_s_push_arr(  bcore_arr_tp_s* o, const bcore_arr_tp_s* arr ); // appends arr
 tp_t            bcore_arr_tp_s_pop(       bcore_arr_tp_s* o );
 s2_t            bcore_arr_tp_s_cmp( const bcore_arr_tp_s* o, const bcore_arr_tp_s* b ); // see comment cmp( o, b ) above
 bcore_arr_tp_s* bcore_arr_tp_s_sort(      bcore_arr_tp_s* o, s2_t order ); // stable
 bcore_arr_tp_s* bcore_arr_tp_s_reorder(   bcore_arr_tp_s* o, const bcore_arr_uz_s* order );
-uz_t bcore_arr_tp_s_find( const bcore_arr_tp_s* o, uz_t start, uz_t end, tp_t v ); // behaves like st_s_find_*
+uz_t            bcore_arr_tp_s_find( const bcore_arr_tp_s* o, uz_t start, uz_t end, tp_t v ); // behaves like st_s_find_*
 uz_t            bcore_arr_tp_s_count_equal( const bcore_arr_tp_s* o, tp_t val ); // number of occurrence
+
+static inline bl_t bcore_arr_tp_s_exists( const bcore_arr_tp_s* o, tp_t v )
+{
+    return bcore_arr_tp_s_find( o, 0, o->size, v ) < o->size;
+}
 
 /**********************************************************************************************************************/
 
@@ -163,6 +172,7 @@ bcore_arr_bl_s* bcore_arr_bl_s_set_size(   bcore_arr_bl_s* o, uz_t size ); // re
 bcore_arr_bl_s* bcore_arr_bl_s_fill(       bcore_arr_bl_s* o, uz_t size, bl_t v ); // creates filled array of size <size>
 bcore_arr_bl_s* bcore_arr_bl_s_push(       bcore_arr_bl_s* o, bl_t v );
 bcore_arr_bl_s* bcore_arr_bl_s_push_left(  bcore_arr_bl_s* o, bl_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+bcore_arr_bl_s* bcore_arr_bl_s_push_arr(  bcore_arr_bl_s* o, const bcore_arr_bl_s* arr ); // appends arr
 bl_t            bcore_arr_bl_s_pop( bcore_arr_bl_s* o );
 uz_t            bcore_arr_bl_s_count_equal( const bcore_arr_bl_s* o, bl_t val ); // number of occurrence
 s2_t            bcore_arr_bl_s_cmp( const bcore_arr_bl_s* o, const bcore_arr_bl_s* b ); // see comment cmp( o, b ) above
