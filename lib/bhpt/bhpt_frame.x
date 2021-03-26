@@ -162,11 +162,8 @@ stamp :s = aware bcore_main
     func (void run_training( m@* o ));
     func (bl_t exit_training( m@* o )) = { o.flag_mutex.create_lock()^; return o.flag_suspend_requested || o.flag_interrupt_requested || o.flag_exit_required; };
 
-    //func (void run_interactive( m@* o, bcore_main_frame_s* main_frame ));
-
     func bcore_main.main;
-    func bcore_main.shell;
-    func bcore_main.shell_help;
+    func bcore_shell.op_group = { return :op~; };
 
     func bcore_main.on_suspend     = { o.flag_mutex.create_lock()^; o.flag_suspend_requested   = true; return true; };
     func bcore_main.on_interrupt   = { o.flag_mutex.create_lock()^; o.flag_interrupt_requested = true; o.flag_exit_required = true; return true; };
@@ -488,41 +485,6 @@ func (:s) (void help_to_sink( m bcore_sink* sink )) =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:s) shell =
-{
-    if( source.parse_bl( "#?w's'" ) || source.parse_bl( "#?w'start'" ) )
-    {
-        o.run_training();
-        if( o.exit_required() ) control.request_exit_loop();
-        return true;
-    }
-
-    if( source.parse_bl( "#?w'safe'" ) )
-    {
-        sink.push_fa( "Saving state at cycle #<sz_t>\n", o->state->cycle );
-        o.backup();
-        return true;
-    }
-
-    if( o.shell_default( frame, source, sink, control ) )
-    {
-        return true;
-    }
-
-    return false;
-};
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-func (:s) shell_help =
-{
-    helper.push( "s, start", "Starts/Continues training (C-z: interactive exit; C-c: terminating exit)." );
-    helper.push( "safe",     "Saves current status." );
-    o.shell_help_default( helper );
-};
-
-// ---------------------------------------------------------------------------------------------------------------------
-
 func (:s) bcore_main.main = (try)
 {
     o.main_frame = frame;
@@ -606,7 +568,7 @@ func (:s) bcore_main.main = (try)
 
     if( !o.exit_required() )
     {
-        o.shell_loop( frame, frame.source, frame.sink, NULL );
+        o.cast( m bcore_shell* ).loop( frame, frame.source, frame.sink, NULL );
     }
 
     o.log.push_fa( "\nSaving state at cycle #<sz_t>\n", o->state->cycle );
@@ -725,6 +687,35 @@ func (:state_s) bcore_main.main = (try)
     }
 
     return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+group :op = retrievable
+{
+    stamp :run_s =
+    {
+        func bcore_shell_op.key = { return "run"; };
+        func bcore_shell_op.info = { return "starts/continues training; C-z: interactive exit; C-c: terminating exit"; };
+        func bcore_shell_op.run =
+        {
+            m$* frame = obj.cast( m ::s* );
+            frame.run_training();
+            if( frame.exit_required() ) control.request_exit_loop();
+        };
+    };
+
+    stamp :safe_s =
+    {
+        func bcore_shell_op.key = { return "safe"; };
+        func bcore_shell_op.info = { return "saves current status"; };
+        func bcore_shell_op.run =
+        {
+            m$* frame = obj.cast( m ::s* );
+            sink.push_fa( "Saving state at cycle #<sz_t>\n", frame.state.cycle );
+            frame.backup();
+        };
+    };
 };
 
 //----------------------------------------------------------------------------------------------------------------------
