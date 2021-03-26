@@ -47,7 +47,7 @@ void bcore_const_x_set_c( tp_t key,         sr_s v ); // clones v
 /// Removes key if existing. (Use only during init or down cycles)
 void bcore_const_remove( tp_t key );
 
-/// Get function (Do not modify referenced object); returns NULL if not existing
+/// Get function (Modifying referenced object is only allowed during init or down cycles); returns NULL if not existing
 vc_t        bcore_const_get_o( tp_t key );
 sr_s        bcore_const_get_x( tp_t key );
 const sr_s* bcore_const_get_r( tp_t key );
