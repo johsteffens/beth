@@ -1340,14 +1340,14 @@ void bcore_source_stdin_s_push_until_newline_or_eos( bcore_source_stdin_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_source_stdin_s_consume_whitechars( bcore_source_stdin_s* o )
+void bcore_source_stdin_s_consume_whitechars_excluding_newline( bcore_source_stdin_s* o )
 {
     for(;;)
     {
         if( o->buf_index < o->buf.size )
         {
             char c = o->buf.data[ o->buf_index ];
-            if( c == ' ' || c == '\t' || c == '\r' || c == '\n' )
+            if( c == ' ' || c == '\t' || c == '\r' )
             {
                 o->buf_index++;
             }
@@ -1380,7 +1380,7 @@ er_t bcore_source_stdin_s_parse_em_fv( bcore_source_stdin_s* o, sc_t format, va_
 {
     if( !format ) return 0;
     if( format[ 0 ] == 0 ) return 0;
-    if( format[ 0 ] == ' ' ) bcore_source_stdin_s_consume_whitechars( o );
+    if( format[ 0 ] == ' ' ) bcore_source_stdin_s_consume_whitechars_excluding_newline( o );
     if( o->buf_index == o->buf.size ) bcore_source_stdin_s_push_until_newline_or_eos( o );
 
     struct { er_t er; st_s* msg; } er_arg;
