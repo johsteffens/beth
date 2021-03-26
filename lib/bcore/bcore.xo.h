@@ -1,4 +1,4 @@
-//  Last update: 2021-03-26T20:04:45Z
+//  Last update: 2021-03-26T20:20:59Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 ... 2021 J.B.Steffens
  *
@@ -24,7 +24,6 @@
  *  bcore_arr_inexpandable.x
  *  bcore_flect_inexpandable.x
  *  bcore_hmap_inexpandable.x
- *  bcore_main.x
  *  bcore_sink_inexpandable.x
  *  bcore_source_inexpandable.x
  *  bcore_sr_inexpandable.x
@@ -420,7 +419,7 @@
 // source: bcore_main.h
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: bcore_main; embeds: bcore_main.x
+// group: bcore_main
 
 #define TYPEOF_bcore_main 0x567676BC9B1A5002ull
 #define TYPEOF_bcore_main_spect_s 0x6B2E883BCD2D246Eull
@@ -1188,29 +1187,36 @@
   { \
       aware_t _; \
       bl_t exit_loop; \
+      bl_t exit_all; \
   }; \
   static inline bcore_shell_control_s* bcore_shell_control_s_reset( bcore_shell_control_s* o ); \
   static inline void bcore_shell_control_s_request_exit_loop( bcore_shell_control_s* o ); \
+  static inline void bcore_shell_control_s_request_exit_all( bcore_shell_control_s* o ); \
   static inline bl_t bcore_shell_control_s_exit_loop( const bcore_shell_control_s* o ); \
   static inline bcore_shell_control_s* bcore_shell_control_s_reset( bcore_shell_control_s* o ){ o->exit_loop = false; return  o;} \
   static inline void bcore_shell_control_s_request_exit_loop( bcore_shell_control_s* o ){ o->exit_loop = true;} \
-  static inline bl_t bcore_shell_control_s_exit_loop( const bcore_shell_control_s* o ){ return  o->exit_loop;}
+  static inline void bcore_shell_control_s_request_exit_all( bcore_shell_control_s* o ){ o->exit_all = true;} \
+  static inline bl_t bcore_shell_control_s_exit_loop( const bcore_shell_control_s* o ){ return  o->exit_loop || o->exit_all;}
 #define BETH_EXPAND_GROUP_bcore_shell_control \
   BCORE_FORWARD_OBJECT( bcore_shell_control ); \
   BCORE_FORWARD_OBJECT( bcore_shell_control_s ); \
   typedef void (*bcore_shell_control_request_exit_loop)(bcore_shell_control* o ); \
+  typedef void (*bcore_shell_control_request_exit_all)(bcore_shell_control* o ); \
   typedef bl_t (*bcore_shell_control_exit_loop)(const bcore_shell_control* o ); \
   typedef bcore_shell_control* (*bcore_shell_control_reset)(bcore_shell_control* o ); \
   XOILA_DECLARE_SPECT( bcore_shell_control ) \
   { \
       bcore_spect_header_s header; \
       bcore_shell_control_request_exit_loop request_exit_loop; \
+      bcore_shell_control_request_exit_all request_exit_all; \
       bcore_shell_control_exit_loop exit_loop; \
       bcore_shell_control_reset reset; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_shell_control ) \
   static inline void bcore_shell_control_a_request_exit_loop( bcore_shell_control* o ){ const bcore_shell_control_spect_s* p = bcore_shell_control_spect_s_get_aware( o ); assert( p->request_exit_loop ); p->request_exit_loop( o );} \
   static inline bl_t bcore_shell_control_defines_request_exit_loop( const bcore_shell_control* o ){ return bcore_shell_control_spect_s_get_aware( o )->request_exit_loop != NULL;} \
+  static inline void bcore_shell_control_a_request_exit_all( bcore_shell_control* o ){ const bcore_shell_control_spect_s* p = bcore_shell_control_spect_s_get_aware( o ); assert( p->request_exit_all ); p->request_exit_all( o );} \
+  static inline bl_t bcore_shell_control_defines_request_exit_all( const bcore_shell_control* o ){ return bcore_shell_control_spect_s_get_aware( o )->request_exit_all != NULL;} \
   static inline bl_t bcore_shell_control_a_exit_loop( const bcore_shell_control* o ){ const bcore_shell_control_spect_s* p = bcore_shell_control_spect_s_get_aware( o ); assert( p->exit_loop ); return p->exit_loop( o );} \
   static inline bl_t bcore_shell_control_defines_exit_loop( const bcore_shell_control* o ){ return bcore_shell_control_spect_s_get_aware( o )->exit_loop != NULL;} \
   static inline bcore_shell_control* bcore_shell_control_a_reset( bcore_shell_control* o ){ const bcore_shell_control_spect_s* p = bcore_shell_control_spect_s_get_aware( o ); assert( p->reset ); return p->reset( o );} \
@@ -1239,13 +1245,14 @@
   BCORE_DECLARE_OBJECT( bcore_shell_ops_exit_s ) \
   { \
       aware_t _; \
+      bl_t a; \
   }; \
   static inline sc_t bcore_shell_ops_exit_s_key( const bcore_shell_ops_exit_s* o ); \
   static inline sc_t bcore_shell_ops_exit_s_info( const bcore_shell_ops_exit_s* o ); \
   static inline void bcore_shell_ops_exit_s_run( bcore_shell_ops_exit_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control* control ); \
   static inline sc_t bcore_shell_ops_exit_s_key( const bcore_shell_ops_exit_s* o ){ return  "x,exit";} \
-  static inline sc_t bcore_shell_ops_exit_s_info( const bcore_shell_ops_exit_s* o ){ return  "exits object";} \
-  static inline void bcore_shell_ops_exit_s_run( bcore_shell_ops_exit_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control* control ){ bcore_shell_control_a_request_exit_loop(control);}
+  static inline sc_t bcore_shell_ops_exit_s_info( const bcore_shell_ops_exit_s* o ){ return  "exits object; -a: exits all parent objects";} \
+  static inline void bcore_shell_ops_exit_s_run( bcore_shell_ops_exit_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control* control ){ if( o->a ) bcore_shell_control_a_request_exit_all(control); else bcore_shell_control_a_request_exit_loop(control);}
 #define TYPEOF_bcore_shell_ops_help_s 0x53BFC1F6D21B0228ull
 #define BETH_EXPAND_ITEM_bcore_shell_ops_help_s \
   BCORE_DECLARE_OBJECT( bcore_shell_ops_help_s ) \
@@ -1297,5 +1304,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 BETH_EXPAND_GROUP_bcore_shell
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xBCF8860E13C7BB54
-// XOICO_FILE_SIGNATURE 0xCB684160FF17A5CB
+// XOICO_BODY_SIGNATURE 0xF746D29DA1EEC8DB
+// XOICO_FILE_SIGNATURE 0xD346DD73342A2630
