@@ -151,7 +151,7 @@ static sr_s object_typelist()
     bcore_array_r_push_sc( &list, "bcore_matrix_s" );
     bcore_array_r_push_sc( &list, "bcore_life_s" );
     bcore_array_r_push_sc( &list, "bcore_source_context_s" );
-
+    bcore_array_r_push_sc( &list, "bcore_const_group_stamp_map" );
 
     // signals
     bcore_array_r_push_sc( &list, "all"   );             // (target) broadcast to all

@@ -1,4 +1,4 @@
-//  Last update: 2021-03-17T21:33:09Z
+//  Last update: 2021-03-26T20:04:45Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 ... 2021 J.B.Steffens
  *
@@ -10,6 +10,7 @@
  *  bcore_x_root_inexpandable.h
  *  bcore_x_inst.h
  *  bcore_x_array.h
+ *  bcore_x_group.h
  *  bcore_x_via.h
  *  bcore_file.h
  *  bcore_spect_inst_call.h
@@ -19,6 +20,7 @@
  *  bcore_cday.h
  *  bcore_error_manager.h
  *  bcore_prsg.h
+ *  bcore_shell.x
  *  bcore_arr_inexpandable.x
  *  bcore_flect_inexpandable.x
  *  bcore_hmap_inexpandable.x
@@ -64,6 +66,9 @@
 #include "bcore_txt_ml.h"
 #include "bcore_bin_ml.h"
 #include "bcore_arr.h"
+#include "bcore_life.h"
+#include "bcore_sinks.h"
+#include "bcore_sources.h"
 
 #define TYPEOF_x_inst 0xFC4EFF7569E22558ull
 #define TYPEOF_x_inst_spect_s 0x6B610F4B8E350C20ull
@@ -82,10 +87,10 @@
   static inline const x_inst* x_inst_t_to_sink_bin_ml( tp_t t, const x_inst* o, bcore_sink* sink ); \
   static inline x_inst* x_inst_t_from_source_txt_ml( tp_t t, x_inst* o, bcore_source* source ); \
   static inline x_inst* x_inst_t_from_source_bin_ml( tp_t t, x_inst* o, bcore_source* source ); \
-  static inline const x_inst* x_inst_to_file_txt_ml( const x_inst* o, sc_t path ); \
-  static inline const x_inst* x_inst_to_file_bin_ml( const x_inst* o, sc_t path ); \
-  static inline x_inst* x_inst_from_file_txt_ml( x_inst* o, sc_t path ); \
-  static inline x_inst* x_inst_from_file_bin_ml( x_inst* o, sc_t path ); \
+  const x_inst* x_inst_to_file_txt_ml( const x_inst* o, sc_t path ); \
+  const x_inst* x_inst_to_file_bin_ml( const x_inst* o, sc_t path ); \
+  x_inst* x_inst_from_file_txt_ml( x_inst* o, sc_t path ); \
+  x_inst* x_inst_from_file_bin_ml( x_inst* o, sc_t path ); \
   static inline bcore_source* x_inst_stdin( void ); \
   static inline bcore_sink* x_inst_stdout( void ); \
   static inline bcore_sink* x_inst_stderr( void ); \
@@ -107,10 +112,6 @@
   static inline const x_inst* x_inst_t_to_sink_bin_ml( tp_t t, const x_inst* o, bcore_sink* sink ){ bcore_bin_ml_t_to_sink( t, o, sink ); return  o;} \
   static inline x_inst* x_inst_t_from_source_txt_ml( tp_t t, x_inst* o, bcore_source* source ){ bcore_txt_ml_t_from_source( t, o, source ); return  o;} \
   static inline x_inst* x_inst_t_from_source_bin_ml( tp_t t, x_inst* o, bcore_source* source ){ bcore_bin_ml_t_from_source( t, o, source ); return  o;} \
-  static inline const x_inst* x_inst_to_file_txt_ml( const x_inst* o, sc_t path ){BLM_INIT_LEVEL(0); BLM_RETURNV(const x_inst*, ((const x_inst*)(x_inst_to_sink_txt_ml(o,((bcore_sink*)BLM_LEVEL_A_PUSH(0,bcore_file_open_sink(path ))) ))))} \
-  static inline const x_inst* x_inst_to_file_bin_ml( const x_inst* o, sc_t path ){BLM_INIT_LEVEL(0); BLM_RETURNV(const x_inst*, ((const x_inst*)(x_inst_to_sink_bin_ml(o,((bcore_sink*)BLM_LEVEL_A_PUSH(0,bcore_file_open_sink(path ))) ))))} \
-  static inline x_inst* x_inst_from_file_txt_ml( x_inst* o, sc_t path ){BLM_INIT_LEVEL(0); BLM_RETURNV(x_inst*, ((x_inst*)(x_inst_from_source_txt_ml(o,((bcore_source*)BLM_LEVEL_A_PUSH(0,bcore_file_open_source(path ))) ))))} \
-  static inline x_inst* x_inst_from_file_bin_ml( x_inst* o, sc_t path ){BLM_INIT_LEVEL(0); BLM_RETURNV(x_inst*, ((x_inst*)(x_inst_from_source_bin_ml(o,((bcore_source*)BLM_LEVEL_A_PUSH(0,bcore_file_open_source(path ))) ))))} \
   static inline bcore_source* x_inst_stdin( void ){ return  BCORE_STDIN;} \
   static inline bcore_sink* x_inst_stdout( void ){ return  BCORE_STDOUT;} \
   static inline bcore_sink* x_inst_stderr( void ){ return  BCORE_STDERR;}
@@ -161,6 +162,24 @@
   static inline x_inst* x_array_push_c( x_array* o, const x_inst* v ){ return  x_array_t_push_c(o,o->_, v );} \
   static inline x_inst* x_array_push_t( x_array* o, tp_t val_type ){ return  x_array_t_push_t(o,o->_, val_type );} \
   static inline x_inst* x_array_push( x_array* o ){ return  x_array_t_push(o,o->_ );}
+
+/**********************************************************************************************************************/
+// source: bcore_x_group.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_group
+
+#define TYPEOF_x_group 0xA6462A398FB43D2Bull
+#define TYPEOF_x_group_spect_s 0x6F98C4E297E5BC0Bull
+#define BETH_EXPAND_GROUP_x_group \
+  BCORE_FORWARD_OBJECT( x_group ); \
+  static inline const bcore_arr_tp_s* x_group_get_arr_traitline_stamps( tp_t group ); \
+  XOILA_DECLARE_SPECT( x_group ) \
+  { \
+      bcore_spect_header_s header; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_group ) \
+  static inline const bcore_arr_tp_s* x_group_get_arr_traitline_stamps( tp_t group ){ return  bcore_xoila_get_arr_traitline_stamps( group );}
 
 /**********************************************************************************************************************/
 // source: bcore_x_via.h
@@ -448,17 +467,10 @@
   BCORE_FORWARD_OBJECT( bcore_main_frame_s ); \
   BCORE_FORWARD_OBJECT( bcore_main_arr_s ); \
   BCORE_FORWARD_OBJECT( bcore_main_set_s ); \
-  BCORE_FORWARD_OBJECT( bcore_main_control ); \
-  BCORE_FORWARD_OBJECT( bcore_main_helper ); \
-  er_t bcore_main_shell_loop( bcore_main* o, const bcore_main_frame_s* frame, bcore_source* source, bcore_sink* sink, bcore_main_control* control ); \
-  bl_t bcore_main_shell_default( bcore_main* o, const bcore_main_frame_s* frame, bcore_source* source, bcore_sink* sink, bcore_main_control* control ); \
-  void bcore_main_shell_help_default( const bcore_main* o, bcore_main_helper* helper ); \
   typedef er_t (*bcore_main_main)(bcore_main* o, bcore_main_frame_s* frame ); \
   typedef bl_t (*bcore_main_on_termination)(bcore_main* o, const bcore_main_frame_s* frame ); \
   typedef bl_t (*bcore_main_on_interrupt)(bcore_main* o, const bcore_main_frame_s* frame ); \
   typedef bl_t (*bcore_main_on_suspend)(bcore_main* o, const bcore_main_frame_s* frame ); \
-  typedef bl_t (*bcore_main_shell)(bcore_main* o, const bcore_main_frame_s* frame, bcore_source* source, bcore_sink* sink, bcore_main_control* control ); \
-  typedef void (*bcore_main_shell_help)(const bcore_main* o, bcore_main_helper* helper ); \
   XOILA_DECLARE_SPECT( bcore_main ) \
   { \
       bcore_spect_header_s header; \
@@ -466,8 +478,6 @@
       bcore_main_on_termination on_termination; \
       bcore_main_on_interrupt on_interrupt; \
       bcore_main_on_suspend on_suspend; \
-      bcore_main_shell shell; \
-      bcore_main_shell_help shell_help; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_main ) \
   BETH_EXPAND_ITEM_bcore_main_frame_s \
@@ -491,108 +501,7 @@
   static inline bl_t bcore_main_r_defines_on_suspend( const sr_s* o ){ return  true;} \
   static inline bl_t bcore_main_on_suspend_default( bcore_main* o, const bcore_main_frame_s* frame ){ return  false;} \
   BETH_EXPAND_ITEM_bcore_main_arr_s \
-  BETH_EXPAND_ITEM_bcore_main_set_s \
-  static inline bl_t bcore_main_a_shell( bcore_main* o, const bcore_main_frame_s* frame, bcore_source* source, bcore_sink* sink, bcore_main_control* control ){ const bcore_main_spect_s* p = bcore_main_spect_s_get_aware( o ); assert( p->shell ); return p->shell( o, frame, source, sink, control );} \
-  static inline bl_t bcore_main_defines_shell( const bcore_main* o ){ return  true;} \
-  bl_t bcore_main_shell_default( bcore_main* o, const bcore_main_frame_s* frame, bcore_source* source, bcore_sink* sink, bcore_main_control* control ); \
-  static inline void bcore_main_a_shell_help( const bcore_main* o, bcore_main_helper* helper ){ const bcore_main_spect_s* p = bcore_main_spect_s_get_aware( o ); assert( p->shell_help ); p->shell_help( o, helper );} \
-  static inline bl_t bcore_main_defines_shell_help( const bcore_main* o ){ return  true;} \
-  void bcore_main_shell_help_default( const bcore_main* o, bcore_main_helper* helper ); \
-  BETH_EXPAND_GROUP_bcore_main_control \
-  BETH_EXPAND_GROUP_bcore_main_helper
-
-//----------------------------------------------------------------------------------------------------------------------
-// group: bcore_main_control
-
-#define TYPEOF_bcore_main_control 0x67447C7743103B28ull
-#define TYPEOF_bcore_main_control_spect_s 0x9874520CA8F38170ull
-#define TYPEOF_bcore_main_control_s 0x675AB0B1994227F2ull
-#define BETH_EXPAND_ITEM_bcore_main_control_s \
-  BCORE_DECLARE_OBJECT( bcore_main_control_s ) \
-  { \
-      aware_t _; \
-      bl_t exit_loop; \
-  }; \
-  static inline bcore_main_control_s* bcore_main_control_s_reset( bcore_main_control_s* o ); \
-  static inline void bcore_main_control_s_request_exit_loop( bcore_main_control_s* o ); \
-  static inline bl_t bcore_main_control_s_exit_loop( const bcore_main_control_s* o ); \
-  static inline bcore_main_control_s* bcore_main_control_s_reset( bcore_main_control_s* o ){ o->exit_loop = false; return  o;} \
-  static inline void bcore_main_control_s_request_exit_loop( bcore_main_control_s* o ){ o->exit_loop = true;} \
-  static inline bl_t bcore_main_control_s_exit_loop( const bcore_main_control_s* o ){ return  o->exit_loop;}
-#define BETH_EXPAND_GROUP_bcore_main_control \
-  BCORE_FORWARD_OBJECT( bcore_main_control ); \
-  BCORE_FORWARD_OBJECT( bcore_main_control_s ); \
-  typedef void (*bcore_main_control_request_exit_loop)(bcore_main_control* o ); \
-  typedef bl_t (*bcore_main_control_exit_loop)(const bcore_main_control* o ); \
-  typedef bcore_main_control* (*bcore_main_control_reset)(bcore_main_control* o ); \
-  XOILA_DECLARE_SPECT( bcore_main_control ) \
-  { \
-      bcore_spect_header_s header; \
-      bcore_main_control_request_exit_loop request_exit_loop; \
-      bcore_main_control_exit_loop exit_loop; \
-      bcore_main_control_reset reset; \
-  }; \
-  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_main_control ) \
-  static inline void bcore_main_control_a_request_exit_loop( bcore_main_control* o ){ const bcore_main_control_spect_s* p = bcore_main_control_spect_s_get_aware( o ); assert( p->request_exit_loop ); p->request_exit_loop( o );} \
-  static inline bl_t bcore_main_control_defines_request_exit_loop( const bcore_main_control* o ){ return bcore_main_control_spect_s_get_aware( o )->request_exit_loop != NULL;} \
-  static inline bl_t bcore_main_control_a_exit_loop( const bcore_main_control* o ){ const bcore_main_control_spect_s* p = bcore_main_control_spect_s_get_aware( o ); assert( p->exit_loop ); return p->exit_loop( o );} \
-  static inline bl_t bcore_main_control_defines_exit_loop( const bcore_main_control* o ){ return bcore_main_control_spect_s_get_aware( o )->exit_loop != NULL;} \
-  static inline bcore_main_control* bcore_main_control_a_reset( bcore_main_control* o ){ const bcore_main_control_spect_s* p = bcore_main_control_spect_s_get_aware( o ); assert( p->reset ); return p->reset( o );} \
-  static inline bl_t bcore_main_control_defines_reset( const bcore_main_control* o ){ return bcore_main_control_spect_s_get_aware( o )->reset != NULL;} \
-  BETH_EXPAND_ITEM_bcore_main_control_s
-
-//----------------------------------------------------------------------------------------------------------------------
-// group: bcore_main_helper
-
-#define TYPEOF_bcore_main_helper 0x544B435D27ED6A63ull
-#define TYPEOF_bcore_main_helper_spect_s 0x4BBAEB25D2C370C3ull
-#define TYPEOF_bcore_main_helper_item_s 0xD043D3994D07E9BDull
-#define BETH_EXPAND_ITEM_bcore_main_helper_item_s \
-  BCORE_DECLARE_OBJECT( bcore_main_helper_item_s ) \
-  { \
-      aware_t _; \
-      st_s command; \
-      st_s description; \
-  };
-#define TYPEOF_bcore_main_helper_items_s 0x22180F7E944CE8B2ull
-#define BETH_EXPAND_ITEM_bcore_main_helper_items_s \
-  BCORE_DECLARE_OBJECT( bcore_main_helper_items_s ) \
-  { \
-      aware_t _; \
-      BCORE_ARRAY_DYN_LINK_STATIC_S( bcore_main_helper_item_s, ); \
-  };
-#define TYPEOF_bcore_main_helper_s 0x9A8B2F2DBEB07E65ull
-#define BETH_EXPAND_ITEM_bcore_main_helper_s \
-  BCORE_DECLARE_OBJECT( bcore_main_helper_s ) \
-  { \
-      aware_t _; \
-      bcore_main_helper_items_s items; \
-  }; \
-  static inline bcore_main_helper_s* bcore_main_helper_s_setup( bcore_main_helper_s* o, const bcore_main* main ); \
-  void bcore_main_helper_s_push( const bcore_main_helper_s* o, sc_t command, sc_t description ); \
-  void bcore_main_helper_s_to_sink( const bcore_main_helper_s* o, bcore_sink* sink ); \
-  static inline bcore_main_helper_s* bcore_main_helper_s_setup( bcore_main_helper_s* o, const bcore_main* main ){ bcore_main_a_shell_help(main,((bcore_main_helper*)(o ))); return  o;}
-#define BETH_EXPAND_GROUP_bcore_main_helper \
-  BCORE_FORWARD_OBJECT( bcore_main_helper ); \
-  BCORE_FORWARD_OBJECT( bcore_main_helper_item_s ); \
-  BCORE_FORWARD_OBJECT( bcore_main_helper_items_s ); \
-  BCORE_FORWARD_OBJECT( bcore_main_helper_s ); \
-  typedef void (*bcore_main_helper_push)(const bcore_main_helper* o, sc_t command, sc_t description ); \
-  typedef void (*bcore_main_helper_to_sink)(const bcore_main_helper* o, bcore_sink* sink ); \
-  XOILA_DECLARE_SPECT( bcore_main_helper ) \
-  { \
-      bcore_spect_header_s header; \
-      bcore_main_helper_push push; \
-      bcore_main_helper_to_sink to_sink; \
-  }; \
-  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_main_helper ) \
-  static inline void bcore_main_helper_a_push( const bcore_main_helper* o, sc_t command, sc_t description ){ const bcore_main_helper_spect_s* p = bcore_main_helper_spect_s_get_aware( o ); assert( p->push ); p->push( o, command, description );} \
-  static inline bl_t bcore_main_helper_defines_push( const bcore_main_helper* o ){ return bcore_main_helper_spect_s_get_aware( o )->push != NULL;} \
-  static inline void bcore_main_helper_a_to_sink( const bcore_main_helper* o, bcore_sink* sink ){ const bcore_main_helper_spect_s* p = bcore_main_helper_spect_s_get_aware( o ); assert( p->to_sink ); p->to_sink( o, sink );} \
-  static inline bl_t bcore_main_helper_defines_to_sink( const bcore_main_helper* o ){ return bcore_main_helper_spect_s_get_aware( o )->to_sink != NULL;} \
-  BETH_EXPAND_ITEM_bcore_main_helper_item_s \
-  BETH_EXPAND_ITEM_bcore_main_helper_items_s \
-  BETH_EXPAND_ITEM_bcore_main_helper_s
+  BETH_EXPAND_ITEM_bcore_main_set_s
 
 /**********************************************************************************************************************/
 // source: bcore_hmap_name.h
@@ -1191,13 +1100,202 @@
   BETH_EXPAND_ITEM_bcore_prsg_xsg_u2_03_s
 
 /**********************************************************************************************************************/
+// source: bcore_shell.x
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_shell
+
+#define TYPEOF_bcore_shell 0x2877B9FE4C6D99A7ull
+#define TYPEOF_bcore_shell_spect_s 0xF1C3CEFCE7D4C897ull
+#define TYPEOF_x_inst 0xFC4EFF7569E22558ull
+#define TYPEOF_bcore_main_frame_s 0x32D158C73073F54Eull
+#define BETH_EXPAND_GROUP_bcore_shell \
+  BCORE_FORWARD_OBJECT( bcore_shell ); \
+  BCORE_FORWARD_OBJECT( x_inst ); \
+  BCORE_FORWARD_OBJECT( bcore_main_frame_s ); \
+  BCORE_FORWARD_OBJECT( bcore_shell_op ); \
+  BCORE_FORWARD_OBJECT( bcore_shell_control ); \
+  BCORE_FORWARD_OBJECT( bcore_shell_ops ); \
+  bcore_arr_tp_s* bcore_shell_get_op_stamps( const bcore_shell* o ); \
+  void bcore_shell_help_to_sink( bcore_shell* o, bcore_sink* sink ); \
+  void bcore_shell_loop( bcore_shell* o, const bcore_main_frame_s* frame, bcore_source* source, bcore_sink* sink, bcore_shell_control* control ); \
+  typedef tp_t (*bcore_shell_op_group)(const bcore_shell* o ); \
+  typedef void (*bcore_shell_push_op_groups)(const bcore_shell* o, bcore_arr_tp_s* list ); \
+  XOILA_DECLARE_SPECT( bcore_shell ) \
+  { \
+      bcore_spect_header_s header; \
+      bcore_shell_op_group op_group; \
+      bcore_shell_push_op_groups push_op_groups; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_shell ) \
+  BETH_EXPAND_GROUP_bcore_shell_op \
+  BETH_EXPAND_GROUP_bcore_shell_control \
+  static inline tp_t bcore_shell_a_op_group( const bcore_shell* o ){ const bcore_shell_spect_s* p = bcore_shell_spect_s_get_aware( o ); assert( p->op_group ); return p->op_group( o );} \
+  static inline bl_t bcore_shell_defines_op_group( const bcore_shell* o ){ return  true;} \
+  static inline tp_t bcore_shell_op_group_default( const bcore_shell* o ){ return  ((tp_t)(TYPEOF_bcore_shell_ops));} \
+  static inline void bcore_shell_a_push_op_groups( const bcore_shell* o, bcore_arr_tp_s* list ){ const bcore_shell_spect_s* p = bcore_shell_spect_s_get_aware( o ); assert( p->push_op_groups ); p->push_op_groups( o, list );} \
+  static inline bl_t bcore_shell_defines_push_op_groups( const bcore_shell* o ){ return  true;} \
+  void bcore_shell_push_op_groups_default( const bcore_shell* o, bcore_arr_tp_s* list ); \
+  BETH_EXPAND_GROUP_bcore_shell_ops
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_shell_op
+
+#define TYPEOF_bcore_shell_op 0xAC946BFF99A94E2Full
+#define TYPEOF_bcore_shell_op_spect_s 0x5C8AC70A55050C9Full
+#define BETH_EXPAND_GROUP_bcore_shell_op \
+  BCORE_FORWARD_OBJECT( bcore_shell_op ); \
+  bl_t bcore_shell_op_key_match( const bcore_shell_op* o, sc_t key ); \
+  bl_t bcore_shell_op_parse_match( bcore_shell_op* o, bcore_source* source ); \
+  bl_t bcore_shell_op_parse_param( bcore_shell_op* o, bcore_source* source, bcore_sink* sink ); \
+  void bcore_shell_op_arg_signature_to_sink( bcore_shell_op* o, bcore_sink* sink ); \
+  typedef sc_t (*bcore_shell_op_key)(const bcore_shell_op* o ); \
+  typedef void (*bcore_shell_op_get_key)(const bcore_shell_op* o, st_s* key ); \
+  typedef sc_t (*bcore_shell_op_info)(const bcore_shell_op* o ); \
+  typedef void (*bcore_shell_op_get_info)(const bcore_shell_op* o, st_s* info ); \
+  typedef void (*bcore_shell_op_run)(bcore_shell_op* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control* control ); \
+  XOILA_DECLARE_SPECT( bcore_shell_op ) \
+  { \
+      bcore_spect_header_s header; \
+      bcore_shell_op_key key; \
+      bcore_shell_op_get_key get_key; \
+      bcore_shell_op_info info; \
+      bcore_shell_op_get_info get_info; \
+      bcore_shell_op_run run; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_shell_op ) \
+  static inline sc_t bcore_shell_op_a_key( const bcore_shell_op* o ){ const bcore_shell_op_spect_s* p = bcore_shell_op_spect_s_get_aware( o ); assert( p->key ); return p->key( o );} \
+  static inline bl_t bcore_shell_op_defines_key( const bcore_shell_op* o ){ return bcore_shell_op_spect_s_get_aware( o )->key != NULL;} \
+  static inline void bcore_shell_op_a_get_key( const bcore_shell_op* o, st_s* key ){ const bcore_shell_op_spect_s* p = bcore_shell_op_spect_s_get_aware( o ); assert( p->get_key ); p->get_key( o, key );} \
+  static inline bl_t bcore_shell_op_defines_get_key( const bcore_shell_op* o ){ return  true;} \
+  static inline void bcore_shell_op_get_key_default( const bcore_shell_op* o, st_s* key ){ st_s_copy_sc(key,bcore_shell_op_a_key(o) );} \
+  static inline sc_t bcore_shell_op_a_info( const bcore_shell_op* o ){ const bcore_shell_op_spect_s* p = bcore_shell_op_spect_s_get_aware( o ); assert( p->info ); return p->info( o );} \
+  static inline bl_t bcore_shell_op_defines_info( const bcore_shell_op* o ){ return bcore_shell_op_spect_s_get_aware( o )->info != NULL;} \
+  static inline void bcore_shell_op_a_get_info( const bcore_shell_op* o, st_s* info ){ const bcore_shell_op_spect_s* p = bcore_shell_op_spect_s_get_aware( o ); assert( p->get_info ); p->get_info( o, info );} \
+  static inline bl_t bcore_shell_op_defines_get_info( const bcore_shell_op* o ){ return  true;} \
+  static inline void bcore_shell_op_get_info_default( const bcore_shell_op* o, st_s* info ){ st_s_copy_sc(info,bcore_shell_op_a_info(o) );} \
+  static inline void bcore_shell_op_a_run( bcore_shell_op* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control* control ){ const bcore_shell_op_spect_s* p = bcore_shell_op_spect_s_get_aware( o ); assert( p->run ); p->run( o, obj, main_frame, source, sink, control );} \
+  static inline bl_t bcore_shell_op_defines_run( const bcore_shell_op* o ){ return bcore_shell_op_spect_s_get_aware( o )->run != NULL;}
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_shell_control
+
+#define TYPEOF_bcore_shell_control 0x07411255F31A995Dull
+#define TYPEOF_bcore_shell_control_spect_s 0xCF41737BCBB25259ull
+#define TYPEOF_bcore_shell_control_s 0x65568789B6F2BDAFull
+#define BETH_EXPAND_ITEM_bcore_shell_control_s \
+  BCORE_DECLARE_OBJECT( bcore_shell_control_s ) \
+  { \
+      aware_t _; \
+      bl_t exit_loop; \
+  }; \
+  static inline bcore_shell_control_s* bcore_shell_control_s_reset( bcore_shell_control_s* o ); \
+  static inline void bcore_shell_control_s_request_exit_loop( bcore_shell_control_s* o ); \
+  static inline bl_t bcore_shell_control_s_exit_loop( const bcore_shell_control_s* o ); \
+  static inline bcore_shell_control_s* bcore_shell_control_s_reset( bcore_shell_control_s* o ){ o->exit_loop = false; return  o;} \
+  static inline void bcore_shell_control_s_request_exit_loop( bcore_shell_control_s* o ){ o->exit_loop = true;} \
+  static inline bl_t bcore_shell_control_s_exit_loop( const bcore_shell_control_s* o ){ return  o->exit_loop;}
+#define BETH_EXPAND_GROUP_bcore_shell_control \
+  BCORE_FORWARD_OBJECT( bcore_shell_control ); \
+  BCORE_FORWARD_OBJECT( bcore_shell_control_s ); \
+  typedef void (*bcore_shell_control_request_exit_loop)(bcore_shell_control* o ); \
+  typedef bl_t (*bcore_shell_control_exit_loop)(const bcore_shell_control* o ); \
+  typedef bcore_shell_control* (*bcore_shell_control_reset)(bcore_shell_control* o ); \
+  XOILA_DECLARE_SPECT( bcore_shell_control ) \
+  { \
+      bcore_spect_header_s header; \
+      bcore_shell_control_request_exit_loop request_exit_loop; \
+      bcore_shell_control_exit_loop exit_loop; \
+      bcore_shell_control_reset reset; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_shell_control ) \
+  static inline void bcore_shell_control_a_request_exit_loop( bcore_shell_control* o ){ const bcore_shell_control_spect_s* p = bcore_shell_control_spect_s_get_aware( o ); assert( p->request_exit_loop ); p->request_exit_loop( o );} \
+  static inline bl_t bcore_shell_control_defines_request_exit_loop( const bcore_shell_control* o ){ return bcore_shell_control_spect_s_get_aware( o )->request_exit_loop != NULL;} \
+  static inline bl_t bcore_shell_control_a_exit_loop( const bcore_shell_control* o ){ const bcore_shell_control_spect_s* p = bcore_shell_control_spect_s_get_aware( o ); assert( p->exit_loop ); return p->exit_loop( o );} \
+  static inline bl_t bcore_shell_control_defines_exit_loop( const bcore_shell_control* o ){ return bcore_shell_control_spect_s_get_aware( o )->exit_loop != NULL;} \
+  static inline bcore_shell_control* bcore_shell_control_a_reset( bcore_shell_control* o ){ const bcore_shell_control_spect_s* p = bcore_shell_control_spect_s_get_aware( o ); assert( p->reset ); return p->reset( o );} \
+  static inline bl_t bcore_shell_control_defines_reset( const bcore_shell_control* o ){ return bcore_shell_control_spect_s_get_aware( o )->reset != NULL;} \
+  BETH_EXPAND_ITEM_bcore_shell_control_s
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_shell_ops
+
+#define TYPEOF_bcore_shell_ops 0xE981DF521AB02654ull
+#define TYPEOF_bcore_shell_ops_spect_s 0xEA0BDF908291F00Cull
+#define TYPEOF_bcore_shell_ops_enter_s 0x69E32E21983BB7FBull
+#define BETH_EXPAND_ITEM_bcore_shell_ops_enter_s \
+  BCORE_DECLARE_OBJECT( bcore_shell_ops_enter_s ) \
+  { \
+      aware_t _; \
+      st_s path; \
+  }; \
+  static inline sc_t bcore_shell_ops_enter_s_key( const bcore_shell_ops_enter_s* o ); \
+  static inline sc_t bcore_shell_ops_enter_s_info( const bcore_shell_ops_enter_s* o ); \
+  void bcore_shell_ops_enter_s_run( bcore_shell_ops_enter_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control* control ); \
+  static inline sc_t bcore_shell_ops_enter_s_key( const bcore_shell_ops_enter_s* o ){ return  "n,enter";} \
+  static inline sc_t bcore_shell_ops_enter_s_info( const bcore_shell_ops_enter_s* o ){ return  "enters object";}
+#define TYPEOF_bcore_shell_ops_exit_s 0xBFC4477A094C96DBull
+#define BETH_EXPAND_ITEM_bcore_shell_ops_exit_s \
+  BCORE_DECLARE_OBJECT( bcore_shell_ops_exit_s ) \
+  { \
+      aware_t _; \
+  }; \
+  static inline sc_t bcore_shell_ops_exit_s_key( const bcore_shell_ops_exit_s* o ); \
+  static inline sc_t bcore_shell_ops_exit_s_info( const bcore_shell_ops_exit_s* o ); \
+  static inline void bcore_shell_ops_exit_s_run( bcore_shell_ops_exit_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control* control ); \
+  static inline sc_t bcore_shell_ops_exit_s_key( const bcore_shell_ops_exit_s* o ){ return  "x,exit";} \
+  static inline sc_t bcore_shell_ops_exit_s_info( const bcore_shell_ops_exit_s* o ){ return  "exits object";} \
+  static inline void bcore_shell_ops_exit_s_run( bcore_shell_ops_exit_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control* control ){ bcore_shell_control_a_request_exit_loop(control);}
+#define TYPEOF_bcore_shell_ops_help_s 0x53BFC1F6D21B0228ull
+#define BETH_EXPAND_ITEM_bcore_shell_ops_help_s \
+  BCORE_DECLARE_OBJECT( bcore_shell_ops_help_s ) \
+  { \
+      aware_t _; \
+  }; \
+  static inline sc_t bcore_shell_ops_help_s_key( const bcore_shell_ops_help_s* o ); \
+  static inline sc_t bcore_shell_ops_help_s_info( const bcore_shell_ops_help_s* o ); \
+  static inline void bcore_shell_ops_help_s_run( bcore_shell_ops_help_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control* control ); \
+  static inline sc_t bcore_shell_ops_help_s_key( const bcore_shell_ops_help_s* o ){ return  "?,help";} \
+  static inline sc_t bcore_shell_ops_help_s_info( const bcore_shell_ops_help_s* o ){ return  "lists available commands";} \
+  static inline void bcore_shell_ops_help_s_run( bcore_shell_ops_help_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control* control ){ bcore_shell_help_to_sink(obj,sink );}
+#define TYPEOF_bcore_shell_ops_ls_s 0x36EEE4FB46B8675Eull
+#define BETH_EXPAND_ITEM_bcore_shell_ops_ls_s \
+  BCORE_DECLARE_OBJECT( bcore_shell_ops_ls_s ) \
+  { \
+      aware_t _; \
+      bl_t l; \
+      st_s path; \
+  }; \
+  static inline void bcore_shell_ops_ls_s_get_key( const bcore_shell_ops_ls_s* o, st_s* key ); \
+  static inline void bcore_shell_ops_ls_s_get_info( const bcore_shell_ops_ls_s* o, st_s* info ); \
+  void bcore_shell_ops_ls_s_run( bcore_shell_ops_ls_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control* control ); \
+  static inline void bcore_shell_ops_ls_s_get_key( const bcore_shell_ops_ls_s* o, st_s* key ){ st_s_push_fa(key,"ls" );} \
+  static inline void bcore_shell_ops_ls_s_get_info( const bcore_shell_ops_ls_s* o, st_s* info ){ st_s_push_fa(info,"lists all visible members; -l: txt_ml to stdout" );}
+#define BETH_EXPAND_GROUP_bcore_shell_ops \
+  BCORE_FORWARD_OBJECT( bcore_shell_ops ); \
+  BCORE_FORWARD_OBJECT( bcore_shell_ops_enter_s ); \
+  BCORE_FORWARD_OBJECT( bcore_shell_ops_exit_s ); \
+  BCORE_FORWARD_OBJECT( bcore_shell_ops_help_s ); \
+  BCORE_FORWARD_OBJECT( bcore_shell_ops_ls_s ); \
+  XOILA_DECLARE_SPECT( bcore_shell_ops ) \
+  { \
+      bcore_spect_header_s header; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_shell_ops ) \
+  BETH_EXPAND_ITEM_bcore_shell_ops_enter_s \
+  BETH_EXPAND_ITEM_bcore_shell_ops_exit_s \
+  BETH_EXPAND_ITEM_bcore_shell_ops_help_s \
+  BETH_EXPAND_ITEM_bcore_shell_ops_ls_s
+
+/**********************************************************************************************************************/
 
 vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 /**********************************************************************************************************************/
 // Manifesto
 
+BETH_EXPAND_GROUP_bcore_shell
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xD876280A54F603CE
-// XOICO_FILE_SIGNATURE 0x541314F5A050916F
+// XOICO_BODY_SIGNATURE 0xBCF8860E13C7BB54
+// XOICO_FILE_SIGNATURE 0xCB684160FF17A5CB

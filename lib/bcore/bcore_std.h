@@ -61,6 +61,7 @@
 
 #include "bcore_x_inst.h"
 #include "bcore_x_array.h"
+#include "bcore_x_group.h"
 #include "bcore_x_via.h"
 
 #endif // BCORE_STD_H
