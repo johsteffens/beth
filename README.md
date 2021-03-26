@@ -167,16 +167,27 @@ was spun-off into a stand-alone solution in project [tbman](https://github.com/j
 
 <a name = "xoila"></a>
 ### Xoila
-Xoila was initially a meta language conceived for beth to reduce boilerplate coding. Meanwhile it has
-grown into a full fletched (stand-alone) programming language.
+Xoila (appreviated 'X') is a highly structured object oriented programming language.
+It is conceived for software projects using beth. Its syntax bases on C, borrowing
+a few familiar syntax elements from higher level languages. 
+Beyond that, X has its own syntax, conceived for safe and compact coding and
+advanced structuring.
 
-The language allows expressing key aspects of reflections and perspectives in a well-readable,
-compact and simple style. It is defined by the compiler [xoico](https://github.com/johsteffens/xoico), 
+By this time, X has grown into a viable alternative to C or C++. It allows designing highly compact,
+yet well readable source code yielding fast executing programs. Considerable portions in Beth 
+have been ported to 'X' because the new code is much better maintainable. 
+
+A program written in X also tends to build significantly faster than comparable C++ code.
+X provides many high level features such as polymorphism, reflection, object reference management, 
+object lifetime management, generic dynamic arrays, dynamic arrays of virtual objects, iteration,
+generic serialization (binary and editable text), namespaces, etc.
+
+The language is defined by the compiler [xoico](https://github.com/johsteffens/xoico), 
 which is itself 100% coded in xoila. Xoico and Beth form an ecosystem.
 
-Xoila-code can be embedded in c-code as non-parseable section, 
+Dedicated (pure) X code resides in files with extension *.x.
+X-code can also be embedded in C-header-code, 
 initiated by macro `XOILA_DEFINE_GROUP( <group-name>, <trait-name> )`.
-Alternatively it used in dedicated files with extension *.x.
 
 Key components of the xoila language are `stamp`, `group` and `feature`.
 
@@ -214,6 +225,7 @@ loss of control over how code and data is mapped onto the hardware.
 Overcoming these deficiencies is a key motivation in project *beth*. 
 The language 'C' was preferred over 'C++' because most concepts that
 set 'C++' apart from 'C' have been solved differently in *beth*.
+This effort culminates in the language [Xoila](#xoila).
 
 Another motivation is providing functionality as might be expected from a general purpose
 library with a scientific touch.
