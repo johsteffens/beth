@@ -167,7 +167,7 @@ was spun-off into a stand-alone solution in project [tbman](https://github.com/j
 
 <a name = "xoila"></a>
 ### Xoila
-Xoila (appreviated 'X') is a highly structured object oriented programming language.
+Xoila (abbreviated 'X') is a highly structured object oriented programming language.
 It is conceived for software projects using beth. Its syntax bases on C, borrowing
 a few familiar syntax elements from higher level languages. 
 Beyond that, X has its own syntax, conceived for safe and compact coding and
