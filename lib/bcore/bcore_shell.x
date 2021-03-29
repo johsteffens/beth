@@ -17,6 +17,7 @@
 
 forward x_inst;
 forward bcore_main_frame_s;
+forward :control_s;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -30,7 +31,15 @@ group :op =
     feature 'a' sc_t info( @* o );
     feature 'a' void get_info( @* o, m st_s* info ) = { info.copy_sc( o.info() ); };
 
-    feature 'a' void run( m @* o, m ::* obj, bcore_main_frame_s* main_frame, m bcore_source* source, m bcore_sink* sink, m bcore_shell_control* control );
+    feature 'a' void run
+    (
+        m @* o,
+        m ::* obj,
+        bcore_main_frame_s* main_frame,
+        m bcore_source* source,
+        m bcore_sink* sink,
+        m bcore_shell_control_s* control
+    );
 
     func (bl_t key_match( @* o, sc_t key )) =
     {
@@ -263,10 +272,10 @@ group :op =
 group :control =
 {
     /// request to exit loop asap
-    feature 'a' void request_exit_loop( m @* o );
-    feature 'a' void request_exit_all( m @* o );
-    feature 'a' bl_t exit_loop( @* o );
-    feature 'a' o reset( m @* o );
+    signature void request_exit_loop( m @* o );
+    signature void request_exit_all( m @* o );
+    signature bl_t exit_loop( @* o );
+    signature o reset( m @* o );
 
     stamp :s =
     {
@@ -284,13 +293,13 @@ group :control =
 /// Overload one of features below to register groups with operators.
 
 // Overload this to always include default operators
-feature tp_t op_group( @* o ) = { return :ops~; };
+feature tp_t op_group( @* o ) = { return :op_default~; };
 
 // Overload this to handle multiple groups (if default group is wanted, it must be explicitly added to list)
 feature void push_op_groups( @* o, m bcore_arr_tp_s* list ) =
 {
     list.push( o.op_group() );
-    if( !list.exists( :ops~ ) ) list.push( :ops~ );
+    if( !list.exists( :op_default~ ) ) list.push( :op_default~ );
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -335,12 +344,22 @@ func (void help_to_sink( m @* o, m bcore_sink* sink )) =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (void loop( m @* o, bcore_main_frame_s* frame, m bcore_source* source, m bcore_sink* sink, m bcore_shell_control* control ) ) =
+signature void loop
+(
+    m @* o,
+    bcore_main_frame_s* frame,
+    m bcore_source* source,
+    m bcore_sink* sink,
+    m bcore_shell_control_s* control,
+    st_s* prompt
+);
+
+func loop =
 {
     if( !control ) control = :control_s!.scope( control );
     while( !source.eos() && !control.exit_loop() )
     {
-        sink.push_fa( "\n(#<sc_t>)> ", bnameof( o._ ) ).flush();
+        sink.push_fa( "\n#<sc_t>(#<sc_t>)> ", prompt ? prompt.sc : "", bnameof( o._ ) ).flush();
         control.reset();
 
         st_s^ line;
@@ -376,7 +395,7 @@ func (void loop( m @* o, bcore_main_frame_s* frame, m bcore_source* source, m bc
 
 //----------------------------------------------------------------------------------------------------------------------
 
-group :ops = retrievable
+group :op_default = retrievable
 {
     stamp :enter_s =
     {
@@ -396,7 +415,7 @@ group :ops = retrievable
                 }
 
                 mutable bcore_shell* shell_o = sr.o;
-                shell_o.loop( main_frame, source, sink, control );
+                shell_o.loop( main_frame, source, sink, control, o.path );
             }
             else
             {

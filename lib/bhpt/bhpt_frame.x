@@ -163,7 +163,6 @@ stamp :s = aware bcore_main
     func (bl_t exit_training( m@* o )) = { o.flag_mutex.create_lock()^; return o.flag_suspend_requested || o.flag_interrupt_requested || o.flag_exit_required; };
 
     func bcore_main.main;
-    func bcore_shell.op_group = { return :op~; };
 
     func bcore_main.on_suspend     = { o.flag_mutex.create_lock()^; o.flag_suspend_requested   = true; return true; };
     func bcore_main.on_interrupt   = { o.flag_mutex.create_lock()^; o.flag_interrupt_requested = true; o.flag_exit_required = true; return true; };
@@ -568,7 +567,7 @@ func (:s) bcore_main.main = (try)
 
     if( !o.exit_required() )
     {
-        o.cast( m bcore_shell* ).loop( frame, frame.source, frame.sink, NULL );
+        o.cast( m bcore_shell* ).loop( frame, frame.source, frame.sink, NULL, NULL );
     }
 
     o.log.push_fa( "\nSaving state at cycle #<sz_t>\n", o->state->cycle );
@@ -691,6 +690,7 @@ func (:state_s) bcore_main.main = (try)
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:s) bcore_shell.op_group = { return :op~; };
 group :op = retrievable
 {
     stamp :run_s =
