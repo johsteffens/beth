@@ -67,7 +67,7 @@ with focus on platform independence and computational efficiency.
 # License
 The source code in this repository is licensed under the [Apache 2.0 License](https://github.com/johsteffens/beth/blob/master/LICENSE). 
 
-*Copyright (C) 2017, ..., 2020 Johannes B. Steffens johannes.b.steffens@gmail.com.*
+*Copyright (C) 2017, ..., 2021 Johannes B. Steffens johannes.b.steffens@gmail.com.*
 
 # Sub Libraries
 Beth consists of a suite of sub-libraries.
