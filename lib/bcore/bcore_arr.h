@@ -190,13 +190,33 @@ BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_st_s )
 bcore_arr_st_s* bcore_arr_st_s_clear(     bcore_arr_st_s* o ); // sets size to zero
 bcore_arr_st_s* bcore_arr_st_s_set_space( bcore_arr_st_s* o, uz_t space );
 bcore_arr_st_s* bcore_arr_st_s_set_size(  bcore_arr_st_s* o, uz_t size ); // resize
+st_s*           bcore_arr_st_s_push(      bcore_arr_st_s* o );
 st_s*           bcore_arr_st_s_push_st(   bcore_arr_st_s* o, const st_s* st );
 st_s*           bcore_arr_st_s_push_st_d( bcore_arr_st_s* o, st_s* st );
 st_s*           bcore_arr_st_s_push_sc(   bcore_arr_st_s* o, sc_t sc );
+st_s*           bcore_arr_st_s_push_fv(   bcore_arr_st_s* o, sc_t format, va_list args );
+st_s*           bcore_arr_st_s_push_fa(   bcore_arr_st_s* o, sc_t format, ... );
 void            bcore_arr_st_s_pop(       bcore_arr_st_s* o );
 bcore_arr_st_s* bcore_arr_st_s_sort(      bcore_arr_st_s* o, s2_t order ); // stable
 bcore_arr_st_s* bcore_arr_st_s_reorder(   bcore_arr_st_s* o, const bcore_arr_uz_s* order );
 uz_t            bcore_arr_st_s_count_equal( const bcore_arr_st_s* o, const st_s* val ); // number of occurrence
+
+/** Outputs to sink the arrays content in the format of a table.
+ *  cols or rows can be set to -1, in which case the missing value is estimated.
+ *  rows is truncated in case rows * cols exceeds array size.
+ *  Example:
+ *    arr.push_fa( "Name" );   arr.push_fa( " Number" );
+ *    arr.push_fa( "ab" );     arr.push_fa( " 123" );
+ *    arr.push_fa( "abcdef" ); arr.push_fa( " 12" );
+ *    arr.push_fa( "abc" );    arr.push_fa( " 1" );
+ *    arr.table_to_sink( 4, -1, BCORE_STDOUT )
+ *  Output:
+ *    Name   Number
+ *    ab     123
+ *    abcdef 12
+ *    abc    1
+ */
+void bcore_arr_st_s_table_to_sink( const bcore_arr_st_s* o, sz_t rows, sz_t cols, bcore_sink* sink );
 
 /**********************************************************************************************************************/
 

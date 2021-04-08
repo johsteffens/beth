@@ -17,6 +17,7 @@
 #include "bcore_signal.h"
 #include "bcore_spect_inst.h"
 #include "bcore_spect_array.h"
+#include "bcore_spect_sink.h"
 #include "bcore_sr.h"
 #include "bcore_spect_compare.h"
 #include "bcore_signal.h"
@@ -1443,15 +1444,24 @@ void bcore_arr_st_s_make_strong( bcore_arr_st_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-st_s* bcore_arr_st_s_push_st( bcore_arr_st_s* o, const st_s* st )
+st_s* bcore_arr_st_s_push( bcore_arr_st_s* o )
 {
     if( o->size >  o->space ) bcore_arr_st_s_make_strong( o );
     if( o->size == o->space )
     {
         o->data = bcore_un_alloc( sizeof( st_s* ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
     }
-    o->data[ o->size++ ] = st_s_clone( st );
+    o->data[ o->size++ ] = st_s_create();
     return o->data[ o->size - 1 ];
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+st_s* bcore_arr_st_s_push_st( bcore_arr_st_s* o, const st_s* st )
+{
+    st_s* str = bcore_arr_st_s_push( o );
+    st_s_copy( str, st );
+    return str;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1472,6 +1482,24 @@ st_s* bcore_arr_st_s_push_st_d( bcore_arr_st_s* o, st_s* st )
 st_s* bcore_arr_st_s_push_sc( bcore_arr_st_s* o, sc_t sc )
 {
     return bcore_arr_st_s_push_st_d( o, st_s_create_sc( sc ) );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+st_s* bcore_arr_st_s_push_fv( bcore_arr_st_s* o, sc_t format, va_list args )
+{
+    return bcore_arr_st_s_push_st_d( o, st_s_create_fv( format, args ) );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+st_s* bcore_arr_st_s_push_fa( bcore_arr_st_s* o, sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    st_s* ret = bcore_arr_st_s_push_fv( o, format, args );
+    va_end( args );
+    return ret;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1546,6 +1574,40 @@ uz_t bcore_arr_st_s_count_equal( const bcore_arr_st_s* o, const st_s* val )
         }
     }
     return count;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_arr_st_s_table_to_sink( const bcore_arr_st_s* o, sz_t rows, sz_t cols, bcore_sink* sink )
+{
+    rows = ( rows < 0 ) ? ( ( cols > 0 ) ? o->size / cols : o->size ) : rows;
+    cols = ( cols < 0 ) ? o->size / rows : cols;
+    rows = ( cols * rows > o->size ) ? o->size / cols : rows;
+
+    bcore_arr_sz_s* col_sz = bcore_arr_sz_s_create();
+    bcore_arr_sz_s_fill( col_sz, cols, 0 );
+
+    for( sz_t i = 0; i < o->size; i++ )
+    {
+        sz_t size = o->data[ i ] ? o->data[ i ]->size : 0;
+        col_sz->data[ i % cols ] = sz_max( col_sz->data[ i % cols ], size );
+    }
+
+    for( sz_t i = 0; i < o->size; i++ )
+    {
+        sz_t size = o->data[ i ] ? o->data[ i ]->size : 0;
+        sc_t sc = o->data[ i ] ? o->data[ i ]->sc : "";
+        if( ( i + 1 ) % cols == 0 )
+        {
+            bcore_sink_a_push_fa( sink, "#<sc_t>\n", sc );
+        }
+        else
+        {
+            bcore_sink_a_push_fa( sink, "#<sc_t>#rn{ }", sc, col_sz->data[ i % cols ] - size );
+        }
+    }
+
+    bcore_arr_sz_s_discard( col_sz );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -201,11 +201,31 @@ group :bl = :
 
 group :st = :
 {
+    signature m st_s* push     ( m @* o );
     signature m st_s* push_st  ( m @* o, c st_s* st );
     signature m st_s* push_st_d( m @* o, m st_s* st );
-    signature m st_s* push_sc  ( m @* o, sc_t sc );
+    signature m st_s* push_sc  ( m @* o,   sc_t  sc );
+    signature m st_s* push_fv  ( m @* o, sc_t format, va_list args );
+    signature m st_s* push_fa  ( m @* o, sc_t format, ... );
     signature void pop        ( m @* o );
     signature uz_t count_equal( c @* o, c st_s* val ); // number of occurrence
+
+    /** Outputs to sink the arrays content in the format of a table.
+     *  cols or rows can be set to -1, in which case the missing value is estimated.
+     *  rows is truncated in case rows * cols exceeds array size.
+     *  Example:
+     *    arr.push_fa( "Name" );   arr.push_fa( " Number" );
+     *    arr.push_fa( "ab" );     arr.push_fa( " 123" );
+     *    arr.push_fa( "abcdef" ); arr.push_fa( " 12" );
+     *    arr.push_fa( "abc" );    arr.push_fa( " 1" );
+     *    arr.table_to_sink( 4, -1, BCORE_STDOUT )
+     *  Output:
+     *    Name   Number
+     *    ab     123
+     *    abcdef 12
+     *    abc    1
+     */
+    signature void table_to_sink( c @* o, sz_t rows, sz_t cols, m bcore_sink* sink );
 
     stamp :s = aware x_inst
     {
@@ -215,11 +235,15 @@ group :st = :
         func :: .set_size;
         func :: .sort;
         func :: .reorder;
+        func  : .push;
         func  : .push_st;
         func  : .push_st_d;
         func  : .push_sc;
+        func  : .push_fv;
+        func  : .push_fa;
         func  : .pop;
         func  : .count_equal;
+        func  : .table_to_sink;
     };
 };
 
