@@ -35,7 +35,7 @@
 /** This flag allows full type conversion to object elements in interpreter:
  *  Advatage:
  *      - Any type can be assigned provided the target has a conversion (copy_typed) in place.
- *        --> this provides much more editing flexibility in configuration textfiles.
+ *        --> this provides much better editing flexibility.
  *
  *  Disadvantage:
  *      - Hidden and private embedded members are being reset to their initial state

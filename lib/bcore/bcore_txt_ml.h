@@ -13,7 +13,7 @@
  *  limitations under the License.
  */
 
-/** Text based markup language for marshaling and creation of objects.
+/** Text based markup language for marshalling and creation of objects.
  *  Implements features translate, interpret and supports corresponding perspectives.
  *
  *  The interpreter sends bcore_spect_via_call:mutated to object after alteration.
