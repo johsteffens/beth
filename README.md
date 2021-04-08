@@ -261,7 +261,7 @@ From April 2017:
 
 2019
 
-   * Developed the meta-language [Beth-Plant](#plant).
+   * Developed the meta-language [Beth-Plant](#xoila).
    * Developed a new machine learning library [badapt](#badapt).
    * Designed a more generic approach to machine learning. 
    * Initially privately in [badapt_dev](https://github.com/johsteffens/badapt_dev): 
