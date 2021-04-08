@@ -76,7 +76,7 @@ typedef uz_t (*bcore_fp_flow_src )( vd_t o, vd_t data, uz_t size ); // flow_sour
 
 /**********************************************************************************************************************/
 
-/// marshaling (translator, interpreter objects)
+/// marshalling (translator, interpreter objects)
 typedef void ( *bcore_fp_translate )( vc_t o, sr_s obj, sr_s snk ); // translates object to be constructible via 'interpret_object'
 typedef sr_s ( *bcore_fp_interpret )( vc_t o,           sr_s src ); // constructs object (no information given)
 
