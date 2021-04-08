@@ -80,7 +80,7 @@ void bcore_cday_ymd_s_from_source( bcore_cday_ymd_s* o, bcore_source* source )
     char m[2] = { 0 };
     char d[2] = { 0 };
 
-    // We deliberately parse characters rather than using direct integer conversions in order to enforce the correct format.
+    // We deliberately parse characters (rather than using direct integer conversions) in order to enforce the correct format.
     bcore_source_a_parse_fa( source, "#<char*>#<char*>#<char*>#<char*>-#<char*>#<char*>-#<char*>#<char*>", &y[0], &y[1], &y[2], &y[3], &m[0], &m[1], &d[0], &d[1] );
 
     for( sz_t i = 0; i < 4; i++ ) ASSERT( y[i] >= '0' && y[i] <= '9' );
