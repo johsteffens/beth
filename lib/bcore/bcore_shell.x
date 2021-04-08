@@ -158,7 +158,7 @@ group :op =
                 bl_t success = false;
 
                 /// a numeric is passed to the first numeric type
-                if( source.parse_bl( "#?(([0]=='-'&&([1]>='0'||[1]<='9'))||([0]>='0'&&[0]<='9'))" ) )
+                if( source.parse_bl( "#?(([0]=='-'&&([1]>='0'&&[1]<='9'))||([0]>='0'&&[0]<='9'))" ) )
                 {
                     f3_t num;
                     source.parse_fa( "#<f3_t*>", num.1 );
@@ -189,7 +189,7 @@ group :op =
                     }
                     else
                     {
-                        source.parse_fa( "#name", st.1 );
+                        source.parse_fa( "#until' '", st.1 );
                     }
 
                     for( sz_t i = 0; i < v.size(); i++ )
@@ -276,15 +276,18 @@ group :control =
     signature void request_exit_all( m @* o );
     signature bl_t exit_loop( @* o );
     signature o reset( m @* o );
+    signature d @* spawn( m @* o );
 
     stamp :s =
     {
+        hidden :s* parent;
         bl_t exit_loop;
-        bl_t exit_all;
+        st_s path;
         func :.reset             = { o.exit_loop = false; return o; };
         func :.request_exit_loop = { o.exit_loop = true; };
-        func :.request_exit_all  = { o.exit_all = true; };
-        func :.exit_loop         = { return o.exit_loop || o.exit_all; };
+        func :.request_exit_all  = { o.exit_loop = true; if( o.parent ) o.parent.request_exit_all(); };
+        func :.exit_loop         = { return o.exit_loop; };
+        func :.spawn             = { d @* r = o.clone(); r.parent = o; return r; };
     };
 };
 
@@ -317,9 +320,7 @@ func (d bcore_arr_tp_s* get_op_stamps( @* o ) ) =
 
 func (void help_to_sink( m @* o, m bcore_sink* sink )) =
 {
-    bcore_arr_st_s^ arr_sign;
-    bcore_arr_st_s^ arr_info;
-    sz_t sz_sign = 0;
+    bcore_arr_st_s^ table;
     foreach( tp_t t in o.get_op_stamps()^ )
     {
         m :op* op = x_inst_t_create( t )^;
@@ -331,15 +332,10 @@ func (void help_to_sink( m @* o, m bcore_sink* sink )) =
         op.arg_signature_to_sink( sign );
         st_s^ info;
         op.get_info( info );
-        arr_sign.push_st( sign );
-        arr_info.push_st( info );
-        sz_sign = sz_max( sz_sign, sign.size );
+        table.push_fa( "#<st_s*>", sign.1 );
+        table.push_fa( ": #<st_s*>", info.1 );
     }
-
-    foreach( $* sign in arr_sign )
-    {
-        sink.push_fa( "#pn' '{#<sc_t>} : #<sc_t>\n", sz_sign, sign.sc, arr_info.[ __i ].sc );
-    }
+    table.table_to_sink( -1, 2, sink );
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -350,8 +346,7 @@ signature void loop
     bcore_main_frame_s* frame,
     m bcore_source* source,
     m bcore_sink* sink,
-    m bcore_shell_control_s* control,
-    st_s* prompt
+    m bcore_shell_control_s* control
 );
 
 func loop =
@@ -359,7 +354,7 @@ func loop =
     if( !control ) control = :control_s!.scope( control );
     while( !source.eos() && !control.exit_loop() )
     {
-        sink.push_fa( "\n#<sc_t>(#<sc_t>)> ", prompt ? prompt.sc : "", bnameof( o._ ) ).flush();
+        sink.push_fa( "\n#<sc_t>#<sc_t>(#<sc_t>)> ", control.path.sc, control.path.size ? " " : "", bnameof( o._ ) ).flush();
         control.reset();
 
         st_s^ line;
@@ -391,6 +386,8 @@ func loop =
             }
         }
     }
+
+    control.exit_loop = false;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -415,7 +412,11 @@ group :op_default = retrievable
                 }
 
                 mutable bcore_shell* shell_o = sr.o;
-                shell_o.loop( main_frame, source, sink, control, o.path );
+
+                m $* control_child = control.spawn()^;
+                if( control_child.path.size ) control_child.path.push_sc( "|" );
+                control_child.path.push_st( o.path );
+                shell_o.loop( main_frame, source, sink, control_child );
             }
             else
             {
@@ -426,7 +427,7 @@ group :op_default = retrievable
 
     stamp :exit_s =
     {
-        bl_t a;
+        bl_t a = false;
         func ::op.key = { return "x,exit"; };
         func ::op.info = { return "exits object; -a: exits all parent objects"; };
         func ::op.run = { if( o.a ) control.request_exit_all(); else control.request_exit_loop(); };
@@ -464,12 +465,36 @@ group :op_default = retrievable
                     tp_t t = sr_s_type( sr );
                     x_via* v = sr.o;
                     sz_t size = x_via_t_size( t );
+                    bcore_arr_st_s^ table;
                     for( sz_t i = 0; i < size; i++ )
                     {
                         tp_t name = x_via_t_name( t, i );
                         tp_t type = x_via_t_type( t, v, name );
-                        sink.push_fa( "#<sc_t>: #<sc_t>\n", bnameof( name ), bnameof( type ) );
+                        table.push_fa( "#<sc_t>", bnameof( name ) );
+                        table.push_fa( ": #<sc_t>", bnameof( type ) );
+                        m st_s* st = table.push();
+
+                        switch( type )
+                        {
+                            case u0_t~: case u1_t~: case u2_t~: case u3_t~:
+                            case s0_t~: case s1_t~: case s2_t~: case s3_t~:
+                            case bl_t~: case uz_t~: case sz_t~: case tp_t~:
+                            {
+                                sr_s^ sr;
+                                sr = x_via_t_c_get_sr( t, v, name );
+                                if( sr.o )
+                                {
+                                    st.push_sc( ": " );
+                                    st.push_st_d( st_s_create_typed( type, sr.o ) );
+                                }
+                            }
+                            break;
+
+                            default: break;
+
+                        }
                     }
+                    table.table_to_sink( size, -1, sink );
                 }
             }
             else
