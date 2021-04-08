@@ -13,7 +13,7 @@
  *  limitations under the License.
  */
 
-/** Binary markup language for marshaling and creation of objects.
+/** Binary markup language for marshalling and creation of objects.
  *  Implements features translate, interpret and supports corresponding perspectives.
  *
  *  The interpreter sends bcore_spect_via_call:mutated to object after alteration.
