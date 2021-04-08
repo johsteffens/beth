@@ -13,8 +13,8 @@
  *  limitations under the License.
  */
 
-#ifndef BCORE_REF_H
-#define BCORE_REF_H
+#ifndef BCORE_SR_H
+#define BCORE_SR_H
 
 /// Smart references
 
@@ -191,4 +191,4 @@ static inline tp_t sr_to_tp( sr_s o ) { tp_t r = sr_s_to_tp( &o ); sr_down( o );
 typedef struct bcore_signal_s bcore_signal_s;
 vd_t bcore_ref_signal_handler( const bcore_signal_s* o );
 
-#endif // BCORE_REF_H
+#endif // BCORE_SR_H

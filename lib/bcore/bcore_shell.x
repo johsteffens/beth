@@ -85,7 +85,7 @@ group :op =
         while( !source.eos() && !source.parse_bl( "#?'\n'" ) )
         {
             source.parse_fa( "#skip' '" );
-            m x_via* v = o;
+            m x_stamp* v = o;
             if( source.parse_bl( "#?([0]=='-'&&(([1]>='A'&&[1]<='Z')||([1]>='a'&&[1]<='z')))" ) )
             {
                 st_s^ name;
@@ -215,7 +215,7 @@ group :op =
     /// Sends a description of operators argument signature to sink.
     func (void arg_signature_to_sink( m @* o, m bcore_sink* sink )) =
     {
-        m x_via* v = o;
+        m x_stamp* v = o;
         bl_t direct_num = false;
         bl_t direct_str = false;
         for( sz_t i = 0; i < v.size(); i++ )
@@ -401,11 +401,11 @@ group :op_default = retrievable
         func ::op.info = { return "enters object"; };
         func ::op.run =
         {
-            sr_s sr = x_via_path_s!^.parse( bcore_source_string_s_create_from_string( o.path )^ ).get_sr_in( obj );
+            sr_s sr = x_stamp_path_s!^.parse( bcore_source_string_s_create_from_string( o.path )^ ).get_sr_in( obj );
             if( sr.o )
             {
                 tp_t t = sr_s_type( sr );
-                if( !x_via_t_is_aware( t ) )
+                if( !x_stamp_t_is_aware( t ) )
                 {
                     sink.push_fa( "Selected object '#<sc_t>' is oblivious. Cannot enter.\n", bnameof( t ) );
                     return;
@@ -451,7 +451,7 @@ group :op_default = retrievable
         {
             bl_t extensive = o.l;
 
-            x_via_path_s^ path.parse( bcore_source_string_s_create_sc( o.path.sc )^ );
+            x_stamp_path_s^ path.parse( bcore_source_string_s_create_sc( o.path.sc )^ );
             sr_s sr = path.get_sr_in( obj );
 
             if( sr.o )
@@ -463,13 +463,13 @@ group :op_default = retrievable
                 else
                 {
                     tp_t t = sr_s_type( sr );
-                    x_via* v = sr.o;
-                    sz_t size = x_via_t_size( t );
+                    x_stamp* v = sr.o;
+                    sz_t size = x_stamp_t_size( t );
                     bcore_arr_st_s^ table;
                     for( sz_t i = 0; i < size; i++ )
                     {
-                        tp_t name = x_via_t_name( t, i );
-                        tp_t type = x_via_t_type( t, v, name );
+                        tp_t name = x_stamp_t_name( t, i );
+                        tp_t type = x_stamp_t_type( t, v, name );
                         table.push_fa( "#<sc_t>", bnameof( name ) );
                         table.push_fa( ": #<sc_t>", bnameof( type ) );
                         m st_s* st = table.push();
@@ -481,7 +481,7 @@ group :op_default = retrievable
                             case bl_t~: case uz_t~: case sz_t~: case tp_t~:
                             {
                                 sr_s^ sr;
-                                sr = x_via_t_c_get_sr( t, v, name );
+                                sr = x_stamp_t_c_get_sr( t, v, name );
                                 if( sr.o )
                                 {
                                     st.push_sc( ": " );

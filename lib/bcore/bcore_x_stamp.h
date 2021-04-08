@@ -1,4 +1,4 @@
-/** Author and Copyright 2020 Johannes Bernhard Steffens
+/** Author and Copyright 2021 Johannes Bernhard Steffens
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,10 +13,10 @@
  *  limitations under the License.
  */
 
-/** Beth via-group. Provides access via reflection. */
+/** Beth stamp-group. Provides access from reflection (using bcore_via perspective). */
 
-#ifndef BCORE_X_VIA_H
-#define BCORE_X_VIA_H
+#ifndef BCORE_X_STAMP_H
+#define BCORE_X_STAMP_H
 
 #include "bcore_txt_ml.h"
 #include "bcore_bin_ml.h"
@@ -25,7 +25,7 @@
 
 /**********************************************************************************************************************/
 
-XOILA_DEFINE_GROUP( x_via, x_inst )
+XOILA_DEFINE_GROUP( x_stamp, x_inst )
 
 #ifdef XOILA_SECTION
 
@@ -349,16 +349,16 @@ func (void selftest() ) =
 {
     bcore_prsg_lcg_u3_00_s^ lcg;
 
-    ASSERT( lcg.cast( c x_via* ).exists( btypeof( "state" ) ) );
+    ASSERT( lcg.cast( c x_stamp* ).exists( btypeof( "state" ) ) );
 
-    u3_t state = lcg.cast( c x_via* ).c_get( btypeof( "state" ) ).cast( c u3_t* );
+    u3_t state = lcg.cast( c x_stamp* ).c_get( btypeof( "state" ) ).cast( c u3_t* );
     ASSERT( state == 16437 );
 
-    x_via_set_sr( lcg, btypeof( "state" ), sr_u3( 12345 ) );
-    state = x_via_c_get( lcg, btypeof( "state" ) ).cast( c u3_t* ).0;
+    x_stamp_set_sr( lcg, btypeof( "state" ), sr_u3( 12345 ) );
+    state = x_stamp_c_get( lcg, btypeof( "state" ) ).cast( c u3_t* ).0;
     ASSERT( state == 12345 );
 
-    c x_inst* inst = x_via_path_s!^.parse_sc( "state" ).c_get_in( lcg );
+    c x_inst* inst = x_stamp_path_s!^.parse_sc( "state" ).c_get_in( lcg );
     ASSERT( inst );
     ASSERT( inst.cast( c u3_t* ).0 == 12345 );
 
@@ -366,11 +366,11 @@ func (void selftest() ) =
 
     sr_s sr = sr_null();
 
-    sr = x_via_path_s!^.parse_sc( "[0].[1].vdata.data2.[1]" ).get_sr_in( zoo );
+    sr = x_stamp_path_s!^.parse_sc( "[0].[1].vdata.data2.[1]" ).get_sr_in( zoo );
     ASSERT( sr.type() == TYPEOF_u3_t );
     ASSERT( sr.to_u3() == 0 );
 
-    sr = x_via_path_s!^.parse_sc( "[0].[1].vdata.data2.[1]" ).set_sr_in( zoo, sr_u3( 20 ) );
+    sr = x_stamp_path_s!^.parse_sc( "[0].[1].vdata.data2.[1]" ).set_sr_in( zoo, sr_u3( 20 ) );
     ASSERT( sr.type() == TYPEOF_u3_t );
     ASSERT( sr.to_u3() == 20 );
 };
@@ -381,4 +381,4 @@ func (void selftest() ) =
 
 #endif // XOILA_SECTION
 
-#endif  // BCORE_X_VIA_H
+#endif  // BCORE_X_STAMP_H

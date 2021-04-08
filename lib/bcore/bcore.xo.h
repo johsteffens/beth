@@ -1,4 +1,4 @@
-//  Last update: 2021-03-28T13:57:09Z
+//  Last update: 2021-04-08T14:22:24Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 ... 2021 J.B.Steffens
  *
@@ -11,7 +11,7 @@
  *  bcore_x_inst.h
  *  bcore_x_array.h
  *  bcore_x_group.h
- *  bcore_x_via.h
+ *  bcore_x_stamp.h
  *  bcore_file.h
  *  bcore_spect_inst_call.h
  *  bcore_spect_via_call.h
@@ -181,111 +181,111 @@
   static inline const bcore_arr_tp_s* x_group_get_arr_traitline_stamps( tp_t group ){ return  bcore_xoila_get_arr_traitline_stamps( group );}
 
 /**********************************************************************************************************************/
-// source: bcore_x_via.h
+// source: bcore_x_stamp.h
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: x_via
+// group: x_stamp
 
-#define TYPEOF_x_via 0x489B36CA197B9018ull
-#define TYPEOF_x_via_spect_s 0xDC266D32F62210E0ull
-#define TYPEOF_x_via_path_s_array_index 0xA88FECED7BEB4541ull
+#define TYPEOF_x_stamp 0x7FDBB7509FCFB7EFull
+#define TYPEOF_x_stamp_spect_s 0x068E092CFA39F65Full
+#define TYPEOF_x_stamp_path_s_array_index 0xDF1039CAE32C5978ull
 #define TYPEOF_sr_s 0x79B76918FF0AF12Aull
-#define TYPEOF_x_via_path_s 0x31B6919DDD2EDD88ull
-#define BETH_EXPAND_ITEM_x_via_path_s \
-  BCORE_DECLARE_OBJECT( x_via_path_s ) \
+#define TYPEOF_x_stamp_path_s 0x8B231122A65D4291ull
+#define BETH_EXPAND_ITEM_x_stamp_path_s \
+  BCORE_DECLARE_OBJECT( x_stamp_path_s ) \
   { \
       aware_t _; \
       BCORE_ARRAY_DYN_SOLID_STATIC_S( tp_t, ); \
   }; \
-  static inline x_via_path_s* x_via_path_s_clear( x_via_path_s* o ); \
-  static inline void x_via_path_s_push( x_via_path_s* o, tp_t tp ); \
-  void x_via_path_s_push_index( x_via_path_s* o, sz_t index ); \
-  static inline x_via_path_s* x_via_path_s_parse_sc( x_via_path_s* o, sc_t sc ); \
-  static inline bl_t x_via_path_s_exists_in( const x_via_path_s* o, const x_inst* inst ); \
-  static inline bl_t x_via_path_s_exists_in_t( const x_via_path_s* o, tp_t t, const x_inst* inst ); \
-  static inline tp_t x_via_path_s_type_in( const x_via_path_s* o, const x_inst* inst ); \
-  static inline tp_t x_via_path_s_type_in_t( const x_via_path_s* o, tp_t t, const x_inst* inst ); \
-  static inline sr_s x_via_path_s_get_sr_in( const x_via_path_s* o, const x_inst* inst ); \
-  static inline const x_inst* x_via_path_s_c_get_in( const x_via_path_s* o, const x_inst* inst ); \
-  static inline x_inst* x_via_path_s_m_get_in( const x_via_path_s* o, x_inst* inst ); \
-  static inline sr_s x_via_path_s_set_sr_in( const x_via_path_s* o, x_inst* inst, sr_s sr_src ); \
-  static inline x_inst* x_via_path_s_set_c_in( const x_via_path_s* o, x_inst* inst, const x_inst* src ); \
-  static inline x_inst* x_via_path_s_set_d_in( const x_via_path_s* o, x_inst* inst, x_inst* src ); \
-  const x_via_path_s* x_via_path_s_to_sink( const x_via_path_s* o, bcore_sink* sink ); \
-  x_via_path_s* x_via_path_s_parse( x_via_path_s* o, bcore_source* source ); \
-  sr_s x_via_path_s_get_sr_in_t( const x_via_path_s* o, tp_t t, const x_inst* inst ); \
-  sr_s x_via_path_s_set_sr_in_t( const x_via_path_s* o, tp_t t, x_inst* inst, sr_s sr_src ); \
-  static inline x_via_path_s* x_via_path_s_clear( x_via_path_s* o ){ x_array_clear(((x_array*)(o))); return  o;} \
-  static inline void x_via_path_s_push( x_via_path_s* o, tp_t tp ){ x_array_push_c(((x_array*)(o)),((const x_inst*)(&(tp))) );} \
-  static inline x_via_path_s* x_via_path_s_parse_sc( x_via_path_s* o, sc_t sc ){BLM_INIT_LEVEL(0); BLM_RETURNV(x_via_path_s*, ((x_via_path_s*)(x_via_path_s_parse(o,((bcore_source*)(((bcore_source_string_s*)BLM_LEVEL_T_PUSH(0,bcore_source_string_s,bcore_source_string_s_create_sc(sc ))) ))))))} \
-  static inline bl_t x_via_path_s_exists_in( const x_via_path_s* o, const x_inst* inst ){ return  x_via_path_s_exists_in_t(o,inst->_, inst );} \
-  static inline bl_t x_via_path_s_exists_in_t( const x_via_path_s* o, tp_t t, const x_inst* inst ){BLM_INIT_LEVEL(0); sr_s sr;BLM_T_INIT_SPUSH(sr_s, &sr);; sr = x_via_path_s_get_sr_in_t(o,t, inst ); BLM_RETURNV(bl_t, sr.o != NULL)} \
-  static inline tp_t x_via_path_s_type_in( const x_via_path_s* o, const x_inst* inst ){ return  x_via_path_s_type_in_t(o,inst->_, inst );} \
-  static inline tp_t x_via_path_s_type_in_t( const x_via_path_s* o, tp_t t, const x_inst* inst ){BLM_INIT_LEVEL(0); sr_s sr;BLM_T_INIT_SPUSH(sr_s, &sr);; sr = x_via_path_s_get_sr_in_t(o,t, inst ); BLM_RETURNV(tp_t, sr_s_type(&(sr)))} \
-  static inline sr_s x_via_path_s_get_sr_in( const x_via_path_s* o, const x_inst* inst ){ return  x_via_path_s_get_sr_in_t(o,inst->_, inst );} \
-  static inline const x_inst* x_via_path_s_c_get_in( const x_via_path_s* o, const x_inst* inst ){ sr_s sr = x_via_path_s_get_sr_in(o,inst ); if( sr_s_is_strong(&(sr)) ) sr_s_clear(&(sr)); return  ((const x_inst*)(sr.o));} \
-  static inline x_inst* x_via_path_s_m_get_in( const x_via_path_s* o, x_inst* inst ){ sr_s sr = x_via_path_s_get_sr_in(o,inst ); if( sr_s_is_strong(&(sr)) ) sr_s_clear(&(sr)); return  ((x_inst*)(sr.o));} \
-  static inline sr_s x_via_path_s_set_sr_in( const x_via_path_s* o, x_inst* inst, sr_s sr_src ){ return  x_via_path_s_set_sr_in_t(o,inst->_, inst, sr_src );} \
-  static inline x_inst* x_via_path_s_set_c_in( const x_via_path_s* o, x_inst* inst, const x_inst* src ){ return  x_via_path_s_set_sr_in(o,inst, sr_awc( src ) ).o;} \
-  static inline x_inst* x_via_path_s_set_d_in( const x_via_path_s* o, x_inst* inst, x_inst* src ){ return  x_via_path_s_set_sr_in(o,inst, sr_asd( src ) ).o;}
-#define TYPEOF_x_via_path_adl_s 0xC4349DCCC08A7378ull
-#define BETH_EXPAND_ITEM_x_via_path_adl_s \
-  BCORE_DECLARE_OBJECT( x_via_path_adl_s ) \
+  static inline x_stamp_path_s* x_stamp_path_s_clear( x_stamp_path_s* o ); \
+  static inline void x_stamp_path_s_push( x_stamp_path_s* o, tp_t tp ); \
+  void x_stamp_path_s_push_index( x_stamp_path_s* o, sz_t index ); \
+  static inline x_stamp_path_s* x_stamp_path_s_parse_sc( x_stamp_path_s* o, sc_t sc ); \
+  static inline bl_t x_stamp_path_s_exists_in( const x_stamp_path_s* o, const x_inst* inst ); \
+  static inline bl_t x_stamp_path_s_exists_in_t( const x_stamp_path_s* o, tp_t t, const x_inst* inst ); \
+  static inline tp_t x_stamp_path_s_type_in( const x_stamp_path_s* o, const x_inst* inst ); \
+  static inline tp_t x_stamp_path_s_type_in_t( const x_stamp_path_s* o, tp_t t, const x_inst* inst ); \
+  static inline sr_s x_stamp_path_s_get_sr_in( const x_stamp_path_s* o, const x_inst* inst ); \
+  static inline const x_inst* x_stamp_path_s_c_get_in( const x_stamp_path_s* o, const x_inst* inst ); \
+  static inline x_inst* x_stamp_path_s_m_get_in( const x_stamp_path_s* o, x_inst* inst ); \
+  static inline sr_s x_stamp_path_s_set_sr_in( const x_stamp_path_s* o, x_inst* inst, sr_s sr_src ); \
+  static inline x_inst* x_stamp_path_s_set_c_in( const x_stamp_path_s* o, x_inst* inst, const x_inst* src ); \
+  static inline x_inst* x_stamp_path_s_set_d_in( const x_stamp_path_s* o, x_inst* inst, x_inst* src ); \
+  const x_stamp_path_s* x_stamp_path_s_to_sink( const x_stamp_path_s* o, bcore_sink* sink ); \
+  x_stamp_path_s* x_stamp_path_s_parse( x_stamp_path_s* o, bcore_source* source ); \
+  sr_s x_stamp_path_s_get_sr_in_t( const x_stamp_path_s* o, tp_t t, const x_inst* inst ); \
+  sr_s x_stamp_path_s_set_sr_in_t( const x_stamp_path_s* o, tp_t t, x_inst* inst, sr_s sr_src ); \
+  static inline x_stamp_path_s* x_stamp_path_s_clear( x_stamp_path_s* o ){ x_array_clear(((x_array*)(o))); return  o;} \
+  static inline void x_stamp_path_s_push( x_stamp_path_s* o, tp_t tp ){ x_array_push_c(((x_array*)(o)),((const x_inst*)(&(tp))) );} \
+  static inline x_stamp_path_s* x_stamp_path_s_parse_sc( x_stamp_path_s* o, sc_t sc ){BLM_INIT_LEVEL(0); BLM_RETURNV(x_stamp_path_s*, ((x_stamp_path_s*)(x_stamp_path_s_parse(o,((bcore_source*)(((bcore_source_string_s*)BLM_LEVEL_T_PUSH(0,bcore_source_string_s,bcore_source_string_s_create_sc(sc ))) ))))))} \
+  static inline bl_t x_stamp_path_s_exists_in( const x_stamp_path_s* o, const x_inst* inst ){ return  x_stamp_path_s_exists_in_t(o,inst->_, inst );} \
+  static inline bl_t x_stamp_path_s_exists_in_t( const x_stamp_path_s* o, tp_t t, const x_inst* inst ){BLM_INIT_LEVEL(0); sr_s sr;BLM_T_INIT_SPUSH(sr_s, &sr);; sr = x_stamp_path_s_get_sr_in_t(o,t, inst ); BLM_RETURNV(bl_t, sr.o != NULL)} \
+  static inline tp_t x_stamp_path_s_type_in( const x_stamp_path_s* o, const x_inst* inst ){ return  x_stamp_path_s_type_in_t(o,inst->_, inst );} \
+  static inline tp_t x_stamp_path_s_type_in_t( const x_stamp_path_s* o, tp_t t, const x_inst* inst ){BLM_INIT_LEVEL(0); sr_s sr;BLM_T_INIT_SPUSH(sr_s, &sr);; sr = x_stamp_path_s_get_sr_in_t(o,t, inst ); BLM_RETURNV(tp_t, sr_s_type(&(sr)))} \
+  static inline sr_s x_stamp_path_s_get_sr_in( const x_stamp_path_s* o, const x_inst* inst ){ return  x_stamp_path_s_get_sr_in_t(o,inst->_, inst );} \
+  static inline const x_inst* x_stamp_path_s_c_get_in( const x_stamp_path_s* o, const x_inst* inst ){ sr_s sr = x_stamp_path_s_get_sr_in(o,inst ); if( sr_s_is_strong(&(sr)) ) sr_s_clear(&(sr)); return  ((const x_inst*)(sr.o));} \
+  static inline x_inst* x_stamp_path_s_m_get_in( const x_stamp_path_s* o, x_inst* inst ){ sr_s sr = x_stamp_path_s_get_sr_in(o,inst ); if( sr_s_is_strong(&(sr)) ) sr_s_clear(&(sr)); return  ((x_inst*)(sr.o));} \
+  static inline sr_s x_stamp_path_s_set_sr_in( const x_stamp_path_s* o, x_inst* inst, sr_s sr_src ){ return  x_stamp_path_s_set_sr_in_t(o,inst->_, inst, sr_src );} \
+  static inline x_inst* x_stamp_path_s_set_c_in( const x_stamp_path_s* o, x_inst* inst, const x_inst* src ){ return  x_stamp_path_s_set_sr_in(o,inst, sr_awc( src ) ).o;} \
+  static inline x_inst* x_stamp_path_s_set_d_in( const x_stamp_path_s* o, x_inst* inst, x_inst* src ){ return  x_stamp_path_s_set_sr_in(o,inst, sr_asd( src ) ).o;}
+#define TYPEOF_x_stamp_path_adl_s 0xB48FCD6B3D836E95ull
+#define BETH_EXPAND_ITEM_x_stamp_path_adl_s \
+  BCORE_DECLARE_OBJECT( x_stamp_path_adl_s ) \
   { \
       aware_t _; \
-      BCORE_ARRAY_DYN_LINK_STATIC_S( x_via_path_s, ); \
+      BCORE_ARRAY_DYN_LINK_STATIC_S( x_stamp_path_s, ); \
   };
-#define BETH_EXPAND_GROUP_x_via \
-  BCORE_FORWARD_OBJECT( x_via ); \
-  BCORE_FORWARD_OBJECT( x_via_path_s ); \
-  BCORE_FORWARD_OBJECT( x_via_path_adl_s ); \
-  static inline sz_t x_via_size( const x_via* o ); \
-  static inline sz_t x_via_t_size( tp_t t ); \
-  static inline bl_t x_via_t_is_leaf( tp_t t ); \
-  static inline bl_t x_via_is_aware( const x_via* o ); \
-  static inline bl_t x_via_t_is_aware( tp_t t ); \
-  static inline tp_t x_via_name( const x_via* o, sz_t index ); \
-  static inline tp_t x_via_t_name( tp_t t, sz_t index ); \
-  static inline bl_t x_via_exists( const x_via* o, tp_t name ); \
-  static inline bl_t x_via_t_exists( tp_t t, tp_t name ); \
-  static inline tp_t x_via_type( const x_via* o, tp_t name ); \
-  static inline tp_t x_via_t_type( tp_t t, const x_via* o, tp_t name ); \
-  static inline sr_s x_via_m_get_sr( x_via* o, tp_t name ); \
-  static inline sr_s x_via_c_get_sr( const x_via* o, tp_t name ); \
-  static inline const x_inst* x_via_c_get( const x_via* o, tp_t name ); \
-  static inline x_inst* x_via_m_get( x_via* o, tp_t name ); \
-  static inline sr_s x_via_set_sr( x_via* o, tp_t name, sr_s sr_src ); \
-  static inline x_inst* x_via_set_c( x_via* o, tp_t name, const x_inst* src ); \
-  static inline x_inst* x_via_set_d( x_via* o, tp_t name, x_inst* src ); \
-  sr_s x_via_t_m_get_sr( tp_t t, x_via* o, tp_t name ); \
-  sr_s x_via_t_set_sr( tp_t t, x_via* o, tp_t name, sr_s sr_src ); \
-  sr_s x_via_t_c_get_sr( tp_t t, const x_via* o, tp_t name ); \
-  void x_via_selftest( void ); \
-  XOILA_DECLARE_SPECT( x_via ) \
+#define BETH_EXPAND_GROUP_x_stamp \
+  BCORE_FORWARD_OBJECT( x_stamp ); \
+  BCORE_FORWARD_OBJECT( x_stamp_path_s ); \
+  BCORE_FORWARD_OBJECT( x_stamp_path_adl_s ); \
+  static inline sz_t x_stamp_size( const x_stamp* o ); \
+  static inline sz_t x_stamp_t_size( tp_t t ); \
+  static inline bl_t x_stamp_t_is_leaf( tp_t t ); \
+  static inline bl_t x_stamp_is_aware( const x_stamp* o ); \
+  static inline bl_t x_stamp_t_is_aware( tp_t t ); \
+  static inline tp_t x_stamp_name( const x_stamp* o, sz_t index ); \
+  static inline tp_t x_stamp_t_name( tp_t t, sz_t index ); \
+  static inline bl_t x_stamp_exists( const x_stamp* o, tp_t name ); \
+  static inline bl_t x_stamp_t_exists( tp_t t, tp_t name ); \
+  static inline tp_t x_stamp_type( const x_stamp* o, tp_t name ); \
+  static inline tp_t x_stamp_t_type( tp_t t, const x_stamp* o, tp_t name ); \
+  static inline sr_s x_stamp_m_get_sr( x_stamp* o, tp_t name ); \
+  static inline sr_s x_stamp_c_get_sr( const x_stamp* o, tp_t name ); \
+  static inline const x_inst* x_stamp_c_get( const x_stamp* o, tp_t name ); \
+  static inline x_inst* x_stamp_m_get( x_stamp* o, tp_t name ); \
+  static inline sr_s x_stamp_set_sr( x_stamp* o, tp_t name, sr_s sr_src ); \
+  static inline x_inst* x_stamp_set_c( x_stamp* o, tp_t name, const x_inst* src ); \
+  static inline x_inst* x_stamp_set_d( x_stamp* o, tp_t name, x_inst* src ); \
+  sr_s x_stamp_t_m_get_sr( tp_t t, x_stamp* o, tp_t name ); \
+  sr_s x_stamp_t_set_sr( tp_t t, x_stamp* o, tp_t name, sr_s sr_src ); \
+  sr_s x_stamp_t_c_get_sr( tp_t t, const x_stamp* o, tp_t name ); \
+  void x_stamp_selftest( void ); \
+  XOILA_DECLARE_SPECT( x_stamp ) \
   { \
       bcore_spect_header_s header; \
   }; \
-  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_via ) \
-  BETH_EXPAND_ITEM_x_via_path_s \
-  BETH_EXPAND_ITEM_x_via_path_adl_s \
-  static inline sz_t x_via_size( const x_via* o ){ return  bcore_via_a_get_size( ((const bcore_via*)(o)) );} \
-  static inline sz_t x_via_t_size( tp_t t ){ return  bcore_via_t_get_size( t, NULL );} \
-  static inline bl_t x_via_t_is_leaf( tp_t t ){ return  bcore_via_t_is_leaf( t, NULL );} \
-  static inline bl_t x_via_is_aware( const x_via* o ){ return  bcore_via_a_is_aware( ((const bcore_via*)(o)) );} \
-  static inline bl_t x_via_t_is_aware( tp_t t ){ return  bcore_via_t_is_aware( t, NULL );} \
-  static inline tp_t x_via_name( const x_via* o, sz_t index ){ return  bcore_via_a_iget_name( ((const bcore_via*)(o)),index );} \
-  static inline tp_t x_via_t_name( tp_t t, sz_t index ){ return  bcore_via_t_iget_name( t, NULL, index );} \
-  static inline bl_t x_via_exists( const x_via* o, tp_t name ){ return  bcore_via_a_nexists(    ((const bcore_via*)(o)),name );} \
-  static inline bl_t x_via_t_exists( tp_t t, tp_t name ){ return  bcore_via_t_nexists( t, NULL, name );} \
-  static inline tp_t x_via_type( const x_via* o, tp_t name ){ return  bcore_via_a_nget_type(    ((const bcore_via*)(o)),name );} \
-  static inline tp_t x_via_t_type( tp_t t, const x_via* o, tp_t name ){ return  bcore_via_t_nget_type( t, ((const bcore_via*)(o)), name );} \
-  static inline sr_s x_via_m_get_sr( x_via* o, tp_t name ){ return  x_via_t_m_get_sr(o->_, o, name );} \
-  static inline sr_s x_via_c_get_sr( const x_via* o, tp_t name ){ return  x_via_t_c_get_sr(o->_, o, name );} \
-  static inline const x_inst* x_via_c_get( const x_via* o, tp_t name ){ sr_s sr = x_via_c_get_sr(o,name ); if( sr_s_is_strong(&(sr)) ) sr_s_clear(&(sr)); return  sr.o;} \
-  static inline x_inst* x_via_m_get( x_via* o, tp_t name ){ sr_s sr = x_via_m_get_sr(o,name ); if( sr_s_is_strong(&(sr)) ) sr_s_clear(&(sr)); return  sr.o;} \
-  static inline sr_s x_via_set_sr( x_via* o, tp_t name, sr_s sr_src ){ return  x_via_t_set_sr(o->_, o, name, sr_src );} \
-  static inline x_inst* x_via_set_c( x_via* o, tp_t name, const x_inst* src ){ return  x_via_set_sr(o,name, sr_awc( src ) ).o;} \
-  static inline x_inst* x_via_set_d( x_via* o, tp_t name, x_inst* src ){ return  x_via_set_sr(o,name, sr_asd( src ) ).o;}
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_stamp ) \
+  BETH_EXPAND_ITEM_x_stamp_path_s \
+  BETH_EXPAND_ITEM_x_stamp_path_adl_s \
+  static inline sz_t x_stamp_size( const x_stamp* o ){ return  bcore_via_a_get_size( ((const bcore_via*)(o)) );} \
+  static inline sz_t x_stamp_t_size( tp_t t ){ return  bcore_via_t_get_size( t, NULL );} \
+  static inline bl_t x_stamp_t_is_leaf( tp_t t ){ return  bcore_via_t_is_leaf( t, NULL );} \
+  static inline bl_t x_stamp_is_aware( const x_stamp* o ){ return  bcore_via_a_is_aware( ((const bcore_via*)(o)) );} \
+  static inline bl_t x_stamp_t_is_aware( tp_t t ){ return  bcore_via_t_is_aware( t, NULL );} \
+  static inline tp_t x_stamp_name( const x_stamp* o, sz_t index ){ return  bcore_via_a_iget_name( ((const bcore_via*)(o)),index );} \
+  static inline tp_t x_stamp_t_name( tp_t t, sz_t index ){ return  bcore_via_t_iget_name( t, NULL, index );} \
+  static inline bl_t x_stamp_exists( const x_stamp* o, tp_t name ){ return  bcore_via_a_nexists(    ((const bcore_via*)(o)),name );} \
+  static inline bl_t x_stamp_t_exists( tp_t t, tp_t name ){ return  bcore_via_t_nexists( t, NULL, name );} \
+  static inline tp_t x_stamp_type( const x_stamp* o, tp_t name ){ return  bcore_via_a_nget_type(    ((const bcore_via*)(o)),name );} \
+  static inline tp_t x_stamp_t_type( tp_t t, const x_stamp* o, tp_t name ){ return  bcore_via_t_nget_type( t, ((const bcore_via*)(o)), name );} \
+  static inline sr_s x_stamp_m_get_sr( x_stamp* o, tp_t name ){ return  x_stamp_t_m_get_sr(o->_, o, name );} \
+  static inline sr_s x_stamp_c_get_sr( const x_stamp* o, tp_t name ){ return  x_stamp_t_c_get_sr(o->_, o, name );} \
+  static inline const x_inst* x_stamp_c_get( const x_stamp* o, tp_t name ){ sr_s sr = x_stamp_c_get_sr(o,name ); if( sr_s_is_strong(&(sr)) ) sr_s_clear(&(sr)); return  sr.o;} \
+  static inline x_inst* x_stamp_m_get( x_stamp* o, tp_t name ){ sr_s sr = x_stamp_m_get_sr(o,name ); if( sr_s_is_strong(&(sr)) ) sr_s_clear(&(sr)); return  sr.o;} \
+  static inline sr_s x_stamp_set_sr( x_stamp* o, tp_t name, sr_s sr_src ){ return  x_stamp_t_set_sr(o->_, o, name, sr_src );} \
+  static inline x_inst* x_stamp_set_c( x_stamp* o, tp_t name, const x_inst* src ){ return  x_stamp_set_sr(o,name, sr_awc( src ) ).o;} \
+  static inline x_inst* x_stamp_set_d( x_stamp* o, tp_t name, x_inst* src ){ return  x_stamp_set_sr(o,name, sr_asd( src ) ).o;}
 
 /**********************************************************************************************************************/
 // source: bcore_file.h
@@ -1119,7 +1119,7 @@
   BCORE_FORWARD_OBJECT( bcore_shell_op_default ); \
   bcore_arr_tp_s* bcore_shell_get_op_stamps( const bcore_shell* o ); \
   void bcore_shell_help_to_sink( bcore_shell* o, bcore_sink* sink ); \
-  void bcore_shell_loop( bcore_shell* o, const bcore_main_frame_s* frame, bcore_source* source, bcore_sink* sink, bcore_shell_control_s* control, const st_s* prompt ); \
+  void bcore_shell_loop( bcore_shell* o, const bcore_main_frame_s* frame, bcore_source* source, bcore_sink* sink, bcore_shell_control_s* control ); \
   typedef tp_t (*bcore_shell_op_group)(const bcore_shell* o ); \
   typedef void (*bcore_shell_push_op_groups)(const bcore_shell* o, bcore_arr_tp_s* list ); \
   XOILA_DECLARE_SPECT( bcore_shell ) \
@@ -1188,17 +1188,20 @@
   BCORE_DECLARE_OBJECT( bcore_shell_control_s ) \
   { \
       aware_t _; \
+      bcore_shell_control_s* parent; \
       bl_t exit_loop; \
-      bl_t exit_all; \
+      st_s path; \
   }; \
   static inline bcore_shell_control_s* bcore_shell_control_s_reset( bcore_shell_control_s* o ); \
   static inline void bcore_shell_control_s_request_exit_loop( bcore_shell_control_s* o ); \
   static inline void bcore_shell_control_s_request_exit_all( bcore_shell_control_s* o ); \
   static inline bl_t bcore_shell_control_s_exit_loop( const bcore_shell_control_s* o ); \
+  static inline bcore_shell_control_s* bcore_shell_control_s_spawn( bcore_shell_control_s* o ); \
   static inline bcore_shell_control_s* bcore_shell_control_s_reset( bcore_shell_control_s* o ){ o->exit_loop = false; return  o;} \
   static inline void bcore_shell_control_s_request_exit_loop( bcore_shell_control_s* o ){ o->exit_loop = true;} \
-  static inline void bcore_shell_control_s_request_exit_all( bcore_shell_control_s* o ){ o->exit_all = true;} \
-  static inline bl_t bcore_shell_control_s_exit_loop( const bcore_shell_control_s* o ){ return  o->exit_loop || o->exit_all;}
+  static inline void bcore_shell_control_s_request_exit_all( bcore_shell_control_s* o ){ o->exit_loop = true; if( o->parent ) bcore_shell_control_s_request_exit_all(o->parent);} \
+  static inline bl_t bcore_shell_control_s_exit_loop( const bcore_shell_control_s* o ){ return  o->exit_loop;} \
+  static inline bcore_shell_control_s* bcore_shell_control_s_spawn( bcore_shell_control_s* o ){ bcore_shell_control_s* r = bcore_shell_control_s_clone(o); r->parent = o; return  r;}
 #define BETH_EXPAND_GROUP_bcore_shell_control \
   BCORE_FORWARD_OBJECT( bcore_shell_control ); \
   BCORE_FORWARD_OBJECT( bcore_shell_control_s ); \
@@ -1290,5 +1293,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 BETH_EXPAND_GROUP_bcore_shell
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x09711FEE706C3CD7
-// XOICO_FILE_SIGNATURE 0x6ABC98A241C5C861
+// XOICO_BODY_SIGNATURE 0x1D993EDB1C2509A9
+// XOICO_FILE_SIGNATURE 0x977C194321768B03
