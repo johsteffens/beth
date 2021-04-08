@@ -567,7 +567,7 @@ func (:s) bcore_main.main = (try)
 
     if( !o.exit_required() )
     {
-        o.cast( m bcore_shell* ).loop( frame, frame.source, frame.sink, NULL, NULL );
+        o.cast( m bcore_shell* ).loop( frame, frame.source, frame.sink, NULL );
     }
 
     o.log.push_fa( "\nSaving state at cycle #<sz_t>\n", o->state->cycle );
