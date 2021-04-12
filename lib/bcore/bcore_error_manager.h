@@ -87,10 +87,16 @@ sz_t bcore_error_stack_size( void );
 /// Removes all errors from stack
 void bcore_error_clear_stack( void );
 
+/// Removes last error from stack (if any)
+void bcore_error_remove_last( void );
+
 /// Pushes an error onto stack; returns id
 er_t bcore_error_push_sc( er_t id, sc_t msg );
 er_t bcore_error_push_fv( er_t id, sc_t format, va_list args );
 er_t bcore_error_push_fa( er_t id, sc_t format, ... );
+
+/// returns last error id on stack; returns 0 in case of no error; does not change error stack
+er_t bcore_error_last();
 
 /// Takes last error from stack; returns false if stack was empty
 bl_t bcore_error_pop_st( er_t* id, st_s* msg );

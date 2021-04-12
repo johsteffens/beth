@@ -61,6 +61,15 @@ static void context_s_clear_stack( bcore_error_manager_context_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static void context_s_remove_last( bcore_error_manager_context_s* o )
+{
+    bcore_mutex_s_lock( &o->mutex );
+    bcore_error_manager_error_adl_s_set_size( &o->adl, o->adl.size > 0 ? o->adl.size - 1 : 0 );
+    bcore_mutex_s_unlock( &o->mutex );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static void context_s_push_sc( bcore_error_manager_context_s* o, er_t id, sc_t msg )
 {
     ASSERT( id != 0 );
@@ -70,6 +79,24 @@ static void context_s_push_sc( bcore_error_manager_context_s* o, er_t id, sc_t m
     st_s_copy_sc( &error->msg, msg );
     bcore_error_manager_error_adl_s_push_d( &o->adl, error );
     bcore_mutex_s_unlock( &o->mutex );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// returns last error id or 0; does not change error stack
+static er_t context_s_last( bcore_error_manager_context_s* o )
+{
+    bcore_mutex_s_lock( &o->mutex );
+    er_t id = 0;
+
+    if( o->adl.size > 0 )
+    {
+        const bcore_error_manager_error_s* error = o->adl.data[ o->adl.size - 1 ];
+        id = error->id;
+    }
+
+    bcore_mutex_s_unlock( &o->mutex );
+    return id;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -106,6 +133,13 @@ void bcore_error_clear_stack( void )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void bcore_error_remove_last( void )
+{
+    context_s_remove_last( get_context() );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 sz_t bcore_error_stack_size( void )
 {
     return context_s_stack_size( get_context() );
@@ -138,6 +172,13 @@ er_t bcore_error_push_fa( er_t id, sc_t format, ... )
     er_t ret = bcore_error_push_fv( id, format, args );
     va_end( args );
     return ret;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+er_t bcore_error_last()
+{
+    return context_s_last( get_context() );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
