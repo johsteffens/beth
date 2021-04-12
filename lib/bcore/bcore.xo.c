@@ -1,4 +1,4 @@
-//  Last update: 2021-04-12T17:38:05Z
+//  Last update: 2021-04-12T21:48:56Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 ... 2021 J.B.Steffens
  *
@@ -41,7 +41,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0xA62A9E4D4A413E78ull
+// HKEYOF_bcore 0xC2F88F8910737C5Eull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -2436,11 +2436,16 @@ er_t x_btml_parse_create_object( bcore_source* source, sr_s* obj )
                     obj->p = bcore_inst_s_get_typed( type );
                 }
                 else
-                {BLM_INIT_LEVEL(4);
-                    x_inst* inst = ((x_inst*)BLM_LEVEL_A_PUSH(4,x_inst_t_create(type )));
-                    BLM_TRY(x_btml_t_parse_body(((x_btml*)( inst)),type, source ))
-                    (*(obj)) = sr_tsd(type, ((x_inst*)bcore_fork(inst)) );
-                BLM_DOWN();}
+                {
+                    x_inst* inst = x_inst_t_create(type ); // do not scope here (inst is obliv)
+                    er_t er = x_btml_t_parse_body(((x_btml*)( inst)),type, source );
+                    if( er )
+                    {
+                        x_inst_t_discard(inst,type );
+                        BLM_RETURNV(er_t, er)
+                    }
+                    (*(obj)) = sr_tsd(type, inst );
+                }
             }
             else if( type == btypeof( "#file" ) )
             {BLM_INIT_LEVEL(4);
@@ -2517,7 +2522,7 @@ er_t x_btml_parse_create_object( bcore_source* source, sr_s* obj )
 
 er_t x_btml_t_parse_body( x_btml* o, tp_t t, bcore_source* source )
 {
-    // bcore_x_btml.h:306:70
+    // bcore_x_btml.h:311:70
     
     x_stamp* stamp =((x_stamp*)( o));
     if( x_btml_t_defines_body_from_source( t ) )
@@ -2609,19 +2614,20 @@ er_t x_btml_t_parse_body( x_btml* o, tp_t t, bcore_source* source )
 
 void x_btml_t_translate_recursive( const x_btml* o, tp_t t, tp_t name, bl_t shelve, bcore_sink* sink, sz_t depth )
 {
-    // bcore_x_btml.h:399:1
+    // bcore_x_btml.h:404:1
     BLM_INIT_LEVEL(0);
     sz_t indent = 4 * depth;
     st_s* buf = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
     
     // shelving obj_l
     if( o && shelve && bcore_via_call_t_defines_shelve( t ) )
-    {BLM_INIT_LEVEL(1);
-        x_btml* o_clone =((x_btml*)( ((x_inst*)BLM_LEVEL_A_PUSH(1,x_inst_t_clone(((const x_inst*)(o)),t )))));
+    {
+        x_btml* o_clone =((x_btml*)( x_inst_t_clone(((const x_inst*)(o)),t ))); // o_clone is obliv
         x_stamp_t_shelve(((x_stamp*)(o_clone)),t );
         x_btml_t_translate_recursive(o_clone,t, name, false, sink, depth );
+        x_inst_t_discard(((x_inst*)(o_clone)),t );
         BLM_RETURN();
-    BLM_DOWN();}
+    }
     
     bcore_sink_a_push_fa(sink,"#rn{ }", indent );
     if( name ) bcore_sink_a_push_fa(sink,"#<sc_t>:", x_btml_name_of(name, buf ) );
@@ -2698,7 +2704,7 @@ void x_btml_t_translate_recursive( const x_btml* o, tp_t t, tp_t name, bl_t shel
 
 void x_btml_t_test_transfer( const x_btml* o, tp_t t )
 {
-    // bcore_x_btml.h:487:1
+    // bcore_x_btml.h:493:1
     BLM_INIT_LEVEL(0);
     st_s* string = st_s_create();
     x_btml_t_to_sink(o,t,((bcore_sink*)( string )));
@@ -2732,7 +2738,7 @@ void x_btml_t_test_transfer( const x_btml* o, tp_t t )
 
 void x_btml_selftest( void )
 {
-    // bcore_x_btml.h:520:1
+    // bcore_x_btml.h:526:1
     BLM_INIT_LEVEL(0);
     sr_s zoo;BLM_T_INIT_SPUSH(sr_s, &zoo);; zoo = bcore_spect_via_create_zoo( 1000 );
     
@@ -2809,11 +2815,16 @@ er_t x_bbml_parse_create_object( bcore_source* source, sr_s* obj )
         if( bcore_flect_exists( type ) )
         {
             if( flag )
-            {BLM_INIT_LEVEL(3);
-                x_inst* inst = ((x_inst*)BLM_LEVEL_A_PUSH(3,x_inst_t_create(type )));
-                BLM_TRY(x_bbml_t_parse_body(((x_bbml*)( inst)),type, source ))
-                (*(obj)) = sr_tsd(type, ((x_inst*)bcore_fork(inst)) );
-            BLM_DOWN();}
+            {
+                x_inst* inst = x_inst_t_create(type ); // do not scope here (inst is obliv)
+                er_t er = x_bbml_t_parse_body(((x_bbml*)( inst)),type, source );
+                if( er )
+                {
+                    x_inst_t_discard(inst,type );
+                    return  er;
+                }
+                (*(obj)) = sr_tsd(type, inst );
+            }
             else // no instance
             {
                 obj->p = bcore_inst_s_get_typed( type );
@@ -2830,7 +2841,7 @@ er_t x_bbml_parse_create_object( bcore_source* source, sr_s* obj )
 
 er_t x_bbml_t_parse_body( x_bbml* o, tp_t t, bcore_source* source )
 {
-    // bcore_x_bbml.h:171:70
+    // bcore_x_bbml.h:176:70
     
     x_stamp* stamp =((x_stamp*)( o));
     if( x_bbml_t_defines_body_from_source( t ) )
@@ -2932,16 +2943,17 @@ er_t x_bbml_t_parse_body( x_bbml* o, tp_t t, bcore_source* source )
 
 void x_bbml_t_translate_recursive( const x_bbml* o, tp_t t, tp_t name, bl_t shelve, bcore_sink* sink )
 {
-    // bcore_x_bbml.h:278:1
+    // bcore_x_bbml.h:283:1
     
     // shelving obj_l
     if( o && shelve && bcore_via_call_t_defines_shelve( t ) )
-    {BLM_INIT_LEVEL(1);
-        x_bbml* o_clone =((x_bbml*)( ((x_inst*)BLM_LEVEL_A_PUSH(1,x_inst_t_clone(((const x_inst*)(o)),t )))));
+    {
+        x_bbml* o_clone =((x_bbml*)( x_inst_t_clone(((const x_inst*)(o)),t ))); // no scoping (o_clone is obliv)
         x_stamp_t_shelve(((x_stamp*)(o_clone)),t );
         x_bbml_t_translate_recursive(o_clone,t, name, false, sink );
-        BLM_RETURN();
-    BLM_DOWN();}
+        x_inst_discard(((x_inst*)(o_clone)));
+        return ;
+    }
     
     if( name ) x_bbml_push_type(sink, name );
     
@@ -3018,7 +3030,7 @@ void x_bbml_t_translate_recursive( const x_bbml* o, tp_t t, tp_t name, bl_t shel
 
 void x_bbml_t_test_transfer( const x_bbml* o, tp_t t )
 {
-    // bcore_x_bbml.h:364:1
+    // bcore_x_bbml.h:370:1
     BLM_INIT_LEVEL(0);
     st_s* string = st_s_create();
     x_bbml_t_to_sink(o,t,((bcore_sink*)( string )));
@@ -3052,7 +3064,7 @@ void x_bbml_t_test_transfer( const x_bbml* o, tp_t t )
 
 void x_bbml_selftest( void )
 {
-    // bcore_x_bbml.h:397:1
+    // bcore_x_bbml.h:403:1
     BLM_INIT_LEVEL(0);
     sr_s zoo;BLM_T_INIT_SPUSH(sr_s, &zoo);; zoo = bcore_spect_via_create_zoo( 1000 );
     
@@ -3464,5 +3476,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x7E9D95B4D8564815
-// XOICO_FILE_SIGNATURE 0x0C896C60B17079D9
+// XOICO_BODY_SIGNATURE 0x5C00941B76A50DBA
+// XOICO_FILE_SIGNATURE 0x20B9A0889862E5FA

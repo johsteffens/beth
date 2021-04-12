@@ -148,9 +148,14 @@ func (er_t parse_create_object( m bcore_source* source, m sr_s* obj )) = (try)
         {
             if( flag )
             {
-                m x_inst* inst = x_inst_t_create( type )^;
-                :t_parse_body( inst, type, source );
-                obj.0 = sr_tsd( type, inst.fork() );
+                d x_inst* inst = x_inst_t_create( type ); // do not scope here (inst is obliv)
+                er_t er = :t_parse_body( inst, type, source );
+                if( er )
+                {
+                    inst.t_discard( type );
+                    return er;
+                }
+                obj.0 = sr_tsd( type, inst );
             }
             else // no instance
             {
@@ -279,9 +284,10 @@ func (void t_translate_recursive( @* o, tp_t t, tp_t name, bl_t shelve, m bcore_
     // shelving obj_l
     if( o && shelve && bcore_via_call_t_defines_shelve( t ) )
     {
-        m@* o_clone = o.cast( x_inst* ).t_clone( t )^;
+        d @* o_clone = o.cast( x_inst* ).t_clone( t ); // no scoping (o_clone is obliv)
         o_clone.cast( m x_stamp* ).t_shelve( t );
         o_clone.t_translate_recursive( t, name, false, sink );
+        o_clone.cast( d x_inst* ).discard();
         return;
     }
 
