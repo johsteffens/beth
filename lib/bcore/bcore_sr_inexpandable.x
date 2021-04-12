@@ -67,15 +67,15 @@ group sr = x_inst
     func (sr_s null()); // returns a null-reference
     func (sr_s pocs( vc_t p, m x_inst* o, bl_t const_f, bl_t strong_f ));
 
-    func (sr_s twc( tp_t t, c x_inst* o )); // typed weak const
-    func (sr_s twd( tp_t t, d x_inst* o )); // typed weak discardable
-    func (sr_s tsd( tp_t t, d x_inst* o )); // typed strong discardable
+    func (sr_s twc( tp_t t, c obliv x_inst* o )); // typed weak const
+    func (sr_s twd( tp_t t, d obliv x_inst* o )); // typed weak discardable
+    func (sr_s tsd( tp_t t, d obliv x_inst* o )); // typed strong discardable
     func (sr_s awc( c x_inst* o ));  // aware weak const
     func (sr_s awd( d x_inst* o ));  // aware weak discardable
     func (sr_s asd( d x_inst* o ));  // aware strong discardable
-    func (sr_s pwc( c bcore_spect* p, c x_inst* o )); // spect weak const
-    func (sr_s pwd( c bcore_spect* p, d x_inst* o )); // spect weak discardable
-    func (sr_s psd( c bcore_spect* p, d x_inst* o )); // spect strong discardable
+    func (sr_s pwc( c bcore_spect* p, c obliv x_inst* o )); // spect weak const
+    func (sr_s pwd( c bcore_spect* p, d obliv x_inst* o )); // spect weak discardable
+    func (sr_s psd( c bcore_spect* p, d obliv x_inst* o )); // spect strong discardable
 
     func (sr_s cw( sr_s o )); // turns a reference into a weak one;
     func (sr_s cc( sr_s o )); // turns a reference into a const one;
@@ -95,7 +95,7 @@ group sr = x_inst
     func (sr_s create_from_spect( c bcore_spect* spect ));
 
     /// creates a strong reference of a typed object by cloning obj
-    func (sr_s create_strong_typed( tp_t type, c x_inst* obj ));
+    func (sr_s create_strong_typed( tp_t type, c obliv x_inst* obj ));
 
     // copies specified leaf objects into a strong reference
     func (sr_s s0( s0_t v ));

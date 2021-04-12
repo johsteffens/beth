@@ -458,7 +458,7 @@ group :op_default = retrievable
             {
                 if( extensive )
                 {
-                    x_inst_t_to_sink_txt_ml( sr_s_type( sr ), sr.o, sink );
+                    x_btml_t_to_sink( sr.o, sr_s_type( sr ), sink );
                 }
                 else
                 {
@@ -469,7 +469,7 @@ group :op_default = retrievable
                     for( sz_t i = 0; i < size; i++ )
                     {
                         tp_t name = x_stamp_t_name( t, i );
-                        tp_t type = x_stamp_t_type( t, v, name );
+                        tp_t type = x_stamp_t_type( v, t, name );
                         table.push_fa( "#<sc_t>", bnameof( name ) );
                         table.push_fa( ": #<sc_t>", bnameof( type ) );
                         m st_s* st = table.push();
@@ -481,7 +481,7 @@ group :op_default = retrievable
                             case bl_t~: case uz_t~: case sz_t~: case tp_t~:
                             {
                                 sr_s^ sr;
-                                sr = x_stamp_t_c_get_sr( t, v, name );
+                                sr = x_stamp_t_c_get_sr( v, t, name );
                                 if( sr.o )
                                 {
                                     st.push_sc( ": " );

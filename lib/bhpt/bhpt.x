@@ -201,7 +201,7 @@ group :tutor =
     feature d ::test_result* test( m @* o, c ::adaptive* adaptive ) = { return NULL; };
 
     /// outputs current status information to sink
-    feature void status_to_sink( c @* o, sz_t verbosity, m bcore_sink* sink ) = { if( verbosity > 0 ) o.to_sink_txt_ml( sink ); };
+    feature void status_to_sink( c @* o, sz_t verbosity, m bcore_sink* sink ) = { if( verbosity > 0 ) o.cast( x_btml* ).to_sink( sink ); };
 };
 
 // ---------------------------------------------------------------------------------------------------------------------

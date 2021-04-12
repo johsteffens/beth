@@ -47,63 +47,34 @@ include 'c' "bcore_file.h";
 signature s2_t main( bcore_arr_st_s* args );
 
 /**********************************************************************************************************************/
-/// existence, creation
+/// existence
 
 // checks existence of type
 func (bl_t exists( tp_t type )) = { return bcore_flect_exists( type ); };
 
+/**********************************************************************************************************************/
+/// create/copy/clone/discard
+
 // creates instance from type; error in case type does not exist (check with 'exists')
 func (d x_inst* create( tp_t type )) = { return bcore_inst_t_create( type ); };
 
-/**********************************************************************************************************************/
-/// copying
+func (o t_copy( m obliv @* o, tp_t t, c@* src )) = { bcore_inst_t_copy( t, o.cast( m bcore_inst* ), src ); return o; };
+func (o   copy( m aware @* o,         c@* src )) = { bcore_inst_a_copy(    o.cast( m bcore_inst* ), src ); return o; };
 
-func (o copy_typed( m@* o, tp_t type, c@* src )) = { bcore_inst_a_copy_typed( o.cast( m bcore_inst* ), type, src ); return o; };
+func (o t_copy_typed( m obliv @* o, tp_t t, tp_t type, c obliv @* src )) = { bcore_inst_t_copy_typed( t, o.cast( m bcore_inst* ), type, src ); return o; };
+func (o   copy_typed( m aware @* o,         tp_t type, c obliv @* src )) = { bcore_inst_a_copy_typed(    o.cast( m bcore_inst* ), type, src ); return o; };
+
+func (d (TO) @* t_clone( c obliv (TO) @* o, tp_t t )) = { return bcore_inst_t_clone( t, o.cast( bcore_inst* ) ); };
+func (d (TO) @*   clone( c aware (TO) @* o         )) = { return bcore_inst_a_clone(    o.cast( bcore_inst* ) ); };
+
+func (void t_discard( d obliv @* o, tp_t t )) = { bcore_inst_t_discard( t, o.cast( m bcore_inst* ) ); };
+func (void   discard( d aware @* o         )) = { bcore_inst_a_discard(    o.cast( m bcore_inst* ) ); };
 
 /**********************************************************************************************************************/
 /// ternary branch
 
 func (m (TO) :* ifd( m@* o, bl_t cond, m (TO) :* b )) = { return cond ? o : b; };
 func (c (TO) :* ifc( c@* o, bl_t cond, c (TO) :* b )) = { return cond ? o : b; };
-
-/**********************************************************************************************************************/
-/// serialization
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (o to_sink_txt_ml(     c@* o, m bcore_sink* sink )) = { bcore_txt_ml_a_to_sink( o, sink ); return o; };
-func (o to_sink_bin_ml(     c@* o, m bcore_sink* sink )) = { bcore_bin_ml_a_to_sink( o, sink ); return o; };
-func (o from_source_txt_ml( m@* o, m bcore_source* source )) = { bcore_txt_ml_a_from_source( o, source ); return o; };
-func (o from_source_bin_ml( m@* o, m bcore_source* source )) = { bcore_bin_ml_a_from_source( o, source ); return o; };
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (o t_to_sink_txt_ml(     tp_t t, c@* o, m bcore_sink* sink )) = { bcore_txt_ml_t_to_sink( t, o, sink ); return o; };
-func (o t_to_sink_bin_ml(     tp_t t, c@* o, m bcore_sink* sink )) = { bcore_bin_ml_t_to_sink( t, o, sink ); return o; };
-func (o t_from_source_txt_ml( tp_t t, m@* o, m bcore_source* source )) = { bcore_txt_ml_t_from_source( t, o, source ); return o; };
-func (o t_from_source_bin_ml( tp_t t, m@* o, m bcore_source* source )) = { bcore_bin_ml_t_from_source( t, o, source ); return o; };
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (o to_file_txt_ml(   c@* o, sc_t path )) =
-{
-    return o.to_sink_txt_ml( bcore_file_open_sink( path )^ );
-};
-
-func (o to_file_bin_ml(   c@* o, sc_t path )) =
-{
-    return o.to_sink_bin_ml( bcore_file_open_sink( path )^ );
-};
-
-func (o from_file_txt_ml( m@* o, sc_t path )) =
-{
-    return o.from_source_txt_ml( bcore_file_open_source( path )^ );
-};
-
-func (o from_file_bin_ml( m@* o, sc_t path )) =
-{
-    return o.from_source_bin_ml( bcore_file_open_source( path )^ );
-};
 
 //----------------------------------------------------------------------------------------------------------------------
 

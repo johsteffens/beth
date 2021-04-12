@@ -38,6 +38,8 @@
 #include "bcore_spect_hash.h"
 #include "bcore_txt_ml.h"
 #include "bcore_bin_ml.h"
+#include "bcore_x_btml.h"
+#include "bcore_x_bbml.h"
 #include "bcore_signal.h"
 #include "bcore_life.h"
 #include "bcore_sinks.h"
@@ -62,7 +64,6 @@
 #include "bcore_x_inst.h"
 #include "bcore_x_array.h"
 #include "bcore_x_group.h"
-//#include "bcore_x_via.h"
 #include "bcore_x_stamp.h"
 
 #endif // BCORE_STD_H

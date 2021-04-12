@@ -92,7 +92,7 @@ tp_t bcore_array_fix_link_aware_type_of( uz_t size );
 
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_array, get_size,  uz_t ) // returns size
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_array, get_space, uz_t ) // returns space
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_array, get, sr_s, uz_t, index ) // returns indexed item; if index is out of range or the linked item is NULL
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_array, get, sr_s, uz_t, index ) // returns indexed item; returns sr_null() if index is out of range or the linked item is NULL
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set,    uz_t, index, sr_s, src ) // sets item at indexed position
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_s3, uz_t, index, s3_t, val ) // Sets item by converting s3_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_u3, uz_t, index, u3_t, val ) // Sets item by converting u3_t into target type

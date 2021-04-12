@@ -57,9 +57,6 @@ stamp :frame_s = aware bcore_inst
 {
     /// ==== Parameters ====
 
-    /// interpreter used to decode the config file; If NULL, frame tries to guess the correct interpreter from the file's content
-    aware bcore_interpreter => interpreter;
-
     /// The following criteria are processed in given order until one matches or all fail
     bl_t  first_argument_is_path_to_object = true; // path to object's config file is expected as first argument
     bl_t second_argument_is_path_to_script = true; // path to scipt file file is expected as first argument (only when feature 'main_parse' is implemented)

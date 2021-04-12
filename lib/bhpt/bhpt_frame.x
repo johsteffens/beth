@@ -328,7 +328,8 @@ func (:s) (void adapt( m @* o )) =
 func (:s) (void backup( m@* o )) =
 {
     sc_t path = o.state_path.sc;
-    if( path[ 0 ] ) o.state.to_file_bin_ml( path );
+//    if( path[ 0 ] ) o.state.to_file_bin_ml( path );
+    if( path[ 0 ] ) o.state.cast( x_bbml* ).to_file( path );
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -528,8 +529,13 @@ func (:s) bcore_main.main = (try)
         sc_t path = o.state_path.sc;
         if( path[ 0 ] && bcore_file_exists( path ) )
         {
-            o.state =< bhpt_frame_state_s!.from_file_bin_ml( path );
-            o.log.push_fa( "State recovered from '#<sc_t>'\n", path );
+            o.state =< bhpt_frame_state_s!;
+            if( o.state.cast( m x_bbml* ).from_file( path ) )
+            {
+                bcore_error_pop_all_to_stderr();
+                bcore_abort();
+            }
+            o.log.push_fa( "State recovered from '#<sc_t>' at cycle #<sz_t>\n", path, o.state.cycle );
         }
         else
         {
@@ -570,7 +576,7 @@ func (:s) bcore_main.main = (try)
         o.cast( m bcore_shell* ).loop( frame, frame.source, frame.sink, NULL );
     }
 
-    o.log.push_fa( "\nSaving state at cycle #<sz_t>\n", o->state->cycle );
+    o.log.push_fa( "\nSaving state at cycle #<sz_t>\n", o.state.cycle );
     o.backup();
     o.log.push_fa( "Exiting cleanly.\n" );
 
@@ -579,7 +585,7 @@ func (:s) bcore_main.main = (try)
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:state_s) (er_t table_to_sink(:state_s* o, bcore_hmap_name_s* hmap_name, x_via_path_adl_s* path_adl, m bcore_sink* sink )) =
+func (:state_s) (er_t table_to_sink(:state_s* o, bcore_hmap_name_s* hmap_name, x_stamp_path_adl_s* path_adl, m bcore_sink* sink )) =
 {
     foreach( $* path in path_adl )
     {
@@ -653,10 +659,10 @@ func (:state_s) bcore_main.main = (try)
             {
                 sz_t idx = 3;
                 if( idx == args.size ) return bcore_error_push_fa( TYPEOF_general_error, "Element name expected." );
-                x_via_path_adl_s^ path_adl;
+                x_stamp_path_adl_s^ path_adl;
                 while( idx < args.size )
                 {
-                    path_adl.push_d( x_via_path_s!.parse_sc( args.[ idx++ ].sc ) );
+                    path_adl.push_d( x_stamp_path_s!.parse_sc( args.[ idx++ ].sc ) );
                 }
 
                 bcore_hmap_name_s^ hmap_name;

@@ -137,23 +137,24 @@ er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args 
 
         bcore_source* source = bcore_file_open_source( file );
 
-        bcore_interpreter* interpreter = NULL;
-        if( o->interpreter )
+        x_inst* object = NULL;
+        if( x_btml_appears_valid( source ) )
         {
-            interpreter = bcore_fork( o->interpreter );
+            object = ( x_inst* )x_btml_create_from_source( source );
         }
-        else if( bcore_txt_ml_contains_valid_syntax( source ) )
+        else if( x_bbml_appears_valid( source ) )
         {
-            interpreter = ( bcore_interpreter* )bcore_txt_ml_interpreter_s_create();
-        }
-        else
-        {
-            interpreter = ( bcore_interpreter* )bcore_bin_ml_interpreter_s_create();
+            object = ( x_inst* )x_bbml_create_from_source( source );
         }
 
-        o->object_sr = bcore_interpret_x( sr_awd( interpreter ), sr_awd( source ) );
-        bcore_inst_a_detach( (bcore_inst** )&interpreter );
-        bcore_inst_a_detach( (bcore_inst** )&source );
+        if( !object )
+        {
+            bcore_source_a_detach( &source );
+            return bcore_error_push_fa( TYPEOF_general_error, "bcore_main_frame_s: File '#<sc_t>' contains no valid content.", file );
+        }
+
+        o->object_sr = sr_asd( object );
+        bcore_source_a_detach( &source );
 
         if( o->args.size > 2 && o->second_argument_is_path_to_script && bcore_file_exists( o->args.data[ 2 ]->sc ) )
         {

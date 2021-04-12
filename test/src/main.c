@@ -17,7 +17,7 @@
 #include "bcore_name_manager.h"
 #include "bcore_signal.h"
 #include "bcore_spect.h"
-#include "bcore_x_via.h"
+#include "bcore_x_stamp.h"
 #include "bcore_quicktypes.h"
 #include "bclos_quicktypes.h"
 #include "bmath_quicktypes.h"
@@ -29,6 +29,8 @@
 #include "bmath_signal.h"
 #include "badapt_signal.h"
 #include "bhvm_holor.h"
+#include "bcore_x_btml.h"
+#include "bcore_x_bbml.h"
 
 void selftest( const char* name )
 {
@@ -67,7 +69,7 @@ int main( void )
     selftest( "bcore_prsg" );
     selftest( "bcore_sources" );
 
-    x_via_selftest();
+    x_stamp_selftest();
 
     bhvm_holor_selftest();
 
@@ -105,6 +107,9 @@ int main( void )
     selftest( "bcore_spect_array" );
     selftest( "bcore_spect_via" );
     selftest( "bcore_spect_compare" );
+
+    x_btml_selftest();
+    x_bbml_selftest();
     selftest( "bcore_txt_ml" );
     selftest( "bcore_bin_ml" );
 

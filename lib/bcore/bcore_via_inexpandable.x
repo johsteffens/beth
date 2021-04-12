@@ -23,7 +23,7 @@ group bcore_via = x_inst
     feature 'at' tp_t iget_name( c@* o, uz_t index );
     feature 'at' sr_s iget     ( c@* o, uz_t index );
     feature 'at' void iset     ( m@* o, uz_t index, sr_s val );
-    feature 'at' tp_t iget_type( m@* o, uz_t index );
+    feature 'at' tp_t iget_type( c@* o, uz_t index );
 
     feature 'at' void iset_s3( m@* o, uz_t index, s3_t val );
     feature 'at' void iset_u3( m@* o, uz_t index, u3_t val );
