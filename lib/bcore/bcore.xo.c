@@ -1,4 +1,4 @@
-//  Last update: 2021-04-19T13:57:55Z
+//  Last update: 2021-04-19T16:23:40Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 ... 2021 J.B.Steffens
  *
@@ -41,7 +41,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0xD252C32E5E3DC2A8ull
+// HKEYOF_bcore 0x90FF221DBDFCB9A2ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -2565,9 +2565,9 @@ er_t x_btml_t_parse_body( x_btml* o, tp_t t, bcore_source* source )
     // bcore_x_btml.h:348:70
     
     x_stamp* stamp =((x_stamp*)( o));
-    if( x_btml_t_defines_feature_body_from_source( t ) )
+    if( x_btml_t_defines_feature_body_from_source(t ) )
     {
-        x_btml_t_feature_body_from_source( t, o, source );
+        BLM_TRY(x_btml_t_feature_body_from_source(o,t, source ))
     }
     
     /// supported string formats: '"..."' or any text terminated by whitespace or '</>'
@@ -2699,7 +2699,7 @@ void x_btml_t_translate_recursive( const x_btml* o, tp_t t, tp_t name, bl_t shel
     st_s* buf = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
     
     // shelving obj_l
-    if( o && shelve && bcore_via_call_t_defines_shelve( t ) )
+    if( o && shelve && bcore_via_call_t_defines_shelve(t ) )
     {
         x_btml* o_clone =((x_btml*)( x_inst_t_clone(((const x_inst*)(o)),t ))); // o_clone is obliv
         x_stamp_t_shelve(((x_stamp*)(o_clone)),t );
@@ -2729,9 +2729,9 @@ void x_btml_t_translate_recursive( const x_btml* o, tp_t t, tp_t name, bl_t shel
     {
         bcore_sink_a_push_fa(sink,"<#<sc_t>>", x_btml_name_of(t, buf ) );
     
-        if( x_btml_t_defines_feature_body_to_sink( t ) )
+        if( x_btml_t_defines_feature_body_to_sink(t ) )
         {
-            x_btml_t_feature_body_to_sink( t, o, sink );
+            x_btml_t_feature_body_to_sink(o,t, sink );
         }
         else if( t == TYPEOF_st_s ) // strings
         {BLM_INIT_LEVEL(3);
@@ -2932,9 +2932,9 @@ er_t x_bbml_t_parse_body( x_bbml* o, tp_t t, bcore_source* source )
     // bcore_x_bbml.h:191:70
     
     x_stamp* stamp =((x_stamp*)( o));
-    if( x_bbml_t_defines_feature_body_from_source( t ) )
+    if( x_bbml_t_defines_feature_body_from_source(t ) )
     {
-        x_bbml_t_feature_body_from_source( t, o, source );
+        BLM_TRY(x_bbml_t_feature_body_from_source(o,t, source ))
     }
     else if( t == ((tp_t)(TYPEOF_st_s)) )
     {
@@ -3034,7 +3034,7 @@ void x_bbml_t_translate_recursive( const x_bbml* o, tp_t t, tp_t name, bl_t shel
     // bcore_x_bbml.h:298:1
     
     // shelving obj_l
-    if( o && shelve && bcore_via_call_t_defines_shelve( t ) )
+    if( o && shelve && bcore_via_call_t_defines_shelve(t ) )
     {
         x_bbml* o_clone =((x_bbml*)( x_inst_t_clone(((const x_inst*)(o)),t ))); // no scoping (o_clone is obliv)
         x_stamp_t_shelve(((x_stamp*)(o_clone)),t );
@@ -3050,9 +3050,9 @@ void x_bbml_t_translate_recursive( const x_bbml* o, tp_t t, tp_t name, bl_t shel
     
     if( o )
     {
-        if( x_bbml_t_defines_feature_body_to_sink( t ) )
+        if( x_bbml_t_defines_feature_body_to_sink(t ) )
         {
-            x_bbml_t_feature_body_to_sink( t, o, sink );
+            x_bbml_t_feature_body_to_sink(o,t, sink );
         }
         else if( t == TYPEOF_st_s ) // strings
         {
@@ -3574,5 +3574,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x8250DAF6DE86E00B
-// XOICO_FILE_SIGNATURE 0x21ED646068E113FE
+// XOICO_BODY_SIGNATURE 0xADE5A22EF99840E9
+// XOICO_FILE_SIGNATURE 0x08D0B2D519F2D6E7

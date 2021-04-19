@@ -191,9 +191,9 @@ func (er_t parse_create_object( m bcore_source* source, m sr_s* obj )) = (try)
 func (er_t t_parse_body( m @* o, tp_t t, m bcore_source* source )) = (try)
 {
     m x_stamp* stamp = o;
-    if( :t_defines_feature_body_from_source( t ) )
+    if( o.t_defines_feature_body_from_source( t ) )
     {
-        :t_feature_body_from_source( t, o, source );
+        o.t_feature_body_from_source( t, source );
     }
     else if( t == st_s~ )
     {
@@ -313,9 +313,9 @@ func (void t_translate_recursive( @* o, tp_t t, tp_t name, bl_t shelve, m bcore_
 
     if( o )
     {
-        if( :t_defines_feature_body_to_sink( t ) )
+        if( o.t_defines_feature_body_to_sink( t ) )
         {
-            :t_feature_body_to_sink( t, o, sink );
+            o.t_feature_body_to_sink( t, sink );
         }
         else if( t == TYPEOF_st_s ) // strings
         {

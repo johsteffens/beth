@@ -108,15 +108,15 @@ func (m x_inst* set_c( m aware @* o, tp_t name, c x_inst* src )) = { return o.se
 func (m x_inst* set_d( m aware @* o, tp_t name, d x_inst* src )) = { return o.set_sr_ret( name, sr_asd( src ) ).o; };
 
 /// tells stamp that it was mutated (stamp must overload bcore_via_call:mutated to receive this signal)
-func (void t_mutated( m obliv @* o, tp_t t )) = { if( bcore_via_call_t_defines_mutated( t ) ) bcore_via_call_t_mutated( t, o.cast( m bcore_via_call* ) ); };
+func (void t_mutated( m obliv @* o, tp_t t )) = { if( bcore_via_call_t_defines_mutated( t ) ) o.cast( m bcore_via_call* ).t_mutated( t ); };
 func (void   mutated( m aware @* o         )) = { o.cast( m bcore_via_call* ).mutated(); };
 
 /// tells stamp that it should 'shelve' itself; see bcore_via_call:shelve for details (stamp must overload bcore_via_call:shelve to receive this signal)
-func (void t_shelve( m obliv @* o, tp_t t )) = { if( bcore_via_call_t_defines_shelve( t ) ) bcore_via_call_t_shelve( t, o.cast( m bcore_via_call* ) ); };
+func (void t_shelve( m obliv @* o, tp_t t )) = { if( bcore_via_call_t_defines_shelve( t ) ) o.cast( m bcore_via_call* ).t_shelve( t ); };
 func (void   shelve( m aware @* o         )) = { o.cast( m bcore_via_call* ).shelve(); };
 
 /// tells stamp about a source that was used for mutation (stamp must overload bcore_via_call:source to receive this signal)
-func (void t_source( m obliv @* o, tp_t t, m bcore_source* source )) = { if( bcore_via_call_t_defines_source( t ) ) bcore_via_call_t_source( t, o.cast( m bcore_via_call* ), source ); };
+func (void t_source( m obliv @* o, tp_t t, m bcore_source* source )) = { if( bcore_via_call_t_defines_source( t ) ) o.cast( m bcore_via_call* ).t_source( t, source ); };
 func (void   source( m aware @* o        , m bcore_source* source )) = { o.cast( m bcore_via_call* ).source( source ); };
 
 //----------------------------------------------------------------------------------------------------------------------
