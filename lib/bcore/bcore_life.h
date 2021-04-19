@@ -168,7 +168,8 @@ extern bcore_life_s* __bcore_life; // always NULL; needed to ingrain a life-chai
 #define BLM_T_SPUSH( type, expr ) bcore_life_s_spush_typed( __bcore_life_curent, TYPEOF_##type, expr )
 #define BLM_T_INIT_SPUSH( type, expr ) type##_init( expr ); bcore_life_s_spush_typed( __bcore_life_curent, TYPEOF_##type, expr )
 #define BLM_LEVEL_A_PUSH( level,       expr ) bcore_life_s_push_level_aware( __bcore_life_curent, level, expr )
-#define BLM_LEVEL_T_PUSH( level, type, expr ) bcore_life_s_push_level_typed( __bcore_life_curent, level, TYPEOF_##type, expr )
+#define BLM_LEVEL_T_PUSH( level, type_name, expr ) bcore_life_s_push_level_typed( __bcore_life_curent, level, TYPEOF_##type_name, expr )
+#define BLM_LEVEL_TV_PUSH( level, type_val, expr ) bcore_life_s_push_level_typed( __bcore_life_curent, level, type_val, expr )
 #define BLM_X_PUSH(  expr ) bcore_life_s_push_sr(    __bcore_life_curent,       expr )
 #define BLM_A_CLONE( expr ) bcore_life_s_push_aware( __bcore_life_curent, bcore_inst_a_clone( ( bcore_inst* )expr ) )
 
