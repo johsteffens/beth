@@ -229,11 +229,13 @@ void st_s_print_fa( sc_t format, ... );
  *  "#skip'...'"  (Example: "#skip' ')
  *      Argument: none
  *      Consumes all successive occurrence of any character in '...'
+ *      Note: Characters enclosure '...' can also be expressed as {...}
  *
  *  "#until'...'"  (Example: "#until'\n'")
  *      Argument: st_s*
  *      Consumes a string until any character in '...' or end of string is reached.
  *      The terminating character <char> is not consumed.
+ *      Note: Characters enclosure '...' can also be expressed as {...}
  *
  *  "#?'...'"  (Example: "#?'->'")
  *      Argument: bl_t*

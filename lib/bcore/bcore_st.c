@@ -1978,12 +1978,14 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
             else if( ( bcore_strcmp( "skip", fp ) >> 1 ) == 0 )
             {
                 fp += strlen( "skip" );
-                sc_t err_msg = "Format specifier 'skip' must be followed by one or more characters enclosed in single quotes ''";
-                if( *fp++ != '\'' ) ERR( err_msg );
+                sc_t err_msg = "Format specifier 'skip' must be followed by one or more characters enclosed in quotes '...' or brackets {...}";
+                char close_char = *fp == '\'' ? '\'' : ( *fp == '{' ? '}' : 0 );
+                if( !close_char ) ERR( err_msg );
+                fp++;
                 sc_t list = fp;
                 sz_t size = 0;
-                while( *fp != '\'' && *fp != 0 ) { size++; fp++; }
-                if( *fp++ != '\'' ) ERR( err_msg );
+                while( *fp != close_char && *fp != 0 ) { size++; fp++; }
+                if( *fp++ != close_char ) ERR( err_msg );
                 while ( o->sc[ idx ] != 0 )
                 {
                     char c = o->sc[ idx ];
@@ -1995,12 +1997,14 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
             else if( ( bcore_strcmp( "until", fp ) >> 1 ) == 0 )
             {
                 fp += strlen( "until" );
-                sc_t err_msg = "Format specifier 'until' must be followed by character enclosed in single quotes ''";
-                if( *fp++ != '\'' ) ERR( err_msg );
+                sc_t err_msg = "Format specifier 'until' must be followed by one or more characters enclosed in quotes '...' or brackets {...}";
+                char close_char = *fp == '\'' ? '\'' : ( *fp == '{' ? '}' : 0 );
+                if( !close_char ) ERR( err_msg );
+                fp++;
                 sc_t list = fp;
                 sz_t size = 0;
-                while( *fp != '\'' && *fp != 0 ) { size++; fp++; }
-                if( *fp++ != '\'' ) ERR( err_msg );
+                while( *fp != close_char && *fp != 0 ) { size++; fp++; }
+                if( *fp++ != close_char ) ERR( err_msg );
                 st_s* string = NULL;
                 if( set_arg )
                 {
