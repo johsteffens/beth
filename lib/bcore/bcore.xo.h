@@ -1,4 +1,4 @@
-//  Last update: 2021-04-12T17:38:05Z
+//  Last update: 2021-04-19T13:57:55Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 ... 2021 J.B.Steffens
  *
@@ -76,7 +76,6 @@
 #define BETH_EXPAND_GROUP_x_inst \
   BCORE_FORWARD_OBJECT( x_inst ); \
   static inline bl_t x_inst_exists( tp_t type ); \
-  static inline x_inst* x_inst_create( tp_t type ); \
   static inline x_inst* x_inst_t_copy( x_inst* o, tp_t t, const x_inst* src ); \
   static inline x_inst* x_inst_copy( x_inst* o, const x_inst* src ); \
   static inline x_inst* x_inst_t_copy_typed( x_inst* o, tp_t t, tp_t type, const x_inst* src ); \
@@ -90,13 +89,13 @@
   static inline bcore_source* x_inst_stdin( void ); \
   static inline bcore_sink* x_inst_stdout( void ); \
   static inline bcore_sink* x_inst_stderr( void ); \
+  x_inst* x_inst_create( tp_t type ); \
   XOILA_DECLARE_SPECT( x_inst ) \
   { \
       bcore_spect_header_s header; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_inst ) \
   static inline bl_t x_inst_exists( tp_t type ){ return  bcore_flect_exists( type );} \
-  static inline x_inst* x_inst_create( tp_t type ){ return ((x_inst*)( bcore_inst_t_create(type )));} \
   static inline x_inst* x_inst_t_copy( x_inst* o, tp_t t, const x_inst* src ){ bcore_inst_t_copy( t, ((bcore_inst*)(o)), src ); return  o;} \
   static inline x_inst* x_inst_copy( x_inst* o, const x_inst* src ){ bcore_inst_a_copy(    ((bcore_inst*)(o)),((const bcore_inst*)(src ))); return  o;} \
   static inline x_inst* x_inst_t_copy_typed( x_inst* o, tp_t t, tp_t type, const x_inst* src ){ bcore_inst_t_copy_typed( t, ((bcore_inst*)(o)), type, src ); return  o;} \
@@ -1347,6 +1346,30 @@
 
 #define TYPEOF_bcore_shell_op_default 0x377F955C9208880Dull
 #define TYPEOF_bcore_shell_op_default_spect_s 0xD8576D49161AE849ull
+#define TYPEOF_bcore_shell_op_default_help_s 0xF75CEDD411DE13D3ull
+#define BETH_EXPAND_ITEM_bcore_shell_op_default_help_s \
+  BCORE_DECLARE_OBJECT( bcore_shell_op_default_help_s ) \
+  { \
+      aware_t _; \
+  }; \
+  static inline sc_t bcore_shell_op_default_help_s_key( const bcore_shell_op_default_help_s* o ); \
+  static inline sc_t bcore_shell_op_default_help_s_info( const bcore_shell_op_default_help_s* o ); \
+  static inline void bcore_shell_op_default_help_s_run( bcore_shell_op_default_help_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control_s* control ); \
+  static inline sc_t bcore_shell_op_default_help_s_key( const bcore_shell_op_default_help_s* o ){ return  "?,help";} \
+  static inline sc_t bcore_shell_op_default_help_s_info( const bcore_shell_op_default_help_s* o ){ return  "Lists available commands";} \
+  static inline void bcore_shell_op_default_help_s_run( bcore_shell_op_default_help_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control_s* control ){ bcore_shell_help_to_sink(obj,sink );}
+#define TYPEOF_bcore_shell_op_default_ls_s 0xDC836302CF3C1A21ull
+#define BETH_EXPAND_ITEM_bcore_shell_op_default_ls_s \
+  BCORE_DECLARE_OBJECT( bcore_shell_op_default_ls_s ) \
+  { \
+      aware_t _; \
+      st_s path; \
+  }; \
+  static inline void bcore_shell_op_default_ls_s_get_key( const bcore_shell_op_default_ls_s* o, st_s* key ); \
+  static inline void bcore_shell_op_default_ls_s_get_info( const bcore_shell_op_default_ls_s* o, st_s* info ); \
+  void bcore_shell_op_default_ls_s_run( bcore_shell_op_default_ls_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control_s* control ); \
+  static inline void bcore_shell_op_default_ls_s_get_key( const bcore_shell_op_default_ls_s* o, st_s* key ){ st_s_push_fa(key,"ls" );} \
+  static inline void bcore_shell_op_default_ls_s_get_info( const bcore_shell_op_default_ls_s* o, st_s* info ){ st_s_push_fa(info,"Lists all visible members" );}
 #define TYPEOF_bcore_shell_op_default_enter_s 0xAA8F66CF9A301BFAull
 #define BETH_EXPAND_ITEM_bcore_shell_op_default_enter_s \
   BCORE_DECLARE_OBJECT( bcore_shell_op_default_enter_s ) \
@@ -1358,7 +1381,7 @@
   static inline sc_t bcore_shell_op_default_enter_s_info( const bcore_shell_op_default_enter_s* o ); \
   void bcore_shell_op_default_enter_s_run( bcore_shell_op_default_enter_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control_s* control ); \
   static inline sc_t bcore_shell_op_default_enter_s_key( const bcore_shell_op_default_enter_s* o ){ return  "n,enter";} \
-  static inline sc_t bcore_shell_op_default_enter_s_info( const bcore_shell_op_default_enter_s* o ){ return  "enters object";}
+  static inline sc_t bcore_shell_op_default_enter_s_info( const bcore_shell_op_default_enter_s* o ){ return  "Enters object";}
 #define TYPEOF_bcore_shell_op_default_exit_s 0xB8E52C4CA484C9E0ull
 #define BETH_EXPAND_ITEM_bcore_shell_op_default_exit_s \
   BCORE_DECLARE_OBJECT( bcore_shell_op_default_exit_s ) \
@@ -1370,48 +1393,52 @@
   static inline sc_t bcore_shell_op_default_exit_s_info( const bcore_shell_op_default_exit_s* o ); \
   static inline void bcore_shell_op_default_exit_s_run( bcore_shell_op_default_exit_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control_s* control ); \
   static inline sc_t bcore_shell_op_default_exit_s_key( const bcore_shell_op_default_exit_s* o ){ return  "x,exit";} \
-  static inline sc_t bcore_shell_op_default_exit_s_info( const bcore_shell_op_default_exit_s* o ){ return  "exits object; -a: exits all parent objects";} \
+  static inline sc_t bcore_shell_op_default_exit_s_info( const bcore_shell_op_default_exit_s* o ){ return  "Exits object; -a: exits all parent objects";} \
   static inline void bcore_shell_op_default_exit_s_run( bcore_shell_op_default_exit_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control_s* control ){ if( o->a ) bcore_shell_control_s_request_exit_all(control); else bcore_shell_control_s_request_exit_loop(control);}
-#define TYPEOF_bcore_shell_op_default_help_s 0xF75CEDD411DE13D3ull
-#define BETH_EXPAND_ITEM_bcore_shell_op_default_help_s \
-  BCORE_DECLARE_OBJECT( bcore_shell_op_default_help_s ) \
+#define TYPEOF_bcore_shell_op_default_get_s 0x6D41BBBB174FE26Cull
+#define BETH_EXPAND_ITEM_bcore_shell_op_default_get_s \
+  BCORE_DECLARE_OBJECT( bcore_shell_op_default_get_s ) \
   { \
       aware_t _; \
-  }; \
-  static inline sc_t bcore_shell_op_default_help_s_key( const bcore_shell_op_default_help_s* o ); \
-  static inline sc_t bcore_shell_op_default_help_s_info( const bcore_shell_op_default_help_s* o ); \
-  static inline void bcore_shell_op_default_help_s_run( bcore_shell_op_default_help_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control_s* control ); \
-  static inline sc_t bcore_shell_op_default_help_s_key( const bcore_shell_op_default_help_s* o ){ return  "?,help";} \
-  static inline sc_t bcore_shell_op_default_help_s_info( const bcore_shell_op_default_help_s* o ){ return  "lists available commands";} \
-  static inline void bcore_shell_op_default_help_s_run( bcore_shell_op_default_help_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control_s* control ){ bcore_shell_help_to_sink(obj,sink );}
-#define TYPEOF_bcore_shell_op_default_ls_s 0xDC836302CF3C1A21ull
-#define BETH_EXPAND_ITEM_bcore_shell_op_default_ls_s \
-  BCORE_DECLARE_OBJECT( bcore_shell_op_default_ls_s ) \
-  { \
-      aware_t _; \
-      bl_t l; \
       st_s path; \
   }; \
-  static inline void bcore_shell_op_default_ls_s_get_key( const bcore_shell_op_default_ls_s* o, st_s* key ); \
-  static inline void bcore_shell_op_default_ls_s_get_info( const bcore_shell_op_default_ls_s* o, st_s* info ); \
-  void bcore_shell_op_default_ls_s_run( bcore_shell_op_default_ls_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control_s* control ); \
-  static inline void bcore_shell_op_default_ls_s_get_key( const bcore_shell_op_default_ls_s* o, st_s* key ){ st_s_push_fa(key,"ls" );} \
-  static inline void bcore_shell_op_default_ls_s_get_info( const bcore_shell_op_default_ls_s* o, st_s* info ){ st_s_push_fa(info,"lists all visible members; -l: txt_ml to stdout" );}
+  static inline sc_t bcore_shell_op_default_get_s_key( const bcore_shell_op_default_get_s* o ); \
+  static inline sc_t bcore_shell_op_default_get_s_info( const bcore_shell_op_default_get_s* o ); \
+  void bcore_shell_op_default_get_s_run( bcore_shell_op_default_get_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control_s* control ); \
+  static inline sc_t bcore_shell_op_default_get_s_key( const bcore_shell_op_default_get_s* o ){ return  "get";} \
+  static inline sc_t bcore_shell_op_default_get_s_info( const bcore_shell_op_default_get_s* o ){ return  "Outputs object as btml";}
+#define TYPEOF_bcore_shell_op_default_set_s 0xA537CD7AFBBEEAB0ull
+#define BETH_EXPAND_ITEM_bcore_shell_op_default_set_s \
+  BCORE_DECLARE_OBJECT( bcore_shell_op_default_set_s ) \
+  { \
+      aware_t _; \
+      st_s path; \
+      st_s source; \
+  }; \
+  static inline sc_t bcore_shell_op_default_set_s_key( const bcore_shell_op_default_set_s* o ); \
+  static inline sc_t bcore_shell_op_default_set_s_info( const bcore_shell_op_default_set_s* o ); \
+  void bcore_shell_op_default_set_s_run( bcore_shell_op_default_set_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, bcore_source* source, bcore_sink* sink, bcore_shell_control_s* control ); \
+  static inline sc_t bcore_shell_op_default_set_s_key( const bcore_shell_op_default_set_s* o ){ return  "set";} \
+  static inline sc_t bcore_shell_op_default_set_s_info( const bcore_shell_op_default_set_s* o ){ return  "Sets object from btml";}
 #define BETH_EXPAND_GROUP_bcore_shell_op_default \
   BCORE_FORWARD_OBJECT( bcore_shell_op_default ); \
-  BCORE_FORWARD_OBJECT( bcore_shell_op_default_enter_s ); \
-  BCORE_FORWARD_OBJECT( bcore_shell_op_default_exit_s ); \
   BCORE_FORWARD_OBJECT( bcore_shell_op_default_help_s ); \
   BCORE_FORWARD_OBJECT( bcore_shell_op_default_ls_s ); \
+  BCORE_FORWARD_OBJECT( bcore_shell_op_default_enter_s ); \
+  BCORE_FORWARD_OBJECT( bcore_shell_op_default_exit_s ); \
+  BCORE_FORWARD_OBJECT( bcore_shell_op_default_get_s ); \
+  BCORE_FORWARD_OBJECT( bcore_shell_op_default_set_s ); \
   XOILA_DECLARE_SPECT( bcore_shell_op_default ) \
   { \
       bcore_spect_header_s header; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_shell_op_default ) \
+  BETH_EXPAND_ITEM_bcore_shell_op_default_help_s \
+  BETH_EXPAND_ITEM_bcore_shell_op_default_ls_s \
   BETH_EXPAND_ITEM_bcore_shell_op_default_enter_s \
   BETH_EXPAND_ITEM_bcore_shell_op_default_exit_s \
-  BETH_EXPAND_ITEM_bcore_shell_op_default_help_s \
-  BETH_EXPAND_ITEM_bcore_shell_op_default_ls_s
+  BETH_EXPAND_ITEM_bcore_shell_op_default_get_s \
+  BETH_EXPAND_ITEM_bcore_shell_op_default_set_s
 
 /**********************************************************************************************************************/
 // source: bcore_x_btml.h
@@ -1430,6 +1457,16 @@
   static inline er_t x_btml_from_st( x_btml* o, const st_s* st ); \
   static inline er_t x_btml_t_from_sc( x_btml* o, tp_t t, sc_t sc ); \
   static inline er_t x_btml_from_sc( x_btml* o, sc_t sc ); \
+  static inline er_t x_btml_t_body_from_source( x_btml* o, tp_t t, bcore_source* source ); \
+  static inline er_t x_btml_body_from_source( x_btml* o, bcore_source* source ); \
+  static inline er_t x_btml_t_body_from_file( x_btml* o, tp_t t, sc_t file ); \
+  static inline er_t x_btml_body_from_file( x_btml* o, sc_t file ); \
+  static inline er_t x_btml_t_body_from_st( x_btml* o, tp_t t, const st_s* st ); \
+  static inline er_t x_btml_body_from_st( x_btml* o, const st_s* st ); \
+  static inline er_t x_btml_t_body_from_sc( x_btml* o, tp_t t, sc_t sc ); \
+  static inline er_t x_btml_body_from_sc( x_btml* o, sc_t sc ); \
+  static inline x_btml* x_btml_create_from_st_t( const st_s* st, tp_t* type ); \
+  static inline x_btml* x_btml_create_from_sc_t( sc_t sc, tp_t* type ); \
   static inline x_btml* x_btml_create_from_st( const st_s* st ); \
   static inline x_btml* x_btml_create_from_sc( sc_t sc ); \
   static inline void x_btml_to_sink( const x_btml* o, bcore_sink* sink ); \
@@ -1437,6 +1474,7 @@
   static inline void x_btml_to_file( const x_btml* o, sc_t file ); \
   static inline void x_btml_test_transfer( const x_btml* o ); \
   er_t x_btml_t_from_source( x_btml* o, tp_t t, bcore_source* source ); \
+  x_btml* x_btml_create_from_source_t( bcore_source* source, tp_t* type ); \
   x_btml* x_btml_create_from_source( bcore_source* source ); \
   void x_btml_t_to_sink( const x_btml* o, tp_t t, bcore_sink* sink ); \
   sc_t x_btml_name_of( tp_t type, st_s* buf ); \
@@ -1444,26 +1482,27 @@
   bl_t x_btml_appears_valid( bcore_source* source ); \
   er_t x_btml_parse_create_object( bcore_source* source, sr_s* obj ); \
   er_t x_btml_t_parse_body( x_btml* o, tp_t t, bcore_source* source ); \
+  er_t x_btml_skip_body( bcore_source* source ); \
   void x_btml_t_translate_recursive( const x_btml* o, tp_t t, tp_t name, bl_t shelve, bcore_sink* sink, sz_t depth ); \
   void x_btml_t_test_transfer( const x_btml* o, tp_t t ); \
   void x_btml_selftest( void ); \
-  typedef er_t (*x_btml_body_from_source)(x_btml* o, bcore_source* source ); \
-  typedef void (*x_btml_body_to_sink)(const x_btml* o, bcore_sink* sink ); \
+  typedef er_t (*x_btml_feature_body_from_source)(x_btml* o, bcore_source* source ); \
+  typedef void (*x_btml_feature_body_to_sink)(const x_btml* o, bcore_sink* sink ); \
   XOILA_DECLARE_SPECT( x_btml ) \
   { \
       bcore_spect_header_s header; \
-      x_btml_body_from_source body_from_source; \
-      x_btml_body_to_sink body_to_sink; \
+      x_btml_feature_body_from_source feature_body_from_source; \
+      x_btml_feature_body_to_sink feature_body_to_sink; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_btml ) \
-  static inline er_t x_btml_a_body_from_source( x_btml* o, bcore_source* source ){ const x_btml_spect_s* p = x_btml_spect_s_get_aware( o ); assert( p->body_from_source ); return p->body_from_source( o, source );} \
-  static inline bl_t x_btml_defines_body_from_source( const x_btml* o ){ return x_btml_spect_s_get_aware( o )->body_from_source != NULL;} \
-  static inline er_t x_btml_t_body_from_source( tp_t t, x_btml* o, bcore_source* source ){ const x_btml_spect_s* p = x_btml_spect_s_get_typed( t ); assert( p->body_from_source ); return p->body_from_source( o, source );} \
-  static inline bl_t x_btml_t_defines_body_from_source( tp_t t ){ return x_btml_spect_s_get_typed( t )->body_from_source != NULL;} \
-  static inline void x_btml_a_body_to_sink( const x_btml* o, bcore_sink* sink ){ const x_btml_spect_s* p = x_btml_spect_s_get_aware( o ); assert( p->body_to_sink ); p->body_to_sink( o, sink );} \
-  static inline bl_t x_btml_defines_body_to_sink( const x_btml* o ){ return x_btml_spect_s_get_aware( o )->body_to_sink != NULL;} \
-  static inline void x_btml_t_body_to_sink( tp_t t, const x_btml* o, bcore_sink* sink ){ const x_btml_spect_s* p = x_btml_spect_s_get_typed( t ); assert( p->body_to_sink ); p->body_to_sink( o, sink );} \
-  static inline bl_t x_btml_t_defines_body_to_sink( tp_t t ){ return x_btml_spect_s_get_typed( t )->body_to_sink != NULL;} \
+  static inline er_t x_btml_a_feature_body_from_source( x_btml* o, bcore_source* source ){ const x_btml_spect_s* p = x_btml_spect_s_get_aware( o ); assert( p->feature_body_from_source ); return p->feature_body_from_source( o, source );} \
+  static inline bl_t x_btml_defines_feature_body_from_source( const x_btml* o ){ return x_btml_spect_s_get_aware( o )->feature_body_from_source != NULL;} \
+  static inline er_t x_btml_t_feature_body_from_source( tp_t t, x_btml* o, bcore_source* source ){ const x_btml_spect_s* p = x_btml_spect_s_get_typed( t ); assert( p->feature_body_from_source ); return p->feature_body_from_source( o, source );} \
+  static inline bl_t x_btml_t_defines_feature_body_from_source( tp_t t ){ return x_btml_spect_s_get_typed( t )->feature_body_from_source != NULL;} \
+  static inline void x_btml_a_feature_body_to_sink( const x_btml* o, bcore_sink* sink ){ const x_btml_spect_s* p = x_btml_spect_s_get_aware( o ); assert( p->feature_body_to_sink ); p->feature_body_to_sink( o, sink );} \
+  static inline bl_t x_btml_defines_feature_body_to_sink( const x_btml* o ){ return x_btml_spect_s_get_aware( o )->feature_body_to_sink != NULL;} \
+  static inline void x_btml_t_feature_body_to_sink( tp_t t, const x_btml* o, bcore_sink* sink ){ const x_btml_spect_s* p = x_btml_spect_s_get_typed( t ); assert( p->feature_body_to_sink ); p->feature_body_to_sink( o, sink );} \
+  static inline bl_t x_btml_t_defines_feature_body_to_sink( tp_t t ){ return x_btml_spect_s_get_typed( t )->feature_body_to_sink != NULL;} \
   static inline er_t x_btml_from_source( x_btml* o, bcore_source* source ){ return  x_btml_t_from_source(o,o->_, source );} \
   static inline er_t x_btml_t_from_file( x_btml* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0); BLM_RETURNV(er_t, x_btml_t_from_source(o,o->_, ((bcore_source*)BLM_LEVEL_A_PUSH(0,bcore_file_open_source(file ))) ))} \
   static inline er_t x_btml_from_file( x_btml* o, sc_t file ){ return  x_btml_t_from_file(o,o->_, file );} \
@@ -1471,6 +1510,16 @@
   static inline er_t x_btml_from_st( x_btml* o, const st_s* st ){ return  x_btml_t_from_st(o,o->_, st );} \
   static inline er_t x_btml_t_from_sc( x_btml* o, tp_t t, sc_t sc ){BLM_INIT_LEVEL(0); BLM_RETURNV(er_t, x_btml_t_from_source(o,o->_,((bcore_source*)( ((bcore_source_string_s*)BLM_LEVEL_T_PUSH(0,bcore_source_string_s,bcore_source_string_s_create_from_sc(sc ))) ))))} \
   static inline er_t x_btml_from_sc( x_btml* o, sc_t sc ){ return  x_btml_t_from_sc(o,o->_, sc );} \
+  static inline er_t x_btml_t_body_from_source( x_btml* o, tp_t t, bcore_source* source ){ return  x_btml_t_parse_body(o,t, source );} \
+  static inline er_t x_btml_body_from_source( x_btml* o, bcore_source* source ){ return  x_btml_t_body_from_source(o,o->_, source );} \
+  static inline er_t x_btml_t_body_from_file( x_btml* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0); BLM_RETURNV(er_t, x_btml_t_body_from_source(o,o->_, ((bcore_source*)BLM_LEVEL_A_PUSH(0,bcore_file_open_source(file ))) ))} \
+  static inline er_t x_btml_body_from_file( x_btml* o, sc_t file ){ return  x_btml_t_body_from_file(o,o->_, file );} \
+  static inline er_t x_btml_t_body_from_st( x_btml* o, tp_t t, const st_s* st ){BLM_INIT_LEVEL(0); BLM_RETURNV(er_t, x_btml_t_body_from_source(o,o->_,((bcore_source*)( ((bcore_source_string_s*)BLM_LEVEL_T_PUSH(0,bcore_source_string_s,bcore_source_string_s_create_from_string(st ))) ))))} \
+  static inline er_t x_btml_body_from_st( x_btml* o, const st_s* st ){ return  x_btml_t_body_from_st(o,o->_, st );} \
+  static inline er_t x_btml_t_body_from_sc( x_btml* o, tp_t t, sc_t sc ){BLM_INIT_LEVEL(0); BLM_RETURNV(er_t, x_btml_t_body_from_source(o,o->_,((bcore_source*)( ((bcore_source_string_s*)BLM_LEVEL_T_PUSH(0,bcore_source_string_s,bcore_source_string_s_create_from_sc(sc ))) ))))} \
+  static inline er_t x_btml_body_from_sc( x_btml* o, sc_t sc ){ return  x_btml_t_body_from_sc(o,o->_, sc );} \
+  static inline x_btml* x_btml_create_from_st_t( const st_s* st, tp_t* type ){BLM_INIT_LEVEL(0); BLM_RETURNV(x_btml*, x_btml_create_from_source_t(((bcore_source*)(((bcore_source_string_s*)BLM_LEVEL_T_PUSH(0,bcore_source_string_s,bcore_source_string_s_create_from_string(st ))))), type ))} \
+  static inline x_btml* x_btml_create_from_sc_t( sc_t sc, tp_t* type ){BLM_INIT_LEVEL(0); BLM_RETURNV(x_btml*, x_btml_create_from_source_t(((bcore_source*)(((bcore_source_string_s*)BLM_LEVEL_T_PUSH(0,bcore_source_string_s,bcore_source_string_s_create_from_sc(sc ))))), type ))} \
   static inline x_btml* x_btml_create_from_st( const st_s* st ){BLM_INIT_LEVEL(0); BLM_RETURNV(x_btml*, x_btml_create_from_source(((bcore_source*)(((bcore_source_string_s*)BLM_LEVEL_T_PUSH(0,bcore_source_string_s,bcore_source_string_s_create_from_string(st ))) ))))} \
   static inline x_btml* x_btml_create_from_sc( sc_t sc ){BLM_INIT_LEVEL(0); BLM_RETURNV(x_btml*, x_btml_create_from_source(((bcore_source*)(((bcore_source_string_s*)BLM_LEVEL_T_PUSH(0,bcore_source_string_s,bcore_source_string_s_create_from_sc(sc ))) ))))} \
   static inline void x_btml_to_sink( const x_btml* o, bcore_sink* sink ){ x_btml_t_to_sink(o,o->_, sink );} \
@@ -1495,6 +1544,8 @@
   static inline er_t x_bbml_from_st( x_bbml* o, const st_s* st ); \
   static inline er_t x_bbml_t_from_sc( x_bbml* o, tp_t t, sc_t sc ); \
   static inline er_t x_bbml_from_sc( x_bbml* o, sc_t sc ); \
+  static inline x_bbml* x_bbml_create_from_st_t( const st_s* st, tp_t* type ); \
+  static inline x_bbml* x_bbml_create_from_sc_t( sc_t sc, tp_t* type ); \
   static inline x_bbml* x_bbml_create_from_st( const st_s* st ); \
   static inline x_bbml* x_bbml_create_from_sc( sc_t sc ); \
   static inline void x_bbml_to_sink( const x_bbml* o, bcore_sink* sink ); \
@@ -1502,6 +1553,7 @@
   static inline void x_bbml_to_file( const x_bbml* o, sc_t file ); \
   static inline void x_bbml_test_transfer( const x_bbml* o ); \
   er_t x_bbml_t_from_source( x_bbml* o, tp_t t, bcore_source* source ); \
+  x_bbml* x_bbml_create_from_source_t( bcore_source* source, tp_t* type ); \
   x_bbml* x_bbml_create_from_source( bcore_source* source ); \
   void x_bbml_t_to_sink( const x_bbml* o, tp_t t, bcore_sink* sink ); \
   static inline tp_t x_bbml_parse_type( bcore_source* source ); \
@@ -1516,23 +1568,23 @@
   void x_bbml_t_translate_recursive( const x_bbml* o, tp_t t, tp_t name, bl_t shelve, bcore_sink* sink ); \
   void x_bbml_t_test_transfer( const x_bbml* o, tp_t t ); \
   void x_bbml_selftest( void ); \
-  typedef er_t (*x_bbml_body_from_source)(x_bbml* o, bcore_source* source ); \
-  typedef void (*x_bbml_body_to_sink)(const x_bbml* o, bcore_sink* sink ); \
+  typedef er_t (*x_bbml_feature_body_from_source)(x_bbml* o, bcore_source* source ); \
+  typedef void (*x_bbml_feature_body_to_sink)(const x_bbml* o, bcore_sink* sink ); \
   XOILA_DECLARE_SPECT( x_bbml ) \
   { \
       bcore_spect_header_s header; \
-      x_bbml_body_from_source body_from_source; \
-      x_bbml_body_to_sink body_to_sink; \
+      x_bbml_feature_body_from_source feature_body_from_source; \
+      x_bbml_feature_body_to_sink feature_body_to_sink; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_bbml ) \
-  static inline er_t x_bbml_a_body_from_source( x_bbml* o, bcore_source* source ){ const x_bbml_spect_s* p = x_bbml_spect_s_get_aware( o ); assert( p->body_from_source ); return p->body_from_source( o, source );} \
-  static inline bl_t x_bbml_defines_body_from_source( const x_bbml* o ){ return x_bbml_spect_s_get_aware( o )->body_from_source != NULL;} \
-  static inline er_t x_bbml_t_body_from_source( tp_t t, x_bbml* o, bcore_source* source ){ const x_bbml_spect_s* p = x_bbml_spect_s_get_typed( t ); assert( p->body_from_source ); return p->body_from_source( o, source );} \
-  static inline bl_t x_bbml_t_defines_body_from_source( tp_t t ){ return x_bbml_spect_s_get_typed( t )->body_from_source != NULL;} \
-  static inline void x_bbml_a_body_to_sink( const x_bbml* o, bcore_sink* sink ){ const x_bbml_spect_s* p = x_bbml_spect_s_get_aware( o ); assert( p->body_to_sink ); p->body_to_sink( o, sink );} \
-  static inline bl_t x_bbml_defines_body_to_sink( const x_bbml* o ){ return x_bbml_spect_s_get_aware( o )->body_to_sink != NULL;} \
-  static inline void x_bbml_t_body_to_sink( tp_t t, const x_bbml* o, bcore_sink* sink ){ const x_bbml_spect_s* p = x_bbml_spect_s_get_typed( t ); assert( p->body_to_sink ); p->body_to_sink( o, sink );} \
-  static inline bl_t x_bbml_t_defines_body_to_sink( tp_t t ){ return x_bbml_spect_s_get_typed( t )->body_to_sink != NULL;} \
+  static inline er_t x_bbml_a_feature_body_from_source( x_bbml* o, bcore_source* source ){ const x_bbml_spect_s* p = x_bbml_spect_s_get_aware( o ); assert( p->feature_body_from_source ); return p->feature_body_from_source( o, source );} \
+  static inline bl_t x_bbml_defines_feature_body_from_source( const x_bbml* o ){ return x_bbml_spect_s_get_aware( o )->feature_body_from_source != NULL;} \
+  static inline er_t x_bbml_t_feature_body_from_source( tp_t t, x_bbml* o, bcore_source* source ){ const x_bbml_spect_s* p = x_bbml_spect_s_get_typed( t ); assert( p->feature_body_from_source ); return p->feature_body_from_source( o, source );} \
+  static inline bl_t x_bbml_t_defines_feature_body_from_source( tp_t t ){ return x_bbml_spect_s_get_typed( t )->feature_body_from_source != NULL;} \
+  static inline void x_bbml_a_feature_body_to_sink( const x_bbml* o, bcore_sink* sink ){ const x_bbml_spect_s* p = x_bbml_spect_s_get_aware( o ); assert( p->feature_body_to_sink ); p->feature_body_to_sink( o, sink );} \
+  static inline bl_t x_bbml_defines_feature_body_to_sink( const x_bbml* o ){ return x_bbml_spect_s_get_aware( o )->feature_body_to_sink != NULL;} \
+  static inline void x_bbml_t_feature_body_to_sink( tp_t t, const x_bbml* o, bcore_sink* sink ){ const x_bbml_spect_s* p = x_bbml_spect_s_get_typed( t ); assert( p->feature_body_to_sink ); p->feature_body_to_sink( o, sink );} \
+  static inline bl_t x_bbml_t_defines_feature_body_to_sink( tp_t t ){ return x_bbml_spect_s_get_typed( t )->feature_body_to_sink != NULL;} \
   static inline er_t x_bbml_from_source( x_bbml* o, bcore_source* source ){ return  x_bbml_t_from_source(o,o->_, source );} \
   static inline er_t x_bbml_t_from_file( x_bbml* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0); BLM_RETURNV(er_t, x_bbml_t_from_source(o,o->_, ((bcore_source*)BLM_LEVEL_A_PUSH(0,bcore_file_open_source(file ))) ))} \
   static inline er_t x_bbml_from_file( x_bbml* o, sc_t file ){ return  x_bbml_t_from_file(o,o->_, file );} \
@@ -1540,6 +1592,8 @@
   static inline er_t x_bbml_from_st( x_bbml* o, const st_s* st ){ return  x_bbml_t_from_st(o,o->_, st );} \
   static inline er_t x_bbml_t_from_sc( x_bbml* o, tp_t t, sc_t sc ){BLM_INIT_LEVEL(0); BLM_RETURNV(er_t, x_bbml_t_from_source(o,o->_,((bcore_source*)( ((bcore_source_string_s*)BLM_LEVEL_T_PUSH(0,bcore_source_string_s,bcore_source_string_s_create_from_sc(sc ))) ))))} \
   static inline er_t x_bbml_from_sc( x_bbml* o, sc_t sc ){ return  x_bbml_t_from_sc(o,o->_, sc );} \
+  static inline x_bbml* x_bbml_create_from_st_t( const st_s* st, tp_t* type ){BLM_INIT_LEVEL(0); BLM_RETURNV(x_bbml*, x_bbml_create_from_source_t(((bcore_source*)(((bcore_source_string_s*)BLM_LEVEL_T_PUSH(0,bcore_source_string_s,bcore_source_string_s_create_from_string(st ))))), type ))} \
+  static inline x_bbml* x_bbml_create_from_sc_t( sc_t sc, tp_t* type ){BLM_INIT_LEVEL(0); BLM_RETURNV(x_bbml*, x_bbml_create_from_source_t(((bcore_source*)(((bcore_source_string_s*)BLM_LEVEL_T_PUSH(0,bcore_source_string_s,bcore_source_string_s_create_from_sc(sc ))))), type ))} \
   static inline x_bbml* x_bbml_create_from_st( const st_s* st ){BLM_INIT_LEVEL(0); BLM_RETURNV(x_bbml*, x_bbml_create_from_source(((bcore_source*)(((bcore_source_string_s*)BLM_LEVEL_T_PUSH(0,bcore_source_string_s,bcore_source_string_s_create_from_string(st ))) ))))} \
   static inline x_bbml* x_bbml_create_from_sc( sc_t sc ){BLM_INIT_LEVEL(0); BLM_RETURNV(x_bbml*, x_bbml_create_from_source(((bcore_source*)(((bcore_source_string_s*)BLM_LEVEL_T_PUSH(0,bcore_source_string_s,bcore_source_string_s_create_from_sc(sc ))) ))))} \
   static inline void x_bbml_to_sink( const x_bbml* o, bcore_sink* sink ){ x_bbml_t_to_sink(o,o->_, sink );} \
@@ -1563,5 +1617,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 BETH_EXPAND_GROUP_bcore_shell
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x3EBE83F5EDA0E9CF
-// XOICO_FILE_SIGNATURE 0x2775D7BA9DFAD1D4
+// XOICO_BODY_SIGNATURE 0x6274143A7DEA0F25
+// XOICO_FILE_SIGNATURE 0x7CECB7C97E53B45D
