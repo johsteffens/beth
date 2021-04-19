@@ -40,13 +40,19 @@ stamp myobject =
     id:<tp_t>1234</>
 </>
 
-Version handling without version declaration:
+Version tolerance:
+
+Changes in the object do not (generally) produce a parser error.
+This allows handling of different object version as follows:
 
 New elements:
-An incomplete set of members is handled by setting unspecified elements to their respective default.
+An incomplete set of members is allowed by setting unspecified elements to their respective default.
 
 Retired elements:
-An unrecognized element name is ignored by the parser. (The object of that element might be temporarily created and parsed)
+An unrecognized element name is ignored by the parser.
+
+Retired types:
+An unrecognized object type is skipped by the parser and treated as if 'NULL' was parsed.
 
 */
 
@@ -67,7 +73,7 @@ XOILA_DEFINE_GROUP( x_btml, x_inst )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/** Reads object from source.
+/** Reads full object from source.
  *  If o implements copy_typed, automatic type conversion is used.
  *  Allows recovering from parse errors and conversion errors.
  *  Checks error-stack after copy_typed.
@@ -87,12 +93,29 @@ func (er_t   from_st    ( m@* o,         c st_s* st  )) = { return o.t_from_st( 
 func (er_t t_from_sc    ( m@* o, tp_t t,   sc_t  sc  )) = { return o.t_from_source( o._, bcore_source_string_s_create_from_sc( sc )^ ); };
 func (er_t   from_sc    ( m@* o,           sc_t  sc  )) = { return o.t_from_sc( o._, sc ); };
 
+/** Reads only object body from source (excluding <...>, </> enclosures)
+ *  Allows recovering from parse errors and conversion errors.
+ *  In case of a parse error o might have been changed.
+ */
+func (er_t t_body_from_source( m@* o, tp_t t, m bcore_source* source )) = { return o.t_parse_body( t, source ); };
+func (er_t   body_from_source( m@* o,         m bcore_source* source )) = { return o.t_body_from_source( o._, source ); };
+func (er_t t_body_from_file  ( m@* o, tp_t t,   sc_t file )) = { return o.t_body_from_source( o._, bcore_file_open_source( file )^ ); };
+func (er_t   body_from_file  ( m@* o,           sc_t file )) = { return o.t_body_from_file( o._, file ); };
+func (er_t t_body_from_st    ( m@* o, tp_t t, c st_s* st  )) = { return o.t_body_from_source( o._, bcore_source_string_s_create_from_string( st )^ ); };
+func (er_t   body_from_st    ( m@* o,         c st_s* st  )) = { return o.t_body_from_st( o._, st ); };
+func (er_t t_body_from_sc    ( m@* o, tp_t t,   sc_t  sc  )) = { return o.t_body_from_source( o._, bcore_source_string_s_create_from_sc( sc )^ ); };
+func (er_t   body_from_sc    ( m@* o,           sc_t  sc  )) = { return o.t_body_from_sc( o._, sc ); };
+
 /** Reads and creates object from source.
  *  Returns NULL in case of parse error (check error-stack).
+ *  If type is != NULL Sets type.0 to object's type.
  */
-func (d @* create_from_source( m bcore_source* source ));
-func (d @* create_from_st( c st_s* st )) = { return :create_from_source( bcore_source_string_s_create_from_string( st )^ ); };
-func (d @* create_from_sc(   sc_t  sc )) = { return :create_from_source( bcore_source_string_s_create_from_sc( sc )^ ); };
+func (d obliv @* create_from_source_t( m bcore_source* source, m tp_t* type ));
+func (d obliv @* create_from_st_t( c st_s* st, m tp_t* type )) = { return :create_from_source_t( bcore_source_string_s_create_from_string( st )^, type ); };
+func (d obliv @* create_from_sc_t(   sc_t  sc, m tp_t* type )) = { return :create_from_source_t( bcore_source_string_s_create_from_sc( sc )^, type ); };
+func (d aware @* create_from_source( m bcore_source* source ));
+func (d aware @* create_from_st( c st_s* st )) = { return :create_from_source( bcore_source_string_s_create_from_string( st )^ ); };
+func (d aware @* create_from_sc(   sc_t  sc )) = { return :create_from_source( bcore_source_string_s_create_from_sc( sc )^ ); };
 
 /// Tests initial source content for validity. Restores index.
 func (bl_t appears_valid( m bcore_source* source ));
@@ -107,9 +130,11 @@ func (void   to_file( c@* o,         sc_t file )) = { o.t_to_file( o._, file ); 
 func (void t_test_transfer( @* o, tp_t t ));
 func (void   test_transfer( @* o )) = { o.t_test_transfer( o._ ); };
 
-/// Overload these features for objects that define their own txt_ml syntax
-feature 'at' er_t body_from_source( m@* o, m bcore_source* source );
-feature 'at' void body_to_sink(     c@* o, m bcore_sink* sink );
+/** Overload these features for objects that define their own markup syntax.
+ *  Note: Always overload both features with compatible syntax to ensure I/O consistency.
+ */
+feature 'at' er_t feature_body_from_source( m@* o, m bcore_source* source );
+feature 'at' void feature_body_to_sink(     c@* o, m bcore_sink* sink );
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -124,23 +149,38 @@ func t_from_source = (try)
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func create_from_source =
+func create_from_source_t =
 {
     sr_s sr = sr_null();
     :parse_create_object( source, sr.1 );
+    if( sr.o && type ) type.0 = sr_s_o_type( sr );
     return sr.o.cast( d @* ); // sr.o is NULL in case of error
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func create_from_source =
+{
+    tp_t t = 0;
+    d @* o = :create_from_source_t( source, t.1 );
+    if( t )
+    {
+        ASSERT( x_stamp_t_is_aware( t ) );
+    }
+    return o;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 func t_to_sink =
 {
-    o.t_translate_recursive( o._, 0, true, sink, 0 );
+    o.t_translate_recursive( t, 0, true, sink, 0 );
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+/// implementation
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -223,14 +263,10 @@ func (er_t parse_create_object( m bcore_source* source, m sr_s* obj )) = (try)
                 }
                 else
                 {
-                    d x_inst* inst = x_inst_t_create( type ); // do not scope here (inst is obliv)
-                    er_t er = :t_parse_body( inst, type, source );
-                    if( er )
-                    {
-                        inst.t_discard( type );
-                        return er;
-                    }
-                    obj.0 = sr_tsd( type, inst );
+                    m x_inst* inst = x_inst_t_create( type ).t_scope( type );
+                    :t_parse_body( inst, type, source );
+                    source.parse_em_fa( " </>" );
+                    obj.0 = sr_tsd( type, inst.fork() );
                 }
             }
             else if( type == btypeof( "#file" ) )
@@ -300,7 +336,8 @@ func (er_t parse_create_object( m bcore_source* source, m sr_s* obj )) = (try)
     }
     else
     {
-        return source.parse_error_fa( "Type expected." );
+        :skip_body( source );
+        source.parse_em_fa( " </>" );
     }
 
     return er;
@@ -311,20 +348,34 @@ func (er_t parse_create_object( m bcore_source* source, m sr_s* obj )) = (try)
 func (er_t t_parse_body( m @* o, tp_t t, m bcore_source* source )) = (try)
 {
     m x_stamp* stamp = o;
-    if( :t_defines_body_from_source( t ) )
+    if( :t_defines_feature_body_from_source( t ) )
     {
-        :t_body_from_source( t, o, source );
-        source.parse_em_fa( " </>" );
+        :t_feature_body_from_source( t, o, source );
     }
+
+    /// supported string formats: '"..."' or any text terminated by whitespace or '</>'
     else if( t == st_s~ )
     {
-        source.parse_em_fa( " #string", o.cast( m st_s* ) );
-        source.parse_em_fa( " </>" );
+        m st_s* st = o.cast( m st_s* );
+        if( source.parse_bl( " #=?'\"'" ) )
+        {
+            source.parse_em_fa( " #string", st );
+        }
+        else
+        {
+            st.clear();
+            while( !source.eos() )
+            {
+                char c = source.inspect_char();
+                if( c == ' ' || c == '\t' || c == '\r' || c == '\n' ) break;
+                if( c == '<' && source.parse_bl( " #=?'</>'" ) ) break;
+                st.push_char( source.get_char() );
+            }
+        }
     }
     else if( stamp.t_is_leaf( t ) )
     {
         source.parse_em_fa( st_s_create_fa( " ##<#<sc_t>*>", :name_of( t, st_s!^ ) )^.sc, o );
-        source.parse_em_fa( " </>" );
     }
     else if( stamp.t_is_pure_array( t ) )
     {
@@ -345,7 +396,7 @@ func (er_t t_parse_body( m @* o, tp_t t, m bcore_source* source )) = (try)
         {
             sz_t arr_size = arr.t_size( t );
             sz_t arr_count = 0;
-            while( !source.parse_bl( " #?'</>'" ) )
+            while( !source.parse_bl( " #=?'</>'" ) )
             {
                 sr_s sr = sr_null();
                 :parse_create_object( source, sr.1 );
@@ -363,7 +414,7 @@ func (er_t t_parse_body( m @* o, tp_t t, m bcore_source* source )) = (try)
         else
         {
             arr.t_set_size( t, 0 );
-            while( !source.parse_bl( " #?'</>'" ) )
+            while( !source.parse_bl( " #=?'</>'" ) )
             {
                 sr_s sr = sr_null();
                 :parse_create_object( source, sr.1 );
@@ -373,7 +424,7 @@ func (er_t t_parse_body( m @* o, tp_t t, m bcore_source* source )) = (try)
     }
     else
     {
-        while( !source.parse_bl( " #?'</>'" ) )
+        while( !source.parse_bl( " #=?'</>'" ) )
         {
             // non existing member variables are parsed but not assigned
             m st_s* name = st_s!^;
@@ -395,6 +446,31 @@ func (er_t t_parse_body( m @* o, tp_t t, m bcore_source* source )) = (try)
     stamp.t_source( t, source );
     stamp.t_mutated( t );
 
+    return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (er_t skip_body( m bcore_source* source )) = (try)
+{
+    while( !source.eos() )
+    {
+        if( source.parse_bl( " #=?'</>'" ) ) break;
+        if( source.parse_bl( "#?'<'" ) )
+        {
+            source.parse_em_fa( "#-until'>'>" );
+            :skip_body( source );
+            source.parse_em_fa( "</>" );
+        }
+        else if( source.parse_bl( "#=?'\"'" ) ) // strings
+        {
+            source.parse_em_fa( "#-string" );
+        }
+        else
+        {
+            source.get_char();
+        }
+    }
     return 0;
 };
 
@@ -436,9 +512,9 @@ func (void t_translate_recursive( @* o, tp_t t, tp_t name, bl_t shelve, m bcore_
     {
         sink.push_fa( "<#<sc_t>>", :name_of( t, buf ) );
 
-        if( :t_defines_body_to_sink( t ) )
+        if( :t_defines_feature_body_to_sink( t ) )
         {
-            :t_body_to_sink( t, o, sink );
+            :t_feature_body_to_sink( t, o, sink );
         }
         else if( t == TYPEOF_st_s ) // strings
         {
