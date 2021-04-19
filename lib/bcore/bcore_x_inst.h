@@ -55,8 +55,8 @@ func (bl_t exists( tp_t type )) = { return bcore_flect_exists( type ); };
 /**********************************************************************************************************************/
 /// create/copy/clone/discard
 
-// creates instance from type; error in case type does not exist (check with 'exists')
-func (d x_inst* create( tp_t type )) = { return bcore_inst_t_create( type ); };
+/// func (d obliv x_inst* t_create( tp_t type )) = { return bcore_inst_t_create( type ); }; // this is a default function for groups
+    func (d aware x_inst*   create( tp_t type )); // only for aware types (checked at runtime)
 
 func (o t_copy( m obliv @* o, tp_t t, c@* src )) = { bcore_inst_t_copy( t, o.cast( m bcore_inst* ), src ); return o; };
 func (o   copy( m aware @* o,         c@* src )) = { bcore_inst_a_copy(    o.cast( m bcore_inst* ), src ); return o; };
@@ -86,6 +86,22 @@ func (c (TO) :* ifc( c@* o, bl_t cond, c (TO) :* b )) = { return cond ? o : b; }
 func (m bcore_source* stdin()) = { return BCORE_STDIN; };
 func (m bcore_sink* stdout()) = { return BCORE_STDOUT; };
 func (m bcore_sink* stderr()) = { return BCORE_STDERR; };
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// implementations
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func create =
+{
+    if( type != 0 && !x_stamp_t_is_aware( type ) )
+    {
+        ERR_fa( "Function 'x_inst:create' can only be used for aware types. Use 'x_inst:t_create' instead." );
+    }
+    return bcore_inst_t_create( type );
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
