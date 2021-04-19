@@ -1978,20 +1978,28 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
             else if( ( bcore_strcmp( "skip", fp ) >> 1 ) == 0 )
             {
                 fp += strlen( "skip" );
-                sc_t err_msg = "Format specifier 'skip' must be followed by character enclosed in single quotes ''";
+                sc_t err_msg = "Format specifier 'skip' must be followed by one or more characters enclosed in single quotes ''";
                 if( *fp++ != '\'' ) ERR( err_msg );
-                char char_l = *fp++;
-                if(  char_l == 0  ) ERR( err_msg );
+                sc_t list = fp;
+                sz_t size = 0;
+                while( *fp != '\'' && *fp != 0 ) { size++; fp++; }
                 if( *fp++ != '\'' ) ERR( err_msg );
-                while ( o->sc[ idx ] == char_l ) idx++;
+                while ( o->sc[ idx ] != 0 )
+                {
+                    char c = o->sc[ idx ];
+                    bl_t found = false;
+                    for( sz_t i = 0; i < size; i++ ) if( c == list[ i ] ) { found = true; break; }
+                    if( found ) idx++; else break;
+                }
             }
             else if( ( bcore_strcmp( "until", fp ) >> 1 ) == 0 )
             {
                 fp += strlen( "until" );
                 sc_t err_msg = "Format specifier 'until' must be followed by character enclosed in single quotes ''";
                 if( *fp++ != '\'' ) ERR( err_msg );
-                char char_l = *fp++;
-                if(  char_l == 0  ) ERR( err_msg );
+                sc_t list = fp;
+                sz_t size = 0;
+                while( *fp != '\'' && *fp != 0 ) { size++; fp++; }
                 if( *fp++ != '\'' ) ERR( err_msg );
                 st_s* string = NULL;
                 if( set_arg )
@@ -1999,9 +2007,14 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     string = va_arg( args, st_s* );
                     if( string && !cat_arg ) st_s_clear( string );
                 }
-                while( o->sc[ idx ] != char_l && o->sc[ idx ] != 0 )
+
+                while ( o->sc[ idx ] != 0 )
                 {
-                    if( string ) st_s_push_char( string, o->sc[ idx ] );
+                    char c = o->sc[ idx ];
+                    bl_t found = false;
+                    for( sz_t i = 0; i < size; i++ ) if( c == list[ i ] ) { found = true; break; }
+                    if( found ) break;
+                    if( string ) st_s_push_char( string, c );
                     idx++;
                 }
             }

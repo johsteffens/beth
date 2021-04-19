@@ -226,13 +226,13 @@ void st_s_print_fa( sc_t format, ... );
  *      Quotes inside the string are to be escaped '\"'.
  *      Backslashes are to be escaped '\\'.
  *
- *  "#skip'<char>'"  (Example: "#skip' ')
+ *  "#skip'...'"  (Example: "#skip' ')
  *      Argument: none
- *      Consumes all successive occurrence of <char>
+ *      Consumes all successive occurrence of any character in '...'
  *
- *  "#until'<char>'"  (Example: "#until'\n'")
+ *  "#until'...'"  (Example: "#until'\n'")
  *      Argument: st_s*
- *      Consumes a string until <char> or end of string is reached.
+ *      Consumes a string until any character in '...' or end of string is reached.
  *      The terminating character <char> is not consumed.
  *
  *  "#?'...'"  (Example: "#?'->'")
@@ -246,7 +246,7 @@ void st_s_print_fa( sc_t format, ... );
  *  "#?w'...'"  word-match (Example: "#?w'hidden'")
  *      Argument: bl_t*
  *      Like "#?'...'" except that the matching criterion and consumption fails if the character following
- *      the matched string is a letter or digit. The letter following is never consumed.
+ *      the matched string is a letter, digit or '_'. The letter following is never consumed.
  *
  *  "#?(...)"
  *      Argument: bl_t*
