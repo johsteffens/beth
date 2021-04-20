@@ -27,44 +27,45 @@
  *  Maintains a global list of for error (-conditions) and
  *  thread safe functions for pushing and removing errors.
  */
-
-#ifdef BETH_EXPAND_GROUP_bcore_error_manager
-
-XOILA_DEFINE_GROUP( bcore_error_manager, bcore_inst )
-#ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+XOILA_DEFINE_GROUP( bcore_error, bcore_inst )
+#ifdef XOILA_SECTION
 
 include 'c' "bcore_x_array.h";
 
-stamp :error_s = aware :
+group :manager =
 {
-    er_t id;
-    st_s msg; // error message
-};
-
-stamp :error_adl_s = aware x_array
-{
-    :error_s => [];
-    func x_array.set_size =
+    stamp :error_s = aware :
     {
-        return x_array_set_size( o, size );
+        er_t id;
+        st_s msg; // error message
     };
 
-    func x_array.clear =
+    stamp :error_adl_s = aware x_array
     {
-        return x_array_clear( o );
+        :error_s => [];
+        func x_array.set_size =
+        {
+            return x_array_set_size( o, size );
+        };
+
+        func x_array.clear =
+        {
+            return x_array_clear( o );
+        };
+
+        func x_array.push_d =
+        {
+            return x_array_push_d( o, v );
+        };
     };
 
-    func x_array.push_d =
+    stamp :context_s = aware :
     {
-        return x_array_push_d( o, v );
+        :error_adl_s adl;
+        bcore_mutex_s mutex;
     };
 };
 
-stamp :context_s = aware :
-{
-    :error_adl_s adl;
-    bcore_mutex_s mutex;
-};
 
 /// frequently used error states
 name general_error; // general purpose error
@@ -72,42 +73,42 @@ name parse_error; // errors from text/string parsing
 name plant_error; // errors from beth plant management
 name error_stack; // error stack is not zero (usually a subsequent error for functions that require an empty error stack)
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#endif // BETH_EXPAND_GROUP_bcore_error_manager
-
 //----------------------------------------------------------------------------------------------------------------------
-// bcore_error_manager interface functions
+/// interface functions
 
 /// Returns number of errors on stack
-sz_t bcore_error_stack_size( void );
+func(sz_t stack_size());
 
 /// Removes all errors from stack
-void bcore_error_clear_stack( void );
+func(void clear_stack());
 
 /// Removes last error from stack (if any)
-void bcore_error_remove_last( void );
+func(void remove_last());
 
 /// Pushes an error onto stack; returns id
-er_t bcore_error_push_sc( er_t id, sc_t msg );
-er_t bcore_error_push_fv( er_t id, sc_t format, va_list args );
-er_t bcore_error_push_fa( er_t id, sc_t format, ... );
+func(er_t push_sc( er_t id, sc_t msg ));
+func(er_t push_fv( er_t id, sc_t format, va_list args ));
+func(er_t push_fa( er_t id, sc_t format, ... ));
 
 /// returns last error id on stack; returns 0 in case of no error; does not change error stack
-er_t bcore_error_last();
+func(er_t last());
 
 /// Takes last error from stack; returns false if stack was empty
-bl_t bcore_error_pop_st( er_t* id, st_s* msg );
-bl_t bcore_error_pop_to_sink( bcore_sink* sink );
-bl_t bcore_error_pop_to_stderr( void );
+func(bl_t pop_st( m er_t* id, m st_s* msg ));
+func(bl_t pop_to_sink( m bcore_sink* sink ));
+func(bl_t pop_to_stderr());
 
 /// Takes all errors from stack
-void bcore_error_pop_all_to_sink( bcore_sink* sink );
-void bcore_error_pop_all_to_stderr( void );
+func(void pop_all_to_sink( m bcore_sink* sink ));
+func(void pop_all_to_stderr());
 
 //----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+#endif // XOILA_SECTION
+
+/**********************************************************************************************************************/
 
 vd_t bcore_error_manager_signal_handler( const bcore_signal_s* o );
 
