@@ -116,8 +116,8 @@ func (void t_shelve( m obliv @* o, tp_t t )) = { if( bcore_via_call_t_defines_sh
 func (void   shelve( m aware @* o         )) = { o.cast( m bcore_via_call* ).shelve(); };
 
 /// tells stamp about a source that was used for mutation (stamp must overload bcore_via_call:source to receive this signal)
-func (void t_source( m obliv @* o, tp_t t, m bcore_source* source )) = { if( bcore_via_call_t_defines_source( t ) ) o.cast( m bcore_via_call* ).t_source( t, source ); };
-func (void   source( m aware @* o        , m bcore_source* source )) = { o.cast( m bcore_via_call* ).source( source ); };
+func (void t_source( m obliv @* o, tp_t t, m x_source* source )) = { if( bcore_via_call_t_defines_source( t ) ) o.cast( m bcore_via_call* ).t_source( t, source ); };
+func (void   source( m aware @* o        , m x_source* source )) = { o.cast( m bcore_via_call* ).source( source ); };
 
 //----------------------------------------------------------------------------------------------------------------------
 

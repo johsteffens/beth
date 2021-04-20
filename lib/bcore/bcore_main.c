@@ -138,13 +138,13 @@ er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args 
         bcore_source* source = bcore_file_open_source( file );
 
         x_inst* object = NULL;
-        if( x_btml_appears_valid( source ) )
+        if( x_btml_appears_valid( ( x_source* )source ) )
         {
-            object = ( x_inst* )x_btml_create_from_source( source );
+            object = ( x_inst* )x_btml_create_from_source( ( x_source* )source );
         }
-        else if( x_bbml_appears_valid( source ) )
+        else if( x_bbml_appears_valid( ( x_source* )source ) )
         {
-            object = ( x_inst* )x_bbml_create_from_source( source );
+            object = ( x_inst* )x_bbml_create_from_source( ( x_source* )source );
         }
 
         if( !object )

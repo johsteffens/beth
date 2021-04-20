@@ -88,7 +88,7 @@ char bcore_source_default_get_char( const bcore_source_s* p, bcore_source* o )
     return bcore_source_default_get_u0( p, o );
 }
 
-/// Parse functions can be used for scannlerless parsing or lexing.
+/// Parse functions can be used for scannerless parsing or lexing.
 
 /// Reads and consumes data. Returns number of bytes consumed.
 BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP1( bcore_source, get_data, uz_t, vd_t, data, uz_t, size )

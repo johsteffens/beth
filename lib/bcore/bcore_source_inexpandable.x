@@ -30,9 +30,12 @@ group bcore_source = x_inst
     feature void parse_fa( m @* o, sc_t format, ... );
     feature void parse_msg_fv( m @* o, sc_t format, va_list args );
     feature void parse_msg_fa( m @* o, sc_t format, ... );
+    feature void parse_msg_to_sink_fv( m @* o, m bcore_sink* sink, sc_t format, va_list args );
     feature void parse_msg_to_sink_fa( m @* o, m bcore_sink* sink, sc_t format, ... );
     feature void parse_err_fa( m @* o, sc_t format, ... );
+    feature er_t parse_em_fv( m @* o, sc_t format, va_list args );
     feature er_t parse_em_fa( m @* o, sc_t format, ... );
+    feature er_t parse_error_fv( m @* o, sc_t format, va_list args );
     feature er_t parse_error_fa( m @* o, sc_t format, ... );
     feature bl_t parse_bl( m @* o, sc_t format );
 

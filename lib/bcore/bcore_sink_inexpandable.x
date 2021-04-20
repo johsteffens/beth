@@ -28,8 +28,7 @@ group bcore_sink = x_inst
     feature o push_char( m @* o, char c );
     feature o push_sc(   m @* o, sc_t sc );
     feature o push_string(   m @* o, c st_s* string );
-    feature o push_string_d( m @* o, m st_s* string );
-
+    feature o push_string_d( m @* o, d st_s* string );
 
     stamp :buffer_s =
     {

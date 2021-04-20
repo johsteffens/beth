@@ -62,6 +62,8 @@
 #include "bcore_cday.h"
 
 #include "bcore_x_inst.h"
+#include "bcore_x_source.h"
+#include "bcore_x_sink.h"
 #include "bcore_x_array.h"
 #include "bcore_x_group.h"
 #include "bcore_x_stamp.h"
