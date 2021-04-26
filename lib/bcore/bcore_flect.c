@@ -395,6 +395,7 @@ static er_t bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
     bl_t f_feature_requires_awareness = false;
     bl_t f_strict    = false;
     bl_t f_aware     = false;
+    bl_t f_obliv     = false;
     bl_t f_typed     = false;
 
     uz_t array_fix_size = 0;
@@ -445,9 +446,17 @@ static er_t bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
             f_any_prefix = f_strict = true;
         }
 
+        if( bcore_source_r_parse_bl_fa( &src, " #?w'obliv'"   ) )
+        {
+            if( f_obliv ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefixes 'obliv' occurs twice.", ifnameof( parent_type ) ) );
+            if( f_aware ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefixes 'obliv' cannot be mixed with 'aware'.", ifnameof( parent_type ) ) );
+            f_any_prefix = f_obliv = true;
+        }
+
         if( bcore_source_r_parse_bl_fa( &src, " #?w'aware'"   ) )
         {
             if( f_typed || f_aware ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefixes 'aware' occurs twice or mixed with 'typed'.", ifnameof( parent_type ) ) );
+            if( f_obliv ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefixes 'aware' cannot be mixed with 'obliv'.", ifnameof( parent_type ) ) );
             f_any_prefix = f_aware = true;
         }
 
@@ -484,9 +493,10 @@ static er_t bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
     {
         if( !(f_private || f_hidden ) )
         {
-            bcore_source_r_parse_err_fa
+            BLM_DOWN();
+            return bcore_source_a_parse_error_fa
             (
-                &src,
+                src.o,
                 "In definition of '#<sc_t>':\n"
                 "Declaring a pointer requires 'hidden' or 'private' specification.\n",
                 ifnameof( parent_type )
@@ -552,6 +562,8 @@ static er_t bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
     o->flags.f_feature_requires_awarenes = f_feature_requires_awareness;
     o->flags.f_strict    = f_strict;
     o->flags.f_virtual   = f_aware || f_typed || f_treat_as_pointer;
+    o->flags.f_obliv     = f_obliv;
+    o->flags.f_aware     = f_aware;
 
     if( f_arr_fix ) o->array_fix_size = array_fix_size;
 
@@ -623,9 +635,10 @@ static er_t bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
         {
             if( o->type == parent_type )
             {
-                bcore_source_r_parse_err_fa
+                BLM_DOWN();
+                return bcore_source_a_parse_error_fa
                 (
-                    &src,
+                    src.o,
                     "Parent '#<sc_t>':\nItem #<sc_t>: Postfix '!' is not allowed on recursive members.",
                     ifnameof( parent_type ),
                     item_name->sc
@@ -639,9 +652,10 @@ static er_t bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
         }
         else
         {
-            bcore_source_r_parse_err_fa
+            BLM_DOWN();
+            return bcore_source_a_parse_error_fa
             (
-                &src,
+                src.o,
                 "Parent '#<sc_t>':\nItem #<sc_t>: Postfix '!' is not supported in this context.",
                 ifnameof( parent_type ),
                 item_name->sc
@@ -842,9 +856,10 @@ static er_t bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
                     st_s* log = st_s_create();
                     if( !bcore_trait_satisfied_type( o->type, aware_tp, log ) )
                     {
-                        bcore_source_r_parse_err_fa
+                        BLM_DOWN();
+                        return bcore_source_a_parse_error_fa
                         (
-                            &src,
+                            src.o,
                             "Parent '#<sc_t>':\n'#<sc_t>' does not support trait '#<sc_t>' Reason:\n#<sc_t>",
                             ifnameof( parent_type ),
                             name->sc,

@@ -162,6 +162,11 @@ typedef struct bcore_flect_flags_s
             // for managed static links: create an instance of given type during init
             unsigned f_create_on_init : 1;
 
+            // object was explicitly declared 'obliv' (used in parser and consistency check)
+            unsigned f_obliv : 1;
+
+            // object was explicitly declared 'aware' (used in parser and consistency check)
+            unsigned f_aware : 1;
         };
     };
 } bcore_flect_flags_s;
