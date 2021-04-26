@@ -44,6 +44,8 @@ func (d x_source* create_from_file(   sc_t path )) = { return bcore_file_exists(
 func (d x_source* create_from_st(     st_s* st  )) = { return bcore_source_string_s_create_from_string( st ); };
 func (d x_source* create_from_st_d( d st_s* st  )) = { return bcore_source_string_s_create_from_string_d( st ); };
 func (d x_source* create_from_sc(     sc_t  sc  )) = { return bcore_source_string_s_create_from_sc( sc ); };
+func (d x_source* create_from_fv( sc_t format, va_list args )) = { return bcore_source_string_s_create_fv( format, args ); };
+func (d x_source* create_from_fa( sc_t format, ... )) = { va_list a; va_start( a, format ); d x_source* r = :create_from_fv( format, a ); va_end( a ); return r; };
 
 //----------------------------------------------------------------------------------------------------------------------
 

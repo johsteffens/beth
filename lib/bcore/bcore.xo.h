@@ -1,4 +1,4 @@
-//  Last update: 2021-04-26T19:14:46Z
+//  Last update: 2021-04-26T19:44:46Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 ... 2021 J.B.Steffens
  *
@@ -144,6 +144,8 @@
   static inline x_source* x_source_create_from_st( const st_s* st ); \
   static inline x_source* x_source_create_from_st_d( st_s* st ); \
   static inline x_source* x_source_create_from_sc( sc_t sc ); \
+  static inline x_source* x_source_create_from_fv( sc_t format, va_list args ); \
+  static inline x_source* x_source_create_from_fa( sc_t format, ... ); \
   static inline bl_t x_source_eos( x_source* o ); \
   static inline sz_t x_source_get_data( x_source* o, x_inst* data, sz_t size ); \
   static inline sz_t x_source_inspect_data( x_source* o, x_inst* data, sz_t size ); \
@@ -174,6 +176,8 @@
   static inline x_source* x_source_create_from_st( const st_s* st ){ return ((x_source*)( bcore_source_string_s_create_from_string(st )));} \
   static inline x_source* x_source_create_from_st_d( st_s* st ){ return ((x_source*)( bcore_source_string_s_create_from_string_d(st )));} \
   static inline x_source* x_source_create_from_sc( sc_t sc ){ return ((x_source*)( bcore_source_string_s_create_from_sc(sc )));} \
+  static inline x_source* x_source_create_from_fv( sc_t format, va_list args ){ return ((x_source*)( bcore_source_string_s_create_fv(format, args )));} \
+  static inline x_source* x_source_create_from_fa( sc_t format, ... ){ va_list a; va_start( a, format ); x_source* r = x_source_create_from_fv(format, a ); va_end( a ); return  r;} \
   static inline bl_t x_source_eos( x_source* o ){ return  bcore_source_a_eos(((bcore_source*)(o)));} \
   static inline sz_t x_source_get_data( x_source* o, x_inst* data, sz_t size ){ return  bcore_source_a_get_data(((bcore_source*)(o)),data, size );} \
   static inline sz_t x_source_inspect_data( x_source* o, x_inst* data, sz_t size ){ return  bcore_source_a_inspect_data(((bcore_source*)(o)),data, size );} \
@@ -1766,5 +1770,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 BETH_EXPAND_GROUP_bcore_shell
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x114E76D29269F949
-// XOICO_FILE_SIGNATURE 0x970B3C1D19D8B6F6
+// XOICO_BODY_SIGNATURE 0xAE82CBCE3DBA9448
+// XOICO_FILE_SIGNATURE 0x4D57E37A81B6A652

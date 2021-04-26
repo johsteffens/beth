@@ -1,4 +1,4 @@
-//  Last update: 2021-04-26T19:16:34Z
+//  Last update: 2021-04-26T19:58:22Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 ... 2021 J.B.Steffens
  *
@@ -43,7 +43,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0xF23F96529AB6CDC3ull
+// HKEYOF_bcore 0x18CF03BA3F7BBB59ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -98,14 +98,14 @@ BCORE_DEFINE_OBJECT_INST_P( x_source_point_s )
 
 void x_source_point_s_parse_msg_fv( const x_source_point_s* o, sc_t format, va_list args )
 {
-    // bcore_x_source.h:153:1
+    // bcore_x_source.h:155:1
     
     x_source_point_s_parse_msg_to_sink_fv(o,x_sink_stdout(), format, args );
 }
 
 x_source* x_source_point_s_clone_source( const x_source_point_s* o )
 {
-    // bcore_x_source.h:160:1
+    // bcore_x_source.h:162:1
     
     x_source* source = x_source_a_clone(o->source);
     x_source_set_index(source,o->index );
@@ -114,7 +114,7 @@ x_source* x_source_point_s_clone_source( const x_source_point_s* o )
 
 void x_source_point_s_parse_msg_to_sink_fv( const x_source_point_s* o, x_sink* sink, sc_t format, va_list args )
 {
-    // bcore_x_source.h:169:1
+    // bcore_x_source.h:171:1
     
     if( o->source )
     {
@@ -131,7 +131,7 @@ void x_source_point_s_parse_msg_to_sink_fv( const x_source_point_s* o, x_sink* s
 
 er_t x_source_point_s_parse_error_fv( const x_source_point_s* o, sc_t format, va_list args )
 {
-    // bcore_x_source.h:186:1
+    // bcore_x_source.h:188:1
     
     er_t err = 0;
     if( o->source )
@@ -150,7 +150,7 @@ er_t x_source_point_s_parse_error_fv( const x_source_point_s* o, sc_t format, va
 
 void x_source_point_s_source_reference_to_sink( const x_source_point_s* o, bl_t file_name_only, x_sink* sink )
 {
-    // bcore_x_source.h:205:1
+    // bcore_x_source.h:207:1
     BLM_INIT_LEVEL(0);
     if( !o->source ) BLM_RETURN();
     s3_t index = x_source_get_index(o->source);
@@ -178,7 +178,7 @@ XOILA_DEFINE_SPECT( x_inst, x_source )
 
 void x_source_parse_msg_fv( const x_source* o, sc_t format, va_list args )
 {
-    // bcore_x_source.h:104:1
+    // bcore_x_source.h:106:1
     
     x_source_parse_msg_to_sink_fv(o,x_sink_stdout(), format, args );
 }
@@ -3714,5 +3714,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x01D440DADCDC8A1B
-// XOICO_FILE_SIGNATURE 0x981C756625AB4CD1
+// XOICO_BODY_SIGNATURE 0xF39A9D9456EF903C
+// XOICO_FILE_SIGNATURE 0x369CEA9EB672536B
