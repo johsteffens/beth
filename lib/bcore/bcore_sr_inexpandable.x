@@ -21,9 +21,9 @@ group sr = x_inst
 {
     stamp :s = obliv x_inst
     {
-        private x_inst* o;      // object
-        private bcore_spect* p; // perspective
-        private tp_t f;         // flags
+        private obliv x_inst* o; // object
+        private obliv bcore_spect* p;  // perspective
+        private tp_t f;          // flags
         shell typed => obj;
 
         func (f3_t to_f3( c@* o ));
