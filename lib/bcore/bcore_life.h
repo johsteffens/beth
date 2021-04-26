@@ -202,6 +202,12 @@ extern bcore_life_s* __bcore_life; // always NULL; needed to ingrain a life-chai
     return __retv;  \
 }
 
+#define BLM_EXIT( value ) \
+{ \
+    bcore_life_s_down_all( __bcore_life ); \
+    bcore_down_exit( value ); \
+}
+
 /// creates object and runs a member function as continuation
 #define BLM_CREATEC( tname, fname, ... ) tname##_##fname( BLM_CREATE( tname ), __VA_ARGS__ )
 
@@ -216,6 +222,15 @@ extern bcore_life_s* __bcore_life; // always NULL; needed to ingrain a life-chai
 { \
     er_t __blm_err = expression; \
     if( __blm_err ) BLM_RETURNV( er_t, __blm_err ) \
+}
+
+/** Running expression with error management:
+ *    In case of error, BLM_EXIT( err_value ) is executed.
+ */
+#define BLM_TRY_EXIT( expression ) \
+{ \
+    er_t __blm_err = expression; \
+    if( __blm_err ) BLM_EXIT( __blm_err ) \
 }
 
 /// Error report in function with error management
