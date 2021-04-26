@@ -113,7 +113,7 @@ stamp :set_s = aware :
 {
     :arr_s arr;
 
-    private :* current_object;
+    private obliv :* current_object;
     bcore_mutex_s mutex_current_object;
 
     func :.main =
