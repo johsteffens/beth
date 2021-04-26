@@ -206,7 +206,7 @@ group bcore_lock = bcore_inst
 
     stamp :s = aware bcore_inst
     {
-        private bcore_mutex* mutex;
+        private bcore_mutex_s* mutex;
         func :.set;
         func :.release;
     };
@@ -225,7 +225,7 @@ group bcore_unlock = bcore_inst
 
     stamp :s = aware bcore_inst
     {
-        private bcore_mutex* mutex;
+        private bcore_mutex_s* mutex;
         func :.set;
         func :.release;
     };
