@@ -1,4 +1,4 @@
-//  Last update: 2021-04-20T14:38:15Z
+//  Last update: 2021-04-26T19:14:46Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 ... 2021 J.B.Steffens
  *
@@ -115,9 +115,31 @@
 #define TYPEOF_x_source 0x2E28FF78616384DDull
 #define TYPEOF_x_source_spect_s 0x23C78F93F3ABADD9ull
 #define TYPEOF_x_sink 0x7652A8509073840Bull
+#define TYPEOF_x_source_point_s 0x717FF038B7471B82ull
+#define BETH_EXPAND_ITEM_x_source_point_s \
+  BCORE_DECLARE_OBJECT( x_source_point_s ) \
+  { \
+      aware_t _; \
+      x_source* source; \
+      s3_t index; \
+  }; \
+  static inline void x_source_point_s_setup_from_source( x_source_point_s* o, x_source* source ); \
+  static inline void x_source_point_s_parse_msg_to_sink_fa( const x_source_point_s* o, x_sink* sink, sc_t format, ... ); \
+  static inline void x_source_point_s_parse_msg_fa( const x_source_point_s* o, sc_t format, ... ); \
+  static inline er_t x_source_point_s_parse_error_fa( const x_source_point_s* o, sc_t format, ... ); \
+  void x_source_point_s_parse_msg_fv( const x_source_point_s* o, sc_t format, va_list args ); \
+  x_source* x_source_point_s_clone_source( const x_source_point_s* o ); \
+  void x_source_point_s_parse_msg_to_sink_fv( const x_source_point_s* o, x_sink* sink, sc_t format, va_list args ); \
+  er_t x_source_point_s_parse_error_fv( const x_source_point_s* o, sc_t format, va_list args ); \
+  void x_source_point_s_source_reference_to_sink( const x_source_point_s* o, bl_t file_name_only, x_sink* sink ); \
+  static inline void x_source_point_s_setup_from_source( x_source_point_s* o, x_source* source ){ x_source_a_attach( &(o->source ), (x_source*)( ((x_source*)bcore_fork(source)))); o->index = x_source_get_index(source);} \
+  static inline void x_source_point_s_parse_msg_to_sink_fa( const x_source_point_s* o, x_sink* sink, sc_t format, ... ){ va_list a; va_start( a, format ); x_source_point_s_parse_msg_to_sink_fv(o,sink, format, a ); va_end( a );} \
+  static inline void x_source_point_s_parse_msg_fa( const x_source_point_s* o, sc_t format, ... ){ va_list a; va_start( a, format );               x_source_point_s_parse_msg_fv(o,format, a ); va_end( a );} \
+  static inline er_t x_source_point_s_parse_error_fa( const x_source_point_s* o, sc_t format, ... ){ va_list a; va_start( a, format ); er_t err =  x_source_point_s_parse_error_fv(o,format, a ); va_end( a ); return  err;}
 #define BETH_EXPAND_GROUP_x_source \
   BCORE_FORWARD_OBJECT( x_source ); \
   BCORE_FORWARD_OBJECT( x_sink ); \
+  BCORE_FORWARD_OBJECT( x_source_point_s ); \
   static inline x_source* x_source_create_from_file( sc_t path ); \
   static inline x_source* x_source_create_from_st( const st_s* st ); \
   static inline x_source* x_source_create_from_st_d( st_s* st ); \
@@ -134,10 +156,12 @@
   static inline bl_t x_source_parse_bl( x_source* o, sc_t format ); \
   static inline er_t x_source_parse_fv( x_source* o, sc_t format, va_list args ); \
   static inline er_t x_source_parse_fa( x_source* o, sc_t format, ... ); \
-  static inline er_t x_source_parse_error_fv( x_source* o, sc_t format, va_list args ); \
-  static inline er_t x_source_parse_error_fa( x_source* o, sc_t format, ... ); \
-  static inline void x_source_parse_msg_to_sink_fv( x_source* o, x_sink* sink, sc_t format, va_list args ); \
-  static inline void x_source_parse_msg_to_sink_fa( x_source* o, x_sink* sink, sc_t format, ... ); \
+  static inline er_t x_source_parse_error_fv( const x_source* o, sc_t format, va_list args ); \
+  static inline er_t x_source_parse_error_fa( const x_source* o, sc_t format, ... ); \
+  static inline void x_source_parse_msg_to_sink_fv( const x_source* o, x_sink* sink, sc_t format, va_list args ); \
+  static inline void x_source_parse_msg_to_sink_fa( const x_source* o, x_sink* sink, sc_t format, ... ); \
+  void x_source_parse_msg_fv( const x_source* o, sc_t format, va_list args ); \
+  static inline void x_source_parse_msg_fa( const x_source* o, sc_t format, ... ); \
   static inline sc_t x_source_get_file( const x_source* o ); \
   static inline x_source* x_source_stdin( void ); \
   XOILA_DECLARE_SPECT( x_source ) \
@@ -145,6 +169,7 @@
       bcore_spect_header_s header; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_source ) \
+  BETH_EXPAND_ITEM_x_source_point_s \
   static inline x_source* x_source_create_from_file( sc_t path ){ return ((x_source*)( bcore_file_exists(path ) ? bcore_file_open_source(path ) : NULL));} \
   static inline x_source* x_source_create_from_st( const st_s* st ){ return ((x_source*)( bcore_source_string_s_create_from_string(st )));} \
   static inline x_source* x_source_create_from_st_d( st_s* st ){ return ((x_source*)( bcore_source_string_s_create_from_string_d(st )));} \
@@ -161,10 +186,11 @@
   static inline bl_t x_source_parse_bl( x_source* o, sc_t format ){ return  bcore_source_a_parse_bl(((bcore_source*)(o)),format );} \
   static inline er_t x_source_parse_fv( x_source* o, sc_t format, va_list args ){ return  bcore_source_a_parse_em_fv(((bcore_source*)(o)),format, args );} \
   static inline er_t x_source_parse_fa( x_source* o, sc_t format, ... ){ va_list a; va_start( a, format ); er_t r = x_source_parse_fv(o,format, a ); va_end( a ); return  r;} \
-  static inline er_t x_source_parse_error_fv( x_source* o, sc_t format, va_list args ){ return  bcore_source_a_parse_error_fv(((bcore_source*)(o)),format, args );} \
-  static inline er_t x_source_parse_error_fa( x_source* o, sc_t format, ... ){ va_list a; va_start( a, format ); er_t r = x_source_parse_error_fv(o,format, a ); va_end( a ); return  r;} \
-  static inline void x_source_parse_msg_to_sink_fv( x_source* o, x_sink* sink, sc_t format, va_list args ){ bcore_source_a_parse_msg_to_sink_fv(((bcore_source*)(o)),((bcore_sink*)(sink)), format, args );} \
-  static inline void x_source_parse_msg_to_sink_fa( x_source* o, x_sink* sink, sc_t format, ... ){ va_list a; va_start( a, format ); x_source_parse_msg_to_sink_fv(o,sink, format, a ); va_end( a );} \
+  static inline er_t x_source_parse_error_fv( const x_source* o, sc_t format, va_list args ){ return  bcore_source_a_parse_error_fv(((const bcore_source*)(o)),format, args );} \
+  static inline er_t x_source_parse_error_fa( const x_source* o, sc_t format, ... ){ va_list a; va_start( a, format ); er_t r = x_source_parse_error_fv(o,format, a ); va_end( a ); return  r;} \
+  static inline void x_source_parse_msg_to_sink_fv( const x_source* o, x_sink* sink, sc_t format, va_list args ){ bcore_source_a_parse_msg_to_sink_fv(((bcore_source*)(o)),((bcore_sink*)(sink)), format, args );} \
+  static inline void x_source_parse_msg_to_sink_fa( const x_source* o, x_sink* sink, sc_t format, ... ){ va_list a; va_start( a, format ); x_source_parse_msg_to_sink_fv(o,sink, format, a ); va_end( a );} \
+  static inline void x_source_parse_msg_fa( const x_source* o, sc_t format, ... ){ va_list a; va_start( a, format ); x_source_parse_msg_fv(o,format, a ); va_end( a );} \
   static inline sc_t x_source_get_file( const x_source* o ){ return  bcore_source_a_get_file(((const bcore_source*)(o)));} \
   static inline x_source* x_source_stdin( void ){ return  ( x_source* )BCORE_STDIN;}
 
@@ -1740,5 +1766,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 BETH_EXPAND_GROUP_bcore_shell
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xECA0E528B7963216
-// XOICO_FILE_SIGNATURE 0x025169BAE96F24AB
+// XOICO_BODY_SIGNATURE 0x114E76D29269F949
+// XOICO_FILE_SIGNATURE 0x970B3C1D19D8B6F6
