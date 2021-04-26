@@ -136,7 +136,7 @@ char bcore_source_default_inspect_char( const bcore_source_s* p, bcore_source* o
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_source_default_parse_errvf( const bcore_source_s* p, bcore_source* o, sc_t format, va_list args )
+void bcore_source_default_parse_errvf( const bcore_source_s* p, const bcore_source* o, sc_t format, va_list args )
 {
     st_s* s0 = st_s_createvf( format, args );
     st_s* s1 = st_s_create();
@@ -151,7 +151,7 @@ void bcore_source_default_parse_errvf( const bcore_source_s* p, bcore_source* o,
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_source_default_get_context( const bcore_source_s* p, bcore_source* o, bcore_source_context_s* context )
+void bcore_source_default_get_context( const bcore_source_s* p, const bcore_source* o, bcore_source_context_s* context )
 {
     if( p->get_context )
     {
@@ -161,7 +161,7 @@ void bcore_source_default_get_context( const bcore_source_s* p, bcore_source* o,
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_source_default_parse_msgvf( const bcore_source_s* p, bcore_source* o, sc_t format, va_list args )
+void bcore_source_default_parse_msgvf( const bcore_source_s* p, const bcore_source* o, sc_t format, va_list args )
 {
     st_s* s0 = st_s_create_fv( format, args );
     bcore_source_context_s* context = bcore_source_context_s_create();
@@ -178,7 +178,7 @@ void bcore_source_default_parse_msgvf( const bcore_source_s* p, bcore_source* o,
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_source_default_parse_err_fv( const bcore_source_s* p, bcore_source* o, sc_t format, va_list args )
+void bcore_source_default_parse_err_fv( const bcore_source_s* p, const bcore_source* o, sc_t format, va_list args )
 {
     st_s* s = st_s_create_fv( format, args );
     bcore_source_p_parse_errf( p, o, "%s", s->sc );
@@ -187,7 +187,7 @@ void bcore_source_default_parse_err_fv( const bcore_source_s* p, bcore_source* o
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_source_default_parse_msg_to_sink_fv( const bcore_source_s* p, bcore_source* o, bcore_sink* sink, sc_t format, va_list args )
+void bcore_source_default_parse_msg_to_sink_fv( const bcore_source_s* p, const bcore_source* o, bcore_sink* sink, sc_t format, va_list args )
 {
     if( !sink ) return;
     if( p->get_context )
@@ -210,7 +210,7 @@ void bcore_source_default_parse_msg_to_sink_fv( const bcore_source_s* p, bcore_s
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_source_default_parse_msg_fv( const bcore_source_s* p, bcore_source* o, sc_t format, va_list args )
+void bcore_source_default_parse_msg_fv( const bcore_source_s* p, const bcore_source* o, sc_t format, va_list args )
 {
     bcore_source_p_parse_msg_to_sink_fv( p, o, BCORE_STDOUT, format, args );
 }
@@ -322,15 +322,15 @@ static bcore_self_s* source_s_create_self( void )
 
 void NPX(p_parse_fa    )( const NPX(s)* p, bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(p_parse_fv    )( p, o, f, a ); va_end( a ); }
 er_t NPX(p_parse_em_fa )( const NPX(s)* p, bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); er_t r = NPX(p_parse_em_fv )( p, o, f, a ); va_end( a ); return r; }
-void NPX(p_parse_errf  )( const NPX(s)* p, bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(p_parse_errvf )( p, o, f, a ); va_end( a ); }
-void NPX(p_parse_msgf  )( const NPX(s)* p, bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(p_parse_msgvf )( p, o, f, a ); va_end( a ); }
-void NPX(p_parse_err_fa)( const NPX(s)* p, bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(p_parse_err_fv)( p, o, f, a ); va_end( a ); }
-void NPX(p_parse_msg_fa)( const NPX(s)* p, bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(p_parse_msg_fv)( p, o, f, a ); va_end( a ); }
+void NPX(p_parse_errf  )( const NPX(s)* p, const bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(p_parse_errvf )( p, o, f, a ); va_end( a ); }
+void NPX(p_parse_msgf  )( const NPX(s)* p, const bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(p_parse_msgvf )( p, o, f, a ); va_end( a ); }
+void NPX(p_parse_err_fa)( const NPX(s)* p, const bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(p_parse_err_fv)( p, o, f, a ); va_end( a ); }
+void NPX(p_parse_msg_fa)( const NPX(s)* p, const bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(p_parse_msg_fv)( p, o, f, a ); va_end( a ); }
 bcore_source* NPX(a_parse_fa )( bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(a_parse_fv    )( o, f, a ); va_end( a ); return o; }
 er_t NPX(a_parse_em_fa )( bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); er_t r = NPX(a_parse_em_fv )( o, f, a ); va_end( a ); return r; }
-void NPX(a_parse_errf  )( bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(a_parse_errvf )( o, f, a ); va_end( a ); }
-void NPX(a_parse_err_fa)( bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(a_parse_err_fv)( o, f, a ); va_end( a ); }
-void NPX(a_parse_msg_fa)( bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(a_parse_msg_fv)( o, f, a ); va_end( a ); }
+void NPX(a_parse_errf  )( const bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(a_parse_errvf )( o, f, a ); va_end( a ); }
+void NPX(a_parse_err_fa)( const bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(a_parse_err_fv)( o, f, a ); va_end( a ); }
+void NPX(a_parse_msg_fa)( const bcore_source* o, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(a_parse_msg_fv)( o, f, a ); va_end( a ); }
 void NPX(x_parse_fa    )( sr_s o, sc_t f, ...          ) { va_list a; va_start( a, f ); NPX(x_parse_fv    )( o, f, a ); va_end( a ); }
 er_t NPX(x_parse_em_fa )( sr_s o, sc_t f, ...          ) { va_list a; va_start( a, f ); er_t r = NPX(x_parse_em_fv )( o, f, a ); va_end( a ); return r; }
 void NPX(x_parse_errf  )( sr_s o, sc_t f, ...          ) { va_list a; va_start( a, f ); NPX(x_parse_errvf )( o, f, a ); va_end( a ); }
@@ -342,14 +342,14 @@ void NPX(r_parse_errf  )( const sr_s* o, sc_t f, ...   ) { va_list a; va_start( 
 void NPX(r_parse_err_fa)( const sr_s* o, sc_t f, ...   ) { va_list a; va_start( a, f ); NPX(r_parse_err_fv)( o, f, a ); va_end( a ); }
 void NPX(r_parse_msg_fa)( const sr_s* o, sc_t f, ...   ) { va_list a; va_start( a, f ); NPX(r_parse_msg_fv)( o, f, a ); va_end( a ); }
 
-void NPX(p_parse_msg_to_sink_fa)( const NPX(s)* p, bcore_source* o, bcore_sink* s, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(p_parse_msg_to_sink_fv)( p, o, s, f, a ); va_end( a ); }
-void NPX(a_parse_msg_to_sink_fa)(                  bcore_source* o, bcore_sink* s, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(a_parse_msg_to_sink_fv)(    o, s, f, a ); va_end( a ); }
-void NPX(x_parse_msg_to_sink_fa)(                          sr_s  o, bcore_sink* s, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(x_parse_msg_to_sink_fv)(    o, s, f, a ); va_end( a ); }
-void NPX(r_parse_msg_to_sink_fa)(                    const sr_s* o, bcore_sink* s, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(r_parse_msg_to_sink_fv)(    o, s, f, a ); va_end( a ); }
+void NPX(p_parse_msg_to_sink_fa)( const NPX(s)* p, const bcore_source* o, bcore_sink* s, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(p_parse_msg_to_sink_fv)( p, o, s, f, a ); va_end( a ); }
+void NPX(a_parse_msg_to_sink_fa)(                  const bcore_source* o, bcore_sink* s, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(a_parse_msg_to_sink_fv)(    o, s, f, a ); va_end( a ); }
+void NPX(x_parse_msg_to_sink_fa)(                                sr_s  o, bcore_sink* s, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(x_parse_msg_to_sink_fv)(    o, s, f, a ); va_end( a ); }
+void NPX(r_parse_msg_to_sink_fa)(                          const sr_s* o, bcore_sink* s, sc_t f, ... ) { va_list a; va_start( a, f ); NPX(r_parse_msg_to_sink_fv)(    o, s, f, a ); va_end( a ); }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-er_t bcore_source_a_parse_error_fv( bcore_source* o, sc_t format, va_list args )
+er_t bcore_source_a_parse_error_fv( const bcore_source* o, sc_t format, va_list args )
 {
     st_s* s0 = st_s_create_fv( format, args );
     st_s* s1 = st_s_create();
@@ -364,7 +364,7 @@ er_t bcore_source_a_parse_error_fv( bcore_source* o, sc_t format, va_list args )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-er_t bcore_source_a_parse_error_fa( bcore_source* o, sc_t format, ... )
+er_t bcore_source_a_parse_error_fa( const bcore_source* o, sc_t format, ... )
 {
     va_list args;
     va_start( args, format );

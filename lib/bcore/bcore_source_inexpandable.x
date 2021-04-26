@@ -28,15 +28,15 @@ group bcore_source = x_inst
 
     feature void parse_fv( m @* o, sc_t format, va_list args );
     feature void parse_fa( m @* o, sc_t format, ... );
-    feature void parse_msg_fv( m @* o, sc_t format, va_list args );
-    feature void parse_msg_fa( m @* o, sc_t format, ... );
-    feature void parse_msg_to_sink_fv( m @* o, m bcore_sink* sink, sc_t format, va_list args );
-    feature void parse_msg_to_sink_fa( m @* o, m bcore_sink* sink, sc_t format, ... );
-    feature void parse_err_fa( m @* o, sc_t format, ... );
+    feature void parse_msg_fv( c @* o, sc_t format, va_list args );
+    feature void parse_msg_fa( c @* o, sc_t format, ... );
+    feature void parse_msg_to_sink_fv( c @* o, m bcore_sink* sink, sc_t format, va_list args );
+    feature void parse_msg_to_sink_fa( c @* o, m bcore_sink* sink, sc_t format, ... );
+    feature void parse_err_fa( c @* o, sc_t format, ... );
     feature er_t parse_em_fv( m @* o, sc_t format, va_list args );
     feature er_t parse_em_fa( m @* o, sc_t format, ... );
-    feature er_t parse_error_fv( m @* o, sc_t format, va_list args );
-    feature er_t parse_error_fa( m @* o, sc_t format, ... );
+    feature er_t parse_error_fv( c @* o, sc_t format, va_list args );
+    feature er_t parse_error_fa( c @* o, sc_t format, ... );
     feature bl_t parse_bl( m @* o, sc_t format );
 
     feature bl_t eos( c @* o );
@@ -44,7 +44,6 @@ group bcore_source = x_inst
     feature s3_t get_index( c @* o );
     feature void set_index( m @* o, s3_t index );
     feature void move_index( m @* o, s3_t delta ); // set_index( get_index() + delta );
-
 
     stamp :string_s = aware :
     {
@@ -70,7 +69,7 @@ group bcore_source = x_inst
 
     stamp :point_s = aware :
     {
-        bcore_source -> source; // shallow reference
+        aware bcore_source -> source; // shallow reference
         s3_t index;
 
         func( void set( m @* o, m bcore_source* source ) );
@@ -91,6 +90,17 @@ group bcore_source = x_inst
         /// write a source reference to sink in the form <file_path>:<line>:<col>
         func( void source_reference_to_sink( c @* o, bl_t file_name_only, m bcore_sink* sink ) );
     };
+
+    stamp :context_s = x_inst
+    {
+        st_s => file_path;   // file path; NULL if not available
+        s3_t index;       // current index
+        sz_t line;        // line number for text based sources
+        sz_t col;         // column number for text based sources
+        st_s => txt_context; // text context (if available)
+    };
+
+    feature void get_context( c @* o, m :context_s* context );
 };
 
 //----------------------------------------------------------------------------------------------------------------------

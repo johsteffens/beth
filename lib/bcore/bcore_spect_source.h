@@ -111,14 +111,14 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP1( bcore_source, parse_fv, sc_t, format, va
 BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP1( bcore_source, parse_em_fv, er_t, sc_t, format, va_list, args )
 
 /// Retrieves context info about current read position
-BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_source, get_context, bcore_source_context_s*, context )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG1_MAP0( bcore_source, get_context, bcore_source_context_s*, context )
 
 /// Produces a parse message
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_source, parse_errvf,  sc_t, format, va_list, args )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_source, parse_err_fv, sc_t, format, va_list, args )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_source, parse_msgvf,  sc_t, format, va_list, args )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_source, parse_msg_fv, sc_t, format, va_list, args )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG3_MAP0( bcore_source, parse_msg_to_sink_fv, bcore_sink*, sink, sc_t, format, va_list, args )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAP0( bcore_source, parse_errvf,  sc_t, format, va_list, args )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAP0( bcore_source, parse_err_fv, sc_t, format, va_list, args )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAP0( bcore_source, parse_msgvf,  sc_t, format, va_list, args )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG2_MAP0( bcore_source, parse_msg_fv, sc_t, format, va_list, args )
+BCORE_FUNC_SPECT_CONST1_RET0_ARG3_MAP0( bcore_source, parse_msg_to_sink_fv, bcore_sink*, sink, sc_t, format, va_list, args )
 
 /// Returns the boolean of a formatted parse. 'format' must yield just one bool, which is returned.
 BCORE_FUNC_SPECT_CONST0_RET1_ARG1_MAP0( bcore_source, parse_bl_fa,  bl_t, sc_t, format )  // deprecated: use parse_bl
@@ -147,21 +147,21 @@ BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_source, get_index,  s3_t )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_source, set_index,  s3_t, index )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_source, move_index, s3_t, delta ) // set_index( get_index() + delta );
 
-void bcore_source_p_parse_msg_to_sink_fa( const bcore_source_s* p, bcore_source* o, bcore_sink* sink, sc_t format, ... );
-void bcore_source_a_parse_msg_to_sink_fa( bcore_source* o, bcore_sink* sink, sc_t format, ... );
+void bcore_source_p_parse_msg_to_sink_fa( const bcore_source_s* p, const bcore_source* o, bcore_sink* sink, sc_t format, ... );
+void bcore_source_a_parse_msg_to_sink_fa( const bcore_source* o, bcore_sink* sink, sc_t format, ... );
 void bcore_source_x_parse_msg_to_sink_fa( sr_s o, bcore_sink* sink, sc_t format, ... );
 void bcore_source_r_parse_msg_to_sink_fa( const sr_s* o, bcore_sink* sink, sc_t format, ... );
 
-void bcore_source_p_parse_msg_fa( const bcore_source_s* p, bcore_source* o, sc_t format, ... );
-void bcore_source_a_parse_msg_fa( bcore_source* o, sc_t format, ... );
+void bcore_source_p_parse_msg_fa( const bcore_source_s* p, const bcore_source* o, sc_t format, ... );
+void bcore_source_a_parse_msg_fa( const bcore_source* o, sc_t format, ... );
 void bcore_source_x_parse_msg_fa( sr_s o, sc_t format, ... );
 void bcore_source_r_parse_msg_fa( const sr_s* o, sc_t format, ... );
 
-void bcore_source_p_parse_err_fa( const bcore_source_s* p, bcore_source* o, sc_t format, ... );
-void bcore_source_p_parse_errf  ( const bcore_source_s* p, bcore_source* o, sc_t format, ... );
+void bcore_source_p_parse_err_fa( const bcore_source_s* p, const bcore_source* o, sc_t format, ... );
+void bcore_source_p_parse_errf  ( const bcore_source_s* p, const bcore_source* o, sc_t format, ... );
 void bcore_source_p_parse_fa    ( const bcore_source_s* p, bcore_source* o, sc_t format, ... );
 er_t bcore_source_p_parse_em_fa ( const bcore_source_s* p, bcore_source* o, sc_t format, ... );
-void bcore_source_a_parse_err_fa( bcore_source* o, sc_t format, ... );
+void bcore_source_a_parse_err_fa( const bcore_source* o, sc_t format, ... );
 bcore_source* bcore_source_a_parse_fa( bcore_source* o, sc_t format, ... );
 er_t bcore_source_a_parse_em_fa ( bcore_source* o, sc_t format, ... );
 void bcore_source_x_parse_fa    ( sr_s o, sc_t format, ... );
@@ -174,8 +174,8 @@ void bcore_source_r_parse_errf  ( const sr_s* o, sc_t format, ... );
 void bcore_source_r_parse_err_fa( const sr_s* o, sc_t format, ... );
 
 /// generates a parse error message and pushes it to the error stack (see bcore_error_manager.h); returns err_id
-er_t bcore_source_a_parse_error_fv( bcore_source* o, sc_t format, va_list args );
-er_t bcore_source_a_parse_error_fa( bcore_source* o, sc_t format, ... );
+er_t bcore_source_a_parse_error_fv( const bcore_source* o, sc_t format, va_list args );
+er_t bcore_source_a_parse_error_fa( const bcore_source* o, sc_t format, ... );
 
 bcore_source* bcore_source_t_create( tp_t type );
 void bcore_source_a_copy( bcore_source* o, const bcore_source* src );
