@@ -60,7 +60,7 @@ typedef struct bcore_lock_s
 {
     aware_t _;
 
-    /// pointer to associated mutx
+    /// pointer to associated mutex
     bcore_mutex_s* mutex;
 } bcore_lock_s;
 
@@ -88,7 +88,7 @@ typedef struct bcore_unlock_s
 {
     aware_t _;
 
-    /// pointer to associated mutx
+    /// pointer to associated mutex
     bcore_mutex_s* mutex;
 } bcore_unlock_s;
 
