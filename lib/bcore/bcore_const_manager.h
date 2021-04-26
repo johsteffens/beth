@@ -20,8 +20,10 @@
     added or removed. Therefore concurrent read-access can be kept lock-free.
 
     String constants are in a separate concurrent dedicated manager, which is lock-secured
-    and memory conservative. String constants can be registered and used concurrently anywhere
+    and memory-conservative. String constants can be registered and used concurrently anywhere
     in the program.
+    A typical use case for string constants is the constant definition in a registry.
+    Since registries can be created anywhere in the program, concurrency must be ensured.
  */
 
 #ifndef BCORE_CONST_MANAGER_H
@@ -31,7 +33,7 @@
 #include "bcore_signal.h"
 
 /**********************************************************************************************************************/
-/// Global general constants
+/// Global general purpose constants
 
 /** Set function (Use only during init or down cycles)
   * Defining an existing key causes error and abort.
@@ -69,9 +71,9 @@ bl_t bcore_const_exists( tp_t key );
 tp_t        bcore_const_string_set_sc(          sc_t string ); // returns key; string collision tested and copied.
 tp_t        bcore_const_string_set_st_c( const st_s* string ); // returns key; string collision tested and copied.
 tp_t        bcore_const_string_set_st_d(       st_s* string ); // returns key; string collision tested; assumes ownership
-sc_t        bcore_const_string_get_sc( tp_t key    ); // retuns NULL if not existing
-const st_s* bcore_const_string_get_st( tp_t key    ); // retuns NULL if not existing
-bl_t        bcore_const_string_exists( tp_t key    );
+sc_t        bcore_const_string_get_sc( tp_t key ); // retuns NULL if not existing
+const st_s* bcore_const_string_get_st( tp_t key ); // retuns NULL if not existing
+bl_t        bcore_const_string_exists( tp_t key );
 
 /**********************************************************************************************************************/
 
