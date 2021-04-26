@@ -13,7 +13,7 @@
  *  limitations under the License.
  */
 
-/** Data stream source. */
+/** Data stream source */
 
 #ifndef BCORE_X_SOURCE_H
 #define BCORE_X_SOURCE_H
@@ -27,6 +27,8 @@
 XOILA_DEFINE_GROUP( x_source, x_inst )
 
 #ifdef XOILA_SECTION
+
+include 'c' "bcore_x_sink.h";
 
 forward x_sink;
 
@@ -78,16 +80,31 @@ func (void set_index( m @*o, s3_t index )) = { o.cast( m bcore_source* ).set_ind
 func (bl_t parse_bl( m @* o, sc_t format )) = { return o.cast( m bcore_source* ).parse_bl( format ); };
 
 /// parses stream according to format string; returns != 0 in case of parse error. (Error message on stack)
-func (er_t parse_fv( m @*o, sc_t format, va_list args )) = { return o.cast( m bcore_source* ).parse_em_fv( format, args ); };
-func (er_t parse_fa( m @*o, sc_t format, ... )) = { va_list a; va_start( a, format ); er_t r = o.parse_fv( format, a ); va_end( a ); return r; };
+signature er_t parse_fv( m @*o, sc_t format, va_list args );
+signature er_t parse_fa( m @*o, sc_t format, ... );
+func parse_fv = { return o.cast( m bcore_source* ).parse_em_fv( format, args ); };
+func parse_fa = { va_list a; va_start( a, format ); er_t r = o.parse_fv( format, a ); va_end( a ); return r; };
 
 /// generates a parse error message and pushes it to the error stack (see bcore_error_manager.h); returns err_id
-func (er_t parse_error_fv( m @*o, sc_t format, va_list args )) = { return o.cast( m bcore_source* ).parse_error_fv( format, args ); };
-func (er_t parse_error_fa( m @*o, sc_t format, ... )) = { va_list a; va_start( a, format ); er_t r = o.parse_error_fv( format, a ); va_end( a ); return r; };
+signature er_t parse_error_fv( c @*o, sc_t format, va_list args );
+signature er_t parse_error_fa( c @*o, sc_t format, ... );
+func parse_error_fv = { return o.cast( bcore_source* ).parse_error_fv( format, args ); };
+func parse_error_fa = { va_list a; va_start( a, format ); er_t r = o.parse_error_fv( format, a ); va_end( a ); return r; };
 
 /// generates a parse message
-func (void parse_msg_to_sink_fv( m @*o, m x_sink* sink, sc_t format, va_list args )) = { o.cast( m bcore_source* ).parse_msg_to_sink_fv( sink, format, args ); };
-func (void parse_msg_to_sink_fa( m @*o, m x_sink* sink, sc_t format, ... )) = { va_list a; va_start( a, format ); o.parse_msg_to_sink_fv( sink, format, a ); va_end( a ); };
+signature void parse_msg_to_sink_fv( c @*o, m x_sink* sink, sc_t format, va_list args );
+signature void parse_msg_to_sink_fa( c @*o, m x_sink* sink, sc_t format, ... );
+func parse_msg_to_sink_fv = { o.cast( m bcore_source* ).parse_msg_to_sink_fv( sink, format, args ); };
+func parse_msg_to_sink_fa = { va_list a; va_start( a, format ); o.parse_msg_to_sink_fv( sink, format, a ); va_end( a ); };
+
+/// generates a parse message to stdout
+signature void parse_msg_fv( c @*o, sc_t format, va_list args );
+signature void parse_msg_fa( c @*o, sc_t format, ... );
+func parse_msg_fv =
+{
+    o.parse_msg_to_sink_fv( x_sink_stdout(), format, args );
+};
+func parse_msg_fa = { va_list a; va_start( a, format ); o.parse_msg_fv( format, a ); va_end( a ); };
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -97,6 +114,112 @@ func (sc_t get_file( c @*o )) = { return o.cast( bcore_source* ).get_file(); };
 //----------------------------------------------------------------------------------------------------------------------
 
 func (m x_source* stdin()) = { return ( x_source* )BCORE_STDIN; };
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// source_point
+
+/** A source point is a runtime reference to a specific source location.
+ *  This is often used for multi-pass parsing and descriptive message generation
+ *  (e.g. parse error messages)\
+ */
+
+stamp :point_s = x_inst
+{
+    aware : -> source;
+    s3_t index;
+
+    func (void setup_from_source( m@* o, m x_source* source )) = { o.source =< source.fork(); o.index = source.get_index(); };
+
+    /// creates a cloned source pointing to the index position of source point
+    func (d x_source* clone_source( c@* o ));
+
+    /// write a source reference to sink in the form <file_path>:<line>:<col>
+    func (void source_reference_to_sink( @* o, bl_t file_name_only, m x_sink* sink ));
+
+    func :.parse_msg_to_sink_fv;
+    func :.parse_msg_fv;
+    func :.parse_error_fv;
+
+    func :.parse_msg_to_sink_fa = { va_list a; va_start( a, format ); o.parse_msg_to_sink_fv( sink, format, a ); va_end( a ); };
+    func :.parse_msg_fa         = { va_list a; va_start( a, format );               o.parse_msg_fv( format, a ); va_end( a ); };
+    func :.parse_error_fa       = { va_list a; va_start( a, format ); er_t err =  o.parse_error_fv( format, a ); va_end( a ); return err; };
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:point_s) parse_msg_fv =
+{
+    o.parse_msg_to_sink_fv( x_sink_stdout(), format, args );
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:point_s) clone_source =
+{
+    d x_source* source = o.source.clone();
+    source.set_index( o.index );
+    return source;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:point_s) :.parse_msg_to_sink_fv =
+{
+    if( o.source )
+    {
+        s3_t index = o.source.get_index();
+        o.source.set_index( o.index );
+        o.source.parse_msg_to_sink_fv( sink, format, args );
+        o.source.set_index( index );
+    }
+    else
+    {
+        sink.push_fv( format, args );
+    }
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:point_s) :.parse_error_fv =
+{
+    er_t err = 0;
+    if( o.source )
+    {
+        s3_t index = o.source.get_index();
+        o.source.set_index( o.index );
+        err = o.source.parse_error_fv( format, args );
+        o.source.set_index( index );
+    }
+    else
+    {
+        err = bcore_error_push_fv( TYPEOF_parse_error, format, args );
+    }
+    return err;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:point_s) source_reference_to_sink =
+{
+    if( !o.source ) return;
+    s3_t index = o.source.get_index();
+    o.source.set_index( o.index );
+
+    m bcore_source_context_s* context = bcore_source_context_s!^;
+    o.source.cast( bcore_source* ).get_context( context );
+
+    if( context.file_path )
+    {
+        m st_s* file = context.file_path.clone()^;
+        if( file_name_only ) file.copy_sc( bcore_file_name( file.sc ) );
+        sink.push_fa( "#<sc_t>", file.sc );
+    }
+
+    sink.push_fa( ":#<sz_t>:#<sz_t>", context.line, context.col );
+    o.source.set_index( index );
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
