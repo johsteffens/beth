@@ -1,4 +1,4 @@
-//  Last update: 2021-04-26T19:58:22Z
+//  Last update: 2021-04-28T08:01:37Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 ... 2021 J.B.Steffens
  *
@@ -43,7 +43,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0x18CF03BA3F7BBB59ull
+// HKEYOF_bcore 0x1BADD7D8A8BDF342ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -2487,7 +2487,7 @@ XOILA_DEFINE_SPECT( x_inst, x_btml )
 
 er_t x_btml_t_from_source( x_btml* o, tp_t t, x_source* source )
 {
-    // bcore_x_btml.h:143:22
+    // bcore_x_btml.h:144:1
     
     sr_s sr = sr_null();
     BLM_TRY(x_btml_parse_create_object(source, (&(sr)) ))
@@ -2501,7 +2501,7 @@ x_btml* x_btml_create_from_source_t( x_source* source, tp_t* type )
     // bcore_x_btml.h:155:1
     
     sr_s sr = sr_null();
-    x_btml_parse_create_object(source, (&(sr)) );
+    BLM_TRY_EXIT(x_btml_parse_create_object(source, (&(sr)) ))
     if( sr.o && type ) (*(type)) = sr_s_o_type(&( sr ));
     return  ((x_btml*)(sr.o)); // sr.o is NULL in case of error
 }
@@ -2583,7 +2583,7 @@ bl_t x_btml_appears_valid( x_source* source )
 
 er_t x_btml_parse_create_object( x_source* source, sr_s* obj )
 {
-    // bcore_x_btml.h:247:70
+    // bcore_x_btml.h:248:1
     BLM_INIT_LEVEL(0);
     er_t er = 0;
     st_s* type_string = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
@@ -2686,7 +2686,7 @@ er_t x_btml_parse_create_object( x_source* source, sr_s* obj )
 
 er_t x_btml_t_parse_body( x_btml* o, tp_t t, x_source* source )
 {
-    // bcore_x_btml.h:350:66
+    // bcore_x_btml.h:351:1
     
     x_stamp* stamp =((x_stamp*)( o));
     if( x_btml_t_defines_feature_body_from_source(t ) )
@@ -2792,7 +2792,7 @@ er_t x_btml_t_parse_body( x_btml* o, tp_t t, x_source* source )
 
 er_t x_btml_skip_body( x_source* source )
 {
-    // bcore_x_btml.h:456:47
+    // bcore_x_btml.h:457:1
     
     while( !x_source_eos(source) )
     {
@@ -2969,7 +2969,7 @@ XOILA_DEFINE_SPECT( x_inst, x_bbml )
 
 er_t x_bbml_t_from_source( x_bbml* o, tp_t t, x_source* source )
 {
-    // bcore_x_bbml.h:96:22
+    // bcore_x_bbml.h:97:1
     
     sr_s sr = sr_null();
     BLM_TRY(x_bbml_parse_create_object(source, (&(sr)) ))
@@ -2983,7 +2983,7 @@ x_bbml* x_bbml_create_from_source_t( x_source* source, tp_t* type )
     // bcore_x_bbml.h:108:1
     
     sr_s sr = sr_null();
-    x_bbml_parse_create_object(source, (&(sr)) );
+    BLM_TRY_EXIT(x_bbml_parse_create_object(source, (&(sr)) ))
     if( sr.o && type ) (*(type)) = sr_s_o_type(&( sr ));
     return  ((x_bbml*)(sr.o)); // sr.o is NULL in case of error
 }
@@ -3021,7 +3021,7 @@ bl_t x_bbml_appears_valid( x_source* source )
 
 er_t x_bbml_parse_create_object( x_source* source, sr_s* obj )
 {
-    // bcore_x_bbml.h:161:70
+    // bcore_x_bbml.h:162:1
     BLM_INIT_LEVEL(0);
     er_t er = 0;
     tp_t type = x_bbml_parse_type(source );
@@ -3053,7 +3053,7 @@ er_t x_bbml_parse_create_object( x_source* source, sr_s* obj )
 
 er_t x_bbml_t_parse_body( x_bbml* o, tp_t t, x_source* source )
 {
-    // bcore_x_bbml.h:193:66
+    // bcore_x_bbml.h:194:1
     
     x_stamp* stamp =((x_stamp*)( o));
     if( x_bbml_t_defines_feature_body_from_source(t ) )
@@ -3714,5 +3714,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0xF39A9D9456EF903C
-// XOICO_FILE_SIGNATURE 0x369CEA9EB672536B
+// XOICO_BODY_SIGNATURE 0x07071B70D593D6C7
+// XOICO_FILE_SIGNATURE 0x23522787211EA78E

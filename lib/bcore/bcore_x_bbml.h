@@ -93,7 +93,7 @@ feature 'at' void feature_body_to_sink(     c@* o, m x_sink* sink );
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func t_from_source = (try)
+func t_from_source =
 {
     sr_s sr = sr_null();
     :parse_create_object( source, sr.1 );
@@ -158,7 +158,7 @@ func appears_valid =
 /** On entering obj should be sr_null
  *  In case of error obj need not be discarded
  */
-func (er_t parse_create_object( m x_source* source, m sr_s* obj )) = (try)
+func (er_t parse_create_object( m x_source* source, m sr_s* obj )) =
 {
     er_t er = 0;
     tp_t type = :parse_type( source );
@@ -190,7 +190,7 @@ func (er_t parse_create_object( m x_source* source, m sr_s* obj )) = (try)
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (er_t t_parse_body( m @* o, tp_t t, m x_source* source )) = (try)
+func (er_t t_parse_body( m @* o, tp_t t, m x_source* source )) =
 {
     m x_stamp* stamp = o;
     if( o.t_defines_feature_body_from_source( t ) )

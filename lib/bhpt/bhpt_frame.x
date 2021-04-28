@@ -485,7 +485,7 @@ func (:s) (void help_to_sink( m bcore_sink* sink )) =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:s) bcore_main.main = (try)
+func (:s) bcore_main.main =
 {
     o.main_frame = frame;
 
@@ -642,7 +642,7 @@ func (:state_s) (void help_to_sink( m bcore_sink* sink )) =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:state_s) bcore_main.main = (try)
+func (:state_s) bcore_main.main =
 {
     bcore_arr_st_s* args = frame.args;
     if( o.test_result_adl )
@@ -668,7 +668,7 @@ func (:state_s) bcore_main.main = (try)
                 bcore_hmap_name_s^ hmap_name;
                 bcore_arr_tp_s^ arr_tp;
                 for( ; idx < args.size; idx++ ) arr_tp.push( hmap_name.set_sc( args.[idx].sc ) );
-                o.table_to_sink( hmap_name, path_adl, BCORE_STDOUT ).try();
+                o.table_to_sink( hmap_name, path_adl, BCORE_STDOUT );
                 return 0;
             }
             else if( cmd.equal_sc( "-adaptive" ) )

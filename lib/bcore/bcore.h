@@ -48,11 +48,17 @@ vd_t bcore_run_signal_selftest( tp_t target, vd_t object );
 void bcore_down( s2_t verbosity );
 
 /** Shuts down all libraries and exits program with given return value.
- *  If you set verbosity < 0; the system shuts down quietly and cleanly.
+ *  If you set verbosity < 0; the system shuts down quietly and cleanly even if
+ *  memory manager detects a memory leak or there are remaining errors on the error stack.
  *  It garbage collects residual memory before shutting down the memory manager.
- *  This function is intended for producing a regular program exit outside
- *  function main.
+ *  This function is intended for producing a regular program exit outside function main.
  */
 void bcore_down_exit( s2_t verbosity, s2_t return_value );
+
+
+/** Quietly shuts down all libraries and exits program with given return value.
+ *  If the error stack is nonempty, it is popped to stderr before shutting down.
+ */
+void bcore_pop_errors_down_exit( s2_t return_value );
 
 #endif // BCORE_H

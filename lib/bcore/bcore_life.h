@@ -205,7 +205,7 @@ extern bcore_life_s* __bcore_life; // always NULL; needed to ingrain a life-chai
 #define BLM_EXIT( value ) \
 { \
     bcore_life_s_down_all( __bcore_life ); \
-    bcore_down_exit( value ); \
+    bcore_pop_errors_down_exit( value ); \
 }
 
 /// creates object and runs a member function as continuation

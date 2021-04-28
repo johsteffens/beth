@@ -17,6 +17,7 @@
 #include "bcore_threads.h"
 #include "bcore_tbman.h"
 #include "bcore_name_manager.h"
+#include "bcore_error_manager.h"
 #include "bcore_signal.h"
 #include "bcore_arr.h"
 #include "bcore.h"
@@ -220,6 +221,14 @@ void bcore_down_exit( s2_t verbosity, s2_t return_value )
 {
     bcore_down( verbosity );
     bcore_exit( return_value );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_pop_errors_down_exit( s2_t return_value )
+{
+    bcore_error_pop_all_to_stderr();
+    bcore_down_exit( -1, return_value );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
