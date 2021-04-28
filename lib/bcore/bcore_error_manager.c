@@ -243,7 +243,8 @@ vd_t bcore_error_manager_signal_handler( const bcore_signal_s* o )
         {
             if( context_g )
             {
-                if( bcore_error_stack_size() > 0 )
+                s2_t verbosity = o->object ? *( s2_t* )o->object : 0;
+                if( verbosity >= 0 && bcore_error_stack_size() > 0 )
                 {
                     WRN_fa( "Error Manager: Stack is not empty!\nList of remaining errors:" );
                     st_s* msg = st_s_create();
