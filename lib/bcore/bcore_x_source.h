@@ -31,6 +31,7 @@ XOILA_DEFINE_GROUP( x_source, x_inst )
 include 'c' "bcore_x_sink.h";
 
 forward x_sink;
+forward x_inst;
 
 /**********************************************************************************************************************/
 /// interface

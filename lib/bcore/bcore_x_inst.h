@@ -32,7 +32,6 @@ include 'h' "bcore_bin_ml.h";
 include 'h' "bcore_arr.h";
 include 'h' "bcore_life.h";
 include 'h' "bcore_sinks.h";
-include 'h' "bcore_sources.h";
 
 include 'c' "bcore_file.h";
 

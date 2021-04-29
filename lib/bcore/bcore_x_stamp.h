@@ -144,8 +144,8 @@ stamp :path_s = aware x_inst
     };
 
     /// parses format: <name>.<name>. .... or <name>.[<index_literal>]. ...
-    func (o parse(    m@* o, m bcore_source* source ));
-    func (o parse_sc( m@* o, sc_t sc )) = { return o.parse( bcore_source_string_s_create_sc( sc )^ ); };
+    func (o parse(    m@* o, m x_source* source ));
+    func (o parse_sc( m@* o, sc_t sc )) = { return o.parse( x_source_create_from_sc( sc )^ ); };
 
     func (o to_sink( c@* o, m bcore_sink* sink ));
 

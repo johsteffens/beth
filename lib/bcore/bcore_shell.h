@@ -13,7 +13,21 @@
  *  limitations under the License.
  */
 
+#ifndef BCORE_SHELL_H
+#define BCORE_SHELL_H
+
+#include "bcore_spect_source.h"
+#include "bcore_sources.h"
+#include "bcore_file.h"
+#include "bcore_x_inst.h"
+#include "bcore_x_source.h"
+#include "bcore_x_sink.h"
+
 /**********************************************************************************************************************/
+
+XOILA_DEFINE_GROUP( bcore_shell, x_inst )
+
+#ifdef XOILA_SECTION
 
 forward x_inst;
 forward bcore_main_frame_s;
@@ -36,7 +50,7 @@ group :op =
         m @* o,
         m ::* obj,
         bcore_main_frame_s* main_frame,
-        m bcore_source* source,
+        m x_source* source,
         m bcore_sink* sink,
         m bcore_shell_control_s* control
     );
@@ -66,7 +80,7 @@ group :op =
      *  false: No match. Nothing consumed. Go try next command.
      *  true:  Match. Keyword consumed. Continue with 'parse_param'.
      */
-    func (bl_t parse_match( m @* o, m bcore_source* source )) =
+    func (bl_t parse_match( m @* o, m x_source* source )) =
     {
         st_s^ key;
         source.parse_fa( "#=until' '", key.1 );
@@ -80,7 +94,7 @@ group :op =
      *  false: An error occurred. Discard this operation and continue with next command.
      *  true:  Parsing successful. Continue with 'run'
      */
-    func (bl_t parse_param( m @* o, m bcore_source* source, m bcore_sink* sink )) =
+    func (bl_t parse_param( m @* o, m x_source* source, m bcore_sink* sink )) =
     {
         sz_t direct_index = 0;
         source.parse_fa( "#skip' \t'" );
@@ -307,7 +321,7 @@ signature void loop
 (
     m @* o,
     bcore_main_frame_s* frame,
-    m bcore_source* source,
+    m x_source* source,
     m bcore_sink* sink,
     m bcore_shell_control_s* control
 );
@@ -322,7 +336,7 @@ func loop =
 
         st_s^ line;
         source.parse_fa( " #until'\n'#skip'\n'", line.1 );
-        bcore_source_string_s^ line_source.setup_from_string( line );
+        m$* line_source = x_source_create_from_st( line )^;
 
         if( line.size > 0 )
         {
@@ -372,7 +386,7 @@ group :op_default = retrievable
         func ::op.get_info = { info.push_fa( "Lists all visible members" ); };
         func ::op.run =
         {
-            x_stamp_path_s^ path.parse( bcore_source_string_s_create_sc( o.path.sc )^ );
+            x_stamp_path_s^ path.parse( x_source_create_from_sc( o.path.sc )^ );
             sr_s sr = path.get_sr_in( obj );
 
             if( sr.o )
@@ -424,17 +438,24 @@ group :op_default = retrievable
         func ::op.info = { return "Enters object"; };
         func ::op.run =
         {
-            sr_s sr = x_stamp_path_s!^.parse( bcore_source_string_s_create_from_string( o.path )^ ).get_sr_in( obj );
-            if( sr.o )
+            x_stamp_path_s* path = x_stamp_path_s!^.parse( x_source_create_from_st( o.path )^ );
+            if( path.size == 0 )
             {
-                tp_t t = sr_s_type( sr );
-                if( !x_stamp_t_is_aware( t ) )
+                sink.push_fa( "Path '#<sc_t>' not found.\n", o.path.sc );
+                return;
+            }
+            sr_s^ sr;
+            sr = path.get_sr_in( obj );
+            mutable bcore_shell* shell_o = sr.o;
+            tp_t shell_t = sr.type();
+
+            if( shell_o )
+            {
+                if( !x_stamp_t_is_aware( shell_t ) )
                 {
-                    sink.push_fa( "Selected object '#<sc_t>' is oblivious. Cannot enter.\n", bnameof( t ) );
+                    sink.push_fa( "Selected object '#<sc_t>' is oblivious. Cannot enter.\n", bnameof( shell_t ) );
                     return;
                 }
-
-                mutable bcore_shell* shell_o = sr.o;
 
                 m $* control_child = control.spawn()^;
                 if( control_child.path.size ) control_child.path.push_sc( "|" );
@@ -463,7 +484,7 @@ group :op_default = retrievable
         func ::op.info = { return "Outputs object as btml"; };
         func ::op.run =
         {
-            sr_s sr = x_stamp_path_s!^.parse( bcore_source_string_s_create_from_string( o.path )^ ).get_sr_in( obj );
+            sr_s sr = x_stamp_path_s!^.parse( x_source_create_from_st( o.path )^ ).get_sr_in( obj );
             if( sr.o )
             {
                 x_btml_t_to_sink( sr.o, sr_s_type( sr ), sink );
@@ -483,7 +504,7 @@ group :op_default = retrievable
         func ::op.info = { return "Sets object from btml"; };
         func ::op.run =
         {
-            sr_s sr = x_stamp_path_s!^.parse( bcore_source_string_s_create_from_string( o.path )^ ).get_sr_in( obj );
+            sr_s sr = x_stamp_path_s!^.parse( x_source_create_from_st( o.path )^ ).get_sr_in( obj );
             if( sr.o )
             {
                 if( o.source.size == 0 )
@@ -514,5 +535,10 @@ group :op_default = retrievable
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+
+#endif // XOILA_SECTION
+
+#endif // BCORE_SHELL_H
+
 
 
