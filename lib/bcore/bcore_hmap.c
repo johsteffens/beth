@@ -167,7 +167,6 @@ void bcore_hmap_u3vd_s_init( bcore_hmap_u3vd_s* o )
 {
     bcore_memzero( o, sizeof( *o ) );
     o->_ = TYPEOF_bcore_hmap_u3vd_s;
-    o->size_limit = 0xFFFFFFFFu;
     o->h1         = hash_u3u3_1;
     o->h2         = hash_u3u3_2;
     o->h3         = NULL;
@@ -198,7 +197,6 @@ void bcore_hmap_u3vd_s_copy( bcore_hmap_u3vd_s* o, const bcore_hmap_u3vd_s* src 
         bcore_hnode_u3vd_s_copy( &o->data[ i ], &src->data[ i ] );
     }
     o->depth_limit = src->depth_limit;
-    o->size_limit  = src->size_limit;
     o->h1          = src->h1;
     o->h2          = src->h2;
     o->h3          = src->h3;
@@ -410,7 +408,6 @@ void bcore_hmap_u3vd_s_set( bcore_hmap_u3vd_s* o, u3_t key, vd_t val, bool hold 
         uz_t         buf_space = o->space;
         o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
         o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
-        if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
         o->data = bcore_u_alloc( sizeof( bcore_hnode_u3vd_s ), NULL, o->size, &o->space );
         bcore_memzero( o->data, sizeof( bcore_hnode_u3vd_s ) * o->size );
         for( uz_t i = 0; i < buf_size; i++ )
@@ -458,7 +455,6 @@ void bcore_hmap_u3vd_s_setf( bcore_hmap_u3vd_s* o, u3_t key, fp_t func )
         uz_t buf_space = o->space;
         o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
         o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
-        if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
         o->data = bcore_u_alloc( sizeof( bcore_hnode_u3vd_s ), NULL, o->size, &o->space );
         bcore_memzero( o->data, sizeof( bcore_hnode_u3vd_s ) * o->size );
         for( uz_t i = 0; i < buf_size; i++ )
@@ -630,7 +626,6 @@ static bcore_self_s* hmap_u3vd_s_create_self( void )
                 aware_t _; \
                 private bcore_array_dyn_solid_static_s arr; \
                 uz_t depth_limit; \
-                uz_t size_limit; \
                 private fp_t h1; \
                 private fp_t h2; \
                 private fp_t h3; \
@@ -812,7 +807,6 @@ void bcore_hmap_tpuz_s_init( bcore_hmap_tpuz_s* o )
 {
     bcore_memzero( o, sizeof( *o ) );
     o->_ = TYPEOF_bcore_hmap_tpuz_s;
-    o->size_limit = 0xFFFFFFFFu;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -836,7 +830,6 @@ void bcore_hmap_tpuz_s_copy( bcore_hmap_tpuz_s* o, const bcore_hmap_tpuz_s* src 
     o->size  = src->size;
 
     o->depth_limit = src->depth_limit;
-    o->size_limit  = src->size_limit;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -959,7 +952,6 @@ uz_t* bcore_hmap_tpuz_s_set( bcore_hmap_tpuz_s* o, tp_t key, uz_t val )
         uz_t  buf_size = o->size;
         o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
         o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
-        if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
         o->nodes = bcore_u_memzero( sizeof( bcore_hnode_tpuz_s ), NULL, o->size );
         for( uz_t i = 0; i < buf_size; i++ )
         {
@@ -1076,7 +1068,6 @@ static bcore_self_s* hmap_tpsz_s_create_self( void )
                 private bl_t* flags; \
                 private uz_t size; \
                 private uz_t depth_limit; \
-                private uz_t size_limit; \
                 shell { bcore_hnode_tpuz_s []; } data; } \
             }";
     bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_hmap_tpuz_s );
@@ -1258,7 +1249,6 @@ void bcore_hmap_tpfp_s_init( bcore_hmap_tpfp_s* o )
 {
     bcore_memzero( o, sizeof( *o ) );
     o->_ = TYPEOF_bcore_hmap_tpfp_s;
-    o->size_limit = 0xFFFFFFFFu;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1282,7 +1272,6 @@ void bcore_hmap_tpfp_s_copy( bcore_hmap_tpfp_s* o, const bcore_hmap_tpfp_s* src 
     o->size  = src->size;
 
     o->depth_limit = src->depth_limit;
-    o->size_limit  = src->size_limit;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1405,7 +1394,6 @@ fp_t* bcore_hmap_tpfp_s_set( bcore_hmap_tpfp_s* o, tp_t key, fp_t val )
         uz_t  buf_size = o->size;
         o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
         o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
-        if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
         o->nodes = bcore_u_memzero( sizeof( bcore_hnode_tpfp_s ), NULL, o->size );
         for( uz_t i = 0; i < buf_size; i++ )
         {
@@ -1522,7 +1510,6 @@ static bcore_self_s* hmap_tpfp_s_create_self( void )
                 private bl_t* flags; \
                 private uz_t size; \
                 private uz_t depth_limit; \
-                private uz_t size_limit; \
                 shell { bcore_hnode_tpfp_s []; } data; } \
             }";
     bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_hmap_tpfp_s );
@@ -1697,7 +1684,6 @@ void bcore_hmap_tptp_s_init( bcore_hmap_tptp_s* o )
 {
     bcore_memzero( o, sizeof( *o ) );
     o->_ = TYPEOF_bcore_hmap_tptp_s;
-    o->size_limit = 0xFFFFFFFFu;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1719,7 +1705,6 @@ void bcore_hmap_tptp_s_copy( bcore_hmap_tptp_s* o, const bcore_hmap_tptp_s* src 
     o->nodes = bcore_u_memcpy( sizeof( bcore_hnode_tptp_s ), o->nodes, src->nodes, src->size );
     o->size  = src->size;
     o->depth_limit = src->depth_limit;
-    o->size_limit  = src->size_limit;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1842,7 +1827,6 @@ tp_t* bcore_hmap_tptp_s_set( bcore_hmap_tptp_s* o, tp_t key, tp_t val )
         uz_t  buf_size = o->size;
         o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
         o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
-        if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
         o->nodes = bcore_u_memzero( sizeof( bcore_hnode_tptp_s ), NULL, o->size );
         for( uz_t i = 0; i < buf_size; i++ )
         {
@@ -1959,7 +1943,6 @@ static bcore_self_s* hmap_tptp_s_create_self( void )
                 private bl_t* flags; \
                 private uz_t size; \
                 private uz_t depth_limit; \
-                private uz_t size_limit; \
                 shell { bcore_hnode_tptp_s []; } data; } \
             }";
     bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_hmap_tptp_s );
@@ -2128,7 +2111,6 @@ void bcore_hmap_tpvd_s_init( bcore_hmap_tpvd_s* o )
 {
     bcore_memzero( o, sizeof( *o ) );
     o->_ = TYPEOF_bcore_hmap_tpvd_s;
-    o->size_limit = 0xFFFFFFFFu;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2150,7 +2132,6 @@ void bcore_hmap_tpvd_s_copy( bcore_hmap_tpvd_s* o, const bcore_hmap_tpvd_s* src 
     o->nodes = bcore_u_memcpy( sizeof( bcore_hnode_tpvd_s ), o->nodes, src->nodes, src->size );
     o->size  = src->size;
     o->depth_limit = src->depth_limit;
-    o->size_limit  = src->size_limit;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2248,7 +2229,6 @@ vd_t* bcore_hmap_tpvd_s_set( bcore_hmap_tpvd_s* o, tp_t key, vd_t val )
         uz_t  buf_size = o->size;
         o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
         o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
-        if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
         o->nodes = bcore_u_memzero( sizeof( bcore_hnode_tpvd_s ), NULL, o->size );
         for( uz_t i = 0; i < buf_size; i++ )
         {
@@ -2403,7 +2383,6 @@ static bcore_self_s* hmap_tpvd_s_create_self( void )
                 private bl_t* flags; \
                 private uz_t size; \
                 private uz_t depth_limit; \
-                private uz_t size_limit; \
             }";
     bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_hmap_tpvd_s );
     bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpvd_s_init,    "bcore_fp_init",  "init"     );
@@ -2563,7 +2542,6 @@ void bcore_hmap_tpto_s_init( bcore_hmap_tpto_s* o )
 {
     bcore_memzero( o, sizeof( *o ) );
     o->_ = TYPEOF_bcore_hmap_tpto_s;
-    o->size_limit = 0xFFFFFFFFu;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2617,7 +2595,6 @@ void bcore_hmap_tpto_s_copy( bcore_hmap_tpto_s* o, const bcore_hmap_tpto_s* src 
     o->type = src->type;
     o->size = src->size;
     o->depth_limit = src->depth_limit;
-    o->size_limit  = src->size_limit;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2762,7 +2739,6 @@ vd_t* bcore_hmap_tpto_s_set_d( bcore_hmap_tpto_s* o, tp_t key, vd_t val )
         uz_t  buf_size = o->size;
         o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
         o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
-        if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
         o->nodes = bcore_u_memzero( sizeof( bcore_hnode_tpto_s ), NULL, o->size );
         for( uz_t i = 0; i < buf_size; i++ )
         {
@@ -2911,7 +2887,6 @@ static bcore_self_s* hmap_tpto_s_create_self( void )
                 private bl_t* flags; \
                 private uz_t size; \
                 private uz_t depth_limit; \
-                private uz_t size_limit; \
                 shell { tp_t type; { tp_t key; sr_s obj; } []; } data; } \
             }";
     bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_hmap_tpto_s );
@@ -3081,7 +3056,6 @@ void bcore_hmap_tp_s_init( bcore_hmap_tp_s* o )
 {
     bcore_memzero( o, sizeof( *o ) );
     o->_ = TYPEOF_bcore_hmap_tp_s;
-    o->size_limit = 0xFFFFFFFFu;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3103,7 +3077,6 @@ void bcore_hmap_tp_s_copy( bcore_hmap_tp_s* o, const bcore_hmap_tp_s* src )
     o->keys  = bcore_u_memcpy( sizeof( tp_t ), o->keys, src->keys, src->size );
     o->size  = src->size;
     o->depth_limit = src->depth_limit;
-    o->size_limit  = src->size_limit;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -3222,7 +3195,6 @@ uz_t bcore_hmap_tp_s_set( bcore_hmap_tp_s* o, tp_t key )
         o->flags = bcore_u_alloc( sizeof( bl_t ), o->flags, 0, NULL );
         o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
         o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
-        if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
         o->keys = bcore_u_memzero( sizeof( tp_t ), NULL, o->size );
         for( uz_t i = 0; i < buf_size; i++ )
         {
@@ -3325,7 +3297,6 @@ static bcore_self_s* hmap_tp_s_create_self( void )
                 private bl_t * flags; \
                 private uz_t size; \
                 private uz_t depth_limit; \
-                private uz_t size_limit; \
                 shell { tp_t []; } data; } \
             }";
     bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_hmap_tp_s );

@@ -100,7 +100,6 @@ void bcore_hmap_tp_sr_s_init( bcore_hmap_tp_sr_s* o )
 {
     bcore_memzero( o, sizeof( *o ) );
     o->_ = typeof( "bcore_hmap_tp_sr_s" );
-    o->size_limit = 0xFFFFFFFFu;
 }
 
 void bcore_hmap_tp_sr_s_down( bcore_hmap_tp_sr_s* o )
@@ -122,7 +121,6 @@ void bcore_hmap_tp_sr_s_copy( bcore_hmap_tp_sr_s* o, const bcore_hmap_tp_sr_s* s
     for( uz_t i = 0; i < src->size; i++ ) bcore_hnode_tp_sr_s_copy( &o->nodes[ i ], &src->nodes[ i ] );
     o->size  = src->size;
     o->depth_limit = src->depth_limit;
-    o->size_limit  = src->size_limit;
 }
 
 BCORE_DEFINE_FUNCTION_CREATE(  bcore_hmap_tp_sr_s )
@@ -230,7 +228,6 @@ sr_s* bcore_hmap_tp_sr_s_set( bcore_hmap_tp_sr_s* o, tp_t key, sr_s val )
             o->size = 8;
             o->depth_limit = 4;
         }
-        if( o->size > o->size_limit ) ERR( "size limit (%zu) exceeded", o->size_limit );
 
         // Note: We can safely reset the memory as long as bcore_hnode_tp_sr_s_init is memzero
         o->nodes = bcore_u_memzero( sizeof( bcore_hnode_tp_sr_s ), NULL, o->size );
@@ -354,7 +351,6 @@ static bcore_self_s* hmap_tp_sr_s_create_self( void )
             private bl_t* flags; \
             private uz_t size; \
             private uz_t depth_limit; \
-            private uz_t size_limit; \
             shell { bcore_hnode_tp_sr_s []; } data; } \
         }";
     bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_hmap_tp_sr_s );

@@ -72,7 +72,6 @@ typedef struct bcore_hmap_u3vd_s
         };
     };
     uz_t depth_limit;
-    uz_t size_limit;
     bcore_hash_u3u3 h1, h2, h3;
 } bcore_hmap_u3vd_s;
 
@@ -123,7 +122,6 @@ typedef struct bcore_hmap_tpuz_s
     bl_t* flags;
     uz_t size;
     uz_t depth_limit;
-    uz_t size_limit;
 } bcore_hmap_tpuz_s;
 
 BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tpuz_s )
@@ -175,7 +173,6 @@ typedef struct bcore_hmap_tpfp_s
     bl_t* flags;
     uz_t size;
     uz_t depth_limit;
-    uz_t size_limit;
 } bcore_hmap_tpfp_s;
 
 BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tpfp_s )
@@ -216,7 +213,6 @@ typedef struct bcore_hmap_tptp_s
     bl_t* flags;
     uz_t size;
     uz_t depth_limit;
-    uz_t size_limit;
 } bcore_hmap_tptp_s;
 
 BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tptp_s )
@@ -257,7 +253,6 @@ BCORE_DECLARE_OBJECT( bcore_hmap_tpvd_s )
     bl_t* flags;
     uz_t size;
     uz_t depth_limit;
-    uz_t size_limit;
 };
 
 vd_t* bcore_hmap_tpvd_s_set(           bcore_hmap_tpvd_s* o, tp_t key, vd_t val ); // sets new key; sets/overwrites value and returns pointer to value location
@@ -292,7 +287,6 @@ typedef struct bcore_hmap_tpto_s
     bl_t* flags;
     uz_t size;
     uz_t depth_limit;
-    uz_t size_limit;
 } bcore_hmap_tpto_s;
 
 BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tpto_s )
@@ -329,7 +323,6 @@ typedef struct bcore_hmap_tp_s
     bl_t* flags; // flags for tracing
     uz_t size;
     uz_t depth_limit;
-    uz_t size_limit;
 } bcore_hmap_tp_s;
 
 BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tp_s )

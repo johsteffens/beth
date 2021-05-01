@@ -22,6 +22,9 @@
 #include "bcore_x_inst.h"
 #include "bcore_x_source.h"
 #include "bcore_x_sink.h"
+#include "bcore_hmap.h"
+#include "bcore_hmap_name.h"
+#include "bcore_hmap_tp_st.h"
 
 /**********************************************************************************************************************/
 
@@ -250,6 +253,12 @@ group :control =
     stamp :s =
     {
         hidden :s* parent;
+        aware x_sink   -> sink;
+        aware x_source -> source;
+
+        bcore_hmap_name_s  hmap_name;
+        bcore_hmap_tp_st_s hmap_alias;
+
         bl_t exit_loop;
         st_s path;
         func :.reset             = { o.exit_loop = false; return o; };
@@ -287,7 +296,7 @@ func (d bcore_arr_tp_s* get_op_stamps( @* o ) ) =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (void help_to_sink( m @* o, m bcore_sink* sink )) =
+func (void help_to_sink( m @* o, :control_s* control, m bcore_sink* sink )) =
 {
     bcore_arr_tp_s^ op_groups;
     o.push_op_groups( op_groups );
@@ -313,6 +322,23 @@ func (void help_to_sink( m @* o, m bcore_sink* sink )) =
         table.table_to_sink( -1, 2, sink );
     }
 
+    if( control.hmap_alias.keys() > 0 )
+    {
+        sink.push_fa( "#p80'*'{******** #<sc_t> }\n", "ALIAS" );
+        bcore_arr_st_s^ table;
+        for( sz_t i = 0; i < control.hmap_alias.size(); i++ )
+        {
+            tp_t key = control.hmap_alias.idx_key( i );
+            if( key )
+            {
+                st_s* expression = control.hmap_alias.idx_val( i );
+                table.push_fa( "#<st_s*>", control.hmap_name.get( key ) );
+                table.push_fa( ": #<st_s*>", expression );
+            }
+        }
+        table.table_to_sink( -1, 2, sink );
+    }
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -321,24 +347,27 @@ signature void loop
 (
     m @* o,
     bcore_main_frame_s* frame,
-    m x_source* source,
-    m bcore_sink* sink,
     m bcore_shell_control_s* control
 );
 
 func loop =
 {
-    if( !control ) control = :control_s!.scope( control );
-    while( !source.eos() && !control.exit_loop() )
+    ASSERT( control );
+    while( !control.source.eos() && !control.exit_loop() )
     {
-        sink.push_fa( "\n#<sc_t>#<sc_t>(#<sc_t>)> ", control.path.sc, control.path.size ? " " : "", bnameof( o._ ) ).flush();
+        control.sink.push_fa( "\n#<sc_t>#<sc_t>(#<sc_t>)> ", control.path.sc, control.path.size ? " " : "", bnameof( o._ ) ).flush();
         control.reset();
 
-        st_s^ line;
-        source.parse_fa( " #until'\n'#skip'\n'", line.1 );
-        m$* line_source = x_source_create_from_st( line )^;
+        st_s^ expression;
+        control.source.parse_fa( " #until'\n'#skip'\n'", expression.1 );
+        if( control.hmap_alias.exists( btypeof( expression.sc ) ) )
+        {
+            expression.copy( control.hmap_alias.get( btypeof( expression.sc ) ) );
+        }
 
-        if( line.size > 0 )
+        m$* line_source = x_source_create_from_st( expression )^;
+
+        if( expression.size > 0 )
         {
             bl_t found = false;
 
@@ -347,9 +376,9 @@ func loop =
                 m :op* op = x_inst_t_create( t ).t_scope( t );
                 if( op.parse_match( line_source ) )
                 {
-                    if( op.parse_param( line_source, sink ) )
+                    if( op.parse_param( line_source, control.sink ) )
                     {
-                        op.run( o, frame, source, sink, control );
+                        op.run( o, frame, control.source, control.sink, control );
                     }
                     found = true;
                     break;
@@ -358,8 +387,8 @@ func loop =
 
             if( !found )
             {
-                sink.push_fa( "Syntax error.\n" );
-                o.help_to_sink( sink );
+                control.sink.push_fa( "Syntax error.\n" );
+                o.help_to_sink( control, control.sink );
             }
         }
     }
@@ -375,7 +404,7 @@ group :op_default = retrievable
     {
         func ::op.key = { return "?,help"; };
         func ::op.info = { return "Lists available commands"; };
-        func ::op.run = { obj.help_to_sink( sink ); };
+        func ::op.run = { obj.help_to_sink( control, sink ); };
     };
 
     stamp :ls_s =
@@ -460,7 +489,9 @@ group :op_default = retrievable
                 m $* control_child = control.spawn()^;
                 if( control_child.path.size ) control_child.path.push_sc( "|" );
                 control_child.path.push_st( o.path );
-                shell_o.loop( main_frame, source, sink, control_child );
+                control_child.source =< source.fork();
+                control_child.sink =< sink.fork();
+                shell_o.loop( main_frame, control_child );
             }
             else
             {
@@ -530,6 +561,46 @@ group :op_default = retrievable
             }
         };
     };
+
+    stamp :alias_s =
+    {
+        st_s key;
+        st_s expression;
+        func ::op.key  = { return "alias"; };
+        func ::op.info = { return "Defines an alias."; };
+        func ::op.run  =
+        {
+            if( o.key.size == 0 )
+            {
+                sink.push_fa( "No key defined.\n" );
+                return;
+            }
+            tp_t tp_key = control.hmap_name.set_st_c( o.key );
+            if( o.expression.size > 0 )
+            {
+                control.hmap_alias.set( tp_key, o.expression );
+            }
+            else
+            {
+                control.hmap_alias.remove( tp_key );
+            }
+        };
+    };
+
+    stamp :stdin_s =
+    {
+        func ::op.key = { return "stdin"; };
+        func ::op.info = { return "Sets shell-control source to stdin"; };
+        func ::op.run = { control.source =< x_source_stdin().fork(); };
+    };
+
+    stamp :stdout_s =
+    {
+        func ::op.key = { return "stdout"; };
+        func ::op.info = { return "Sets shell-control sink to stdout"; };
+        func ::op.run = { control.sink =< x_sink_stdout().fork(); };
+    };
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------

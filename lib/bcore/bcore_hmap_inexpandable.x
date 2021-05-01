@@ -59,7 +59,6 @@ group bcore_hmap_tpuz = bcore_inst
         private bl_t* flags;
         uz_t size;
         uz_t depth_limit;
-        uz_t size_limit;
 
         func  : .get;
         func  : .fget;
@@ -97,7 +96,6 @@ group bcore_hmap_tpfp = bcore_inst
         private bl_t* flags;
         uz_t size;
         uz_t depth_limit;
-        uz_t size_limit;
 
         func  : .get;
         func  : .fget;
@@ -134,7 +132,6 @@ group bcore_hmap_tptp = bcore_inst
         private bl_t* flags;
         uz_t size;
         uz_t depth_limit;
-        uz_t size_limit;
 
         func  : .get;
         func  : .fget;
@@ -171,7 +168,6 @@ group bcore_hmap_tpvd = bcore_inst
         private bl_t* flags;
         uz_t size;
         uz_t depth_limit;
-        uz_t size_limit;
 
         func  : .get;
         func  : .fget;
@@ -211,7 +207,6 @@ group bcore_hmap_tpto = bcore_inst
         private bl_t* flags;
         uz_t size;
         uz_t depth_limit;
-        uz_t size_limit;
 
         func  : .set_type;
         func  : .get;
@@ -242,7 +237,6 @@ group bcore_hmap_tp = bcore_inst
         private bl_t* flags;
         uz_t size;
         uz_t depth_limit;
-        uz_t size_limit;
 
         func  : .get;
         func  : .set;

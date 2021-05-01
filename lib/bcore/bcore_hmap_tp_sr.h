@@ -52,7 +52,6 @@ typedef struct bcore_hmap_tp_sr_s
     bl_t* flags;
     uz_t size;
     uz_t depth_limit;
-    uz_t size_limit;
 } bcore_hmap_tp_sr_s;
 
 BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tp_sr_s )

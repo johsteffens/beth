@@ -49,6 +49,7 @@
 #include "bcore_hmap.h"
 #include "bcore_hmap_tp_sr.h"
 #include "bcore_hmap_name.h"
+#include "bcore_hmap_tp_st.h"
 #include "bcore_st.h"
 #include "bcore_sc.h"
 #include "bcore_leaf.h"

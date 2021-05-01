@@ -488,6 +488,9 @@ func (:s) (void help_to_sink( m bcore_sink* sink )) =
 func (:s) bcore_main.main =
 {
     o.main_frame = frame;
+    m $* control = bcore_shell_control_s!^;
+    control.source =< frame.source.fork();
+    control.sink   =< frame.sink.fork();
 
     bl_t flag_reset = false;
     bl_t flag_start = false;
@@ -516,6 +519,10 @@ func (:s) bcore_main.main =
             else if( arg.equal_sc( "-start" ) || arg.equal_sc( "-continue" ) )
             {
                 flag_start = true;
+            }
+            else if( bcore_file_exists( arg.sc ) ) // expect a script file
+            {
+                control.source =< x_source_create_from_file( arg.sc );
             }
             else
             {
@@ -573,7 +580,7 @@ func (:s) bcore_main.main =
 
     if( !o.exit_required() )
     {
-        o.cast( m bcore_shell* ).loop( frame, frame.source, frame.sink, NULL );
+        o.cast( m bcore_shell* ).loop( frame, control );
     }
 
     o.log.push_fa( "\nSaving state at cycle #<sz_t>\n", o.state.cycle );

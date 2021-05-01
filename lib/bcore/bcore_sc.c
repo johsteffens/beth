@@ -481,8 +481,11 @@ uz_t sc_t_fnv( sd_t o, uz_t space, sc_t f, uz_t fsize, va_list* p_args )
                         case TYPEOF_st_s:
                         {
                             st_s* v = va_arg( *p_args, st_s* );
-                            ASSERT( *(aware_t*)v == TYPEOF_st_s );
-                            if( v ) sres = snprintf( dst, space, "%s", v->sc );
+                            if( v )
+                            {
+                                ASSERT( *(aware_t*)v == TYPEOF_st_s );
+                                sres = snprintf( dst, space, "%s", v->sc );
+                            }
                         }
                         break;
 
