@@ -72,7 +72,7 @@ sc_t  bcore_hmap_name_s_get_sc( const bcore_hmap_name_s* o, tp_t key )
 
 void bcore_hmap_name_s_remove( bcore_hmap_name_s* o, tp_t key )
 {
-    bcore_hmap_tp_sr_s_remove( &o->map, key );
+    sr_down( bcore_hmap_tp_sr_s_remove( &o->map, key ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
