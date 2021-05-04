@@ -225,6 +225,44 @@ group bcore_hmap_tpto = bcore_inst
 
 //----------------------------------------------------------------------------------------------------------------------
 
+stamp bcore_hnode_tpaw_s = obliv bcore_inst
+{
+    tp_t key;
+    vd_t val;
+};
+
+group bcore_hmap_tpaw = bcore_inst
+{
+    signature void  set_type( m @* o, tp_t type ); // sets type; resets array in case of type difference
+    signature m vd_t* get   ( c @* o, tp_t key ); // returns pointer to value or NULL when key does not exist
+    signature m vd_t* set_d ( m @* o, tp_t key, d x_inst* val ); // sets new key; assumed ownership; sets/overwrites value and returns pointer to value location
+    signature m vd_t* set_c ( m @* o, tp_t key, c x_inst* val ); // sets new key; copies val; sets/overwrites value and returns pointer to value location
+    signature void  remove  ( m @* o, tp_t key ); // removes key, destroys associated object (if present)
+    signature vd_t  idx_val ( c @* o, uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
+
+    stamp :s = aware bcore_inst
+    {
+        private bcore_hnode_tpaw_s* nodes;
+        private bl_t* flags;
+        uz_t size;
+        uz_t depth_limit;
+
+        func  : .set_type;
+        func  : .get;
+        func  : .set_d;
+        func  : .set_c;
+        func  : .remove;
+        func :: .exists;
+        func :: .clear;
+        func :: .keys;
+        func :: .size;
+        func :: .idx_key;
+        func  : .idx_val;
+    };
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 group bcore_hmap_tp = bcore_inst
 {
     signature uz_t get(      c @* o, tp_t key ); // returns index of key; if not existing, index is o->size

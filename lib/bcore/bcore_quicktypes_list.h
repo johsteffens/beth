@@ -73,6 +73,7 @@
 #define TYPEOF_bcore_hash_s                0x57EF6EA4EFC111B5ull
 #define TYPEOF_bcore_hmap_tp_s             0x09046DF16AACCE0Cull
 #define TYPEOF_bcore_hmap_tp_sr_s          0xAE83A642027D3024ull
+#define TYPEOF_bcore_hmap_tpaw_s           0xC548F8C429C030A4ull
 #define TYPEOF_bcore_hmap_tpfp_s           0xFAFC09CA90EE28B6ull
 #define TYPEOF_bcore_hmap_tpto_s           0xCEA13853E8F2A1C1ull
 #define TYPEOF_bcore_hmap_tptp_s           0xE4C7E55364804B78ull

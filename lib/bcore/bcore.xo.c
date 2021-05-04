@@ -1,4 +1,4 @@
-//  Last update: 2021-04-29T13:06:09Z
+//  Last update: 2021-05-04T17:05:53Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 ... 2021 J.B.Steffens
  *
@@ -26,6 +26,7 @@
  *  bcore_shell.h
  *  bcore_x_btml.h
  *  bcore_x_bbml.h
+ *  bcore_x_hmap.h
  *  bcore_arr_inexpandable.x
  *  bcore_flect_inexpandable.x
  *  bcore_hmap_inexpandable.x
@@ -34,6 +35,7 @@
  *  bcore_sr_inexpandable.x
  *  bcore_st_inexpandable.x
  *  bcore_via_inexpandable.x
+ *  bcore_x_hmap.x
  *
  */
 
@@ -44,7 +46,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0xCC6850DF6E9DC555ull
+// HKEYOF_bcore 0x87156B0198F1B312ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -945,8 +947,7 @@ XOILA_DEFINE_SPECT( bcore_inst, bcore_hmap_name )
 BCORE_DEFINE_OBJECT_INST_P( bcore_hmap_tp_st_s )
 "aware bcore_inst"
 "{"
-    "bcore_hmap_tpto_s map;"
-    "func bcore_inst_call:init_x;"
+    "bcore_hmap_tpaw_s map;"
 "}";
 
 XOILA_DEFINE_SPECT( x_inst, bcore_hmap_tp_st )
@@ -3013,7 +3014,6 @@ void x_btml_t_test_transfer( const x_btml* o, tp_t t )
     BLM_INIT_LEVEL(0);
     st_s* string = st_s_create();
     x_btml_t_to_sink(o,t,((x_sink*)( string )));
-    
     x_source* source = ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st_d(string )));
     
     x_btml* o2 =((x_btml*)( x_inst_t_create(t )));
@@ -3043,7 +3043,7 @@ void x_btml_t_test_transfer( const x_btml* o, tp_t t )
 
 void x_btml_selftest( void )
 {
-    // bcore_x_btml.h:604:1
+    // bcore_x_btml.h:603:1
     BLM_INIT_LEVEL(0);
     sr_s zoo;BLM_T_INIT_SPUSH(sr_s, &zoo);; zoo = bcore_spect_via_create_zoo( 1000 );
     
@@ -3391,6 +3391,292 @@ void x_bbml_selftest( void )
 }
 
 /**********************************************************************************************************************/
+// source: bcore_x_hmap.h
+#include "bcore_x_hmap.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_hmap; embeds: bcore_x_hmap.x
+
+XOILA_DEFINE_SPECT( x_inst, x_hmap )
+"{"
+    "bcore_spect_header_s header;"
+"}";
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_hmap_tp
+
+BCORE_DEFINE_OBJECT_INST_P( x_hmap_tp_s )
+"aware x_hmap_tp"
+"{"
+    "bcore_hmap_tpaw_s map;"
+"}";
+
+bcore_arr_tp_s* x_hmap_tp_s_get_key_arr( const x_hmap_tp_s* o, bcore_arr_tp_s* key_arr )
+{
+    // bcore_x_hmap.h:95:5
+    
+    bcore_arr_tp_s_set_size(key_arr,0 );
+    sz_t size = x_hmap_tp_s_size(o);
+    tp_t key = 0;
+    for(sz_t i = 0; i < size; i++ ) if( (key = x_hmap_tp_s_idx_key(o,i )) ) bcore_arr_tp_s_push(key_arr,key );
+    return  key_arr;
+}
+
+x_array* x_hmap_tp_s_m_get_val_arr( x_hmap_tp_s* o, x_array* val_arr )
+{
+    // bcore_x_hmap.h:104:5
+    
+    x_array_set_size(val_arr,0 );
+    sz_t size = x_hmap_tp_s_size(o);
+    for(sz_t i = 0; i < size; i++ ) if( x_hmap_tp_s_idx_key(o,i ) ) x_array_push_d(val_arr,((x_inst*)bcore_fork(x_hmap_tp_s_m_idx_val(o,i ))) );
+    return  val_arr;
+}
+
+x_array* x_hmap_tp_s_c_get_val_arr( const x_hmap_tp_s* o, x_array* val_arr )
+{
+    // bcore_x_hmap.h:112:5
+    
+    x_array_set_size(val_arr,0 );
+    sz_t size = x_hmap_tp_s_size(o);
+    for(sz_t i = 0; i < size; i++ ) if( x_hmap_tp_s_idx_key(o,i ) ) x_array_push_d(val_arr,x_inst_clone(x_hmap_tp_s_c_idx_val(o,i )) );
+    return  val_arr;
+}
+
+BCORE_DEFINE_OBJECT_INST_P( x_hmap_tp_st_s )
+"aware x_hmap_tp"
+"{"
+    "x_hmap_tp_s map;"
+"}";
+
+st_s* x_hmap_tp_st_s_create_st_status( const x_hmap_tp_st_s* o )
+{
+    // bcore_x_hmap.x:23:1
+    
+    st_s* string = st_s_create();
+    st_s_push_fa(string,"keys ........... #<sz_t>\n", x_hmap_tp_keys(((const x_hmap_tp*)(o))) );
+    st_s_push_fa(string,"nodes .......... #<sz_t>\n", x_hmap_tp_size(((const x_hmap_tp*)(o))) );
+    st_s_push_fa(string,"keys/nodes ..... #<f3_t>\n", x_hmap_tp_size(((const x_hmap_tp*)(o))) > 0 ? ( f3_t )( x_hmap_tp_keys(((const x_hmap_tp*)(o))) ) / x_hmap_tp_size(((const x_hmap_tp*)(o))) : 0 );
+    return  string;
+}
+
+XOILA_DEFINE_SPECT( x_hmap, x_hmap_tp )
+"{"
+    "bcore_spect_header_s header;"
+"}";
+
+x_hmap_tp_s* x_hmap_tp_m_map_( x_hmap_tp* o )
+{
+    // bcore_x_hmap.h:122:5
+    
+    assert( x_stamp_is_aware(((const x_stamp*)(o))) );
+    x_inst* map = x_stamp_m_get_i(((x_stamp*)(o)),0 );
+    if( !map || map->_ != TYPEOF_x_hmap_tp_s ) ERR_fa( "First element of '#<sc_t>' must be of type '#<sc_t>'", bnameof( o->_ ), bnameof( ((tp_t)(TYPEOF_x_hmap_tp_s)) ) );
+    return  ((x_hmap_tp_s*)(map));
+}
+
+const x_hmap_tp_s* x_hmap_tp_c_map_( const x_hmap_tp* o )
+{
+    // bcore_x_hmap.h:130:5
+    
+    assert( x_stamp_is_aware(((const x_stamp*)(o))) );
+    const x_inst* map = x_stamp_c_get_i(((const x_stamp*)(o)),0 );
+    if( !map || map->_ != TYPEOF_x_hmap_tp_s ) ERR_fa( "First element of '#<sc_t>' must be of type '#<sc_t>'", bnameof( o->_ ), bnameof( ((tp_t)(TYPEOF_x_hmap_tp_s)) ) );
+    return  ((const x_hmap_tp_s*)(map));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_hmap_tp_test
+
+BCORE_DEFINE_OBJECT_INST_P( x_hmap_tp_test_kv_s )
+"x_hmap_tp_test"
+"{"
+    "tp_t key;"
+    "u3_t val;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( x_hmap_tp_test_kv_arr_s )
+"aware x_array"
+"{"
+    "x_hmap_tp_test_kv_s [];"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( x_hmap_tp_test_val_s )
+"aware x_hmap_tp_test"
+"{"
+    "u3_t val;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( x_hmap_tp_test_map_s )
+"aware x_hmap_tp"
+"{"
+    "x_hmap_tp_s map;"
+"}";
+
+st_s* x_hmap_tp_test_map_s_create_st_status( const x_hmap_tp_test_map_s* o )
+{
+    // bcore_x_hmap.x:44:5
+    
+    st_s* string = st_s_create();
+    st_s_push_fa(string,"keys ........... #<sz_t>\n", x_hmap_tp_keys(((const x_hmap_tp*)(o))) );
+    st_s_push_fa(string,"nodes .......... #<sz_t>\n", x_hmap_tp_size(((const x_hmap_tp*)(o))) );
+    st_s_push_fa(string,"keys/nodes ..... #<f3_t>\n", x_hmap_tp_size(((const x_hmap_tp*)(o))) > 0 ? ( f3_t )( x_hmap_tp_keys(((const x_hmap_tp*)(o))) ) / x_hmap_tp_size(((const x_hmap_tp*)(o))) : 0 );
+    return  string;
+}
+
+XOILA_DEFINE_SPECT( x_hmap, x_hmap_tp_test )
+"{"
+    "bcore_spect_header_s header;"
+"}";
+
+void x_hmap_tp_test_selftest( void )
+{
+    // bcore_x_hmap.x:55:5
+    BLM_INIT_LEVEL(0);
+    x_sink* log = x_sink_stdout();
+    ((x_sink*)(x_sink_push_fa(log,"#p80'='{== #<sc_t>_selftest }\n", bnameof( ((tp_t)(TYPEOF_x_hmap_tp_test)) ) )));
+    
+    sz_t cycles = 200000;
+    
+    x_hmap_tp_test_map_s* map    = ((x_hmap_tp_test_map_s*)BLM_LEVEL_T_PUSH(0,x_hmap_tp_test_map_s,x_hmap_tp_test_map_s_create()));
+    x_hmap_tp_test_kv_arr_s* kv_arr = ((x_hmap_tp_test_kv_arr_s*)BLM_LEVEL_T_PUSH(0,x_hmap_tp_test_kv_arr_s,x_hmap_tp_test_kv_arr_s_create()));
+    ((x_hmap_tp_test_kv_arr_s*)(x_array_set_space(((x_array*)(kv_arr)),cycles )));
+    
+    clock_t time = clock();
+    ((x_sink*)(x_sink_push_fa(log,"Mixed access: " )));
+    
+    x_hmap_tp_test_val_s mval;BLM_T_INIT_SPUSH(x_hmap_tp_test_val_s, &mval);;
+    
+    {
+        u3_t rval1 = 1;
+        u3_t rval2 = 12345;
+        for(sz_t i = 0; i < cycles; i++ )
+        {
+            rval1 = bcore_lcg00_u3( rval1 );
+            rval2 = bcore_lcg00_u3( rval2 );
+            x_hmap_tp_test_kv_s* kv = ((x_hmap_tp_test_kv_s*)(x_array_push(((x_array*)(kv_arr)))));
+            kv->key = ( tp_t )rval1;
+            kv->val = rval2;
+            mval.val = kv->val;
+            ((x_hmap_tp_test_val_s*)(x_hmap_tp_set_c(((x_hmap_tp*)(map)),kv->key,((const x_inst*)(&( mval ))))));
+    
+            // retrieve
+            rval1 = bcore_lcg00_u3( rval1 );
+            kv = (&(kv_arr->data[ rval1 % kv_arr->size ]));
+    
+            u3_t val = ((const x_hmap_tp_test_val_s*)(x_hmap_tp_c_get(((const x_hmap_tp*)(map)),kv->key )))->val;
+            if( kv->val != val ) ERR_fa( "value mismatch (#<u3_t> vs #<u3_t>)", kv->val, val );
+    
+            // delete
+            rval1 = bcore_lcg00_u3( rval1 );
+            if( ( ( rval1 >> 10 ) & 1 ) == 1 )
+            {
+                rval1 = bcore_lcg00_u3( rval1 );
+                sz_t idx = rval1 % kv_arr->size;
+                const x_hmap_tp_test_kv_s* kv =&( kv_arr->data[ idx ]);
+                if( !((const x_hmap_tp_test_val_s*)(x_hmap_tp_c_get(((const x_hmap_tp*)(map)),kv->key ))) ) ERR_fa( "key #<tp_t> not found", kv->key );
+                ((x_hmap_tp_test_map_s*)(x_hmap_tp_remove(((x_hmap_tp*)(map)),kv->key )));
+                if( ((const x_hmap_tp_test_val_s*)(x_hmap_tp_c_get(((const x_hmap_tp*)(map)),kv->key ))) )  ERR_fa( "deleted key #<tp_t> still exists", kv->key );
+                kv_arr->data[ idx ] = kv_arr->data[ kv_arr->size - 1 ];
+                ((x_hmap_tp_test_kv_arr_s*)(x_array_set_size(((x_array*)(kv_arr)),kv_arr->size - 1 )));
+            }
+        }
+    }
+    
+    time = clock() - time;
+    ((x_sink*)(x_sink_push_fa(log,"#<f3_t>s\n", ( f3_t )time/CLOCKS_PER_SEC )));
+    ((x_sink*)(x_sink_push_st_d(log,x_hmap_tp_test_map_s_create_st_status(map) )));
+    
+    time = clock();
+    const x_hmap_tp_test_map_s* map_cloned = ((x_hmap_tp_test_map_s*)BLM_LEVEL_T_PUSH(0,x_hmap_tp_test_map_s,x_hmap_tp_test_map_s_clone(map)));
+    time = clock() - time;
+    ((x_sink*)(x_sink_push_fa(log,"Clone .......... #<f3_t>s\n", ( f3_t )time/CLOCKS_PER_SEC )));
+    
+    time = clock();
+    if( bcore_compare_aware( map, map_cloned ) != 0 )
+    {
+        ERR( "comparison failed:\n%s", bcore_diff_aware( map, map_cloned )->sc );
+    }
+    
+    time = clock() - time;
+    ((x_sink*)(x_sink_push_fa(log,"Comparison ..... #<f3_t>s\n", ( f3_t )time/CLOCKS_PER_SEC )));
+    
+    {BLM_INIT_LEVEL(1);
+        time = clock();
+        x_hmap_tp_test_map_s* map_trans = ((x_hmap_tp_test_map_s*)BLM_LEVEL_T_PUSH(1,x_hmap_tp_test_map_s,x_hmap_tp_test_map_s_create()));
+        x_stamp_set_sr(((x_stamp*)(map_trans)),btypeof( "map" ), x_stamp_c_get_sr(((x_stamp*)(map)),btypeof( "map" ) ) );
+        time = clock() - time;
+        ((x_sink*)(x_sink_push_fa(log,"Stamp-assign ... #<f3_t>s\n", ( f3_t )time/CLOCKS_PER_SEC )));
+        time = clock();
+        sz_t map_size = x_hmap_tp_size(((const x_hmap_tp*)(map)));
+        for(uz_t i = 0; i < map_size; i++ )
+        {
+            tp_t key = x_hmap_tp_idx_key(((const x_hmap_tp*)(map)),i );
+            if( key != 0 )
+            {
+                ASSERT( x_hmap_tp_exists(((const x_hmap_tp*)(map_trans)),key ) );
+                ASSERT( ((const x_hmap_tp_test_val_s*)(x_hmap_tp_c_get(((const x_hmap_tp*)(map)),key )))->val == ((const x_hmap_tp_test_val_s*)(x_hmap_tp_c_get(((const x_hmap_tp*)(map_trans)),key )))->val );
+            }
+        }
+        time = clock() - time;
+        ((x_sink*)(x_sink_push_fa(log,"verify assign .. #<f3_t>s\n", ( f3_t )time/CLOCKS_PER_SEC )));
+    BLM_DOWN();}
+    
+    {BLM_INIT_LEVEL(1);
+        time = clock();
+        x_hmap_tp_test_map_s* map_trans = ((x_hmap_tp_test_map_s*)BLM_LEVEL_T_PUSH(1,x_hmap_tp_test_map_s,x_hmap_tp_test_map_s_create()));
+        st_s* buf = st_s_create();
+        x_bbml_to_sink(((const x_bbml*)(map)),((x_sink*)(buf )));
+        BLM_TRY_EXIT(x_bbml_from_source(((x_bbml*)(map_trans)),((x_source*)BLM_LEVEL_A_PUSH(1,x_source_create_from_st_d(buf ))) ))
+        time = clock() - time;
+        ((x_sink*)(x_sink_push_fa(log,"BBML Transfer .. #<f3_t>s\n", ( f3_t )time/CLOCKS_PER_SEC )));
+        time = clock();
+        sz_t map_size = x_hmap_tp_size(((const x_hmap_tp*)(map)));
+        for(uz_t i = 0; i < map_size; i++ )
+        {
+            tp_t key = x_hmap_tp_idx_key(((const x_hmap_tp*)(map)),i );
+            if( key != 0 )
+            {
+                ASSERT( x_hmap_tp_exists(((const x_hmap_tp*)(map_trans)),key ) );
+                ASSERT( ((const x_hmap_tp_test_val_s*)(x_hmap_tp_c_get(((const x_hmap_tp*)(map)),key )))->val == ((const x_hmap_tp_test_val_s*)(x_hmap_tp_c_get(((const x_hmap_tp*)(map_trans)),key )))->val );
+            }
+        }
+        time = clock() - time;
+        ((x_sink*)(x_sink_push_fa(log,"verify transfer  #<f3_t>s\n", ( f3_t )time/CLOCKS_PER_SEC )));
+    BLM_DOWN();}
+    
+    time = clock();
+    ((x_sink*)(x_sink_push_fa(log,"\nRead-access of #<sz_t> keys: ", kv_arr->size )));
+    uz_t read_cycles = 20;
+    for(uz_t j = 0; j < read_cycles; j++ )
+    {
+        for(uz_t i = 0; i < kv_arr->size; i++ )
+        {
+            u3_t val = ((const x_hmap_tp_test_val_s*)(x_hmap_tp_c_get(((const x_hmap_tp*)(map)),kv_arr->data[ i ].key )))->val;
+            if( val != kv_arr->data[ i ].val ) ERR_fa( "value mismatch (#<u3_t> vs #<u3_t>)", val, kv_arr->data[ i ].val );
+        }
+    }
+    time = clock() - time;
+    ((x_sink*)(x_sink_push_fa(log,"(#<f3_t> per access)\n", ( ( f3_t )time/CLOCKS_PER_SEC ) / ( kv_arr->size * read_cycles ) )));
+    
+    ((x_sink*)(x_sink_push_fa(log,"\n" )));
+    ((x_sink*)(x_sink_push_fa(log,"Removal: " )));
+    time = clock();
+    while( kv_arr->size )
+    {
+        const x_hmap_tp_test_kv_s* kv =&( kv_arr->data[ kv_arr->size - 1 ]);
+        if( !((const x_hmap_tp_test_val_s*)(x_hmap_tp_c_get(((const x_hmap_tp*)(map)),kv->key ))) ) ERR_fa( "key #<tp_t> not found", kv->key );
+        ((x_hmap_tp_test_map_s*)(x_hmap_tp_remove(((x_hmap_tp*)(map)),kv->key )));
+        if( ((const x_hmap_tp_test_val_s*)(x_hmap_tp_c_get(((const x_hmap_tp*)(map)),kv->key ))) ) ERR_fa( "deleted key #<tp_t> still exists", kv->key );
+        ((x_hmap_tp_test_kv_arr_s*)(x_array_set_size(((x_array*)(kv_arr)),kv_arr->size - 1 )));
+    }
+    time = clock() - time;
+    ((x_sink*)(x_sink_push_fa(log,"(#<f3_t>s)\n", ( f3_t )time/CLOCKS_PER_SEC )));
+    ((x_sink*)(x_sink_push_st_d(log,x_hmap_tp_test_map_s_create_st_status(map) )));
+    ((x_sink*)(x_sink_push_fa(log,"#r80{=}\n" )));
+    BLM_DOWN();
+}
+
+/**********************************************************************************************************************/
 
 
 vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
@@ -3515,7 +3801,6 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             // source: bcore_hmap_tp_st.h
 
             // group: bcore_hmap_tp_st
-            BCORE_REGISTER_FFUNC( bcore_inst_call_init_x, bcore_hmap_tp_st_s_init_x );
             BCORE_REGISTER_OBJECT( bcore_hmap_tp_st_s );
             XOILA_REGISTER_SPECT( bcore_hmap_tp_st );
 
@@ -3833,11 +4118,29 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FEATURE( x_bbml_feature_body_from_source );
             BCORE_REGISTER_FEATURE( x_bbml_feature_body_to_sink );
             XOILA_REGISTER_SPECT( x_bbml );
+
+            // --------------------------------------------------------------------
+            // source: bcore_x_hmap.h
+
+            // group: x_hmap
+            XOILA_REGISTER_SPECT( x_hmap );
+
+            // group: x_hmap_tp
+            BCORE_REGISTER_OBJECT( x_hmap_tp_s );
+            BCORE_REGISTER_OBJECT( x_hmap_tp_st_s );
+            XOILA_REGISTER_SPECT( x_hmap_tp );
+
+            // group: x_hmap_tp_test
+            BCORE_REGISTER_OBJECT( x_hmap_tp_test_kv_s );
+            BCORE_REGISTER_OBJECT( x_hmap_tp_test_kv_arr_s );
+            BCORE_REGISTER_OBJECT( x_hmap_tp_test_val_s );
+            BCORE_REGISTER_OBJECT( x_hmap_tp_test_map_s );
+            XOILA_REGISTER_SPECT( x_hmap_tp_test );
         }
         break;
         default: break;
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x14D27D8F810C677D
-// XOICO_FILE_SIGNATURE 0xA5B5025440103CA6
+// XOICO_BODY_SIGNATURE 0x64EAD00BDED14C1C
+// XOICO_FILE_SIGNATURE 0x21D5AEB0C8C2B5F5

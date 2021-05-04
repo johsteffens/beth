@@ -1,4 +1,4 @@
-/** Author and Copyright 2019 Johannes Bernhard Steffens
+/** Author and Copyright 2021 Johannes Bernhard Steffens
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,11 +24,12 @@
 #include "bcore_trait.h"
 #include "bcore.xo.h"
 #include "bcore_hmap.h"
+#include "bcore_x_inst.h"
 
 /**********************************************************************************************************************/
 
 XOILA_DEFINE_GROUP( bcore_hmap_tp_st, x_inst )
-#ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#ifdef XOILA_SECTION
 
 signature c st_s* get    ( c@* o, tp_t key ); // returns pointer to value or NULL when key does not exist
 signature m st_s* set    ( m@* o, tp_t key, c st_s* val ); // sets (overwrites) key-value
@@ -45,8 +46,7 @@ signature c st_s* idx_val( c@* o, sz_t idx ); // returns indexed value (idx inde
 
 stamp :s = aware bcore_inst
 {
-    bcore_hmap_tpto_s map;
-    func bcore_inst_call.init_x = { o.map.set_type( TYPEOF_st_s ); };
+    bcore_hmap_tpaw_s map;
     func :.get     = { st_s** p_st = o.map.get( key ).cast( st_s** ); return p_st ? p_st.1 : NULL; };
     func :.set_d   = { return o.map.set_d( key, val ).cast( m st_s* ); };
     func :.set     = { return o.set_d( key, val.clone() ); };
@@ -60,7 +60,9 @@ stamp :s = aware bcore_inst
     func :.idx_val = { return o.map.idx_val( idx ).cast( st_s* ); };
 };
 
-#endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+func (void selftest());
+
+#endif
 
 /**********************************************************************************************************************/
 

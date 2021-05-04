@@ -311,6 +311,50 @@ vd_t  bcore_hmap_tpto_s_idx_val( const bcore_hmap_tpto_s* o, uz_t idx ); // retu
 
 /**********************************************************************************************************************/
 
+/** bcore_hmap_tpaw_s: maps keys to aware object
+ *    key-type: tp_t
+ *    val-type: vd_t. (aware, owned)
+ *    shell: { { tp_t key; aware => val; } []; } data;
+ *
+ *  Routines cache the perspective instead querying it for each type.
+ *  Hence, if most or all elements are of the same type, performance runs close to hmap_tpto
+ *  This map is well suited for use in generic mapping of aware types.
+ */
+typedef struct bcore_hnode_tpaw_s
+{
+    tp_t key;
+    vd_t val;
+} bcore_hnode_tpaw_s;
+
+typedef struct bcore_hmap_tpaw_s
+{
+    aware_t _;
+    bcore_hnode_tpaw_s* nodes;
+    bl_t* flags;
+    uz_t size;
+    uz_t depth_limit;
+} bcore_hmap_tpaw_s;
+
+BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tpaw_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bcore_hmap_tpaw_s )
+BCORE_DECLARE_FUNCTION_COPY(    bcore_hmap_tpaw_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bcore_hmap_tpaw_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_tpaw_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_tpaw_s )
+
+vd_t* bcore_hmap_tpaw_s_get(     const bcore_hmap_tpaw_s* o, tp_t key ); // returns pointer to value or NULL when key does not exist
+vd_t* bcore_hmap_tpaw_s_set_c(         bcore_hmap_tpaw_s* o, tp_t key, vc_t val ); // sets new key; sets/overwrites value and returns pointer to value location
+vd_t* bcore_hmap_tpaw_s_set_d(         bcore_hmap_tpaw_s* o, tp_t key, vd_t val ); // sets new key; sets/overwrites value and returns pointer to value location
+void  bcore_hmap_tpaw_s_remove(        bcore_hmap_tpaw_s* o, tp_t key ); // removes key, destroys associated object (if present)
+bl_t  bcore_hmap_tpaw_s_exists(  const bcore_hmap_tpaw_s* o, tp_t key ); // checks if key exists
+void  bcore_hmap_tpaw_s_clear(         bcore_hmap_tpaw_s* o           ); // removes all entries and frees memory
+uz_t  bcore_hmap_tpaw_s_keys(    const bcore_hmap_tpaw_s* o           ); // returns number of registered keys
+uz_t  bcore_hmap_tpaw_s_size(    const bcore_hmap_tpaw_s* o           ); // returns current size of the hash map (note that this includes empty places)
+tp_t  bcore_hmap_tpaw_s_idx_key( const bcore_hmap_tpaw_s* o, uz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
+vd_t  bcore_hmap_tpaw_s_idx_val( const bcore_hmap_tpaw_s* o, uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
+
+/**********************************************************************************************************************/
+
 /** bcore_hmap_tp_s:  maps a key to automatic index
  *    key-type: tp_t
  *    val-type: no explicit value

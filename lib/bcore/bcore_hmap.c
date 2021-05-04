@@ -3050,6 +3050,359 @@ static st_s* hmap_tpto_selftest( void )
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+// bcore_hmap_tpaw_s
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_hmap_tpaw_s_init( bcore_hmap_tpaw_s* o )
+{
+    bcore_memzero( o, sizeof( *o ) );
+    o->_ = TYPEOF_bcore_hmap_tpaw_s;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_hmap_tpaw_s_down( bcore_hmap_tpaw_s* o )
+{
+    if( o->size > 0 )
+    {
+        const bcore_inst_s* inst_p = NULL;
+        for( uz_t i = 0; i < o->size; i++ )
+        {
+            if( o->nodes[ i ].val )
+            {
+                vd_t val = o->nodes[ i ].val;
+                tp_t type = *(aware_t*)val;
+                if( !inst_p || inst_p->header.o_type != type ) inst_p = bcore_inst_s_get_typed( type );
+                bcore_inst_p_discard( inst_p, val );
+            }
+        }
+    }
+    o->nodes = bcore_alloc( o->nodes, 0 );
+    o->flags = bcore_alloc( o->flags, 0 );
+    o->size  = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_hmap_tpaw_s_copy( bcore_hmap_tpaw_s* o, const bcore_hmap_tpaw_s* src )
+{
+    const bcore_inst_s* inst_p = NULL;
+    for( uz_t i = 0; i < o->size; i++ )
+    {
+        if( o->nodes[ i ].val )
+        {
+            vd_t val = o->nodes[ i ].val;
+            tp_t type = *(aware_t*)val;
+            if( !inst_p || inst_p->header.o_type != type ) inst_p = bcore_inst_s_get_typed( type );
+            bcore_inst_p_discard( inst_p, val );
+        }
+    }
+    o->nodes = bcore_alloc( o->nodes, 0 );
+    o->flags = bcore_alloc( o->flags, 0 );
+    o->size  = 0;
+
+    o->nodes = bcore_u_memzero( sizeof( bcore_hnode_tpaw_s ), o->nodes, src->size );
+    for( uz_t i = 0; i < src->size; i++ )
+    {
+        const bcore_hnode_tpaw_s* src_node = &src->nodes[ i ];
+              bcore_hnode_tpaw_s* dst_node =   &o->nodes[ i ];
+
+        dst_node->key = src_node->key;
+        if( src_node->val )
+        {
+            vd_t val = src_node->val;
+            tp_t type = *(aware_t*)val;
+            if( !inst_p || inst_p->header.o_type != type ) inst_p = bcore_inst_s_get_typed( type );
+            dst_node->val = bcore_inst_p_clone( inst_p, src_node->val );
+        }
+    }
+
+    o->size = src->size;
+    o->depth_limit = src->depth_limit;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_hmap_tpaw_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_hmap_tpaw_s )
+BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tpaw_s )
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static uz_t tpaw_find( const bcore_hmap_tpaw_s* o, tp_t key ) // returns valid index or o->size
+{
+    if( o->size == 0 ) return o->size;
+    uz_t mask = o->size - 1;
+    uz_t idx = hash_tpu3_1( key ) & mask;
+    if( o->nodes[ idx ].key == key ) return idx;
+    idx = hash_tpu3_2( key ) & mask;
+    if( o->nodes[ idx ].key == key ) return idx;
+    return o->size;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+uz_t tpaw_set( bcore_hmap_tpaw_s* o, bcore_hnode_tpaw_s node, uz_t depth ) // sets new node, returns valid index on success; o->size otherwise
+{
+    uz_t size = o->size;
+    if( size == 0 ) return size;
+    uz_t mask = o->size - 1;
+
+    if( depth == o->depth_limit ) return size;
+
+    uz_t idx1 = hash_tpu3_1( node.key ) & mask;
+    if( !o->nodes[ idx1 ].key )
+    {
+        o->nodes[ idx1 ] = node;
+        return idx1;
+    }
+
+    uz_t idx2 = hash_tpu3_2( node.key ) & mask;
+    if( !o->nodes[ idx2 ].key )
+    {
+        o->nodes[ idx2 ] = node;
+        return idx2;
+    }
+
+    if( !o->flags ) o->flags = bcore_u_memzero( sizeof( bl_t ), NULL, size );
+
+    if( !o->flags[ idx1 ] )
+    {
+        o->flags[ idx1 ] = true;
+        if( tpaw_set( o, o->nodes[ idx1 ], depth + 1 ) < size )
+        {
+            o->flags[ idx1 ] = false;
+            o->nodes[ idx1 ] = node;
+            return idx1;
+        }
+        o->flags[ idx1 ] = false;
+    }
+
+    if( !o->flags[ idx2 ] )
+    {
+        o->flags[ idx2 ] = true;
+        if( tpaw_set( o, o->nodes[ idx2 ], depth + 1 ) < size )
+        {
+            o->flags[ idx2 ] = false;
+            o->nodes[ idx2 ] = node;
+            return idx2;
+        }
+        o->flags[ idx2 ] = false;
+    }
+
+    return size;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+vd_t* bcore_hmap_tpaw_s_get( const bcore_hmap_tpaw_s* o, tp_t key )
+{
+    if( !key ) return NULL;
+    uz_t idx = tpaw_find( o, key );
+    return ( idx < o->size ) ? &o->nodes[ idx ].val : NULL;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+vd_t* bcore_hmap_tpaw_s_set_d( bcore_hmap_tpaw_s* o, tp_t key, vd_t val )
+{
+    if( !key ) ERR( "key is zero" );
+
+    uz_t idx = tpaw_find( o, key );
+    if( idx < o->size )
+    {
+        if( o->nodes[ idx ].val ) bcore_inst_a_discard( val );
+        o->nodes[ idx ].val = val;
+        return &o->nodes[ idx ].val;
+    }
+
+    idx = tpaw_set( o, ( bcore_hnode_tpaw_s ){ .key = key, .val = val }, 1 );
+    if( idx < o->size ) return &o->nodes[ idx ].val;
+
+    // rehash
+    {
+        o->flags = bcore_u_alloc( sizeof( bl_t ), o->flags, 0, NULL );
+        bcore_hnode_tpaw_s* buf_nodes = o->nodes;
+        uz_t  buf_size = o->size;
+        o->depth_limit = ( o->size > 0 ) ? o->depth_limit + 1 : 4;
+        o->size        = ( o->size > 0 ) ? o->size * 2        : 8;
+        o->nodes = bcore_u_memzero( sizeof( bcore_hnode_tpaw_s ), NULL, o->size );
+        for( uz_t i = 0; i < buf_size; i++ )
+        {
+            if( buf_nodes[ i ].key ) bcore_hmap_tpaw_s_set_d( o, buf_nodes[ i ].key, buf_nodes[ i ].val );
+        }
+        bcore_alloc( buf_nodes, 0 ); // rehashing does not destroy any object (only rearranges nodes)
+    }
+
+    return bcore_hmap_tpaw_s_set_d( o, key, val );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+vd_t* bcore_hmap_tpaw_s_set_c( bcore_hmap_tpaw_s* o, tp_t key, vc_t val )
+{
+    if( val )
+    {
+        return bcore_hmap_tpaw_s_set_d( o, key, bcore_inst_a_clone( val ) );
+    }
+    else
+    {
+        return bcore_hmap_tpaw_s_set_d( o, key, NULL );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_hmap_tpaw_s_remove( bcore_hmap_tpaw_s* o, tp_t key )
+{
+    if( !key ) return;
+    uz_t idx = tpaw_find( o, key );
+    if( idx < o->size )
+    {
+        if( o->nodes[ idx ].val ) bcore_inst_a_discard( o->nodes[ idx ].val );
+        o->nodes[ idx ].key = 0;
+        o->nodes[ idx ].val = 0;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t bcore_hmap_tpaw_s_exists( const bcore_hmap_tpaw_s* o, tp_t key )
+{
+    if( !key ) return false;
+    uz_t idx = tpaw_find( o, key );
+    return ( idx < o->size );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_hmap_tpaw_s_clear( bcore_hmap_tpaw_s* o )
+{
+    const bcore_inst_s* inst_p = NULL;
+    for( uz_t i = 0; i < o->size; i++ )
+    {
+        if( o->nodes[ i ].val )
+        {
+            vd_t val = o->nodes[ i ].val;
+            tp_t type = *(aware_t*)val;
+            if( !inst_p || inst_p->header.o_type != type ) inst_p = bcore_inst_s_get_typed( type );
+            bcore_inst_p_discard( inst_p, val );
+        }
+    }
+    o->nodes = bcore_alloc( o->nodes, 0 );
+    o->flags = bcore_alloc( o->flags, 0 );
+    o->size  = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+uz_t bcore_hmap_tpaw_s_keys( const bcore_hmap_tpaw_s* o )
+{
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->size; i++ ) count += ( o->nodes[ i ].key > 0 );
+    return count;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+uz_t bcore_hmap_tpaw_s_size( const bcore_hmap_tpaw_s* o )
+{
+    return o->size;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+tp_t bcore_hmap_tpaw_s_idx_key( const bcore_hmap_tpaw_s* o, uz_t idx )
+{
+    assert( idx < o->size );
+    return o->nodes[ idx ].key;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+vd_t bcore_hmap_tpaw_s_idx_val( const bcore_hmap_tpaw_s* o, uz_t idx )
+{
+    assert( idx < o->size );
+    return o->nodes[ idx ].val;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static sr_s tpaw_s_get_data( const bcore_hmap_tpaw_s* o )
+{
+    tp_t t_data = bcore_flect_type_parse_sc( "{ { tp_t key; aware => obj; } [] arr; }" );
+    sr_s data = sr_create( t_data );
+    struct { tp_t key; vd_t obj; } node;
+    tp_t t_node = bcore_array_r_get_static_type( &data );
+
+    for( uz_t i = 0; i < o->size; i++ )
+    {
+        if( o->nodes[ i ].key )
+        {
+            node.key = o->nodes[ i ].key;
+            node.obj = o->nodes[ i ].val;
+            bcore_array_r_push( &data, sr_twc( t_node, &node ) );
+        }
+    }
+
+    return data;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void tpaw_s_set_data( bcore_hmap_tpaw_s* o, sr_s data )
+{
+    bcore_hmap_tpaw_s_clear( o );
+    assert( sr_s_type( &data ) == bcore_flect_type_parse_sc( "{ { tp_t key; aware => obj; } [] arr; }" ) );
+
+    uz_t size = bcore_array_r_get_size( &data );
+    if( sr_s_is_strong( &data ) )
+    {
+        struct { tp_t key; vd_t obj; }* src = bcore_array_r_get_d_data( &data );
+        for( uz_t i = 0; i < size; i++ )
+        {
+            bcore_hmap_tpaw_s_set_d( o, src[ i ].key, src[ i ].obj );
+            src[ i ].obj = NULL;
+        }
+    }
+    else
+    {
+        const struct { tp_t key; vd_t obj; }* src = bcore_array_r_get_c_data( &data );
+        for( uz_t i = 0; i < size; i++ )
+        {
+            bcore_hmap_tpaw_s_set_d( o, src[ i ].key, bcore_inst_a_clone( src[ i ].obj ) );
+        }
+    }
+    sr_down( data );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static bcore_self_s* hmap_tpaw_s_create_self( void )
+{
+    sc_t def = "\
+        bcore_hmap_tpaw_s = bcore_inst \
+            { \
+                aware_t _; \
+                private vd_t* nodes; \
+                private bl_t* flags; \
+                private uz_t size; \
+                private uz_t depth_limit; \
+                shell { { tp_t key; aware => obj; } []; } data; } \
+            }";
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( def, bcore_hmap_tpaw_s );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpaw_s_init,    "bcore_fp_init",  "init"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpaw_s_down,    "bcore_fp_down",  "down"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_hmap_tpaw_s_copy,    "bcore_fp_copy",  "copy"     );
+    bcore_self_s_push_ns_func( self, ( fp_t )tpaw_s_get_data,           "bcore_fp_get",   "get_data" );
+    bcore_self_s_push_ns_func( self, ( fp_t )tpaw_s_set_data,           "bcore_fp_set",   "set_data" );
+    return self;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 // bcore_hmap_tp_s
 
 void bcore_hmap_tp_s_init( bcore_hmap_tp_s* o )
@@ -3463,6 +3816,7 @@ vd_t bcore_hmap_signal_handler( const bcore_signal_s* o )
             bcore_flect_define_creator( TYPEOF_bcore_hmap_tptp_s      , hmap_tptp_s_create_self  );
             bcore_flect_define_creator( TYPEOF_bcore_hmap_tpvd_s      , hmap_tpvd_s_create_self  );
             bcore_flect_define_creator( TYPEOF_bcore_hmap_tpto_s      , hmap_tpto_s_create_self  );
+            bcore_flect_define_creator( TYPEOF_bcore_hmap_tpaw_s      , hmap_tpaw_s_create_self  );
             bcore_flect_define_creator( TYPEOF_bcore_hmap_tp_s        , hmap_tp_s_create_self    );
         }
         break;

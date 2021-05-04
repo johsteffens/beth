@@ -1,4 +1,4 @@
-//  Last update: 2021-04-29T12:52:42Z
+//  Last update: 2021-05-04T16:44:23Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 ... 2021 J.B.Steffens
  *
@@ -26,6 +26,7 @@
  *  bcore_shell.h
  *  bcore_x_btml.h
  *  bcore_x_bbml.h
+ *  bcore_x_hmap.h
  *  bcore_arr_inexpandable.x
  *  bcore_flect_inexpandable.x
  *  bcore_hmap_inexpandable.x
@@ -34,6 +35,7 @@
  *  bcore_sr_inexpandable.x
  *  bcore_st_inexpandable.x
  *  bcore_via_inexpandable.x
+ *  bcore_x_hmap.x
  *
  */
 
@@ -805,9 +807,8 @@
   BCORE_DECLARE_OBJECT( bcore_hmap_tp_st_s ) \
   { \
       aware_t _; \
-      bcore_hmap_tpto_s map; \
+      bcore_hmap_tpaw_s map; \
   }; \
-  static inline void bcore_hmap_tp_st_s_init_x( bcore_hmap_tp_st_s* o ); \
   static inline const st_s* bcore_hmap_tp_st_s_get( const bcore_hmap_tp_st_s* o, tp_t key ); \
   static inline st_s* bcore_hmap_tp_st_s_set_d( bcore_hmap_tp_st_s* o, tp_t key, st_s* val ); \
   static inline st_s* bcore_hmap_tp_st_s_set( bcore_hmap_tp_st_s* o, tp_t key, const st_s* val ); \
@@ -819,21 +820,21 @@
   static inline sz_t bcore_hmap_tp_st_s_size( const bcore_hmap_tp_st_s* o ); \
   static inline tp_t bcore_hmap_tp_st_s_idx_key( const bcore_hmap_tp_st_s* o, sz_t idx ); \
   static inline const st_s* bcore_hmap_tp_st_s_idx_val( const bcore_hmap_tp_st_s* o, sz_t idx ); \
-  static inline void bcore_hmap_tp_st_s_init_x( bcore_hmap_tp_st_s* o ){ bcore_hmap_tpto_s_set_type(&(o->map),TYPEOF_st_s );} \
-  static inline const st_s* bcore_hmap_tp_st_s_get( const bcore_hmap_tp_st_s* o, tp_t key ){ const st_s** p_st = ((const st_s**)(bcore_hmap_tpto_s_get(&(o->map),key ))); return  p_st ? (*(p_st)) : NULL;} \
-  static inline st_s* bcore_hmap_tp_st_s_set_d( bcore_hmap_tp_st_s* o, tp_t key, st_s* val ){ return  ((st_s*)(bcore_hmap_tpto_s_set_d(&(o->map),key, val )));} \
+  static inline const st_s* bcore_hmap_tp_st_s_get( const bcore_hmap_tp_st_s* o, tp_t key ){ const st_s** p_st = ((const st_s**)(bcore_hmap_tpaw_s_get(&(o->map),key ))); return  p_st ? (*(p_st)) : NULL;} \
+  static inline st_s* bcore_hmap_tp_st_s_set_d( bcore_hmap_tp_st_s* o, tp_t key, st_s* val ){ return  ((st_s*)(bcore_hmap_tpaw_s_set_d(&(o->map),key,((x_inst*)( val )))));} \
   static inline st_s* bcore_hmap_tp_st_s_set( bcore_hmap_tp_st_s* o, tp_t key, const st_s* val ){ return  bcore_hmap_tp_st_s_set_d(o,key, st_s_clone(val) );} \
   static inline st_s* bcore_hmap_tp_st_s_set_sc( bcore_hmap_tp_st_s* o, tp_t key, sc_t val ){ return  bcore_hmap_tp_st_s_set_d(o,key, st_s_create_sc(val ) );} \
-  static inline void bcore_hmap_tp_st_s_remove( bcore_hmap_tp_st_s* o, tp_t key ){ bcore_hmap_tpto_s_remove(&(o->map),key );} \
-  static inline bl_t bcore_hmap_tp_st_s_exists( const bcore_hmap_tp_st_s* o, tp_t key ){ return  bcore_hmap_tpto_s_exists(&(o->map),key );} \
-  static inline void bcore_hmap_tp_st_s_clear( bcore_hmap_tp_st_s* o ){ bcore_hmap_tpto_s_clear(&(o->map));} \
-  static inline sz_t bcore_hmap_tp_st_s_keys( const bcore_hmap_tp_st_s* o ){ return  bcore_hmap_tpto_s_keys(&(o->map));} \
-  static inline sz_t bcore_hmap_tp_st_s_size( const bcore_hmap_tp_st_s* o ){ return  bcore_hmap_tpto_s_size(&(o->map));} \
-  static inline tp_t bcore_hmap_tp_st_s_idx_key( const bcore_hmap_tp_st_s* o, sz_t idx ){ return  bcore_hmap_tpto_s_idx_key(&(o->map),idx );} \
-  static inline const st_s* bcore_hmap_tp_st_s_idx_val( const bcore_hmap_tp_st_s* o, sz_t idx ){ return  ((const st_s*)(bcore_hmap_tpto_s_idx_val(&(o->map),idx )));}
+  static inline void bcore_hmap_tp_st_s_remove( bcore_hmap_tp_st_s* o, tp_t key ){ bcore_hmap_tpaw_s_remove(&(o->map),key );} \
+  static inline bl_t bcore_hmap_tp_st_s_exists( const bcore_hmap_tp_st_s* o, tp_t key ){ return  bcore_hmap_tpaw_s_exists(&(o->map),key );} \
+  static inline void bcore_hmap_tp_st_s_clear( bcore_hmap_tp_st_s* o ){ bcore_hmap_tpaw_s_clear(&(o->map));} \
+  static inline sz_t bcore_hmap_tp_st_s_keys( const bcore_hmap_tp_st_s* o ){ return  bcore_hmap_tpaw_s_keys(&(o->map));} \
+  static inline sz_t bcore_hmap_tp_st_s_size( const bcore_hmap_tp_st_s* o ){ return  bcore_hmap_tpaw_s_size(&(o->map));} \
+  static inline tp_t bcore_hmap_tp_st_s_idx_key( const bcore_hmap_tp_st_s* o, sz_t idx ){ return  bcore_hmap_tpaw_s_idx_key(&(o->map),idx );} \
+  static inline const st_s* bcore_hmap_tp_st_s_idx_val( const bcore_hmap_tp_st_s* o, sz_t idx ){ return  ((const st_s*)(bcore_hmap_tpaw_s_idx_val(&(o->map),idx )));}
 #define BETH_EXPAND_GROUP_bcore_hmap_tp_st \
   BCORE_FORWARD_OBJECT( bcore_hmap_tp_st ); \
   BCORE_FORWARD_OBJECT( bcore_hmap_tp_st_s ); \
+  void bcore_hmap_tp_st_selftest( void ); \
   XOILA_DECLARE_SPECT( bcore_hmap_tp_st ) \
   { \
       bcore_spect_header_s header; \
@@ -1859,6 +1860,170 @@
   static inline void x_bbml_push_size( x_sink* sink, sz_t size ){ x_sink_push_data(sink,((const x_inst*)((&(size)))), sizeof( size ) );}
 
 /**********************************************************************************************************************/
+// source: bcore_x_hmap.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_hmap; embeds: bcore_x_hmap.x
+
+#define TYPEOF_x_hmap 0x9FA6546E5B82A976ull
+#define TYPEOF_x_hmap_spect_s 0xF4B61F3CCFBA3082ull
+#define BETH_EXPAND_GROUP_x_hmap \
+  BCORE_FORWARD_OBJECT( x_hmap ); \
+  BCORE_FORWARD_OBJECT( x_hmap_tp ); \
+  BCORE_FORWARD_OBJECT( x_hmap_tp_test ); \
+  XOILA_DECLARE_SPECT( x_hmap ) \
+  { \
+      bcore_spect_header_s header; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_hmap ) \
+  BETH_EXPAND_GROUP_x_hmap_tp \
+  BETH_EXPAND_GROUP_x_hmap_tp_test
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_hmap_tp
+
+#define TYPEOF_x_hmap_tp 0x50EA9D0E0CB248C7ull
+#define TYPEOF_x_hmap_tp_spect_s 0x3683902FE0AC12B7ull
+#define TYPEOF_x_hmap_tp_s 0x1BA738E6B01C5241ull
+#define BETH_EXPAND_ITEM_x_hmap_tp_s \
+  BCORE_DECLARE_OBJECT( x_hmap_tp_s ) \
+  { \
+      aware_t _; \
+      bcore_hmap_tpaw_s map; \
+  }; \
+  static inline const x_inst* x_hmap_tp_s_c_get( const x_hmap_tp_s* o, tp_t key ); \
+  static inline x_inst* x_hmap_tp_s_m_get( x_hmap_tp_s* o, tp_t key ); \
+  static inline x_inst* x_hmap_tp_s_set_c( x_hmap_tp_s* o, tp_t key, const x_inst* val ); \
+  static inline x_inst* x_hmap_tp_s_set_d( x_hmap_tp_s* o, tp_t key, x_inst* val ); \
+  static inline x_hmap_tp_s* x_hmap_tp_s_remove( x_hmap_tp_s* o, tp_t key ); \
+  static inline bl_t x_hmap_tp_s_exists( const x_hmap_tp_s* o, tp_t key ); \
+  static inline x_hmap_tp_s* x_hmap_tp_s_clear( x_hmap_tp_s* o ); \
+  static inline sz_t x_hmap_tp_s_keys( const x_hmap_tp_s* o ); \
+  static inline sz_t x_hmap_tp_s_size( const x_hmap_tp_s* o ); \
+  static inline tp_t x_hmap_tp_s_idx_key( const x_hmap_tp_s* o, sz_t idx ); \
+  static inline const x_inst* x_hmap_tp_s_c_idx_val( const x_hmap_tp_s* o, sz_t idx ); \
+  static inline x_inst* x_hmap_tp_s_m_idx_val( x_hmap_tp_s* o, sz_t idx ); \
+  bcore_arr_tp_s* x_hmap_tp_s_get_key_arr( const x_hmap_tp_s* o, bcore_arr_tp_s* key_arr ); \
+  x_array* x_hmap_tp_s_m_get_val_arr( x_hmap_tp_s* o, x_array* val_arr ); \
+  x_array* x_hmap_tp_s_c_get_val_arr( const x_hmap_tp_s* o, x_array* val_arr ); \
+  static inline const x_inst* x_hmap_tp_s_c_get( const x_hmap_tp_s* o, tp_t key ){ const vd_t* e = bcore_hmap_tpaw_s_get(&(o->map),key ); return  e ? ((const x_inst*)((*(e)))) : NULL;} \
+  static inline x_inst* x_hmap_tp_s_m_get( x_hmap_tp_s* o, tp_t key ){ vd_t* e = bcore_hmap_tpaw_s_get(&(o->map),key ); return  e ? ((x_inst*)((*(e)))) : NULL;} \
+  static inline x_inst* x_hmap_tp_s_set_c( x_hmap_tp_s* o, tp_t key, const x_inst* val ){ return  ((x_inst*)(bcore_hmap_tpaw_s_set_c(&(o->map),key, val )));} \
+  static inline x_inst* x_hmap_tp_s_set_d( x_hmap_tp_s* o, tp_t key, x_inst* val ){ return  ((x_inst*)(bcore_hmap_tpaw_s_set_d(&(o->map),key, val )));} \
+  static inline x_hmap_tp_s* x_hmap_tp_s_remove( x_hmap_tp_s* o, tp_t key ){ bcore_hmap_tpaw_s_remove(&(o->map),key ); return  o;} \
+  static inline bl_t x_hmap_tp_s_exists( const x_hmap_tp_s* o, tp_t key ){ return  bcore_hmap_tpaw_s_exists(&(o->map),key );} \
+  static inline x_hmap_tp_s* x_hmap_tp_s_clear( x_hmap_tp_s* o ){ bcore_hmap_tpaw_s_clear(&(o->map)); return  o;} \
+  static inline sz_t x_hmap_tp_s_keys( const x_hmap_tp_s* o ){ return  bcore_hmap_tpaw_s_keys(&(o->map));} \
+  static inline sz_t x_hmap_tp_s_size( const x_hmap_tp_s* o ){ return  bcore_hmap_tpaw_s_size(&(o->map));} \
+  static inline tp_t x_hmap_tp_s_idx_key( const x_hmap_tp_s* o, sz_t idx ){ return  bcore_hmap_tpaw_s_idx_key(&(o->map),idx );} \
+  static inline const x_inst* x_hmap_tp_s_c_idx_val( const x_hmap_tp_s* o, sz_t idx ){ return  ((const x_inst*)(bcore_hmap_tpaw_s_idx_val(&(o->map),idx )));} \
+  static inline x_inst* x_hmap_tp_s_m_idx_val( x_hmap_tp_s* o, sz_t idx ){ return  ((x_inst*)(bcore_hmap_tpaw_s_idx_val(&(o->map),idx )));}
+#define TYPEOF_x_hmap_tp_st_s 0xDF6A2FAABF097399ull
+#define BETH_EXPAND_ITEM_x_hmap_tp_st_s \
+  BCORE_DECLARE_OBJECT( x_hmap_tp_st_s ) \
+  { \
+      aware_t _; \
+      x_hmap_tp_s map; \
+  }; \
+  st_s* x_hmap_tp_st_s_create_st_status( const x_hmap_tp_st_s* o );
+#define BETH_EXPAND_GROUP_x_hmap_tp \
+  BCORE_FORWARD_OBJECT( x_hmap_tp ); \
+  BCORE_FORWARD_OBJECT( x_hmap_tp_s ); \
+  BCORE_FORWARD_OBJECT( x_hmap_tp_st_s ); \
+  x_hmap_tp_s* x_hmap_tp_m_map_( x_hmap_tp* o ); \
+  const x_hmap_tp_s* x_hmap_tp_c_map_( const x_hmap_tp* o ); \
+  static inline const x_inst* x_hmap_tp_c_get( const x_hmap_tp* o, tp_t key ); \
+  static inline x_inst* x_hmap_tp_m_get( x_hmap_tp* o, tp_t key ); \
+  static inline x_inst* x_hmap_tp_set_c( x_hmap_tp* o, tp_t key, const x_inst* val ); \
+  static inline x_inst* x_hmap_tp_set_d( x_hmap_tp* o, tp_t key, x_inst* val ); \
+  static inline x_hmap_tp* x_hmap_tp_remove( x_hmap_tp* o, tp_t key ); \
+  static inline bl_t x_hmap_tp_exists( const x_hmap_tp* o, tp_t key ); \
+  static inline x_hmap_tp* x_hmap_tp_clear( x_hmap_tp* o ); \
+  static inline sz_t x_hmap_tp_keys( const x_hmap_tp* o ); \
+  static inline sz_t x_hmap_tp_size( const x_hmap_tp* o ); \
+  static inline tp_t x_hmap_tp_idx_key( const x_hmap_tp* o, sz_t idx ); \
+  static inline const x_inst* x_hmap_tp_c_idx_val( const x_hmap_tp* o, sz_t idx ); \
+  static inline x_inst* x_hmap_tp_m_idx_val( x_hmap_tp* o, sz_t idx ); \
+  static inline bcore_arr_tp_s* x_hmap_tp_get_key_arr( const x_hmap_tp* o, bcore_arr_tp_s* key_arr ); \
+  static inline x_array* x_hmap_tp_m_get_val_arr( x_hmap_tp* o, x_array* val_arr ); \
+  static inline x_array* x_hmap_tp_c_get_val_arr( const x_hmap_tp* o, x_array* val_arr ); \
+  XOILA_DECLARE_SPECT( x_hmap_tp ) \
+  { \
+      bcore_spect_header_s header; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_hmap_tp ) \
+  BETH_EXPAND_ITEM_x_hmap_tp_s \
+  BETH_EXPAND_ITEM_x_hmap_tp_st_s \
+  static inline const x_inst* x_hmap_tp_c_get( const x_hmap_tp* o, tp_t key ){ return  x_hmap_tp_s_c_get(x_hmap_tp_c_map_(o),key );} \
+  static inline x_inst* x_hmap_tp_m_get( x_hmap_tp* o, tp_t key ){ return  x_hmap_tp_s_m_get(x_hmap_tp_m_map_(o),key );} \
+  static inline x_inst* x_hmap_tp_set_c( x_hmap_tp* o, tp_t key, const x_inst* val ){ return  x_hmap_tp_s_set_c(x_hmap_tp_m_map_(o),key, val );} \
+  static inline x_inst* x_hmap_tp_set_d( x_hmap_tp* o, tp_t key, x_inst* val ){ return  x_hmap_tp_s_set_d(x_hmap_tp_m_map_(o),key, val );} \
+  static inline x_hmap_tp* x_hmap_tp_remove( x_hmap_tp* o, tp_t key ){ return ((x_hmap_tp*)( ((x_hmap_tp_s*)(x_hmap_tp_s_remove(x_hmap_tp_m_map_(o),key )))));} \
+  static inline bl_t x_hmap_tp_exists( const x_hmap_tp* o, tp_t key ){ return  x_hmap_tp_s_exists(x_hmap_tp_c_map_(o),key );} \
+  static inline x_hmap_tp* x_hmap_tp_clear( x_hmap_tp* o ){ return ((x_hmap_tp*)( ((x_hmap_tp_s*)(x_hmap_tp_s_clear(x_hmap_tp_m_map_(o))))));} \
+  static inline sz_t x_hmap_tp_keys( const x_hmap_tp* o ){ return  x_hmap_tp_s_keys(x_hmap_tp_c_map_(o));} \
+  static inline sz_t x_hmap_tp_size( const x_hmap_tp* o ){ return  x_hmap_tp_s_size(x_hmap_tp_c_map_(o));} \
+  static inline tp_t x_hmap_tp_idx_key( const x_hmap_tp* o, sz_t idx ){ return  x_hmap_tp_s_idx_key(x_hmap_tp_c_map_(o),idx );} \
+  static inline const x_inst* x_hmap_tp_c_idx_val( const x_hmap_tp* o, sz_t idx ){ return  x_hmap_tp_s_c_idx_val(x_hmap_tp_c_map_(o),idx );} \
+  static inline x_inst* x_hmap_tp_m_idx_val( x_hmap_tp* o, sz_t idx ){ return  x_hmap_tp_s_m_idx_val(x_hmap_tp_m_map_(o),idx );} \
+  static inline bcore_arr_tp_s* x_hmap_tp_get_key_arr( const x_hmap_tp* o, bcore_arr_tp_s* key_arr ){ return  ((bcore_arr_tp_s*)(x_hmap_tp_s_get_key_arr(x_hmap_tp_c_map_(o),key_arr )));} \
+  static inline x_array* x_hmap_tp_m_get_val_arr( x_hmap_tp* o, x_array* val_arr ){ return  ((x_array*)(x_hmap_tp_s_m_get_val_arr(x_hmap_tp_m_map_(o),val_arr )));} \
+  static inline x_array* x_hmap_tp_c_get_val_arr( const x_hmap_tp* o, x_array* val_arr ){ return  ((x_array*)(x_hmap_tp_s_c_get_val_arr(x_hmap_tp_c_map_(o),val_arr )));}
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_hmap_tp_test
+
+#define TYPEOF_x_hmap_tp_test 0x8BD597B168BD2B8Cull
+#define TYPEOF_x_hmap_tp_test_spect_s 0x96F97B6D93952FC4ull
+#define TYPEOF_x_hmap_tp_test_kv_s 0xC2118146626BE7CAull
+#define BETH_EXPAND_ITEM_x_hmap_tp_test_kv_s \
+  BCORE_DECLARE_OBJECT( x_hmap_tp_test_kv_s ) \
+  { \
+      tp_t key; \
+      u3_t val; \
+  };
+#define TYPEOF_x_hmap_tp_test_kv_arr_s 0xD22D4BA75808939Aull
+#define BETH_EXPAND_ITEM_x_hmap_tp_test_kv_arr_s \
+  BCORE_DECLARE_OBJECT( x_hmap_tp_test_kv_arr_s ) \
+  { \
+      aware_t _; \
+      BCORE_ARRAY_DYN_SOLID_STATIC_S( x_hmap_tp_test_kv_s, ); \
+  };
+#define TYPEOF_x_hmap_tp_test_val_s 0x033F73E3560ADAC2ull
+#define BETH_EXPAND_ITEM_x_hmap_tp_test_val_s \
+  BCORE_DECLARE_OBJECT( x_hmap_tp_test_val_s ) \
+  { \
+      aware_t _; \
+      u3_t val; \
+  }; \
+  static inline x_hmap_tp_test_val_s* x_hmap_tp_test_val_s_create_u3( u3_t u3 ); \
+  static inline x_hmap_tp_test_val_s* x_hmap_tp_test_val_s_create_u3( u3_t u3 ){ x_hmap_tp_test_val_s* m = x_hmap_tp_test_val_s_create(); m->val = u3; return  m;}
+#define TYPEOF_x_hmap_tp_test_map_s 0x97CB9A65516543C7ull
+#define BETH_EXPAND_ITEM_x_hmap_tp_test_map_s \
+  BCORE_DECLARE_OBJECT( x_hmap_tp_test_map_s ) \
+  { \
+      aware_t _; \
+      x_hmap_tp_s map; \
+  }; \
+  st_s* x_hmap_tp_test_map_s_create_st_status( const x_hmap_tp_test_map_s* o );
+#define BETH_EXPAND_GROUP_x_hmap_tp_test \
+  BCORE_FORWARD_OBJECT( x_hmap_tp_test ); \
+  BCORE_FORWARD_OBJECT( x_hmap_tp_test_kv_s ); \
+  BCORE_FORWARD_OBJECT( x_hmap_tp_test_kv_arr_s ); \
+  BCORE_FORWARD_OBJECT( x_hmap_tp_test_val_s ); \
+  BCORE_FORWARD_OBJECT( x_hmap_tp_test_map_s ); \
+  void x_hmap_tp_test_selftest( void ); \
+  XOILA_DECLARE_SPECT( x_hmap_tp_test ) \
+  { \
+      bcore_spect_header_s header; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_hmap_tp_test ) \
+  BETH_EXPAND_ITEM_x_hmap_tp_test_kv_s \
+  BETH_EXPAND_ITEM_x_hmap_tp_test_kv_arr_s \
+  BETH_EXPAND_ITEM_x_hmap_tp_test_val_s \
+  BETH_EXPAND_ITEM_x_hmap_tp_test_map_s
+
+/**********************************************************************************************************************/
 
 vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
@@ -1867,5 +2032,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x976AE480FD7C0307
-// XOICO_FILE_SIGNATURE 0xFC7B0ED4521EA339
+// XOICO_BODY_SIGNATURE 0x4056CA79A446A30C
+// XOICO_FILE_SIGNATURE 0x95A3606531B39815

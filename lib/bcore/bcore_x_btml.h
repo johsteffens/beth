@@ -571,7 +571,6 @@ func t_test_transfer =
 {
     d st_s* string = st_s!;
     o.t_to_sink( t, string );
-
     m x_source* source = x_source_create_from_st_d( string )^;
 
     d @* o2 = x_inst_t_create( t );
