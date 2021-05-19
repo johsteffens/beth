@@ -68,7 +68,16 @@ void bcore_life_s_init( struct bcore_life_s* o )
 void bcore_life_s_down( struct bcore_life_s* o )
 {
     assert( o );
-    bcore_release_obj_arr( ( fp_t )bcore_life_item_s_down, o->data, o->size, sizeof( bcore_life_item_s ) );
+
+    /// shut down in reverse order
+    for( sz_t i = o->size - 1; i >= 0; i-- )
+    {
+        bcore_life_item_s_down( &o->data[ i ] );
+    }
+
+    o->data = bcore_alloc( o->data, 0 );
+    o->space = 0;
+    o->size = 0;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

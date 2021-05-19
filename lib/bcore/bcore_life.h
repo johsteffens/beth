@@ -19,9 +19,10 @@
 #include "bcore_feature.h"
 #include "bcore_flect.h"
 
-/** Simple lifetime manager for objects.
+/** Lifetime manager for objects.
  *  bcore_life assumes ownership of objects with respect to managing their lifetime.
  *  Objects remain alive until the instance of bcore_life terminates.
+ *  Shut down happens in reverse order.
  */
 
 typedef void (*bcore_fp_down_or_discard       )(            vd_t  o );
