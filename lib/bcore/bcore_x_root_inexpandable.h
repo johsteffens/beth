@@ -58,6 +58,7 @@ type vd_t;
 type vc_t;
 type char;
 type void;
+type int;
 type clock_t;
 
 // objects
@@ -251,6 +252,7 @@ group bcore_condition = bcore_inst
 //----------------------------------------------------------------------------------------------------------------------
 
 /// bcore_thread_s
+identifier bcore_fp_thread;
 group bcore_thread = bcore_inst
 {
     signature void call( m @* o, bcore_fp_thread func, vd_t arg );

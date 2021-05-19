@@ -69,5 +69,6 @@
 #include "bcore_x_array.h"
 #include "bcore_x_group.h"
 #include "bcore_x_stamp.h"
+#include "bcore_x_threads.h"
 
 #endif // BCORE_STD_H

@@ -1,4 +1,4 @@
-//  Last update: 2021-05-04T16:44:23Z
+//  Last update: 2021-05-18T14:44:27Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : xoico_compiler (C) 2020 ... 2021 J.B.Steffens
  *
@@ -14,6 +14,7 @@
  *  bcore_x_array.h
  *  bcore_x_group.h
  *  bcore_x_stamp.h
+ *  bcore_x_threads.h
  *  bcore_file.h
  *  bcore_spect_inst_call.h
  *  bcore_spect_via_call.h
@@ -540,6 +541,118 @@
   static inline void x_stamp_shelve( x_stamp* o ){ bcore_via_call_a_shelve(((bcore_via_call*)(o)));} \
   static inline void x_stamp_t_source( x_stamp* o, tp_t t, x_source* source ){ if( bcore_via_call_t_defines_source(t ) ) bcore_via_call_t_source(((bcore_via_call*)(o)),t,((bcore_source*)( source )));} \
   static inline void x_stamp_source( x_stamp* o, x_source* source ){ bcore_via_call_a_source(((bcore_via_call*)(o)),((bcore_source*)(source )));}
+
+/**********************************************************************************************************************/
+// source: bcore_x_threads.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x
+
+#define TYPEOF_x 0xAF63F54C86021707ull
+#define TYPEOF_x_spect_s 0xF7DA5355152AE8F7ull
+#define TYPEOF_x_mutex_s 0x339FC5615E44B9CDull
+#define TYPEOF_x_lock_s 0x2AA183F86DEBE2E9ull
+#define BETH_EXPAND_ITEM_x_lock_s \
+  BCORE_DECLARE_OBJECT( x_lock_s ) \
+  { \
+      aware_t _; \
+      x_mutex_s* mutex; \
+  }; \
+  x_lock_s* x_lock_s_set( x_lock_s* o, x_mutex_s* mutex ); \
+  x_lock_s* x_lock_s_release( x_lock_s* o ); \
+  static inline void x_lock_s_down_e( x_lock_s* o ); \
+  static inline void x_lock_s_down_e( x_lock_s* o ){ ((x_lock_s*)(x_lock_s_release(o)));}
+#define TYPEOF_x_unlock_s 0x6DA985CDBF521AB6ull
+#define BETH_EXPAND_ITEM_x_unlock_s \
+  BCORE_DECLARE_OBJECT( x_unlock_s ) \
+  { \
+      aware_t _; \
+      x_mutex_s* mutex; \
+  }; \
+  x_unlock_s* x_unlock_s_set( x_unlock_s* o, x_mutex_s* mutex ); \
+  x_unlock_s* x_unlock_s_release( x_unlock_s* o ); \
+  static inline void x_unlock_s_down_e( x_unlock_s* o ); \
+  static inline void x_unlock_s_down_e( x_unlock_s* o ){ ((x_unlock_s*)(x_unlock_s_release(o)));}
+#define TYPEOF_x_mutex_s 0x339FC5615E44B9CDull
+#define BETH_EXPAND_ITEM_x_mutex_s \
+  BCORE_DECLARE_OBJECT( x_mutex_s ) \
+  { \
+      aware_t _; \
+      pthread_mutex_t _mutex; \
+  }; \
+  void x_mutex_s_init_x( x_mutex_s* o ); \
+  void x_mutex_s_down_e( x_mutex_s* o ); \
+  void x_mutex_s_lock( x_mutex_s* o ); \
+  void x_mutex_s_unlock( x_mutex_s* o ); \
+  static inline x_lock_s* x_mutex_s_create_lock( x_mutex_s* o ); \
+  static inline x_unlock_s* x_mutex_s_create_unlock( x_mutex_s* o ); \
+  static inline x_lock_s* x_mutex_s_create_lock( x_mutex_s* o ){ return  ((x_lock_s*)(x_lock_s_set(x_lock_s_create(),o )));} \
+  static inline x_unlock_s* x_mutex_s_create_unlock( x_mutex_s* o ){ return  ((x_unlock_s*)(x_unlock_s_set(x_unlock_s_create(),o )));}
+#define TYPEOF_x_condition_s 0x16757800448583FFull
+#define BETH_EXPAND_ITEM_x_condition_s \
+  BCORE_DECLARE_OBJECT( x_condition_s ) \
+  { \
+      aware_t _; \
+      pthread_cond_t _cond; \
+  }; \
+  void x_condition_s_init_x( x_condition_s* o ); \
+  void x_condition_s_down_e( x_condition_s* o ); \
+  void x_condition_s_sleep( x_condition_s* o, x_mutex_s* mutex ); \
+  void x_condition_s_wake_one( x_condition_s* o ); \
+  void x_condition_s_wake_all( x_condition_s* o );
+#define BETH_EXPAND_GROUP_x \
+  BCORE_FORWARD_OBJECT( x ); \
+  BCORE_FORWARD_OBJECT( x_mutex_s ); \
+  BCORE_FORWARD_OBJECT( x_lock_s ); \
+  BCORE_FORWARD_OBJECT( x_unlock_s ); \
+  BCORE_FORWARD_OBJECT( x_mutex_s ); \
+  BCORE_FORWARD_OBJECT( x_condition_s ); \
+  BCORE_FORWARD_OBJECT( x_thread ); \
+  XOILA_DECLARE_SPECT( x ) \
+  { \
+      bcore_spect_header_s header; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x ) \
+  BETH_EXPAND_ITEM_x_lock_s \
+  BETH_EXPAND_ITEM_x_unlock_s \
+  BETH_EXPAND_ITEM_x_mutex_s \
+  BETH_EXPAND_ITEM_x_condition_s \
+  BETH_EXPAND_GROUP_x_thread
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_thread
+
+#define TYPEOF_x_thread 0x7A71922A48A7E288ull
+#define TYPEOF_x_thread_spect_s 0x9961A6A26F0330D0ull
+#define TYPEOF_x_thread_s 0x0206F38246B5A992ull
+#define BETH_EXPAND_ITEM_x_thread_s \
+  BCORE_DECLARE_OBJECT( x_thread_s ) \
+  { \
+      aware_t _; \
+      pthread_t _thread; \
+      bl_t _join; \
+  }; \
+  void x_thread_s_down_e( x_thread_s* o ); \
+  void x_thread_s_call_m_thread_func( x_thread_s* o, x_thread* obj ); \
+  void x_thread_s_call_c_thread_func( x_thread_s* o, const x_thread* obj ); \
+  const x_inst* x_thread_s_join( x_thread_s* o );
+#define BETH_EXPAND_GROUP_x_thread \
+  BCORE_FORWARD_OBJECT( x_thread ); \
+  BCORE_FORWARD_OBJECT( x_thread_s ); \
+  typedef const x_inst* (*x_thread_m_thread_func)(x_thread* o ); \
+  typedef const x_inst* (*x_thread_c_thread_func)(const x_thread* o ); \
+  XOILA_DECLARE_SPECT( x_thread ) \
+  { \
+      bcore_spect_header_s header; \
+      x_thread_m_thread_func m_thread_func; \
+      x_thread_c_thread_func c_thread_func; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_thread ) \
+  static inline const x_inst* x_thread_a_m_thread_func( x_thread* o ){ const x_thread_spect_s* p = x_thread_spect_s_get_aware( o ); assert( p->m_thread_func ); return p->m_thread_func( o );} \
+  static inline bl_t x_thread_defines_m_thread_func( const x_thread* o ){ return x_thread_spect_s_get_aware( o )->m_thread_func != NULL;} \
+  static inline const x_inst* x_thread_a_c_thread_func( const x_thread* o ){ const x_thread_spect_s* p = x_thread_spect_s_get_aware( o ); assert( p->c_thread_func ); return p->c_thread_func( o );} \
+  static inline bl_t x_thread_defines_c_thread_func( const x_thread* o ){ return x_thread_spect_s_get_aware( o )->c_thread_func != NULL;} \
+  BETH_EXPAND_ITEM_x_thread_s
 
 /**********************************************************************************************************************/
 // source: bcore_file.h
@@ -1526,7 +1639,7 @@
       x_sink* sink; \
       x_source* source; \
       bcore_hmap_name_s hmap_name; \
-      bcore_hmap_tp_st_s hmap_alias; \
+      x_hmap_tp_st_s hmap_alias; \
       bl_t exit_loop; \
       st_s path; \
   }; \
@@ -1995,9 +2108,7 @@
   { \
       aware_t _; \
       u3_t val; \
-  }; \
-  static inline x_hmap_tp_test_val_s* x_hmap_tp_test_val_s_create_u3( u3_t u3 ); \
-  static inline x_hmap_tp_test_val_s* x_hmap_tp_test_val_s_create_u3( u3_t u3 ){ x_hmap_tp_test_val_s* m = x_hmap_tp_test_val_s_create(); m->val = u3; return  m;}
+  };
 #define TYPEOF_x_hmap_tp_test_map_s 0x97CB9A65516543C7ull
 #define BETH_EXPAND_ITEM_x_hmap_tp_test_map_s \
   BCORE_DECLARE_OBJECT( x_hmap_tp_test_map_s ) \
@@ -2032,5 +2143,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x4056CA79A446A30C
-// XOICO_FILE_SIGNATURE 0x95A3606531B39815
+// XOICO_BODY_SIGNATURE 0x7F04CBDDB17921F5
+// XOICO_FILE_SIGNATURE 0x94DBA30B33D1931F

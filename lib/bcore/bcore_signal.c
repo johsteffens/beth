@@ -52,6 +52,7 @@
 #include "bcore_tp.h"
 #include "bcore_tp_fastmap.h"
 #include "bcore_threads.h"
+#include "bcore_x_threads.h"
 #include "bcore_trait.h"
 #include "bcore_txt_ml.h"
 #include "bcore_xoila.h"
@@ -132,6 +133,7 @@ vd_t bcore_general_signal_handler( const bcore_signal_s* o )
         bcore_spect_translator_signal_handler,
         bcore_spect_matrix_signal_handler,
         bcore_threads_signal_handler,
+        bcore_x_threads_signal_handler,
         bcore_txt_ml_signal_handler,
         bcore_bin_ml_signal_handler,
         bcore_arr_signal_handler,
