@@ -21,6 +21,7 @@
 #include "bcore_txt_ml.h"
 #include "bcore_bin_ml.h"
 #include "bcore_file.h"
+#include "bcore_x_array.h"
 #include "bcore.xo.h"
 
 /**********************************************************************************************************************/
