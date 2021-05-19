@@ -1,0 +1,12 @@
+Beth:
+u0_t u1_t u2_t u3_t s0_t
+s1_t s2_t s3_t uz_t sz_t
+bl_t sc_t st_s f2_t f3_t vc_t vd_t tp_t
+BLM_INIT BLM_DOWN BLM_RETURN BLM_RETURNV BLM_A_PUSH BLM_T_PUSH
+BLM_CREATE BLM_CREATEC BLM_CLONE BLM_TRY  BFOR_EACH BFOR_SIZE
+
+Xoila:
+group stamp stump hidden private func name signature body obliv aware feature
+extending verbatim mutable discardable retrievable forward include embed cast
+foreach in verbatim_C fork strict try scope scope_local scope_func extern wrap
+restrict type identifier
