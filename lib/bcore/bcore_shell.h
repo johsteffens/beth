@@ -25,6 +25,7 @@
 #include "bcore_hmap.h"
 #include "bcore_hmap_name.h"
 #include "bcore_hmap_tp_st.h"
+#include "bcore_x_hmap.h"
 
 /**********************************************************************************************************************/
 
@@ -257,7 +258,7 @@ group :control =
         aware x_source -> source;
 
         bcore_hmap_name_s  hmap_name;
-        bcore_hmap_tp_st_s hmap_alias;
+        x_hmap_tp_st_s hmap_alias;
 
         bl_t exit_loop;
         st_s path;
@@ -331,7 +332,7 @@ func (void help_to_sink( m @* o, :control_s* control, m bcore_sink* sink )) =
             tp_t key = control.hmap_alias.idx_key( i );
             if( key )
             {
-                st_s* expression = control.hmap_alias.idx_val( i );
+                st_s* expression = control.hmap_alias.c_idx_val( i );
                 table.push_fa( "#<st_s*>", control.hmap_name.get( key ) );
                 table.push_fa( ": #<st_s*>", expression );
             }
@@ -362,7 +363,7 @@ func loop =
         control.source.parse_fa( " #until'\n'#skip'\n'", expression.1 );
         if( control.hmap_alias.exists( btypeof( expression.sc ) ) )
         {
-            expression.copy( control.hmap_alias.get( btypeof( expression.sc ) ) );
+            expression.copy( control.hmap_alias.c_get( btypeof( expression.sc ) ) );
         }
 
         m$* line_source = x_source_create_from_st( expression )^;
@@ -578,7 +579,7 @@ group :op_default = retrievable
             tp_t tp_key = control.hmap_name.set_st_c( o.key );
             if( o.expression.size > 0 )
             {
-                control.hmap_alias.set( tp_key, o.expression );
+                control.hmap_alias.set_c( tp_key, o.expression );
             }
             else
             {
