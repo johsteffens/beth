@@ -267,6 +267,45 @@ group bcore_thread = bcore_inst
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// bcore_img
+group bcore_img = bcore_inst
+{
+    stamp :u2_s = obliv x_array
+    {
+        tp_t format; // pixel color space
+        uz_t rows;
+        uz_t cols;
+        uz_t stride;
+        u2_t [];
+
+        /** Allocates image and initializes pixels with 0
+         *  if o->format == 0: o->format = TYPEOF_bcore_img_u2_argb
+         */
+        func (void set_size( m @* o, uz_t rows, uz_t cols ));
+
+        // pnm format
+        func (void pnm_to_sink(       @* o, bcore_sink* dst ));
+        func (void pnm_to_file(       @* o, sc_t file ));
+        func (void pnm_from_source( m @* o, bcore_source* src ));
+        func (void pnm_from_file(   m @* o, sc_t file ));
+
+        // pixel access
+        func (void set_pixel( m @* o, uz_t row, uz_t col, u2_t v ));
+        func (u2_t get_pixel(   @* o, uz_t row, uz_t col ));
+        func (void set_rgb( m @* o, uz_t row, uz_t col, u0_t  r, u0_t  g, u0_t  b ));
+        func (void get_rgb(   @* o, uz_t row, uz_t col, u0_t* r, u0_t* g, u0_t* b ));
+    };
+
+
+};
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// pixel access
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
 embed "bcore_source_inexpandable.x";
 embed "bcore_sink_inexpandable.x";
 embed "bcore_st_inexpandable.x";
