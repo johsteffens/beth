@@ -274,7 +274,7 @@ void st_s_copy_typed( st_s* o, tp_t type, vc_t src )
         case TYPEOF_u2_t: st_s_copyf( o, "%"PRIu32, *(const u2_t*)src ); break;
         case TYPEOF_u3_t: st_s_copyf( o, "%"PRIu64, *(const u3_t*)src ); break;
         case TYPEOF_f2_t: st_s_copyf( o, "%g",      *(const f2_t*)src ); break;
-        case TYPEOF_f3_t: st_s_copyf( o, "%lg",     *(const f3_t*)src ); break;
+        case TYPEOF_f3_t: st_s_copyf( o, "%.18lg",  *(const f3_t*)src ); break;
         case TYPEOF_sz_t: st_s_copyf( o, "%ti",     *(const sz_t*)src ); break;
         case TYPEOF_uz_t: st_s_copyf( o, "%zu",     *(const uz_t*)src ); break;
         case TYPEOF_vd_t: st_s_copyf( o, "%p",      *(const vd_t*)src ); break;
