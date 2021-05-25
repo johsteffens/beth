@@ -1,12 +1,14 @@
-//  Last update: 2021-05-18T14:44:27Z
+//  Last update: 2021-05-24T14:47:17Z
 /** This file was generated from xoila source code.
- *  Compiling Agent : xoico_compiler (C) 2020 ... 2021 J.B.Steffens
+ *  Compiling Agent : XOICO (C) 2020 ... 2021 J.B.Steffens
+ *  Note that any changes of this file can be erased or overwritten by XOICO.
  *
  *  Copyright and License of this File:
  *
- *  Generated code inherits the copyright and license of the underlying xoila source code.
- *  Source code defining this file is distributed across following files:
+ *  Unless explicitly stated otherwise in governing license terms, this file inherits the
+ *  copyright and license terms of the immediate source code from which it was compiled.
  *
+ *  The immediate source code is distributed across following files:
  *  bcore_x_root_inexpandable.h
  *  bcore_x_inst.h
  *  bcore_x_source.h
@@ -151,6 +153,7 @@
   static inline x_source* x_source_create_from_sc( sc_t sc ); \
   static inline x_source* x_source_create_from_fv( sc_t format, va_list args ); \
   static inline x_source* x_source_create_from_fa( sc_t format, ... ); \
+  x_source* x_source_check_create_from_file( sc_t path ); \
   static inline bl_t x_source_eos( x_source* o ); \
   static inline sz_t x_source_get_data( x_source* o, x_inst* data, sz_t size ); \
   static inline sz_t x_source_inspect_data( x_source* o, x_inst* data, sz_t size ); \
@@ -1845,6 +1848,7 @@
   sc_t x_btml_name_of( tp_t type, st_s* buf ); \
   tp_t x_btml_type_of( const st_s* name ); \
   bl_t x_btml_appears_valid( x_source* source ); \
+  bl_t x_btml_t_appears_valid( tp_t type, x_source* source ); \
   er_t x_btml_parse_create_object( x_source* source, sr_s* obj ); \
   er_t x_btml_t_parse_body( x_btml* o, tp_t t, x_source* source ); \
   er_t x_btml_skip_body( x_source* source ); \
@@ -1869,7 +1873,7 @@
   static inline void x_btml_t_feature_body_to_sink( const x_btml* o, tp_t t, x_sink* sink ){ const x_btml_spect_s* p = x_btml_spect_s_get_typed( t ); assert( p->feature_body_to_sink ); p->feature_body_to_sink( o, sink );} \
   static inline bl_t x_btml_t_defines_feature_body_to_sink( tp_t t ){ return x_btml_spect_s_get_typed( t )->feature_body_to_sink != NULL;} \
   static inline er_t x_btml_from_source( x_btml* o, x_source* source ){ return  x_btml_t_from_source(o,o->_, source );} \
-  static inline er_t x_btml_t_from_file( x_btml* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0); BLM_RETURNV(er_t, x_btml_t_from_source(o,o->_, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))) ))} \
+  static inline er_t x_btml_t_from_file( x_btml* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0); BLM_RETURNV(er_t, x_btml_t_from_source(o,o->_, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_check_create_from_file(file ))) ))} \
   static inline er_t x_btml_from_file( x_btml* o, sc_t file ){ return  x_btml_t_from_file(o,o->_, file );} \
   static inline er_t x_btml_t_from_st( x_btml* o, tp_t t, const st_s* st ){BLM_INIT_LEVEL(0); BLM_RETURNV(er_t, x_btml_t_from_source(o,o->_, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))) ))} \
   static inline er_t x_btml_from_st( x_btml* o, const st_s* st ){ return  x_btml_t_from_st(o,o->_, st );} \
@@ -1877,7 +1881,7 @@
   static inline er_t x_btml_from_sc( x_btml* o, sc_t sc ){ return  x_btml_t_from_sc(o,o->_, sc );} \
   static inline er_t x_btml_t_body_from_source( x_btml* o, tp_t t, x_source* source ){ return  x_btml_t_parse_body(o,t, source );} \
   static inline er_t x_btml_body_from_source( x_btml* o, x_source* source ){ return  x_btml_t_body_from_source(o,o->_, source );} \
-  static inline er_t x_btml_t_body_from_file( x_btml* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0); BLM_RETURNV(er_t, x_btml_t_body_from_source(o,o->_, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))) ))} \
+  static inline er_t x_btml_t_body_from_file( x_btml* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0); BLM_RETURNV(er_t, x_btml_t_body_from_source(o,o->_, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_check_create_from_file(file ))) ))} \
   static inline er_t x_btml_body_from_file( x_btml* o, sc_t file ){ return  x_btml_t_body_from_file(o,o->_, file );} \
   static inline er_t x_btml_t_body_from_st( x_btml* o, tp_t t, const st_s* st ){BLM_INIT_LEVEL(0); BLM_RETURNV(er_t, x_btml_t_body_from_source(o,o->_, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))) ))} \
   static inline er_t x_btml_body_from_st( x_btml* o, const st_s* st ){ return  x_btml_t_body_from_st(o,o->_, st );} \
@@ -1951,7 +1955,7 @@
   static inline void x_bbml_t_feature_body_to_sink( const x_bbml* o, tp_t t, x_sink* sink ){ const x_bbml_spect_s* p = x_bbml_spect_s_get_typed( t ); assert( p->feature_body_to_sink ); p->feature_body_to_sink( o, sink );} \
   static inline bl_t x_bbml_t_defines_feature_body_to_sink( tp_t t ){ return x_bbml_spect_s_get_typed( t )->feature_body_to_sink != NULL;} \
   static inline er_t x_bbml_from_source( x_bbml* o, x_source* source ){ return  x_bbml_t_from_source(o,o->_, source );} \
-  static inline er_t x_bbml_t_from_file( x_bbml* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0); BLM_RETURNV(er_t, x_bbml_t_from_source(o,o->_, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))) ))} \
+  static inline er_t x_bbml_t_from_file( x_bbml* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0); BLM_RETURNV(er_t, x_bbml_t_from_source(o,o->_, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_check_create_from_file(file ))) ))} \
   static inline er_t x_bbml_from_file( x_bbml* o, sc_t file ){ return  x_bbml_t_from_file(o,o->_, file );} \
   static inline er_t x_bbml_t_from_st( x_bbml* o, tp_t t, const st_s* st ){BLM_INIT_LEVEL(0); BLM_RETURNV(er_t, x_bbml_t_from_source(o,o->_, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))) ))} \
   static inline er_t x_bbml_from_st( x_bbml* o, const st_s* st ){ return  x_bbml_t_from_st(o,o->_, st );} \
@@ -2143,5 +2147,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x7F04CBDDB17921F5
-// XOICO_FILE_SIGNATURE 0x94DBA30B33D1931F
+// XOICO_BODY_SIGNATURE 0xF76F133052B1CD94
+// XOICO_FILE_SIGNATURE 0x1EE5ACF36595CE13

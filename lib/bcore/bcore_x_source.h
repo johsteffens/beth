@@ -48,6 +48,13 @@ func (d x_source* create_from_sc(     sc_t  sc  )) = { return bcore_source_strin
 func (d x_source* create_from_fv( sc_t format, va_list args )) = { return bcore_source_string_s_create_fv( format, args ); };
 func (d x_source* create_from_fa( sc_t format, ... )) = { va_list a; va_start( a, format ); d x_source* r = :create_from_fv( format, a ); va_end( a ); return r; };
 
+/// error in case file does not exist
+func (d x_source* check_create_from_file( sc_t path )) =
+{
+    if( !bcore_file_exists( path ) ) ERR_fa( "File '#<sc_t>' not found.", path );
+    return bcore_file_open_source( path );
+};
+
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Returns 'true' when end of stream was reached

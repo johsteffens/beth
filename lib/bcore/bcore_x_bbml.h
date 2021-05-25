@@ -54,7 +54,7 @@ XOILA_DEFINE_GROUP( x_bbml, x_inst )
  */
 func (er_t t_from_source( m@* o, tp_t t, m x_source* source ));
 func (er_t   from_source( m@* o,         m x_source* source )) = { return o.t_from_source( o._, source ); };
-func (er_t t_from_file  ( m@* o, tp_t t,   sc_t file )) = { return o.t_from_source( o._, x_source_create_from_file( file )^ ); };
+func (er_t t_from_file  ( m@* o, tp_t t,   sc_t file )) = { return o.t_from_source( o._, x_source_check_create_from_file( file )^ ); };
 func (er_t   from_file  ( m@* o,           sc_t file )) = { return o.t_from_file( o._, file ); };
 func (er_t t_from_st    ( m@* o, tp_t t, c st_s* st  )) = { return o.t_from_source( o._, x_source_create_from_st( st )^ ); };
 func (er_t   from_st    ( m@* o,         c st_s* st  )) = { return o.t_from_st( o._, st ); };

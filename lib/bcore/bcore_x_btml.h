@@ -88,7 +88,7 @@ XOILA_DEFINE_GROUP( x_btml, x_inst )
  */
 func (er_t t_from_source( m@* o, tp_t t, m x_source* source ));
 func (er_t   from_source( m@* o,         m x_source* source )) = { return o.t_from_source( o._, source ); };
-func (er_t t_from_file  ( m@* o, tp_t t,   sc_t file )) = { return o.t_from_source( o._, x_source_create_from_file( file )^ ); };
+func (er_t t_from_file  ( m@* o, tp_t t,   sc_t file )) = { return o.t_from_source( o._, x_source_check_create_from_file( file )^ ); };
 func (er_t   from_file  ( m@* o,           sc_t file )) = { return o.t_from_file( o._, file ); };
 func (er_t t_from_st    ( m@* o, tp_t t, c st_s* st  )) = { return o.t_from_source( o._, x_source_create_from_st( st )^ ); };
 func (er_t   from_st    ( m@* o,         c st_s* st  )) = { return o.t_from_st( o._, st ); };
@@ -101,7 +101,7 @@ func (er_t   from_sc    ( m@* o,           sc_t  sc  )) = { return o.t_from_sc( 
  */
 func (er_t t_body_from_source( m@* o, tp_t t, m x_source* source )) = { return o.t_parse_body( t, source ); };
 func (er_t   body_from_source( m@* o,         m x_source* source )) = { return o.t_body_from_source( o._, source ); };
-func (er_t t_body_from_file  ( m@* o, tp_t t,   sc_t file )) = { return o.t_body_from_source( o._, x_source_create_from_file( file )^ ); };
+func (er_t t_body_from_file  ( m@* o, tp_t t,   sc_t file )) = { return o.t_body_from_source( o._, x_source_check_create_from_file( file )^ ); };
 func (er_t   body_from_file  ( m@* o,           sc_t file )) = { return o.t_body_from_file( o._, file ); };
 func (er_t t_body_from_st    ( m@* o, tp_t t, c st_s* st  )) = { return o.t_body_from_source( o._, x_source_create_from_st( st )^ ); };
 func (er_t   body_from_st    ( m@* o,         c st_s* st  )) = { return o.t_body_from_st( o._, st ); };
@@ -121,6 +121,9 @@ func (d aware @* create_from_sc(   sc_t  sc )) = { return :create_from_source( x
 
 /// Tests initial source content for validity. Restores index.
 func (bl_t appears_valid( m x_source* source ));
+
+/// Tests initial source content if it represents an object of given type. Restores index.
+func (bl_t t_appears_valid( tp_t type, m x_source* source ));
 
 /// Writes object to sink.
 func (void t_to_sink( c@* o, tp_t t, m x_sink* sink ));
@@ -232,6 +235,29 @@ func appears_valid =
             tp_t type = :type_of( type_string );
             if( bcore_flect_exists( type ) )      valid = true;
             else if( type == btypeof( "#file" ) ) valid = true;
+        }
+    }
+
+    source.set_index( index );
+    return valid;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func t_appears_valid =
+{
+    bl_t valid = false;
+    sz_t index = source.get_index();
+    m st_s* type_string = st_s!^;
+    if( source.parse_bl( " #?'<'" ) ) // type specifier
+    {
+        if( source.parse_fa( "#until'>'>", type_string ) )
+        {
+            bcore_error_remove_last();
+        }
+        else
+        {
+            if( :type_of( type_string ) == type ) valid = true;
         }
     }
 
