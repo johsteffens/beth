@@ -195,7 +195,7 @@ bl_t bcore_error_pop_to_sink( bcore_sink* sink )
     BLM_INIT();
     st_s* s = BLM_CREATE( st_s );
     bl_t success = bcore_error_pop_st( NULL, s );
-    if( success ) bcore_sink_a_push_fa( sink, "#<sc_t>\n", s->sc );
+    if( success && sink ) bcore_sink_a_push_fa( sink, "#<sc_t>\n", s->sc );
     BLM_RETURNV( bl_t, success );
 }
 
@@ -208,16 +208,25 @@ bl_t bcore_error_pop_to_stderr()
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_error_pop_all_to_sink( bcore_sink* sink )
+bl_t bcore_error_pop_all_to_sink( bcore_sink* sink )
 {
-    while( bcore_error_pop_to_sink( sink ) ) {};
+    bl_t any = false;
+    while( bcore_error_pop_to_sink( sink ) ) { any = true; };
+    return any;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_error_pop_all_to_stderr()
+bl_t bcore_error_pop_all_to_stderr()
 {
-    bcore_error_pop_all_to_sink( BCORE_STDERR );
+    return bcore_error_pop_all_to_sink( BCORE_STDERR );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t bcore_error_pop_all()
+{
+    return bcore_error_pop_all_to_sink( NULL );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -98,9 +98,10 @@ func(bl_t pop_st( m er_t* id, m st_s* msg ));
 func(bl_t pop_to_sink( m bcore_sink* sink ));
 func(bl_t pop_to_stderr());
 
-/// Takes all errors from stack
-func(void pop_all_to_sink( m bcore_sink* sink ));
-func(void pop_all_to_stderr());
+/// Takes all errors from stack; returns false in case stack was empty
+func(bl_t pop_all_to_sink( m bcore_sink* sink ));
+func(bl_t pop_all_to_stderr());
+func(bl_t pop_all());
 
 //----------------------------------------------------------------------------------------------------------------------
 
