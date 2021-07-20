@@ -1,4 +1,4 @@
-//  Last update: 2021-05-24T14:47:17Z
+//  Last update: 2021-06-05T11:16:57Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2021 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -1020,8 +1020,9 @@
   bl_t bcore_error_pop_st( er_t* id, st_s* msg ); \
   bl_t bcore_error_pop_to_sink( bcore_sink* sink ); \
   bl_t bcore_error_pop_to_stderr( void ); \
-  void bcore_error_pop_all_to_sink( bcore_sink* sink ); \
-  void bcore_error_pop_all_to_stderr( void ); \
+  bl_t bcore_error_pop_all_to_sink( bcore_sink* sink ); \
+  bl_t bcore_error_pop_all_to_stderr( void ); \
+  bl_t bcore_error_pop_all( void ); \
   XOILA_DECLARE_SPECT( bcore_error ) \
   { \
       bcore_spect_header_s header; \
@@ -2147,5 +2148,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xF76F133052B1CD94
-// XOICO_FILE_SIGNATURE 0x1EE5ACF36595CE13
+// XOICO_BODY_SIGNATURE 0xBCEA1A36E8D16F3D
+// XOICO_FILE_SIGNATURE 0x3C687ADA8E03A9A8

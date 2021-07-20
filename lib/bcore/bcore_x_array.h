@@ -19,7 +19,8 @@
 #ifndef BCORE_X_ARRAY_H
 #define BCORE_X_ARRAY_H
 
-#include "bcore_std.h"
+#include "bcore_spect_array.h"
+#include "bcore_x_inst.h"
 #include "bcore.xo.h"
 
 /**********************************************************************************************************************/
