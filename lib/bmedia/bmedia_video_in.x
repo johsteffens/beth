@@ -37,7 +37,7 @@ func (:s) ( er_t ioctl( @*o, u3_t request, vd_t arg ) ) =
     s2_t result = 0;
 
     /// retry in case of interrupt
-    for( result = 0; ( result = ioctl( o.handler_, request, arg ) ) == -1 && errno == EINTR; ) {};
+    for( result = 0; ( result = ioctl( o.handle_, request, arg ) ) == -1 && errno == EINTR; ) {};
 
     if( result == -1 )
     {
@@ -113,9 +113,9 @@ func (:s) setup =
         return bcore_error_push_fa( TYPEOF_general_error, "Improper device: #<sc_t>.\n#<s2_t>: #<sc_t>\n", o.dev_name.sc, errno, strerror(errno) );
     }
 
-    o.handler_ = open( o.dev_name.sc, O_RDWR | O_NONBLOCK, 0 );
+    o.handle_ = open( o.dev_name.sc, O_RDWR | O_NONBLOCK, 0 );
 
-    if( o.handler_ == -1 )
+    if( o.handle_ == -1 )
     {
         return bcore_error_push_fa( TYPEOF_general_error, "Failed opening #<sc_t>.\n#<s2_t>: #<sc_t>\n", o.dev_name.sc, errno, strerror(errno) );
     }
@@ -199,7 +199,7 @@ func (:s) capture_loop =
         o.stream_on();
     }
 
-    while( !feed.capture_exit() )
+    while( capture_exit ? !capture_exit.capture_exit() : true )
     {
         o.mutex_exit_capture_loop_.lock();
         bl_t exit_loop = o.exit_capture_loop_;
@@ -211,13 +211,13 @@ func (:s) capture_loop =
             fd_set fds;
 
             FD_ZERO( &fds );
-            FD_SET( o.handler_, &fds );
+            FD_SET( o.handle_, &fds );
 
             struct timeval timeout = { 0 };
             timeout.tv_sec = 2;
             timeout.tv_usec = 0;
 
-            s2_t result = select( o.handler_ + 1, &fds, NULL, NULL, &timeout );
+            s2_t result = select( o.handle_ + 1, &fds, NULL, NULL, &timeout );
             if( result == -1 )
             {
                 if( errno != EINTR )
@@ -261,7 +261,7 @@ func (:s) capture_loop =
             {
                 if( buf.m.userptr == (intptr_t)e.data )
                 {
-                    feed.capture_feed( e );
+                    capture_feed.capture_feed( e );
                     break;
                 }
             }
@@ -282,13 +282,13 @@ func (:s) shut_down =
 
     x_lock_s^ lock.set( o.mutex_ );
     o.stream_off();
-    if( o.handler_ != -1 )
+    if( o.handle_ != -1 )
     {
-        if( close( o.handler_ ) == -1 )
+        if( close( o.handle_ ) == -1 )
         {
             return bcore_error_push_fa( TYPEOF_general_error, "#<s2_t>: #<sc_t>\n", errno, strerror(errno) );
         }
-        o.handler_ = -1;
+        o.handle_ = -1;
     }
 
     o.mutex_exit_capture_loop_.lock();
@@ -307,13 +307,15 @@ func (u0_t clamp16( s2_t v )) = { return s2_min( 255, s2_max( 0, v >> 8 ) ); };
 
 func (:image_s) convert_to_argb =
 {
-    assert( o.width & 1 == 0 );
+    assert( ( o.width & 1 ) == 0 );
     img.format = TYPEOF_bcore_img_u2_argb;
     img.set_size( o.height, o.width );
 
     for( sz_t j = 0; j < img.rows; j++ )
     {
         u0_t* yp = o.data + o.bytes_per_line * j;
+
+        m u2_t* u2_row = img.data + img.stride * j;
         for( sz_t i = 0; i < img.cols; i += 2 )
         {
             u2_t y1 = ( ( ( s2_t )yp[ i * 2     ] - 16 ) * 298 ) + 128;
@@ -325,8 +327,8 @@ func (:image_s) convert_to_argb =
             s2_t gp = - 100 * u - 208 * v;
             s2_t bp =   516 * u;
 
-            img.set_rgb( j, i    , :clamp16( y1 + rp ), :clamp16( y1 + gp ), :clamp16( y1 + bp ) );
-            img.set_rgb( j, i + 1, :clamp16( y2 + rp ), :clamp16( y2 + gp ), :clamp16( y2 + bp ) );
+            u2_row[ i     ] = bcore_img_u2_pixel_from_rgb( img.format, :clamp16( y1 + rp ), :clamp16( y1 + gp ), :clamp16( y1 + bp ) );
+            u2_row[ i + 1 ] = bcore_img_u2_pixel_from_rgb( img.format, :clamp16( y2 + rp ), :clamp16( y2 + gp ), :clamp16( y2 + bp ) );
         }
     }
 };
