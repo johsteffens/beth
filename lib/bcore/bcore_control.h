@@ -210,6 +210,14 @@ static inline vd_t bcore_pass_bounds( vd_t o, sz_t size, sz_t index, sc_t f_name
 }
 
 /**********************************************************************************************************************/
+/// Timer
+
+/// retrieves time based on function gettimeofday
+void bcore_get_time( u3_t* seconds, u3_t* microseconds );
+u3_t bcore_time_us( void ); /// returns (full) time in microseconds
+u3_t bcore_time_ms( void ); /// returns (full) time in milliseconds
+
+/**********************************************************************************************************************/
 
 vd_t bcore_control_signal_handler( const bcore_signal_s* o );
 
