@@ -14,7 +14,7 @@
       * [Associative Binding](#binding)
       * [RTTI](#RTTI)
       * [Memory Management](#memory-management)
-      * [Xoila (automatic code)](#xoila)
+      * [Xoila](#xoila)
    * [Motivation](#motivation)
 
 # Getting Started
@@ -37,7 +37,7 @@ $ make run
 # About Beth
 
 *Beth* is a collection of foundation libraries covering basic objects, advanced 
-numerical frameworks, a [meta-code framework](#xoi) for high level software design
+numerical frameworks, a [dedicated language](#xoila) for high level software design
 and a [framework for machine learning](#badapt) (in development).
 
 It is a personal *"moonshot"* project in which I'm trying to bring several high-level programming
