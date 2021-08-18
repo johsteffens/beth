@@ -201,7 +201,7 @@ func (:s) stream_play =
     s1_t* data_ptr = interleaved_samples;
     while( frames_left > 0 )
     {
-        snd_pcm_wait( o.handle_.1, 1000 );
+        snd_pcm_wait( o.handle_.1, 100 );
         s2_t frames = frames_left > o.actual_frames_per_period ? o.actual_frames_per_period : frames_left;
         s2_t frames_written = snd_pcm_writei( o.handle_.1, data_ptr, frames );
         if( frames_written < 0 ) frames_written = snd_pcm_recover( o.handle_.1, frames_written, 1 );
@@ -285,6 +285,174 @@ func (:s) sound_check =
     o.stream_stop();
 
     return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+stamp :chain_s =
+{
+    :buf_s buf;
+    :chain_s => next;
+
+    func (m @* last( m@* o )) = { return o.next ? o.next.last() : o; };
+    func (sz_t size( @* o )) = { return 1 + ( o.next ? o.next.size() : 0 ); };
+    func (sz_t buf_size( @* o )) = { return o.buf.size + ( o.next ? o.next.buf_size() : 0 ); };
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:player_s) setup =
+{
+    o.shut_down();
+    o.thread_exit_ = false;
+    o.audio =< audio;
+    o.audio.setup();
+    o.thread.call_m_thread_func( o );
+    o.is_setup_ = true;
+    return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:player_s) shut_down =
+{
+    if( !o.is_setup_ ) return 0;
+    o.mutex.lock();
+    o.thread_exit_ = true;
+    o.mutex.unlock();
+    o.condition_play.wake_one();
+    o.thread.join();
+    if( o.audio ) o.audio.stream_cut();
+    o.audio =< NULL;
+    o.is_setup_ = false;
+    er_t thread_error_ = o.thread_error_;
+    o.thread_error_ = 0;
+    return thread_error_;
+};
+
+func (:player_s) bcore_inst_call.down_e = { o.shut_down(); };
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:player_s) m_thread_func =
+{
+    o.mutex.lock();
+    while( !o.thread_exit_ )
+    {
+        if( o.chain )
+        {
+            :chain_s* chain = o.chain.fork()^;
+
+            o.mutex.unlock();
+            er_t thread_error = o.audio.stream_play_buf( chain.buf );
+            o.mutex.lock();
+            if( thread_error )
+            {
+                o.thread_error_ = thread_error;
+                o.thread_exit_ = true;
+            }
+
+            o.chain =< chain.next.fork();
+        }
+        else
+        {
+            o.condition_buffer_empty.wake_one();
+            o.condition_play.sleep( o.mutex );
+        }
+    };
+    o.condition_buffer_empty.wake_one();
+    o.audio.stream_stop();
+    o.mutex.unlock();
+    return NULL;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:player_s) play =
+{
+    if( frames == 0 ) return 0;
+    o.mutex.lock();
+
+    sz_t channels = o.audio.channels;
+
+    m :chain_s* chain = NULL;
+
+    sz_t buf_space = o.buf_frames * channels;
+
+    if( !o.chain )
+    {
+        o.chain =< :chain_s!;
+        chain = o.chain;
+        chain.buf.set_space( buf_space );
+    }
+    else
+    {
+        chain = o.chain.last();
+        if( chain == o.chain )
+        {
+            chain.next =< :chain_s!;
+            chain = chain.next;
+            chain.buf.set_space( buf_space );
+        }
+    }
+
+    while( frames > 0 )
+    {
+        if( chain.buf.size == chain.buf.space )
+        {
+            chain.next =< :chain_s!;
+            chain = chain.next;
+            chain.buf.set_space( buf_space );
+        }
+
+        m :buf_s* buf = chain.buf;
+        sz_t values = sz_min( buf.space - buf.size, frames * channels );
+        m s1_t* buf_ptr = buf.data + buf.size;
+        assert( buf.size + values <= buf.space );
+        for( sz_t i = 0; i < values; i++ ) buf_ptr[ i ] = interleaved_samples[ i ];
+        buf.size += values;
+        interleaved_samples += values;
+        frames -= values / channels;
+    }
+
+    o.condition_play.wake_one();
+    o.mutex.unlock();
+    return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:player_s) buffer_frames =
+{
+    o.mutex.lock();
+    sz_t size = o.chain ? o.chain.buf_size() / o.audio.channels : 0;
+    o.mutex.unlock();
+    return size;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:player_s) is_empty =
+{
+    o.mutex.lock();
+    bl_t is_empty = ( o.chain == NULL );
+    o.mutex.unlock();
+    return is_empty;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:player_s) wait_until_empty =
+{
+    o.mutex.lock();
+    while( o.chain != NULL ) o.condition_buffer_empty.sleep( o.mutex );
+    er_t thread_error = o.thread_error_;
+    o.mutex.unlock();
+    return thread_error;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

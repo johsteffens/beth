@@ -43,6 +43,13 @@
  *
  *  ---------------------------------
  *
+ *  Usage via bmedia_audio_out_player_s:
+ *  - m$* player = bmedia_audio_in_player_s!.setup( audio );
+ *  - Call player.play any time to feed more data
+ *  - When finished capturing simply destroy player.
+ *
+ *  ---------------------------------
+ *
  *  References (used for development):
  *    - ALSA Project: https://www.alsa-project.org/alsa-doc/alsa-lib/index.html
  */
@@ -154,10 +161,10 @@ stamp :s =
     func (er_t stream_play_buf ( m@* o, :buf_s* buf )) = { return o.stream_play( buf.data, buf.size / o.channels ); };
     func (er_t stream_play_zero( m@* o, u2_t frames )) = { return ( frames > 0 ) ? o.stream_play_buf( :buf_s!^.set_size( frames * o.channels ) ) : 0; };
 
-    /// Gentle stop of a continuous stream (by draining)
+    /// Gentle stop of a continuous stream (by draining) (no effect if not streaming)
     func (er_t stream_stop( m@* o ));
 
-    /// Forced stop of a continuous stream (by dropping frames)
+    /// Forced stop of a continuous stream (by dropping frames) (no effect if not streaming)
     func (er_t stream_cut( m@* o ));
 
     /// Plays a test sound
@@ -170,6 +177,68 @@ stamp :s =
     private bl_t is_open_ = false;
     private bl_t is_setup_ = false;
     private bl_t is_streaming_ = false;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/** Dedicated Audio Player using a background thread.
+ *  Simplifies setup and control for one-time or continuous playing.
+ *  Usage:
+ *      m$* player = bmedia_audio_out_player_s!;
+ *      my_thread.setup( audio );
+ *      call player.play( ... ) anytime
+ *      when finished, simply destroy player.
+ *
+ *  - Takes ownership of audio object
+ *  - Unlimited buffer space.
+ *
+ */
+
+forward :chain_s;
+
+stamp :player_s =
+{
+    /// =========== parameters ===========
+
+    /** Maximum buffer size of a single chain-element.
+     *  When shutting down, the maximum latency is given by this value.
+     */
+    sz_t buf_frames = 16384;
+
+    /// ==================================
+
+    :s -> audio;
+    aware :chain_s => chain;
+
+    x_thread_s    thread;
+    x_mutex_s     mutex;
+    x_condition_s condition_play;
+    x_condition_s condition_buffer_empty;
+
+    bl_t thread_exit_;
+    bl_t is_setup_;
+    er_t thread_error_;
+
+    func x_thread.m_thread_func;
+
+    func (er_t setup( m@* o, d :s* audio ));
+    func (er_t shut_down( m@* o ));
+
+    /** Appends data to the play-buffer.
+     *  If not already playing, playing is triggered.
+     */
+    func (er_t play( m@* o, s1_t* interleaved_samples, u2_t frames ));
+    func (er_t play_buf ( m@* o, :buf_s* buf )) = { ASSERT( o.audio ); return o.play( buf.data, buf.size / o.audio.channels ); };
+    func (er_t play_zero( m@* o, u2_t frames )) = { ASSERT( o.audio ); return ( frames > 0 ) ? o.play_buf( :buf_s!^.set_size( frames * o.audio.channels ) ) : 0; };
+
+    /// Returns current (unplayed) buffer frames
+    func (bl_t buffer_frames( m@* o ));
+
+    /// Checks if play-buffer is empty
+    func (bl_t is_empty( m@* o ));
+
+    /// Suspends calling thread until play-buffer is empty
+    func (er_t wait_until_empty( m@* o ));
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -184,7 +184,7 @@ stamp :s =
  *  - Takes ownership of video object
  *  - No ownership of capture_feed object
  *  - Video stream is started during setup if not started already.
- *  - capture_loop_error holds an error occurring in the thread
+ *  - capture_loop_error_ holds an error occurring in the thread
  */
 stamp :capture_thread_s =
 {
@@ -193,9 +193,8 @@ stamp :capture_thread_s =
 
     x_thread_s thread;
     x_mutex_s  mutex;
-    bl_t exit_loop;
-    bl_t is_running;
-    er_t capture_loop_error = 0;
+    bl_t exit_loop_;
+    er_t capture_loop_error_ = 0;
 
     func (er_t setup( m@* o, d :s* video, m aware :* capture_feed )) =
     {
@@ -203,40 +202,42 @@ stamp :capture_thread_s =
         o.video =< video;
         o.video.stream_on();
         o.capture_feed = capture_feed;
-        o.exit_loop = false;
+        o.exit_loop_ = false;
         o.thread.call_m_thread_func( o );
-        o.mutex.lock();
-        o.is_running = true;
-        o.mutex.unlock();
         return 0;
     };
 
     func x_thread.m_thread_func =
     {
-        o.capture_loop_error = o.video.capture_loop( o.capture_feed, o );
-        o.mutex.lock();
-        o.is_running = false;
-        o.mutex.unlock();
+        er_t error = o.video.capture_loop( o.capture_feed, o );
+        if( error )
+        {
+            o.mutex.lock();
+            o.capture_loop_error_ = error;
+            o.mutex.unlock();
+        }
         return NULL;
     };
 
     func bmedia_video_in.capture_exit =
     {
         o.mutex.lock();
-        bl_t exit_loop = o.exit_loop;
+        bl_t exit_loop_ = o.exit_loop_;
         o.mutex.unlock();
-        return exit_loop;
+        return exit_loop_;
     };
 
-    func (void shut_down( m@* o )) =
+    func (er_t shut_down( m@* o )) =
     {
         o.mutex.lock();
-        o.exit_loop = true;
+        o.exit_loop_ = true;
         o.mutex.unlock();
         o.thread.join();
         o.video =< NULL;
         o.capture_feed = NULL;
-        o.is_running = false;
+        er_t capture_loop_error_ = o.capture_loop_error_;
+        o.capture_loop_error_ = 0;
+        return capture_loop_error_;
     };
 
     func bcore_inst_call.down_e = { o.shut_down(); };
