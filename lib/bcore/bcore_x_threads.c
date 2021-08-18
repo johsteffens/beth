@@ -25,8 +25,8 @@ void x_mutex_s_init_x( x_mutex_s* o )
 {
     int ern = pthread_mutex_init( &o->_mutex, NULL );
     if( ern == EAGAIN ) ERR( "Resources exceeded." );
-    if( ern == ENOMEM ) ERR( "Memory exhaused." );
-    if( ern == EPERM  ) ERR( "Unpriviledged call." );
+    if( ern == ENOMEM ) ERR( "Memory exhausted." );
+    if( ern == EPERM  ) ERR( "Unprivileged call." );
     if( ern ) ERR( "function returned error %i", ern );
 }
 
