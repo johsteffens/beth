@@ -174,9 +174,27 @@ func (:s) play =
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:s) play_sequence =
+{
+    if( sequence.size == 0 ) return 0;
+    if( o.actual_rate != sequence.rate || o.channels != sequence.channels )
+    {
+        o.shut_down();
+        o.requested_rate = sequence.rate;
+        o.channels = sequence.channels;
+    }
+    o.stream_restart();
+    o.stream_play_sequence( sequence );
+    o.stream_stop();
+    return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:s) stream_start =
 {
     if( o.is_streaming_ ) return 0;
+    if( !o.is_setup_ ) o.setup();
     snd_pcm_start( o.handle_.1 );
     o.is_streaming_ = true;
     return 0;
@@ -234,6 +252,23 @@ func (:s) stream_play =
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:s) stream_play_sequence =
+{
+    if( sequence.rate != o.actual_rate )
+    {
+        return bcore_error_push_fa( TYPEOF_general_error, "stream_play_sequence: Stream rate (#<sz_t>) and audio rate (#<sz_t>) mismatch.\n", sequence.rate, o.actual_rate );
+    }
+
+    if( sequence.channels != o.channels )
+    {
+        return bcore_error_push_fa( TYPEOF_general_error, "stream_play_sequence: Stream channels (#<sz_t>) and audio channels (#<sz_t>) mismatch.\n", sequence.channels, o.channels );
+    }
+    for( sz_t i = 0; i < sequence.size; i++ ) o.stream_play_buffer( sequence.buffer_c( i ) );
+    return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:s) stream_stop =
 {
     if( !o.is_streaming_ ) return 0;
@@ -260,7 +295,7 @@ func (:s) sound_check =
     o.setup();
     sz_t frames = 4 * o.actual_frames_per_period;
 
-    :buf_s^ buf.set_size( frames * 2 );
+    bmedia_audio_buffer_s^ buf.set_size( frames * 2 );
 
     f3_t pi = 3.1415926535897932384626434;
     f3_t tau = pi * 2;
@@ -290,18 +325,6 @@ func (:s) sound_check =
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
-
-//----------------------------------------------------------------------------------------------------------------------
-
-stamp :chain_s =
-{
-    :buf_s buf;
-    :chain_s => next;
-
-    func (m @* last( m@* o )) = { return o.next ? o.next.last() : o; };
-    func (sz_t size( @* o )) = { return 1 + ( o.next ? o.next.size() : 0 ); };
-    func (sz_t buf_size( @* o )) = { return o.buf.size + ( o.next ? o.next.buf_size() : 0 ); };
-};
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -343,20 +366,17 @@ func (:player_s) m_thread_func =
     o.mutex.lock();
     while( !o.thread_exit_ )
     {
-        if( o.chain )
+        if( o.sequence.size > 0 )
         {
-            :chain_s* chain = o.chain.fork()^;
-
+            bmedia_audio_buffer_s* buffer = o.sequence.pop_first_buffer()^;
             o.mutex.unlock();
-            er_t thread_error = o.audio.stream_play_buf( chain.buf );
+            er_t thread_error = o.audio.stream_play_buffer( buffer );
             o.mutex.lock();
             if( thread_error )
             {
                 o.thread_error_ = thread_error;
                 o.thread_exit_ = true;
             }
-
-            o.chain =< chain.next.fork();
         }
         else
         {
@@ -378,38 +398,17 @@ func (:player_s) play =
     o.mutex.lock();
 
     sz_t channels = o.audio.channels;
-
-    m :chain_s* chain = NULL;
-
     sz_t buf_space = o.buf_frames * channels;
 
-    if( !o.chain )
-    {
-        o.chain =< :chain_s!;
-        chain = o.chain;
-        chain.buf.set_space( buf_space );
-    }
-    else
-    {
-        chain = o.chain.last();
-        if( chain == o.chain )
-        {
-            chain.next =< :chain_s!;
-            chain = chain.next;
-            chain.buf.set_space( buf_space );
-        }
-    }
+    if( o.sequence.size == 0 ) o.sequence.push_buffer().set_space( buf_space );
 
     while( frames > 0 )
     {
-        if( chain.buf.size == chain.buf.space )
+        m bmedia_audio_buffer_s* buf = o.sequence.last_m();
+        if( !buf || buf.size == buf.space )
         {
-            chain.next =< :chain_s!;
-            chain = chain.next;
-            chain.buf.set_space( buf_space );
+            buf = o.sequence.push_buffer().set_space( buf_space );
         }
-
-        m :buf_s* buf = chain.buf;
         sz_t values = sz_min( buf.space - buf.size, frames * channels );
         m s1_t* buf_ptr = buf.data + buf.size;
         assert( buf.size + values <= buf.space );
@@ -426,12 +425,31 @@ func (:player_s) play =
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:player_s) play_sequence =
+{
+    if( sequence.size == 0 ) return 0;
+    if( o.audio.actual_rate != sequence.rate || o.audio.channels != sequence.channels )
+    {
+        o.wait_until_empty();
+        o.mutex.lock();
+        o.audio.shut_down();
+        o.audio.requested_rate = sequence.rate;
+        o.audio.channels = sequence.channels;
+        o.audio.setup();
+        o.mutex.unlock();
+    }
+    for( sz_t i = 0; i < sequence.size; i++ ) o.play_buffer( sequence.buffer_c( i ) );
+    return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:player_s) buffer_frames =
 {
     o.mutex.lock();
-    sz_t size = o.chain ? o.chain.buf_size() / o.audio.channels : 0;
+    sz_t frames = o.sequence.sum_buffer_size() / o.audio.channels;
     o.mutex.unlock();
-    return size;
+    return frames;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -439,7 +457,7 @@ func (:player_s) buffer_frames =
 func (:player_s) is_empty =
 {
     o.mutex.lock();
-    bl_t is_empty = ( o.chain == NULL );
+    bl_t is_empty = ( o.sequence.size == 0 );
     o.mutex.unlock();
     return is_empty;
 };
@@ -449,7 +467,7 @@ func (:player_s) is_empty =
 func (:player_s) wait_until_empty =
 {
     o.mutex.lock();
-    while( o.chain != NULL ) o.condition_buffer_empty.sleep( o.mutex );
+    while( o.sequence.size > 0 ) o.condition_buffer_empty.sleep( o.mutex );
     er_t thread_error = o.thread_error_;
     o.mutex.unlock();
     return thread_error;

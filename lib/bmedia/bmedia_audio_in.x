@@ -200,7 +200,7 @@ func (:s) stream_record =
 {
     if( !o.is_setup_ ) o.setup();
     if( !o.is_streaming_ ) o.stream_start();
-    s2_t frames_left = frames;
+    sz_t frames_left = frames;
     m s1_t* data_ptr = interleaved_samples;
     while( frames_left > 0 )
     {
@@ -212,7 +212,7 @@ func (:s) stream_record =
          */
         snd_pcm_wait( o.handle_.1, 100 );
 
-        s2_t frames = frames_left > o.actual_frames_per_period ? o.actual_frames_per_period : frames_left;
+        s2_t frames = frames_left > o.actual_frames_per_period ? o.actual_frames_per_period : frames_left.cast( s2_t );
         s2_t frames_recorded = snd_pcm_readi( o.handle_.1, data_ptr, frames );
         if( frames_recorded < 0 ) frames_recorded = snd_pcm_recover( o.handle_.1, frames_recorded, 1 );
 
@@ -244,6 +244,39 @@ func (:s) stream_record =
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:s) stream_record_to_sequence =
+{
+    if( !o.is_setup_ ) o.setup();
+    if( sequence.size == 0 )
+    {
+        sequence.rate = o.actual_rate;
+        sequence.channels = o.channels;
+    }
+    else
+    {
+        if( sequence.rate != o.actual_rate )
+        {
+            return bcore_error_push_fa( TYPEOF_general_error, "stream_record_to_sequence: Stream rate and audio rate mismatch.\n" );
+        }
+
+        if( sequence.channels != o.channels )
+        {
+            return bcore_error_push_fa( TYPEOF_general_error, "stream_record_to_sequence: Stream channels and audio channels mismatch.\n" );
+        }
+    }
+    sz_t frames_left = frames;
+    while( frames_left > 0 )
+    {
+        sz_t frames = ( frames_left > o.actual_frames_per_period ) ? o.actual_frames_per_period.cast( sz_t ) : frames_left;
+        m bmedia_audio_buffer_s* buffer = sequence.push_buffer().set_size( frames * o.channels );
+        o.stream_record( buffer.data, frames );
+        frames_left -= frames;
+    }
+    return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:s) stream_stop =
 {
     if( !o.is_streaming_ ) return 0;
@@ -264,6 +297,26 @@ func (:s) stream_cut =
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:s) record =
+{
+    o.stream_restart();
+    o.stream_record( interleaved_samples, frames );
+    o.stream_cut();
+    return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) record_to_sequence =
+{
+    o.stream_restart();
+    o.stream_record_to_sequence( sequence, frames );
+    o.stream_cut();
+    return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:s) capture_loop =
 {
     x_lock_s^ _.set( o.mutex_ );
@@ -274,7 +327,7 @@ func (:s) capture_loop =
         o.stream_start();
     }
 
-    :buf_s^ buf.set_size( o.actual_frames_per_period * o.channels );
+    bmedia_audio_buffer_s^ buf.set_size( o.actual_frames_per_period * o.channels );
 
     while( capture_exit ? !capture_exit.capture_exit() : true )
     {

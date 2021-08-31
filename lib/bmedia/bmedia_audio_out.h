@@ -59,6 +59,7 @@
 
 #include <alsa/asoundlib.h> // link with -lasound
 #include "bcore_std.h"
+#include "bmedia_audio.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -72,11 +73,6 @@ XOILA_DEFINE_GROUP( bmedia_audio_out, x_inst )
 
 type snd_pcm_t;
 type snd_pcm_hwparams_t;
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/// General buffer for audio data
-stamp :buf_s = x_array { s1_t []; };
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -144,7 +140,10 @@ stamp :s =
      *  See also stream-functions below.
      */
     func (er_t play( m@* o, s1_t* interleaved_samples, u2_t frames ));
-    func (er_t play_buf( m@* o, :buf_s* buf )) = { return o.play( buf.data, buf.size / o.channels ); };
+    func (er_t play_buffer( m@* o, bmedia_audio_buffer_s* buf )) = { return o.play( buf.data, buf.size / o.channels ); };
+
+    /// Resets player to sequence channels and rate if needed
+    func (er_t play_sequence( m@* o, bmedia_audio_sequence_s* sequence ));
 
     /// Starts a continuous stream (no effect if already started)
     func (er_t stream_start( m@* o ));
@@ -157,9 +156,10 @@ stamp :s =
      *  This function seamlessly concatenates subsequent samples to a continuous stream.
      *  To avoid underruns, a subsequent call must be initiated before the last finishes playing.
      */
-    func (er_t stream_play     ( m@* o, s1_t* interleaved_samples, u2_t frames ));
-    func (er_t stream_play_buf ( m@* o, :buf_s* buf )) = { return o.stream_play( buf.data, buf.size / o.channels ); };
-    func (er_t stream_play_zero( m@* o, u2_t frames )) = { return ( frames > 0 ) ? o.stream_play_buf( :buf_s!^.set_size( frames * o.channels ) ) : 0; };
+    func (er_t stream_play       ( m@* o, s1_t* interleaved_samples, u2_t frames ));
+    func (er_t stream_play_buffer( m@* o, bmedia_audio_buffer_s* buf )) = { return o.stream_play( buf.data, buf.size / o.channels ); };
+    func (er_t stream_play_zero  ( m@* o, u2_t frames )) = { return ( frames > 0 ) ? o.stream_play_buffer( bmedia_audio_buffer_s!^.set_size( frames * o.channels ) ) : 0; };
+    func (er_t stream_play_sequence( m@* o, bmedia_audio_sequence_s* sequence )); // error if sequence rate and channels settings mismatch audio settings
 
     /// Gentle stop of a continuous stream (by draining) (no effect if not streaming)
     func (er_t stream_stop( m@* o ));
@@ -193,14 +193,11 @@ stamp :s =
  *  - Unlimited buffer space.
  *
  */
-
-forward :chain_s;
-
 stamp :player_s =
 {
     /// =========== parameters ===========
 
-    /** Maximum buffer size of a single chain-element.
+    /** Maximum buffer size of a single sequence-element.
      *  When shutting down, the maximum latency is given by this value.
      */
     sz_t buf_frames = 16384;
@@ -208,16 +205,17 @@ stamp :player_s =
     /// ==================================
 
     :s -> audio;
-    aware :chain_s => chain;
 
-    x_thread_s    thread;
-    x_mutex_s     mutex;
-    x_condition_s condition_play;
-    x_condition_s condition_buffer_empty;
+    hidden bmedia_audio_sequence_s sequence;
 
-    bl_t thread_exit_;
-    bl_t is_setup_;
-    er_t thread_error_;
+    hidden x_thread_s    thread;
+    hidden x_mutex_s     mutex;
+    hidden x_condition_s condition_play;
+    hidden x_condition_s condition_buffer_empty;
+
+    hidden bl_t thread_exit_;
+    hidden bl_t is_setup_;
+    hidden er_t thread_error_;
 
     func x_thread.m_thread_func;
 
@@ -228,8 +226,11 @@ stamp :player_s =
      *  If not already playing, playing is triggered.
      */
     func (er_t play( m@* o, s1_t* interleaved_samples, u2_t frames ));
-    func (er_t play_buf ( m@* o, :buf_s* buf )) = { ASSERT( o.audio ); return o.play( buf.data, buf.size / o.audio.channels ); };
-    func (er_t play_zero( m@* o, u2_t frames )) = { ASSERT( o.audio ); return ( frames > 0 ) ? o.play_buf( :buf_s!^.set_size( frames * o.audio.channels ) ) : 0; };
+    func (er_t play_buffer( m@* o, bmedia_audio_buffer_s* buf )) = { ASSERT( o.audio ); return o.play( buf.data, buf.size / o.audio.channels ); };
+    func (er_t play_zero( m@* o, u2_t frames )) = { ASSERT( o.audio ); return ( frames > 0 ) ? o.play_buffer( bmedia_audio_buffer_s!^.set_size( frames * o.audio.channels ) ) : 0; };
+
+    /// This function resets player to sequence channels and rate if needed; otherwise error on mismatch
+    func (er_t play_sequence( m@* o, bmedia_audio_sequence_s* sequence ));
 
     /// Returns current (unplayed) buffer frames
     func (bl_t buffer_frames( m@* o ));
