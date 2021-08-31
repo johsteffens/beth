@@ -35,7 +35,7 @@ bcore_hmap_tpto_s* bcore_xoila_get_group_stamp_map( void );
 
 /** group-stamp list
  *  List of all stamps that have 'group' in their traitline.
- *  Retruns null in case group is not 'retrievable' or does not exist
+ *  Returns null in case group is not 'retrievable' or does not exist
  */
 static inline const bcore_arr_tp_s* bcore_xoila_get_arr_traitline_stamps( tp_t group )
 {
