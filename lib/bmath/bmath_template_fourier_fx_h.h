@@ -21,6 +21,13 @@
  *  To obtain the inverse transform:
  *      - Conjugate src before FT.
  *      - Conjugate dst after FT and scale with 1.0 / size.
+ *
+ *  Note:
+ *  The numerical stability of FFT scales much better than of the general DCT.
+ *  In nearly all practical use cases FFT is the preferable choice. This remains true
+ *  even with the use of padding to match the power-2 size requirement.
+ *  Due to DCT's simplicity, the DCT can be used for understanding the FT and
+ *  in verification or debugging purposes (for small enough data sizes).
  */
 
 /**********************************************************************************************************************/
@@ -32,6 +39,7 @@
 /// DFT/FFT (dst==src allowed); fft: size = power of 2
 
 /** (Slow) Discrete Fourier Transformation for all vector sizes.
+ *
  *  - Complexity O(n^2)
  *  - dst==src allowed
  *  - Accuracy:

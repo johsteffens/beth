@@ -25,7 +25,7 @@
  *  |        ...        ... |
  *
  * 'XON' denotes a contiguous data block of fixed size.
- *  '()' indicates that the data bock is referenced via index.
+ *  '()' indicates that the data block is referenced via index.
  *
  *  The reason for this specific matrix design is the efficient computation of of convolutions, transposed convolutions
  *  and their respective gradient propagation by expressing them as fast matrix*matrix multiplications.

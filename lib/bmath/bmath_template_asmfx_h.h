@@ -25,7 +25,7 @@
  *  |        ...        ... |
  *
  * 'CAL' denotes a single scalar value.
- *  '()' indicates that the value bock is referenced via index.
+ *  '()' indicates that the value block is referenced via index.
  *
  *  The reason for this specific matrix design is the efficient computation of of convolutions, transposed convolutions and
  *  their respective gradient propagation by expressing them as fast matrix*matrix multiplications.
