@@ -1,4 +1,4 @@
-//  Last update: 2021-06-05T11:16:57Z
+//  Last update: 2021-08-25T09:57:34Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2021 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -216,6 +216,7 @@
 #define TYPEOF_x_sink_spect_s 0xD9C03942D97B5EEBull
 #define BETH_EXPAND_GROUP_x_sink \
   BCORE_FORWARD_OBJECT( x_sink ); \
+  static inline x_sink* x_sink_create_from_file( sc_t path ); \
   static inline sz_t x_sink_push_data( x_sink* o, const x_inst* data, sz_t size ); \
   static inline x_sink* x_sink_push_u0( x_sink* o, u0_t u ); \
   static inline x_sink* x_sink_push_char( x_sink* o, char c ); \
@@ -232,6 +233,7 @@
       bcore_spect_header_s header; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_sink ) \
+  static inline x_sink* x_sink_create_from_file( sc_t path ){ return ((x_sink*)( bcore_file_try_open_sink(path )));} \
   static inline sz_t x_sink_push_data( x_sink* o, const x_inst* data, sz_t size ){ return  bcore_sink_a_push_data(((bcore_sink*)(o)),data, size );} \
   static inline x_sink* x_sink_push_u0( x_sink* o, u0_t u ){ return ((x_sink*)( bcore_sink_a_push_u0(((bcore_sink*)(o)),u )));} \
   static inline x_sink* x_sink_push_char( x_sink* o, char c ){ return ((x_sink*)( bcore_sink_a_push_char(((bcore_sink*)(o)),c )));} \
@@ -697,6 +699,7 @@
   bcore_source* bcore_file_open_source( sc_t name ); \
   bcore_source* bcore_file_open_source_path( const bcore_file_path_s* path ); \
   bcore_sink* bcore_file_open_sink( sc_t name ); \
+  bcore_sink* bcore_file_try_open_sink( sc_t name ); \
   XOILA_DECLARE_SPECT( bcore_file ) \
   { \
       bcore_spect_header_s header; \
@@ -2148,5 +2151,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xBCEA1A36E8D16F3D
-// XOICO_FILE_SIGNATURE 0x3C687ADA8E03A9A8
+// XOICO_BODY_SIGNATURE 0xF8BE7FCF423CA71B
+// XOICO_FILE_SIGNATURE 0x32D5AB03F7D3C75E
