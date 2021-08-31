@@ -255,13 +255,20 @@ vd_t bcore_const_manager_signal_handler( const bcore_signal_s* o )
             s2_t verbosity = o->object ? *( s2_t* )o->object : 0;
             if( verbosity > 0 )
             {
-                uz_t count = bcore_const_size();
-                uz_t space = bcore_tbman_total_granted_space();
+                sz_t count = bcore_const_size();
+                sz_t space1 = bcore_tbman_total_granted_space();
                 bcore_hmap_tp_sr_s_discard( hmap_sr_g );
                 bcore_hmap_tp_sr_s_discard( hmap_st_g );
                 bcore_mutex_s_discard( mutex_st_g );
-                space -= bcore_tbman_total_granted_space();
-                bcore_msg( "  const manager ....... % 7zu (by % 4zu constants    )\n", space, count );
+                sz_t space2 = bcore_tbman_total_granted_space();
+                sz_t space = space1 - space2;
+                bcore_msg_fa( "  const manager ....... #pl7 {#<sz_t>} (by #pl4 {#<sz_t>} constants    )\n", space, count );
+                if( space < 0 )
+                {
+                    bcore_msg_fa( "    A negative memory balance in the const-manager\n" );
+                    bcore_msg_fa( "    can happen when previously unused perspectives\n" );
+                    bcore_msg_fa( "    are invoked to shut down objects.\n" );
+                }
             }
             else
             {
