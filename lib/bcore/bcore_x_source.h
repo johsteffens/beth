@@ -62,7 +62,7 @@ func (bl_t eos( m @*o )) = { return o.cast( m bcore_source* ).eos(); };
 
 /** Read functions:
  *  - 'data'    Reads 'size' bytes into 'data' or less in case stream ends early. Returns number of bytes read.
- *  - 'u0,char' Reads a single byte. Retruns 0 in case stream ends early.
+ *  - 'u0,char' Reads a single byte. Returns 0 in case stream ends early.
  *  Inspect-functions perform the read without changing the read index
  */
 func (sz_t get_data(     m @*o, m obliv x_inst* data, sz_t size )) = { return o.cast( m bcore_source* ).get_data( data, size ); };
