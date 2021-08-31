@@ -94,8 +94,17 @@ void bcore_sink_buffer_s_set_consumer( bcore_sink_buffer_s* o, vd_t consumer );
 
 // syntactic sugar
 
-/// opens a buffered file for writing
+/** Opens a file-sink for writing.
+ *  Physical file opening is delayed until first write access.
+ *  Write access aborts in case of error.
+ */
 bcore_sink_chain_s* bcore_sink_open_file( sc_t file_name );
+
+/** Opens a file-sink for writing.
+ *  Physical tries opening the file for writing.
+ *  In case of error, NULL is returned.
+ */
+bcore_sink_chain_s* bcore_sink_try_open_file( sc_t file_name );
 
 /**********************************************************************************************************************/
 
@@ -112,7 +121,8 @@ bcore_sink_file_s*  bcore_sink_file_s_create_name( sc_t name );        // file i
 sc_t                bcore_sink_file_s_get_name( const bcore_sink_file_s* o );
 void                bcore_sink_file_s_discard(     bcore_sink_file_s* o );
 bcore_sink_file_s*  bcore_sink_file_s_clone( const bcore_sink_file_s* o );
-void                bcore_sink_file_s_open(        bcore_sink_file_s* o ); // (re)opens file
+void                bcore_sink_file_s_open(        bcore_sink_file_s* o ); // (re)opens file; abort on case of failure
+bl_t                bcore_sink_file_s_try_open(    bcore_sink_file_s* o ); // (re)opens file; returns 'false' in case of failure
 void                bcore_sink_file_s_close(       bcore_sink_file_s* o ); // closes file if open
 bcore_sink_file_s*  bcore_sink_file_s_flush(       bcore_sink_file_s* o );
 uz_t                bcore_sink_file_s_push_data(   bcore_sink_file_s* o, vc_t data, uz_t size );

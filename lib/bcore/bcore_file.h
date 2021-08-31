@@ -135,6 +135,9 @@ func( d bcore_source* open_source_path( c bcore_file_path_s* path ) );
 /// opens file-sink (close it with bcore_sink_a_discard)
 func( d bcore_sink* open_sink( sc_t name ) );
 
+/// opens file-sink. returns NULL in case of error
+func( d bcore_sink* try_open_sink( sc_t name ) );
+
 #endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #endif // TYPEOF_bcore_file
 

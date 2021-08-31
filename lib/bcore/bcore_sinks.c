@@ -415,6 +415,17 @@ void bcore_sink_file_s_open( bcore_sink_file_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bl_t bcore_sink_file_s_try_open( bcore_sink_file_s* o )
+{
+    if( !o->name ) return false;
+    if( o->handle ) bcore_sink_file_s_close( o );
+    o->handle = fopen( o->name->sc, "wb" );
+    if( !o->handle ) return false;
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_sink_file_s_close( bcore_sink_file_s* o )
 {
     if( !o->handle ) return;
@@ -515,6 +526,25 @@ bcore_sink_chain_s* bcore_sink_open_file( sc_t file_name )
     bcore_sink_chain_s_push_d( chain, bcore_sink_file_s_create_name( file_name ) );
     bcore_sink_chain_s_push_d( chain, bcore_inst_t_create( typeof( "bcore_sink_buffer_s" ) ) );
     return chain;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bcore_sink_chain_s* bcore_sink_try_open_file( sc_t file_name )
+{
+    bcore_sink_file_s* sink_file = bcore_sink_file_s_create_name( file_name );
+    if( bcore_sink_file_s_try_open( sink_file ) )
+    {
+        bcore_sink_chain_s* chain = bcore_sink_chain_s_create();
+        bcore_sink_chain_s_push_d( chain, sink_file );
+        bcore_sink_chain_s_push_d( chain, bcore_inst_t_create( typeof( "bcore_sink_buffer_s" ) ) );
+        return chain;
+    }
+    else
+    {
+        bcore_sink_file_s_discard( sink_file );
+        return NULL;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
