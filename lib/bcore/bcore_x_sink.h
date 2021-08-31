@@ -31,6 +31,11 @@ XOILA_DEFINE_GROUP( x_sink, x_inst )
 /**********************************************************************************************************************/
 /// interface
 
+/** Create functions: Create a stream
+ *  create_from_file returns NULL in case the file could not be opened for writing.
+ */
+func (d x_sink* create_from_file( sc_t path )) = { return bcore_file_try_open_sink( path ); };
+
 //----------------------------------------------------------------------------------------------------------------------
 
 func (sz_t push_data( m @* o, c obliv x_inst* data, sz_t size )) = { return o.cast( m bcore_sink* ).push_data( data, size ); };
