@@ -266,8 +266,9 @@ vd_t bcore_const_manager_signal_handler( const bcore_signal_s* o )
                 if( space < 0 )
                 {
                     bcore_msg_fa( "    A negative memory balance in the const-manager\n" );
-                    bcore_msg_fa( "    can happen when previously unused perspectives\n" );
+                    bcore_msg_fa( "    can occur when previously unused perspectives\n" );
                     bcore_msg_fa( "    are invoked to shut down objects.\n" );
+                    bcore_msg_fa( "    This is no error.\n" );
                 }
             }
             else
