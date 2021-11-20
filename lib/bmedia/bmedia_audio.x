@@ -188,7 +188,7 @@ func (:sequence_s) wav_from_source =
 
     if( channels < 1 || channels > 256 )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (channels) Suspicious value (#<u1_t>). Probably invalid.", channels );
+        return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (channels) Unlikely value (#<u1_t>). Probably invalid.", channels );
     }
 
     if( rate == 0 )

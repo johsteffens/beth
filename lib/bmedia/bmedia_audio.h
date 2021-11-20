@@ -131,6 +131,7 @@ stamp :sequence_s =
 
     /// Sum of all buffer sizes
     func (sz_t sum_buffer_size( @* o ));
+    func (sz_t sum_buffer_frames( @* o )) = { return o.sum_buffer_size() / o.channels; };
 
     /// Sends sequence in RIFF-WAVE format to sink
     func (er_t wav_to_sink( @* o, m x_sink* sink ));

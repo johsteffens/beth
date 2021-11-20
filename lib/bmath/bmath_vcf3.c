@@ -86,7 +86,7 @@ static void test_fourier_accuracy()
 
         if( fft_dev > 0.001 )
         {
-            bcore_msg_fa( "Accuray size limit (DFT f2): #<sz_t> \n", 1 << ( size_exp - 1 ) );
+            bcore_msg_fa( "Accuracy size limit (DFT f2): #<sz_t> \n", 1 << ( size_exp - 1 ) );
             break;
         }
     }
@@ -113,7 +113,7 @@ static void test_fourier_accuracy()
 
         if( fft_dev > 0.001 )
         {
-            bcore_msg_fa( "Accuray size limit (DFT f3): #<sz_t> \n", 1 << ( size_exp - 1 ) );
+            bcore_msg_fa( "Accuracy size limit (DFT f3): #<sz_t> \n", 1 << ( size_exp - 1 ) );
             break;
         }
     }
@@ -146,7 +146,7 @@ static void test_fourier_accuracy()
 
         if( fft_dev > 0.001 )
         {
-            bcore_msg_fa( "Accuray size limit (FFT f2): #<sz_t> \n", 1 << ( size_exp - 1 ) );
+            bcore_msg_fa( "Accuracy size limit (FFT f2): #<sz_t> \n", 1 << ( size_exp - 1 ) );
             break;
         }
     }
