@@ -520,8 +520,8 @@ stamp :holor_s = aware bcore_inst
         assert( o.v.size == cols * rows );
         switch( o.v.type )
         {
-            case TYPEOF_f2_t: return bmath_mf2_s_create_weak( rows, cols, cols, ( f2_t* )o.v.data );
-            case TYPEOF_f3_t: return bmath_mf3_s_create_weak( rows, cols, cols, ( f3_t* )o.v.data );
+            case TYPEOF_f2_t: return ( vd_t )bmath_mf2_s_create_weak( rows, cols, cols, ( f2_t* )o.v.data );
+            case TYPEOF_f3_t: return ( vd_t )bmath_mf3_s_create_weak( rows, cols, cols, ( f3_t* )o.v.data );
             default: ERR_fa( "Invalid type" );
         }
         return NULL;
