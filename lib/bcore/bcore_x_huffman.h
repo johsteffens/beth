@@ -13,15 +13,47 @@
  *  limitations under the License.
  */
 
-/** Huffman codec
+/** Huffman CODEC
+ *  Efficiently scans and encodes a series of signed or unsigned integers.
+ *  Choose a suitable data type from s2_t, s3_t, u2_t, u3_t.
+ *  Prefer s2_t|u2_t in case the original data encodes in less or equal 32 bits.
+ *  Usage: See example below.
+ *
+ *  Note:
+ *  Decoding from a corrupted bit_buffer causes runtime errors.
+ *  Streaming: Ensure data hygiene with hashed-envelopes.
+ *
+ *  Do not use function itr.eos() to test if all data were decoded. Instead store
+ *  the data size as separate value. Reason: Certain data constellations may generate
+ *  no footprint in the bit buffer.
  */
+
+/** Example:
+
+// Encoding:
+x_huffman_codec_s^ codec;
+codec.scan_start();
+for( sz_t i = 0; i < size; i++ ) codec.scan_s2( data[ i ] );
+codec.scan_end();
+x_huffman_bit_buffer_s^ buf;
+codec.encode( buf );
+buf.push_packed_u( size );
+for( sz_t i = 0; i < size; i++ ) codec.encode( data[ i ], buf );
+buf.cast( x_bbml_s* ).to_sink( my_sink );
+
+// Decoding:
+x_huffman_bit_buffer_s^ buf.cast( x_bbml ).from_source( my_source );
+x_huffman_bit_buffer_iterator_s^ itr.setup( buf );
+x_huffman_codec_s^ codec.decode( itr );
+sz_t size = itr.read_packed_u();
+for( sz_t i = 0; i < size; i++ ) data[ i ] = codec.decode( itr );
+
+*/
 
 #ifndef BCORE_X_HUFFMAN_H
 #define BCORE_X_HUFFMAN_H
 
 #include "bcore_hmap.h"
-#include "bcore_x_stamp.h"
-#include "bcore_x_array.h"
 #include "bcore.xo.h"
 
 XOILA_DEFINE_GROUP( x_huffman, x_inst )
@@ -43,7 +75,7 @@ stamp :codec_s =
 
     func (o scan_start( m@* o ));
 
-    // use best fitting function for your input data
+    // For optimal performance use best fitting function for your input data
     func (o scan_u2( m@* o, u2_t val ));
     func (o scan_u3( m@* o, u3_t val ));
     func (o scan_s2( m@* o, s2_t val ));
@@ -51,44 +83,74 @@ stamp :codec_s =
 
     func (o scan_end( m@* o ));
 
-    // use best fitting function for your input data
+    // For optimal performance use best fitting function for your input data
     func (o    encode_u2( @* o, u2_t val, m :bit_buffer_s* bit_buffer ));
     func (o    encode_u3( @* o, u3_t val, m :bit_buffer_s* bit_buffer ));
     func (o    encode_s2( @* o, s2_t val, m :bit_buffer_s* bit_buffer ));
     func (o    encode_s3( @* o, s3_t val, m :bit_buffer_s* bit_buffer ));
-    func (u2_t decode_u2( @* o,           m :bit_buffer_s* bit_buffer ));
-    func (u3_t decode_u3( @* o,           m :bit_buffer_s* bit_buffer ));
-    func (s2_t decode_s2( @* o,           m :bit_buffer_s* bit_buffer ));
-    func (s3_t decode_s3( @* o,           m :bit_buffer_s* bit_buffer ));
+    func (u2_t decode_u2( @* o,           m :bit_buffer_iterator_s* iterator ));
+    func (u3_t decode_u3( @* o,           m :bit_buffer_iterator_s* iterator ));
+    func (s2_t decode_s2( @* o,           m :bit_buffer_iterator_s* iterator ));
+    func (s3_t decode_s3( @* o,           m :bit_buffer_iterator_s* iterator ));
 
     // en/decodes codec
     func (o encode(  @* o, m :bit_buffer_s* bit_buffer ));
-    func (o decode( m@* o, m :bit_buffer_s* bit_buffer ));
+    func (o decode( m@* o, m :bit_buffer_iterator_s* iterator ));
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// Bit buffer. Stores compacted data.
 stamp :bit_buffer_s = x_array
 {
     u3_t bits;
-    hidden sz_t read_bit_index;
     u0_t [];
 
+    func (o clear( m@* o ));
+
+    // Low-level write functions. See :bit_buffer_iterator_s for corresponding read functions.
+
+    /// Writes one bit
+    func (o push_bl( m@* o, bl_t bit ));
+
+    /// Writes an unsigned integer a specified number of bits
+    func (o push_u( m@* o, u3_t val, sz_t bits ));
+
+    /// Writes an unsigned integer. Stores number of used bits eliminating leading zeros. (7 ... 70 bits)
+    func (o push_packed_u( m@* o, u3_t val ));
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Bit buffer iterator. Used to read from a bit buffer.
+stamp :bit_buffer_iterator_s =
+{
+    hidden :bit_buffer_s* bit_buffer;
+    sz_t bit_index;
+
     /// Resets read index
-    func (o reset( m@* o ));
+    func (o reset( m@* o )) = { o.bit_index = 0; return o; };
+
+    /// Rests and assigns a bit buffer
+    func (o setup( m@* o, :bit_buffer_s* bit_buffer )) = { o.reset(); o.bit_buffer = bit_buffer.cast( m$* ); return o; };
+
+    // Low-level read functions.
+
+    /// Reads one bit
+    func (bl_t read_bl( m@* o ));
+
+    /// Reads an unsigned integer a specified number of bits
+    func (u3_t read_u( m@* o, sz_t bits ));
+
+    /// Reads a compacted unsigned integer.
+    func (u3_t read_packed_u( m@* o ));
 
     /** Read index reached end of buffer.
      *  Note:
-     *    Do not use this function as indicator that all compressed data have been decoded
-     *    because this will yield no information in case the entire scan consists yields
-     *    only one value.
+     *    Only use with low level read functions. Higher level encodings (codec) might not
+     *    necessarily leave a footprint in bit_buffer.
      */
-    func (bl_t eos( m@* o ));
-
-    func (o clear( m@* o ));
-    func (o push_bl( m@* o, bl_t bit ));
-
-    func (bl_t read_bl( m@* o ));
+    func (bl_t eos( m@* o )) = { return o.bit_index >= o.bit_buffer.bits; };
 };
 
 //----------------------------------------------------------------------------------------------------------------------

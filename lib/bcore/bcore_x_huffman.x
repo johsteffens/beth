@@ -134,9 +134,9 @@ func (:codec_s) decode_u2 =
     if( !o.tree ) ERR_fa( "No tree! Load a codec or run scanning first." );
     :node_s* node = o.tree.[ o.tree.root_index() ];
 
-    while( !bit_buffer.eos() && !node.is_leaf() )
+    while( !iterator.eos() && !node.is_leaf() )
     {
-        bl_t bit = bit_buffer.read_bl();
+        bl_t bit = iterator.read_bl();
         uz_t idx = ( bit ) ? node.b1 : node.b0;
         node = o.tree.[ idx ].1;
     }
@@ -160,15 +160,15 @@ func (:codec_s) encode_u3 =
 
 func (:codec_s) decode_u3 =
 {
-    return o.decode_u2( bit_buffer ).cast( u3_t ) | ( o.decode_u2( bit_buffer ).cast( u3_t ) << 32 );
+    return o.decode_u2( iterator ).cast( u3_t ) | ( o.decode_u2( iterator ).cast( u3_t ) << 32 );
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 func (:codec_s) encode_s2 = { return o.encode_u2( :u2_from_s2( val ), bit_buffer ); };
 func (:codec_s) encode_s3 = { return o.encode_u3( :u3_from_s3( val ), bit_buffer ); };
-func (:codec_s) decode_s2 = { return :s2_from_u2( o.decode_u2( bit_buffer ) ); };
-func (:codec_s) decode_s3 = { return :s3_from_u3( o.decode_u3( bit_buffer ) ); };
+func (:codec_s) decode_s2 = { return :s2_from_u2( o.decode_u2( iterator ) ); };
+func (:codec_s) decode_s3 = { return :s3_from_u3( o.decode_u3( iterator ) ); };
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -184,7 +184,7 @@ func (:codec_s) encode =
 func (:codec_s) decode =
 {
     o.clear();
-    o.count_map!.decode( bit_buffer );
+    o.count_map!.decode( iterator );
     o.tree!.build( o.count_map, o.leaf_index! );
     return o;
 };
@@ -196,26 +196,10 @@ func (:codec_s) decode =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:bit_buffer_s) reset =
-{
-    o.read_bit_index = 0;
-    return o;
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:bit_buffer_s) eos =
-{
-    return o.read_bit_index >= o.bits;
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
 func (:bit_buffer_s) clear =
 {
     o.cast( m x_array* ).clear();
     o.bits = 0;
-    o.read_bit_index = 0;
     return o;
 };
 
@@ -236,18 +220,7 @@ func (:bit_buffer_s) push_bl =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:bit_buffer_s) read_bl =
-{
-    if( o.read_bit_index >= o.bits ) ERR_fa( "Reading past end of buffer" );
-    sz_t idx = o.read_bit_index / 8;
-    u0_t m = 1 << ( o.read_bit_index - ( idx * 8 ) );
-    o.read_bit_index++;
-    return ( o.[ idx ] & m ) ? true : false;
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:bit_buffer_s) (o push_u( m@* o, u3_t val, sz_t bits )) =
+func (:bit_buffer_s) push_u =
 {
     for( sz_t i = 0; i < bits; i++ ) o.push_bl( ( val >> i ) & 1 );
     return o;
@@ -255,7 +228,27 @@ func (:bit_buffer_s) (o push_u( m@* o, u3_t val, sz_t bits )) =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:bit_buffer_s) (u3_t read_u( m@* o, sz_t bits )) =
+func (:bit_buffer_s) push_packed_u =
+{
+    sz_t bits = sz_max( 1, :min_bits( val, 64 ) );
+    return o.push_u( bits - 1, 6 ).push_u( val, bits );
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bit_buffer_iterator_s) read_bl =
+{
+    if( !o.bit_buffer ) ERR_fa( "No buffer assigned. Call setup first." );
+    if( o.bit_index >= o.bit_buffer.bits ) ERR_fa( "Reading past end of buffer" );
+    sz_t idx = o.bit_index / 8;
+    u0_t m = 1 << ( o.bit_index - ( idx * 8 ) );
+    o.bit_index++;
+    return ( o.bit_buffer.[ idx ] & m ) ? true : false;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bit_buffer_iterator_s) read_u =
 {
     u3_t val = 0;
     for( sz_t i = 0; i < bits; i++ ) val = val | ( o.read_bl().cast( u3_t ) << i );
@@ -264,17 +257,9 @@ func (:bit_buffer_s) (u3_t read_u( m@* o, sz_t bits )) =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:bit_buffer_s) (o push_packed_u( m@* o, u3_t val )) =
+func (:bit_buffer_iterator_s) read_packed_u =
 {
-    sz_t bits = :min_bits( val, 64 );
-    return o.push_u( bits, 7 ).push_u( val, bits );
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:bit_buffer_s) (u3_t read_packed_u( m@* o )) =
-{
-    return o.read_u( o.read_u( 7 ) );
+    return o.read_u( o.read_u( 6 ) + 1 );
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -401,7 +386,7 @@ func (:count_map_s) (o encode( m@* o, m :bit_buffer_s* out )) =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:count_map_s) (o decode( m@* o, m :bit_buffer_s* in )) =
+func (:count_map_s) (o decode( m@* o, m :bit_buffer_iterator_s* in )) =
 {
     o.clear();
     sz_t size = in.read_packed_u();
@@ -492,8 +477,10 @@ func (void selftest()) =
     codec.encode( bit_buffer );
     for( sz_t i = 0; i < n; i++ ) codec.encode_s3( arr_s3.[ i ], bit_buffer );
 
-    :codec_s^ codec2.decode( bit_buffer );
-    for( sz_t i = 0; i < n; i++ ) ASSERT( codec2.decode_s3( bit_buffer ) == arr_s3.[ i ] );
+    :bit_buffer_iterator_s^ iterator.setup( bit_buffer );
+
+    :codec_s^ codec2.decode( iterator );
+    for( sz_t i = 0; i < n; i++ ) ASSERT( codec2.decode_s3( iterator ) == arr_s3.[ i ] );
 };
 
 //----------------------------------------------------------------------------------------------------------------------

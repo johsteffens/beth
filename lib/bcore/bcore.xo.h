@@ -1,4 +1,4 @@
-//  Last update: 2021-12-23T14:08:09Z
+//  Last update: 2021-12-23T22:07:36Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2021 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -687,39 +687,50 @@
   static inline x_huffman_codec_s* x_huffman_codec_s_scan_s3( x_huffman_codec_s* o, s3_t val ); \
   x_huffman_codec_s* x_huffman_codec_s_scan_end( x_huffman_codec_s* o ); \
   const x_huffman_codec_s* x_huffman_codec_s_encode_u2( const x_huffman_codec_s* o, u2_t val, x_huffman_bit_buffer_s* bit_buffer ); \
-  u2_t x_huffman_codec_s_decode_u2( const x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer ); \
+  u2_t x_huffman_codec_s_decode_u2( const x_huffman_codec_s* o, x_huffman_bit_buffer_iterator_s* iterator ); \
   const x_huffman_codec_s* x_huffman_codec_s_encode_u3( const x_huffman_codec_s* o, u3_t val, x_huffman_bit_buffer_s* bit_buffer ); \
-  u3_t x_huffman_codec_s_decode_u3( const x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer ); \
+  u3_t x_huffman_codec_s_decode_u3( const x_huffman_codec_s* o, x_huffman_bit_buffer_iterator_s* iterator ); \
   static inline const x_huffman_codec_s* x_huffman_codec_s_encode_s2( const x_huffman_codec_s* o, s2_t val, x_huffman_bit_buffer_s* bit_buffer ); \
   static inline const x_huffman_codec_s* x_huffman_codec_s_encode_s3( const x_huffman_codec_s* o, s3_t val, x_huffman_bit_buffer_s* bit_buffer ); \
-  static inline s2_t x_huffman_codec_s_decode_s2( const x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer ); \
-  static inline s3_t x_huffman_codec_s_decode_s3( const x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer ); \
+  static inline s2_t x_huffman_codec_s_decode_s2( const x_huffman_codec_s* o, x_huffman_bit_buffer_iterator_s* iterator ); \
+  static inline s3_t x_huffman_codec_s_decode_s3( const x_huffman_codec_s* o, x_huffman_bit_buffer_iterator_s* iterator ); \
   const x_huffman_codec_s* x_huffman_codec_s_encode( const x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer ); \
-  x_huffman_codec_s* x_huffman_codec_s_decode( x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer ); \
+  x_huffman_codec_s* x_huffman_codec_s_decode( x_huffman_codec_s* o, x_huffman_bit_buffer_iterator_s* iterator ); \
   static inline x_huffman_codec_s* x_huffman_codec_s_scan_s2( x_huffman_codec_s* o, s2_t val ){ return  ((x_huffman_codec_s*)(x_huffman_codec_s_scan_u2(o,x_huffman_u2_from_s2(val ) )));} \
   static inline x_huffman_codec_s* x_huffman_codec_s_scan_s3( x_huffman_codec_s* o, s3_t val ){ return  ((x_huffman_codec_s*)(x_huffman_codec_s_scan_u3(o,x_huffman_u3_from_s3(val ) )));} \
   static inline const x_huffman_codec_s* x_huffman_codec_s_encode_s2( const x_huffman_codec_s* o, s2_t val, x_huffman_bit_buffer_s* bit_buffer ){ return  ((const x_huffman_codec_s*)(x_huffman_codec_s_encode_u2(o,x_huffman_u2_from_s2(val ), bit_buffer )));} \
   static inline const x_huffman_codec_s* x_huffman_codec_s_encode_s3( const x_huffman_codec_s* o, s3_t val, x_huffman_bit_buffer_s* bit_buffer ){ return  ((const x_huffman_codec_s*)(x_huffman_codec_s_encode_u3(o,x_huffman_u3_from_s3(val ), bit_buffer )));} \
-  static inline s2_t x_huffman_codec_s_decode_s2( const x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer ){ return  x_huffman_s2_from_u2(x_huffman_codec_s_decode_u2(o,bit_buffer ) );} \
-  static inline s3_t x_huffman_codec_s_decode_s3( const x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer ){ return  x_huffman_s3_from_u3(x_huffman_codec_s_decode_u3(o,bit_buffer ) );}
+  static inline s2_t x_huffman_codec_s_decode_s2( const x_huffman_codec_s* o, x_huffman_bit_buffer_iterator_s* iterator ){ return  x_huffman_s2_from_u2(x_huffman_codec_s_decode_u2(o,iterator ) );} \
+  static inline s3_t x_huffman_codec_s_decode_s3( const x_huffman_codec_s* o, x_huffman_bit_buffer_iterator_s* iterator ){ return  x_huffman_s3_from_u3(x_huffman_codec_s_decode_u3(o,iterator ) );}
 #define TYPEOF_x_huffman_bit_buffer_s 0x32B1A7734F13BDBAull
 #define BETH_EXPAND_ITEM_x_huffman_bit_buffer_s \
   BCORE_DECLARE_OBJECT( x_huffman_bit_buffer_s ) \
   { \
       aware_t _; \
       u3_t bits; \
-      sz_t read_bit_index; \
       BCORE_ARRAY_DYN_SOLID_STATIC_S( u0_t, ); \
   }; \
-  x_huffman_bit_buffer_s* x_huffman_bit_buffer_s_reset( x_huffman_bit_buffer_s* o ); \
-  bl_t x_huffman_bit_buffer_s_eos( x_huffman_bit_buffer_s* o ); \
   x_huffman_bit_buffer_s* x_huffman_bit_buffer_s_clear( x_huffman_bit_buffer_s* o ); \
   x_huffman_bit_buffer_s* x_huffman_bit_buffer_s_push_bl( x_huffman_bit_buffer_s* o, bl_t bit ); \
-  bl_t x_huffman_bit_buffer_s_read_bl( x_huffman_bit_buffer_s* o ); \
   x_huffman_bit_buffer_s* x_huffman_bit_buffer_s_push_u( x_huffman_bit_buffer_s* o, u3_t val, sz_t bits ); \
-  u3_t x_huffman_bit_buffer_s_read_u( x_huffman_bit_buffer_s* o, sz_t bits ); \
-  x_huffman_bit_buffer_s* x_huffman_bit_buffer_s_push_packed_u( x_huffman_bit_buffer_s* o, u3_t val ); \
-  u3_t x_huffman_bit_buffer_s_read_packed_u( x_huffman_bit_buffer_s* o );
+  x_huffman_bit_buffer_s* x_huffman_bit_buffer_s_push_packed_u( x_huffman_bit_buffer_s* o, u3_t val );
+#define TYPEOF_x_huffman_bit_buffer_iterator_s 0x5CE8DF462034E311ull
+#define BETH_EXPAND_ITEM_x_huffman_bit_buffer_iterator_s \
+  BCORE_DECLARE_OBJECT( x_huffman_bit_buffer_iterator_s ) \
+  { \
+      aware_t _; \
+      x_huffman_bit_buffer_s* bit_buffer; \
+      sz_t bit_index; \
+  }; \
+  static inline x_huffman_bit_buffer_iterator_s* x_huffman_bit_buffer_iterator_s_reset( x_huffman_bit_buffer_iterator_s* o ); \
+  static inline x_huffman_bit_buffer_iterator_s* x_huffman_bit_buffer_iterator_s_setup( x_huffman_bit_buffer_iterator_s* o, const x_huffman_bit_buffer_s* bit_buffer ); \
+  static inline bl_t x_huffman_bit_buffer_iterator_s_eos( x_huffman_bit_buffer_iterator_s* o ); \
+  bl_t x_huffman_bit_buffer_iterator_s_read_bl( x_huffman_bit_buffer_iterator_s* o ); \
+  u3_t x_huffman_bit_buffer_iterator_s_read_u( x_huffman_bit_buffer_iterator_s* o, sz_t bits ); \
+  u3_t x_huffman_bit_buffer_iterator_s_read_packed_u( x_huffman_bit_buffer_iterator_s* o ); \
+  static inline x_huffman_bit_buffer_iterator_s* x_huffman_bit_buffer_iterator_s_reset( x_huffman_bit_buffer_iterator_s* o ){ o->bit_index = 0; return  o;} \
+  static inline x_huffman_bit_buffer_iterator_s* x_huffman_bit_buffer_iterator_s_setup( x_huffman_bit_buffer_iterator_s* o, const x_huffman_bit_buffer_s* bit_buffer ){ ((x_huffman_bit_buffer_iterator_s*)(x_huffman_bit_buffer_iterator_s_reset(o))); o->bit_buffer = ((x_huffman_bit_buffer_s*)(bit_buffer)); return  o;} \
+  static inline bl_t x_huffman_bit_buffer_iterator_s_eos( x_huffman_bit_buffer_iterator_s* o ){ return  o->bit_index >= o->bit_buffer->bits;}
 #define TYPEOF_x_huffman_hist_s 0xA2ED1456163965ECull
 #define BETH_EXPAND_ITEM_x_huffman_hist_s \
   BCORE_DECLARE_OBJECT( x_huffman_hist_s ) \
@@ -786,7 +797,7 @@
   bl_t x_huffman_count_map_s_is_sorted( const x_huffman_count_map_s* o ); \
   bl_t x_huffman_count_map_s_is_equal( const x_huffman_count_map_s* o, const x_huffman_count_map_s* b ); \
   x_huffman_count_map_s* x_huffman_count_map_s_encode( x_huffman_count_map_s* o, x_huffman_bit_buffer_s* out ); \
-  x_huffman_count_map_s* x_huffman_count_map_s_decode( x_huffman_count_map_s* o, x_huffman_bit_buffer_s* in );
+  x_huffman_count_map_s* x_huffman_count_map_s_decode( x_huffman_count_map_s* o, x_huffman_bit_buffer_iterator_s* in );
 #define TYPEOF_x_huffman_tree_s 0x98E164C59D59BCE0ull
 #define BETH_EXPAND_ITEM_x_huffman_tree_s \
   BCORE_DECLARE_OBJECT( x_huffman_tree_s ) \
@@ -801,6 +812,7 @@
   BCORE_FORWARD_OBJECT( x_huffman ); \
   BCORE_FORWARD_OBJECT( x_huffman_codec_s ); \
   BCORE_FORWARD_OBJECT( x_huffman_bit_buffer_s ); \
+  BCORE_FORWARD_OBJECT( x_huffman_bit_buffer_iterator_s ); \
   BCORE_FORWARD_OBJECT( x_huffman_hist_s ); \
   BCORE_FORWARD_OBJECT( x_huffman_index_s ); \
   BCORE_FORWARD_OBJECT( x_huffman_node_s ); \
@@ -820,6 +832,7 @@
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_huffman ) \
   BETH_EXPAND_ITEM_x_huffman_codec_s \
   BETH_EXPAND_ITEM_x_huffman_bit_buffer_s \
+  BETH_EXPAND_ITEM_x_huffman_bit_buffer_iterator_s \
   BETH_EXPAND_ITEM_x_huffman_hist_s \
   BETH_EXPAND_ITEM_x_huffman_index_s \
   BETH_EXPAND_ITEM_x_huffman_node_s \
@@ -2323,5 +2336,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x9A9C0C4E21BF2E3B
-// XOICO_FILE_SIGNATURE 0xC273B3749C3F85E8
+// XOICO_BODY_SIGNATURE 0x89DBBCDDCD68863B
+// XOICO_FILE_SIGNATURE 0x8083F32C68DB2933
