@@ -117,11 +117,41 @@ group :u3 = :
     signature void push       ( m @* o, u3_t v );
     signature m @* push_left  ( m @* o, u3_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature u3_t pop        ( m @* o );
-    signature uz_t count_equal( c @* o,   u3_t val ); // number of occurrence
+    signature uz_t count_equal( c @* o, u3_t val ); // number of occurrence
 
     stamp :s = aware x_inst
     {
         u3_t [];
+        func :: .clear;
+        func :: .set_space;
+        func :: .set_size;
+        func :: .sort;
+        func :: .reorder;
+        func  : .fill;
+        func  : .step_fill;
+        func  : .push;
+        func  : .push_left;
+        func :: .push_arr;
+        func  : .pop;
+        func :: .cmp;
+        func  : .count_equal;
+    };
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+group :s3 = :
+{
+    signature m @* fill       ( m @* o, uz_t size, s3_t v ); // creates filled array of size <size>
+    signature m @* step_fill  ( m @* o, s3_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
+    signature void push       ( m @* o, s3_t v );
+    signature m @* push_left  ( m @* o, s3_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+    signature s3_t pop        ( m @* o );
+    signature uz_t count_equal( c @* o, s3_t val ); // number of occurrence
+
+    stamp :s = aware x_inst
+    {
+        s3_t [];
         func :: .clear;
         func :: .set_space;
         func :: .set_size;
