@@ -34,6 +34,8 @@
 #include "bmath_mfx_eval.h"
 #include "bmath_vcf2.h"
 #include "bmath_vcf3.h"
+#include "bmath_fourier_f2.h"
+#include "bmath_fourier_f3.h"
 #include "bmath_stat.h"
 
 #endif // BMATH_STD_H

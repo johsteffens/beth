@@ -70,6 +70,17 @@ void BCATU(bmath_vcfx_s,set_size)( bmath_vcfx_s* o, uz_t size );
 void BCATU(bmath_vcfx_s,push)(     bmath_vcfx_s* o, bmath_cfx_s cfx );
 void BCATU(bmath_vcfx_s,push_ri)(  bmath_vcfx_s* o, fx_t r, fx_t i );
 
+static inline void BCATU(bmath_vcfx_s,push_r)( bmath_vcfx_s* o, fx_t r ) { BCATU(bmath_vcfx_s,push_ri)( o, r, 0 ); }
+static inline void BCATU(bmath_vcfx_s,push_i)( bmath_vcfx_s* o, fx_t i ) { BCATU(bmath_vcfx_s,push_ri)( o, 0, i ); }
+static inline void BCATU(bmath_vcfx_s,set_r)( bmath_vcfx_s* o, uz_t index, fx_t r ) { assert( index < o->size ); o->data[ index ].v[ 0 ] = r; }
+static inline void BCATU(bmath_vcfx_s,set_i)( bmath_vcfx_s* o, uz_t index, fx_t i ) { assert( index < o->size ); o->data[ index ].v[ 1 ] = i; }
+
+/// sets real values from vector
+static inline void BCATU(bmath_vcfx_s,set_vr)( bmath_vcfx_s* o, const bmath_vfx_s* vec ) { uz_t sz = uz_min( o->size, vec->size ); for( uz_t i = 0; i < sz; i++ ) o->data[ i ].v[ 0 ] = vec->data[ i ]; }
+
+/// sets imag values from vector
+static inline void BCATU(bmath_vcfx_s,set_vi)( bmath_vcfx_s* o, const bmath_vfx_s* vec ) { uz_t sz = uz_min( o->size, vec->size ); for( uz_t i = 0; i < sz; i++ ) o->data[ i ].v[ 1 ] = vec->data[ i ]; }
+
 bmath_vcfx_s* BCATU(bmath_vcfx_s,create_size)( uz_t size );
 bmath_vcfx_s* BCATU(bmath_vcfx_s,create_fill)( bmath_cfx_s val, uz_t size );
 

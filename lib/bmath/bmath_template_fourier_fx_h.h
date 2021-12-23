@@ -51,7 +51,7 @@ void BCATU(bmath_fourier,fx,dft)( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t
 /** Fast Fourier Transformation for vector size being power of 2.
  *  - Complexity O(n*log(n))
  *  - dst==src allowed
- *  - Accuracy: f2 stable up to very large sizes (see function test_fourier_accuracy)
+ *  - Accuracy: f2,f3 both stable up to very large sizes (see function test_fourier_accuracy)
  *              Deviation remains below 0.1% of vector norm for all tested sizes.
  *  - AVX2 optimized
  */

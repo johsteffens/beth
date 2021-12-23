@@ -34,6 +34,15 @@ XOILA_DEFINE_GROUP( bmath_x_root, x_inst )
 
 set inexpandable;
 
+identifier sin;
+identifier cos;
+identifier tan;
+identifier tanh;
+identifier pow;
+identifier lrint;
+identifier f2_pi;
+identifier f3_pi;
+
 stamp bmath_arr_vf2_s = x_array
 {
     bmath_vf2_s [];
@@ -46,8 +55,11 @@ stamp bmath_arr_vf3_s = x_array
 
 //----------------------------------------------------------------------------------------------------------------------
 
-embed "bmath_x_vf_inexpandable.x";
-embed "bmath_x_mf_inexpandable.x";
+embed "bmath_x_vf_inexpandable.x";  // vector
+embed "bmath_x_mf_inexpandable.x";  // matrix
+embed "bmath_x_cf_inexpandable.x";  // complex number
+embed "bmath_x_vcf_inexpandable.x"; // complex vector
+embed "bmath_x_fourier_inexpandable.x"; // fourier transformation
 
 #endif // XOILA_SECTION
 
