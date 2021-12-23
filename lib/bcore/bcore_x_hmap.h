@@ -13,7 +13,25 @@
  *  limitations under the License.
  */
 
-/** Hashmap generic framework */
+/** Hashmap generic framework
+
+    Purpose:
+      Quickly creating a new hashmap-stamp with all relevant hmap-functions predefined.
+
+    Usage: (Map of tp_t -> my_object_s)
+    - Define a stamp with x_hmap_tp in ts traitline.
+    - Set type identifier 'TE' to the target object.
+    - Place x_hmap_tp_s as first object of the stamp. The name is irrelevant.
+
+    Example:
+      stamp my_hmap_my_object_s = x_hmap_tp (TE my_object_s)
+      {
+          x_hmap_tp_s my_first_object; // x_hmap_tp_s must be first; the name is irrelevant.
+
+          // additional objects and functions follow here:
+          ....
+      };
+ */
 
 #ifndef BCORE_X_HMAP_H
 #define BCORE_X_HMAP_H
@@ -61,7 +79,7 @@ group :tp =
 
     /******************************************************************************************************************/
     /** First Element  (tp-map to aware objects)
-     *  This stamp should be first element of objects that use this group in their traitline
+     *  This stamp should be first element of the object that uses this group in its traitline
      */
     stamp :s =
     {
