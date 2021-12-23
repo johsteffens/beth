@@ -18,6 +18,7 @@
 #ifndef BCORE_XOILA_H
 #define BCORE_XOILA_H
 
+#include "bcore.h"
 #include "bcore_trait.h"
 #include "bcore_spect.h"
 #include "bcore_spect_inst.h"
