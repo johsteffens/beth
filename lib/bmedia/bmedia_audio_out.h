@@ -229,8 +229,16 @@ stamp :player_s =
     func (er_t play_buffer( m@* o, bmedia_audio_buffer_s* buf )) = { ASSERT( o.audio ); return o.play( buf.data, buf.size / o.audio.channels ); };
     func (er_t play_zero( m@* o, u2_t frames )) = { ASSERT( o.audio ); return ( frames > 0 ) ? o.play_buffer( bmedia_audio_buffer_s!^.set_size( frames * o.audio.channels ) ) : 0; };
 
-    /// This function resets player to sequence channels and rate if needed; otherwise error on mismatch
+    /** Plays entire sequence.
+     *  This function resets player to sequence channels and rate if needed.
+     */
     func (er_t play_sequence( m@* o, bmedia_audio_sequence_s* sequence ));
+
+    /** Plays sequence from iterator position for number of frames or until end (whichever occurs first).
+     *  frames == -1: Plays until end.
+     *  This function resets player to sequence channels and rate if needed.
+     */
+    func (er_t play_iterator( m@* o, m bmedia_audio_sequence_iterator_s* iterator, sz_t frames ));
 
     /// Returns current (unplayed) buffer frames
     func (bl_t buffer_frames( m@* o ));

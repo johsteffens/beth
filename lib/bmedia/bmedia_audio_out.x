@@ -394,20 +394,21 @@ func (:player_s) m_thread_func =
 
 func (:player_s) play =
 {
+    if( !o.is_setup_ ) o.setup( bmedia_audio_out_s! );
     if( frames == 0 ) return 0;
     o.mutex.lock();
 
     sz_t channels = o.audio.channels;
     sz_t buf_space = o.buf_frames * channels;
 
-    if( o.sequence.size == 0 ) o.sequence.push_buffer().set_space( buf_space );
+    if( o.sequence.size == 0 ) o.sequence.push_empty_buffer().set_space( buf_space );
 
     while( frames > 0 )
     {
         m bmedia_audio_buffer_s* buf = o.sequence.last_m();
         if( !buf || buf.size == buf.space )
         {
-            buf = o.sequence.push_buffer().set_space( buf_space );
+            buf = o.sequence.push_empty_buffer().set_space( buf_space );
         }
         sz_t values = sz_min( buf.space - buf.size, frames * channels );
         m s1_t* buf_ptr = buf.data + buf.size;
@@ -427,7 +428,10 @@ func (:player_s) play =
 
 func (:player_s) play_sequence =
 {
+    if( !o.is_setup_ ) o.setup( bmedia_audio_out_s! );
     if( sequence.size == 0 ) return 0;
+    if( sequence.rate < 0 || sequence.channels < 0 ) ERR_fa( "Sequence rate or channels have not been set." );
+
     if( o.audio.actual_rate != sequence.rate || o.audio.channels != sequence.channels )
     {
         o.wait_until_empty();
@@ -439,6 +443,33 @@ func (:player_s) play_sequence =
         o.mutex.unlock();
     }
     for( sz_t i = 0; i < sequence.size; i++ ) o.play_buffer( sequence.buffer_c( i ) );
+    return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:player_s) play_iterator =
+{
+    if( !o.is_setup_ ) o.setup( bmedia_audio_out_s! );
+    if( iterator.eos ) return 0;
+    if( o.audio.actual_rate != iterator.sequence.rate || o.audio.channels != iterator.sequence.channels )
+    {
+        o.wait_until_empty();
+        o.mutex.lock();
+        o.audio.shut_down();
+        o.audio.requested_rate = iterator.sequence.rate;
+        o.audio.channels = iterator.sequence.channels;
+        o.audio.setup();
+        o.mutex.unlock();
+    }
+
+    s3_t frames_ = frames;
+    if( frames == -1 || frames + iterator.past_frames >= iterator.total_frames )
+    {
+        frames_ = iterator.total_frames - iterator.past_frames;
+    }
+
+    o.play_buffer( iterator.create_buffer( frames_ )^ );
     return 0;
 };
 
