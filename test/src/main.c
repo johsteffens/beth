@@ -14,25 +14,7 @@
  */
 
 #include "bcore_std.h"
-#include "bcore_name_manager.h"
-#include "bcore_signal.h"
-#include "bcore_spect.h"
-#include "bcore_x_stamp.h"
-#include "bcore_quicktypes.h"
-#include "bclos_quicktypes.h"
-#include "bmath_quicktypes.h"
-#include "bcore_threads.h"
-#include "bcore_txt_ml.h"
-#include "bcore_tp.h"
-#include "bcore_trait.h"
-#include "bclos_signal.h"
-#include "bmath_signal.h"
-#include "badapt_signal.h"
 #include "bhvm_holor.h"
-#include "bcore_x_btml.h"
-#include "bcore_x_bbml.h"
-#include "bcore_hmap_tp_st.h"
-#include "bcore_x_hmap.h"
 
 void selftest( const char* name )
 {
@@ -122,6 +104,8 @@ int main( void )
     selftest( "bcore_img" );
     selftest( "bcore_spect_hash" );
     selftest( "bcore_tbman" );
+
+    x_huffman_selftest();
 
     st_s_print_d( bcore_spect_status() );
 
