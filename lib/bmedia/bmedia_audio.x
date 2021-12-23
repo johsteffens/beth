@@ -17,7 +17,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:sequence_s) push_buffer =
+func (:sequence_s) push_empty_buffer =
 {
     if( o.size == o.adl.size )
     {
@@ -223,12 +223,12 @@ func (:sequence_s) wav_from_source =
     }
 
     sz_t frames = data_length / ( o.channels * sizeof( s1_t ) );
-    sz_t frames_per_buffer = 32768;
+    sz_t frames_per_buffer = o.preferred_frames_per_buffer;
 
     while( frames > 0 )
     {
         sz_t buffered_frames = frames < frames_per_buffer ? frames : frames_per_buffer;
-        m :buffer_s* buffer = o.push_buffer().set_size( buffered_frames * o.channels );
+        m :buffer_s* buffer = o.push_empty_buffer().set_size( buffered_frames * o.channels );
         if( source.get_data( buffer.data, buffer.size * sizeof( s1_t ) ) != buffer.size * sizeof( s1_t ) )
         {
             return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: Unexpected end of stream." );
@@ -252,3 +252,134 @@ func (:sequence_s) wav_from_file =
 
 /**********************************************************************************************************************/
 
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:sequence_iterator_s) setup =
+{
+    if( sequence )
+    {
+        o.sequence = sequence.cast( m :sequence_s* );
+        o.channels = o.sequence.channels;
+        o.buffer_index = 0;
+        o.frame_index = 0;
+        o.total_frames = o.sequence.sum_buffer_frames();
+        o.past_frames = 0;
+        o.eos = ( o.total_frames == 0 );
+    }
+    else
+    {
+        o.sequence = NULL;
+        o.channels = 0;
+        o.buffer_index = 0;
+        o.frame_index = 0;
+        o.total_frames = 0;
+        o.past_frames = 0;
+        o.eos = true;
+    }
+    return o;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:sequence_iterator_s) reset =
+{
+    o.buffer_index = 0;
+    o.frame_index = 0;
+    o.eos = ( o.total_frames == 0 );
+    o.past_frames = 0;
+    return o;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:sequence_iterator_s) go_to =
+{
+    if( !o.sequence ) ERR_fa( "No sequence attached." );
+
+    if( past_frames == -1 || past_frames >= o.total_frames )
+    {
+        o.buffer_index = o.sequence.size;
+        o.frame_index = 0;
+        o.past_frames = o.total_frames;
+        o.eos = true;
+    }
+    else
+    {
+        o.reset();
+        s3_t sum = 0;
+        for( sz_t i = 0; i < o.sequence.size; i++ )
+        {
+            sz_t buf_frames = o.sequence.buffer_c( i ).size / o.channels;
+            if( sum + buf_frames > past_frames )
+            {
+                o.buffer_index = i;
+                o.frame_index = past_frames - sum;
+                o.past_frames = past_frames;
+                break;
+            }
+            sum += buf_frames;
+        }
+    }
+    return o;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:sequence_iterator_s) get_frames =
+{
+    sz_t frames_left = frames;
+    sz_t data_index = 0;
+    while( frames_left > 0 )
+    {
+        if( !o.eos )
+        {
+            :buffer_s* buffer = o.sequence.buffer_c( o.buffer_index );
+            sz_t buf_size = buffer.size - ( buffer.size % o.channels );
+
+            sz_t buf_start = o.frame_index * o.channels;
+            sz_t buf_end = sz_min( buf_size, buf_start + frames_left * o.channels );
+            for( sz_t i = buf_start; i < buf_end; i++ ) data[ data_index++ ] = buffer.[ i ];
+            sz_t frames_copied = ( buf_end - buf_start ) / o.channels;
+            if( buf_end == buf_size )
+            {
+                o.buffer_index++;
+                o.frame_index = 0;
+                o.eos = ( o.buffer_index >= o.sequence.size );
+            }
+            else
+            {
+                o.frame_index += frames_copied;
+            }
+            frames_left -= frames_copied;
+            o.past_frames += frames_copied;
+        }
+        else
+        {
+            sz_t pad_size = frames_left * o.channels;
+            for( sz_t i = 0; i < pad_size; i++ ) data[ data_index++ ] = 0;
+            frames_left = 0;
+        }
+    }
+    return o;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:sequence_iterator_s) get_buffer =
+{
+    buffer.set_size( frames * o.channels );
+    return o.get_frames( buffer.data, frames );
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:sequence_iterator_s) create_buffer =
+{
+    d :buffer_s* buffer = :buffer_s!;
+    o.get_buffer( buffer, frames );
+    return buffer;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/

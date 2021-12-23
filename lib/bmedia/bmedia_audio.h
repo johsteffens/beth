@@ -106,6 +106,14 @@ stamp :sequence_s =
     /// Sample rate in hertz; -1: not specified
     s2_t rate = -1;
 
+    /** Preferred Frames per Buffer
+     *  This number is used where a buffer size needs to be specified
+     *  but was not already provided externally.
+     *  Note that the buffer adl can hold buffers of arbitrary size
+     *  regardless of this number.
+     */
+    sz_t preferred_frames_per_buffer = 32768;
+
     :buffer_adl_s adl;
 
     sz_t first; // index to first element
@@ -124,7 +132,8 @@ stamp :sequence_s =
     func (c :buffer_s* last_c( m@* o )) = { return o.cast( m@* ).last_m(); };
 
     /// Appends new element to sequence
-    func (m :buffer_s* push_buffer( m@* o ));
+    func (m :buffer_s* push_empty_buffer( m@* o ));
+    func (m :buffer_s* push_copy_buffer( m@* o, :buffer_s* buffer )) = { m :buffer_s* b = o.push_empty_buffer(); b.copy( buffer ); return b; };
 
     /// Takes first element from sequence
     func (d :buffer_s* pop_first_buffer( m@* o ));
@@ -140,9 +149,60 @@ stamp :sequence_s =
     /// Receives sequence in RIFF-WAVE format from source
     func (er_t wav_from_source( m@* o, m x_source* source ));
     func (er_t wav_from_file(   m@* o, sc_t path ));
+
+    /// returns an iterator for sequence
+    func (d :sequence_iterator_s* create_iterator( @* o )) =
+    {
+        return :sequence_iterator_s!.setup( o );
+    };
 };
 
 //----------------------------------------------------------------------------------------------------------------------
+
+/** Iterator used to seamlessly extract frames from a sequence.
+ *  While the iterator is in use, the sequence should not be modified.
+ */
+stamp :sequence_iterator_s =
+{
+    /// pointer to sequence
+    hidden :sequence_s* sequence;
+
+    /// copied form sequence.channels
+    s2_t channels;
+
+    /// index to current buffer in sequence
+    sz_t buffer_index;
+
+    /// index to current frame in current buffer
+    sz_t frame_index;
+
+    /// total number of frames in sequence
+    s3_t total_frames;
+
+    /// frames past current index
+    s3_t past_frames;
+
+    /// end of sequence was reached
+    bl_t eos = true;
+
+    /// setup; sets index to zero
+    func (o setup( m@* o, :sequence_s* sequence ));
+
+    /// sets index to zero
+    func (o reset( m@* o ));
+
+    /// goes to the next frame after past_frames
+    func (o go_to( m@* o, sz_t past_frames ));
+
+    /// obtains given number of frames; excess frames are padded with zeros
+    func (o get_frames( m@* o, m s1_t* data, sz_t frames ));
+
+    /// obtains given number of frames; excess frames are padded with zeros; allocates buffer
+    func (o get_buffer( m@* o, m :buffer_s* buffer, sz_t frames ));
+
+    /// obtains given number of frames; excess frames are padded with zeros; returns buffer of copied data
+    func (d :buffer_s* create_buffer( m@* o, sz_t frames ));
+};
 
 /**********************************************************************************************************************/
 
