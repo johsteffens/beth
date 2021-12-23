@@ -45,17 +45,17 @@ name data;
 func (sz_t t_size ( c obliv (TO) @* o, tp_t t )) = { return bcore_array_t_get_size ( t, o.cast( m bcore_array* ) ); };
 func (sz_t   size ( c aware (TO) @* o         )) = { return o.t_size( o._ ); };
 
-func (m (TO) @* t_set_size( m obliv (TO) @* o, tp_t t, sz_t size )) = { bcore_array_t_set_size ( t, o.cast( m bcore_array* ), size  ); return o; };
-func (m (TO) @*   set_size( m aware (TO) @* o,         sz_t size )) = { return o.t_set_size( o._, size ); };
+func (o t_set_size( m obliv (TO) @* o, tp_t t, sz_t size )) = { bcore_array_t_set_size ( t, o.cast( m bcore_array* ), size  ); return o; };
+func (o   set_size( m aware (TO) @* o,         sz_t size )) = { return o.t_set_size( o._, size ); };
 
-func (m (TO) @* t_set_space( m obliv (TO) @* o, tp_t t, sz_t space )) = { bcore_array_t_set_space( t, o.cast( m bcore_array* ), space ); return o; };
-func (m (TO) @*   set_space( m aware (TO) @* o,         sz_t space )) = { return o.t_set_space( o._, space ); };
+func (o t_set_space( m obliv (TO) @* o, tp_t t, sz_t space )) = { bcore_array_t_set_space( t, o.cast( m bcore_array* ), space ); return o; };
+func (o   set_space( m aware (TO) @* o,         sz_t space )) = { return o.t_set_space( o._, space ); };
 
-func (m (TO) @* t_clear( m obliv (TO) @* o, tp_t t )) = { return o.t_set_space( t, 0 ); };
-func (m (TO) @*   clear( m aware (TO) @* o         )) = { return o.t_clear( o._ ); };
+func (o t_clear( m obliv (TO) @* o, tp_t t )) = { return o.t_set_space( t, 0 ); };
+func (o   clear( m aware (TO) @* o         )) = { return o.t_clear( o._ ); };
 
-func (m (TO) @* t_sort( m obliv (TO) @* o, tp_t t, s2_t direction )) = { bcore_array_t_sort( t, o.cast( m bcore_array* ), 0, -1, direction ); return o; };
-func (m (TO) @*   sort( m aware (TO) @* o,         s2_t direction )) = { return o.t_sort( o._, direction ); };
+func (o t_sort( m obliv (TO) @* o, tp_t t, s2_t direction )) = { bcore_array_t_sort( t, o.cast( m bcore_array* ), 0, -1, direction ); return o; };
+func (o sort(   m aware (TO) @* o,         s2_t direction )) = { return o.t_sort( o._, direction ); };
 
 //----------------------------------------------------------------------------------------------------------------------
 
