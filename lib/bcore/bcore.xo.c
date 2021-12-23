@@ -1,4 +1,4 @@
-//  Last update: 2021-07-20T11:17:32Z
+//  Last update: 2021-12-23T15:14:00Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2021 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -17,6 +17,7 @@
  *  bcore_x_group.h
  *  bcore_x_stamp.h
  *  bcore_x_threads.h
+ *  bcore_x_huffman.h
  *  bcore_file.h
  *  bcore_spect_inst_call.h
  *  bcore_spect_via_call.h
@@ -39,6 +40,7 @@
  *  bcore_st_inexpandable.x
  *  bcore_via_inexpandable.x
  *  bcore_x_hmap.x
+ *  bcore_x_huffman.x
  *
  */
 
@@ -49,7 +51,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0x9BDE0F136FA44941ull
+// HKEYOF_bcore 0x9D877A6AEFB49971ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -874,6 +876,468 @@ XOILA_DEFINE_SPECT( x, x_thread )
     "feature aware x_thread : m_thread_func;"
     "feature aware x_thread : c_thread_func;"
 "}";
+
+/**********************************************************************************************************************/
+// source: bcore_x_huffman.h
+#include "bcore_x_huffman.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_huffman; embeds: bcore_x_huffman.x
+
+BCORE_DEFINE_OBJECT_INST_P( x_huffman_codec_s )
+"aware x_huffman"
+"{"
+    "x_huffman_hist_s => hist;"
+    "x_huffman_count_map_s => count_map;"
+    "x_huffman_tree_s => tree;"
+    "x_huffman_index_s => leaf_index;"
+"}";
+
+x_huffman_codec_s* x_huffman_codec_s_clear( x_huffman_codec_s* o )
+{
+    // bcore_x_huffman.x:47:1
+    
+    x_huffman_hist_s_attach( &(o->hist ),  NULL);
+    x_huffman_tree_s_attach( &(o->tree ),  NULL);
+    x_huffman_count_map_s_attach( &(o->count_map ),  NULL);
+    x_huffman_index_s_attach( &(o->leaf_index ),  NULL);
+    return  o;
+}
+
+x_huffman_codec_s* x_huffman_codec_s_scan_start( x_huffman_codec_s* o )
+{
+    // bcore_x_huffman.x:58:1
+    
+    ((x_huffman_codec_s*)(x_huffman_codec_s_clear(o)));
+    ((x_huffman_hist_s*)(x_huffman_hist_s_clear(BCORE_PASS_CREATE(x_huffman_hist_s,o->hist))));
+    return  o;
+}
+
+x_huffman_codec_s* x_huffman_codec_s_scan_u2( x_huffman_codec_s* o, u2_t val )
+{
+    // bcore_x_huffman.x:67:1
+    
+    if( !o->hist ) ERR_fa( "Enclose scanning with 'scan_start()' ... 'scan_end()'." );
+    ((x_huffman_hist_s*)(x_huffman_hist_s_count(o->hist,val )));
+    return  o;
+}
+
+x_huffman_codec_s* x_huffman_codec_s_scan_u3( x_huffman_codec_s* o, u3_t val )
+{
+    // bcore_x_huffman.x:76:1
+    
+    return  ((x_huffman_codec_s*)(x_huffman_codec_s_scan_u2(((x_huffman_codec_s*)(x_huffman_codec_s_scan_u2(o,val ))),val >> 32 )));
+}
+
+x_huffman_codec_s* x_huffman_codec_s_scan_end( x_huffman_codec_s* o )
+{
+    // bcore_x_huffman.x:88:1
+    
+    if( !o->hist ) ERR_fa( "No histogram. scan_end() called before scan_start()?." );
+    x_huffman_count_map_s_attach( &(o->count_map ),  ((x_huffman_count_map_s*)(x_array_sort(((x_array*)(((x_huffman_count_map_s*)(x_huffman_count_map_s_from_hist(x_huffman_count_map_s_create(),o->hist ))))),1 ))));
+    x_huffman_hist_s_attach( &(o->hist ),  NULL);
+    ((x_huffman_tree_s*)(x_huffman_tree_s_build(BCORE_PASS_CREATE(x_huffman_tree_s,o->tree),o->count_map, BCORE_PASS_CREATE(x_huffman_index_s,o->leaf_index) )));
+    return  o;
+}
+
+const x_huffman_codec_s* x_huffman_codec_s_encode_u2( const x_huffman_codec_s* o, u2_t val, x_huffman_bit_buffer_s* bit_buffer )
+{
+    // bcore_x_huffman.x:99:1
+    
+    if( !o->tree ) ERR_fa( "No tree! Load a codec or run scanning first." );
+    sz_t idx = x_huffman_index_s_get(o->leaf_index,val );
+    if( idx == 0 ) ERR_fa( "An encoding for value #<u2_t> does not exist.", val );
+    
+    const x_huffman_node_s* node =&( o->tree->data[ idx ]);
+    
+    u3_t stack = 0;
+    sz_t bits = 0;
+    
+    while( node->p )
+    {
+        bl_t bit = ( o->tree->data[ node->p ].b1 == idx );
+        idx = node->p;
+        node = (&(o->tree->data[ idx ]));
+    
+        stack = ( stack << 1 ) | ( ( bit ) ? 1 : 0 );
+        bits++;
+    }
+    
+    if( bits > 64 )  ERR_fa( "Encoding of value #<u2_t> consumes more than 64 bits.", val );
+    
+    for(sz_t i = 0; i < bits; i++ )
+    {
+        ((x_huffman_bit_buffer_s*)(x_huffman_bit_buffer_s_push_bl(bit_buffer,( stack & 1 ) )));
+        stack = stack >> 1;
+    }
+    
+    return  o;
+}
+
+u2_t x_huffman_codec_s_decode_u2( const x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer )
+{
+    // bcore_x_huffman.x:133:1
+    
+    if( !o->tree ) ERR_fa( "No tree! Load a codec or run scanning first." );
+    const x_huffman_node_s* node =&( o->tree->data[ x_huffman_tree_s_root_index(o->tree) ]);
+    
+    while( !x_huffman_bit_buffer_s_eos(bit_buffer) && !x_huffman_node_s_is_leaf(node) )
+    {
+        bl_t bit = x_huffman_bit_buffer_s_read_bl(bit_buffer);
+        uz_t idx = ( bit ) ? node->b1 : node->b0;
+        node = (&(o->tree->data[ idx ]));
+    }
+    
+    if( !x_huffman_node_s_is_leaf(node) )
+    {
+        ERR_fa( "Decoding error. Bit buffer appears corrupted." );
+    }
+    
+    return  node->v;
+}
+
+const x_huffman_codec_s* x_huffman_codec_s_encode_u3( const x_huffman_codec_s* o, u3_t val, x_huffman_bit_buffer_s* bit_buffer )
+{
+    // bcore_x_huffman.x:155:1
+    
+    return  ((const x_huffman_codec_s*)(x_huffman_codec_s_encode_u2(((const x_huffman_codec_s*)(x_huffman_codec_s_encode_u2(o,val, bit_buffer ))),val >> 32, bit_buffer )));
+}
+
+u3_t x_huffman_codec_s_decode_u3( const x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer )
+{
+    // bcore_x_huffman.x:162:1
+    
+    return  ((u3_t)(x_huffman_codec_s_decode_u2(o,bit_buffer ))) | ( ((u3_t)(x_huffman_codec_s_decode_u2(o,bit_buffer ))) << 32 );
+}
+
+const x_huffman_codec_s* x_huffman_codec_s_encode( const x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer )
+{
+    // bcore_x_huffman.x:176:1
+    
+    if( !o->count_map ) return  o;
+    ((x_huffman_count_map_s*)(x_huffman_count_map_s_encode(o->count_map,bit_buffer )));
+    return  o;
+}
+
+x_huffman_codec_s* x_huffman_codec_s_decode( x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer )
+{
+    // bcore_x_huffman.x:185:1
+    
+    ((x_huffman_codec_s*)(x_huffman_codec_s_clear(o)));
+    ((x_huffman_count_map_s*)(x_huffman_count_map_s_decode(BCORE_PASS_CREATE(x_huffman_count_map_s,o->count_map),bit_buffer )));
+    ((x_huffman_tree_s*)(x_huffman_tree_s_build(BCORE_PASS_CREATE(x_huffman_tree_s,o->tree),o->count_map, BCORE_PASS_CREATE(x_huffman_index_s,o->leaf_index) )));
+    return  o;
+}
+
+BCORE_DEFINE_OBJECT_INST_P( x_huffman_bit_buffer_s )
+"aware x_array"
+"{"
+    "u3_t bits;"
+    "hidden sz_t read_bit_index;"
+    "u0_t [];"
+"}";
+
+x_huffman_bit_buffer_s* x_huffman_bit_buffer_s_reset( x_huffman_bit_buffer_s* o )
+{
+    // bcore_x_huffman.x:200:1
+    
+    o->read_bit_index = 0;
+    return  o;
+}
+
+bl_t x_huffman_bit_buffer_s_eos( x_huffman_bit_buffer_s* o )
+{
+    // bcore_x_huffman.x:208:1
+    
+    return  o->read_bit_index >= o->bits;
+}
+
+x_huffman_bit_buffer_s* x_huffman_bit_buffer_s_clear( x_huffman_bit_buffer_s* o )
+{
+    // bcore_x_huffman.x:215:1
+    
+    ((x_array*)(x_array_clear(((x_array*)(o)))));
+    o->bits = 0;
+    o->read_bit_index = 0;
+    return  o;
+}
+
+x_huffman_bit_buffer_s* x_huffman_bit_buffer_s_push_bl( x_huffman_bit_buffer_s* o, bl_t bit )
+{
+    // bcore_x_huffman.x:225:1
+    
+    if( o->bits == o->size * 8 ) (*(((u0_t*)(x_array_push(((x_array*)(o))))))) = 0;
+    sz_t idx = o->bits / 8;
+    if( bit )
+    {
+        u0_t m = 1 << ( o->bits - ( idx * 8 ) );
+        o->data[ idx ] |= m;
+    }
+    o->bits++;
+    return  o;
+}
+
+bl_t x_huffman_bit_buffer_s_read_bl( x_huffman_bit_buffer_s* o )
+{
+    // bcore_x_huffman.x:240:1
+    
+    if( o->read_bit_index >= o->bits ) ERR_fa( "Reading past end of buffer" );
+    sz_t idx = o->read_bit_index / 8;
+    u0_t m = 1 << ( o->read_bit_index - ( idx * 8 ) );
+    o->read_bit_index++;
+    return  ( o->data[ idx ] & m ) ? true : false;
+}
+
+x_huffman_bit_buffer_s* x_huffman_bit_buffer_s_push_u( x_huffman_bit_buffer_s* o, u3_t val, sz_t bits )
+{
+    // bcore_x_huffman.x:251:1
+    
+    for(sz_t i = 0; i < bits; i++ ) ((x_huffman_bit_buffer_s*)(x_huffman_bit_buffer_s_push_bl(o,( val >> i ) & 1 )));
+    return  o;
+}
+
+u3_t x_huffman_bit_buffer_s_read_u( x_huffman_bit_buffer_s* o, sz_t bits )
+{
+    // bcore_x_huffman.x:259:1
+    
+    u3_t val = 0;
+    for(sz_t i = 0; i < bits; i++ ) val = val | ( ((u3_t)(x_huffman_bit_buffer_s_read_bl(o))) << i );
+    return  val;
+}
+
+x_huffman_bit_buffer_s* x_huffman_bit_buffer_s_push_packed_u( x_huffman_bit_buffer_s* o, u3_t val )
+{
+    // bcore_x_huffman.x:268:1
+    
+    sz_t bits = x_huffman_min_bits(val, 64 );
+    return  ((x_huffman_bit_buffer_s*)(x_huffman_bit_buffer_s_push_u(((x_huffman_bit_buffer_s*)(x_huffman_bit_buffer_s_push_u(o,bits, 7 ))),val, bits )));
+}
+
+u3_t x_huffman_bit_buffer_s_read_packed_u( x_huffman_bit_buffer_s* o )
+{
+    // bcore_x_huffman.x:276:1
+    
+    return  x_huffman_bit_buffer_s_read_u(o,x_huffman_bit_buffer_s_read_u(o,7 ) );
+}
+
+BCORE_DEFINE_OBJECT_INST_P( x_huffman_hist_s )
+"aware x_huffman"
+"{"
+    "bcore_hmap_tpuz_s hmap_tpuz;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( x_huffman_index_s )
+"aware x_huffman"
+"{"
+    "bcore_hmap_tpuz_s hmap_tpuz;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( x_huffman_node_s )
+"x_huffman"
+"{"
+    "u3_t c;"
+    "uz_t p;"
+    "uz_t b0;"
+    "uz_t b1;"
+    "u2_t v;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( x_huffman_count_node_s )
+"x_huffman"
+"{"
+    "u3_t c;"
+    "u2_t v;"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( x_huffman_count_map_s )
+"aware x_array"
+"{"
+    "x_huffman_count_node_s [];"
+"}";
+
+x_huffman_count_map_s* x_huffman_count_map_s_from_hist( x_huffman_count_map_s* o, const x_huffman_hist_s* hist )
+{
+    // bcore_x_huffman.x:334:5
+    
+    ((x_huffman_count_map_s*)(x_array_clear(((x_array*)(o)))));
+    for(sz_t i = 0; i < hist->hmap_tpuz.size; i++ )
+    {
+        tp_t key = bcore_hmap_tpuz_s_idx_key(&(hist->hmap_tpuz),i );
+        if( key > 0 )
+        {
+            x_huffman_count_node_s* node = ((x_huffman_count_node_s*)(x_array_push(((x_array*)(o)))));
+            node->c = bcore_hmap_tpuz_s_idx_val(&(hist->hmap_tpuz),i );
+            node->v = x_huffman_hist_s_val(hist,key );
+        }
+    }
+    return  o;
+}
+
+bl_t x_huffman_count_map_s_is_sorted( const x_huffman_count_map_s* o )
+{
+    // bcore_x_huffman.x:350:5
+    
+    for(sz_t i = 1; i < o->size; i++ ) if( o->data[ i - 1 ].c > o->data[ i ].c ) return  false;
+    return  true;
+}
+
+bl_t x_huffman_count_map_s_is_equal( const x_huffman_count_map_s* o, const x_huffman_count_map_s* b )
+{
+    // bcore_x_huffman.x:356:5
+    
+    if( o->size != b->size ) return  false;
+    for(sz_t i = 1; i < o->size; i++ ) if( !x_huffman_count_node_s_is_equal(&(o->data[ i ]),&(b->data[ i ] )) ) return  false;
+    return  true;
+}
+
+x_huffman_count_map_s* x_huffman_count_map_s_encode( x_huffman_count_map_s* o, x_huffman_bit_buffer_s* out )
+{
+    // bcore_x_huffman.x:366:1
+    
+    if( !x_huffman_count_map_s_is_sorted(o) ) ERR_fa( "Map is not sorted." );
+    
+    ((x_huffman_bit_buffer_s*)(x_huffman_bit_buffer_s_push_packed_u(out,o->size )));
+    
+    sz_t idx = 0;
+    u3_t count = 0;
+    
+    {
+        for(; idx < o->size && o->data[ idx ].c == 1 ; idx++ ) count++;
+        ((x_huffman_bit_buffer_s*)(x_huffman_bit_buffer_s_push_packed_u(out,count )));
+    }
+    
+    sz_t bits = 2;
+    while( idx < o->size )
+    {
+        count = 0;
+        for(sz_t i = idx; i < o->size && x_huffman_min_bits(o->data[ i ].c, 64 ) == bits ; i++ ) count++;
+        if( count > 0 )
+        {
+            ((x_huffman_bit_buffer_s*)(x_huffman_bit_buffer_s_push_u(out,bits - 1, 6 )));
+            ((x_huffman_bit_buffer_s*)(x_huffman_bit_buffer_s_push_packed_u(out,count )));
+            for(sz_t i = 0; i < count; i++ ) ((x_huffman_bit_buffer_s*)(x_huffman_bit_buffer_s_push_u(out,o->data[ idx + i ].c, bits - 1 )));
+        }
+        idx += count;
+        bits++;
+    }
+    
+    sz_t max_bits = 0;
+    for(sz_t i = 0; i < o->size; i++ ) max_bits = sz_max( max_bits, x_huffman_min_bits(o->data[ i ].v, 32 ) );
+    ((x_huffman_bit_buffer_s*)(x_huffman_bit_buffer_s_push_u(out,max_bits, 6 )));
+    for(sz_t i = 0; i < o->size; i++ ) ((x_huffman_bit_buffer_s*)(x_huffman_bit_buffer_s_push_u(out,o->data[ i ].v, max_bits )));
+    
+    return  o;
+}
+
+x_huffman_count_map_s* x_huffman_count_map_s_decode( x_huffman_count_map_s* o, x_huffman_bit_buffer_s* in )
+{
+    // bcore_x_huffman.x:405:1
+    
+    ((x_huffman_count_map_s*)(x_array_clear(((x_array*)(o)))));
+    sz_t size = x_huffman_bit_buffer_s_read_packed_u(in);
+    ((x_huffman_count_map_s*)(x_array_set_size(((x_array*)(o)),size )));
+    
+    sz_t idx = 0;
+    u3_t count = x_huffman_bit_buffer_s_read_packed_u(in);
+    ASSERT( count <= o->size );
+    for(sz_t i = 0; i < count; i++ ) o->data[ idx++ ].c = 1;
+    
+    while( idx < o->size )
+    {
+        sz_t bits_m1 = x_huffman_bit_buffer_s_read_u(in,6 );
+        u3_t count = x_huffman_bit_buffer_s_read_packed_u(in);
+        ASSERT( idx + count <= o->size );
+        for(sz_t i = 0; i < count; i++ ) o->data[ idx + i ].c = x_huffman_bit_buffer_s_read_u(in,bits_m1 ) + ( 1ull << bits_m1 );
+        idx += count;
+    }
+    
+    sz_t max_bits = x_huffman_bit_buffer_s_read_u(in,6 );
+    for(sz_t i = 0; i < o->size; i++ ) o->data[ i ].v = x_huffman_bit_buffer_s_read_u(in,max_bits );
+    
+    return  o;
+}
+
+BCORE_DEFINE_OBJECT_INST_P( x_huffman_tree_s )
+"aware x_array"
+"{"
+    "x_huffman_node_s [];"
+"}";
+
+x_huffman_tree_s* x_huffman_tree_s_build( x_huffman_tree_s* o, const x_huffman_count_map_s* count_map, x_huffman_index_s* leaf_index )
+{
+    // bcore_x_huffman.x:438:5
+    
+    ((x_huffman_tree_s*)(x_array_set_size(((x_array*)(o)),1 )));
+    for(sz_t i = 0; i < count_map->size; i++ )
+    {
+        x_huffman_node_s* node = ((x_huffman_node_s*)(x_array_push(((x_array*)(o)))));
+        node->c = count_map->data[ i ].c;
+        node->v = count_map->data[ i ].v;
+        if( leaf_index ) ((x_huffman_index_s*)(x_huffman_index_s_set(leaf_index,node->v, o->size - 1 )));
+    }
+    
+    sz_t idx_a = 1;
+    sz_t end_a = o->size;
+    sz_t idx_b = o->size;
+    while( end_a - idx_a + o->size - idx_b >= 2 )
+    {
+        u3_t b1 = ( idx_a < end_a && ( ( idx_b == o->size ) || ( o->data[ idx_a ].c <= o->data[ idx_b ].c ) ) ) ? idx_a++ : idx_b++;
+        u3_t b0 = ( idx_a < end_a && ( ( idx_b == o->size ) || ( o->data[ idx_a ].c <= o->data[ idx_b ].c ) ) ) ? idx_a++ : idx_b++;
+        o->data[ b1 ].p = o->data[ b0 ].p = o->size;
+        x_huffman_node_s* node = ((x_huffman_node_s*)(x_array_push(((x_array*)(o)))));
+        node->b1 = b1;
+        node->b0 = b0;
+        node->c = o->data[ b1 ].c + o->data[ b0 ].c;
+    }
+    
+    return  o;
+}
+
+XOILA_DEFINE_SPECT( x_inst, x_huffman )
+"{"
+    "bcore_spect_header_s header;"
+"}";
+
+sz_t x_huffman_min_bits( u3_t v, sz_t n )
+{
+    // bcore_x_huffman.x:23:1
+    
+    sz_t n1 = n >> 1;
+    u3_t v1 = v >> n1;
+    return  ( v1 ? n1 : 0 ) + ( n1 ? x_huffman_min_bits(v1 ? v1 : v, n1 ) : ((sz_t)(v)) );
+}
+
+void x_huffman_selftest( void )
+{
+    // bcore_x_huffman.x:471:1
+    BLM_INIT_LEVEL(0);
+    x_huffman_codec_s codec;BLM_T_INIT_SPUSH(x_huffman_codec_s, &codec);;
+    
+    bcore_prsg_lcg_u3_00_s prsg;BLM_T_INIT_SPUSH(bcore_prsg_lcg_u3_00_s, &prsg);;
+    
+    sz_t n = 100000;
+    
+    bcore_arr_s3_s arr_s3;BLM_T_INIT_SPUSH(bcore_arr_s3_s, &arr_s3);;
+    for(sz_t i = 0; i < n; i++ )
+    {
+        f3_t v = bcore_prsg_lcg_u3_00_s_gen_f3(&(prsg),0.0, 1.0 );
+        s3_t x = pow( sin( v * 3.141 * 2.0 ), 10 + 1 ) * 1000;
+        bcore_arr_s3_s_push(&(arr_s3),x );
+    }
+    
+    ((x_huffman_codec_s*)(x_huffman_codec_s_scan_start(&(codec))));
+    for(sz_t i = 0; i < n; i++ ) ((x_huffman_codec_s*)(x_huffman_codec_s_scan_s3(&(codec),arr_s3.data[ i ] )));
+    ((x_huffman_codec_s*)(x_huffman_codec_s_scan_end(&(codec))));
+    
+    x_huffman_bit_buffer_s bit_buffer;BLM_T_INIT_SPUSH(x_huffman_bit_buffer_s, &bit_buffer);;
+    
+    ((x_huffman_codec_s*)(x_huffman_codec_s_encode(&(codec),&(bit_buffer ))));
+    for(sz_t i = 0; i < n; i++ ) ((x_huffman_codec_s*)(x_huffman_codec_s_encode_s3(&(codec),arr_s3.data[ i ],&( bit_buffer ))));
+    
+    x_huffman_codec_s codec2;BLM_T_INIT_SPUSH(x_huffman_codec_s, &codec2);((x_huffman_codec_s*)(x_huffman_codec_s_decode(&(codec2),&(bit_buffer ))));
+    for(sz_t i = 0; i < n; i++ ) ASSERT( x_huffman_codec_s_decode_s3(&(codec2),&(bit_buffer )) == arr_s3.data[ i ] );
+    BLM_DOWN();
+}
 
 /**********************************************************************************************************************/
 // source: bcore_file.h
@@ -2989,7 +3453,7 @@ er_t x_btml_t_parse_body( x_btml* o, tp_t t, x_source* source )
         }
         else
         {
-            x_array_t_set_size(arr,t, 0 );
+            ((x_array*)(x_array_t_set_size(arr,t, 0 )));
             while( !x_source_parse_bl(source," #=?'</>'" ) )
             {
                 sr_s sr = sr_null();
@@ -3351,7 +3815,7 @@ er_t x_bbml_t_parse_body( x_bbml* o, tp_t t, x_source* source )
         }
         else
         {
-            x_array_t_set_size(arr,t, size );
+            ((x_array*)(x_array_t_set_size(arr,t, size )));
             for(sz_t i = 0; i < size; i++ )
             {
                 sr_s sr = sr_null();
@@ -3545,7 +4009,7 @@ BCORE_DEFINE_OBJECT_INST_P( x_hmap_tp_s )
 
 bcore_arr_tp_s* x_hmap_tp_s_get_key_arr( const x_hmap_tp_s* o, bcore_arr_tp_s* key_arr )
 {
-    // bcore_x_hmap.h:95:5
+    // bcore_x_hmap.h:113:5
     
     bcore_arr_tp_s_set_size(key_arr,0 );
     sz_t size = x_hmap_tp_s_size(o);
@@ -3556,9 +4020,9 @@ bcore_arr_tp_s* x_hmap_tp_s_get_key_arr( const x_hmap_tp_s* o, bcore_arr_tp_s* k
 
 x_array* x_hmap_tp_s_m_get_val_arr( x_hmap_tp_s* o, x_array* val_arr )
 {
-    // bcore_x_hmap.h:104:5
+    // bcore_x_hmap.h:122:5
     
-    x_array_set_size(val_arr,0 );
+    ((x_array*)(x_array_set_size(val_arr,0 )));
     sz_t size = x_hmap_tp_s_size(o);
     for(sz_t i = 0; i < size; i++ ) if( x_hmap_tp_s_idx_key(o,i ) ) x_array_push_d(val_arr,((x_inst*)bcore_fork(x_hmap_tp_s_m_idx_val(o,i ))) );
     return  val_arr;
@@ -3566,9 +4030,9 @@ x_array* x_hmap_tp_s_m_get_val_arr( x_hmap_tp_s* o, x_array* val_arr )
 
 x_array* x_hmap_tp_s_c_get_val_arr( const x_hmap_tp_s* o, x_array* val_arr )
 {
-    // bcore_x_hmap.h:112:5
+    // bcore_x_hmap.h:130:5
     
-    x_array_set_size(val_arr,0 );
+    ((x_array*)(x_array_set_size(val_arr,0 )));
     sz_t size = x_hmap_tp_s_size(o);
     for(sz_t i = 0; i < size; i++ ) if( x_hmap_tp_s_idx_key(o,i ) ) x_array_push_d(val_arr,x_inst_clone(x_hmap_tp_s_c_idx_val(o,i )) );
     return  val_arr;
@@ -3598,7 +4062,7 @@ XOILA_DEFINE_SPECT( x_hmap, x_hmap_tp )
 
 x_hmap_tp_s* x_hmap_tp_m_map_( x_hmap_tp* o )
 {
-    // bcore_x_hmap.h:122:5
+    // bcore_x_hmap.h:140:5
     
     assert( x_stamp_is_aware(((const x_stamp*)(o))) );
     x_inst* map = x_stamp_m_get_i(((x_stamp*)(o)),0 );
@@ -3608,7 +4072,7 @@ x_hmap_tp_s* x_hmap_tp_m_map_( x_hmap_tp* o )
 
 const x_hmap_tp_s* x_hmap_tp_c_map_( const x_hmap_tp* o )
 {
-    // bcore_x_hmap.h:130:5
+    // bcore_x_hmap.h:148:5
     
     assert( x_stamp_is_aware(((const x_stamp*)(o))) );
     const x_inst* map = x_stamp_c_get_i(((const x_stamp*)(o)),0 );
@@ -3891,6 +4355,20 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bcore_inst_call_down_e, x_thread_s_down_e );
             BCORE_REGISTER_OBJECT( x_thread_s );
             XOILA_REGISTER_SPECT( x_thread );
+
+            // --------------------------------------------------------------------
+            // source: bcore_x_huffman.h
+
+            // group: x_huffman
+            BCORE_REGISTER_OBJECT( x_huffman_codec_s );
+            BCORE_REGISTER_OBJECT( x_huffman_bit_buffer_s );
+            BCORE_REGISTER_OBJECT( x_huffman_hist_s );
+            BCORE_REGISTER_OBJECT( x_huffman_index_s );
+            BCORE_REGISTER_OBJECT( x_huffman_node_s );
+            BCORE_REGISTER_OBJECT( x_huffman_count_node_s );
+            BCORE_REGISTER_OBJECT( x_huffman_count_map_s );
+            BCORE_REGISTER_OBJECT( x_huffman_tree_s );
+            XOILA_REGISTER_SPECT( x_huffman );
 
             // --------------------------------------------------------------------
             // source: bcore_file.h
@@ -4297,5 +4775,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x266779C8D6042F98
-// XOICO_FILE_SIGNATURE 0xFD23B8B0DC56304C
+// XOICO_BODY_SIGNATURE 0x4DF9BC200A782953
+// XOICO_FILE_SIGNATURE 0x6ADCEF5138FB87CF

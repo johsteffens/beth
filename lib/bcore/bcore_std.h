@@ -70,5 +70,6 @@
 #include "bcore_x_group.h"
 #include "bcore_x_stamp.h"
 #include "bcore_x_threads.h"
+#include "bcore_x_huffman.h"
 
 #endif // BCORE_STD_H

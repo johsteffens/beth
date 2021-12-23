@@ -139,6 +139,7 @@ static sr_s object_typelist()
     bcore_array_r_push_sc( &list, "bcore_arr_uz_s" );
     bcore_array_r_push_sc( &list, "bcore_arr_sz_s" );
     bcore_array_r_push_sc( &list, "bcore_arr_u3_s" );
+    bcore_array_r_push_sc( &list, "bcore_arr_s3_s" );
     bcore_array_r_push_sc( &list, "bcore_arr_tp_s" );
     bcore_array_r_push_sc( &list, "bcore_arr_bl_s" );
     bcore_array_r_push_sc( &list, "bcore_arr_st_s" );

@@ -1,4 +1,4 @@
-//  Last update: 2021-08-25T09:57:34Z
+//  Last update: 2021-12-23T14:08:09Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2021 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -17,6 +17,7 @@
  *  bcore_x_group.h
  *  bcore_x_stamp.h
  *  bcore_x_threads.h
+ *  bcore_x_huffman.h
  *  bcore_file.h
  *  bcore_spect_inst_call.h
  *  bcore_spect_via_call.h
@@ -39,6 +40,7 @@
  *  bcore_st_inexpandable.x
  *  bcore_via_inexpandable.x
  *  bcore_x_hmap.x
+ *  bcore_x_huffman.x
  *
  */
 
@@ -420,7 +422,7 @@
   x_stamp_path_s* x_stamp_path_s_parse( x_stamp_path_s* o, x_source* source ); \
   sr_s x_stamp_path_s_get_sr_in_t( const x_stamp_path_s* o, tp_t t, const x_inst* inst ); \
   sr_s x_stamp_path_s_set_sr_ret_in_t( const x_stamp_path_s* o, tp_t t, x_inst* inst, sr_s sr_src ); \
-  static inline x_stamp_path_s* x_stamp_path_s_clear( x_stamp_path_s* o ){ x_array_clear(((x_array*)(o))); return  o;} \
+  static inline x_stamp_path_s* x_stamp_path_s_clear( x_stamp_path_s* o ){ ((x_array*)(x_array_clear(((x_array*)(o))))); return  o;} \
   static inline void x_stamp_path_s_push( x_stamp_path_s* o, tp_t tp ){ x_array_push_c(((x_array*)(o)),((const x_inst*)(&(tp))) );} \
   static inline x_stamp_path_s* x_stamp_path_s_parse_sc( x_stamp_path_s* o, sc_t sc ){BLM_INIT_LEVEL(0); BLM_RETURNV(x_stamp_path_s*, ((x_stamp_path_s*)(x_stamp_path_s_parse(o,((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))))} \
   static inline bl_t x_stamp_path_s_exists_in( const x_stamp_path_s* o, const x_inst* inst ){ return  x_stamp_path_s_exists_in_t(o,inst->_, inst );} \
@@ -658,6 +660,176 @@
   static inline const x_inst* x_thread_a_c_thread_func( const x_thread* o ){ const x_thread_spect_s* p = x_thread_spect_s_get_aware( o ); assert( p->c_thread_func ); return p->c_thread_func( o );} \
   static inline bl_t x_thread_defines_c_thread_func( const x_thread* o ){ return x_thread_spect_s_get_aware( o )->c_thread_func != NULL;} \
   BETH_EXPAND_ITEM_x_thread_s
+
+/**********************************************************************************************************************/
+// source: bcore_x_huffman.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_huffman; embeds: bcore_x_huffman.x
+
+#define TYPEOF_x_huffman 0x7FED3FBCB0326489ull
+#define TYPEOF_x_huffman_spect_s 0xE1C8245F4A05E9C5ull
+#define TYPEOF_x_huffman_codec_s 0xA1340F9A8D0D6956ull
+#define BETH_EXPAND_ITEM_x_huffman_codec_s \
+  BCORE_DECLARE_OBJECT( x_huffman_codec_s ) \
+  { \
+      aware_t _; \
+      x_huffman_hist_s* hist; \
+      x_huffman_count_map_s* count_map; \
+      x_huffman_tree_s* tree; \
+      x_huffman_index_s* leaf_index; \
+  }; \
+  x_huffman_codec_s* x_huffman_codec_s_clear( x_huffman_codec_s* o ); \
+  x_huffman_codec_s* x_huffman_codec_s_scan_start( x_huffman_codec_s* o ); \
+  x_huffman_codec_s* x_huffman_codec_s_scan_u2( x_huffman_codec_s* o, u2_t val ); \
+  x_huffman_codec_s* x_huffman_codec_s_scan_u3( x_huffman_codec_s* o, u3_t val ); \
+  static inline x_huffman_codec_s* x_huffman_codec_s_scan_s2( x_huffman_codec_s* o, s2_t val ); \
+  static inline x_huffman_codec_s* x_huffman_codec_s_scan_s3( x_huffman_codec_s* o, s3_t val ); \
+  x_huffman_codec_s* x_huffman_codec_s_scan_end( x_huffman_codec_s* o ); \
+  const x_huffman_codec_s* x_huffman_codec_s_encode_u2( const x_huffman_codec_s* o, u2_t val, x_huffman_bit_buffer_s* bit_buffer ); \
+  u2_t x_huffman_codec_s_decode_u2( const x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer ); \
+  const x_huffman_codec_s* x_huffman_codec_s_encode_u3( const x_huffman_codec_s* o, u3_t val, x_huffman_bit_buffer_s* bit_buffer ); \
+  u3_t x_huffman_codec_s_decode_u3( const x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer ); \
+  static inline const x_huffman_codec_s* x_huffman_codec_s_encode_s2( const x_huffman_codec_s* o, s2_t val, x_huffman_bit_buffer_s* bit_buffer ); \
+  static inline const x_huffman_codec_s* x_huffman_codec_s_encode_s3( const x_huffman_codec_s* o, s3_t val, x_huffman_bit_buffer_s* bit_buffer ); \
+  static inline s2_t x_huffman_codec_s_decode_s2( const x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer ); \
+  static inline s3_t x_huffman_codec_s_decode_s3( const x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer ); \
+  const x_huffman_codec_s* x_huffman_codec_s_encode( const x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer ); \
+  x_huffman_codec_s* x_huffman_codec_s_decode( x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer ); \
+  static inline x_huffman_codec_s* x_huffman_codec_s_scan_s2( x_huffman_codec_s* o, s2_t val ){ return  ((x_huffman_codec_s*)(x_huffman_codec_s_scan_u2(o,x_huffman_u2_from_s2(val ) )));} \
+  static inline x_huffman_codec_s* x_huffman_codec_s_scan_s3( x_huffman_codec_s* o, s3_t val ){ return  ((x_huffman_codec_s*)(x_huffman_codec_s_scan_u3(o,x_huffman_u3_from_s3(val ) )));} \
+  static inline const x_huffman_codec_s* x_huffman_codec_s_encode_s2( const x_huffman_codec_s* o, s2_t val, x_huffman_bit_buffer_s* bit_buffer ){ return  ((const x_huffman_codec_s*)(x_huffman_codec_s_encode_u2(o,x_huffman_u2_from_s2(val ), bit_buffer )));} \
+  static inline const x_huffman_codec_s* x_huffman_codec_s_encode_s3( const x_huffman_codec_s* o, s3_t val, x_huffman_bit_buffer_s* bit_buffer ){ return  ((const x_huffman_codec_s*)(x_huffman_codec_s_encode_u3(o,x_huffman_u3_from_s3(val ), bit_buffer )));} \
+  static inline s2_t x_huffman_codec_s_decode_s2( const x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer ){ return  x_huffman_s2_from_u2(x_huffman_codec_s_decode_u2(o,bit_buffer ) );} \
+  static inline s3_t x_huffman_codec_s_decode_s3( const x_huffman_codec_s* o, x_huffman_bit_buffer_s* bit_buffer ){ return  x_huffman_s3_from_u3(x_huffman_codec_s_decode_u3(o,bit_buffer ) );}
+#define TYPEOF_x_huffman_bit_buffer_s 0x32B1A7734F13BDBAull
+#define BETH_EXPAND_ITEM_x_huffman_bit_buffer_s \
+  BCORE_DECLARE_OBJECT( x_huffman_bit_buffer_s ) \
+  { \
+      aware_t _; \
+      u3_t bits; \
+      sz_t read_bit_index; \
+      BCORE_ARRAY_DYN_SOLID_STATIC_S( u0_t, ); \
+  }; \
+  x_huffman_bit_buffer_s* x_huffman_bit_buffer_s_reset( x_huffman_bit_buffer_s* o ); \
+  bl_t x_huffman_bit_buffer_s_eos( x_huffman_bit_buffer_s* o ); \
+  x_huffman_bit_buffer_s* x_huffman_bit_buffer_s_clear( x_huffman_bit_buffer_s* o ); \
+  x_huffman_bit_buffer_s* x_huffman_bit_buffer_s_push_bl( x_huffman_bit_buffer_s* o, bl_t bit ); \
+  bl_t x_huffman_bit_buffer_s_read_bl( x_huffman_bit_buffer_s* o ); \
+  x_huffman_bit_buffer_s* x_huffman_bit_buffer_s_push_u( x_huffman_bit_buffer_s* o, u3_t val, sz_t bits ); \
+  u3_t x_huffman_bit_buffer_s_read_u( x_huffman_bit_buffer_s* o, sz_t bits ); \
+  x_huffman_bit_buffer_s* x_huffman_bit_buffer_s_push_packed_u( x_huffman_bit_buffer_s* o, u3_t val ); \
+  u3_t x_huffman_bit_buffer_s_read_packed_u( x_huffman_bit_buffer_s* o );
+#define TYPEOF_x_huffman_hist_s 0xA2ED1456163965ECull
+#define BETH_EXPAND_ITEM_x_huffman_hist_s \
+  BCORE_DECLARE_OBJECT( x_huffman_hist_s ) \
+  { \
+      aware_t _; \
+      bcore_hmap_tpuz_s hmap_tpuz; \
+  }; \
+  static inline x_huffman_hist_s* x_huffman_hist_s_clear( x_huffman_hist_s* o ); \
+  static inline x_huffman_hist_s* x_huffman_hist_s_count( x_huffman_hist_s* o, u2_t val ); \
+  static inline uz_t x_huffman_hist_s_get( const x_huffman_hist_s* o, u2_t val ); \
+  static inline tp_t x_huffman_hist_s_key( const x_huffman_hist_s* o, u2_t val ); \
+  static inline u2_t x_huffman_hist_s_val( const x_huffman_hist_s* o, tp_t key ); \
+  static inline x_huffman_hist_s* x_huffman_hist_s_clear( x_huffman_hist_s* o ){ bcore_hmap_tpuz_s_clear(&(o->hmap_tpuz)); return  o;} \
+  static inline x_huffman_hist_s* x_huffman_hist_s_count( x_huffman_hist_s* o, u2_t val ){ (*(bcore_hmap_tpuz_s_fget(&(o->hmap_tpuz),x_huffman_hist_s_key(o,val ), 0 )))++; return  o;} \
+  static inline uz_t x_huffman_hist_s_get( const x_huffman_hist_s* o, u2_t val ){ const uz_t* p = bcore_hmap_tpuz_s_get(&(o->hmap_tpuz),x_huffman_hist_s_key(o,val ) ); return  p ? (*(p)) : 0;} \
+  static inline tp_t x_huffman_hist_s_key( const x_huffman_hist_s* o, u2_t val ){ return  ((tp_t)(val)) + 1;} \
+  static inline u2_t x_huffman_hist_s_val( const x_huffman_hist_s* o, tp_t key ){ return  key - 1;}
+#define TYPEOF_x_huffman_index_s 0x16B6A678073620E8ull
+#define BETH_EXPAND_ITEM_x_huffman_index_s \
+  BCORE_DECLARE_OBJECT( x_huffman_index_s ) \
+  { \
+      aware_t _; \
+      bcore_hmap_tpuz_s hmap_tpuz; \
+  }; \
+  static inline tp_t x_huffman_index_s_key( const x_huffman_index_s* o, u2_t val ); \
+  static inline x_huffman_index_s* x_huffman_index_s_clear( x_huffman_index_s* o ); \
+  static inline x_huffman_index_s* x_huffman_index_s_set( x_huffman_index_s* o, u2_t val, uz_t index ); \
+  static inline uz_t x_huffman_index_s_get( const x_huffman_index_s* o, u2_t val ); \
+  static inline tp_t x_huffman_index_s_key( const x_huffman_index_s* o, u2_t val ){ return  ((tp_t)(val)) + 1;} \
+  static inline x_huffman_index_s* x_huffman_index_s_clear( x_huffman_index_s* o ){ bcore_hmap_tpuz_s_clear(&(o->hmap_tpuz)); return  o;} \
+  static inline x_huffman_index_s* x_huffman_index_s_set( x_huffman_index_s* o, u2_t val, uz_t index ){ bcore_hmap_tpuz_s_set(&(o->hmap_tpuz),x_huffman_index_s_key(o,val ), index ); return  o;} \
+  static inline uz_t x_huffman_index_s_get( const x_huffman_index_s* o, u2_t val ){ const uz_t* p = bcore_hmap_tpuz_s_get(&(o->hmap_tpuz),x_huffman_index_s_key(o,val ) ); return  p ? (*(p)) : 0;}
+#define TYPEOF_x_huffman_node_s 0x023E98968E865960ull
+#define BETH_EXPAND_ITEM_x_huffman_node_s \
+  BCORE_DECLARE_OBJECT( x_huffman_node_s ) \
+  { \
+      u3_t c; \
+      uz_t p; \
+      uz_t b0; \
+      uz_t b1; \
+      u2_t v; \
+  }; \
+  static inline bl_t x_huffman_node_s_is_leaf( const x_huffman_node_s* o ); \
+  static inline bl_t x_huffman_node_s_is_root( const x_huffman_node_s* o ); \
+  static inline bl_t x_huffman_node_s_is_leaf( const x_huffman_node_s* o ){ return  o->b0 == 0;} \
+  static inline bl_t x_huffman_node_s_is_root( const x_huffman_node_s* o ){ return  o->p  == 0;}
+#define TYPEOF_x_huffman_count_node_s 0xF52E376DA3A250E0ull
+#define BETH_EXPAND_ITEM_x_huffman_count_node_s \
+  BCORE_DECLARE_OBJECT( x_huffman_count_node_s ) \
+  { \
+      u3_t c; \
+      u2_t v; \
+  }; \
+  static inline bl_t x_huffman_count_node_s_is_equal( const x_huffman_count_node_s* o, const x_huffman_count_node_s* b ); \
+  static inline bl_t x_huffman_count_node_s_is_equal( const x_huffman_count_node_s* o, const x_huffman_count_node_s* b ){ return  ( o->c == b->c ) && ( o->v == b->v );}
+#define TYPEOF_x_huffman_count_map_s 0x864BA48B8DEDA52Eull
+#define BETH_EXPAND_ITEM_x_huffman_count_map_s \
+  BCORE_DECLARE_OBJECT( x_huffman_count_map_s ) \
+  { \
+      aware_t _; \
+      BCORE_ARRAY_DYN_SOLID_STATIC_S( x_huffman_count_node_s, ); \
+  }; \
+  x_huffman_count_map_s* x_huffman_count_map_s_from_hist( x_huffman_count_map_s* o, const x_huffman_hist_s* hist ); \
+  bl_t x_huffman_count_map_s_is_sorted( const x_huffman_count_map_s* o ); \
+  bl_t x_huffman_count_map_s_is_equal( const x_huffman_count_map_s* o, const x_huffman_count_map_s* b ); \
+  x_huffman_count_map_s* x_huffman_count_map_s_encode( x_huffman_count_map_s* o, x_huffman_bit_buffer_s* out ); \
+  x_huffman_count_map_s* x_huffman_count_map_s_decode( x_huffman_count_map_s* o, x_huffman_bit_buffer_s* in );
+#define TYPEOF_x_huffman_tree_s 0x98E164C59D59BCE0ull
+#define BETH_EXPAND_ITEM_x_huffman_tree_s \
+  BCORE_DECLARE_OBJECT( x_huffman_tree_s ) \
+  { \
+      aware_t _; \
+      BCORE_ARRAY_DYN_SOLID_STATIC_S( x_huffman_node_s, ); \
+  }; \
+  x_huffman_tree_s* x_huffman_tree_s_build( x_huffman_tree_s* o, const x_huffman_count_map_s* count_map, x_huffman_index_s* leaf_index ); \
+  static inline sz_t x_huffman_tree_s_root_index( const x_huffman_tree_s* o ); \
+  static inline sz_t x_huffman_tree_s_root_index( const x_huffman_tree_s* o ){ return  o->size - 1;}
+#define BETH_EXPAND_GROUP_x_huffman \
+  BCORE_FORWARD_OBJECT( x_huffman ); \
+  BCORE_FORWARD_OBJECT( x_huffman_codec_s ); \
+  BCORE_FORWARD_OBJECT( x_huffman_bit_buffer_s ); \
+  BCORE_FORWARD_OBJECT( x_huffman_hist_s ); \
+  BCORE_FORWARD_OBJECT( x_huffman_index_s ); \
+  BCORE_FORWARD_OBJECT( x_huffman_node_s ); \
+  BCORE_FORWARD_OBJECT( x_huffman_count_node_s ); \
+  BCORE_FORWARD_OBJECT( x_huffman_count_map_s ); \
+  BCORE_FORWARD_OBJECT( x_huffman_tree_s ); \
+  sz_t x_huffman_min_bits( u3_t v, sz_t n ); \
+  static inline u2_t x_huffman_u2_from_s2( s2_t s ); \
+  static inline u3_t x_huffman_u3_from_s3( s3_t s ); \
+  static inline s2_t x_huffman_s2_from_u2( u2_t u ); \
+  static inline s3_t x_huffman_s3_from_u3( u3_t u ); \
+  void x_huffman_selftest( void ); \
+  XOILA_DECLARE_SPECT( x_huffman ) \
+  { \
+      bcore_spect_header_s header; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_huffman ) \
+  BETH_EXPAND_ITEM_x_huffman_codec_s \
+  BETH_EXPAND_ITEM_x_huffman_bit_buffer_s \
+  BETH_EXPAND_ITEM_x_huffman_hist_s \
+  BETH_EXPAND_ITEM_x_huffman_index_s \
+  BETH_EXPAND_ITEM_x_huffman_node_s \
+  BETH_EXPAND_ITEM_x_huffman_count_node_s \
+  BETH_EXPAND_ITEM_x_huffman_count_map_s \
+  BETH_EXPAND_ITEM_x_huffman_tree_s \
+  static inline u2_t x_huffman_u2_from_s2( s2_t s ){ return  ( s < 0 ) ? ( ( ( ~(u2_t)s ) << 1 ) + 1 ) : ( (u2_t)s << 1 );} \
+  static inline u3_t x_huffman_u3_from_s3( s3_t s ){ return  ( s < 0 ) ? ( ( ( ~(u3_t)s ) << 1 ) + 1 ) : ( (u3_t)s << 1 );} \
+  static inline s2_t x_huffman_s2_from_u2( u2_t u ){ return  ( u & 1 ) ? ~( ( u - 1 ) >> 1 ) : ( u >> 1 );} \
+  static inline s3_t x_huffman_s3_from_u3( u3_t u ){ return  ( u & 1 ) ? ~( ( u - 1 ) >> 1 ) : ( u >> 1 );}
 
 /**********************************************************************************************************************/
 // source: bcore_file.h
@@ -2151,5 +2323,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xF8BE7FCF423CA71B
-// XOICO_FILE_SIGNATURE 0x32D5AB03F7D3C75E
+// XOICO_BODY_SIGNATURE 0x9A9C0C4E21BF2E3B
+// XOICO_FILE_SIGNATURE 0xC273B3749C3F85E8

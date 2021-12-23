@@ -136,10 +136,33 @@ identifier bcore_cday_utc_s_to_sink;
 
 identifier bcore_life_s_push_aware;
 
+identifier f3_lim_min; // minimum normalized representable positive number
+identifier f3_lim_max; // maximum normalized representable positive number
+identifier f3_lim_eps; // minimum representable positive difference to 1.0
+identifier f3_lim_inf; // floating point representation of infinity
+
+identifier f3_sqr;
 identifier f3_srt;
-identifier f3_abs;
-identifier f3_max;
 identifier f3_min;
+identifier f3_max;
+identifier f3_sig;
+identifier f3_abs;
+identifier f3_inv;
+identifier f3_t_swap;
+
+identifier f2_lim_min; // minimum normalized representable positive number
+identifier f2_lim_max; // maximum normalized representable positive number
+identifier f2_lim_eps; // minimum representable positive difference to 1.0
+identifier f2_lim_inf; // floating point representation of infinity
+
+identifier f2_sqr;
+identifier f2_srt;
+identifier f2_min;
+identifier f2_max;
+identifier f2_sig;
+identifier f2_abs;
+identifier f2_inv;
+identifier f2_t_swap;
 
 //----------------------------------------------------------------------------------------------------------------------
 
