@@ -54,11 +54,11 @@ XOILA_DEFINE_GROUP( x_bbml, x_inst )
  */
 func (er_t t_from_source( m@* o, tp_t t, m x_source* source ));
 func (er_t   from_source( m@* o,         m x_source* source )) = { return o.t_from_source( o._, source ); };
-func (er_t t_from_file  ( m@* o, tp_t t,   sc_t file )) = { return o.t_from_source( o._, x_source_check_create_from_file( file )^ ); };
+func (er_t t_from_file  ( m@* o, tp_t t,   sc_t file )) = { return o.t_from_source( t, x_source_check_create_from_file( file )^ ); };
 func (er_t   from_file  ( m@* o,           sc_t file )) = { return o.t_from_file( o._, file ); };
-func (er_t t_from_st    ( m@* o, tp_t t, c st_s* st  )) = { return o.t_from_source( o._, x_source_create_from_st( st )^ ); };
+func (er_t t_from_st    ( m@* o, tp_t t, c st_s* st  )) = { return o.t_from_source( t, x_source_create_from_st( st )^ ); };
 func (er_t   from_st    ( m@* o,         c st_s* st  )) = { return o.t_from_st( o._, st ); };
-func (er_t t_from_sc    ( m@* o, tp_t t,   sc_t  sc  )) = { return o.t_from_source( o._, x_source_create_from_sc( sc )^ ); };
+func (er_t t_from_sc    ( m@* o, tp_t t,   sc_t  sc  )) = { return o.t_from_source( t, x_source_create_from_sc( sc )^ ); };
 func (er_t   from_sc    ( m@* o,           sc_t  sc  )) = { return o.t_from_sc( o._, sc ); };
 
 /** Reads and creates object from source.
@@ -78,7 +78,7 @@ func (bl_t appears_valid( m x_source* source ));
 /// Writes object to sink.
 func (void t_to_sink( c@* o, tp_t t, m x_sink* sink ));
 func (void   to_sink( c@* o,         m x_sink* sink )) = { o.t_to_sink( o._, sink ); };
-func (void t_to_file( c@* o, tp_t t, sc_t file )) = { o.t_to_sink( o._, bcore_file_open_sink( file )^ ); };
+func (void t_to_file( c@* o, tp_t t, sc_t file )) = { o.t_to_sink( t, bcore_file_open_sink( file )^ ); };
 func (void   to_file( c@* o,         sc_t file )) = { o.t_to_file( o._, file ); };
 
 /// runs a transfer-test (write-read-compare) on given object; in case of a mismatch a descriptive error is created.
