@@ -13,9 +13,8 @@
  *  limitations under the License.
  */
 
-/** Indexer is a support object for fast (O(1)) addressing of a data set distributed across
- *  a list of containers of arbitrary size. A typical use case is accessing audio frames
- *  in an audio sequence.
+/** Indexer is a support object for fast (O(1)) indexing of various forms of jagged arrays.
+ *  (First use case is accessing audio frames in an audio sequence.)
  *
  *  Problem:
  *  Given a list of containers each representing a list of objects.
