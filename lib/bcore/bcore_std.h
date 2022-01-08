@@ -62,6 +62,8 @@
 #include "bcore_prsg.h"
 #include "bcore_cday.h"
 #include "bcore_shell.h"
+#include "bcore_huffman.h"
+#include "bcore_indexer.h"
 
 #include "bcore_x_inst.h"
 #include "bcore_x_source.h"
@@ -70,6 +72,5 @@
 #include "bcore_x_group.h"
 #include "bcore_x_stamp.h"
 #include "bcore_x_threads.h"
-#include "bcore_x_huffman.h"
 
 #endif // BCORE_STD_H

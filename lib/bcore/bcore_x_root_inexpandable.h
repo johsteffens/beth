@@ -106,6 +106,14 @@ identifier bcore_folder_get_current;
 
 identifier sz_max;
 identifier sz_min;
+identifier s3_max;
+identifier s3_min;
+identifier s2_max;
+identifier s2_min;
+identifier u3_max;
+identifier u3_min;
+identifier u2_max;
+identifier u2_min;
 
 identifier sc_t_equal;
 

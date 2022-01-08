@@ -13,50 +13,54 @@
  *  limitations under the License.
  */
 
-/** Huffman CODEC
- *  Efficiently scans and encodes a series of signed or unsigned integers.
+/** Efficient Huffman CODEC implementation for a series of signed or unsigned integers.
+ *  Complexity: O(n1*log(n2)) (Worst case for scanning, encoding and decoding)
+ *  Where n1 is the number of data samples and n2 the number of different
+ *  data values.
+ *
  *  Choose a suitable data type from s2_t, s3_t, u2_t, u3_t.
- *  Prefer s2_t|u2_t in case the original data encodes in less or equal 32 bits.
+ *  Only use  s3_t|u3_t when the original data values may exceed 32 bits.
  *  Usage: See example below.
  *
  *  Note:
- *  Decoding from a corrupted bit_buffer causes runtime errors.
- *  Streaming: Ensure data hygiene with hashed-envelopes.
+ *  Decoding a corrupted bit_buffer causes runtime errors.
+ *  Suggest using hashed-envelopes and re-synchronization points
+ *  for corruption detection and recovery from the carrier.
  *
- *  Do not use function itr.eos() to test if all data were decoded. Instead store
- *  the data size as separate value. Reason: Certain data constellations may generate
- *  no footprint in the bit buffer.
+ *  Do not use function itr.eos() to retrieve the number of samples.
+ *  Reason: Certain data constellations may generate no footprint in the bit buffer.
+ *  Hence, eos can be reached before all samples were decoded.
  */
 
 /** Example:
 
 // Encoding:
-x_huffman_codec_s^ codec;
-codec.scan_start();
-for( sz_t i = 0; i < size; i++ ) codec.scan_s2( data[ i ] );
-codec.scan_end();
-x_huffman_bit_buffer_s^ buf;
-codec.encode( buf );
-buf.push_packed_u( size );
-for( sz_t i = 0; i < size; i++ ) codec.encode( data[ i ], buf );
-buf.cast( x_bbml_s* ).to_sink( my_sink );
+    bcore_huffman_codec_s^ codec;
+    codec.scan_start();
+    for( sz_t i = 0; i < size; i++ ) codec.scan_s2( data[ i ] );
+    codec.scan_end();
+    bcore_huffman_bit_buffer_s^ buf;
+    codec.encode( buf );
+    buf.push_packed_u( size );
+    for( sz_t i = 0; i < size; i++ ) codec.encode_s2( data[ i ], buf );
+    buf.cast( x_bbml_s* ).to_sink( my_sink );
 
 // Decoding:
-x_huffman_bit_buffer_s^ buf.cast( x_bbml ).from_source( my_source );
-x_huffman_bit_buffer_iterator_s^ itr.setup( buf );
-x_huffman_codec_s^ codec.decode( itr );
-sz_t size = itr.read_packed_u();
-for( sz_t i = 0; i < size; i++ ) data[ i ] = codec.decode( itr );
+    bcore_huffman_bit_buffer_s^ buf.cast( x_bbml ).from_source( my_source );
+    bcore_huffman_bit_buffer_iterator_s^ itr.setup( buf );
+    bcore_huffman_codec_s^ codec.decode( itr );
+    sz_t size = itr.read_packed_u();
+    for( sz_t i = 0; i < size; i++ ) data[ i ] = codec.decode_s2( itr );
 
 */
 
-#ifndef BCORE_X_HUFFMAN_H
-#define BCORE_X_HUFFMAN_H
+#ifndef BCORE_HUFFMAN_H
+#define BCORE_HUFFMAN_H
 
 #include "bcore_hmap.h"
 #include "bcore.xo.h"
 
-XOILA_DEFINE_GROUP( x_huffman, x_inst )
+XOILA_DEFINE_GROUP( bcore_huffman, x_inst )
 
 #ifdef XOILA_SECTION
 
@@ -131,7 +135,7 @@ stamp :bit_buffer_iterator_s =
     /// Resets read index
     func (o reset( m@* o )) = { o.bit_index = 0; return o; };
 
-    /// Rests and assigns a bit buffer
+    /// Resets and assigns a bit buffer
     func (o setup( m@* o, :bit_buffer_s* bit_buffer )) = { o.reset(); o.bit_buffer = bit_buffer.cast( m$* ); return o; };
 
     // Low-level read functions.
@@ -148,17 +152,17 @@ stamp :bit_buffer_iterator_s =
     /** Read index reached end of buffer.
      *  Note:
      *    Only use with low level read functions. Higher level encodings (codec) might not
-     *    necessarily leave a footprint in bit_buffer.
+     *    always leave a footprint in bit_buffer.
      */
     func (bl_t eos( m@* o )) = { return o.bit_index >= o.bit_buffer.bits; };
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-embed "bcore_x_huffman.x";
+embed "bcore_huffman.x";
 
 /**********************************************************************************************************************/
 
 #endif // XOILA_SECTION
 
-#endif  // BCORE_X_HUFFMAN_H
+#endif  // BCORE_HUFFMAN_H
