@@ -17,10 +17,9 @@
 #define BMATH_ESTIMATOR_H
 
 /** Linear estimator
- *  The estimator assumes an affine transformation A: X -> Y.
- *  behind a dataset given by (weightd) samples x, y.
- *  After digesting all data points, it can compute an estimate
- *  of the transformation.
+ *  The estimator assumes the existence of an affine transformation A: X -> Y
+ *  behind a data-set given by (weighted) samples x, y.
+ *  After digesting all data points, it can compute an estimate of the transformation.
  *
  *  The method employed is generalized least square analysis.
  */
@@ -40,16 +39,16 @@ BCORE_DECLARE_OBJECT( bmath_estimator_s )
 };
 
 /// clears accumulators
-void bmath_estimator_s_clear( bmath_estimator_s* o );
+bmath_estimator_s* bmath_estimator_s_clear( bmath_estimator_s* o );
 
 /// digests a weighted data sample
-void bmath_estimator_s_digest( bmath_estimator_s* o, f3_t weight, const bmath_vf3_s* x, const bmath_vf3_s* y );
+bmath_estimator_s* bmath_estimator_s_digest( bmath_estimator_s* o, f3_t weight, const bmath_vf3_s* x, const bmath_vf3_s* y );
 
-/// reweights by multiplying weight to all digested weights
-void bmath_estimator_s_reweight( bmath_estimator_s* o, f3_t weight );
+/// re-weights by multiplying weight to all digested weights
+bmath_estimator_s* bmath_estimator_s_reweight( bmath_estimator_s* o, f3_t weight );
 
 /// computes final affine matrix (use with bmath_mf3_s_mul_av1)
-void bmath_estimator_s_get_matrix( const bmath_estimator_s* o, bmath_mf3_s* mat );
+bmath_mf3_s* bmath_estimator_s_get_matrix( const bmath_estimator_s* o, bmath_mf3_s* mat );
 
 /**********************************************************************************************************************/
 

@@ -25,15 +25,16 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_estimator_s )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_estimator_s_clear( bmath_estimator_s* o )
+bmath_estimator_s* bmath_estimator_s_clear( bmath_estimator_s* o )
 {
     bmath_mf3_s_set_size( &o->xx, 0, 0 );
     bmath_mf3_s_set_size( &o->yx, 0, 0 );
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_estimator_s_digest( bmath_estimator_s* o, f3_t weight, const bmath_vf3_s* x, const bmath_vf3_s* y )
+bmath_estimator_s* bmath_estimator_s_digest( bmath_estimator_s* o, f3_t weight, const bmath_vf3_s* x, const bmath_vf3_s* y )
 {
     uz_t n = x->size;
     uz_t m = y->size;
@@ -77,19 +78,21 @@ void bmath_estimator_s_digest( bmath_estimator_s* o, f3_t weight, const bmath_vf
         }
         vi[ n ] += yi * weight;
     }
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_estimator_s_reweight( bmath_estimator_s* o, f3_t weight )
+bmath_estimator_s* bmath_estimator_s_reweight( bmath_estimator_s* o, f3_t weight )
 {
     bmath_mf3_s_mul_scl_fx( &o->xx, weight, &o->xx );
     bmath_mf3_s_mul_scl_fx( &o->yx, weight, &o->yx );
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_estimator_s_get_matrix( const bmath_estimator_s* o, bmath_mf3_s* mat )
+bmath_mf3_s* bmath_estimator_s_get_matrix( const bmath_estimator_s* o, bmath_mf3_s* mat )
 {
     bmath_mf3_s* xx_piv = bmath_mf3_s_create();
     bmath_mf3_s_set_size_to( &o->xx, xx_piv );
@@ -97,6 +100,7 @@ void bmath_estimator_s_get_matrix( const bmath_estimator_s* o, bmath_mf3_s* mat 
     bmath_mf3_s_set_size( mat, o->yx.rows, o->yx.cols );
     bmath_mf3_s_mul_htp( &o->yx, xx_piv, mat );
     bmath_mf3_s_discard( xx_piv );
+    return mat;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
