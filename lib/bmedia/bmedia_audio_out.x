@@ -295,7 +295,7 @@ func (:s) sound_check =
     o.setup();
     sz_t frames = 4 * o.actual_frames_per_period;
 
-    bmedia_audio_buffer_s^ buf.set_size( frames * 2 );
+    bmedia_audio_buffer_s^ buf.set_size( frames * 2, 2 );
 
     f3_t pi = 3.1415926535897932384626434;
     f3_t tau = pi * 2;
@@ -337,6 +337,16 @@ func (:player_s) setup =
     o.thread.call_m_thread_func( o );
     o.is_setup_ = true;
     return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:player_s) setup_from_sequence =
+{
+    d$* audio = bmedia_audio_out_s!;
+    audio.requested_rate = sequence.rate;
+    audio.channels = sequence.channels;
+    return o.setup( audio );
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -464,9 +474,9 @@ func (:player_s) play_iterator =
     }
 
     s3_t frames_ = frames;
-    if( frames == -1 || frames + iterator.past_frames >= iterator.total_frames )
+    if( frames == -1 || frames + iterator.global_frame_index >= iterator.total_frames )
     {
-        frames_ = iterator.total_frames - iterator.past_frames;
+        frames_ = iterator.total_frames - iterator.global_frame_index;
     }
 
     o.play_buffer( iterator.create_buffer( frames_ )^ );

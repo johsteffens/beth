@@ -158,7 +158,7 @@ stamp :s =
      */
     func (er_t stream_play       ( m@* o, s1_t* interleaved_samples, u2_t frames ));
     func (er_t stream_play_buffer( m@* o, bmedia_audio_buffer_s* buf )) = { return o.stream_play( buf.data, buf.size / o.channels ); };
-    func (er_t stream_play_zero  ( m@* o, u2_t frames )) = { return ( frames > 0 ) ? o.stream_play_buffer( bmedia_audio_buffer_s!^.set_size( frames * o.channels ) ) : 0; };
+    func (er_t stream_play_zero  ( m@* o, u2_t frames )) = { return ( frames > 0 ) ? o.stream_play_buffer( bmedia_audio_buffer_s!^.set_size( frames * o.channels, o.channels ) ) : 0; };
     func (er_t stream_play_sequence( m@* o, bmedia_audio_sequence_s* sequence )); // error if sequence rate and channels settings mismatch audio settings
 
     /// Gentle stop of a continuous stream (by draining) (no effect if not streaming)
@@ -220,6 +220,10 @@ stamp :player_s =
     func x_thread.m_thread_func;
 
     func (er_t setup( m@* o, d :s* audio ));
+
+    /// sets up audio parameters according to sequence
+    func (er_t setup_from_sequence( m@* o, bmedia_audio_sequence_s* sequence ));
+
     func (er_t shut_down( m@* o ));
 
     /** Appends data to the play-buffer.
@@ -227,7 +231,7 @@ stamp :player_s =
      */
     func (er_t play( m@* o, s1_t* interleaved_samples, u2_t frames ));
     func (er_t play_buffer( m@* o, bmedia_audio_buffer_s* buf )) = { ASSERT( o.audio ); return o.play( buf.data, buf.size / o.audio.channels ); };
-    func (er_t play_zero( m@* o, u2_t frames )) = { ASSERT( o.audio ); return ( frames > 0 ) ? o.play_buffer( bmedia_audio_buffer_s!^.set_size( frames * o.audio.channels ) ) : 0; };
+    func (er_t play_zero( m@* o, u2_t frames )) = { ASSERT( o.audio ); return ( frames > 0 ) ? o.play_buffer( bmedia_audio_buffer_s!^.set_size( frames * o.audio.channels, o.audio.channels ) ) : 0; };
 
     /** Plays entire sequence.
      *  This function resets player to sequence channels and rate if needed.
