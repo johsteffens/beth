@@ -268,7 +268,7 @@ func (:s) stream_record_to_sequence =
     while( frames_left > 0 )
     {
         sz_t frames = ( frames_left > o.actual_frames_per_period ) ? o.actual_frames_per_period.cast( sz_t ) : frames_left;
-        m bmedia_audio_buffer_s* buffer = sequence.push_empty_buffer().set_size( frames * o.channels );
+        m bmedia_audio_buffer_s* buffer = sequence.push_empty_buffer().set_size( frames * o.channels, o.channels );
         o.stream_record( buffer.data, frames );
         frames_left -= frames;
     }
@@ -327,7 +327,7 @@ func (:s) capture_loop =
         o.stream_start();
     }
 
-    bmedia_audio_buffer_s^ buf.set_size( o.actual_frames_per_period * o.channels );
+    bmedia_audio_buffer_s^ buf.set_size( o.actual_frames_per_period * o.channels, o.channels );
 
     while( capture_exit ? !capture_exit.capture_exit() : true )
     {
