@@ -36,7 +36,7 @@
 bl_t BCATU(bmath_mfx_s,evd_htp_jacobi)( bmath_mfx_s* a, bmath_mfx_s* v );
 
 /** In-place EVD for a symmetric matrix.
- *  Approach: TRD, QR with explicit shifting. (Variant of Francis' QR-Algorithm; Developed by J.B.Steffens)
+ *  Approach: TRD, QR with isolated shifting. (Variant of Francis' QR-Algorithm; Developed by J.B.Steffens)
  *  Input:  a  (symmetric), v  (preallocated or NULL)
  *  Output: a' (diagonal),  v' (rotation) with a = v'T * a' * v'.
  *  Returns 'true' on successful convergence, 'false' otherwise with a' likely not being diagonal.

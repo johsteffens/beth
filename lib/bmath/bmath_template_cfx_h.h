@@ -22,8 +22,8 @@
  *  cnj - complex conjugate
  *  det - squared - magnitude: a^2 + b^2  (determinat of the canonic rot-scale-matrix)
  *  mag - magnitude: sqrt( mag );
- *  arg - phase atan2( im, re )
- *  urt - kth element of nth-roots of unity: urt(k,n) = e^i*2*pi*k/n
+ *  arg - phase atan2( im, re )  (range -pi , ..., pi)
+ *  urt - (unity-root) kth element of nth-roots of unity: urt(k,n) = e^i*2*pi*k/n
  */
 
 /**********************************************************************************************************************/
@@ -43,6 +43,15 @@ static inline
 bmath_cfx_s BCATU(bmath,cfx,init_mag_arg)( fx_t mag, fx_t arg )
 {
     return ( bmath_cfx_s ) { .v[0] = mag * cos( arg ), .v[1] = mag * sin( arg ) };
+}
+
+/// init using mag, arg (radius, angle)
+static inline
+bmath_cfx_s* BCATU(bmath,cfx,s,set_mag_arg)( bmath_cfx_s* o, fx_t mag, fx_t arg )
+{
+    o->v[ 0 ] = mag * cos( arg );
+    o->v[ 1 ] = mag * sin( arg );
+    return o;
 }
 
 /// urt-init (s. nomenclature); k can be negative indicating the circular direction.
@@ -95,6 +104,16 @@ void BCATU(bmath_cfx_s,zro)( bmath_cfx_s* o )
 {
     o->v[ 0 ] = 0;
     o->v[ 1 ] = 0;
+}
+
+/// srt to urt (s. nomenclature); k can be negative indicating the circular direction.
+static inline
+bmath_cfx_s* BCATU(bmath_cfx_s,urt)( bmath_cfx_s* o, s3_t k, s3_t n )
+{
+    fx_t arg = ( BCATU(fx,tau)() * k ) / n;
+    o->v[0] = cos( arg );
+    o->v[1] = sin( arg );
+    return o;
 }
 
 static inline
@@ -229,6 +248,20 @@ static inline
 fx_t BCATU(bmath,cfx,s,tss)( const bmath_cfx_s* o )
 {
     return BCATU(fx,sqr)( o->v[ 0 ] ) + BCATU(fx,sqr)( o->v[ 1 ] );
+}
+
+/// magnitude (srt(tss))
+static inline
+fx_t BCATU(bmath,cfx,s,mag)( const bmath_cfx_s* o )
+{
+    return BCATU(fx,srt)( BCATU(bmath,cfx,s,tss)( o ) );
+}
+
+/// phase
+static inline
+fx_t BCATU(bmath,cfx,s,arg)( const bmath_cfx_s* o )
+{
+    return ( o->v[ 0 ] != 0 || o->v[ 1 ] != 0 ) ? atan2( o->v[ 1 ], o->v[ 0 ] ) : 0;
 }
 
 static inline

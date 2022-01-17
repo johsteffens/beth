@@ -37,5 +37,6 @@
 #include "bmath_fourier_f2.h"
 #include "bmath_fourier_f3.h"
 #include "bmath_stat.h"
+#include "bmath_estimator.h"
 
 #endif // BMATH_STD_H

@@ -40,8 +40,28 @@ identifier tan;
 identifier tanh;
 identifier pow;
 identifier lrint;
-identifier f2_pi;
+identifier atan2;
+identifier frexp;
+
 identifier f3_pi;
+identifier f3_pi_2; // PI / 2
+identifier f3_tau; // 2 * PI
+identifier f3_is_nan; // nan compares unequal to itself
+identifier f3_exp;
+identifier f3_log;
+identifier f3_pow;
+identifier f3_erf;
+
+identifier f2_pi;
+identifier f2_pi_2; // PI / 2
+identifier f2_tau; // 2 * PI
+identifier f2_is_nan; // nan compares unequal to itself
+identifier f2_exp;
+identifier f2_log;
+identifier f2_pow;
+identifier f2_erf;
+
+//----------------------------------------------------------------------------------------------------------------------
 
 stamp bmath_arr_vf2_s = x_array
 {
@@ -60,6 +80,7 @@ embed "bmath_x_mf_inexpandable.x";  // matrix
 embed "bmath_x_cf_inexpandable.x";  // complex number
 embed "bmath_x_vcf_inexpandable.x"; // complex vector
 embed "bmath_x_fourier_inexpandable.x"; // fourier transformation
+embed "bmath_x_estimator_inexpandable.x"; // linear estimator
 
 #endif // XOILA_SECTION
 
