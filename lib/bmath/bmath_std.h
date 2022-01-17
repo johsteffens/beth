@@ -38,5 +38,6 @@
 #include "bmath_fourier_f3.h"
 #include "bmath_stat.h"
 #include "bmath_estimator.h"
+#include "bmath_cosine.h"
 
 #endif // BMATH_STD_H

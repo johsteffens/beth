@@ -107,6 +107,7 @@ int main( void )
 
     bcore_huffman_selftest();
     bcore_indexer_selftest();
+    bmath_cosine_selftest();
 
     st_s_print_d( bcore_spect_status() );
 
