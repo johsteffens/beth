@@ -25,7 +25,7 @@
 /**********************************************************************************************************************/
 
 /// v[0]: real, v[1]: imaginary
-BCORE_DECLARE_OBJECT( bmath_cf2_s ) { f2_t v[ 2 ]; };
+BCORE_DECLARE_OBJECT( bmath_cf2_s ) { union { f2_t v[ 2 ]; struct  { f2_t r; f2_t i; }; }; };
 
 #define BMATH_TEMPLATE_FX_PREC 2
 #include "bmath_template_cfx_h.h"
