@@ -105,7 +105,8 @@ int main( void )
     selftest( "bcore_spect_hash" );
     selftest( "bcore_tbman" );
 
-    x_huffman_selftest();
+    bcore_huffman_selftest();
+    bcore_indexer_selftest();
 
     st_s_print_d( bcore_spect_status() );
 
