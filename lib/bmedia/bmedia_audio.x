@@ -17,6 +17,86 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// converts buffer channel into vector with value range [ -1.0 , +1.0 [
+func (:buffer_s) get_vf2 =
+{
+    vec.set_size( o.size / o.channels );
+    f2_t f = 1.0 / 32768;
+    for( sz_t i = 0; i < vec.size; i++ ) vec.[ i ] = o.[ i * o.channels + channel ] * f;
+    return vec;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// vector into buffer value for given channel (overflow-check by truncation)
+func (:buffer_s) set_from_vf2 =
+{
+    sz_t k = 0;
+    for( sz_t i = channel; i < o.size; i += o.channels )
+    {
+        f2_t v = k < vec.size ? vec.[ k++ ] : 0;
+        v = f2_min( 1.0, f2_max( -1.0, v ));
+        o.[ i ] = s2_min( 32768, lrint( v * 32768.0 ) );
+    }
+    return o;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:sequence_s) setup_frames =
+{
+    o.adl.clear();
+    o.channels = channels;
+    o.rate = rate;
+    while( frames > 0 )
+    {
+        sz_t buffer_frames = s3_min( frames, o.preferred_frames_per_buffer );
+        m :buffer_s* buffer = o.push_empty_buffer();
+        buffer.set_frames( buffer_frames, channels );
+        frames -= buffer_frames;
+    }
+    return o;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:sequence_s) setup_diff =
+{
+    :sequence_indexer_s* idx_a = a.create_indexer()^;
+    :sequence_indexer_s* idx_b = b.create_indexer()^;
+    o.setup_frames( a.channels, a.rate, s3_min( idx_a.size, idx_b.size ) );
+    m :sequence_indexer_s* idx_o = o.create_indexer()^;
+    if( idx_o.size == 0 ) return o;
+    ASSERT( a.channels == b.channels );
+    ASSERT( a.rate == b.rate );
+    sz_t buf_frames = o.preferred_frames_per_buffer;
+    sz_t buf_size = buf_frames * o.channels;
+
+    :buffer_s^ buf_a.set_size( buf_size, o.channels );
+    :buffer_s^ buf_b.set_size( buf_size, o.channels );
+    :buffer_s^ buf_o.set_size( buf_size, o.channels );
+
+    for( s3_t index = 0; index < idx_o.size; index += buf_frames )
+    {
+        idx_a.get_buffer( buf_a, index, buf_frames );
+        idx_b.get_buffer( buf_b, index, buf_frames );
+        for( sz_t i = 0; i < buf_o.size; i++ )
+        {
+            s2_t diff = buf_a.[ i ] - buf_b.[ i ];
+            buf_o.[ i ] = s2_max( -32768, s2_min( 32767, diff ) );
+        }
+        idx_o.set_from_buffer( buf_o, index );
+    }
+
+    return o;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:sequence_s) push_empty_buffer =
 {
     if( o.size == o.adl.size )
@@ -37,7 +117,9 @@ func (:sequence_s) push_empty_buffer =
     assert( o.adl.[ index ] == NULL );
     o.size++;
 
-    return o.adl.[ index ] = :buffer_s!;
+    d$* buffer = :buffer_s!;
+    buffer.channels = o.channels;
+    return o.adl.[ index ] = buffer;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -228,7 +310,7 @@ func (:sequence_s) wav_from_source =
     while( frames > 0 )
     {
         sz_t buffered_frames = frames < frames_per_buffer ? frames : frames_per_buffer;
-        m :buffer_s* buffer = o.push_empty_buffer().set_size( buffered_frames * o.channels );
+        m :buffer_s* buffer = o.push_empty_buffer().set_size( buffered_frames * o.channels, o.channels );
         if( source.get_data( buffer.data, buffer.size * sizeof( s1_t ) ) != buffer.size * sizeof( s1_t ) )
         {
             return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: Unexpected end of stream." );
@@ -263,7 +345,7 @@ func (:sequence_iterator_s) setup =
         o.buffer_index = 0;
         o.frame_index = 0;
         o.total_frames = o.sequence.sum_buffer_frames();
-        o.past_frames = 0;
+        o.global_frame_index = 0;
         o.eos = ( o.total_frames == 0 );
     }
     else
@@ -273,7 +355,7 @@ func (:sequence_iterator_s) setup =
         o.buffer_index = 0;
         o.frame_index = 0;
         o.total_frames = 0;
-        o.past_frames = 0;
+        o.global_frame_index = 0;
         o.eos = true;
     }
     return o;
@@ -286,7 +368,65 @@ func (:sequence_iterator_s) reset =
     o.buffer_index = 0;
     o.frame_index = 0;
     o.eos = ( o.total_frames == 0 );
-    o.past_frames = 0;
+    o.global_frame_index = 0;
+    return o;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:sequence_iterator_s) move =
+{
+    sz_t frames_left = diff;
+    while( frames_left > 0 )
+    {
+        if( o.eos ) return o;
+        :buffer_s* buffer = o.sequence.buffer_c( o.buffer_index );
+        sz_t bsize = buffer.size % o.channels;
+
+        if( bsize - o.frame_index > frames_left )
+        {
+            o.frame_index += frames_left;
+            o.global_frame_index += frames_left;
+            frames_left = 0;
+        }
+        else
+        {
+            sz_t frames = bsize - o.frame_index;
+            frames_left -= frames;
+            o.global_frame_index += frames;
+            o.buffer_index++;
+            o.frame_index = 0;
+            o.eos = ( o.buffer_index >= o.sequence.size );
+        }
+    }
+
+    while( frames_left < 0 )
+    {
+        if( o.frame_index == 0 )
+        {
+            if( o.buffer_index == 0 ) return o;
+            o.buffer_index--;
+            :buffer_s* buffer = o.sequence.buffer_c( o.buffer_index );
+            sz_t bsize = buffer.size % o.channels;
+            o.frame_index = bsize;
+            o.eos = false;
+        }
+        else
+        {
+            if( o.frame_index + frames_left >= 0 )
+            {
+                o.frame_index += frames_left;
+                o.global_frame_index += frames_left;
+                frames_left = 0;
+            }
+            else
+            {
+                o.global_frame_index -= o.frame_index;
+                frames_left += o.frame_index;
+                o.frame_index = 0;
+            }
+        }
+    }
     return o;
 };
 
@@ -294,33 +434,7 @@ func (:sequence_iterator_s) reset =
 
 func (:sequence_iterator_s) go_to =
 {
-    if( !o.sequence ) ERR_fa( "No sequence attached." );
-
-    if( past_frames == -1 || past_frames >= o.total_frames )
-    {
-        o.buffer_index = o.sequence.size;
-        o.frame_index = 0;
-        o.past_frames = o.total_frames;
-        o.eos = true;
-    }
-    else
-    {
-        o.reset();
-        s3_t sum = 0;
-        for( sz_t i = 0; i < o.sequence.size; i++ )
-        {
-            sz_t buf_frames = o.sequence.buffer_c( i ).size / o.channels;
-            if( sum + buf_frames > past_frames )
-            {
-                o.buffer_index = i;
-                o.frame_index = past_frames - sum;
-                o.past_frames = past_frames;
-                break;
-            }
-            sum += buf_frames;
-        }
-    }
-    return o;
+    return o.move( global_frame_index - o.global_frame_index );
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -351,7 +465,7 @@ func (:sequence_iterator_s) get_frames =
                 o.frame_index += frames_copied;
             }
             frames_left -= frames_copied;
-            o.past_frames += frames_copied;
+            o.global_frame_index += frames_copied;
         }
         else
         {
@@ -367,7 +481,7 @@ func (:sequence_iterator_s) get_frames =
 
 func (:sequence_iterator_s) get_buffer =
 {
-    buffer.set_size( frames * o.channels );
+    buffer.set_size( frames * o.channels, o.channels );
     return o.get_frames( buffer.data, frames );
 };
 
@@ -383,3 +497,114 @@ func (:sequence_iterator_s) create_buffer =
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// setup; sets index to zero
+func (:sequence_indexer_s) setup =
+{
+    o.sequence = sequence;
+    o.channels = sequence.channels;
+    bcore_arr_s3_s^ arr.set_size( sequence.size );
+    foreach( m$* e in arr ) e.0 = sequence.buffer_c( __i ).size / o.channels;
+    o.indexer.setup( arr );
+    o.size = o.indexer.size;
+    return o;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// reads 'frames' from sequence at global index position. Out-of-range positions are filled with zeros.
+func (:sequence_indexer_s) get_data =
+{
+    if( index < 0 )
+    {
+        sz_t size = sz_min( -index, frames );
+        bcore_memset( data, 0, sizeof( s1_t ) * size * o.channels );
+        frames -= size;
+        index  += size;
+        data   += size * o.channels;
+    }
+
+    bcore_indexer_io_s io = { 0 };
+
+    while( frames > 0 && o.indexer.get_io( index, io ) )
+    {
+        s1_t* o_data = o.sequence.buffer_c( io.i ).data + io.o * o.channels;
+        sz_t size = o.indexer.cs_arr.[ io.i ].s - io.o;
+        size = sz_min( size, frames );
+        bcore_memcpy( data, o_data, sizeof( s1_t ) * size * o.channels );
+        frames -= size;
+        index  += size;
+        data   += size * o.channels;
+    }
+
+    if( frames > 0 ) bcore_memset( data, 0, sizeof( s1_t ) * frames * o.channels );
+    return o;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// sets 'frames' in sequence at global index position. Out-of-range positions are ignored.
+func (:sequence_indexer_s) set_data =
+{
+    if( index < 0 )
+    {
+        sz_t size = sz_min( -index, frames );
+        frames -= size;
+        index  += size;
+        data   += size * o.channels;
+    }
+
+    bcore_indexer_io_s io = { 0 };
+
+    while( frames > 0 && o.indexer.get_io( index, io ) )
+    {
+        m s1_t* o_data = o.sequence.buffer_m( io.i ).data + io.o * o.channels;
+        sz_t size = o.indexer.cs_arr.[ io.i ].s - io.o;
+        size = sz_min( size, frames );
+        bcore_memcpy( o_data, data, sizeof( s1_t ) * size * o.channels );
+        frames -= size;
+        index  += size;
+        data   += size * o.channels;
+    }
+
+    return o;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// obtains given number of frames; off-range frames are padded with zeros; allocates buffer
+func (:sequence_indexer_s) get_buffer =
+{
+    o.get_data( buffer.set_size( frames * o.channels, o.channels ).data, index, frames );
+    return buffer;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// obtains given number of frames; off-range frames are padded with zeros; returns buffer of copied data
+func (:sequence_indexer_s) create_buffer =
+{
+    d$* buffer = :buffer_s!;
+    return o.get_buffer( buffer, index, frames );
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// obtains given number of frames; off-range frames are padded with zeros; allocates buffer
+func (:sequence_indexer_s) set_from_buffer =
+{
+    if( buffer.size > 0 )
+    {
+        ASSERT( o.channels == buffer.channels );
+        o.set_data( buffer.data, index, buffer.size / o.channels );
+    }
+    return o;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+

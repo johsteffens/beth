@@ -66,6 +66,7 @@
 
 #include <alsa/asoundlib.h> // link with -lasound
 #include "bcore_std.h"
+#include "bmath_std.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -80,7 +81,31 @@ XOILA_DEFINE_GROUP( bmedia_audio, x_inst )
 /// General buffer for audio data
 stamp :buffer_s = x_array
 {
+    s1_t channels;
     s1_t [];
+    func ( o set_size( m@* o, sz_t size, sz_t channels ) ) = { o.cast( m x_array* ).set_size( size ); o.channels = channels; return o; };
+    func ( o set_frames( m@* o, sz_t frames, sz_t channels ) ) = { return o.set_size( frames * channels, channels ); };
+    func ( o set_zero( m@* o ) ) = { foreach( m$* e in o ) e.0 = 0; return o; };
+
+    /// converts buffer channel into vector with value range [ -1.0 , +1.0 [
+    func ( vec get_vf2( @* o, m bmath_vf2_s* vec, sz_t channel ) );
+
+    /// vector into buffer value for given channel (overflow-check by truncation)
+    func ( o set_from_vf2( @* o, c bmath_vf2_s* vec, sz_t channel ) );
+
+    func ( f3_t energy( @* o ) ) =
+    {
+        f3_t sum = 0;
+        foreach( $e in o ) sum += f3_sqr( e );
+        return sum;
+    };
+
+    func ( f3_t sum( @* o ) ) =
+    {
+        f3_t sum = 0;
+        foreach( $e in o ) sum += e;
+        return sum;
+    };
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -119,11 +144,15 @@ stamp :sequence_s =
     sz_t first; // index to first element
     sz_t size;  // number of used elements
 
-    func (void clear( m@* o )) =
-    {
-        o.adl.clear();
-        o.first = o.size = 0;
-    };
+    func (o clear( m@* o )) = { o.adl.clear(); o.first = o.size = 0; return o; };
+
+    func (o set_zero( m@* o )) = { foreach( m$* e in o.adl ) e.set_zero(); return o; };
+
+    /// allocates frames and channels and sets all zero
+    func (o setup_frames( m@* o, s2_t channels, s2_t rate, s3_t frames ));
+
+    /// creates difference (a - b) of sequences a and b
+    func (o setup_diff( m@* o, @* a, @* b ));
 
     /// Access function: Returns NULL if out of range
     func (m :buffer_s* buffer_m( m@* o, sz_t index )) = { return ( index >= 0 && index < o.size ) ? o.adl.[ ( o.first + index ) % o.adl.size ] : NULL; };
@@ -150,16 +179,37 @@ stamp :sequence_s =
     func (er_t wav_from_source( m@* o, m x_source* source ));
     func (er_t wav_from_file(   m@* o, sc_t path ));
 
+    func ( f3_t energy( @* o ) ) =
+    {
+        f3_t sum = 0;
+        for( sz_t i = 0; i < o.size; i++ ) sum += o.buffer_c( i ).energy();
+        return sum;
+    };
+
+    func ( f3_t sum( @* o ) ) =
+    {
+        f3_t sum = 0;
+        for( sz_t i = 0; i < o.size; i++ ) sum += o.buffer_c( i ).sum();
+        return sum;
+    };
+
     /// returns an iterator for sequence
     func (d :sequence_iterator_s* create_iterator( @* o )) =
     {
         return :sequence_iterator_s!.setup( o );
     };
+
+    /// returns an indexer for sequence
+    func (d :sequence_indexer_s* create_indexer( @* o )) =
+    {
+        return :sequence_indexer_s!.setup( o.cast( m$* ) );
+    };
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/** Iterator used to seamlessly extract frames from a sequence.
+/** Deprecated: Use indexer below.
+ *  Iterator used to seamlessly extract frames from a sequence.
  *  While the iterator is in use, the sequence should not be modified.
  */
 stamp :sequence_iterator_s =
@@ -179,8 +229,8 @@ stamp :sequence_iterator_s =
     /// total number of frames in sequence
     s3_t total_frames;
 
-    /// frames past current index
-    s3_t past_frames;
+    /// global frame index
+    s3_t global_frame_index;
 
     /// end of sequence was reached
     bl_t eos = true;
@@ -191,8 +241,15 @@ stamp :sequence_iterator_s =
     /// sets index to zero
     func (o reset( m@* o ));
 
-    /// goes to the next frame after past_frames
-    func (o go_to( m@* o, sz_t past_frames ));
+    /** Move to new position.
+     *  diff(erence) can be positive or negative.
+     *  Moving to or past end of sequenced sets eos flag.
+     *  End position is truncated in case destination is out of range.
+     */
+    func (o move( m@* o, s3_t diff ));
+
+    /// goes to the global index (via move)
+    func (o go_to( m@* o, s3_t global_frame_index ));
 
     /// obtains given number of frames; excess frames are padded with zeros
     func (o get_frames( m@* o, m s1_t* data, sz_t frames ));
@@ -202,6 +259,36 @@ stamp :sequence_iterator_s =
 
     /// obtains given number of frames; excess frames are padded with zeros; returns buffer of copied data
     func (d :buffer_s* create_buffer( m@* o, sz_t frames ));
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Indexer providing fast liner access to sequence
+stamp :sequence_indexer_s =
+{
+    hidden :sequence_s* sequence;
+    hidden bcore_indexer_s indexer;
+
+    s3_t size; // global size
+    s2_t channels;
+
+    /// setup; sets index to zero
+    func (o setup( m@* o, m :sequence_s* sequence ));
+
+    /// reads 'frames' from sequence at global index position. Out-of-range positions are filled with zeros.
+    func (o get_data( @* o, m s1_t* data, s3_t index, sz_t frames ));
+
+    /// sets 'frames' in sequence at global index position. Out-of-range positions are ignored.
+    func (o set_data( m @* o, s1_t* data, s3_t index, sz_t frames ));
+
+    /// obtains given number of frames; off-range frames are padded with zeros; allocates buffer
+    func (buffer get_buffer( @* o, m :buffer_s* buffer, s3_t index, sz_t frames ));
+
+    /// obtains given number of frames; off-range frames are padded with zeros; returns buffer of copied data
+    func (d :buffer_s* create_buffer( @* o, s3_t index, sz_t frames ));
+
+    /// obtains given number of frames; off-range frames are padded with zeros; allocates buffer
+    func (o set_from_buffer( m @* o, c :buffer_s* buffer, s3_t index ));
 };
 
 /**********************************************************************************************************************/
