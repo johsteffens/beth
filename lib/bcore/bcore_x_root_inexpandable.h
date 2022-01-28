@@ -89,10 +89,33 @@ identifier bcore_run_signal_selftest;
 
 identifier bcore_self_item_s_parse_src;
 identifier bcore_self_s_parse_source;
+
+identifier bcore_flect_caps_e_sc;
+identifier bcore_flect_caps_e_u2;
 identifier bcore_flect_caps_is_array;
+identifier bcore_flect_caps_is_array_dyn;
+identifier bcore_flect_caps_is_array_fix;
+identifier bcore_flect_caps_is_array_of_links;
+identifier bcore_flect_caps_is_aware;
+identifier bcore_flect_caps_is_typed;
+identifier bcore_flect_caps_get_indirection;
 
 identifier bcore_name_push_all;
 
+identifier BCORE_CAPS_EXTERNAL_FUNC;
+identifier BCORE_CAPS_SOLID_STATIC;
+identifier BCORE_CAPS_LINK_STATIC;
+identifier BCORE_CAPS_LINK_TYPED;
+identifier BCORE_CAPS_LINK_AWARE;
+identifier BCORE_CAPS_POINTER;
+identifier BCORE_CAPS_ARRAY_DYN_SOLID_STATIC;
+identifier BCORE_CAPS_ARRAY_DYN_SOLID_TYPED;
+identifier BCORE_CAPS_ARRAY_DYN_LINK_STATIC;
+identifier BCORE_CAPS_ARRAY_DYN_LINK_TYPED;
+identifier BCORE_CAPS_ARRAY_DYN_LINK_AWARE;
+identifier BCORE_CAPS_ARRAY_FIX_SOLID_STATIC;
+identifier BCORE_CAPS_ARRAY_FIX_LINK_STATIC;
+identifier BCORE_CAPS_ARRAY_FIX_LINK_AWARE;
 identifier BCORE_CAPS_EXTERNAL_FUNC;
 
 identifier bcore_error_push_fa;

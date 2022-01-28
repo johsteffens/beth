@@ -1,6 +1,6 @@
-//  Last update: 2022-01-08T12:31:17Z
+//  Last update: 2022-01-28T23:11:18Z
 /** This file was generated from xoila source code.
- *  Compiling Agent : XOICO (C) 2020 ... 2021 J.B.Steffens
+ *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
  *
  *  Copyright and License of this File:
@@ -52,7 +52,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0xF1D67EDFCD12F28Aull
+// HKEYOF_bcore 0xD4E60ED87F3713F5ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -796,7 +796,7 @@ BCORE_DEFINE_OBJECT_INST_P( x_lock_s )
 
 x_lock_s* x_lock_s_set( x_lock_s* o, x_mutex_s* mutex )
 {
-    // bcore_x_threads.h:43:5
+    // bcore_x_threads.h:45:5
     
     ((x_lock_s*)(x_lock_s_release(o)));
     o->mutex = mutex;
@@ -806,7 +806,7 @@ x_lock_s* x_lock_s_set( x_lock_s* o, x_mutex_s* mutex )
 
 x_lock_s* x_lock_s_release( x_lock_s* o )
 {
-    // bcore_x_threads.h:51:5
+    // bcore_x_threads.h:53:5
     
     if( o->mutex ) x_mutex_s_unlock(o->mutex);
     o->mutex = NULL;
@@ -822,7 +822,7 @@ BCORE_DEFINE_OBJECT_INST_P( x_unlock_s )
 
 x_unlock_s* x_unlock_s_set( x_unlock_s* o, x_mutex_s* mutex )
 {
-    // bcore_x_threads.h:68:5
+    // bcore_x_threads.h:70:5
     
     ((x_unlock_s*)(x_unlock_s_release(o)));
     o->mutex = mutex;
@@ -832,7 +832,7 @@ x_unlock_s* x_unlock_s_set( x_unlock_s* o, x_mutex_s* mutex )
 
 x_unlock_s* x_unlock_s_release( x_unlock_s* o )
 {
-    // bcore_x_threads.h:76:5
+    // bcore_x_threads.h:78:5
     
     if( o->mutex ) x_mutex_s_lock(o->mutex);
     o->mutex = NULL;
@@ -3185,7 +3185,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_indexer_s )
 
 bcore_indexer_s* bcore_indexer_s_setup( bcore_indexer_s* o, const bcore_arr_s3_s* size_arr )
 {
-    // bcore_indexer.h:61:5
+    // bcore_indexer.h:60:5
     
     o->size = 0;
     ((bcore_indexer_cs_arr_s*)(x_array_set_size(((x_array*)(&(o->cs_arr))),size_arr->size )));
@@ -3221,7 +3221,7 @@ bcore_indexer_s* bcore_indexer_s_setup( bcore_indexer_s* o, const bcore_arr_s3_s
 
 bl_t bcore_indexer_s_get_io( const bcore_indexer_s* o, s3_t index, bcore_indexer_io_s* io )
 {
-    // bcore_indexer.h:98:5
+    // bcore_indexer.h:97:5
     
     if( index < 0 || index >= o->size ) return  false;
     (*(io)) = o->io_arr.data[ index >> o->mask_bits ];
@@ -3241,7 +3241,7 @@ XOILA_DEFINE_SPECT( x_inst, bcore_indexer )
 
 void bcore_indexer_selftest( void )
 {
-    // bcore_indexer.h:114:1
+    // bcore_indexer.h:113:1
     BLM_INIT_LEVEL(0);
     bcore_prsg_lcg_u3_00_s prsg;BLM_T_INIT_SPUSH(bcore_prsg_lcg_u3_00_s, &prsg);;
     
@@ -4934,5 +4934,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x82238626259494DF
-// XOICO_FILE_SIGNATURE 0x82B25200BF06E232
+// XOICO_BODY_SIGNATURE 0x2BBBC25D4AD2CD1E
+// XOICO_FILE_SIGNATURE 0xDF2AC399D2FA94B0
