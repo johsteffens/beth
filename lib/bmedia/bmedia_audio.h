@@ -148,6 +148,9 @@ stamp :sequence_s =
 
     func (o set_zero( m@* o )) = { foreach( m$* e in o.adl ) e.set_zero(); return o; };
 
+    /// sets up empty sequence
+    func (o setup( m@* o, s2_t channels, s2_t rate )) = { o.clear(); o.channels = channels; o.rate = rate; return o; };
+
     /// allocates frames and channels and sets all zero
     func (o setup_frames( m@* o, s2_t channels, s2_t rate, s3_t frames ));
 
