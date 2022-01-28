@@ -38,37 +38,43 @@ group :mdct =
     stamp :f3_s =
     {
         /// reusable buffer for temporary data
-        hidden bmath_vcf3_s => buf;
+        hidden bmath_vcf3_s => buf_;
 
         /** Fast Forward Transformation (via FFT)
          *  Transforms src_size source-samples into src_size/2 destination samples
+         *  src, dst can be the same pointer
          */
         func (void ff( m@* o, c f3_t* src, m f3_t* dst, sz_t src_size ));
-        func (dst ffv( m@* o, c bmath_vf3_s* src, m bmath_vf3_s* dst )) = { dst.set_size( src.size >> 1 ); o.ff( src.data, dst.data, src.size ); return dst; };
+        func (dst ffv( m@* o, c bmath_vf3_s* src, m bmath_vf3_s* dst ));
 
         /** Fast Inverse Transformation (via FFT)
          *  Transforms dst_size/2 source-samples into dst_size destination samples
+         *  src, dst can be the same pointer
          */
         func (void fi( m@* o, c f3_t* src, m f3_t* dst, sz_t dst_size ));
-        func (dst fiv( m@* o, c bmath_vf3_s* src, m bmath_vf3_s* dst )) = { dst.set_size( src.size << 1 ); o.fi( src.data, dst.data, dst.size ); return dst; };
+        func (dst fiv( m@* o, c bmath_vf3_s* src, m bmath_vf3_s* dst ));
     };
+
+    //------------------------------------------------------------------------------------------------------------------
 
     stamp :f2_s =
     {
         /// reusable buffer for temporary data
-        hidden bmath_vcf2_s => buf;
+        hidden bmath_vcf2_s => buf_;
 
         /** Fast Forward Transformation (via FFT)
          *  Transforms src_size source-samples into src_size/2 destination samples
+         *  src, dst can be the same pointer
          */
         func (void ff( m@* o, c f2_t* src, m f2_t* dst, sz_t src_size ));
-        func (dst ffv( m@* o, c bmath_vf2_s* src, m bmath_vf2_s* dst )) = { dst.set_size( src.size >> 1 ); o.ff( src.data, dst.data, src.size ); return dst; };
+        func (dst ffv( m@* o, c bmath_vf2_s* src, m bmath_vf2_s* dst ));
 
         /** Fast Inverse Transformation (via FFT)
          *  Transforms dst_size/2 source-samples into dst_size destination samples
+         *  src, dst can be the same pointer
          */
         func (void fi( m@* o, c f2_t* src, m f2_t* dst, sz_t dst_size ));
-        func (dst fiv( m@* o, c bmath_vf2_s* src, m bmath_vf2_s* dst )) = { dst.set_size( src.size << 1 ); o.fi( src.data, dst.data, dst.size ); return dst; };
+        func (dst fiv( m@* o, c bmath_vf2_s* src, m bmath_vf2_s* dst ));
     };
 };
 

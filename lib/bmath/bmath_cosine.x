@@ -26,11 +26,11 @@ group :mdct =
     func (:f3_s) ff =
     {
         ASSERT( ( ( src_size - 1 ) & src_size ) == 0 );
-        if( !o.buf ) o.buf = bmath_vcf3_s!;
-        o.buf.set_size( src_size * 3 );
-        m bmath_cf3_s* dc1 = o.buf.data + src_size * 0;
-        m bmath_cf3_s* dc2 = o.buf.data + src_size * 1;
-        m bmath_cf3_s* dc3 = o.buf.data + src_size * 2;
+        if( !o.buf_ ) o.buf_ = bmath_vcf3_s!;
+        o.buf_.set_size( src_size * 3 );
+        m bmath_cf3_s* dc1 = o.buf_.data + src_size * 0;
+        m bmath_cf3_s* dc2 = o.buf_.data + src_size * 1;
+        m bmath_cf3_s* dc3 = o.buf_.data + src_size * 2;
 
         bmath_cf3_s^ w0;
         bmath_cf3_s^ w1;
@@ -53,11 +53,11 @@ group :mdct =
     func (:f3_s) fi =
     {
         ASSERT( ( ( dst_size - 1 ) & dst_size ) == 0 );
-        if( !o.buf ) o.buf = bmath_vcf3_s!;
-        o.buf.set_size( dst_size * 3 );
-        m bmath_cf3_s* dc1 = o.buf.data + dst_size * 0;
-        m bmath_cf3_s* dc2 = o.buf.data + dst_size * 1;
-        m bmath_cf3_s* dc3 = o.buf.data + dst_size * 2;
+        if( !o.buf_ ) o.buf_ = bmath_vcf3_s!;
+        o.buf_.set_size( dst_size * 3 );
+        m bmath_cf3_s* dc1 = o.buf_.data + dst_size * 0;
+        m bmath_cf3_s* dc2 = o.buf_.data + dst_size * 1;
+        m bmath_cf3_s* dc3 = o.buf_.data + dst_size * 2;
 
         sz_t n = dst_size >> 1;
 
@@ -75,6 +75,25 @@ group :mdct =
         w1.urt( -1, 4 * n );
         for( sz_t i = 0; i < dst_size; i++ ) { dst[ i ] = o.mul_r( dc2[ i ], w0 ); w1.mul( w0, w0 ); }
 
+    };
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    func (:f3_s) ffv =
+    {
+        if( dst != src ) dst.set_size( src.size >> 1 );
+        o.ff( src.data, dst.data, src.size );
+        if( dst == src ) dst.set_size( src.size >> 1 );
+        return dst;
+    };
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    func (:f3_s) fiv =
+    {
+        dst.set_size( src.size << 1 ); // in case dst == src space is increased but data retained
+        o.fi( src.data, dst.data, dst.size );
+        return dst;
     };
 
     //------------------------------------------------------------------------------------------------------------------
@@ -103,11 +122,11 @@ group :mdct =
     func (:f2_s) ff =
     {
         ASSERT( ( ( src_size - 1 ) & src_size ) == 0 );
-        if( !o.buf ) o.buf = bmath_vcf2_s!;
-        o.buf.set_size( src_size * 3 );
-        m bmath_cf2_s* dc1 = o.buf.data + src_size * 0;
-        m bmath_cf2_s* dc2 = o.buf.data + src_size * 1;
-        m bmath_cf2_s* dc3 = o.buf.data + src_size * 2;
+        if( !o.buf_ ) o.buf_ = bmath_vcf2_s!;
+        o.buf_.set_size( src_size * 3 );
+        m bmath_cf2_s* dc1 = o.buf_.data + src_size * 0;
+        m bmath_cf2_s* dc2 = o.buf_.data + src_size * 1;
+        m bmath_cf2_s* dc3 = o.buf_.data + src_size * 2;
 
         bmath_cf2_s^ w0;
         bmath_cf2_s^ w1;
@@ -130,11 +149,11 @@ group :mdct =
     func (:f2_s) fi =
     {
         ASSERT( ( ( dst_size - 1 ) & dst_size ) == 0 );
-        if( !o.buf ) o.buf = bmath_vcf2_s!;
-        o.buf.set_size( dst_size * 3 );
-        m bmath_cf2_s* dc1 = o.buf.data + dst_size * 0;
-        m bmath_cf2_s* dc2 = o.buf.data + dst_size * 1;
-        m bmath_cf2_s* dc3 = o.buf.data + dst_size * 2;
+        if( !o.buf_ ) o.buf_ = bmath_vcf2_s!;
+        o.buf_.set_size( dst_size * 3 );
+        m bmath_cf2_s* dc1 = o.buf_.data + dst_size * 0;
+        m bmath_cf2_s* dc2 = o.buf_.data + dst_size * 1;
+        m bmath_cf2_s* dc3 = o.buf_.data + dst_size * 2;
 
         sz_t n = dst_size >> 1;
 
@@ -152,6 +171,25 @@ group :mdct =
         w1.urt( -1, 4 * n );
         for( sz_t i = 0; i < dst_size; i++ ) { dst[ i ] = o.mul_r( dc2[ i ], w0 ); w1.mul( w0, w0 ); }
 
+    };
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    func (:f2_s) ffv =
+    {
+        if( dst != src ) dst.set_size( src.size >> 1 );
+        o.ff( src.data, dst.data, src.size );
+        if( dst == src ) dst.set_size( src.size >> 1 );
+        return dst;
+    };
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    func (:f2_s) fiv =
+    {
+        dst.set_size( src.size << 1 ); // in case dst == src space is increased but data retained
+        o.fi( src.data, dst.data, dst.size );
+        return dst;
     };
 
     //------------------------------------------------------------------------------------------------------------------
