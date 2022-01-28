@@ -347,10 +347,10 @@ group bmath_mf =
     signature bl_t inv_htp( @* o, m@* res ); // res = (o^-1)T
     signature bl_t pdf_inv( @* o, m@* res ); // res = o^-1 in case o is positive definite (faster than bmath_mfx_s_inv)
 
-    signature bl_t inv_via_cld(     @* o, m@* res ); // inversion via Cholesky decomposition
+    signature bl_t inv_via_cld( @* o, m@* res ); // inversion via Cholesky decomposition
 
     /** Pseudo-Inversion:
-     *  Inversion via SVD/EVD by setting near-zero singular values to zero (cut-off).
+     *  Stable inversion via SVD/EVD by setting near-zero singular values to zero (cut-off).
      *  A singular value s is cut off when abs( s ) < eps * max( { abs(s_0), ..., abs(s_n-1) } ).
      *  Returns success of underlying SVD/EVD.
      *  In case of non-success res contains a result but it might not be the true pseudo inverse.
