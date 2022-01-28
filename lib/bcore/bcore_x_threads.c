@@ -173,8 +173,8 @@ const x_inst* x_thread_s_join( x_thread_s* o )
     if( o->_join )
     {
         int ern = pthread_join( o->_thread, &ret );
-        if( ern == EINVAL )  ERR( "No joinable thread" );
-        if( ern == ESRCH )   ERR( "Invalid thread id" );
+        if( ern == EINVAL )  ERR( "No joinable thread." );
+        if( ern == ESRCH )   ERR( "Invalid thread ID." );
         if( ern == EDEADLK ) ERR( "Deadlock detected." );
         if( ern ) ERR( "function returned error %i", ern );
         o->_join = false;

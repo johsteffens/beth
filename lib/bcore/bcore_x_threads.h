@@ -13,7 +13,9 @@
  *  limitations under the License.
  */
 
-/** Beth stamp-group. Provides access from reflection (using bcore_via perspective). */
+/**
+ *  X Threads. Replaces bcore_threads.
+ */
 
 #ifndef BCORE_X_THREADS_H
 #define BCORE_X_THREADS_H
