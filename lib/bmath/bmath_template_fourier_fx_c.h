@@ -69,30 +69,30 @@ static void fft_4( const bmath_cfx_s* src, bmath_cfx_s* dst )
 {
     #ifdef BMATH_AVX
         #if ( BMATH_TEMPLATE_FX_PREC == 2 )
-            __m128 dst0_m5 = _mm_add_ps( _mm_setr_ps( src[ 0 ].v[ 0 ], src[ 0 ].v[ 1 ],  src[ 0 ].v[ 0 ],  src[ 0 ].v[ 1 ] ),
-                                         _mm_setr_ps( src[ 2 ].v[ 0 ], src[ 2 ].v[ 1 ], -src[ 2 ].v[ 0 ], -src[ 2 ].v[ 1 ] ) );
-            __m128 dst1_m5 = _mm_add_ps( _mm_setr_ps( src[ 1 ].v[ 0 ], src[ 1 ].v[ 1 ],  src[ 1 ].v[ 1 ], -src[ 1 ].v[ 0 ] ),
-                                         _mm_setr_ps( src[ 3 ].v[ 0 ], src[ 3 ].v[ 1 ], -src[ 3 ].v[ 1 ], +src[ 3 ].v[ 0 ] ) );
+            __m128 dst0_m5 = _mm_add_ps( _mm_setr_ps( src[ 0 ].r, src[ 0 ].i,  src[ 0 ].r,  src[ 0 ].i ),
+                                         _mm_setr_ps( src[ 2 ].r, src[ 2 ].i, -src[ 2 ].r, -src[ 2 ].i ) );
+            __m128 dst1_m5 = _mm_add_ps( _mm_setr_ps( src[ 1 ].r, src[ 1 ].i,  src[ 1 ].i, -src[ 1 ].r ),
+                                         _mm_setr_ps( src[ 3 ].r, src[ 3 ].i, -src[ 3 ].i, +src[ 3 ].r ) );
             _mm_storeu_ps( ( ( fx_t* )dst ),     _mm_add_ps( dst0_m5, dst1_m5 ) );
             _mm_storeu_ps( ( ( fx_t* )dst ) + 4, _mm_sub_ps( dst0_m5, dst1_m5 ) );
         #else
-            __m256d dst0_m5 = M5_ADD( _mm256_setr_pd( src[ 0 ].v[ 0 ], src[ 0 ].v[ 1 ],  src[ 0 ].v[ 0 ],  src[ 0 ].v[ 1 ] ),
-                                      _mm256_setr_pd( src[ 2 ].v[ 0 ], src[ 2 ].v[ 1 ], -src[ 2 ].v[ 0 ], -src[ 2 ].v[ 1 ] ) );
-            __m256d dst1_m5 = M5_ADD( _mm256_setr_pd( src[ 1 ].v[ 0 ], src[ 1 ].v[ 1 ],  src[ 1 ].v[ 1 ], -src[ 1 ].v[ 0 ] ),
-                                      _mm256_setr_pd( src[ 3 ].v[ 0 ], src[ 3 ].v[ 1 ], -src[ 3 ].v[ 1 ], +src[ 3 ].v[ 0 ] ) );
+            __m256d dst0_m5 = M5_ADD( _mm256_setr_pd( src[ 0 ].r, src[ 0 ].i,  src[ 0 ].r,  src[ 0 ].i ),
+                                      _mm256_setr_pd( src[ 2 ].r, src[ 2 ].i, -src[ 2 ].r, -src[ 2 ].i ) );
+            __m256d dst1_m5 = M5_ADD( _mm256_setr_pd( src[ 1 ].r, src[ 1 ].i,  src[ 1 ].i, -src[ 1 ].r ),
+                                      _mm256_setr_pd( src[ 3 ].r, src[ 3 ].i, -src[ 3 ].i, +src[ 3 ].r ) );
             M5_STOR( ( ( fx_t* )dst ),     M5_ADD( dst0_m5, dst1_m5 ) );
             M5_STOR( ( ( fx_t* )dst ) + 4, M5_SUB( dst0_m5, dst1_m5 ) );
 
         #endif
     #else
-        dst[ 0 ].v[ 0 ] = src[ 0 ].v[ 0 ] + src[ 1 ].v[ 0 ] + src[ 2 ].v[ 0 ] + src[ 3 ].v[ 0 ];
-        dst[ 0 ].v[ 1 ] = src[ 0 ].v[ 1 ] + src[ 1 ].v[ 1 ] + src[ 2 ].v[ 1 ] + src[ 3 ].v[ 1 ];
-        dst[ 1 ].v[ 0 ] = src[ 0 ].v[ 0 ] + src[ 1 ].v[ 1 ] - src[ 2 ].v[ 0 ] - src[ 3 ].v[ 1 ];
-        dst[ 1 ].v[ 1 ] = src[ 0 ].v[ 1 ] - src[ 1 ].v[ 0 ] - src[ 2 ].v[ 1 ] + src[ 3 ].v[ 0 ];
-        dst[ 2 ].v[ 0 ] = src[ 0 ].v[ 0 ] - src[ 1 ].v[ 0 ] + src[ 2 ].v[ 0 ] - src[ 3 ].v[ 0 ];
-        dst[ 2 ].v[ 1 ] = src[ 0 ].v[ 1 ] - src[ 1 ].v[ 1 ] + src[ 2 ].v[ 1 ] - src[ 3 ].v[ 1 ];
-        dst[ 3 ].v[ 0 ] = src[ 0 ].v[ 0 ] - src[ 1 ].v[ 1 ] - src[ 2 ].v[ 0 ] + src[ 3 ].v[ 1 ];
-        dst[ 3 ].v[ 1 ] = src[ 0 ].v[ 1 ] + src[ 1 ].v[ 0 ] - src[ 2 ].v[ 1 ] - src[ 3 ].v[ 0 ];
+        dst[ 0 ].r = src[ 0 ].r + src[ 1 ].r + src[ 2 ].r + src[ 3 ].r;
+        dst[ 0 ].i = src[ 0 ].i + src[ 1 ].i + src[ 2 ].i + src[ 3 ].i;
+        dst[ 1 ].r = src[ 0 ].r + src[ 1 ].i - src[ 2 ].r - src[ 3 ].i;
+        dst[ 1 ].i = src[ 0 ].i - src[ 1 ].r - src[ 2 ].i + src[ 3 ].r;
+        dst[ 2 ].r = src[ 0 ].r - src[ 1 ].r + src[ 2 ].r - src[ 3 ].r;
+        dst[ 2 ].i = src[ 0 ].i - src[ 1 ].i + src[ 2 ].i - src[ 3 ].i;
+        dst[ 3 ].r = src[ 0 ].r - src[ 1 ].i - src[ 2 ].r + src[ 3 ].i;
+        dst[ 3 ].i = src[ 0 ].i + src[ 1 ].r - src[ 2 ].i - src[ 3 ].r;
         // further disentangling shows no speed advantage on gcc -O3
     #endif
 }
@@ -156,8 +156,8 @@ static void recursive_fft( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t n0, bm
                 w0_i = M5_GATHER( ( fx_t* )wb, idx_i, sizeof( fx_t ) );
             }
 
-            M5_T ws0_r = M5_SET_ALL( w0.v[ 0 ] );
-            M5_T ws0_i = M5_SET_ALL( w0.v[ 1 ] );
+            M5_T ws0_r = M5_SET_ALL( w0.r );
+            M5_T ws0_i = M5_SET_ALL( w0.i );
 
             for( sz_t i = 0; i < n1; i += P5_SIZE )
             {
@@ -250,10 +250,10 @@ vd_t BCATU(bmath_fourier,fx,fft_buf)( const bmath_cfx_s* src, bmath_cfx_s* dst, 
             return NULL;
         }
 
-        dst[ 0 ].v[ 0 ] = src[ 0 ].v[ 0 ] + src[ 1 ].v[ 0 ];
-        dst[ 0 ].v[ 1 ] = src[ 0 ].v[ 1 ] + src[ 1 ].v[ 1 ];
-        dst[ 1 ].v[ 0 ] = src[ 0 ].v[ 0 ] - src[ 1 ].v[ 0 ];
-        dst[ 1 ].v[ 1 ] = src[ 0 ].v[ 1 ] - src[ 1 ].v[ 1 ];
+        dst[ 0 ].r = src[ 0 ].r + src[ 1 ].r;
+        dst[ 0 ].i = src[ 0 ].i + src[ 1 ].i;
+        dst[ 1 ].r = src[ 0 ].r - src[ 1 ].r;
+        dst[ 1 ].i = src[ 0 ].i - src[ 1 ].i;
         return NULL;
     }
 
