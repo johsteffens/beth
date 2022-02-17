@@ -87,6 +87,8 @@ identifier clock;
 identifier sc_t_cmp;
 identifier bcore_run_signal_selftest;
 
+identifier bcore_type_is_leaf;
+
 identifier bcore_self_item_s_parse_src;
 identifier bcore_self_s_parse_source;
 

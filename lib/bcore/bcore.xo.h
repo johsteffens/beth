@@ -1,6 +1,6 @@
-//  Last update: 2022-01-08T12:32:12Z
+//  Last update: 2022-02-04T18:56:36Z
 /** This file was generated from xoila source code.
- *  Compiling Agent : XOICO (C) 2020 ... 2021 J.B.Steffens
+ *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
  *
  *  Copyright and License of this File:
@@ -244,7 +244,7 @@
   static inline x_sink* x_sink_push_st( x_sink* o, const st_s* st ){ return ((x_sink*)( bcore_sink_a_push_string(((bcore_sink*)(o)),st )));} \
   static inline x_sink* x_sink_push_st_d( x_sink* o, st_s* st ){ return ((x_sink*)( bcore_sink_a_push_string_d(((bcore_sink*)(o)),st )));} \
   static inline x_sink* x_sink_push_fv( x_sink* o, sc_t format, va_list args ){ return ((x_sink*)( bcore_sink_a_push_fv(((bcore_sink*)(o)),format, args )));} \
-  static inline x_sink* x_sink_push_fa( x_sink* o, sc_t format, ... ){ va_list a; va_start( a, format ); ((x_sink*)(x_sink_push_fv(o,format, a ))); va_end( a ); return  o;} \
+  static inline x_sink* x_sink_push_fa( x_sink* o, sc_t format, ... ){ va_list a; va_start( a, format ); x_sink_push_fv(o,format, a ); va_end( a ); return  o;} \
   static inline x_sink* x_sink_flush( x_sink* o ){ return ((x_sink*)( bcore_sink_a_flush(((bcore_sink*)(o)))));} \
   static inline x_sink* x_sink_stdout( void ){ return  ( x_sink* )BCORE_STDOUT;} \
   static inline x_sink* x_sink_stderr( void ){ return  ( x_sink* )BCORE_STDERR;}
@@ -423,7 +423,7 @@
   x_stamp_path_s* x_stamp_path_s_parse( x_stamp_path_s* o, x_source* source ); \
   sr_s x_stamp_path_s_get_sr_in_t( const x_stamp_path_s* o, tp_t t, const x_inst* inst ); \
   sr_s x_stamp_path_s_set_sr_ret_in_t( const x_stamp_path_s* o, tp_t t, x_inst* inst, sr_s sr_src ); \
-  static inline x_stamp_path_s* x_stamp_path_s_clear( x_stamp_path_s* o ){ ((x_array*)(x_array_clear(((x_array*)(o))))); return  o;} \
+  static inline x_stamp_path_s* x_stamp_path_s_clear( x_stamp_path_s* o ){ x_array_clear(((x_array*)(o))); return  o;} \
   static inline void x_stamp_path_s_push( x_stamp_path_s* o, tp_t tp ){ x_array_push_c(((x_array*)(o)),((const x_inst*)(&(tp))) );} \
   static inline x_stamp_path_s* x_stamp_path_s_parse_sc( x_stamp_path_s* o, sc_t sc ){BLM_INIT_LEVEL(0); BLM_RETURNV(x_stamp_path_s*, ((x_stamp_path_s*)(x_stamp_path_s_parse(o,((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))))} \
   static inline bl_t x_stamp_path_s_exists_in( const x_stamp_path_s* o, const x_inst* inst ){ return  x_stamp_path_s_exists_in_t(o,inst->_, inst );} \
@@ -569,7 +569,7 @@
   x_lock_s* x_lock_s_set( x_lock_s* o, x_mutex_s* mutex ); \
   x_lock_s* x_lock_s_release( x_lock_s* o ); \
   static inline void x_lock_s_down_e( x_lock_s* o ); \
-  static inline void x_lock_s_down_e( x_lock_s* o ){ ((x_lock_s*)(x_lock_s_release(o)));}
+  static inline void x_lock_s_down_e( x_lock_s* o ){ x_lock_s_release(o);}
 #define TYPEOF_x_unlock_s 0x6DA985CDBF521AB6ull
 #define BETH_EXPAND_ITEM_x_unlock_s \
   BCORE_DECLARE_OBJECT( x_unlock_s ) \
@@ -580,7 +580,7 @@
   x_unlock_s* x_unlock_s_set( x_unlock_s* o, x_mutex_s* mutex ); \
   x_unlock_s* x_unlock_s_release( x_unlock_s* o ); \
   static inline void x_unlock_s_down_e( x_unlock_s* o ); \
-  static inline void x_unlock_s_down_e( x_unlock_s* o ){ ((x_unlock_s*)(x_unlock_s_release(o)));}
+  static inline void x_unlock_s_down_e( x_unlock_s* o ){ x_unlock_s_release(o);}
 #define TYPEOF_x_mutex_s 0x339FC5615E44B9CDull
 #define BETH_EXPAND_ITEM_x_mutex_s \
   BCORE_DECLARE_OBJECT( x_mutex_s ) \
@@ -1883,7 +1883,7 @@
   u3_t bcore_huffman_bit_buffer_iterator_s_read_u( bcore_huffman_bit_buffer_iterator_s* o, sz_t bits ); \
   u3_t bcore_huffman_bit_buffer_iterator_s_read_packed_u( bcore_huffman_bit_buffer_iterator_s* o ); \
   static inline bcore_huffman_bit_buffer_iterator_s* bcore_huffman_bit_buffer_iterator_s_reset( bcore_huffman_bit_buffer_iterator_s* o ){ o->bit_index = 0; return  o;} \
-  static inline bcore_huffman_bit_buffer_iterator_s* bcore_huffman_bit_buffer_iterator_s_setup( bcore_huffman_bit_buffer_iterator_s* o, const bcore_huffman_bit_buffer_s* bit_buffer ){ ((bcore_huffman_bit_buffer_iterator_s*)(bcore_huffman_bit_buffer_iterator_s_reset(o))); o->bit_buffer = ((bcore_huffman_bit_buffer_s*)(bit_buffer)); return  o;} \
+  static inline bcore_huffman_bit_buffer_iterator_s* bcore_huffman_bit_buffer_iterator_s_setup( bcore_huffman_bit_buffer_iterator_s* o, const bcore_huffman_bit_buffer_s* bit_buffer ){ bcore_huffman_bit_buffer_iterator_s_reset(o); o->bit_buffer = ((bcore_huffman_bit_buffer_s*)(bit_buffer)); return  o;} \
   static inline bl_t bcore_huffman_bit_buffer_iterator_s_eos( bcore_huffman_bit_buffer_iterator_s* o ){ return  o->bit_index >= o->bit_buffer->bits;}
 #define TYPEOF_bcore_huffman_hist_s 0x12C3EA9E8F1C4823ull
 #define BETH_EXPAND_ITEM_bcore_huffman_hist_s \
@@ -2336,9 +2336,9 @@
   static inline x_inst* x_hmap_tp_m_get( x_hmap_tp* o, tp_t key ){ return  x_hmap_tp_s_m_get(x_hmap_tp_m_map_(o),key );} \
   static inline x_inst* x_hmap_tp_set_c( x_hmap_tp* o, tp_t key, const x_inst* val ){ return  x_hmap_tp_s_set_c(x_hmap_tp_m_map_(o),key, val );} \
   static inline x_inst* x_hmap_tp_set_d( x_hmap_tp* o, tp_t key, x_inst* val ){ return  x_hmap_tp_s_set_d(x_hmap_tp_m_map_(o),key, val );} \
-  static inline x_hmap_tp* x_hmap_tp_remove( x_hmap_tp* o, tp_t key ){ return ((x_hmap_tp*)( ((x_hmap_tp_s*)(x_hmap_tp_s_remove(x_hmap_tp_m_map_(o),key )))));} \
+  static inline x_hmap_tp* x_hmap_tp_remove( x_hmap_tp* o, tp_t key ){ return ((x_hmap_tp*)( x_hmap_tp_s_remove(x_hmap_tp_m_map_(o),key )));} \
   static inline bl_t x_hmap_tp_exists( const x_hmap_tp* o, tp_t key ){ return  x_hmap_tp_s_exists(x_hmap_tp_c_map_(o),key );} \
-  static inline x_hmap_tp* x_hmap_tp_clear( x_hmap_tp* o ){ return ((x_hmap_tp*)( ((x_hmap_tp_s*)(x_hmap_tp_s_clear(x_hmap_tp_m_map_(o))))));} \
+  static inline x_hmap_tp* x_hmap_tp_clear( x_hmap_tp* o ){ return ((x_hmap_tp*)( x_hmap_tp_s_clear(x_hmap_tp_m_map_(o))));} \
   static inline sz_t x_hmap_tp_keys( const x_hmap_tp* o ){ return  x_hmap_tp_s_keys(x_hmap_tp_c_map_(o));} \
   static inline sz_t x_hmap_tp_size( const x_hmap_tp* o ){ return  x_hmap_tp_s_size(x_hmap_tp_c_map_(o));} \
   static inline tp_t x_hmap_tp_idx_key( const x_hmap_tp* o, sz_t idx ){ return  x_hmap_tp_s_idx_key(x_hmap_tp_c_map_(o),idx );} \
@@ -2408,5 +2408,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x65DF8E6541A7F262
-// XOICO_FILE_SIGNATURE 0xCAC79BDF4BF7944C
+// XOICO_BODY_SIGNATURE 0x4C72F9487A8CFC67
+// XOICO_FILE_SIGNATURE 0x22EFE6F8F16C5B99
