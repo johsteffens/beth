@@ -102,7 +102,7 @@ group :tp =
     /// Predefined maps
 
     /// tp - st_s
-    stamp :st_s = : (TE st_s) { :s map; };
+    stamp :st_s = : trans(TE st_s) { :s map; };
 
     /******************************************************************************************************************/
     /// Implementation

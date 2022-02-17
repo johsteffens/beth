@@ -35,7 +35,7 @@ group :tp_test =
     stamp :kv_s = obliv { tp_t key; u3_t val; };
     stamp :kv_arr_s = x_array { :kv_s []; };
     stamp :val_s = { u3_t val; }; // aware value (used to create a fast testable hmap)
-    stamp :map_s = x_hmap_tp (TE :val_s) { x_hmap_tp_s map; };
+    stamp :map_s = x_hmap_tp trans(TE :val_s) { x_hmap_tp_s map; };
 
     //----------------------------------------------------------------------------------------------------------------------
 
