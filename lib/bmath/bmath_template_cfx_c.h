@@ -34,7 +34,7 @@
 
 void BCATU(bmath_cfx_s,to_stdout)( const bmath_cfx_s* o )
 {
-    bcore_msg( "%9.3g %9.3g\n", o->v[ 0 ], o->v[ 1 ] );
+    bcore_msg( "%9.3g %9.3g\n", o->r, o->i );
 }
 
 /**********************************************************************************************************************/
@@ -63,8 +63,8 @@ void BCATU(bmath_cfx_s,copy_typed)( bmath_cfx_s* o, tp_t type, vc_t src )
         case BCATU(TYPEOF,bmath_cfy_s):
         {
             const bmath_cfy_s* v = src;
-            o->v[ 0 ] = v->v[ 0 ];
-            o->v[ 1 ] = v->v[ 1 ];
+            o->r = v->r;
+            o->i = v->i;
         }
         break;
 
@@ -80,10 +80,10 @@ void BCATU(bmath_cfx_s,copy_typed)( bmath_cfx_s* o, tp_t type, vc_t src )
 
 static vd_t selftest( void )
 {
-    bmath_cfx_s c1 = { .v[0] = 1, .v[1] = 2 };
-    bmath_cfx_s c2 = { .v[0] = 3, .v[1] = 4 };
-    bmath_cfx_s c3 = { .v[0] = 0, .v[1] = 0 };
-    bmath_cfx_s c4 = { .v[0] = 0, .v[1] = 0 };
+    bmath_cfx_s c1 = { .r = 1, .i = 2 };
+    bmath_cfx_s c2 = { .r = 3, .i = 4 };
+    bmath_cfx_s c3 = { .r = 0, .i = 0 };
+    bmath_cfx_s c4 = { .r = 0, .i = 0 };
 
     BCATU(bmath_cfx_s,div)( &c1, &c2, &c3 );
     bmath_ring_t_div( TYPEOF_bmath_cfx_s, (bmath_ring*)&c1, (bmath_ring*)&c2, (bmath_ring*)&c4 );
