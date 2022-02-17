@@ -17,44 +17,44 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp :hwparams_s =
+stamp :hwparams_s
 {
     private snd_pcm_hw_params_t* v;
-    func bcore_inst_call.init_x =
+    func bcore_inst_call.init_x
     {
         if( snd_pcm_hw_params_malloc( o.v.2 ) ) ERR_fa( "Failed allocating hw_params" );
-    };
+    }
 
-    func bcore_inst_call.down_e =
+    func bcore_inst_call.down_e
     {
         if( o.v ) snd_pcm_hw_params_free( o.v.1 );
-    };
-};
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (er_t error( sc_t context, s2_t errnum )) =
+func (er_t error( sc_t context, s2_t errnum ))
 {
     sc_t snd_msg = snd_strerror( errnum );
-    return bcore_error_push_fa( TYPEOF_general_error, "#<sc_t>: #<sc_t>\n", context, snd_msg );
-};
+    = bcore_error_push_fa( TYPEOF_general_error, "#<sc_t>: #<sc_t>\n", context, snd_msg );
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp :shut_down_s =
+stamp :shut_down_s
 {
     private :s* v;
-    func (void setup( m@* o, m :s* v )) = { o.v = v; };
-    func (void clear( m@* o )) = { o.v = NULL; };
+    func void setup( m@* o, m :s* v ) { o.v = v; };
+    func void clear( m@* o ) { o.v = NULL; };
     func bcore_inst_call.down_e = { if( o.v ) o.v.shut_down(); };
-};
+}
 
-func (:s) setup =
+func (:s) setup
 {
-    if( o.is_setup_ ) return 0;
+    if( o.is_setup_ ) = 0;
     s2_t err = 0;
     err = snd_pcm_open( o.handle_.2, o.device_name.sc, SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK );
-    if( err < 0 ) return :error( "snd_pcm_open", err );
+    if( err < 0 ) = :error( "snd_pcm_open", err );
     o.is_open_ = true;
 
     :hwparams_s^ hw_params;
@@ -62,23 +62,23 @@ func (:s) setup =
 
     // obtains configuration space for given device
     err = snd_pcm_hw_params_any( o.handle_, hw_params.v );
-    if( err < 0 ) return :error( "snd_pcm_hw_params_any", err );
+    if( err < 0 ) = :error( "snd_pcm_hw_params_any", err );
 
     // restricts configuration space to real hardware rates
     err = snd_pcm_hw_params_set_rate_resample( o.handle_, hw_params.v, 1 );
-    if( err < 0 ) return :error( "snd_pcm_hw_params_set_rate_resample", err );
+    if( err < 0 ) = :error( "snd_pcm_hw_params_set_rate_resample", err );
 
     // restricts configuration space to interleaved sampling (LRLR...)
     err = snd_pcm_hw_params_set_access( o.handle_, hw_params.v, SND_PCM_ACCESS_RW_INTERLEAVED );
-    if( err < 0 ) return :error( "snd_pcm_hw_params_set_access", err );
+    if( err < 0 ) = :error( "snd_pcm_hw_params_set_access", err );
 
     // sets sample value format to 16bit little-endian
     err = snd_pcm_hw_params_set_format( o.handle_, hw_params.v, SND_PCM_FORMAT_S16_LE );
-    if( err < 0 ) return :error( "snd_pcm_hw_params_set_format", err );
+    if( err < 0 ) = :error( "snd_pcm_hw_params_set_format", err );
 
     // sets number of channels (2 = stereo)
     err = snd_pcm_hw_params_set_channels( o.handle_, hw_params.v, o.channels );
-    if( err < 0 ) return :error( "snd_pcm_hw_params_set_channels", err );
+    if( err < 0 ) = :error( "snd_pcm_hw_params_set_channels", err );
 
     /* sets sampling rate in hertz
      * 'rate' contains the requested value and is modified to the actual (nearest supported) value
@@ -87,14 +87,14 @@ func (:s) setup =
     {
         unsigned int rate = 0;
         err = snd_pcm_hw_params_get_rate( hw_params.v, &rate, NULL );
-        if( err < 0 ) return :error( "snd_pcm_hw_params_get_rate", err );
+        if( err < 0 ) = :error( "snd_pcm_hw_params_get_rate", err );
         o.actual_rate = rate;
     }
     else
     {
         unsigned int rate = o.requested_rate;
         err = snd_pcm_hw_params_set_rate_near( o.handle_, hw_params.v, &rate, NULL );
-        if( err < 0 ) return :error( "snd_pcm_hw_params_set_rate", err );
+        if( err < 0 ) = :error( "snd_pcm_hw_params_set_rate", err );
         o.actual_rate = rate;
     }
 
@@ -102,14 +102,14 @@ func (:s) setup =
     {
         unsigned int periods = 0;
         err = snd_pcm_hw_params_get_periods( hw_params.v, &periods, NULL );
-        if( err < 0 ) return :error( "snd_pcm_hw_params_get_periods", err );
+        if( err < 0 ) = :error( "snd_pcm_hw_params_get_periods", err );
         o.actual_periods = periods;
     }
     else
     {
         unsigned int periods = o.requested_periods;
         err = snd_pcm_hw_params_set_periods_near( o.handle_, hw_params.v, &periods, NULL );
-        if( err < 0 ) return :error( "snd_pcm_hw_params_set_periods_near", err );
+        if( err < 0 ) = :error( "snd_pcm_hw_params_set_periods_near", err );
         o.actual_periods = periods;
     }
 
@@ -118,29 +118,29 @@ func (:s) setup =
     {
         snd_pcm_uframes_t buffer_size = 0;
         err = snd_pcm_hw_params_get_buffer_size( hw_params.v, &buffer_size );
-        if( err < 0 ) return :error( "snd_pcm_hw_params_get_buffer_size", err );
+        if( err < 0 ) = :error( "snd_pcm_hw_params_get_buffer_size", err );
         o.actual_frames_per_period = buffer_size / o.actual_periods;
     }
     else
     {
         snd_pcm_uframes_t buffer_size = o.actual_periods * o.requested_frames_per_period;
         err = snd_pcm_hw_params_set_buffer_size_near( o.handle_, hw_params.v, &buffer_size );
-        if( err < 0 ) return :error( "snd_pcm_hw_params_set_buffer_size_near", err );
+        if( err < 0 ) = :error( "snd_pcm_hw_params_set_buffer_size_near", err );
         o.actual_frames_per_period = buffer_size / o.actual_periods;
     }
 
     // applies hardware parameters
     err = snd_pcm_hw_params( o.handle_, hw_params.v );
-    if( err < 0 ) return :error( "snd_pcm_hw_params", err );
+    if( err < 0 ) = :error( "snd_pcm_hw_params", err );
 
     auto_shut_down.clear();
     o.is_setup_ = true;
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) shut_down =
+func (:s) shut_down
 {
     if( o.is_open_ )
     {
@@ -152,31 +152,31 @@ func (:s) shut_down =
 
         s2_t err = 0;
         err = snd_pcm_close( o.handle_.1 );
-        if( err ) return :error( "snd_pcm_close", err );
+        if( err ) = :error( "snd_pcm_close", err );
         o.handle_ = 0;
         o.is_open_ = false;
     }
 
-    return 0;
-};
+    = 0;
+}
 
-func (:s) bcore_inst_call.down_e = { o.shut_down(); };
+func (:s) bcore_inst_call.down_e { o.shut_down(); }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) play =
+func (:s) play
 {
     o.stream_restart();
     o.stream_play( interleaved_samples, frames );
     o.stream_stop();
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) play_sequence =
+func (:s) play_sequence
 {
-    if( sequence.size == 0 ) return 0;
+    if( sequence.size == 0 ) = 0;
     if( o.actual_rate != sequence.rate || o.channels != sequence.channels )
     {
         o.shut_down();
@@ -186,32 +186,32 @@ func (:s) play_sequence =
     o.stream_restart();
     o.stream_play_sequence( sequence );
     o.stream_stop();
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) stream_start =
+func (:s) stream_start
 {
-    if( o.is_streaming_ ) return 0;
+    if( o.is_streaming_ ) = 0;
     if( !o.is_setup_ ) o.setup();
     snd_pcm_start( o.handle_.1 );
     o.is_streaming_ = true;
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) stream_restart =
+func (:s) stream_restart
 {
     if( o.is_streaming_ ) o.stream_stop();
     o.stream_start();
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) stream_play =
+func (:s) stream_play
 {
     if( !o.is_setup_ ) o.setup();
     if( !o.is_streaming_ ) o.stream_start();
@@ -230,7 +230,7 @@ func (:s) stream_play =
             {
                 case EBADFD:
                 {
-                    return bcore_error_push_fa( TYPEOF_general_error, "snd_pcm_writei: PCM is in an improper state." );
+                    = bcore_error_push_fa( TYPEOF_general_error, "snd_pcm_writei: PCM is in an improper state." );
                 }
                 break;
 
@@ -247,49 +247,49 @@ func (:s) stream_play =
             frames_left -= frames_written;
         }
     }
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) stream_play_sequence =
+func (:s) stream_play_sequence
 {
     if( sequence.rate != o.actual_rate )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "stream_play_sequence: Stream rate (#<sz_t>) and audio rate (#<sz_t>) mismatch.\n", sequence.rate, o.actual_rate );
+        = bcore_error_push_fa( TYPEOF_general_error, "stream_play_sequence: Stream rate (#<sz_t>) and audio rate (#<sz_t>) mismatch.\n", sequence.rate, o.actual_rate );
     }
 
     if( sequence.channels != o.channels )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "stream_play_sequence: Stream channels (#<sz_t>) and audio channels (#<sz_t>) mismatch.\n", sequence.channels, o.channels );
+        = bcore_error_push_fa( TYPEOF_general_error, "stream_play_sequence: Stream channels (#<sz_t>) and audio channels (#<sz_t>) mismatch.\n", sequence.channels, o.channels );
     }
     for( sz_t i = 0; i < sequence.size; i++ ) o.stream_play_buffer( sequence.buffer_c( i ) );
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) stream_stop =
+func (:s) stream_stop
 {
-    if( !o.is_streaming_ ) return 0;
+    if( !o.is_streaming_ ) = 0;
     snd_pcm_drain( o.handle_.1 );
     o.is_streaming_ = false;
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) stream_cut =
+func (:s) stream_cut
 {
-    if( !o.is_streaming_ ) return 0;
+    if( !o.is_streaming_ ) = 0;
     snd_pcm_drop( o.handle_.1 );
     o.is_streaming_ = false;
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) sound_check =
+func (:s) sound_check
 {
     ASSERT( o.channels == 2 );
     o.setup();
@@ -319,8 +319,8 @@ func (:s) sound_check =
 
     o.stream_stop();
 
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -328,7 +328,7 @@ func (:s) sound_check =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:player_s) setup =
+func (:player_s) setup
 {
     o.shut_down();
     o.thread_exit_ = false;
@@ -336,24 +336,24 @@ func (:player_s) setup =
     o.audio.setup();
     o.thread.call_m_thread_func( o );
     o.is_setup_ = true;
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:player_s) setup_from_sequence =
+func (:player_s) setup_from_sequence
 {
     d$* audio = bmedia_audio_out_s!;
     audio.requested_rate = sequence.rate;
     audio.channels = sequence.channels;
-    return o.setup( audio );
-};
+    = o.setup( audio );
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:player_s) shut_down =
+func (:player_s) shut_down
 {
-    if( !o.is_setup_ ) return 0;
+    if( !o.is_setup_ ) = 0;
     o.mutex.lock();
     o.thread_exit_ = true;
     o.mutex.unlock();
@@ -364,14 +364,14 @@ func (:player_s) shut_down =
     o.is_setup_ = false;
     er_t thread_error_ = o.thread_error_;
     o.thread_error_ = 0;
-    return thread_error_;
-};
+    = thread_error_;
+}
 
-func (:player_s) bcore_inst_call.down_e = { o.shut_down(); };
+func (:player_s) bcore_inst_call.down_e { o.shut_down(); }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:player_s) m_thread_func =
+func (:player_s) m_thread_func
 {
     o.mutex.lock();
     while( !o.thread_exit_ )
@@ -397,15 +397,15 @@ func (:player_s) m_thread_func =
     o.condition_buffer_empty.wake_one();
     o.audio.stream_stop();
     o.mutex.unlock();
-    return NULL;
-};
+    = NULL;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:player_s) play =
+func (:player_s) play
 {
     if( !o.is_setup_ ) o.setup( bmedia_audio_out_s! );
-    if( frames == 0 ) return 0;
+    if( frames == 0 ) = 0;
     o.mutex.lock();
 
     sz_t channels = o.audio.channels;
@@ -431,15 +431,15 @@ func (:player_s) play =
 
     o.condition_play.wake_one();
     o.mutex.unlock();
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:player_s) play_sequence =
+func (:player_s) play_sequence
 {
     if( !o.is_setup_ ) o.setup( bmedia_audio_out_s! );
-    if( sequence.size == 0 ) return 0;
+    if( sequence.size == 0 ) = 0;
     if( sequence.rate < 0 || sequence.channels < 0 ) ERR_fa( "Sequence rate or channels have not been set." );
 
     if( o.audio.actual_rate != sequence.rate || o.audio.channels != sequence.channels )
@@ -453,15 +453,15 @@ func (:player_s) play_sequence =
         o.mutex.unlock();
     }
     for( sz_t i = 0; i < sequence.size; i++ ) o.play_buffer( sequence.buffer_c( i ) );
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:player_s) play_iterator =
+func (:player_s) play_iterator
 {
     if( !o.is_setup_ ) o.setup( bmedia_audio_out_s! );
-    if( iterator.eos ) return 0;
+    if( iterator.eos ) = 0;
     if( o.audio.actual_rate != iterator.sequence.rate || o.audio.channels != iterator.sequence.channels )
     {
         o.wait_until_empty();
@@ -480,39 +480,39 @@ func (:player_s) play_iterator =
     }
 
     o.play_buffer( iterator.create_buffer( frames_ )^ );
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:player_s) buffer_frames =
+func (:player_s) buffer_frames
 {
     o.mutex.lock();
     sz_t frames = o.sequence.sum_buffer_size() / o.audio.channels;
     o.mutex.unlock();
-    return frames;
-};
+    = frames;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:player_s) is_empty =
+func (:player_s) is_empty
 {
     o.mutex.lock();
     bl_t is_empty = ( o.sequence.size == 0 );
     o.mutex.unlock();
-    return is_empty;
-};
+    = is_empty;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:player_s) wait_until_empty =
+func (:player_s) wait_until_empty
 {
     o.mutex.lock();
     while( o.sequence.size > 0 ) o.condition_buffer_empty.sleep( o.mutex );
     er_t thread_error = o.thread_error_;
     o.mutex.unlock();
-    return thread_error;
-};
+    = thread_error;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

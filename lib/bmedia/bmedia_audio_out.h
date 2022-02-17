@@ -80,7 +80,7 @@ type snd_pcm_hwparams_t;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp :s =
+stamp :s
 {
     /// =========== parameters ===========
 
@@ -131,44 +131,44 @@ stamp :s =
 
     /// =========== functions ============
 
-    func (er_t setup( m@* o ));
-    func (er_t shut_down( m@* o ));
+    func er_t setup( m@* o );
+    func er_t shut_down( m@* o );
 
     /** Plays a sequence in one sitting.
      *  A single frame contains <o.channels> samples.
      *  Not intended for seamless concatenation of multiple sequences.
      *  See also stream-functions below.
      */
-    func (er_t play( m@* o, s1_t* interleaved_samples, u2_t frames ));
-    func (er_t play_buffer( m@* o, bmedia_audio_buffer_s* buf )) = { return o.play( buf.data, buf.size / o.channels ); };
+    func er_t play( m@* o, s1_t* interleaved_samples, u2_t frames );
+    func er_t play_buffer( m@* o, bmedia_audio_buffer_s* buf ) { = o.play( buf.data, buf.size / o.channels ); }
 
     /// Resets player to sequence channels and rate if needed
-    func (er_t play_sequence( m@* o, bmedia_audio_sequence_s* sequence ));
+    func er_t play_sequence( m@* o, bmedia_audio_sequence_s* sequence );
 
     /// Starts a continuous stream (no effect if already started)
-    func (er_t stream_start( m@* o ));
+    func er_t stream_start( m@* o );
 
     /// Stops an ongoing stream (if any). Starts a continuous stream.
-    func (er_t stream_restart( m@* o ));
+    func er_t stream_restart( m@* o );
 
     /** Plays interleaved samples as part of a continuous stream.
      *  A single frame contains <o.channels> samples.
      *  This function seamlessly concatenates subsequent samples to a continuous stream.
      *  To avoid underruns, a subsequent call must be initiated before the last finishes playing.
      */
-    func (er_t stream_play       ( m@* o, s1_t* interleaved_samples, u2_t frames ));
-    func (er_t stream_play_buffer( m@* o, bmedia_audio_buffer_s* buf )) = { return o.stream_play( buf.data, buf.size / o.channels ); };
-    func (er_t stream_play_zero  ( m@* o, u2_t frames )) = { return ( frames > 0 ) ? o.stream_play_buffer( bmedia_audio_buffer_s!^.set_size( frames * o.channels, o.channels ) ) : 0; };
-    func (er_t stream_play_sequence( m@* o, bmedia_audio_sequence_s* sequence )); // error if sequence rate and channels settings mismatch audio settings
+    func er_t stream_play       ( m@* o, s1_t* interleaved_samples, u2_t frames );
+    func er_t stream_play_buffer( m@* o, bmedia_audio_buffer_s* buf ) { = o.stream_play( buf.data, buf.size / o.channels ); }
+    func er_t stream_play_zero  ( m@* o, u2_t frames ) { = ( frames > 0 ) ? o.stream_play_buffer( bmedia_audio_buffer_s!^.set_size( frames * o.channels, o.channels ) ) : 0; }
+    func er_t stream_play_sequence( m@* o, bmedia_audio_sequence_s* sequence ); // error if sequence rate and channels settings mismatch audio settings
 
     /// Gentle stop of a continuous stream (by draining) (no effect if not streaming)
-    func (er_t stream_stop( m@* o ));
+    func er_t stream_stop( m@* o );
 
     /// Forced stop of a continuous stream (by dropping frames) (no effect if not streaming)
-    func (er_t stream_cut( m@* o ));
+    func er_t stream_cut( m@* o );
 
     /// Plays a test sound
-    func (er_t sound_check( m@* o ));
+    func er_t sound_check( m@* o );
 
     /// ==================================
 
@@ -177,7 +177,7 @@ stamp :s =
     private bl_t is_open_ = false;
     private bl_t is_setup_ = false;
     private bl_t is_streaming_ = false;
-};
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -193,7 +193,7 @@ stamp :s =
  *  - Unlimited buffer space.
  *
  */
-stamp :player_s =
+stamp :player_s
 {
     /// =========== parameters ===========
 
@@ -219,40 +219,40 @@ stamp :player_s =
 
     func x_thread.m_thread_func;
 
-    func (er_t setup( m@* o, d :s* audio ));
+    func er_t setup( m@* o, d :s* audio );
 
     /// sets up audio parameters according to sequence
-    func (er_t setup_from_sequence( m@* o, bmedia_audio_sequence_s* sequence ));
+    func er_t setup_from_sequence( m@* o, bmedia_audio_sequence_s* sequence );
 
-    func (er_t shut_down( m@* o ));
+    func er_t shut_down( m@* o );
 
     /** Appends data to the play-buffer.
      *  If not already playing, playing is triggered.
      */
-    func (er_t play( m@* o, s1_t* interleaved_samples, u2_t frames ));
-    func (er_t play_buffer( m@* o, bmedia_audio_buffer_s* buf )) = { ASSERT( o.audio ); return o.play( buf.data, buf.size / o.audio.channels ); };
-    func (er_t play_zero( m@* o, u2_t frames )) = { ASSERT( o.audio ); return ( frames > 0 ) ? o.play_buffer( bmedia_audio_buffer_s!^.set_size( frames * o.audio.channels, o.audio.channels ) ) : 0; };
+    func er_t play( m@* o, s1_t* interleaved_samples, u2_t frames );
+    func er_t play_buffer( m@* o, bmedia_audio_buffer_s* buf ) { ASSERT( o.audio ); = o.play( buf.data, buf.size / o.audio.channels ); }
+    func er_t play_zero( m@* o, u2_t frames ) { ASSERT( o.audio ); = ( frames > 0 ) ? o.play_buffer( bmedia_audio_buffer_s!^.set_size( frames * o.audio.channels, o.audio.channels ) ) : 0; }
 
     /** Plays entire sequence.
      *  This function resets player to sequence channels and rate if needed.
      */
-    func (er_t play_sequence( m@* o, bmedia_audio_sequence_s* sequence ));
+    func er_t play_sequence( m@* o, bmedia_audio_sequence_s* sequence );
 
     /** Plays sequence from iterator position for number of frames or until end (whichever occurs first).
      *  frames == -1: Plays until end.
      *  This function resets player to sequence channels and rate if needed.
      */
-    func (er_t play_iterator( m@* o, m bmedia_audio_sequence_iterator_s* iterator, sz_t frames ));
+    func er_t play_iterator( m@* o, m bmedia_audio_sequence_iterator_s* iterator, sz_t frames );
 
     /// Returns current (unplayed) buffer frames
-    func (bl_t buffer_frames( m@* o ));
+    func bl_t buffer_frames( m@* o );
 
     /// Checks if play-buffer is empty
-    func (bl_t is_empty( m@* o ));
+    func bl_t is_empty( m@* o );
 
     /// Suspends calling thread until play-buffer is empty
-    func (er_t wait_until_empty( m@* o ));
-};
+    func er_t wait_until_empty( m@* o );
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

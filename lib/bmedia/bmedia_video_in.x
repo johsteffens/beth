@@ -27,12 +27,12 @@ include <linux/videodev2.h>;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) bcore_inst_call.down_e = { o.shut_down(); };
+func (:s) bcore_inst_call.down_e { o.shut_down(); }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// returns errno in case of error
-func (:s) ( er_t ioctl( @*o, u3_t request, vd_t arg ) ) =
+func (:s) er_t ioctl( @*o, u3_t request, vd_t arg )
 {
     s2_t result = 0;
 
@@ -41,16 +41,16 @@ func (:s) ( er_t ioctl( @*o, u3_t request, vd_t arg ) ) =
 
     if( result == -1 )
     {
-        return bcore_error_push_fa( errno, "Device: #<sc_t>\nError #<s2_t>: #<sc_t>\n", o.dev_name.sc, errno, strerror(errno) );
+        = bcore_error_push_fa( errno, "Device: #<sc_t>\nError #<s2_t>: #<sc_t>\n", o.dev_name.sc, errno, strerror(errno) );
     }
 
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// switches video streaming on
-func (:s) stream_on =
+func (:s) stream_on
 {
     x_lock_s^ lock.set( o.mutex_ );
     if( !o.is_setup_ )
@@ -58,12 +58,12 @@ func (:s) stream_on =
         x_unlock_s^ unlock.set( o.mutex_ );
         o.setup();
     }
-    if( o.is_streaming_ ) return 0;
+    if( o.is_streaming_ ) = 0;
     enum v4l2_buf_type buf_type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     o.ioctl( VIDIOC_STREAMON, &buf_type );
     o.is_streaming_ = true;
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -72,30 +72,30 @@ func (:s) stream_on =
  *  When trying, the video capture seems to run into a dead-loop (error: EAGAIN device busy).
  *  Therefore this function should not be considered an interface function. Call shut_down to stop video streaming.
  */
-func (:s) (er_t stream_off( m@* o ) ) =
+func (:s) er_t stream_off( m@* o )
 {
-    if( !o.is_streaming_ ) return 0;
+    if( !o.is_streaming_ ) = 0;
     enum v4l2_buf_type buf_type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     o.ioctl( VIDIOC_STREAMOFF, &buf_type );
     o.is_streaming_ = false;
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Shut down functor (for error handling)
-stamp :shut_down_s =
+stamp :shut_down_s
 {
     hidden :s* video;
-    func (o set( m@* o, m :s* video )) = { o.video = video; return o; };
+    func (o set( m@* o, m :s* video )) = { o.video = video; = o; };
     func bcore_inst_call.down_e = { if( o.video ) o.video.shut_down(); };
-};
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) setup =
+func (:s) setup
 {
-    if( o.is_setup_ ) return 0;
+    if( o.is_setup_ ) = 0;
 
     /// shut down functor in case or error
     :shut_down_s^ video_shut_down.set( o );
@@ -105,36 +105,36 @@ func (:s) setup =
 
     if( stat( o.dev_name.sc, &device_stat ) == -1 )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "Device #<sc_t> not found.\n#<s2_t>: #<sc_t>\n", o.dev_name.sc, errno, strerror(errno) );
+        = bcore_error_push_fa( TYPEOF_general_error, "Device #<sc_t> not found.\n#<s2_t>: #<sc_t>\n", o.dev_name.sc, errno, strerror(errno) );
     }
 
     if( !S_ISCHR( device_stat.st_mode ) )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "Improper device: #<sc_t>.\n#<s2_t>: #<sc_t>\n", o.dev_name.sc, errno, strerror(errno) );
+        = bcore_error_push_fa( TYPEOF_general_error, "Improper device: #<sc_t>.\n#<s2_t>: #<sc_t>\n", o.dev_name.sc, errno, strerror(errno) );
     }
 
     o.handle_ = open( o.dev_name.sc, O_RDWR | O_NONBLOCK, 0 );
 
     if( o.handle_ == -1 )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "Failed opening #<sc_t>.\n#<s2_t>: #<sc_t>\n", o.dev_name.sc, errno, strerror(errno) );
+        = bcore_error_push_fa( TYPEOF_general_error, "Failed opening #<sc_t>.\n#<s2_t>: #<sc_t>\n", o.dev_name.sc, errno, strerror(errno) );
     }
 
     struct v4l2_capability capability = { 0 };
 
     if( o.ioctl( VIDIOC_QUERYCAP, &capability ) )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, ( errno == EINVAL ) ? "Device not supported by V4L2.\n" : "\n" );
+        = bcore_error_push_fa( TYPEOF_general_error, ( errno == EINVAL ) ? "Device not supported by V4L2.\n" : "\n" );
     }
 
     if( !(capability.capabilities & V4L2_CAP_VIDEO_CAPTURE) )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "#<sc_t> does not support video capture.\n", o.dev_name.sc );
+        = bcore_error_push_fa( TYPEOF_general_error, "#<sc_t> does not support video capture.\n", o.dev_name.sc );
     }
 
     if( !(capability.capabilities & V4L2_CAP_STREAMING) )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "#<sc_t> does not support video streaming.\n", o.dev_name.sc );
+        = bcore_error_push_fa( TYPEOF_general_error, "#<sc_t> does not support video streaming.\n", o.dev_name.sc );
     }
 
     struct v4l2_format format = { 0 };
@@ -161,7 +161,7 @@ func (:s) setup =
 
     if( o.ioctl( VIDIOC_REQBUFS, &requestbuffers) )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, ( errno == EINVAL ) ? "User pointer mode not supported.\n" : "" );
+        = bcore_error_push_fa( TYPEOF_general_error, ( errno == EINVAL ) ? "User pointer mode not supported.\n" : "" );
     }
 
     for( sz_t i = 0; i < o.buffers; i++ )
@@ -184,12 +184,12 @@ func (:s) setup =
 
     video_shut_down.set( NULL );
     o.is_setup_ = true;
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) capture_loop =
+func (:s) capture_loop
 {
     x_lock_s^ _.set( o.mutex_ );
 
@@ -222,12 +222,12 @@ func (:s) capture_loop =
             {
                 if( errno != EINTR )
                 {
-                    return bcore_error_push_fa( TYPEOF_general_error, "Select error:\n#<s2_t>: #<sc_t>\n", errno, strerror(errno) );
+                    = bcore_error_push_fa( TYPEOF_general_error, "Select error:\n#<s2_t>: #<sc_t>\n", errno, strerror(errno) );
                 }
             }
             else if( result == 0 )
             {
-                return bcore_error_push_fa( TYPEOF_general_error, "Select timeout:\n#<s2_t>: #<sc_t>\n", errno, strerror(errno) );
+                = bcore_error_push_fa( TYPEOF_general_error, "Select timeout:\n#<s2_t>: #<sc_t>\n", errno, strerror(errno) );
             }
             else
             {
@@ -251,7 +251,7 @@ func (:s) capture_loop =
             }
             else
             {
-                return bcore_error_push_fa( TYPEOF_general_error, "Data query error:\n#<s2_t>: #<sc_t>\n", errno, strerror(errno) );
+                = bcore_error_push_fa( TYPEOF_general_error, "Data query error:\n#<s2_t>: #<sc_t>\n", errno, strerror(errno) );
             }
         }
 
@@ -269,12 +269,12 @@ func (:s) capture_loop =
         }
     }
 
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) shut_down =
+func (:s) shut_down
 {
     o.mutex_exit_capture_loop_.lock();
     o.exit_capture_loop_ = true;
@@ -286,7 +286,7 @@ func (:s) shut_down =
     {
         if( close( o.handle_ ) == -1 )
         {
-            return bcore_error_push_fa( TYPEOF_general_error, "#<s2_t>: #<sc_t>\n", errno, strerror(errno) );
+            = bcore_error_push_fa( TYPEOF_general_error, "#<s2_t>: #<sc_t>\n", errno, strerror(errno) );
         }
         o.handle_ = -1;
     }
@@ -296,16 +296,16 @@ func (:s) shut_down =
     o.mutex_exit_capture_loop_.unlock();
 
     o.is_setup_ = false;
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (u0_t clamp16( s2_t v )) = { return s2_min( 255, s2_max( 0, v >> 8 ) ); };
+func u0_t clamp16( s2_t v ) { = s2_min( 255, s2_max( 0, v >> 8 ) ); }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:image_s) convert_to_argb =
+func (:image_s) convert_to_argb
 {
     assert( ( o.width & 1 ) == 0 );
     img.format = TYPEOF_bcore_img_u2_argb;
@@ -331,7 +331,7 @@ func (:image_s) convert_to_argb =
             u2_row[ i + 1 ] = bcore_img_u2_pixel_from_rgb( img.format, :clamp16( y2 + rp ), :clamp16( y2 + gp ), :clamp16( y2 + bp ) );
         }
     }
-};
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

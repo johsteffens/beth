@@ -18,18 +18,18 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 /// converts buffer channel into vector with value range [ -1.0 , +1.0 [
-func (:buffer_s) get_vf2 =
+func (:buffer_s) get_vf2
 {
     vec.set_size( o.size / o.channels );
     f2_t f = 1.0 / 32768;
     for( sz_t i = 0; i < vec.size; i++ ) vec.[ i ] = o.[ i * o.channels + channel ] * f;
-    return vec;
-};
+    = vec;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// vector into buffer value for given channel (overflow-check by truncation)
-func (:buffer_s) set_from_vf2 =
+func (:buffer_s) set_from_vf2
 {
     sz_t k = 0;
     for( sz_t i = channel; i < o.size; i += o.channels )
@@ -38,8 +38,8 @@ func (:buffer_s) set_from_vf2 =
         v = f2_min( 1.0, f2_max( -1.0, v ));
         o.[ i ] = s2_min( 32768, lrint( v * 32768.0 ) );
     }
-    return o;
-};
+    = o;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ func (:buffer_s) set_from_vf2 =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:sequence_s) setup_frames =
+func (:sequence_s) setup_frames
 {
     o.adl.clear();
     o.channels = channels;
@@ -59,18 +59,18 @@ func (:sequence_s) setup_frames =
         buffer.set_frames( buffer_frames, channels );
         frames -= buffer_frames;
     }
-    return o;
-};
+    = o;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:sequence_s) setup_diff =
+func (:sequence_s) setup_diff
 {
     :sequence_indexer_s* idx_a = a.create_indexer()^;
     :sequence_indexer_s* idx_b = b.create_indexer()^;
     o.setup_frames( a.channels, a.rate, s3_min( idx_a.size, idx_b.size ) );
     m :sequence_indexer_s* idx_o = o.create_indexer()^;
-    if( idx_o.size == 0 ) return o;
+    if( idx_o.size == 0 ) = o;
     ASSERT( a.channels == b.channels );
     ASSERT( a.rate == b.rate );
     sz_t buf_frames = o.preferred_frames_per_buffer;
@@ -92,12 +92,12 @@ func (:sequence_s) setup_diff =
         idx_o.set_from_buffer( buf_o, index );
     }
 
-    return o;
-};
+    = o;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:sequence_s) push_empty_buffer =
+func (:sequence_s) push_empty_buffer
 {
     if( o.size == o.adl.size )
     {
@@ -119,12 +119,12 @@ func (:sequence_s) push_empty_buffer =
 
     d$* buffer = :buffer_s!;
     buffer.channels = o.channels;
-    return o.adl.[ index ] = buffer;
-};
+    = o.adl.[ index ] = buffer;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:sequence_s) pop_first_buffer =
+func (:sequence_s) pop_first_buffer
 {
     d :buffer_s* buffer = NULL;
 
@@ -136,24 +136,24 @@ func (:sequence_s) pop_first_buffer =
         o.size--;
     }
 
-    return buffer;
-};
+    = buffer;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:sequence_s) sum_buffer_size =
+func (:sequence_s) sum_buffer_size
 {
     sz_t sum = 0;
     for( sz_t i = 0; i < o.size; i++ ) sum += o.buffer_c( i ).size;
-    return sum;
-};
+    = sum;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:sequence_s) wav_to_sink =
+func (:sequence_s) wav_to_sink
 {
-    if( o.channels <= 0 ) return bcore_error_push_fa( TYPEOF_general_error, "channels <= 0" );
-    if( o.rate     <= 0 ) return bcore_error_push_fa( TYPEOF_general_error, "rate <= 0" );
+    if( o.channels <= 0 ) = bcore_error_push_fa( TYPEOF_general_error, "channels <= 0" );
+    if( o.rate     <= 0 ) = bcore_error_push_fa( TYPEOF_general_error, "rate <= 0" );
 
     /// file header
     sz_t sum_buffer_size = o.sum_buffer_size();
@@ -190,28 +190,28 @@ func (:sequence_s) wav_to_sink =
         sink.push_data( buffer.data, sizeof( s1_t ) * buffer.size );
     }
 
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:sequence_s) wav_to_file =
+func (:sequence_s) wav_to_file
 {
     m x_sink* sink = x_sink_create_from_file( path )^;
-    if( !sink ) return bcore_error_push_fa( TYPEOF_general_error, "Could not open file path '#<sc_t>'.", path );
-    return o.wav_to_sink( sink );
-};
+    if( !sink ) = bcore_error_push_fa( TYPEOF_general_error, "Could not open file path '#<sc_t>'.", path );
+    = o.wav_to_sink( sink );
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:sequence_s) wav_from_source =
+func (:sequence_s) wav_from_source
 {
     /// file header
     u2_t chunk_size = 0;
     source.parse_fa( "RIFF" );
     if( source.get_data( chunk_size.1, sizeof( chunk_size ) ) != sizeof( chunk_size ) )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: File format error." );
+        = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: File format error." );
     }
     source.parse_fa( "WAVE" );
 
@@ -225,57 +225,57 @@ func (:sequence_s) wav_from_source =
     source.parse_fa( "fmt " );
     if( source.get_data( format_length.1, sizeof( format_length ) ) != sizeof( format_length ) )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (format_length) File format error." );
+        = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (format_length) File format error." );
     }
 
     if( source.get_data( format_tag.1, sizeof( format_tag ) ) != sizeof( format_tag ) )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (format_tag) File format error." );
+        = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (format_tag) File format error." );
     }
 
     if( source.get_data( channels.1, sizeof( channels ) ) != sizeof( channels ) )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (channels) File format error." );
+        = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (channels) File format error." );
     }
 
     if( source.get_data( rate.1, sizeof( rate ) ) != sizeof( rate ) )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (rate) File format error." );
+        = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (rate) File format error." );
     }
 
     if( source.get_data( bytes_per_second.1, sizeof( bytes_per_second ) ) != sizeof( bytes_per_second ) )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (bytes_per_second) File format error." );
+        = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (bytes_per_second) File format error." );
     }
 
     if( source.get_data( block_alignment.1, sizeof( block_alignment ) ) != sizeof( block_alignment ) )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (block_alignment) File format error." );
+        = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (block_alignment) File format error." );
     }
 
     if( source.get_data( bits_per_sample.1, sizeof( bits_per_sample ) ) != sizeof( bits_per_sample ) )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (bits_per_sample) File format error." );
+        = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (bits_per_sample) File format error." );
     }
 
     if( format_length != 16 )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (format_length) Invalid value (#<u2_t>).", format_length );
+        = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (format_length) Invalid value (#<u2_t>).", format_length );
     }
 
     if( format_tag != 1 )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (format_tag) Invalid value (#<u1_t>).", format_tag );
+        = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (format_tag) Invalid value (#<u1_t>).", format_tag );
     }
 
     if( channels < 1 || channels > 256 )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (channels) Unlikely value (#<u1_t>). Probably invalid.", channels );
+        = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (channels) Unlikely value (#<u1_t>). Probably invalid.", channels );
     }
 
     if( rate == 0 )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: Rate is zero." );
+        = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: Rate is zero." );
     }
 
     o.clear();
@@ -284,24 +284,24 @@ func (:sequence_s) wav_from_source =
 
     if( bits_per_sample != sizeof( s1_t ) * 8 )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (bits_per_sample) Unhandled value (#<u1_t>)", bits_per_sample );
+        = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (bits_per_sample) Unhandled value (#<u1_t>)", bits_per_sample );
     }
 
     if( block_alignment != o.channels * 2 )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (bits_per_sample) Unhandled value (#<u1_t>", block_alignment );
+        = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (bits_per_sample) Unhandled value (#<u1_t>", block_alignment );
     }
 
     u2_t data_length = 0;
     source.parse_fa( "data" );
     if( source.get_data( data_length.1, sizeof( data_length ) ) != sizeof( data_length ) )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (data_length) File format error." );
+        = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (data_length) File format error." );
     }
 
     if( data_length % ( o.channels * sizeof( s1_t ) ) != 0 )
     {
-        return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: data_length (#<u2_t>) is not a multiple of frame size (#<sz_t>).", data_length, o.channels * sizeof( s1_t ) );
+        = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: data_length (#<u2_t>) is not a multiple of frame size (#<sz_t>).", data_length, o.channels * sizeof( s1_t ) );
     }
 
     sz_t frames = data_length / ( o.channels * sizeof( s1_t ) );
@@ -313,22 +313,22 @@ func (:sequence_s) wav_from_source =
         m :buffer_s* buffer = o.push_empty_buffer().set_size( buffered_frames * o.channels, o.channels );
         if( source.get_data( buffer.data, buffer.size * sizeof( s1_t ) ) != buffer.size * sizeof( s1_t ) )
         {
-            return bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: Unexpected end of stream." );
+            = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: Unexpected end of stream." );
         }
         frames -= buffered_frames;
     }
 
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:sequence_s) wav_from_file =
+func (:sequence_s) wav_from_file
 {
     m x_source* source = x_source_create_from_file( path )^;
-    if( !source ) return bcore_error_push_fa( TYPEOF_general_error, "Could not open file path '#<sc_t>'.", path );
-    return o.wav_from_source( source );
-};
+    if( !source ) = bcore_error_push_fa( TYPEOF_general_error, "Could not open file path '#<sc_t>'.", path );
+    = o.wav_from_source( source );
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -358,7 +358,7 @@ func (:sequence_iterator_s) setup =
         o.global_frame_index = 0;
         o.eos = true;
     }
-    return o;
+    = o;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -369,7 +369,7 @@ func (:sequence_iterator_s) reset =
     o.frame_index = 0;
     o.eos = ( o.total_frames == 0 );
     o.global_frame_index = 0;
-    return o;
+    = o;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -379,7 +379,7 @@ func (:sequence_iterator_s) move =
     sz_t frames_left = diff;
     while( frames_left > 0 )
     {
-        if( o.eos ) return o;
+        if( o.eos ) = o;
         :buffer_s* buffer = o.sequence.buffer_c( o.buffer_index );
         sz_t bsize = buffer.size % o.channels;
 
@@ -404,7 +404,7 @@ func (:sequence_iterator_s) move =
     {
         if( o.frame_index == 0 )
         {
-            if( o.buffer_index == 0 ) return o;
+            if( o.buffer_index == 0 ) = o;
             o.buffer_index--;
             :buffer_s* buffer = o.sequence.buffer_c( o.buffer_index );
             sz_t bsize = buffer.size % o.channels;
@@ -427,14 +427,14 @@ func (:sequence_iterator_s) move =
             }
         }
     }
-    return o;
+    = o;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 func (:sequence_iterator_s) go_to =
 {
-    return o.move( global_frame_index - o.global_frame_index );
+    = o.move( global_frame_index - o.global_frame_index );
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -474,7 +474,7 @@ func (:sequence_iterator_s) get_frames =
             frames_left = 0;
         }
     }
-    return o;
+    = o;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -482,7 +482,7 @@ func (:sequence_iterator_s) get_frames =
 func (:sequence_iterator_s) get_buffer =
 {
     buffer.set_size( frames * o.channels, o.channels );
-    return o.get_frames( buffer.data, frames );
+    = o.get_frames( buffer.data, frames );
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -491,7 +491,7 @@ func (:sequence_iterator_s) create_buffer =
 {
     d :buffer_s* buffer = :buffer_s!;
     o.get_buffer( buffer, frames );
-    return buffer;
+    = buffer;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -509,7 +509,7 @@ func (:sequence_indexer_s) setup =
     foreach( m$* e in arr ) e.0 = sequence.buffer_c( __i ).size / o.channels;
     o.indexer.setup( arr );
     o.size = o.indexer.size;
-    return o;
+    = o;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -540,7 +540,7 @@ func (:sequence_indexer_s) get_data =
     }
 
     if( frames > 0 ) bcore_memset( data, 0, sizeof( s1_t ) * frames * o.channels );
-    return o;
+    = o;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -569,7 +569,7 @@ func (:sequence_indexer_s) set_data =
         data   += size * o.channels;
     }
 
-    return o;
+    = o;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -578,7 +578,7 @@ func (:sequence_indexer_s) set_data =
 func (:sequence_indexer_s) get_buffer =
 {
     o.get_data( buffer.set_size( frames * o.channels, o.channels ).data, index, frames );
-    return buffer;
+    = buffer;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -587,7 +587,7 @@ func (:sequence_indexer_s) get_buffer =
 func (:sequence_indexer_s) create_buffer =
 {
     d$* buffer = :buffer_s!;
-    return o.get_buffer( buffer, index, frames );
+    = o.get_buffer( buffer, index, frames );
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -600,7 +600,7 @@ func (:sequence_indexer_s) set_from_buffer =
         ASSERT( o.channels == buffer.channels );
         o.set_data( buffer.data, index, buffer.size / o.channels );
     }
-    return o;
+    = o;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

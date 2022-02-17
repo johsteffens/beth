@@ -89,7 +89,7 @@ type snd_pcm_hwparams_t;
 feature void capture_feed( m@* o, bmedia_audio_buffer_s* buf );
 
 /// Optional callback for each loop cycle; return true to exit loop
-feature bl_t capture_exit( m@* o ) = { return false; };
+feature bl_t capture_exit( m@* o ) { = false; };
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -97,7 +97,7 @@ feature bl_t capture_exit( m@* o ) = { return false; };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp :s =
+stamp :s
 {
     /// =========== parameters ===========
 
@@ -151,35 +151,35 @@ stamp :s =
 
     /// =========== functions ============
 
-    func (er_t setup( m@* o ));
-    func (er_t shut_down( m@* o ));
+    func er_t setup( m@* o );
+    func er_t shut_down( m@* o );
 
     /// Records interleaved samples in a single session.
-    func (er_t record( m@* o, m s1_t* interleaved_samples, sz_t frames ));
+    func er_t record( m@* o, m s1_t* interleaved_samples, sz_t frames );
 
     /// Records (appends) to sequence. If sequence is empty, 'rate' and 'channels' are set appropriately.
-    func (er_t record_to_sequence( m@* o, m bmedia_audio_sequence_s* sequence, sz_t frames ));
+    func er_t record_to_sequence( m@* o, m bmedia_audio_sequence_s* sequence, sz_t frames );
 
     /// Starts a continuous stream (no effect if already started)
-    func (er_t stream_start( m@* o ));
+    func er_t stream_start( m@* o );
 
     /// Stops an ongoing stream (if any). Starts a continuous stream.
-    func (er_t stream_restart( m@* o ));
+    func er_t stream_restart( m@* o );
 
     /** Records interleaved samples as part of a continuous stream.
      *  This function seamlessly concatenates subsequent recordings to a continuous stream.
      *  To avoid underruns, a subsequent recording must be initiated before the buffer fills up.
      */
-    func (er_t stream_record( m@* o, m s1_t* interleaved_samples, sz_t frames ));
+    func er_t stream_record( m@* o, m s1_t* interleaved_samples, sz_t frames );
 
     /// Records (appends) to sequence. If sequence is empty, 'rate' and 'channels' are set appropriately.
-    func (er_t stream_record_to_sequence( m@* o, m bmedia_audio_sequence_s* sequence, sz_t frames ));
+    func er_t stream_record_to_sequence( m@* o, m bmedia_audio_sequence_s* sequence, sz_t frames );
 
     /// Gentle stop of a continuous stream (by draining)
-    func (er_t stream_stop( m@* o ));
+    func er_t stream_stop( m@* o );
 
     /// Forced stop of a continuous stream (by dropping frames)
-    func (er_t stream_cut( m@* o ));
+    func er_t stream_cut( m@* o );
 
     /** 'capture_loop' calls 'feed.capture_feed' for each new fragment.
      *  The loop terminates when 'shut_down' is called or when 'feed.capture_exit()' returns 'false'.
@@ -193,7 +193,7 @@ stamp :s =
      *  Features 'capture_exit' and 'capture_feed' are called directly from this function.
      *  If a condition terminates the loop, it can be restarted.
      */
-    func (er_t capture_loop( m@* o, m:* capture_feed, m:* capture_exit /* can be NULL */ ));
+    func er_t capture_loop( m@* o, m:* capture_feed, m:* capture_exit /* can be NULL */ );
 
     /// ==================================
 
@@ -237,7 +237,7 @@ stamp :capture_thread_s =
     bl_t exit_loop_;
     er_t capture_loop_error_ = 0;
 
-    func (er_t setup( m@* o, d :s* audio, m aware :* capture_feed )) =
+    func er_t setup( m@* o, d :s* audio, m aware :* capture_feed )
     {
         o.shut_down();
         o.audio =< audio;
@@ -245,10 +245,10 @@ stamp :capture_thread_s =
         o.capture_feed = capture_feed;
         o.exit_loop_ = false;
         o.thread.call_m_thread_func( o );
-        return 0;
-    };
+        = 0;
+    }
 
-    func x_thread.m_thread_func =
+    func x_thread.m_thread_func
     {
         er_t error = o.audio.capture_loop( o.capture_feed, o );
         if( error )
@@ -257,18 +257,18 @@ stamp :capture_thread_s =
             o.capture_loop_error_ = error;
             o.mutex.unlock();
         }
-        return NULL;
-    };
+        = NULL;
+    }
 
-    func bmedia_audio_in.capture_exit =
+    func bmedia_audio_in.capture_exit
     {
         o.mutex.lock();
         bl_t exit_loop_ = o.exit_loop_;
         o.mutex.unlock();
-        return exit_loop_;
-    };
+        = exit_loop_;
+    }
 
-    func (er_t shut_down( m@* o )) =
+    func er_t shut_down( m@* o )
     {
         o.mutex.lock();
         o.exit_loop_ = true;
@@ -279,10 +279,10 @@ stamp :capture_thread_s =
         o.capture_feed = NULL;
         er_t capture_loop_error_ = o.capture_loop_error_;
         o.capture_loop_error_ = 0;
-        return capture_loop_error_;
-    };
+        = capture_loop_error_;
+    }
 
-    func bcore_inst_call.down_e = { o.shut_down(); };
+    func bcore_inst_call.down_e { o.shut_down(); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

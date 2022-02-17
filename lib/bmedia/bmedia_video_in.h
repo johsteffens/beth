@@ -68,15 +68,15 @@ XOILA_DEFINE_GROUP( bmedia_video_in, x_inst )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp :image_s = x_array
+stamp :image_s x_array
 {
     sz_t width;
     sz_t height;
     sz_t bytes_per_line;
     u0_t [];
 
-    func (void convert_to_argb( @* o, m bcore_img_u2_s* img ));
-};
+    func void convert_to_argb( @* o, m bcore_img_u2_s* img );
+}
 
 /** Callback feature. Called when a new image is available.
  *  Image data is laid out in YUYV format.
@@ -84,11 +84,11 @@ stamp :image_s = x_array
 feature void capture_feed( m@* o, :image_s* image );
 
 /// Optional callback for each loop cycle; return true to exit loop
-feature bl_t capture_exit( m@* o ) = { return false; };
+feature bl_t capture_exit( m@* o ) = { = false; };
 
-stamp :image_adl_s = x_array { :image_s => []; };
+stamp :image_adl_s x_array { :image_s => []; }
 
-stamp :s =
+stamp :s
 {
     /// =========== parameters ===========
 
@@ -123,7 +123,7 @@ stamp :s =
      *  Does nothing if stamp has already been set up.
      *  If a follow-up setup (e.g. with different parameters) is desired, call shut_down inbetween.
      */
-    func (er_t setup( m@* o));
+    func er_t setup( m@* o );
 
     /** Explicitly switches video streaming on. Usage is optional.
      *  Useful to capture additional errors or to explicitly time
@@ -131,7 +131,7 @@ stamp :s =
      *  If this function was not called explicitly, it is called
      *  by function 'capture_loop'.
      */
-    func (er_t stream_on( m@* o ) );
+    func er_t stream_on( m@* o );
 
     /** 'capture_loop' calls 'capture_feed.capture_feed()' for each new frame.
      *  The loop terminates when 'shut_down' is called or when 'capture_exit.capture_exit()' returns 'false'.
@@ -145,14 +145,14 @@ stamp :s =
      *  Features 'capture_exit' and 'capture_feed' are called directly from this function.
      *  If a condition terminates the loop, it can be restarted.
      */
-    func (er_t capture_loop( m@* o, m:* capture_feed, m:* capture_exit /* can be NULL */ ));
+    func er_t capture_loop( m@* o, m:* capture_feed, m:* capture_exit /* can be NULL */ );
 
     /** 'shut_down' brings the stamp into a valid state for 'setup'.
      *  Stops capture_loop (if running in a different thread).
      *  Stops video steaming (if running).
      *  Does nothing if stamp was not set up.
      */
-    func (er_t shut_down( m@* o));
+    func er_t shut_down( m@* o );
 
     /// ==================================
 
@@ -165,7 +165,7 @@ stamp :s =
     hidden x_mutex_s mutex_;
     hidden x_mutex_s mutex_exit_capture_loop_;
     hidden bl_t            exit_capture_loop_ = false;
-};
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -186,7 +186,7 @@ stamp :s =
  *  - Video stream is started during setup if not started already.
  *  - capture_loop_error_ holds an error occurring in the thread
  */
-stamp :capture_thread_s =
+stamp :capture_thread_s
 {
     hidden :s -> video;
     private aware :* capture_feed;
@@ -196,7 +196,7 @@ stamp :capture_thread_s =
     bl_t exit_loop_;
     er_t capture_loop_error_ = 0;
 
-    func (er_t setup( m@* o, d :s* video, m aware :* capture_feed )) =
+    func er_t setup( m@* o, d :s* video, m aware :* capture_feed )
     {
         o.shut_down();
         o.video =< video;
@@ -204,7 +204,7 @@ stamp :capture_thread_s =
         o.capture_feed = capture_feed;
         o.exit_loop_ = false;
         o.thread.call_m_thread_func( o );
-        return 0;
+        = 0;
     };
 
     func x_thread.m_thread_func =
@@ -216,7 +216,7 @@ stamp :capture_thread_s =
             o.capture_loop_error_ = error;
             o.mutex.unlock();
         }
-        return NULL;
+        = NULL;
     };
 
     func bmedia_video_in.capture_exit =
@@ -224,10 +224,10 @@ stamp :capture_thread_s =
         o.mutex.lock();
         bl_t exit_loop_ = o.exit_loop_;
         o.mutex.unlock();
-        return exit_loop_;
+        = exit_loop_;
     };
 
-    func (er_t shut_down( m@* o )) =
+    func er_t shut_down( m@* o )
     {
         o.mutex.lock();
         o.exit_loop_ = true;
@@ -237,11 +237,11 @@ stamp :capture_thread_s =
         o.capture_feed = NULL;
         er_t capture_loop_error_ = o.capture_loop_error_;
         o.capture_loop_error_ = 0;
-        return capture_loop_error_;
+        = capture_loop_error_;
     };
 
     func bcore_inst_call.down_e = { o.shut_down(); };
-};
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
