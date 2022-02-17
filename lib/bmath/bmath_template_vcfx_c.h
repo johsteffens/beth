@@ -31,8 +31,8 @@ bl_t BCATU(bmath_vcfx_s,is_near_equ)( const bmath_vcfx_s* o, const bmath_vcfx_s*
     if( o->size != op->size ) return false;
     for( sz_t i = 0; i < o->size; i++ )
     {
-        if( BCATU(fx,abs)( o->data[ i ].v[ 0 ] - op->data[ i ].v[ 0 ] ) > max_dev ) return false;
-        if( BCATU(fx,abs)( o->data[ i ].v[ 1 ] - op->data[ i ].v[ 1 ] ) > max_dev ) return false;
+        if( BCATU(fx,abs)( o->data[ i ].r - op->data[ i ].r ) > max_dev ) return false;
+        if( BCATU(fx,abs)( o->data[ i ].i - op->data[ i ].i ) > max_dev ) return false;
     }
     return true;
 }
@@ -43,8 +43,8 @@ bl_t BCATU(bmath_vcfx_s,is_near_zro)( const bmath_vcfx_s* o, fx_t max_dev )
 {
     for( sz_t i = 0; i < o->size; i++ )
     {
-        if( BCATU(fx,abs)( o->data[ i ].v[ 0 ] ) > max_dev ) return false;
-        if( BCATU(fx,abs)( o->data[ i ].v[ 1 ] ) > max_dev ) return false;
+        if( BCATU(fx,abs)( o->data[ i ].r ) > max_dev ) return false;
+        if( BCATU(fx,abs)( o->data[ i ].i ) > max_dev ) return false;
     }
     return true;
 }
@@ -55,8 +55,8 @@ bl_t BCATU(bmath_vcfx_s,is_nan)( const bmath_vcfx_s* o )
 {
     for( sz_t i = 0; i < o->size; i++ )
     {
-        if( BCATU(fx,is_nan)( o->data[ i ].v[ 0 ] ) ) return true;
-        if( BCATU(fx,is_nan)( o->data[ i ].v[ 1 ] ) ) return true;
+        if( BCATU(fx,is_nan)( o->data[ i ].r ) ) return true;
+        if( BCATU(fx,is_nan)( o->data[ i ].i ) ) return true;
     }
     return false;
 }
@@ -81,8 +81,8 @@ fx_t BCATU(bmath_vcfx_s,fdev)( const bmath_vcfx_s* o, const bmath_vcfx_s* op )
     fx_t sum = 0;
     for( sz_t i = 0 ; i < o->size; i++ )
     {
-        sum += BCATU(fx,sqr)( o->data[ i ].v[ 0 ] - op->data[ i ].v[ 0 ] )
-            +  BCATU(fx,sqr)( o->data[ i ].v[ 1 ] - op->data[ i ].v[ 1 ] );
+        sum += BCATU(fx,sqr)( o->data[ i ].r - op->data[ i ].r )
+            +  BCATU(fx,sqr)( o->data[ i ].i - op->data[ i ].i );
     }
     return BCATU(fx,srt)( sum );
 }
@@ -170,13 +170,13 @@ void BCATU(bmath_vcfx_s,set_random)( bmath_vcfx_s* o, fx_t density, fx_t min, fx
     {
         if( bcore_prsg_a_gen_f3( prsg, 0, 1 ) < density )
         {
-            o->data[ i ].v[ 0 ] = bcore_prsg_a_gen_f3( prsg, min, max );
-            o->data[ i ].v[ 1 ] = bcore_prsg_a_gen_f3( prsg, min, max );
+            o->data[ i ].r = bcore_prsg_a_gen_f3( prsg, min, max );
+            o->data[ i ].i = bcore_prsg_a_gen_f3( prsg, min, max );
         }
         else
         {
-            o->data[ i ].v[ 0 ] = 0;
-            o->data[ i ].v[ 1 ] = 0;
+            o->data[ i ].r = 0;
+            o->data[ i ].i = 0;
         }
     }
     BLM_DOWN();
@@ -442,22 +442,22 @@ static void vcfx_s_sum( const bmath_cfx_s* v1, uz_t size, bmath_cfx_s* res )
 
         case 2:
         {
-            res->v[0]=v1[0].v[0]+v1[1].v[0];
-            res->v[1]=v1[0].v[1]+v1[1].v[1];
+            res->r=v1[0].r+v1[1].r;
+            res->i=v1[0].i+v1[1].i;
             return;
         }
 
         case 3:
         {
-            res->v[0]=v1[0].v[0]+v1[1].v[0]+v1[2].v[0];
-            res->v[1]=v1[0].v[1]+v1[1].v[1]+v1[2].v[1];
+            res->r=v1[0].r+v1[1].r+v1[2].r;
+            res->i=v1[0].i+v1[1].i+v1[2].i;
             return;
         }
 
         case 4:
         {
-            res->v[0]=v1[0].v[0]+v1[1].v[0]+v1[2].v[0]+v1[3].v[0];
-            res->v[1]=v1[0].v[1]+v1[1].v[1]+v1[2].v[1]+v1[3].v[1];
+            res->r=v1[0].r+v1[1].r+v1[2].r+v1[3].r;
+            res->i=v1[0].i+v1[1].i+v1[2].i+v1[3].i;
             return;
         }
 
@@ -530,8 +530,8 @@ void BCATU(bmath_vcfx_s,copy_typed)( bmath_vcfx_s* o, tp_t type, vc_t src )
             BCATU(bmath_vcfx_s,set_size)( o, v->size );
             BFOR_EACH( i, o )
             {
-                o->data[ i ].v[ 0 ] = v->data[ i ].v[ 0 ];
-                o->data[ i ].v[ 1 ] = v->data[ i ].v[ 1 ];
+                o->data[ i ].r = v->data[ i ].r;
+                o->data[ i ].i = v->data[ i ].i;
             }
         }
         break;
@@ -561,8 +561,8 @@ static vd_t selftest( void )
 
         for( uz_t i = 0; i < size; i++ )
         {
-            v1->data[ i ].v[ 0 ] = i + 1;
-            v1->data[ i ].v[ 1 ] = i;
+            v1->data[ i ].r = i + 1;
+            v1->data[ i ].i = i;
         }
 
 
