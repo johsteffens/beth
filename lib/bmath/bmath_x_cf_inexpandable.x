@@ -32,8 +32,8 @@
 
 stamp bmath_cf2_s = obliv
 {
-    f2_t r;
-    f2_t i;
+    $ f2_t r;
+    $ f2_t i;
 
     func (bl_t is_equ( @* o, @* op ));
     func (bl_t is_zro( @* o ));
@@ -103,8 +103,8 @@ identifier bmath_cf2_tss;
 
 stamp bmath_cf3_s = obliv
 {
-    f2_t r;
-    f2_t i;
+    $ f2_t r;
+    $ f2_t i;
 
     func (bl_t is_equ( @* o, @* op ));
     func (bl_t is_zro( @* o ));

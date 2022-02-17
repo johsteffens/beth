@@ -49,6 +49,7 @@ identifier f3_tau; // 2 * PI
 identifier f3_is_nan; // nan compares unequal to itself
 identifier f3_exp;
 identifier f3_log;
+identifier f3_log10;
 identifier f3_pow;
 identifier f3_erf;
 
@@ -58,6 +59,7 @@ identifier f2_tau; // 2 * PI
 identifier f2_is_nan; // nan compares unequal to itself
 identifier f2_exp;
 identifier f2_log;
+identifier f2_log10;
 identifier f2_pow;
 identifier f2_erf;
 
