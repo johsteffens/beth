@@ -39,5 +39,6 @@
 #include "bmath_stat.h"
 #include "bmath_estimator.h"
 #include "bmath_cosine.h"
+#include "bmath_spliced_func.h"
 
 #endif // BMATH_STD_H
