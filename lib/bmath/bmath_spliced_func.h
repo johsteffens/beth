@@ -18,13 +18,16 @@
  *  Uses a spliced polynomial interpolation of a set of sample points.
  *  Properties:
  *  - Meets each sample point.
- *  - Continuous for 0th and 1st derivative.
- *  - Extrapolates quadratic/linear/const using the nearest available sample points.
- *  - Save with any amount of samples (including zero samples).
+ *  - c0: Continuous for 0th derivative.         (Linear interpolation)
+ *  -     If x is within x-boundaries, y stays in the y-boundary given by parameters.
+ *  - c1: Continuous for 0th and 1st derivative. (Qubic interpolation)
+ *  -     If x is within x-boundaries, y can still exceed y-boundary given by parameters.
+ *  - Extrapolates (quadratic/)linear/const using the nearest available sample points.
+ *  - Save with any amount of samples (in case of zero samples: y = 0).
  *  - Recall speed O(nlog(n)).
  *
  *  Setup:
- *  bmath_spliced_func_s^ f;
+ *  bmath_spliced_func_c1_s^ f;  // or bmath_spliced_func_c0_s^ f;
  *  f.push_xy( x[0], y[0] );
  *  .....
  *  f.push_xy( x[n], y[n] ); // requires x[i+1] > x[i]
@@ -47,7 +50,65 @@ XOILA_DEFINE_GROUP( bmath_spliced_func, x_inst )
 //----------------------------------------------------------------------------------------------------------------------
 
 stamp :xy_s( f3_t x, f3_t y ) obliv;
-stamp :s x_array
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+stamp :c0_s x_array
+{
+    :xy_s [];
+
+    func o push_xy( m@*o, f3_t x, f3_t y )
+    {
+        ASSERT( o.size == 0 || o.[ o.size - 1 ].x < x );
+        o.push()( x, y );
+        = o;
+    }
+
+    // linear splicing
+    func f3_t y_of_2( f3_t x, :xy_s* xy0, :xy_s* xy1 ) { = xy0.y + ( x - xy0.x ) * ( xy1.y - xy0.y ) / ( xy1.x - xy0.x ); }
+
+    // const
+    func f3_t y_of_1( f3_t x, :xy_s* xy0 ) { = xy0.y; }
+
+    // uses splicing via linear interpolation
+    func f3_t y_( @*o, f3_t x, sz_t i1, sz_t i2 ) =
+    {
+        sz_t d = ( i2 - i1 ) >> 1;
+        if( d > 0 )
+        {
+            = o.y_
+            (
+                x,
+                ( x >= o.[ i1 + d ].x ) ? i1 + d : i1,
+                ( x <  o.[ i2 - d ].x ) ? i2 - d : i2
+            );
+        }
+        else
+        {
+            = o.y_of_2( x, o.[i1], o.[i2] );
+        }
+    }
+
+    func f3_t _( @*o, f3_t x )
+    {
+        if( o.size  > 2 ) = o.y_( x, 0, o.size - 1 );
+        if( o.size == 2 ) = o.y_of_2( x, o.[0], o.[1] );
+        if( o.size == 1 ) = o.y_of_1( x, o.[0] );
+        = 0;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+stamp :c1_s x_array
 {
     :xy_s [];
 
