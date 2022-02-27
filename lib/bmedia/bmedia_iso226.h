@@ -36,7 +36,7 @@
  *
  *  Usage:
  *    bmedia_iso226_eql_list_s^ list;
- *    $* func = list.eql_func_log10_f_spl( bmath_spliced_func_s!^, 40 ); // 40DB curve
+ *    $* func = list.eql_func_log10_f_spl( bmath_spliced_func_c1_s!^, 40 ); // 40DB curve
  *    f3_t loudness = func( f3_log10( 300 ) ); // loudness at 300 Hz
  *
  *
@@ -128,7 +128,7 @@ stamp :eql_list_s x_array
         o.push()( 20000  , 0.4  , -40  ,140.0 ); // non-iso extension
     }
 
-    func splf eql_func_log10_f_spl( @*o, m bmath_spliced_func_s* splf, f3_t spl_1khz )
+    func splf eql_func_log10_f_spl( @*o, m bmath_spliced_func_c1_s* splf, f3_t spl_1khz )
     {
         splf.clear();
         foreach( $* e in o ) splf.push_xy( f3_log10( e.f ), e.( spl_1khz ) );
