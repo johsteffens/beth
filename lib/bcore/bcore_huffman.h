@@ -41,7 +41,7 @@
     codec.scan_end();
     bcore_huffman_bit_buffer_s^ buf;
     codec.encode( buf );
-    buf.push_packed_u( size );
+    buf.push_packed_u3( size );
     for( sz_t i = 0; i < size; i++ ) codec.encode_s2( data[ i ], buf );
     buf.cast( x_bbml_s* ).to_sink( my_sink );
 
@@ -49,7 +49,7 @@
     bcore_huffman_bit_buffer_s^ buf.cast( x_bbml ).from_source( my_source );
     bcore_huffman_bit_buffer_iterator_s^ itr.setup( buf );
     bcore_huffman_codec_s^ codec.decode( itr );
-    sz_t size = itr.read_packed_u();
+    sz_t size = itr.read_packed_u3();
     for( sz_t i = 0; i < size; i++ ) data[ i ] = codec.decode_s2( itr );
 
 */
@@ -75,31 +75,31 @@ stamp :codec_s =
     :tree_s       => tree;
     :index_s      => leaf_index;
 
-    func (o clear( m@* o ));
+    func o clear( m@* o );
 
-    func (o scan_start( m@* o ));
-
-    // For optimal performance use best fitting function for your input data
-    func (o scan_u2( m@* o, u2_t val ));
-    func (o scan_u3( m@* o, u3_t val ));
-    func (o scan_s2( m@* o, s2_t val ));
-    func (o scan_s3( m@* o, s3_t val ));
-
-    func (o scan_end( m@* o ));
+    func o scan_start( m@* o );
 
     // For optimal performance use best fitting function for your input data
-    func (o    encode_u2( @* o, u2_t val, m :bit_buffer_s* bit_buffer ));
-    func (o    encode_u3( @* o, u3_t val, m :bit_buffer_s* bit_buffer ));
-    func (o    encode_s2( @* o, s2_t val, m :bit_buffer_s* bit_buffer ));
-    func (o    encode_s3( @* o, s3_t val, m :bit_buffer_s* bit_buffer ));
-    func (u2_t decode_u2( @* o,           m :bit_buffer_iterator_s* iterator ));
-    func (u3_t decode_u3( @* o,           m :bit_buffer_iterator_s* iterator ));
-    func (s2_t decode_s2( @* o,           m :bit_buffer_iterator_s* iterator ));
-    func (s3_t decode_s3( @* o,           m :bit_buffer_iterator_s* iterator ));
+    func o scan_u2( m@* o, u2_t val );
+    func o scan_u3( m@* o, u3_t val );
+    func o scan_s2( m@* o, s2_t val );
+    func o scan_s3( m@* o, s3_t val );
+
+    func o scan_end( m@* o );
+
+    // For optimal performance use best fitting function for your input data
+    func o    encode_u2( @* o, u2_t val, m :bit_buffer_s* bit_buffer );
+    func o    encode_u3( @* o, u3_t val, m :bit_buffer_s* bit_buffer );
+    func o    encode_s2( @* o, s2_t val, m :bit_buffer_s* bit_buffer );
+    func o    encode_s3( @* o, s3_t val, m :bit_buffer_s* bit_buffer );
+    func u2_t decode_u2( @* o,           m :bit_buffer_iterator_s* iterator );
+    func u3_t decode_u3( @* o,           m :bit_buffer_iterator_s* iterator );
+    func s2_t decode_s2( @* o,           m :bit_buffer_iterator_s* iterator );
+    func s3_t decode_s3( @* o,           m :bit_buffer_iterator_s* iterator );
 
     // en/decodes codec
-    func (o encode(  @* o, m :bit_buffer_s* bit_buffer ));
-    func (o decode( m@* o, m :bit_buffer_iterator_s* iterator ));
+    func o encode(  @* o, m :bit_buffer_s* bit_buffer );
+    func o decode( m@* o, m :bit_buffer_iterator_s* iterator );
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -110,18 +110,47 @@ stamp :bit_buffer_s = x_array
     u3_t bits;
     u0_t [];
 
-    func (o clear( m@* o ));
+    func o clear( m@* o );
 
     // Low-level write functions. See :bit_buffer_iterator_s for corresponding read functions.
 
     /// Writes one bit
-    func (o push_bl( m@* o, bl_t bit ));
+    func o push_bl( m@* o, bl_t bit );
 
-    /// Writes an unsigned integer a specified number of bits
-    func (o push_u( m@* o, u3_t val, sz_t bits ));
+    /// Writes an unsigned integer with a specified number of bits
+    func o push_u3( m@* o, u3_t val, sz_t bits );
 
     /// Writes an unsigned integer. Stores number of used bits eliminating leading zeros. (7 ... 70 bits)
-    func (o push_packed_u( m@* o, u3_t val ));
+    func o push_packed_u3( m@* o, u3_t val );
+
+    /// Writes a signed integer with a specified number of bits + 1 bit for the sign
+    func o push_s3( m@* o, s3_t val, sz_t bits )
+    {
+        o.push_bl( val >= 0 ? true : false );
+        o.push_u3( val >= 0 ? val : -val, bits );
+        = o;
+    }
+
+    /// Writes a signed integer. Stores number of used bits eliminating leading zeros. (7 ... 70 bits); Uses one extra bit for the sign
+    func o push_packed_s3( m@* o, s3_t val )
+    {
+        o.push_bl( val >= 0 ? true : false );
+        o.push_packed_u3( val >= 0 ? val : -val );
+        = o;
+    }
+
+    /// Writes a float. Accuracy bits used to loss-encode the mantissa, exponent is encoded lossless
+    func o push_f3( m@* o, f3_t v, sz_t bits ) =
+    {
+        ASSERT( bits <= 31 );
+        int int_exp = 0;
+        s3_t man = llrint( frexp( v, int_exp.1 ) * ( ( 1 << bits ) - 1 ) );
+        s3_t exp = int_exp.cast( s3_t );
+        o.push_s3( man, bits );
+        o.push_packed_s3( exp );
+        = o;
+    }
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -133,28 +162,54 @@ stamp :bit_buffer_iterator_s =
     sz_t bit_index;
 
     /// Resets read index
-    func (o reset( m@* o )) = { o.bit_index = 0; return o; };
+    func o reset( m@* o ) { o.bit_index = 0; = o; }
 
     /// Resets and assigns a bit buffer
-    func (o setup( m@* o, :bit_buffer_s* bit_buffer )) = { o.reset(); o.bit_buffer = bit_buffer.cast( m$* ); return o; };
+    func o setup( m@* o, :bit_buffer_s* bit_buffer ) { o.reset(); o.bit_buffer = bit_buffer.cast( m$* ); = o; }
 
     // Low-level read functions.
 
-    /// Reads one bit
-    func (bl_t read_bl( m@* o ));
+    /// Reads one bit; complementary to :bit_buffer_s.push_bl
+    func bl_t read_bl( m@* o );
 
-    /// Reads an unsigned integer a specified number of bits
-    func (u3_t read_u( m@* o, sz_t bits ));
+    /// Reads an unsigned integer a specified number of bits; complementary to :bit_buffer_s.push_u3
+    func u3_t read_u3( m@* o, sz_t bits );
 
-    /// Reads a compacted unsigned integer.
-    func (u3_t read_packed_u( m@* o ));
+    /// Reads a compacted unsigned integer; complementary to :bit_buffer_s.push_packed_u3
+    func u3_t read_packed_u3( m@* o );
+
+    /// Reads an signed integer with a specified number of bits; complementary to :bit_buffer_s.push_s3
+    func s3_t read_s3( m@* o, sz_t bits )
+    {
+        s3_t sign = o.read_bl() ? 1 : -1;
+        s3_t val = o.read_u3( bits );
+        = val * sign;
+    }
+
+    /// Reads a compacted signed integer; complementary to :bit_buffer_s.push_packed_s3
+    func u3_t read_packed_s3( m@* o )
+    {
+        s3_t sign = o.read_bl() ? 1 : -1;
+        s3_t val = o.read_packed_u3();
+        = val * sign;
+    }
+
+    /// Reads a float. Accuracy bits used to loss-encode the mantissa, exponent is encoded lossless; complementary to :bit_buffer_s.push_f3
+    func f3_t read_f3( m@* o, sz_t bits )
+    {
+        ASSERT( bits <= 31 );
+        s3_t man = o.read_s3( bits );
+        s3_t exp = o.read_packed_s3();
+        = ( 1.0 / ( ( 1l << bits ) - 1 ) ) * man * pow( 2.0, exp );
+    }
+
 
     /** Read index reached end of buffer.
      *  Note:
      *    Only use with low level read functions. Higher level encodings (codec) might not
      *    always leave a footprint in bit_buffer.
      */
-    func (bl_t eos( m@* o )) = { return o.bit_index >= o.bit_buffer.bits; };
+    func bl_t eos( m@* o ) { = o.bit_index >= o.bit_buffer.bits; }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
