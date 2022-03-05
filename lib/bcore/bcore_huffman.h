@@ -124,33 +124,13 @@ stamp :bit_buffer_s = x_array
     func o push_packed_u3( m@* o, u3_t val );
 
     /// Writes a signed integer with a specified number of bits + 1 bit for the sign
-    func o push_s3( m@* o, s3_t val, sz_t bits )
-    {
-        o.push_bl( val >= 0 ? true : false );
-        o.push_u3( val >= 0 ? val : -val, bits );
-        = o;
-    }
+    func o push_s3( m@* o, s3_t val, sz_t bits );
 
     /// Writes a signed integer. Stores number of used bits eliminating leading zeros. (7 ... 70 bits); Uses one extra bit for the sign
-    func o push_packed_s3( m@* o, s3_t val )
-    {
-        o.push_bl( val >= 0 ? true : false );
-        o.push_packed_u3( val >= 0 ? val : -val );
-        = o;
-    }
+    func o push_packed_s3( m@* o, s3_t val );
 
     /// Writes a float. Accuracy bits used to loss-encode the mantissa, exponent is encoded lossless
-    func o push_f3( m@* o, f3_t v, sz_t bits ) =
-    {
-        ASSERT( bits <= 31 );
-        int int_exp = 0;
-        s3_t man = llrint( frexp( v, int_exp.1 ) * ( ( 1 << bits ) - 1 ) );
-        s3_t exp = int_exp.cast( s3_t );
-        o.push_s3( man, bits );
-        o.push_packed_s3( exp );
-        = o;
-    }
-
+    func o push_f3( m@* o, f3_t v, sz_t bits );
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -179,30 +159,13 @@ stamp :bit_buffer_iterator_s =
     func u3_t read_packed_u3( m@* o );
 
     /// Reads an signed integer with a specified number of bits; complementary to :bit_buffer_s.push_s3
-    func s3_t read_s3( m@* o, sz_t bits )
-    {
-        s3_t sign = o.read_bl() ? 1 : -1;
-        s3_t val = o.read_u3( bits );
-        = val * sign;
-    }
+    func s3_t read_s3( m@* o, sz_t bits );
 
     /// Reads a compacted signed integer; complementary to :bit_buffer_s.push_packed_s3
-    func u3_t read_packed_s3( m@* o )
-    {
-        s3_t sign = o.read_bl() ? 1 : -1;
-        s3_t val = o.read_packed_u3();
-        = val * sign;
-    }
+    func u3_t read_packed_s3( m@* o );
 
     /// Reads a float. Accuracy bits used to loss-encode the mantissa, exponent is encoded lossless; complementary to :bit_buffer_s.push_f3
-    func f3_t read_f3( m@* o, sz_t bits )
-    {
-        ASSERT( bits <= 31 );
-        s3_t man = o.read_s3( bits );
-        s3_t exp = o.read_packed_s3();
-        = ( 1.0 / ( ( 1l << bits ) - 1 ) ) * man * pow( 2.0, exp );
-    }
-
+    func f3_t read_f3( m@* o, sz_t bits );
 
     /** Read index reached end of buffer.
      *  Note:

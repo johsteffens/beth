@@ -236,6 +236,37 @@ func (:bit_buffer_s) push_packed_u3
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:bit_buffer_s) push_s3
+{
+    o.push_bl( val >= 0 ? true : false );
+    o.push_u3( val >= 0 ? val : -val, bits );
+    = o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bit_buffer_s) push_packed_s3
+{
+    o.push_bl( val >= 0 ? true : false );
+    o.push_packed_u3( val >= 0 ? val : -val );
+    = o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bit_buffer_s) push_f3
+{
+    ASSERT( bits <= 31 );
+    int int_exp = 0;
+    s3_t man = llrint( frexp( v, int_exp.1 ) * ( ( 1 << bits ) - 1 ) );
+    s3_t exp = int_exp.cast( s3_t );
+    o.push_s3( man, bits );
+    o.push_packed_s3( exp );
+    = o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:bit_buffer_iterator_s) read_bl
 {
     if( !o.bit_buffer ) ERR_fa( "No buffer assigned. Call setup first." );
@@ -260,6 +291,34 @@ func (:bit_buffer_iterator_s) read_u3
 func (:bit_buffer_iterator_s) read_packed_u3
 {
     = o.read_u3( o.read_u3( 6 ) + 1 );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bit_buffer_iterator_s) read_s3
+{
+    s3_t sign = o.read_bl() ? 1 : -1;
+    s3_t val = o.read_u3( bits );
+    = val * sign;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bit_buffer_iterator_s) read_packed_s3
+{
+    s3_t sign = o.read_bl() ? 1 : -1;
+    s3_t val = o.read_packed_u3();
+    = val * sign;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bit_buffer_iterator_s) read_f3
+{
+    ASSERT( bits <= 31 );
+    s3_t man = o.read_s3( bits );
+    s3_t exp = o.read_packed_s3();
+    = ( 1.0 / ( ( 1l << bits ) - 1 ) ) * man * pow( 2.0, exp );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
