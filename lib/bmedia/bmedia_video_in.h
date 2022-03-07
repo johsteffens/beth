@@ -84,7 +84,7 @@ stamp :image_s x_array
 feature void capture_feed( m@* o, :image_s* image );
 
 /// Optional callback for each loop cycle; return true to exit loop
-feature bl_t capture_exit( m@* o ) = { = false; };
+feature bl_t capture_exit( m@* o ) { = false; };
 
 stamp :image_adl_s x_array { :image_s => []; }
 

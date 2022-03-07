@@ -85,7 +85,7 @@ stamp :buffer_s x_array
     s1_t [];
     func o set_size( m@* o, sz_t size, sz_t channels ) { o.cast( m x_array* ).set_size( size ); o.channels = channels; = o; };
     func o set_frames( m@* o, sz_t frames, sz_t channels ) { = o.set_size( frames * channels, channels ); };
-    func o set_zero( m@* o ) = { foreach( m$* e in o ) e.0 = 0; = o; };
+    func o set_zero( m@* o ) { foreach( m$* e in o ) e.0 = 0; = o; };
 
     /// converts buffer channel into vector with value range [ -1.0 , +1.0 [
     func vec get_vf2( @* o, m bmath_vf2_s* vec, sz_t channel );
@@ -105,6 +105,18 @@ stamp :buffer_s x_array
         f3_t sum = 0;
         foreach( $e in o ) sum += e;
         = sum;
+    }
+
+    func f3_t max_abs( @* o ) =
+    {
+        f3_t max_abs = 0;
+        foreach( $e in o ) max_abs = f3_max( max_abs, f3_abs( e ) );
+        = max_abs;
+    }
+
+    func void gain( m@* o, f3_t factor ) =
+    {
+        foreach( m$*e in o ) e.0 = f3_min( 32767, f3_max( -32768, e.0 * factor ) );
     }
 }
 
@@ -144,12 +156,12 @@ stamp :sequence_s
     sz_t first; // index to first element
     sz_t size;  // number of used elements
 
-    func o clear( m@* o ) = { o.adl.clear(); o.first = o.size = 0; = o; }
+    func o clear( m@* o ) { o.adl.clear(); o.first = o.size = 0; = o; }
 
-    func o set_zero( m@* o ) = { foreach( m$* e in o.adl ) e.set_zero(); = o; }
+    func o set_zero( m@* o ) { foreach( m$* e in o.adl ) e.set_zero(); = o; }
 
     /// sets up empty sequence
-    func o setup( m@* o, s2_t channels, s2_t rate ) = { o.clear(); o.channels = channels; o.rate = rate; = o; }
+    func o setup( m@* o, s2_t channels, s2_t rate ) { o.clear(); o.channels = channels; o.rate = rate; = o; }
 
     /// allocates frames and channels and sets all zero
     func o setup_frames( m@* o, s2_t channels, s2_t rate, s3_t frames );
@@ -194,6 +206,18 @@ stamp :sequence_s
         f3_t sum = 0;
         for( sz_t i = 0; i < o.size; i++ ) sum += o.buffer_c( i ).sum();
         = sum;
+    }
+
+    func f3_t max_abs( @* o )
+    {
+        f3_t max_abs = 0;
+        for( sz_t i = 0; i < o.size; i++ ) max_abs = f3_max( max_abs, o.buffer_c( i ).max_abs() );
+        = max_abs;
+    }
+
+    func void gain( m@* o, f3_t factor )
+    {
+        for( sz_t i = 0; i < o.size; i++ ) o.buffer_m( i ).gain( factor );
     }
 
     /// returns an iterator for sequence

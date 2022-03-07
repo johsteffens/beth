@@ -36,7 +36,7 @@ func (:buffer_s) set_from_vf2
     {
         f2_t v = k < vec.size ? vec.[ k++ ] : 0;
         v = f2_min( 1.0, f2_max( -1.0, v ));
-        o.[ i ] = s2_min( 32768, lrint( v * 32768.0 ) );
+        o.[ i ] = lrintf( f2_min( 32767, f2_max( -32768, v * 32768.0 ) ) );
     }
     = o;
 }
