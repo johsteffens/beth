@@ -76,12 +76,12 @@ XOILA_DEFINE_GROUP( bhvm, bcore_inst )
 stamp :shape_s = obliv x_array
 {
     sz_t [];
-    func x_array.clear    = { return ( @*    )o.cast( m x_array* ).t_clear( TYPEOF_@ ); };
-    func x_array.set_size = { return ( @*    )o.cast( m x_array* ).t_set_size( TYPEOF_@, size ); };
-    func x_array.push     = { return ( sz_t* )o.cast( m x_array* ).t_push( TYPEOF_@ ); };
+    func x_array.clear    { return ( @*    )o.cast( m x_array* ).t_clear( TYPEOF_@ ); };
+    func x_array.set_size { return ( @*    )o.cast( m x_array* ).t_set_size( TYPEOF_@, size ); };
+    func x_array.push     { return ( sz_t* )o.cast( m x_array* ).t_push( TYPEOF_@ ); };
 
     /// weak reference; no shutdown required
-    func (void init_weak( m @* o, m sz_t* data, sz_t size )) =
+    func (void init_weak( m @* o, m sz_t* data, sz_t size ))
     {
         o.init();
         o.data = data;
@@ -89,17 +89,17 @@ stamp :shape_s = obliv x_array
     };
 
     /// weak reference; no shutdown required
-    func (void init_weak_from_shape( m @* o, m @* src )) = { o.init_weak( src.data, src.size ); };
+    func (void init_weak_from_shape( m @* o, m @* src )) { o.init_weak( src.data, src.size ); };
 
     /// forked reference; shutdown required
-    func (void init_fork( m @* o, m sz_t* data, sz_t size, sz_t space )) =
+    func (void init_fork( m @* o, m sz_t* data, sz_t size, sz_t space ))
     {
         o.init_weak( data.fork(), size );
         o.space = space;
     };
 
     /// forked reference if src is strong, otherwise weak reference
-    func (void fork_from( m @* o, m @* src )) =
+    func (void fork_from( m @* o, m @* src ))
     {
         o.clear();
         assert( o.space == 0 );
@@ -109,7 +109,7 @@ stamp :shape_s = obliv x_array
     };
 
     /// weak reference;
-    func (void weak( m @* o, m @* src )) =
+    func (void weak( m @* o, m @* src ))
     {
         o.clear();
         assert( o.space == 0 );
@@ -117,11 +117,11 @@ stamp :shape_s = obliv x_array
         o.size = src.size;
     };
 
-    func (o make_strong( m @* o )) = { bcore_array_t_make_strong( TYPEOF_@, ( bcore_array* )o ); return o; };
-    func (sz_t get_volume( c @* o )) = { sz_t v = 1; foreach( sz_t e in o ) v *= e; return v; };
+    func (o make_strong( m @* o )) { bcore_array_t_make_strong( TYPEOF_@, ( bcore_array* )o ); return o; };
+    func (sz_t get_volume( c @* o )) { sz_t v = 1; foreach( sz_t e in o ) v *= e; return v; };
 
     /// sets data by copying
-    func (o set_data( m @* o, c sz_t* data, sz_t size )) =
+    func (o set_data( m @* o, c sz_t* data, sz_t size ))
     {
         o.set_size( size );
         for( sz_t i = 0; i < o.size; i++ ) o.[ i ] = data[ i ];
@@ -131,14 +131,14 @@ stamp :shape_s = obliv x_array
     func (o set_data_nv( m @* o, sz_t size, va_list sz_t_args ));
     func (o set_data_na( m @* o, sz_t size, ... ));
 
-    func (o inc_order( m@* o, sz_t dim )) =
+    func (o inc_order( m@* o, sz_t dim ))
     {
         o.make_strong().set_size( o.size + 1 );
         o.[ o.size - 1 ] = dim;
         return o;
     };
 
-    func (o inc_order_prepend( m@* o, sz_t dim )) =
+    func (o inc_order_prepend( m@* o, sz_t dim ))
     {
         o.make_strong().set_size( o.size + 1 );
         for( sz_t i = o.size - 1; i > 0; i-- ) o.[ i ] = o.[ i - 1 ];
@@ -147,14 +147,14 @@ stamp :shape_s = obliv x_array
     };
 
     /// sets shape to scalar
-    func (o set_scalar( m @* o )) = { return o.set_size( 0 ); };
+    func (o set_scalar( m @* o )) { return o.set_size( 0 ); };
 
     /// sets shape to vector ( dim [ #)
-    func (o set_vector( m @* o, sz_t dim )) = { return o.set_data_na( 1, dim ); };
+    func (o set_vector( m @* o, sz_t dim )) { return o.set_data_na( 1, dim ); };
 
     /// status
-    func (bl_t is_weak( c @* o )) = { return ( o.space == 0 ) && ( o.size > 0 ); };
-    func (bl_t is_equal( c @* o, c @* b )) =
+    func (bl_t is_weak( c @* o )) { return ( o.space == 0 ) && ( o.size > 0 ); };
+    func (bl_t is_equal( c @* o, c @* b ))
     {
         if( o.size != b.size ) return false;
         for( sz_t i = 0; i < o.size; i++ ) if( o.[ i ] != b.[ i ] ) return false;
@@ -162,7 +162,7 @@ stamp :shape_s = obliv x_array
     };
 
     // b is a sub-shape of o
-    func (bl_t is_sub( c @* o, c @* b )) =
+    func (bl_t is_sub( c @* o, c @* b ))
     {
         if( o.size < b.size ) return false;
         for( sz_t i = 0; i < b.size; i++ ) if( o.[ i ] != b.[ i ] ) return false;
@@ -184,7 +184,7 @@ stamp :shape_s = obliv x_array
     func (r ccat_set(  c @* o, c @* b, m @* r ));
 
     /// isovolumetric conversion to a vector (order 1); o == src allowed
-    func (o copy_vector_isovol( m @* o, c @* src )) =
+    func (o copy_vector_isovol( m @* o, c @* src ))
     {
         sz_t volume = src.get_volume();
         o.set_data( volume.1, 1 );
@@ -198,11 +198,11 @@ stamp :shape_s = obliv x_array
 stamp :value_s = obliv x_array
 {
     typed [];
-    func x_array.clear    = { return ( @* )o.cast( m x_array* ).t_clear( TYPEOF_@ ); };
-    func x_array.set_size = { return ( @* )o.cast( m x_array* ).t_set_size( TYPEOF_@, size ); };
+    func x_array.clear    { return ( @* )o.cast( m x_array* ).t_clear( TYPEOF_@ ); };
+    func x_array.set_size { return ( @* )o.cast( m x_array* ).t_set_size( TYPEOF_@, size ); };
 
     /// weak reference; no shutdown required
-    func (void init_weak( m @* o, tp_t type, vd_t data, sz_t size )) =
+    func (void init_weak( m @* o, tp_t type, vd_t data, sz_t size ))
     {
         o.init();
         o.type = type;
@@ -211,10 +211,10 @@ stamp :value_s = obliv x_array
     };
 
     /// weak reference; no shutdown required
-    func (void init_weak_from_value( m @* o, m @* src )) = { o.init_weak( src.type, src.data, src.size ); };
+    func (void init_weak_from_value( m @* o, m @* src )) { o.init_weak( src.type, src.data, src.size ); };
 
     /// forked reference if src is strong, otherwise weak reference
-    func (void fork_from( m @* o, m @* src )) =
+    func (void fork_from( m @* o, m @* src ))
     {
         o.clear();
         assert( o.space == 0 );
@@ -225,7 +225,7 @@ stamp :value_s = obliv x_array
     };
 
     /// weak reference;
-    func (void weak( m @* o, m @* src )) =
+    func (void weak( m @* o, m @* src ))
     {
         o.clear();
         assert( o.space == 0 );
@@ -234,27 +234,27 @@ stamp :value_s = obliv x_array
         o.size = src.size;
     };
 
-    func (o make_strong( m @* o )) = { bcore_array_t_make_strong( TYPEOF_@, ( bcore_array* )o ); return o; };
+    func (o make_strong( m @* o )) { bcore_array_t_make_strong( TYPEOF_@, ( bcore_array* )o ); return o; };
 
 
     /// sets type; preexisting type (if any) is converted
     func (o set_type( m @* o, tp_t type ));
 
     /// sets type and size
-    func (o set_type_size( m @* o, tp_t type, sz_t size )) = { return o.set_type( type ).set_size( size ); };
+    func (o set_type_size( m @* o, tp_t type, sz_t size )) { return o.set_type( type ).set_size( size ); };
 
     /// sets type and data by copying/converting
     func (o set_type_data( m @* o, tp_t dst_type, tp_t src_type, vc_t src_data, sz_t size ));
 
     /// copies data in place; converts type; no allocation; o->type must exits
     func (o cpy_data( m @* o, tp_t src_type, vc_t src_data, sz_t size ));
-    func (dst cpy( c @* o, m @* dst )) = { return dst.cpy_data( o.type, o.data, o.size ); };
+    func (dst cpy( c @* o, m @* dst )) { return dst.cpy_data( o.type, o.data, o.size ); };
 
     /// sets all values zero
     func (o zro( m @* o ));
 
     /// sets data by converting to holor type (sets target type if not set)
-    func (o set_data( m @* o, tp_t src_type, vc_t src_data, sz_t size )) =
+    func (o set_data( m @* o, tp_t src_type, vc_t src_data, sz_t size ))
     {
         if( !o.type ) o->type = src_type;
         return o.set_size( size ).cpy_data( src_type, src_data, size );
@@ -270,17 +270,17 @@ stamp :value_s = obliv x_array
     func (o push_data( m @* o, tp_t src_type, vc_t src_data, sz_t size ));
 
     /// pushes data of value converting to o->type
-    func (o push_value( m @* o, c @* src )) = { return o.push_data( src.type, src.data, src.size ); };
+    func (o push_value( m @* o, c @* src )) { return o.push_data( src.type, src.data, src.size ); };
 
     /// status
-    func (bl_t is_weak(   c @* o )) = { return ( o.space == 0 ) && ( o.size > 0 ); };
-    func (bl_t is_vacant( c @* o )) = { return ( o.size == 0 ); };
+    func (bl_t is_weak(   c @* o )) { return ( o.space == 0 ) && ( o.size > 0 ); };
+    func (bl_t is_vacant( c @* o )) { return ( o.size == 0 ); };
     func (bl_t is_nan(    c @* o ));
     func (bl_t is_equal(  c @* o, c @* b ));
 
     /// constructive (==conservative) concatenation
-    func (bl_t cat_can ( c @* o, c @* b )) = { return true; };
-    func (bl_t cat_fits( c @* o, c @* b, c @* r )) =
+    func (bl_t cat_can ( c @* o, c @* b )) { return true; };
+    func (bl_t cat_fits( c @* o, c @* b, c @* r ))
     {
         if( !o.cat_can( b ) ) return false;
         return ( r.size == o.size + b.size );
@@ -290,13 +290,13 @@ stamp :value_s = obliv x_array
     func (r cat_set( c @* o, c @* b, m @* r ));
 
     /// value -> vector
-    func (bmath_vf2_s get_weak_vf2( c @* o )) =
+    func (bmath_vf2_s get_weak_vf2( c @* o ))
     {
         ASSERT( o.type == TYPEOF_f2_t );
         return bmath_vf2_init_weak( ( f2_t* )o.data, o.size );
     };
 
-    func (bmath_vf3_s get_weak_vf3( c @* o )) =
+    func (bmath_vf3_s get_weak_vf3( c @* o ))
     {
         ASSERT( o.type == TYPEOF_f3_t );
         return bmath_vf3_init_weak( ( f3_t* )o.data, o.size );
@@ -374,7 +374,7 @@ stamp :holor_s = aware bcore_inst
     func bcore_fp . copy_typed;
 
     /// weak reference; no shutdown required
-    func (void init_weak( m @* o, m sz_t* s_data, sz_t s_size, tp_t v_type, vd_t v_data, sz_t v_size )) =
+    func (void init_weak( m @* o, m sz_t* s_data, sz_t s_size, tp_t v_type, vd_t v_data, sz_t v_size ))
     {
         o.init();
         o.s.init_weak( s_data, s_size );
@@ -382,7 +382,7 @@ stamp :holor_s = aware bcore_inst
     };
 
     /// weak reference; no shutdown required
-    func (void init_weak_from_holor( m @* o, m @* src )) =
+    func (void init_weak_from_holor( m @* o, m @* src ))
     {
         o.init();
         o.s.init_weak_from_shape( src.s );
@@ -390,21 +390,21 @@ stamp :holor_s = aware bcore_inst
     };
 
     /// forked reference; (shutdown required)
-    func (void fork_from( m @* o, m @* src )) =
+    func (void fork_from( m @* o, m @* src ))
     {
         o.s.fork_from( src.s );
         o.v.fork_from( src.v );
     };
 
     /// fork or copy according to flags
-    func (void fork_or_copy( m @* o, m @* src, bl_t fork_shape, bl_t fork_value )) =
+    func (void fork_or_copy( m @* o, m @* src, bl_t fork_shape, bl_t fork_value ))
     {
         if( fork_shape ) o.s.fork_from( src.s ); else o.s.copy( src.s );
         if( fork_value ) o.v.fork_from( src.v ); else o.v.copy( src.v );
     };
 
     /// copies value and converts shape to vector
-    func (o copy_vector_isovol( m @* o, c @* src )) =
+    func (o copy_vector_isovol( m @* o, c @* src ))
     {
         o.s.copy_vector_isovol( src.s );
         o.v.copy( src.v );
@@ -412,7 +412,7 @@ stamp :holor_s = aware bcore_inst
     };
 
     /// forks value and converts shape to vector
-    func (o fork_from_vector_isovol( m @* o, m @* src )) =
+    func (o fork_from_vector_isovol( m @* o, m @* src ))
     {
         o.s.copy_vector_isovol( src.s );
         o.v.fork_from( src.v );
@@ -420,19 +420,19 @@ stamp :holor_s = aware bcore_inst
     };
 
     /// clears entire holor
-    func (o clear( m @* o )) = { o.s.clear();  o.v.clear(); return o; };
-    func (o copy_t( m @* o, tp_t type, vc_t src )) = { o.copy_typed( type, src ); return o; };
+    func (o clear( m @* o )) { o.s.clear();  o.v.clear(); return o; };
+    func (o copy_t( m @* o, tp_t type, vc_t src )) { o.copy_typed( type, src ); return o; };
 
 // ---------------------------------------------------------------------------------------------------------------------
 
     /// Copies shape; clears value
-    func (o copy_shape( m @* o, c bhvm_shape_s* src )) = { o.s.copy( src ); o.v.clear(); return o; };
+    func (o copy_shape( m @* o, c bhvm_shape_s* src )) { o.s.copy( src ); o.v.clear(); return o; };
 
     /// Copies shape; clears value; copies type
-    func (o copy_shape_type( m @* o, c @* src )) = { o.copy_shape( src.s ); o.v.set_type( src.v.type ); return o; };
+    func (o copy_shape_type( m @* o, c @* src )) { o.copy_shape( src.s ); o.v.set_type( src.v.type ); return o; };
 
-    func (o set_type( m @* o, tp_t type )) =  { o.v.set_type( type ); return o; };
-    func (o fit_size( m @* o )) =
+    func (o set_type( m @* o, tp_t type )) { o.v.set_type( type ); return o; };
+    func (o fit_size( m @* o ))
     {
         if( o.v.size == 0 )
         {
@@ -445,25 +445,25 @@ stamp :holor_s = aware bcore_inst
         return o;
     };
 
-    func (o fit_type_size( m @* o, tp_t t )) = { o.v.set_type_size( t, o.s.get_volume() ); return o; };
+    func (o fit_type_size( m @* o, tp_t t )) { o.v.set_type_size( t, o.s.get_volume() ); return o; };
 
     /// sets holor to scalar with given value or to vacant scalar
     func (void set_type_scalar_pf( m @* o, tp_t t, tp_t t_src, vc_t v ));
     func (void set_scalar_pf( m @* o, tp_t t_src, vc_t v ));
-    func (void set_scalar_f3( m @* o, f3_t v )) = { o.set_scalar_pf( TYPEOF_f3_t, &v ); };
+    func (void set_scalar_f3( m @* o, f3_t v )) { o.set_scalar_pf( TYPEOF_f3_t, &v ); };
 
-    func (f3_t f3_get_scalar( c @* o )) =
+    func (f3_t f3_get_scalar( c @* o ))
     {
         assert( o->v.size == 1 );
         return ( o->v.type == TYPEOF_f3_t ) ? ( ( f3_t* )o->v.data )[ 0 ] : o->v.type == TYPEOF_f2_t ? ( ( f2_t* )o->v.data )[ 0 ] : 0;
     };
 
     /// sets holor to scalar from f3 value
-    func (void set_type_scalar( m @* o, tp_t t, f3_t v )) = { o.set_type_scalar_pf( t, TYPEOF_f3_t, &v ); };
+    func (void set_type_scalar( m @* o, tp_t t, f3_t v )) { o.set_type_scalar_pf( t, TYPEOF_f3_t, &v ); };
 
     /// sets holor to vacant scalar or vector
-    func (o set_type_scalar_vacant( m @* o, tp_t t )) = { o.s.set_scalar(); o.v.clear().set_type( t ); return o; };
-    func (o set_type_vector_vacant( m @* o, tp_t t, sz_t dim )) = { o.s.set_vector( dim ); o.v.clear().set_type( t ); return o; };
+    func (o set_type_scalar_vacant( m @* o, tp_t t )) { o.s.set_scalar(); o.v.clear().set_type( t ); return o; };
+    func (o set_type_vector_vacant( m @* o, tp_t t, sz_t dim )) { o.s.set_vector( dim ); o.v.clear().set_type( t ); return o; };
 
     /// Overall consistency; all valid states return true;
     func (bl_t is_consistent( c @* o ));
@@ -480,7 +480,7 @@ stamp :holor_s = aware bcore_inst
     func (d @* create_parse_st( c st_s* st ));
     func (d @* create_parse_sc( sc_t sc ));
 
-    func (bl_t is_equal( c @* o, c @* src )) =
+    func (bl_t is_equal( c @* o, c @* src ))
     {
         if( !o.s.is_equal( src.s ) ) return false;
         if( !o.v.is_equal( src.v ) ) return false;
@@ -491,7 +491,7 @@ stamp :holor_s = aware bcore_inst
     /// weak conversion
 
     /// holor -> matrix
-    func (bmath_mf2_s get_weak_mf2( c @* o )) =
+    func (bmath_mf2_s get_weak_mf2( c @* o ))
     {
         assert( o.v.type == TYPEOF_f2_t );
         assert( o.s.size == 2 );
@@ -502,7 +502,7 @@ stamp :holor_s = aware bcore_inst
     };
 
     /// holor -> matrix
-    func (bmath_mf3_s get_weak_mf3( c @* o )) =
+    func (bmath_mf3_s get_weak_mf3( c @* o ))
     {
         assert( o.v.type == TYPEOF_f3_t );
         assert( o.s.size == 2 );
@@ -512,7 +512,7 @@ stamp :holor_s = aware bcore_inst
         return bmath_mf3_init_weak( rows, cols, cols, ( f3_t* )o.v.data );
     };
 
-    func (vd_t mfx_create_weak( c @* o )) =
+    func (vd_t mfx_create_weak( c @* o ))
     {
         assert( o.s.size == 2 );
         sz_t cols = o.s.[ 0 ];
@@ -531,10 +531,10 @@ stamp :holor_s = aware bcore_inst
     /// general mathematics
 
     /// sets all values zero
-    func (o zro( m @* o )) = { assert( o.v.size > 0 ); o.v.zro(); return o; };
+    func (o zro( m @* o )) { assert( o.v.size > 0 ); o.v.zro(); return o; };
 
     /// zro: allocates o->v if necessary
-    func (o zro_set( m @* o )) = { if( o.v.size == 0 ) o.v.set_size( o.s.get_volume() ); return o.zro(); };
+    func (o zro_set( m @* o )) { if( o.v.size == 0 ) o.v.set_size( o.s.get_volume() ); return o.zro(); };
 
     /// returns sum{ ( o[i] ) }
     func (f3_t sum( c @* o ));
@@ -552,7 +552,7 @@ stamp :holor_s = aware bcore_inst
     /**********************************************************************************************************************/
     /// holor specific operations
 
-    func (sz_t get_order( c @* o )) = { return o->s.size; };
+    func (sz_t get_order( c @* o )) { return o->s.size; };
 
     /** Canonic increment of order by appending one dimension 'dim' :
      *  If the holder holds data, the data is duplicated 'dim' times.
