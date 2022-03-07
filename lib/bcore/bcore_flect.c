@@ -448,21 +448,23 @@ static er_t bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
 
         if( bcore_source_r_parse_bl_fa( &src, " #?w'obliv'"   ) )
         {
-            if( f_obliv ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefixes 'obliv' occurs twice.", ifnameof( parent_type ) ) );
-            if( f_aware ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefixes 'obliv' cannot be mixed with 'aware'.", ifnameof( parent_type ) ) );
+            if( f_obliv ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefix 'obliv' occurs twice.", ifnameof( parent_type ) ) );
+            if( f_aware ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefix 'obliv' cannot be mixed with 'aware'.", ifnameof( parent_type ) ) );
             f_any_prefix = f_obliv = true;
         }
 
         if( bcore_source_r_parse_bl_fa( &src, " #?w'aware'"   ) )
         {
-            if( f_typed || f_aware ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefixes 'aware' occurs twice or mixed with 'typed'.", ifnameof( parent_type ) ) );
-            if( f_obliv ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefixes 'aware' cannot be mixed with 'obliv'.", ifnameof( parent_type ) ) );
+            if( f_aware ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefix 'aware' occurs twice.", ifnameof( parent_type ) ) );
+            if( f_typed ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefix 'aware' cannot be mixed with 'typed'.", ifnameof( parent_type ) ) );
+            if( f_obliv ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefix 'aware' cannot be mixed with 'obliv'.", ifnameof( parent_type ) ) );
             f_any_prefix = f_aware = true;
         }
 
         if( bcore_source_r_parse_bl_fa( &src, " #?w'typed'"   ) )
         {
-            if( f_typed || f_aware ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefix 'typed' occurs twice or mixed with 'aware'.", ifnameof( parent_type ) ) );
+            if( f_typed ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefix 'typed' occurs twice.", ifnameof( parent_type ) ) );
+            if( f_aware ) BLM_TRY( bcore_source_a_parse_error_fa( src.o, "Parent '#<sc_t>':\nPrefix 'typed' cannot be mixed with 'aware'.", ifnameof( parent_type ) ) );
             f_any_prefix = f_typed = true;
         }
     }

@@ -43,17 +43,17 @@ group :manager =
     stamp :error_adl_s = aware x_array
     {
         :error_s => [];
-        func x_array.set_size =
+        func x_array.set_size
         {
             return x_array_set_size( o, size );
         };
 
-        func x_array.clear =
+        func x_array.clear
         {
             return x_array_clear( o );
         };
 
-        func x_array.push_d =
+        func x_array.push_d
         {
             return x_array_push_d( o, v );
         };

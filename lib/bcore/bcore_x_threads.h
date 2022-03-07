@@ -41,7 +41,7 @@ stamp :lock_s =
 {
     private :mutex_s * mutex;
 
-    func (o set( m@* o, m :mutex_s* mutex )) =
+    func (o set( m@* o, m :mutex_s* mutex ))
     {
         o.release();
         o.mutex = mutex;
@@ -49,14 +49,14 @@ stamp :lock_s =
         return o;
     };
 
-    func (o release( m@* o )) =
+    func (o release( m@* o ))
     {
         if( o.mutex ) o.mutex.unlock();
         o.mutex = NULL;
         return o;
     };
 
-    func bcore_inst_call.down_e = { o.release(); };
+    func bcore_inst_call.down_e { o.release(); };
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ stamp :unlock_s =
 {
     private :mutex_s * mutex;
 
-    func (o set( m@* o, m :mutex_s* mutex )) =
+    func (o set( m@* o, m :mutex_s* mutex ))
     {
         o.release();
         o.mutex = mutex;
@@ -74,14 +74,14 @@ stamp :unlock_s =
         return o;
     };
 
-    func (o release( m@* o )) =
+    func (o release( m@* o ))
     {
         if( o.mutex ) o.mutex.lock();
         o.mutex = NULL;
         return o;
     };
 
-    func bcore_inst_call.down_e = { o.release(); };
+    func bcore_inst_call.down_e { o.release(); };
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -93,8 +93,8 @@ stamp :mutex_s =
     func bcore_inst_call.down_e;
     func (void lock  (m@*o));
     func (void unlock(m@*o));
-    func (d :lock_s*   create_lock(   m@* o ) ) = { return :lock_s!.set( o );   };
-    func (d :unlock_s* create_unlock( m@* o ) ) = { return :unlock_s!.set( o ); };
+    func (d :lock_s*   create_lock(   m@* o ) ) { return :lock_s!.set( o );   };
+    func (d :unlock_s* create_unlock( m@* o ) ) { return :unlock_s!.set( o ); };
 };
 
 //----------------------------------------------------------------------------------------------------------------------

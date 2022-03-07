@@ -56,7 +56,7 @@ stamp :s =
     s3_t size; // gloabl_size
 
     /// Creates the index. size_arr represents the container sizes.
-    func (o setup( m@* o, bcore_arr_s3_s* size_arr )) =
+    func (o setup( m@* o, bcore_arr_s3_s* size_arr ))
     {
         o.size = 0;
         o.cs_arr.set_size( size_arr.size );
@@ -93,7 +93,7 @@ stamp :s =
     /** Computes container-index and offset into the container.
      *  Returns false in case 'index' is out of range.
      */
-    func (bl_t get_io( @* o, s3_t index, m :io_s* io )) =
+    func (bl_t get_io( @* o, s3_t index, m :io_s* io ))
     {
         if( index < 0 || index >= o.size ) return false;
         io.0 = o.io_arr.[ index >> o.mask_bits ];
@@ -109,7 +109,7 @@ stamp :s =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (void selftest()) =
+func (void selftest())
 {
     bcore_prsg_lcg_u3_00_s^ prsg;
 

@@ -1,4 +1,4 @@
-//  Last update: 2022-02-13T20:49:07Z
+//  Last update: 2022-03-07T14:34:38Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -52,7 +52,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0xF6320CF660C6D83Bull
+// HKEYOF_bcore 0xEAC28806FC268EBFull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -226,221 +226,228 @@ XOILA_DEFINE_SPECT( x_inst, x_array )
 
 x_inst* x_array_t_push_d( x_array* o, tp_t t, x_inst* v )
 {
-    // bcore_x_array.h:138:17
+    // bcore_x_array.h:139:1
     
-    const bcore_array_s* p = bcore_array_s_get_typed( t );
     
-    if( p->item_p )
-    {
-        bcore_array_p_push( p, ( bcore_array* )o, sr_psd( p->item_p, v ) );
-    }
-    else
-    {
-        bcore_array_p_push( p, ( bcore_array* )o, sr_asd( v ) );
-    }
+        const bcore_array_s* p = bcore_array_s_get_typed( t );
     
-    if( p->is_of_links )
-    {
-        return v;
-    }
-    else if( p->is_static )
-    {
-        uz_t size = 0;
-        u0_t* data = bcore_array_p_get_d_data_size( p, o, &size );
-        return ( x_inst* )( data + p->item_p->size * ( size - 1 ) );
-    }
-    else
-    {
-        return bcore_array_p_get_last( p, ( bcore_array* )o ).o;
-    }
+        if( p->item_p )
+        {
+            bcore_array_p_push( p, ( bcore_array* )o, sr_psd( p->item_p, v ) );
+        }
+        else
+        {
+            bcore_array_p_push( p, ( bcore_array* )o, sr_asd( v ) );
+        }
+    
+        if( p->is_of_links )
+        {
+            return v;
+        }
+        else if( p->is_static )
+        {
+            uz_t size = 0;
+            u0_t* data = bcore_array_p_get_d_data_size( p, o, &size );
+            return ( x_inst* )( data + p->item_p->size * ( size - 1 ) );
+        }
+        else
+        {
+            return bcore_array_p_get_last( p, ( bcore_array* )o ).o;
+        }
 }
 
 x_inst* x_array_t_push_c( x_array* o, tp_t t, const x_inst* v )
 {
-    // bcore_x_array.h:169:17
+    // bcore_x_array.h:173:1
     
-    const bcore_array_s* p = bcore_array_s_get_typed( t );
     
-    if( p->item_p )
-    {
-        bcore_array_p_push( p, ( bcore_array* )o, sr_pwc( p->item_p, v ) );
-    }
-    else
-    {
-        bcore_array_p_push( p, ( bcore_array* )o, sr_awc( v ) );
-    }
+        const bcore_array_s* p = bcore_array_s_get_typed( t );
     
-    if( p->is_of_links )
-    {
-        uz_t size = 0;
-        x_inst** data = bcore_array_p_get_d_data_size( p, o, &size );
-        return data[ size - 1 ];
-    }
-    else if( p->is_static )
-    {
-        uz_t size = 0;
-        u0_t* data = bcore_array_p_get_d_data_size( p, o, &size );
-        return ( x_inst* )( data + p->item_p->size * ( size - 1 ) );
-    }
-    else
-    {
-        return bcore_array_p_get_last( p, ( bcore_array* )o ).o;
-    }
+        if( p->item_p )
+        {
+            bcore_array_p_push( p, ( bcore_array* )o, sr_pwc( p->item_p, v ) );
+        }
+        else
+        {
+            bcore_array_p_push( p, ( bcore_array* )o, sr_awc( v ) );
+        }
+    
+        if( p->is_of_links )
+        {
+            uz_t size = 0;
+            x_inst** data = bcore_array_p_get_d_data_size( p, o, &size );
+            return data[ size - 1 ];
+        }
+        else if( p->is_static )
+        {
+            uz_t size = 0;
+            u0_t* data = bcore_array_p_get_d_data_size( p, o, &size );
+            return ( x_inst* )( data + p->item_p->size * ( size - 1 ) );
+        }
+        else
+        {
+            return bcore_array_p_get_last( p, ( bcore_array* )o ).o;
+        }
 }
 
 x_inst* x_array_t_push_t( x_array* o, tp_t t, tp_t val_type )
 {
-    // bcore_x_array.h:202:17
+    // bcore_x_array.h:209:1
     
-    const bcore_array_s* p = bcore_array_s_get_typed( t );
-    bcore_array_p_push( p, ( bcore_array* )o, sr_t_create( val_type ) );
     
-    if( p->is_of_links )
-    {
-        uz_t size = 0;
-        x_inst** data = bcore_array_p_get_d_data_size( p, o, &size );
-        return data[ size - 1 ];
-    }
-    else if( p->is_static )
-    {
-        uz_t size = 0;
-        u0_t* data = bcore_array_p_get_d_data_size( p, o, &size );
-        return ( x_inst* )( data + p->item_p->size * ( size - 1 ) );
-    }
-    else
-    {
-        return bcore_array_p_get_last( p, ( bcore_array* )o ).o;
-    }
+        const bcore_array_s* p = bcore_array_s_get_typed( t );
+        bcore_array_p_push( p, ( bcore_array* )o, sr_t_create( val_type ) );
+    
+        if( p->is_of_links )
+        {
+            uz_t size = 0;
+            x_inst** data = bcore_array_p_get_d_data_size( p, o, &size );
+            return data[ size - 1 ];
+        }
+        else if( p->is_static )
+        {
+            uz_t size = 0;
+            u0_t* data = bcore_array_p_get_d_data_size( p, o, &size );
+            return ( x_inst* )( data + p->item_p->size * ( size - 1 ) );
+        }
+        else
+        {
+            return bcore_array_p_get_last( p, ( bcore_array* )o ).o;
+        }
 }
 
 x_inst* x_array_t_push( x_array* o, tp_t t )
 {
-    // bcore_x_array.h:227:15
+    // bcore_x_array.h:237:1
     
-    const bcore_array_s* p = bcore_array_s_get_typed( t );
     
-    if( p->item_p )
-    {
-        if( p->is_of_links )
+        const bcore_array_s* p = bcore_array_s_get_typed( t );
+    
+        if( p->item_p )
         {
-            tp_t item_type = p->item_p->header.o_type;
-            bcore_array_p_push( p, ( bcore_array* )o, sr_t_create( item_type ) );
+            if( p->is_of_links )
+            {
+                tp_t item_type = p->item_p->header.o_type;
+                bcore_array_p_push( p, ( bcore_array* )o, sr_t_create( item_type ) );
+            }
+            else
+            {
+                bcore_array_p_push( p, ( bcore_array* )o, sr_null() );
+            }
         }
         else
         {
-            bcore_array_p_push( p, ( bcore_array* )o, sr_null() );
+            ERR_fa( "Unspecified push to a dynamically typed array. Use push_d, push_c or push_t." );
         }
-    }
-    else
-    {
-        ERR_fa( "Unspecified push to a dynamically typed array. Use push_d, push_c or push_t." );
-    }
     
-    if( p->is_of_links )
-    {
-        uz_t size = 0;
-        x_inst** data = bcore_array_p_get_d_data_size( p, o, &size );
-        return data[ size - 1 ];
-    }
-    else if( p->is_static )
-    {
-        uz_t size = 0;
-        u0_t* data = bcore_array_p_get_d_data_size( p, o, &size );
-        return ( x_inst* )( data + p->item_p->size * ( size - 1 ) );
-    }
-    else
-    {
-        return bcore_array_p_get_last( p, ( bcore_array* )o ).o;
-    }
+        if( p->is_of_links )
+        {
+            uz_t size = 0;
+            x_inst** data = bcore_array_p_get_d_data_size( p, o, &size );
+            return data[ size - 1 ];
+        }
+        else if( p->is_static )
+        {
+            uz_t size = 0;
+            u0_t* data = bcore_array_p_get_d_data_size( p, o, &size );
+            return ( x_inst* )( data + p->item_p->size * ( size - 1 ) );
+        }
+        else
+        {
+            return bcore_array_p_get_last( p, ( bcore_array* )o ).o;
+        }
 }
 
 x_inst* x_array_t_set_d( x_array* o, tp_t t, sz_t index, x_inst* v )
 {
-    // bcore_x_array.h:268:16
+    // bcore_x_array.h:281:1
     
-    const bcore_array_s* p = bcore_array_s_get_typed( t );
     
-    if( p->item_p )
-    {
-        bcore_array_p_set( p, ( bcore_array* )o, index, sr_psd( p->item_p, v ) );
-    }
-    else
-    {
-        bcore_array_p_set( p, ( bcore_array* )o, index, sr_asd( v ) );
-    }
+        const bcore_array_s* p = bcore_array_s_get_typed( t );
     
-    if( p->is_of_links )
-    {
-        return v;
-    }
-    else if( p->is_static )
-    {
-        u0_t* data = bcore_array_p_get_d_data( p, o );
-        return ( x_inst* )( data + p->item_p->size * index );
-    }
-    else
-    {
-        return bcore_array_p_get( p, ( bcore_array* )o, index ).o;
-    }
+        if( p->item_p )
+        {
+            bcore_array_p_set( p, ( bcore_array* )o, index, sr_psd( p->item_p, v ) );
+        }
+        else
+        {
+            bcore_array_p_set( p, ( bcore_array* )o, index, sr_asd( v ) );
+        }
+    
+        if( p->is_of_links )
+        {
+            return v;
+        }
+        else if( p->is_static )
+        {
+            u0_t* data = bcore_array_p_get_d_data( p, o );
+            return ( x_inst* )( data + p->item_p->size * index );
+        }
+        else
+        {
+            return bcore_array_p_get( p, ( bcore_array* )o, index ).o;
+        }
 }
 
 x_inst* x_array_t_set_c( x_array* o, tp_t t, sz_t index, const x_inst* v )
 {
-    // bcore_x_array.h:298:16
+    // bcore_x_array.h:314:1
     
-    const bcore_array_s* p = bcore_array_s_get_typed( t );
     
-    if( p->item_p )
-    {
-        bcore_array_p_set( p, ( bcore_array* )o, index, sr_pwc( p->item_p, v ) );
-    }
-    else
-    {
-        bcore_array_p_set( p, ( bcore_array* )o, index, sr_awc( v ) );
-    }
+        const bcore_array_s* p = bcore_array_s_get_typed( t );
     
-    if( p->is_of_links )
-    {
-        x_inst** data = bcore_array_p_get_d_data( p, o );
-        return data[ index ];
-    }
-    else if( p->is_static )
-    {
-        u0_t* data = bcore_array_p_get_d_data( p, o );
-        return ( x_inst* )( data + p->item_p->size * index );
-    }
-    else
-    {
-        return bcore_array_p_get( p, ( bcore_array* )o, index ).o;
-    }
+        if( p->item_p )
+        {
+            bcore_array_p_set( p, ( bcore_array* )o, index, sr_pwc( p->item_p, v ) );
+        }
+        else
+        {
+            bcore_array_p_set( p, ( bcore_array* )o, index, sr_awc( v ) );
+        }
+    
+        if( p->is_of_links )
+        {
+            x_inst** data = bcore_array_p_get_d_data( p, o );
+            return data[ index ];
+        }
+        else if( p->is_static )
+        {
+            u0_t* data = bcore_array_p_get_d_data( p, o );
+            return ( x_inst* )( data + p->item_p->size * index );
+        }
+        else
+        {
+            return bcore_array_p_get( p, ( bcore_array* )o, index ).o;
+        }
 }
 
 x_inst* x_array_t_set_t( x_array* o, tp_t t, sz_t index, tp_t val_type )
 {
-    // bcore_x_array.h:329:16
+    // bcore_x_array.h:348:1
     
-    const bcore_array_s* p = bcore_array_s_get_typed( t );
-    bcore_array_p_set( p, ( bcore_array* )o, index, sr_t_create( val_type ) );
     
-    if( p->is_of_links )
-    {
-        x_inst** data = bcore_array_p_get_d_data( p, o );
-        return data[ index ];
-    }
-    else if( p->is_static )
-    {
-        u0_t* data = bcore_array_p_get_d_data( p, o );
-        return ( x_inst* )( data + p->item_p->size * index );
-    }
-    else
-    {
-        return bcore_array_p_get( p, ( bcore_array* )o, index ).o;
-    }
+        const bcore_array_s* p = bcore_array_s_get_typed( t );
+        bcore_array_p_set( p, ( bcore_array* )o, index, sr_t_create( val_type ) );
+    
+        if( p->is_of_links )
+        {
+            x_inst** data = bcore_array_p_get_d_data( p, o );
+            return data[ index ];
+        }
+        else if( p->is_static )
+        {
+            u0_t* data = bcore_array_p_get_d_data( p, o );
+            return ( x_inst* )( data + p->item_p->size * index );
+        }
+        else
+        {
+            return bcore_array_p_get( p, ( bcore_array* )o, index ).o;
+        }
 }
 
 sr_s x_array_t_c_get_sr( const x_array* o, tp_t t, sz_t index )
 {
-    // bcore_x_array.h:353:1
+    // bcore_x_array.h:374:1
     
     sr_s sr = bcore_array_t_get( t, ((const bcore_array*)(o)), index );
     if( sr_s_is_weak(&(sr)) ) sr_s_set_const(&(sr),true );
@@ -2869,7 +2876,7 @@ bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_bl( bcore_huffman_bi
     return  o;
 }
 
-bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_u( bcore_huffman_bit_buffer_s* o, u3_t val, sz_t bits )
+bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_u3( bcore_huffman_bit_buffer_s* o, u3_t val, sz_t bits )
 {
     // bcore_huffman.x:224:1
     
@@ -2877,12 +2884,43 @@ bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_u( bcore_huffman_bit
     return  o;
 }
 
-bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_packed_u( bcore_huffman_bit_buffer_s* o, u3_t val )
+bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_packed_u3( bcore_huffman_bit_buffer_s* o, u3_t val )
 {
     // bcore_huffman.x:232:1
     
     sz_t bits = sz_max( 1, bcore_huffman_min_bits(val, 64 ) );
-    return  ((bcore_huffman_bit_buffer_s*)(bcore_huffman_bit_buffer_s_push_u(((bcore_huffman_bit_buffer_s*)(bcore_huffman_bit_buffer_s_push_u(o,bits - 1, 6 ))),val, bits )));
+    return  ((bcore_huffman_bit_buffer_s*)(bcore_huffman_bit_buffer_s_push_u3(((bcore_huffman_bit_buffer_s*)(bcore_huffman_bit_buffer_s_push_u3(o,bits - 1, 6 ))),val, bits )));
+}
+
+bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_s3( bcore_huffman_bit_buffer_s* o, s3_t val, sz_t bits )
+{
+    // bcore_huffman.x:240:1
+    
+    bcore_huffman_bit_buffer_s_push_bl(o,val >= 0 ? true : false );
+    bcore_huffman_bit_buffer_s_push_u3(o,val >= 0 ? val : -val, bits );
+    return  o;
+}
+
+bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_packed_s3( bcore_huffman_bit_buffer_s* o, s3_t val )
+{
+    // bcore_huffman.x:249:1
+    
+    bcore_huffman_bit_buffer_s_push_bl(o,val >= 0 ? true : false );
+    bcore_huffman_bit_buffer_s_push_packed_u3(o,val >= 0 ? val : -val );
+    return  o;
+}
+
+bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_f3( bcore_huffman_bit_buffer_s* o, f3_t v, sz_t bits )
+{
+    // bcore_huffman.x:258:1
+    
+    ASSERT( bits <= 31 );
+    int int_exp = 0;
+    s3_t man = llrint( frexp( v, (&(int_exp)) ) * ( ( 1 << bits ) - 1 ) );
+    s3_t exp = ((s3_t)(int_exp));
+    bcore_huffman_bit_buffer_s_push_s3(o,man, bits );
+    bcore_huffman_bit_buffer_s_push_packed_s3(o,exp );
+    return  o;
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_bit_buffer_iterator_s )
@@ -2894,7 +2932,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_bit_buffer_iterator_s )
 
 bl_t bcore_huffman_bit_buffer_iterator_s_read_bl( bcore_huffman_bit_buffer_iterator_s* o )
 {
-    // bcore_huffman.x:240:1
+    // bcore_huffman.x:271:1
     
     if( !o->bit_buffer ) ERR_fa( "No buffer assigned. Call setup first." );
     if( o->bit_index >= o->bit_buffer->bits ) ERR_fa( "Reading past end of buffer" );
@@ -2904,20 +2942,48 @@ bl_t bcore_huffman_bit_buffer_iterator_s_read_bl( bcore_huffman_bit_buffer_itera
     return  ( o->bit_buffer->data[ idx ] & m ) ? true : false;
 }
 
-u3_t bcore_huffman_bit_buffer_iterator_s_read_u( bcore_huffman_bit_buffer_iterator_s* o, sz_t bits )
+u3_t bcore_huffman_bit_buffer_iterator_s_read_u3( bcore_huffman_bit_buffer_iterator_s* o, sz_t bits )
 {
-    // bcore_huffman.x:252:1
+    // bcore_huffman.x:283:1
     
     u3_t val = 0;
     for(sz_t i = 0; i < bits; i++ ) val = val | ( ((u3_t)(bcore_huffman_bit_buffer_iterator_s_read_bl(o))) << i );
     return  val;
 }
 
-u3_t bcore_huffman_bit_buffer_iterator_s_read_packed_u( bcore_huffman_bit_buffer_iterator_s* o )
+u3_t bcore_huffman_bit_buffer_iterator_s_read_packed_u3( bcore_huffman_bit_buffer_iterator_s* o )
 {
-    // bcore_huffman.x:261:1
+    // bcore_huffman.x:292:1
     
-    return  bcore_huffman_bit_buffer_iterator_s_read_u(o,bcore_huffman_bit_buffer_iterator_s_read_u(o,6 ) + 1 );
+    return  bcore_huffman_bit_buffer_iterator_s_read_u3(o,bcore_huffman_bit_buffer_iterator_s_read_u3(o,6 ) + 1 );
+}
+
+s3_t bcore_huffman_bit_buffer_iterator_s_read_s3( bcore_huffman_bit_buffer_iterator_s* o, sz_t bits )
+{
+    // bcore_huffman.x:299:1
+    
+    s3_t sign = bcore_huffman_bit_buffer_iterator_s_read_bl(o) ? 1 : -1;
+    s3_t val = bcore_huffman_bit_buffer_iterator_s_read_u3(o,bits );
+    return  val * sign;
+}
+
+u3_t bcore_huffman_bit_buffer_iterator_s_read_packed_s3( bcore_huffman_bit_buffer_iterator_s* o )
+{
+    // bcore_huffman.x:308:1
+    
+    s3_t sign = bcore_huffman_bit_buffer_iterator_s_read_bl(o) ? 1 : -1;
+    s3_t val = bcore_huffman_bit_buffer_iterator_s_read_packed_u3(o);
+    return  val * sign;
+}
+
+f3_t bcore_huffman_bit_buffer_iterator_s_read_f3( bcore_huffman_bit_buffer_iterator_s* o, sz_t bits )
+{
+    // bcore_huffman.x:317:1
+    
+    ASSERT( bits <= 31 );
+    s3_t man = bcore_huffman_bit_buffer_iterator_s_read_s3(o,bits );
+    s3_t exp = bcore_huffman_bit_buffer_iterator_s_read_packed_s3(o);
+    return  ( 1.0 / ( ( 1ull << bits ) - 1 ) ) * man * pow( 2.0, exp );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_hist_s )
@@ -2957,7 +3023,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_count_map_s )
 
 bcore_huffman_count_map_s* bcore_huffman_count_map_s_from_hist( bcore_huffman_count_map_s* o, const bcore_huffman_hist_s* hist )
 {
-    // bcore_huffman.x:319:5
+    // bcore_huffman.x:377:5
     
     x_array_clear(((x_array*)(o)));
     for(sz_t i = 0; i < hist->hmap_tpuz.size; i++ )
@@ -2975,7 +3041,7 @@ bcore_huffman_count_map_s* bcore_huffman_count_map_s_from_hist( bcore_huffman_co
 
 bl_t bcore_huffman_count_map_s_is_sorted( const bcore_huffman_count_map_s* o )
 {
-    // bcore_huffman.x:335:5
+    // bcore_huffman.x:393:5
     
     for(sz_t i = 1; i < o->size; i++ ) if( o->data[ i - 1 ].c > o->data[ i ].c ) return  false;
     return  true;
@@ -2983,7 +3049,7 @@ bl_t bcore_huffman_count_map_s_is_sorted( const bcore_huffman_count_map_s* o )
 
 bl_t bcore_huffman_count_map_s_is_equal( const bcore_huffman_count_map_s* o, const bcore_huffman_count_map_s* b )
 {
-    // bcore_huffman.x:341:5
+    // bcore_huffman.x:399:5
     
     if( o->size != b->size ) return  false;
     for(sz_t i = 1; i < o->size; i++ ) if( !bcore_huffman_count_node_s_is_equal(&(o->data[ i ]),&(b->data[ i ] )) ) return  false;
@@ -2992,18 +3058,18 @@ bl_t bcore_huffman_count_map_s_is_equal( const bcore_huffman_count_map_s* o, con
 
 bcore_huffman_count_map_s* bcore_huffman_count_map_s_encode( bcore_huffman_count_map_s* o, bcore_huffman_bit_buffer_s* out )
 {
-    // bcore_huffman.x:351:1
+    // bcore_huffman.x:409:1
     
     if( !bcore_huffman_count_map_s_is_sorted(o) ) ERR_fa( "Map is not sorted." );
     
-    bcore_huffman_bit_buffer_s_push_packed_u(out,o->size );
+    bcore_huffman_bit_buffer_s_push_packed_u3(out,o->size );
     
     sz_t idx = 0;
     u3_t count = 0;
     
     {
         for(; idx < o->size && o->data[ idx ].c == 1 ; idx++ ) count++;
-        bcore_huffman_bit_buffer_s_push_packed_u(out,count );
+        bcore_huffman_bit_buffer_s_push_packed_u3(out,count );
     }
     
     sz_t bits = 2;
@@ -3013,9 +3079,9 @@ bcore_huffman_count_map_s* bcore_huffman_count_map_s_encode( bcore_huffman_count
         for(sz_t i = idx; i < o->size && bcore_huffman_min_bits(o->data[ i ].c, 64 ) == bits ; i++ ) count++;
         if( count > 0 )
         {
-            bcore_huffman_bit_buffer_s_push_u(out,bits - 1, 6 );
-            bcore_huffman_bit_buffer_s_push_packed_u(out,count );
-            for(sz_t i = 0; i < count; i++ ) bcore_huffman_bit_buffer_s_push_u(out,o->data[ idx + i ].c, bits - 1 );
+            bcore_huffman_bit_buffer_s_push_u3(out,bits - 1, 6 );
+            bcore_huffman_bit_buffer_s_push_packed_u3(out,count );
+            for(sz_t i = 0; i < count; i++ ) bcore_huffman_bit_buffer_s_push_u3(out,o->data[ idx + i ].c, bits - 1 );
         }
         idx += count;
         bits++;
@@ -3023,36 +3089,36 @@ bcore_huffman_count_map_s* bcore_huffman_count_map_s_encode( bcore_huffman_count
     
     sz_t max_bits = 0;
     for(sz_t i = 0; i < o->size; i++ ) max_bits = sz_max( max_bits, bcore_huffman_min_bits(o->data[ i ].v, 32 ) );
-    bcore_huffman_bit_buffer_s_push_u(out,max_bits, 6 );
-    for(sz_t i = 0; i < o->size; i++ ) bcore_huffman_bit_buffer_s_push_u(out,o->data[ i ].v, max_bits );
+    bcore_huffman_bit_buffer_s_push_u3(out,max_bits, 6 );
+    for(sz_t i = 0; i < o->size; i++ ) bcore_huffman_bit_buffer_s_push_u3(out,o->data[ i ].v, max_bits );
     
     return  o;
 }
 
 bcore_huffman_count_map_s* bcore_huffman_count_map_s_decode( bcore_huffman_count_map_s* o, bcore_huffman_bit_buffer_iterator_s* in )
 {
-    // bcore_huffman.x:390:1
+    // bcore_huffman.x:448:1
     
     x_array_clear(((x_array*)(o)));
-    sz_t size = bcore_huffman_bit_buffer_iterator_s_read_packed_u(in);
+    sz_t size = bcore_huffman_bit_buffer_iterator_s_read_packed_u3(in);
     x_array_set_size(((x_array*)(o)),size );
     
     sz_t idx = 0;
-    u3_t count = bcore_huffman_bit_buffer_iterator_s_read_packed_u(in);
+    u3_t count = bcore_huffman_bit_buffer_iterator_s_read_packed_u3(in);
     ASSERT( count <= o->size );
     for(sz_t i = 0; i < count; i++ ) o->data[ idx++ ].c = 1;
     
     while( idx < o->size )
     {
-        sz_t bits_m1 = bcore_huffman_bit_buffer_iterator_s_read_u(in,6 );
-        u3_t count = bcore_huffman_bit_buffer_iterator_s_read_packed_u(in);
+        sz_t bits_m1 = bcore_huffman_bit_buffer_iterator_s_read_u3(in,6 );
+        u3_t count = bcore_huffman_bit_buffer_iterator_s_read_packed_u3(in);
         ASSERT( idx + count <= o->size );
-        for(sz_t i = 0; i < count; i++ ) o->data[ idx + i ].c = bcore_huffman_bit_buffer_iterator_s_read_u(in,bits_m1 ) + ( 1ull << bits_m1 );
+        for(sz_t i = 0; i < count; i++ ) o->data[ idx + i ].c = bcore_huffman_bit_buffer_iterator_s_read_u3(in,bits_m1 ) + ( 1ull << bits_m1 );
         idx += count;
     }
     
-    sz_t max_bits = bcore_huffman_bit_buffer_iterator_s_read_u(in,6 );
-    for(sz_t i = 0; i < o->size; i++ ) o->data[ i ].v = bcore_huffman_bit_buffer_iterator_s_read_u(in,max_bits );
+    sz_t max_bits = bcore_huffman_bit_buffer_iterator_s_read_u3(in,6 );
+    for(sz_t i = 0; i < o->size; i++ ) o->data[ i ].v = bcore_huffman_bit_buffer_iterator_s_read_u3(in,max_bits );
     
     return  o;
 }
@@ -3065,7 +3131,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_tree_s )
 
 bcore_huffman_tree_s* bcore_huffman_tree_s_build( bcore_huffman_tree_s* o, const bcore_huffman_count_map_s* count_map, bcore_huffman_index_s* leaf_index )
 {
-    // bcore_huffman.x:423:5
+    // bcore_huffman.x:481:5
     
     x_array_set_size(((x_array*)(o)),1 );
     for(sz_t i = 0; i < count_map->size; i++ )
@@ -3109,7 +3175,7 @@ sz_t bcore_huffman_min_bits( u3_t v, sz_t n )
 
 void bcore_huffman_selftest( void )
 {
-    // bcore_huffman.x:456:1
+    // bcore_huffman.x:518:1
     BLM_INIT_LEVEL(0);
     bcore_huffman_codec_s codec;BLM_T_INIT_SPUSH(bcore_huffman_codec_s, &codec);;
     
@@ -4156,7 +4222,7 @@ BCORE_DEFINE_OBJECT_INST_P( x_hmap_tp_s )
 
 bcore_arr_tp_s* x_hmap_tp_s_get_key_arr( const x_hmap_tp_s* o, bcore_arr_tp_s* key_arr )
 {
-    // bcore_x_hmap.h:113:5
+    // bcore_x_hmap.h:124:5
     
     bcore_arr_tp_s_set_size(key_arr,0 );
     sz_t size = x_hmap_tp_s_size(o);
@@ -4167,7 +4233,7 @@ bcore_arr_tp_s* x_hmap_tp_s_get_key_arr( const x_hmap_tp_s* o, bcore_arr_tp_s* k
 
 x_array* x_hmap_tp_s_m_get_val_arr( x_hmap_tp_s* o, x_array* val_arr )
 {
-    // bcore_x_hmap.h:122:5
+    // bcore_x_hmap.h:135:5
     
     x_array_set_size(val_arr,0 );
     sz_t size = x_hmap_tp_s_size(o);
@@ -4177,7 +4243,7 @@ x_array* x_hmap_tp_s_m_get_val_arr( x_hmap_tp_s* o, x_array* val_arr )
 
 x_array* x_hmap_tp_s_c_get_val_arr( const x_hmap_tp_s* o, x_array* val_arr )
 {
-    // bcore_x_hmap.h:130:5
+    // bcore_x_hmap.h:143:5
     
     x_array_set_size(val_arr,0 );
     sz_t size = x_hmap_tp_s_size(o);
@@ -4205,11 +4271,12 @@ st_s* x_hmap_tp_st_s_create_st_status( const x_hmap_tp_st_s* o )
 XOILA_DEFINE_SPECT( x_hmap, x_hmap_tp )
 "{"
     "bcore_spect_header_s header;"
+    "feature aware x_hmap_tp : TE = x_hmap_tp_TE_default;"
 "}";
 
 x_hmap_tp_s* x_hmap_tp_m_map_( x_hmap_tp* o )
 {
-    // bcore_x_hmap.h:140:5
+    // bcore_x_hmap.h:153:5
     
     assert( x_stamp_is_aware(((const x_stamp*)(o))) );
     x_inst* map = x_stamp_m_get_i(((x_stamp*)(o)),0 );
@@ -4219,12 +4286,22 @@ x_hmap_tp_s* x_hmap_tp_m_map_( x_hmap_tp* o )
 
 const x_hmap_tp_s* x_hmap_tp_c_map_( const x_hmap_tp* o )
 {
-    // bcore_x_hmap.h:148:5
+    // bcore_x_hmap.h:161:5
     
     assert( x_stamp_is_aware(((const x_stamp*)(o))) );
     const x_inst* map = x_stamp_c_get_i(((const x_stamp*)(o)),0 );
     if( !map || map->_ != TYPEOF_x_hmap_tp_s ) ERR_fa( "First element of '#<sc_t>' must be of type '#<sc_t>'", bnameof( o->_ ), bnameof( ((tp_t)(TYPEOF_x_hmap_tp_s)) ) );
     return  ((const x_hmap_tp_s*)(map));
+}
+
+x_inst* x_hmap_tp_m_getf( x_hmap_tp* o, tp_t key )
+{
+    // bcore_x_hmap.h:186:5
+    
+    x_inst* inst = x_hmap_tp_s_m_get(x_hmap_tp_m_map_(o),key );
+    if( !inst ) inst = x_inst_create(x_hmap_tp_a_TE(o) );
+    if( !inst ) ERR_fa( "'#<sc_t>.m_getf:' stamp must define transient type 'TE'.", bnameof( o->_ ) );
+    return  inst;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -4918,6 +4995,8 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             XOILA_REGISTER_SPECT( x_hmap );
 
             // group: x_hmap_tp
+            BCORE_REGISTER_FEATURE( x_hmap_tp_TE );
+            BCORE_REGISTER_FFUNC( x_hmap_tp_TE, x_hmap_tp_TE_default );
             BCORE_REGISTER_OBJECT( x_hmap_tp_s );
             BCORE_REGISTER_OBJECT( x_hmap_tp_st_s );
             XOILA_REGISTER_SPECT( x_hmap_tp );
@@ -4934,5 +5013,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x05B93516416F578E
-// XOICO_FILE_SIGNATURE 0xFD7D9BDC3199DF36
+// XOICO_BODY_SIGNATURE 0x63519055C074AED6
+// XOICO_FILE_SIGNATURE 0x9B0501799EC6A9D5

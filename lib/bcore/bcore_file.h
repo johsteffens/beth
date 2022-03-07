@@ -47,8 +47,8 @@ stamp :path_s = aware bcore_inst
     hidden st_s => root; // root folder
     hidden st_s => full; // full path: source_folder / rel
     func bcore_via_call . source;
-    func              : . get_sc = { return o->full ? o->full->sc : o->name.sc; };
-    func              : . set_sc =
+    func              : . get_sc { return o->full ? o->full->sc : o->name.sc; };
+    func              : . set_sc
     {
         o.full =< NULL;
         o.name.copy_sc( name );

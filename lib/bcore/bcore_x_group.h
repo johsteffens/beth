@@ -34,7 +34,7 @@ XOILA_DEFINE_GROUP( x_group, x_inst )
  *  Note: Only for 'retrievable' groups.
  *  Returns NULL in case group does not exist or is not retrievable.
  */
-func (bcore_arr_tp_s* get_arr_traitline_stamps( tp_t group )) = { return bcore_xoila_get_arr_traitline_stamps( group ); };
+func (bcore_arr_tp_s* get_arr_traitline_stamps( tp_t group )) { return bcore_xoila_get_arr_traitline_stamps( group ); };
 
 //----------------------------------------------------------------------------------------------------------------------
 

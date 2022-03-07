@@ -90,19 +90,19 @@ feature 'ar' er_t main( m @* o, m :frame_s* frame );
 /** On exit is called when a exit is required (typically when SIGTERM was received)
  *  The implementation should return 'true' when the signal was handled and consumed.
  */
-feature 'ar' bl_t on_termination( mutable @* o, :frame_s* frame ) = { return false; };
+feature 'ar' bl_t on_termination( mutable @* o, :frame_s* frame ) { return false; };
 
 /** On interrupt is called on SIGINT (C-c).
  *  This is typically used to cleanly exit and close the program.
  *  The implementation should return 'true' when the signal was handled and consumed.
  */
-feature 'ar' bl_t on_interrupt( mutable @* o, :frame_s* frame ) = { return false; };
+feature 'ar' bl_t on_interrupt( mutable @* o, :frame_s* frame ) { return false; };
 
 /** On suspend is called on SIGTSTP (C-z).
  *  This is typically used to cleanly leave a long running function for interactive purposes.
  *  The implementation should return 'true' when the signal was handled and consumed.
  */
-feature 'ar' bl_t on_suspend( mutable @* o, :frame_s* frame ) = { return false; };
+feature 'ar' bl_t on_suspend( mutable @* o, :frame_s* frame ) { return false; };
 
 stamp :arr_s = aware x_array
 {
@@ -116,7 +116,7 @@ stamp :set_s = aware :
     private obliv :* current_object;
     bcore_mutex_s mutex_current_object;
 
-    func :.main =
+    func :.main
     {
         foreach( m $* e in o->arr )
         {
@@ -130,19 +130,19 @@ stamp :set_s = aware :
         return 0;
     };
 
-    func :.on_termination =
+    func :.on_termination
     {
         bcore_lock_s^ lock.set( o.mutex_current_object );
         return o.current_object ? o.current_object.on_termination( frame ) : false;
     };
 
-    func :.on_interrupt =
+    func :.on_interrupt
     {
         bcore_lock_s^ lock.set( o.mutex_current_object );
         return o.current_object ? o.current_object.on_interrupt( frame ) : false;
     };
 
-    func :.on_suspend =
+    func :.on_suspend
     {
         bcore_lock_s^ lock.set( o.mutex_current_object );
         return o.current_object ? o.current_object.on_suspend( frame ) : false;

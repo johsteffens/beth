@@ -186,6 +186,8 @@ identifier f3_max;
 identifier f3_sig;
 identifier f3_abs;
 identifier f3_inv;
+identifier f3_rs2;
+identifier f3_rs3;
 identifier f3_t_swap;
 
 identifier f2_lim_min; // minimum normalized representable positive number
@@ -200,6 +202,8 @@ identifier f2_max;
 identifier f2_sig;
 identifier f2_abs;
 identifier f2_inv;
+identifier f2_rs2;
+identifier f2_rs3;
 identifier f2_t_swap;
 
 //----------------------------------------------------------------------------------------------------------------------

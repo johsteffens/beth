@@ -173,7 +173,7 @@ stamp :bit_buffer_iterator_s =
      *    always leave a footprint in bit_buffer.
      */
     func bl_t eos( m@* o ) { = o.bit_index >= o.bit_buffer.bits; }
-};
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

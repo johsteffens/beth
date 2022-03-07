@@ -19,7 +19,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:tp_st_s) (d st_s* create_st_status( c@* o )) =
+func (:tp_st_s) (d st_s* create_st_status( c@* o ))
 {
     d st_s* string = st_s_create();
     string.push_fa( "keys ........... #<sz_t>\n", o.keys() );
@@ -39,7 +39,7 @@ group :tp_test =
 
     //----------------------------------------------------------------------------------------------------------------------
 
-    func (:map_s) (d st_s* create_st_status( c@* o )) =
+    func (:map_s) (d st_s* create_st_status( c@* o ))
     {
         d st_s* string = st_s_create();
         string.push_fa( "keys ........... #<sz_t>\n", o.keys() );
@@ -50,7 +50,7 @@ group :tp_test =
 
     //----------------------------------------------------------------------------------------------------------------------
 
-    func (void selftest()) =
+    func (void selftest())
     {
         m $* log = x_sink_stdout();
         log.push_fa( "#p80'='{== #<sc_t>_selftest }\n", bnameof( :~ ) );

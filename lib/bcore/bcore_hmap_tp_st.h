@@ -47,17 +47,17 @@ signature c st_s* idx_val( c@* o, sz_t idx ); // returns indexed value (idx inde
 stamp :s = aware bcore_inst
 {
     bcore_hmap_tpaw_s map;
-    func :.get     = { st_s** p_st = o.map.get( key ).cast( st_s** ); return p_st ? p_st.1 : NULL; };
-    func :.set_d   = { return o.map.set_d( key, val ).cast( m st_s* ); };
-    func :.set     = { return o.set_d( key, val.clone() ); };
-    func :.set_sc  = { return o.set_d( key, st_s_create_sc( val ) ); };
-    func :.remove  = { o.map.remove( key ); };
-    func :.exists  = { return o.map.exists( key ); };
-    func :.clear   = { o.map.clear(); };
-    func :.keys    = { return o.map.keys(); };
-    func :.size    = { return o.map.size(); };
-    func :.idx_key = { return o.map.idx_key( idx ); };
-    func :.idx_val = { return o.map.idx_val( idx ).cast( st_s* ); };
+    func :.get     { st_s** p_st = o.map.get( key ).cast( st_s** ); return p_st ? p_st.1 : NULL; };
+    func :.set_d   { return o.map.set_d( key, val ).cast( m st_s* ); };
+    func :.set     { return o.set_d( key, val.clone() ); };
+    func :.set_sc  { return o.set_d( key, st_s_create_sc( val ) ); };
+    func :.remove  { o.map.remove( key ); };
+    func :.exists  { return o.map.exists( key ); };
+    func :.clear   { o.map.clear(); };
+    func :.keys    { return o.map.keys(); };
+    func :.size    { return o.map.size(); };
+    func :.idx_key { return o.map.idx_key( idx ); };
+    func :.idx_val { return o.map.idx_val( idx ).cast( st_s* ); };
 };
 
 func (void selftest());

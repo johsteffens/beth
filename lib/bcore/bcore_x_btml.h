@@ -87,37 +87,37 @@ XOILA_DEFINE_GROUP( x_btml, x_inst )
  *     The inclusion can be used at any place where an object is expected
  */
 func (er_t t_from_source( m@* o, tp_t t, m x_source* source ));
-func (er_t   from_source( m@* o,         m x_source* source )) = { return o.t_from_source( o._, source ); };
-func (er_t t_from_file  ( m@* o, tp_t t,   sc_t file )) = { return o.t_from_source( t, x_source_check_create_from_file( file )^ ); };
-func (er_t   from_file  ( m@* o,           sc_t file )) = { return o.t_from_file( o._, file ); };
-func (er_t t_from_st    ( m@* o, tp_t t, c st_s* st  )) = { return o.t_from_source( t, x_source_create_from_st( st )^ ); };
-func (er_t   from_st    ( m@* o,         c st_s* st  )) = { return o.t_from_st( o._, st ); };
-func (er_t t_from_sc    ( m@* o, tp_t t,   sc_t  sc  )) = { return o.t_from_source( t, x_source_create_from_sc( sc )^ ); };
-func (er_t   from_sc    ( m@* o,           sc_t  sc  )) = { return o.t_from_sc( o._, sc ); };
+func (er_t   from_source( m@* o,         m x_source* source )) { return o.t_from_source( o._, source ); };
+func (er_t t_from_file  ( m@* o, tp_t t,   sc_t file )) { return o.t_from_source( t, x_source_check_create_from_file( file )^ ); };
+func (er_t   from_file  ( m@* o,           sc_t file )) { return o.t_from_file( o._, file ); };
+func (er_t t_from_st    ( m@* o, tp_t t, c st_s* st  )) { return o.t_from_source( t, x_source_create_from_st( st )^ ); };
+func (er_t   from_st    ( m@* o,         c st_s* st  )) { return o.t_from_st( o._, st ); };
+func (er_t t_from_sc    ( m@* o, tp_t t,   sc_t  sc  )) { return o.t_from_source( t, x_source_create_from_sc( sc )^ ); };
+func (er_t   from_sc    ( m@* o,           sc_t  sc  )) { return o.t_from_sc( o._, sc ); };
 
 /** Reads only object body from source (excluding <...>, </> enclosures)
  *  Allows recovering from parse errors and conversion errors.
  *  In case of a parse error o might have been changed.
  */
-func (er_t t_body_from_source( m@* o, tp_t t, m x_source* source )) = { return o.t_parse_body( t, source ); };
-func (er_t   body_from_source( m@* o,         m x_source* source )) = { return o.t_body_from_source( o._, source ); };
-func (er_t t_body_from_file  ( m@* o, tp_t t,   sc_t file )) = { return o.t_body_from_source( t, x_source_check_create_from_file( file )^ ); };
-func (er_t   body_from_file  ( m@* o,           sc_t file )) = { return o.t_body_from_file( o._, file ); };
-func (er_t t_body_from_st    ( m@* o, tp_t t, c st_s* st  )) = { return o.t_body_from_source( t, x_source_create_from_st( st )^ ); };
-func (er_t   body_from_st    ( m@* o,         c st_s* st  )) = { return o.t_body_from_st( o._, st ); };
-func (er_t t_body_from_sc    ( m@* o, tp_t t,   sc_t  sc  )) = { return o.t_body_from_source( t, x_source_create_from_sc( sc )^ ); };
-func (er_t   body_from_sc    ( m@* o,           sc_t  sc  )) = { return o.t_body_from_sc( o._, sc ); };
+func (er_t t_body_from_source( m@* o, tp_t t, m x_source* source )) { return o.t_parse_body( t, source ); };
+func (er_t   body_from_source( m@* o,         m x_source* source )) { return o.t_body_from_source( o._, source ); };
+func (er_t t_body_from_file  ( m@* o, tp_t t,   sc_t file )) { return o.t_body_from_source( t, x_source_check_create_from_file( file )^ ); };
+func (er_t   body_from_file  ( m@* o,           sc_t file )) { return o.t_body_from_file( o._, file ); };
+func (er_t t_body_from_st    ( m@* o, tp_t t, c st_s* st  )) { return o.t_body_from_source( t, x_source_create_from_st( st )^ ); };
+func (er_t   body_from_st    ( m@* o,         c st_s* st  )) { return o.t_body_from_st( o._, st ); };
+func (er_t t_body_from_sc    ( m@* o, tp_t t,   sc_t  sc  )) { return o.t_body_from_source( t, x_source_create_from_sc( sc )^ ); };
+func (er_t   body_from_sc    ( m@* o,           sc_t  sc  )) { return o.t_body_from_sc( o._, sc ); };
 
 /** Reads and creates object from source.
  *  Returns NULL in case of parse error (check error-stack).
  *  If type is != NULL Sets type.0 to object's type.
  */
 func (d obliv @* create_from_source_t( m x_source* source, m tp_t* type ));
-func (d obliv @* create_from_st_t( c st_s* st, m tp_t* type )) = { return :create_from_source_t( x_source_create_from_st( st )^, type ); };
-func (d obliv @* create_from_sc_t(   sc_t  sc, m tp_t* type )) = { return :create_from_source_t( x_source_create_from_sc( sc )^, type ); };
+func (d obliv @* create_from_st_t( c st_s* st, m tp_t* type )) { return :create_from_source_t( x_source_create_from_st( st )^, type ); };
+func (d obliv @* create_from_sc_t(   sc_t  sc, m tp_t* type )) { return :create_from_source_t( x_source_create_from_sc( sc )^, type ); };
 func (d aware @* create_from_source( m x_source* source ));
-func (d aware @* create_from_st( c st_s* st )) = { return :create_from_source( x_source_create_from_st( st )^ ); };
-func (d aware @* create_from_sc(   sc_t  sc )) = { return :create_from_source( x_source_create_from_sc( sc )^ ); };
+func (d aware @* create_from_st( c st_s* st )) { return :create_from_source( x_source_create_from_st( st )^ ); };
+func (d aware @* create_from_sc(   sc_t  sc )) { return :create_from_source( x_source_create_from_sc( sc )^ ); };
 
 /// Tests initial source content for validity. Restores index.
 func (bl_t appears_valid( m x_source* source ));
@@ -127,15 +127,15 @@ func (bl_t t_appears_valid( tp_t type, m x_source* source ));
 
 /// Writes object to sink.
 func (void t_to_sink( c@* o, tp_t t, m x_sink* sink ));
-func (void   to_sink( c@* o,         m x_sink* sink )) = { o.t_to_sink( o._, sink ); };
-func (void t_to_file( c@* o, tp_t t, sc_t file )) = { o.t_to_sink( t, bcore_file_open_sink( file )^ ); };
-func (void   to_file( c@* o,         sc_t file )) = { o.t_to_file( o._, file ); };
-func (void t_to_stdout( c@* o, tp_t t )) = { o.t_to_sink( t, x_sink_stdout() ); };
-func (void   to_stdout( c@* o,        )) = { o.t_to_stdout( o._ ); };
+func (void   to_sink( c@* o,         m x_sink* sink )) { o.t_to_sink( o._, sink ); };
+func (void t_to_file( c@* o, tp_t t, sc_t file )) { o.t_to_sink( t, bcore_file_open_sink( file )^ ); };
+func (void   to_file( c@* o,         sc_t file )) { o.t_to_file( o._, file ); };
+func (void t_to_stdout( c@* o, tp_t t )) { o.t_to_sink( t, x_sink_stdout() ); };
+func (void   to_stdout( c@* o,        )) { o.t_to_stdout( o._ ); };
 
 /// runs a transfer-test (write-read-compare) on given object; in case of a mismatch a descriptive error is created.
 func (void t_test_transfer( @* o, tp_t t ));
-func (void   test_transfer( @* o )) = { o.t_test_transfer( o._ ); };
+func (void   test_transfer( @* o )) { o.t_test_transfer( o._ ); };
 
 /** Overload these features for objects that define their own markup syntax.
  *  Note: Always overload both features with compatible syntax to ensure I/O consistency.
@@ -145,7 +145,7 @@ feature 'at' void feature_body_to_sink(     c@* o, m x_sink* sink );
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func t_from_source =
+func t_from_source
 {
     sr_s sr = sr_null();
     :parse_create_object( source, sr.1 );
@@ -156,7 +156,7 @@ func t_from_source =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func create_from_source_t =
+func create_from_source_t
 {
     sr_s sr = sr_null();
     :parse_create_object( source, sr.1 );
@@ -166,7 +166,7 @@ func create_from_source_t =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func create_from_source =
+func create_from_source
 {
     tp_t t = 0;
     d @* o = :create_from_source_t( source, t.1 );
@@ -179,7 +179,7 @@ func create_from_source =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func t_to_sink =
+func t_to_sink
 {
     o.t_translate_recursive( t, 0, true, sink, 0 );
 };
@@ -191,7 +191,7 @@ func t_to_sink =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (sc_t name_of( tp_t type, m st_s* buf )) =
+func (sc_t name_of( tp_t type, m st_s* buf ))
 {
     sc_t n = bcore_name_try_name( type );
     if( n ) return n;
@@ -201,7 +201,7 @@ func (sc_t name_of( tp_t type, m st_s* buf )) =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (tp_t type_of( const st_s* name )) =
+func (tp_t type_of( const st_s* name ))
 {
     tp_t tp = 0;
     if( name.size == 0 )
@@ -221,7 +221,7 @@ func (tp_t type_of( const st_s* name )) =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func appears_valid =
+func appears_valid
 {
     bl_t valid = false;
     sz_t index = source.get_index();
@@ -246,7 +246,7 @@ func appears_valid =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func t_appears_valid =
+func t_appears_valid
 {
     bl_t valid = false;
     sz_t index = source.get_index();
@@ -272,7 +272,7 @@ func t_appears_valid =
 /** On entering obj should be sr_null
  *  In case of error obj need not be discarded
  */
-func (er_t parse_create_object( m x_source* source, m sr_s* obj )) =
+func (er_t parse_create_object( m x_source* source, m sr_s* obj ))
 {
     er_t er = 0;
     m st_s* type_string = st_s!^;
@@ -375,7 +375,7 @@ func (er_t parse_create_object( m x_source* source, m sr_s* obj )) =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (er_t t_parse_body( m @* o, tp_t t, m x_source* source )) =
+func (er_t t_parse_body( m @* o, tp_t t, m x_source* source ))
 {
     m x_stamp* stamp = o;
     if( o.t_defines_feature_body_from_source( t ) )
@@ -481,7 +481,7 @@ func (er_t t_parse_body( m @* o, tp_t t, m x_source* source )) =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (er_t skip_body( m x_source* source )) =
+func (er_t skip_body( m x_source* source ))
 {
     while( !source.eos() )
     {
@@ -506,7 +506,7 @@ func (er_t skip_body( m x_source* source )) =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (void t_translate_recursive( @* o, tp_t t, tp_t name, bl_t shelve, m x_sink* sink, sz_t depth )) =
+func (void t_translate_recursive( @* o, tp_t t, tp_t name, bl_t shelve, m x_sink* sink, sz_t depth ))
 {
     sz_t indent = 4 * depth;
     m st_s* buf = st_s!^;
@@ -595,7 +595,7 @@ func (void t_translate_recursive( @* o, tp_t t, tp_t name, bl_t shelve, m x_sink
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func t_test_transfer =
+func t_test_transfer
 {
     d st_s* string = st_s!;
     o.t_to_sink( t, string );
@@ -627,7 +627,7 @@ func t_test_transfer =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (void selftest()) =
+func (void selftest())
 {
     sr_s^ zoo; zoo = bcore_spect_via_create_zoo( 1000 );
 
