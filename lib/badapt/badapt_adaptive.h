@@ -79,10 +79,10 @@ XOILA_DEFINE_GROUP( badapt_adaptive, bcore_inst )
     // ===== optional features with default implementation =====
 
     /// outputs architecture to text sink (for easy inspection)
-    feature void arc_to_sink( c @* o, m bcore_sink* sink ) = { bcore_txt_ml_a_to_sink( o, sink ); };
+    feature void arc_to_sink( c @* o, m bcore_sink* sink ) { bcore_txt_ml_a_to_sink( o, sink ); };
 
     /// inference for scalar output
-    feature f3_t infer_f3( c @* o, c bmath_vf3_s* in ) =
+    feature f3_t infer_f3( c @* o, c bmath_vf3_s* in )
     {
         bmath_vf3_s v_out;
         f3_t out = 0;
@@ -92,7 +92,7 @@ XOILA_DEFINE_GROUP( badapt_adaptive, bcore_inst )
     };
 
     /// full adaption cycle based on loss function; adapt_loss_f3 returns estimates result
-    feature void adapt_loss( m @* o, c badapt_loss* loss, c bmath_vf3_s* in, c bmath_vf3_s* target, m bmath_vf3_s* out ) =
+    feature void adapt_loss( m @* o, c badapt_loss* loss, c bmath_vf3_s* in, c bmath_vf3_s* target, m bmath_vf3_s* out )
     {
         ASSERT( out != NULL );
         d bmath_vf3_s* grad = bmath_vf3_s_create();
@@ -103,7 +103,7 @@ XOILA_DEFINE_GROUP( badapt_adaptive, bcore_inst )
         bmath_vf3_s_discard( grad );
     };
 
-    feature f3_t adapt_loss_f3( m @* o, c badapt_loss* loss, c bmath_vf3_s* in, f3_t target ) =
+    feature f3_t adapt_loss_f3( m @* o, c badapt_loss* loss, c bmath_vf3_s* in, f3_t target )
     {
         bmath_vf3_s v_target;
         bmath_vf3_s v_out;

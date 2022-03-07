@@ -61,10 +61,10 @@ stamp badapt_mlp_s = aware badapt_adaptive
     // ==============================================================
 
     // === adaptive functions =======================================
-    func ^ . get_in_size      = { return o->arr_layer.arr_size > 0 ? o->arr_layer.arr_data[ 0 ].input_size : 0; };
-    func ^ . get_out_size     = { return o->arr_layer.arr_size > 0 ? o->arr_layer.arr_data[ o->arr_layer.arr_size - 1 ].kernels : 0; };
-    func ^ . get_dynamics_std = { dynamics.copy( o.dynamics ); };
-    func ^ . set_dynamics_std = { o.dynamics.copy( dynamics ); };
+    func ^ . get_in_size      { return o->arr_layer.arr_size > 0 ? o->arr_layer.arr_data[ 0 ].input_size : 0; };
+    func ^ . get_out_size     { return o->arr_layer.arr_size > 0 ? o->arr_layer.arr_data[ o->arr_layer.arr_size - 1 ].kernels : 0; };
+    func ^ . get_dynamics_std { dynamics.copy( o.dynamics ); };
+    func ^ . set_dynamics_std { o.dynamics.copy( dynamics ); };
 
     func ^ . arc_to_sink;
     func ^ . infer;
@@ -93,12 +93,12 @@ stamp badapt_builder_mlp_funnel_s = aware badapt_builder
     // === builder functions =======================================
 
     /// input vector size
-    func ^ . get_in_size = { return o->input_size; };
-    func ^ . set_in_size = { o->input_size = size; };
+    func ^ . get_in_size { return o->input_size; };
+    func ^ . set_in_size { o->input_size = size; };
 
     /// output vector size
-    func ^ . get_out_size = { return o->output_kernels; };
-    func ^ . set_out_size = { o->output_kernels = size; };
+    func ^ . get_out_size { return o->output_kernels; };
+    func ^ . set_out_size { o->output_kernels = size; };
 
     /// builds adaptive ready to be trained; passes ownership
     func ^ . build;
