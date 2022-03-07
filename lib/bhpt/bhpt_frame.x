@@ -52,12 +52,12 @@ group :thread =
         :share_s             -> share;
         aware bhpt_adaptive  => adaptive; // local adaptive
 
-        func bcore_inst_call.down_e = { ASSERT( !o.running ); };
+        func bcore_inst_call.down_e { ASSERT( !o.running ); };
 
         func :.loop;
         func :.loop_enter;
         func :.loop_exit;
-        func :.wait_while_locked = { o.mutex.lock(); o.mutex.unlock(); };
+        func :.wait_while_locked { o.mutex.lock(); o.mutex.unlock(); };
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -84,8 +84,8 @@ group :thread =
         func :.tdown;
         func :.run;
 
-        func bcore_inst_call.down_e = { o.tdown(); };
-        func bcore_inst_call.copy_e = { o.tdown(); };
+        func bcore_inst_call.down_e { o.tdown(); };
+        func bcore_inst_call.copy_e { o.tdown(); };
     };
 };
 
@@ -160,22 +160,22 @@ stamp :s = aware bcore_main
     func (void run_training_single_threaded( m@* o ));
     func (void run_training_multi_threaded( m@* o ));
     func (void run_training( m@* o ));
-    func (bl_t exit_training( m@* o )) = { o.flag_mutex.create_lock()^; return o.flag_suspend_requested || o.flag_interrupt_requested || o.flag_exit_required; };
+    func (bl_t exit_training( m@* o )) { o.flag_mutex.create_lock()^; return o.flag_suspend_requested || o.flag_interrupt_requested || o.flag_exit_required; };
 
     func bcore_main.main;
 
-    func bcore_main.on_suspend     = { o.flag_mutex.create_lock()^; o.flag_suspend_requested   = true; return true; };
-    func bcore_main.on_interrupt   = { o.flag_mutex.create_lock()^; o.flag_interrupt_requested = true; o.flag_exit_required = true; return true; };
-    func bcore_main.on_termination = { o.flag_mutex.create_lock()^; o.flag_exit_required       = true; return true; };
+    func bcore_main.on_suspend     { o.flag_mutex.create_lock()^; o.flag_suspend_requested   = true; return true; };
+    func bcore_main.on_interrupt   { o.flag_mutex.create_lock()^; o.flag_interrupt_requested = true; o.flag_exit_required = true; return true; };
+    func bcore_main.on_termination { o.flag_mutex.create_lock()^; o.flag_exit_required       = true; return true; };
 
-    func (void clear_flags( m @* o )) = { o.flag_mutex.create_lock()^; o.flag_suspend_requested = o.flag_interrupt_requested = o.flag_exit_required = false; };
+    func (void clear_flags( m @* o )) { o.flag_mutex.create_lock()^; o.flag_suspend_requested = o.flag_interrupt_requested = o.flag_exit_required = false; };
 
-    func ( bl_t exit_required( @* o ) ) = { o.cast( m $* ).flag_mutex.create_lock()^; return o.flag_exit_required; };
+    func ( bl_t exit_required( @* o ) ) { o.cast( m $* ).flag_mutex.create_lock()^; return o.flag_exit_required; };
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:thread_item_s) :.loop =
+func (:thread_item_s) :.loop
 {
     m $* probe_item  = bhpt_adaptor_probe_s!^;
     m $* probe_share = bhpt_adaptor_probe_s!^;
@@ -211,7 +211,7 @@ func (:thread_item_s) :.loop =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:thread_item_s) :.loop_enter =
+func (:thread_item_s) :.loop_enter
 {
     o.loop_exit(); // exit if not yet exited
 
@@ -231,7 +231,7 @@ func (:thread_item_s) :.loop_enter =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:thread_item_s) :.loop_exit =
+func (:thread_item_s) :.loop_exit
 {
     if( !o.mutex ) return;
     o.mutex.lock();
@@ -241,7 +241,7 @@ func (:thread_item_s) :.loop_exit =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:thread_base_s) :.tsetup =
+func (:thread_base_s) :.tsetup
 {
     if( o.ads.size > 0 ) o.tdown();
     o.share =< bhpt_frame_thread_share_s!;
@@ -268,7 +268,7 @@ func (:thread_base_s) :.tsetup =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:thread_base_s) :.tdown =
+func (:thread_base_s) :.tdown
 {
     if( !o.share ) return;
     foreach( m $* e in o.ads ) e.loop_exit();
@@ -279,7 +279,7 @@ func (:thread_base_s) :.tdown =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:thread_base_s) :.run =
+func (:thread_base_s) :.run
 {
     o.share.mutex.lock();
     o.share.finished_count = 0;
@@ -308,7 +308,7 @@ func (:thread_base_s) :.run =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:s) (void adapt( m @* o )) =
+func (:s) (void adapt( m @* o ))
 {
     m bhpt_adaptor_adl_s*   adaptor_adl = o.state.adaptor_adl;
     m bhpt_adaptive*        adaptive = o.state.adaptive;
@@ -325,7 +325,7 @@ func (:s) (void adapt( m @* o )) =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:s) (void backup( m@* o )) =
+func (:s) (void backup( m@* o ))
 {
     sc_t path = o.state_path.sc;
 //    if( path[ 0 ] ) o.state.to_file_bin_ml( path );
@@ -341,7 +341,7 @@ stamp :test_result_s = aware bhpt_test_result
     bhvm_stats_s => stats_axon;
     bhvm_stats_s => stats_grad;
 
-    func bhpt_test_result.to_sink =
+    func bhpt_test_result.to_sink
     {
         if( verbosity == 0 ) return o;
         sink.push_fa( "#pl10 {#<sz_t>}: ", o.cycle );
@@ -371,7 +371,7 @@ stamp :test_result_s = aware bhpt_test_result
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:s) (void test( m@* o )) =
+func (:s) (void test( m@* o ))
 {
     :test_result_s^ test_result;
     test_result.cycle = o.state.cycle;
@@ -392,7 +392,7 @@ func (:s) (void test( m@* o )) =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:s) run_training_single_threaded =
+func (:s) run_training_single_threaded
 {
     m bhpt_frame_state_s* state = o.state;
 
@@ -426,7 +426,7 @@ func (:s) run_training_single_threaded =
 // ---------------------------------------------------------------------------------------------------------------------
 
 /// multi threaded run
-func (:s) run_training_multi_threaded =
+func (:s) run_training_multi_threaded
 {
     m bhpt_frame_state_s* state = o.state;
     o.thread_base!.tsetup( o.threads, state.adaptive, o.tutor );
@@ -460,7 +460,7 @@ func (:s) run_training_multi_threaded =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:s) run_training =
+func (:s) run_training
 {
     o.log.push_fa( "Running training... (C-z: interactive mode; C-c: save and quit)\n", o->state->cycle );
     o.clear_flags();
@@ -476,7 +476,7 @@ func (:s) run_training =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:s) (void help_to_sink( m bcore_sink* sink )) =
+func (:s) (void help_to_sink( m bcore_sink* sink ))
 {
     sink.push_fa( "-help:  Prints this help information.\n" );
     sink.push_fa( "-reset: Resets training. Discards previous training results.\n" );
@@ -485,7 +485,7 @@ func (:s) (void help_to_sink( m bcore_sink* sink )) =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:s) bcore_main.main =
+func (:s) bcore_main.main
 {
     o.main_frame = frame;
     m $* control = bcore_shell_control_s!^;
@@ -592,7 +592,7 @@ func (:s) bcore_main.main =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:state_s) (er_t table_to_sink(:state_s* o, bcore_hmap_name_s* hmap_name, x_stamp_path_adl_s* path_adl, m bcore_sink* sink )) =
+func (:state_s) (er_t table_to_sink(:state_s* o, bcore_hmap_name_s* hmap_name, x_stamp_path_adl_s* path_adl, m bcore_sink* sink ))
 {
     foreach( $* path in path_adl )
     {
@@ -638,7 +638,7 @@ func (:state_s) (er_t table_to_sink(:state_s* o, bcore_hmap_name_s* hmap_name, x
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:state_s) (void help_to_sink( m bcore_sink* sink )) =
+func (:state_s) (void help_to_sink( m bcore_sink* sink ))
 {
     sink.push_fa( "-help:  Prints this help information.\n" );
     sink.push_fa( "-csv name1 name2 ... : creates comma-separated-values table of selected numeric array items.\n" );
@@ -649,7 +649,7 @@ func (:state_s) (void help_to_sink( m bcore_sink* sink )) =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:state_s) bcore_main.main =
+func (:state_s) bcore_main.main
 {
     bcore_arr_st_s* args = frame.args;
     if( o.test_result_adl )
@@ -703,14 +703,14 @@ func (:state_s) bcore_main.main =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) bcore_shell.op_group = { return :op~; };
+func (:s) bcore_shell.op_group { return :op~; };
 group :op = retrievable
 {
     stamp :run_s =
     {
-        func bcore_shell_op.key = { return "run"; };
-        func bcore_shell_op.info = { return "starts/continues training; C-z: interactive exit; C-c: terminating exit"; };
-        func bcore_shell_op.run =
+        func bcore_shell_op.key { return "run"; };
+        func bcore_shell_op.info { return "starts/continues training; C-z: interactive exit; C-c: terminating exit"; };
+        func bcore_shell_op.run
         {
             m$* frame = obj.cast( m ::s* );
             frame.run_training();
@@ -720,9 +720,9 @@ group :op = retrievable
 
     stamp :safe_s =
     {
-        func bcore_shell_op.key = { return "safe"; };
-        func bcore_shell_op.info = { return "saves current status"; };
-        func bcore_shell_op.run =
+        func bcore_shell_op.key { return "safe"; };
+        func bcore_shell_op.info { return "saves current status"; };
+        func bcore_shell_op.run
         {
             m$* frame = obj.cast( m ::s* );
             sink.push_fa( "Saving state at cycle #<sz_t>\n", frame.state.cycle );

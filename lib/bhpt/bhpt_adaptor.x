@@ -28,8 +28,8 @@ include "bhvm_std.h";
 stamp :epsilon_s = :
 {
     f3_t epsilon;
-    func :.reset = {};
-    func :.adapt =
+    func :.reset {};
+    func :.adapt
     {
         assert( node.axon.s.is_equal( node.grad.s.1 ) );
         node.grad.v.mul_scl_f3_acc( o.epsilon, node.axon.v.1 );
@@ -42,15 +42,15 @@ stamp :epsilon_s = :
 stamp :reg_l2_s = :
 {
     f3_t lambda;
-    func :.reset = {};
-    func :.adapt = { node.axon.v.mul_scl_f3_acc( -o.lambda, node.axon.v.1 ); };
+    func :.reset {};
+    func :.adapt { node.axon.v.mul_scl_f3_acc( -o.lambda, node.axon.v.1 ); };
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 stamp :zro_grad_s = :
 {
-    func :.adapt = { node.grad.v.zro(); };
+    func :.adapt { node.grad.v.zro(); };
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -59,8 +59,8 @@ stamp :zro_grad_s = :
 stamp :list_s = x_array
 {
     aware : => [];
-    func :.reset = { foreach( m$* e in o ) e.reset(); };
-    func :.adapt = { foreach( m$* e in o ) e.adapt( node ); };
+    func :.reset { foreach( m$* e in o ) e.reset(); };
+    func :.adapt { foreach( m$* e in o ) e.adapt( node ); };
 };
 
 // ---------------------------------------------------------------------------------------------------------------------

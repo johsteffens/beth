@@ -74,12 +74,12 @@ stamp :utf8_s = aware bhpt_tutor
 
     hidden bcore_mutex_s mutex;
 
-    func bhpt_tutor.reset = { o->prsg_priming =< bcore_prsg_lcg_u3_00_s!; };
+    func bhpt_tutor.reset { o->prsg_priming =< bcore_prsg_lcg_u3_00_s!; };
     func bhpt_tutor.create_adaptive;
-    func bhpt_tutor.create_adaptor = { return o.adaptor.clone(); };
+    func bhpt_tutor.create_adaptor { return o.adaptor.clone(); };
     func bhpt_tutor.prime;
     func bhpt_tutor.test;
-    func bhpt_tutor.status_to_sink =
+    func bhpt_tutor.status_to_sink
     {
         if( verbosity > 0 )
         {
@@ -94,7 +94,7 @@ stamp :utf8_s = aware bhpt_tutor
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:utf8_s) bhpt_tutor.create_adaptive =
+func (:utf8_s) bhpt_tutor.create_adaptive
 {
     m$* builder = o.builder.clone()^;
     builder.set_format_en( bhvm_holor_s!^.set_type_vector_vacant( TYPEOF_f3_t, 256 ) );
@@ -104,7 +104,7 @@ func (:utf8_s) bhpt_tutor.create_adaptive =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:utf8_s) (void get_string( m@* o, m bcore_prsg* prsg, sz_t size, m st_s* string )) =
+func (:utf8_s) (void get_string( m@* o, m bcore_prsg* prsg, sz_t size, m st_s* string ))
 {
     if( !o->st )
     {
@@ -145,7 +145,7 @@ func (:utf8_s) (void get_string( m@* o, m bcore_prsg* prsg, sz_t size, m st_s* s
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:utf8_s) (void encode( c bhpt_tutor_language_utf8_s* o, u0_t c, m bhvm_value_s* v )) =
+func (:utf8_s) (void encode( c bhpt_tutor_language_utf8_s* o, u0_t c, m bhvm_value_s* v ))
 {
     assert( v.type == TYPEOF_f3_t );
     m f3_t* v_data = v.data.cast( m f3_t* );
@@ -154,7 +154,7 @@ func (:utf8_s) (void encode( c bhpt_tutor_language_utf8_s* o, u0_t c, m bhvm_val
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:utf8_s) bhpt_tutor.prime =
+func (:utf8_s) bhpt_tutor.prime
 {
     m bhvm_holor_s* hx = adaptive.get_format_en( bhvm_holor_s!^ );
     m bhvm_holor_s* hy = adaptive.get_format_ex( bhvm_holor_s!^ );
@@ -193,7 +193,7 @@ func (:utf8_s) bhpt_tutor.prime =
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:utf8_chatter_s) (void run( c@* o, c :utf8_s* tutor, m bhpt_adaptive* adaptive, m bcore_sink* log )) =
+func (:utf8_chatter_s) (void run( c@* o, c :utf8_s* tutor, m bhpt_adaptive* adaptive, m bcore_sink* log ))
 {
     m bhvm_holor_s* hx = adaptive.get_format_en( bhvm_holor_s!^ ).fit_size().zro();
     m bhvm_holor_s* hy = adaptive.get_format_ex( bhvm_holor_s!^ ).fit_size().zro();
@@ -302,7 +302,7 @@ stamp :test_result_s = aware bhpt_test_result
     sz_t db_size;
     st_s => chatter;
 
-    func bhpt_test_result.to_sink =
+    func bhpt_test_result.to_sink
     {
         if( verbosity > 1 )
         {
@@ -317,7 +317,7 @@ stamp :test_result_s = aware bhpt_test_result
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:utf8_s) bhpt_tutor.test =
+func (:utf8_s) bhpt_tutor.test
 {
     m bhpt_adaptive* adaptive_test = adaptive.clone()^;
     m bhvm_holor_s* hx = adaptive_test.get_format_en( bhvm_holor_s!^ ).fit_size().zro();

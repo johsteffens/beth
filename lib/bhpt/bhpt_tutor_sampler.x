@@ -39,9 +39,9 @@ stamp :sine_random_s = aware :
     f3_t pos_tgt =  0.9;
     f3_t neg_tgt = -0.9;
 
-    func :.get_size_en = { return o.size_en; };
-    func :.get_size_ex = { return 1; };
-    func :.fetch =
+    func :.get_size_en { return o.size_en; };
+    func :.get_size_ex { return 1; };
+    func :.fetch
     {
         ASSERT( en.size == o->size_en );
         ASSERT( ex.size == 1 );
@@ -90,9 +90,9 @@ stamp :binary_add_s = aware :
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
 
-    func :.get_size_en = { return o.bits * 2; };
-    func :.get_size_ex = { return o.bits + 1; };
-    func :.fetch =
+    func :.get_size_en { return o.bits * 2; };
+    func :.get_size_ex { return o.bits + 1; };
+    func :.fetch
     {
         ASSERT( en.size == o.bits * 2 );
         ASSERT( ex.size == o.bits + 1 );
@@ -130,9 +130,9 @@ stamp :binary_mul_s = aware :
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
 
-    func :.get_size_en = { return o.bits * 2; };
-    func :.get_size_ex = { return o.bits * 2; };
-    func :.fetch =
+    func :.get_size_en { return o.bits * 2; };
+    func :.get_size_ex { return o.bits * 2; };
+    func :.fetch
     {
         ASSERT( en.size == o.bits * 2 );
         ASSERT( ex.size == o.bits * 2 );
@@ -170,9 +170,9 @@ stamp :binary_lcg00_s = aware :
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
 
-    func :.get_size_en = { return o.bits; };
-    func :.get_size_ex = { return o.bits; };
-    func :.fetch =
+    func :.get_size_en { return o.bits; };
+    func :.get_size_ex { return o.bits; };
+    func :.fetch
     {
         ASSERT( en.size == o.bits );
         ASSERT( ex.size == o.bits );
@@ -208,9 +208,9 @@ stamp :binary_hash_s = aware :
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
     bl_t reverse = false;
-    func :.get_size_en = { return o.bits; };
-    func :.get_size_ex = { return o.bits; };
-    func :.fetch =
+    func :.get_size_en { return o.bits; };
+    func :.get_size_ex { return o.bits; };
+    func :.fetch
     {
         ASSERT( en.size == o.bits );
         ASSERT( ex.size == o.bits );
@@ -248,9 +248,9 @@ stamp :polynom_s = aware :
     sz_t size_ex = 3;   // polynomial order + 1
     f3_t range   = 1.0; // +/- range of coefficients
     f3_t noise_level = 0;   // additive noise to input signal
-    func :.get_size_en = { return o.size_en; };
-    func :.get_size_ex = { return o.size_ex; };
-    func :.fetch =
+    func :.get_size_en { return o.size_en; };
+    func :.get_size_ex { return o.size_ex; };
+    func :.fetch
     {
         ASSERT( en.size == o.size_en );
         ASSERT( ex.size == o.size_ex );
@@ -295,9 +295,9 @@ stamp bhpt_tutor_sampler_s = aware bhpt_tutor
 
     hidden bcore_mutex_s mutex;
 
-    func bhpt_tutor.reset = {};
+    func bhpt_tutor.reset {};
 
-    func bhpt_tutor.create_adaptive =
+    func bhpt_tutor.create_adaptive
     {
         m bhpt_builder* builder = o.builder.clone()^;
         builder.set_format_en( bhvm_holor_s!^.set_type_vector_vacant( TYPEOF_f3_t, o.sampler.get_size_en() ) );
@@ -305,9 +305,9 @@ stamp bhpt_tutor_sampler_s = aware bhpt_tutor
         return builder.create_adaptive();
     };
 
-    func bhpt_tutor.create_adaptor = { return o.adaptor.clone(); };
+    func bhpt_tutor.create_adaptor { return o.adaptor.clone(); };
     func bhpt_tutor.test;
-    func bhpt_tutor.status_to_sink =
+    func bhpt_tutor.status_to_sink
     {
         if( verbosity > 0 )
         {
@@ -315,7 +315,7 @@ stamp bhpt_tutor_sampler_s = aware bhpt_tutor
         }
     };
 
-    func bhpt_tutor.prime =
+    func bhpt_tutor.prime
     {
         m bhvm_holor_s* hx = adaptive.get_format_en( bhvm_holor_s!^ ).fit_size();
         m bhvm_holor_s* hy = adaptive.get_format_ex( bhvm_holor_s!^ ).fit_size();
@@ -339,13 +339,13 @@ stamp bhpt_tutor_sampler_test_result_s = aware bhpt_test_result
 {
     f3_t error;
     f3_t bias;
-    func (o setup( m@* o, f3_t error, f3_t bias )) = { o.error = error; o.bias = bias; return o; };
-    func bhpt_test_result.to_sink = { sink.pushf( "err: %5.3f, bias: %7.5f", o.error, o.bias ); return o; };
+    func (o setup( m@* o, f3_t error, f3_t bias )) { o.error = error; o.bias = bias; return o; };
+    func bhpt_test_result.to_sink { sink.pushf( "err: %5.3f, bias: %7.5f", o.error, o.bias ); return o; };
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (bhpt_tutor_sampler_s) bhpt_tutor.test =
+func (bhpt_tutor_sampler_s) bhpt_tutor.test
 {
     m bhpt_adaptive* adaptive_test = adaptive.clone()^;
     m bhvm_holor_s* hx = adaptive_test.get_format_en( bhvm_holor_s!^ ).fit_size().zro();

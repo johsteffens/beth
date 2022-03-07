@@ -44,11 +44,11 @@ group :adaptor =
         private bhvm_holor_s* axon;
         private bhvm_holor_s* grad;
 
-        func : .zro_grad  = { o.grad.v.zro(); };
-        func : .acc_grad  =   { assert( o.grad.s.is_equal( src.grad.s.1 ) ); o.grad.v.acc( src.grad.v.1 ); };
-        func : .rebind_axon = { assert( o.axon.s.is_equal( src.axon.s.1 ) ); o.axon.v.weak( src.axon.v.1 ); };
+        func : .zro_grad  { o.grad.v.zro(); };
+        func : .acc_grad  { assert( o.grad.s.is_equal( src.grad.s.1 ) ); o.grad.v.acc( src.grad.v.1 ); };
+        func : .rebind_axon { assert( o.axon.s.is_equal( src.axon.s.1 ) ); o.axon.v.weak( src.axon.v.1 ); };
 
-        func : .acc_min_max =
+        func : .acc_min_max
         {
             if( o.axon )
             {
@@ -57,7 +57,7 @@ group :adaptor =
             }
         };
 
-        func : .acc_stats =
+        func : .acc_stats
         {
             if( axon && o.axon ) o.axon.v.stats_acc( axon );
             if( grad && o.grad ) o.grad.v.stats_acc( grad );
@@ -73,11 +73,11 @@ group :adaptor =
     stamp :probe_s = aware x_array
     {
         :node_s [];
-        func : .acc_min_max =  { foreach( c$* e in o ) e.acc_min_max( min.1, max.1 ); };
-        func : .acc_stats =    { foreach( c$* e in o ) e.acc_stats( axon, grad ); };
-        func : .zro_grad  =    { foreach( m$* e in o ) e.zro_grad(); };
-        func : .acc_grad     = { assert( o.size == src.size ); foreach( m$* e in o ) e.acc_grad( src.[ __i ].1 ); };
-        func : .rebind_axon  = { assert( o.size == src.size ); foreach( m$* e in o ) e.rebind_axon( src.[ __i ].1 ); };
+        func : .acc_min_max { foreach( c$* e in o ) e.acc_min_max( min.1, max.1 ); };
+        func : .acc_stats   { foreach( c$* e in o ) e.acc_stats( axon, grad ); };
+        func : .zro_grad    { foreach( m$* e in o ) e.zro_grad(); };
+        func : .acc_grad    { assert( o.size == src.size ); foreach( m$* e in o ) e.acc_grad( src.[ __i ].1 ); };
+        func : .rebind_axon { assert( o.size == src.size ); foreach( m$* e in o ) e.rebind_axon( src.[ __i ].1 ); };
         wrap x_array.set_size;
     };
 
@@ -107,13 +107,13 @@ group :adaptive =
     feature strict m bhvm_holor_s* get_format_ex( c @* o, m bhvm_holor_s* format );
 
     /// axon-pass
-    feature void axon_pass( m @* o, c bhvm_holor_s* ax_en, m bhvm_holor_s* ax_ex ) = {};
+    feature void axon_pass( m @* o, c bhvm_holor_s* ax_en, m bhvm_holor_s* ax_ex ) {};
 
     /// dendrite-pass (ag_en may be NULL)
-    feature void dendrite_pass( m @* o, c bhvm_holor_s* ag_ex, m bhvm_holor_s* ag_en ) = {};
+    feature void dendrite_pass( m @* o, c bhvm_holor_s* ag_ex, m bhvm_holor_s* ag_en ) {};
 
     /// resets cyclic variables
-    feature void cyclic_reset( m @* o ) = {};
+    feature void cyclic_reset( m @* o ) {};
 
     /** Obtains a holor-probe for accumulative gradients; returns probe
      *  The probe is to be deemed invalid after the adaptive has been modified
@@ -121,7 +121,7 @@ group :adaptive =
      *  rebind_holors must be executed afterwards.
      *  This function should execute fast.
      */
-    feature m ::adaptor_probe_s* get_adaptor_probe( c @* o, m ::adaptor_probe_s* probe ) = { return probe; };
+    feature m ::adaptor_probe_s* get_adaptor_probe( c @* o, m ::adaptor_probe_s* probe ) { return probe; };
 
     /** Explicitly rebinds internal holorbase.
      *  This can be necessary when holors of a probe have been externally reallocated.
@@ -130,10 +130,10 @@ group :adaptive =
     feature void rebind_holors( m @* o );
 
     /// outputs current status information to sink
-    feature void status_to_sink( c @* o, sz_t verbosity, m bcore_sink* sink ) = { if( verbosity > 0 ) bcore_txt_ml_a_to_sink( o, sink ); };
+    feature void status_to_sink( c @* o, sz_t verbosity, m bcore_sink* sink ) { if( verbosity > 0 ) bcore_txt_ml_a_to_sink( o, sink ); };
 
     /// command-line interface TODO: implement bcore_main feature instead
-    feature er_t run_command( m@* o, sc_t command ) =
+    feature er_t run_command( m@* o, sc_t command )
     {
         return bcore_error_push_fa( TYPEOF_general_error, "Command '#<sc_t>': run_command is not implemented in '#<sc_t>'.", command, bnameof( o._ ) );
     };
@@ -168,7 +168,7 @@ group :test_result =
     stamp :adl_s = aware x_array
     {
         aware : => [];
-        func :.to_sink = { foreach( c$* e in o ) { e.to_sink( verbosity, sink ); sink.push_sc( "\n" ); } return o; };
+        func :.to_sink { foreach( c$* e in o ) { e.to_sink( verbosity, sink ); sink.push_sc( "\n" ); } return o; };
     };
 };
 
@@ -187,10 +187,10 @@ group :tutor =
     feature strict d ::adaptor* create_adaptor( c @* o );
 
     /// resets the training session
-    feature void reset( m @* o ) = {};
+    feature void reset( m @* o ) {};
 
     /// primes a specified adaptive (must be concurrent for tutor)
-    feature void prime( m @* o, m ::adaptive* adaptive ) = {};
+    feature void prime( m @* o, m ::adaptive* adaptive ) {};
 
     /** Tests a specified adaptive (must be concurrent for tutor) and creates a test result;
      *  Testing may mutate the tutor if necessary and done in a thread safe manner.
@@ -198,10 +198,10 @@ group :tutor =
      *  of test results.
      *  Simple use: o.test( <adaptive> )^.to_sink( <verbosity>, <sink> );
      */
-    feature d ::test_result* test( m @* o, c ::adaptive* adaptive ) = { return NULL; };
+    feature d ::test_result* test( m @* o, c ::adaptive* adaptive ) { return NULL; };
 
     /// outputs current status information to sink
-    feature void status_to_sink( c @* o, sz_t verbosity, m bcore_sink* sink ) = { if( verbosity > 0 ) o.cast( x_btml* ).to_sink( sink ); };
+    feature void status_to_sink( c @* o, sz_t verbosity, m bcore_sink* sink ) { if( verbosity > 0 ) o.cast( x_btml* ).to_sink( sink ); };
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
