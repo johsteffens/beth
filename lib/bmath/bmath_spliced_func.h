@@ -75,7 +75,7 @@ stamp :c0_s x_array
     func f3_t y_of_1( f3_t x, :xy_s* xy0 ) { = xy0.y; }
 
     // uses splicing via linear interpolation
-    func f3_t y_( @*o, f3_t x, sz_t i1, sz_t i2 ) =
+    func f3_t y_( @*o, f3_t x, sz_t i1, sz_t i2 )
     {
         sz_t d = ( i2 - i1 ) >> 1;
         if( d > 0 )
@@ -140,7 +140,7 @@ stamp :c1_s x_array
     func f3_t y_of_1( f3_t x, :xy_s* xy0 ) { = xy0.y; }
 
     // uses splicing such that the output is continuous in the 0th and 1st derivative (curve has no corners)
-    func f3_t y_( @*o, f3_t x, sz_t i1, sz_t i2 ) =
+    func f3_t y_( @*o, f3_t x, sz_t i1, sz_t i2 )
     {
         sz_t d = ( i2 - i1 ) >> 1;
         if( d > 0 )

@@ -18,12 +18,12 @@
 group :mdct =
 {
     /// multiplies two complex numbers and returns the real part
-    func (:f3_s) (f3_t mul_r( bmath_cf3_s* a, bmath_cf3_s* b )) = { return a.r * b.r - a.i * b.i; };
-    func (:f2_s) (f3_t mul_r( bmath_cf2_s* a, bmath_cf2_s* b )) = { return a.r * b.r - a.i * b.i; };
+    func (:f3_s) (f3_t mul_r( bmath_cf3_s* a, bmath_cf3_s* b )) { return a.r * b.r - a.i * b.i; };
+    func (:f2_s) (f3_t mul_r( bmath_cf2_s* a, bmath_cf2_s* b )) { return a.r * b.r - a.i * b.i; };
 
     //------------------------------------------------------------------------------------------------------------------
 
-    func (:f3_s) ff =
+    func (:f3_s) ff
     {
         ASSERT( ( ( src_size - 1 ) & src_size ) == 0 );
         if( !o.buf_ ) o.buf_ = bmath_vcf3_s!;
@@ -50,7 +50,7 @@ group :mdct =
 
     //------------------------------------------------------------------------------------------------------------------
 
-    func (:f3_s) fi =
+    func (:f3_s) fi
     {
         ASSERT( ( ( dst_size - 1 ) & dst_size ) == 0 );
         if( !o.buf_ ) o.buf_ = bmath_vcf3_s!;
@@ -79,7 +79,7 @@ group :mdct =
 
     //------------------------------------------------------------------------------------------------------------------
 
-    func (:f3_s) ffv =
+    func (:f3_s) ffv
     {
         if( dst != src ) dst.set_size( src.size >> 1 );
         o.ff( src.data, dst.data, src.size );
@@ -89,7 +89,7 @@ group :mdct =
 
     //------------------------------------------------------------------------------------------------------------------
 
-    func (:f3_s) fiv =
+    func (:f3_s) fiv
     {
         dst.set_size( src.size << 1 ); // in case dst == src space is increased but data retained
         o.fi( src.data, dst.data, dst.size );
@@ -98,7 +98,7 @@ group :mdct =
 
     //------------------------------------------------------------------------------------------------------------------
 
-    func (:f3_s) (void selftest()) =
+    func (:f3_s) (void selftest())
     {
         sz_t n = 1024;
         bmath_vf3_s^ v1.set_size( n ).set_random( 1.0, -1.0, 1.0, NULL );
@@ -119,7 +119,7 @@ group :mdct =
 
     //------------------------------------------------------------------------------------------------------------------
 
-    func (:f2_s) ff =
+    func (:f2_s) ff
     {
         ASSERT( ( ( src_size - 1 ) & src_size ) == 0 );
         if( !o.buf_ ) o.buf_ = bmath_vcf2_s!;
@@ -146,7 +146,7 @@ group :mdct =
 
     //------------------------------------------------------------------------------------------------------------------
 
-    func (:f2_s) fi =
+    func (:f2_s) fi
     {
         ASSERT( ( ( dst_size - 1 ) & dst_size ) == 0 );
         if( !o.buf_ ) o.buf_ = bmath_vcf2_s!;
@@ -175,7 +175,7 @@ group :mdct =
 
     //------------------------------------------------------------------------------------------------------------------
 
-    func (:f2_s) ffv =
+    func (:f2_s) ffv
     {
         if( dst != src ) dst.set_size( src.size >> 1 );
         o.ff( src.data, dst.data, src.size );
@@ -185,7 +185,7 @@ group :mdct =
 
     //------------------------------------------------------------------------------------------------------------------
 
-    func (:f2_s) fiv =
+    func (:f2_s) fiv
     {
         dst.set_size( src.size << 1 ); // in case dst == src space is increased but data retained
         o.fi( src.data, dst.data, dst.size );
@@ -194,7 +194,7 @@ group :mdct =
 
     //------------------------------------------------------------------------------------------------------------------
 
-    func (:f2_s) (void selftest()) =
+    func (:f2_s) (void selftest())
     {
         sz_t n = 1024;
         bmath_vf2_s^ v1.set_size( n ).set_random( 1.0, -1.0, 1.0, NULL );
@@ -220,7 +220,7 @@ group :mdct =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (void selftest()) =
+func (void selftest())
 {
     :mdct_f3_s_selftest();
     :mdct_f2_s_selftest();
