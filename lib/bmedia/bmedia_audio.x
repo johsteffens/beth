@@ -336,7 +336,7 @@ func (:sequence_s) wav_from_file
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:sequence_iterator_s) setup =
+func (:sequence_iterator_s) setup
 {
     if( sequence )
     {
@@ -363,7 +363,7 @@ func (:sequence_iterator_s) setup =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:sequence_iterator_s) reset =
+func (:sequence_iterator_s) reset
 {
     o.buffer_index = 0;
     o.frame_index = 0;
@@ -374,7 +374,7 @@ func (:sequence_iterator_s) reset =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:sequence_iterator_s) move =
+func (:sequence_iterator_s) move
 {
     sz_t frames_left = diff;
     while( frames_left > 0 )
@@ -432,14 +432,14 @@ func (:sequence_iterator_s) move =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:sequence_iterator_s) go_to =
+func (:sequence_iterator_s) go_to
 {
     = o.move( global_frame_index - o.global_frame_index );
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:sequence_iterator_s) get_frames =
+func (:sequence_iterator_s) get_frames
 {
     sz_t frames_left = frames;
     sz_t data_index = 0;
@@ -479,7 +479,7 @@ func (:sequence_iterator_s) get_frames =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:sequence_iterator_s) get_buffer =
+func (:sequence_iterator_s) get_buffer
 {
     buffer.set_size( frames * o.channels, o.channels );
     = o.get_frames( buffer.data, frames );
@@ -487,7 +487,7 @@ func (:sequence_iterator_s) get_buffer =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:sequence_iterator_s) create_buffer =
+func (:sequence_iterator_s) create_buffer
 {
     d :buffer_s* buffer = :buffer_s!;
     o.get_buffer( buffer, frames );
@@ -501,7 +501,7 @@ func (:sequence_iterator_s) create_buffer =
 //----------------------------------------------------------------------------------------------------------------------
 
 /// setup; sets index to zero
-func (:sequence_indexer_s) setup =
+func (:sequence_indexer_s) setup
 {
     o.sequence = sequence;
     o.channels = sequence.channels;
@@ -515,7 +515,7 @@ func (:sequence_indexer_s) setup =
 //----------------------------------------------------------------------------------------------------------------------
 
 /// reads 'frames' from sequence at global index position. Out-of-range positions are filled with zeros.
-func (:sequence_indexer_s) get_data =
+func (:sequence_indexer_s) get_data
 {
     if( index < 0 )
     {
@@ -546,7 +546,7 @@ func (:sequence_indexer_s) get_data =
 //----------------------------------------------------------------------------------------------------------------------
 
 /// sets 'frames' in sequence at global index position. Out-of-range positions are ignored.
-func (:sequence_indexer_s) set_data =
+func (:sequence_indexer_s) set_data
 {
     if( index < 0 )
     {
@@ -575,7 +575,7 @@ func (:sequence_indexer_s) set_data =
 //----------------------------------------------------------------------------------------------------------------------
 
 /// obtains given number of frames; off-range frames are padded with zeros; allocates buffer
-func (:sequence_indexer_s) get_buffer =
+func (:sequence_indexer_s) get_buffer
 {
     o.get_data( buffer.set_size( frames * o.channels, o.channels ).data, index, frames );
     = buffer;
@@ -584,7 +584,7 @@ func (:sequence_indexer_s) get_buffer =
 //----------------------------------------------------------------------------------------------------------------------
 
 /// obtains given number of frames; off-range frames are padded with zeros; returns buffer of copied data
-func (:sequence_indexer_s) create_buffer =
+func (:sequence_indexer_s) create_buffer
 {
     d$* buffer = :buffer_s!;
     = o.get_buffer( buffer, index, frames );
@@ -593,7 +593,7 @@ func (:sequence_indexer_s) create_buffer =
 //----------------------------------------------------------------------------------------------------------------------
 
 /// obtains given number of frames; off-range frames are padded with zeros; allocates buffer
-func (:sequence_indexer_s) set_from_buffer =
+func (:sequence_indexer_s) set_from_buffer
 {
     if( buffer.size > 0 )
     {

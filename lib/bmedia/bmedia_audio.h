@@ -100,21 +100,21 @@ stamp :buffer_s x_array
         = sum;
     }
 
-    func f3_t sum( @* o ) =
+    func f3_t sum( @* o )
     {
         f3_t sum = 0;
         foreach( $e in o ) sum += e;
         = sum;
     }
 
-    func f3_t max_abs( @* o ) =
+    func f3_t max_abs( @* o )
     {
         f3_t max_abs = 0;
         foreach( $e in o ) max_abs = f3_max( max_abs, f3_abs( e ) );
         = max_abs;
     }
 
-    func void gain( m@* o, f3_t factor ) =
+    func void gain( m@* o, f3_t factor )
     {
         foreach( m$*e in o ) e.0 = f3_min( 32767, f3_max( -32768, e.0 * factor ) );
     }

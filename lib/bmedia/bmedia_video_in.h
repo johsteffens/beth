@@ -207,7 +207,7 @@ stamp :capture_thread_s
         = 0;
     };
 
-    func x_thread.m_thread_func =
+    func x_thread.m_thread_func
     {
         er_t error = o.video.capture_loop( o.capture_feed, o );
         if( error )
@@ -219,7 +219,7 @@ stamp :capture_thread_s
         = NULL;
     };
 
-    func bmedia_video_in.capture_exit =
+    func bmedia_video_in.capture_exit
     {
         o.mutex.lock();
         bl_t exit_loop_ = o.exit_loop_;
@@ -240,7 +240,7 @@ stamp :capture_thread_s
         = capture_loop_error_;
     };
 
-    func bcore_inst_call.down_e = { o.shut_down(); };
+    func bcore_inst_call.down_e { o.shut_down(); };
 }
 
 //----------------------------------------------------------------------------------------------------------------------

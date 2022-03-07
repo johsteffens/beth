@@ -297,7 +297,7 @@ func (:s) stream_cut
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) record =
+func (:s) record
 {
     o.stream_restart();
     o.stream_record( interleaved_samples, frames );

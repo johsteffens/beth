@@ -88,7 +88,7 @@ stamp :shut_down_s
 {
     hidden :s* video;
     func (o set( m@* o, m :s* video )) { o.video = video; = o; };
-    func bcore_inst_call.down_e = { if( o.video ) o.video.shut_down(); };
+    func bcore_inst_call.down_e { if( o.video ) o.video.shut_down(); };
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -46,7 +46,7 @@ stamp :shut_down_s
     private :s* v;
     func void setup( m@* o, m :s* v ) { o.v = v; };
     func void clear( m@* o ) { o.v = NULL; };
-    func bcore_inst_call.down_e = { if( o.v ) o.v.shut_down(); };
+    func bcore_inst_call.down_e { if( o.v ) o.v.shut_down(); };
 }
 
 func (:s) setup
