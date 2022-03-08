@@ -31,12 +31,12 @@ group :ar0 =
 
     /// axon pass --------------------------------------------------------------
 
-    stamp :zro_s { func : .f { bhvm_lop_ar0_zro_s_f( BKNIT_FA1( r->v.type ), r->v.data, r->v.size ); }; };
-    stamp :one_s { func : .f { bhvm_lop_ar0_one_s_f( BKNIT_FA1( r->v.type ), r->v.data, r->v.size ); }; };
+    stamp :zro_s func :.f bhvm_lop_ar0_zro_s_f( BKNIT_FA1( r->v.type ), r->v.data, r->v.size );
+    stamp :one_s func :.f bhvm_lop_ar0_one_s_f( BKNIT_FA1( r->v.type ), r->v.data, r->v.size );
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :nul_dp_s { func : .f { /* no action */ }; };
+    stamp :nul_dp_s func :.f {}; // no action
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -49,44 +49,44 @@ group :ar1 =
 
     /// axon pass --------------------------------------------------------------
 
-    stamp :l1_s     { func : .f { assert( r.v.size == 1 ); bhvm_lop_ar1_l1_s_f    ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, a.v.size ); }; };
-    stamp :sqrsum_s { func : .f { assert( r.v.size == 1 ); bhvm_lop_ar1_sqrsum_s_f( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, a.v.size ); }; };
+    stamp :l1_s     func :.f { assert( r.v.size == 1 ); bhvm_lop_ar1_l1_s_f    ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, a.v.size ); }
+    stamp :sqrsum_s func :.f { assert( r.v.size == 1 ); bhvm_lop_ar1_sqrsum_s_f( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, a.v.size ); }
 
-    stamp :cpy_s   { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_cpy_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
-    stamp :neg_s   { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_neg_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
-    stamp :floor_s { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_floor_s_f( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
-    stamp :ceil_s  { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_ceil_s_f ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
-    stamp :exp_s   { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_exp_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
-    stamp :log_s   { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_log_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
-    stamp :inv_s   { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_inv_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
-    stamp :abs_s   { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_abs_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
-    stamp :sig_s   { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_sig_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
-    stamp :sqr_s   { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_sqr_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
-    stamp :srt_s   { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_srt_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :cpy_s   func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_cpy_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
+    stamp :neg_s   func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_neg_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
+    stamp :floor_s func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_floor_s_f( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
+    stamp :ceil_s  func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_ceil_s_f ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
+    stamp :exp_s   func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_exp_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
+    stamp :log_s   func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_log_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
+    stamp :inv_s   func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_inv_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
+    stamp :abs_s   func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_abs_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
+    stamp :sig_s   func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_sig_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
+    stamp :sqr_s   func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_sqr_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
+    stamp :srt_s   func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_srt_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
 
-    stamp :sigm_s       { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_sigm_s_f      ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
-    stamp :sigm_hard_s  { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_sigm_hard_s_f ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
-    stamp :sigm_leaky_s { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_sigm_leaky_s_f( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :sigm_s       func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_sigm_s_f      ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
+    stamp :sigm_hard_s  func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_sigm_hard_s_f ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
+    stamp :sigm_leaky_s func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_sigm_leaky_s_f( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
 
-    stamp :tanh_s       { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_tanh_s_f      ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
-    stamp :tanh_hard_s  { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_tanh_hard_s_f ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
-    stamp :tanh_leaky_s { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_tanh_leaky_s_f( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :tanh_s       func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_tanh_s_f      ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
+    stamp :tanh_hard_s  func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_tanh_hard_s_f ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
+    stamp :tanh_leaky_s func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_tanh_leaky_s_f( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
 
-    stamp :softplus_s   { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_softplus_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
-    stamp :relu_s       { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_relu_s_f      ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
-    stamp :relu_leaky_s { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_relu_leaky_s_f( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :softplus_s   func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_softplus_s_f  ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
+    stamp :relu_s       func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_relu_s_f      ( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
+    stamp :relu_leaky_s func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_relu_leaky_s_f( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
 
-    stamp :softmax_s    { func : .f; };
+    stamp :softmax_s    func :.f;
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :neg_dp_zf_s  { func : .f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_accn_s_f( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }; };
+    stamp :neg_dp_zf_s  func :.f { assert( a.v.size == r.v.size ); bhvm_lop_ar1_accn_s_f( BKNIT_FA2( a.v.type, r.v.type ), a.v.data, r.v.data, r.v.size ); }
 
-    stamp :cat_dp_zf_s  { func : .f { a.v.acc_offs( 0, r.v.1, 0, r.v.size ); }; };
-    stamp :cat_dp_zg_s  { func : .f { a.v.acc_offs( a.v.size - r.v.size, r.v.1, 0, r.v.size ); }; };
-    stamp :ccat_dp_zf_s { func : .f { a.v.acc_offs( 0, r.v.1, 0, r.v.size ); }; };
-    stamp :ccat_dp_zg_s { func : .f { a.v.acc_offs( a.v.size - r.v.size, r.v.1, 0, r.v.size ); }; };
-};
+    stamp :cat_dp_zf_s  func :.f { a.v.acc_offs( 0, r.v.1, 0, r.v.size ); }
+    stamp :cat_dp_zg_s  func :.f { a.v.acc_offs( a.v.size - r.v.size, r.v.1, 0, r.v.size ); }
+    stamp :ccat_dp_zf_s func :.f { a.v.acc_offs( 0, r.v.1, 0, r.v.size ); }
+    stamp :ccat_dp_zg_s func :.f { a.v.acc_offs( a.v.size - r.v.size, r.v.1, 0, r.v.size ); }
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -131,15 +131,15 @@ group :ar1_eci =
         #undef BHVM_ACC_CASE
     };
 
-    stamp :cpy_acc_s { func : .f2 { return  a; };          func : .f3 { return  a; };          func : .f = :body_acc; };
-    stamp :neg_acc_s { func : .f2 { return -a; };          func : .f3 { return -a; };          func : .f = :body_acc; };
-    stamp :inv_acc_s { func : .f2 { return f2_inv( a ); }; func : .f3 { return f3_inv( a ); }; func : .f = :body_acc; };
+    stamp :cpy_acc_s { func :.f2 =  a;          func :.f3 =  a;          func :.f :body_acc; }
+    stamp :neg_acc_s { func :.f2 = -a;          func :.f3 = -a;          func :.f :body_acc; }
+    stamp :inv_acc_s { func :.f2 = f2_inv( a ); func :.f3 = f3_inv( a ); func :.f :body_acc; }
 
-    stamp :cpy_s =
+    stamp :cpy_s
     {
-        func : .f2 { return  a; };
-        func : .f3 { return  a; };
-        func : .f
+        func :.f2 =  a;
+        func :.f3 =  a;
+        func :.f
         {
             if( a == r )
             {
@@ -153,14 +153,14 @@ group :ar1_eci =
                 r.v.zro();
                 :cpy_acc_s_f( a, r );
             }
-        };
-    };
+        }
+    }
 
-    stamp :neg_s =
+    stamp :neg_s
     {
-        func : .f2 { return -a; };
-        func : .f3 { return -a; };
-        func : .f
+        func :.f2 = -a;
+        func :.f3 = -a;
+        func :.f
         {
             if( a == r )
             {
@@ -174,14 +174,14 @@ group :ar1_eci =
                 r.v.zro();
                 :neg_acc_s_f( a, r );
             }
-        };
-    };
+        }
+    }
 
-    stamp :inv_s =
+    stamp :inv_s
     {
-        func : .f2 { return f2_inv( a ); };
-        func : .f3 { return f3_inv( a ); };
-        func : .f
+        func :.f2 = f2_inv( a );
+        func :.f3 = f3_inv( a );
+        func :.f
         {
             if( a == r )
             {
@@ -195,84 +195,83 @@ group :ar1_eci =
                 r.v.zro();
                 :inv_acc_s_f( a, r );
             }
-        };
-    };
-};
+        }
+    }
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 /// binary operators
-group :ar2 =
+group :ar2
 {
     extending stump verbatim :_s = aware : {};
     signature void f( c bhvm_holor_s* a, c bhvm_holor_s* b, m bhvm_holor_s* r );
 
     /// axon pass --------------------------------------------------------------
 
-    stamp :sub_sqrsum_s { func : .f { BODY_ASSERT_VVS; bhvm_lop_ar2_sub_sqrsum_s_f( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, a.v.size ); }; }; // r = ( a - b )^2
-    stamp :sub_l1_s     { func : .f { BODY_ASSERT_VVS; bhvm_lop_ar2_sub_l1_s_f    ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, a.v.size ); }; }; // r = l1-norm of ( a - b )
+    stamp :sub_sqrsum_s func :.f { BODY_ASSERT_VVS; bhvm_lop_ar2_sub_sqrsum_s_f( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, a.v.size ); } // r = ( a - b )^2
+    stamp :sub_l1_s     func :.f { BODY_ASSERT_VVS; bhvm_lop_ar2_sub_l1_s_f    ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, a.v.size ); } // r = l1-norm of ( a - b )
 
     /// logic ------------------------------------------------------------------
 
-    stamp :equal_s         { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_equal_s_f        ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :unequal_s       { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_unequal_s_f      ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :larger_s        { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_larger_s_f       ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :smaller_s       { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_smaller_s_f      ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :larger_equal_s  { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_larger_equal_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :smaller_equal_s { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_smaller_equal_s_f( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :logic_and_s     { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_logic_and_s_f    ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :logic_or_s      { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_logic_or_s_f     ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
+    stamp :equal_s         func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_equal_s_f        ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :unequal_s       func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_unequal_s_f      ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :larger_s        func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_larger_s_f       ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :smaller_s       func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_smaller_s_f      ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :larger_equal_s  func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_larger_equal_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :smaller_equal_s func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_smaller_equal_s_f( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :logic_and_s     func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_logic_and_s_f    ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :logic_or_s      func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_logic_or_s_f     ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
 
     /// dendrite pass ----------------------------------------------------------
 
-    stamp :abs_dp_zaf_s        { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_abs_dp_zaf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :exp_dp_zyf_s        { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_exp_dp_zyf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :log_dp_zaf_s        { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_log_dp_zaf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :inv_dp_zyf_s        { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_inv_dp_zyf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :sqr_dp_zaf_s        { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_sqr_dp_zaf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :srt_dp_zyf_s        { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_srt_dp_zyf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :sigm_dp_zyf_s       { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_sigm_dp_zyf_s_f( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :sigm_hard_dp_zyf_s  { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_sigm_hard_dp_zyf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :sigm_leaky_dp_zyf_s { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_sigm_leaky_dp_zyf_s_f( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :tanh_dp_zyf_s       { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_tanh_dp_zyf_s_f      ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :tanh_hard_dp_zyf_s  { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_tanh_hard_dp_zyf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :tanh_leaky_dp_zyf_s { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_tanh_leaky_dp_zyf_s_f( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :softplus_dp_zyf_s   { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_softplus_dp_zyf_s_f  ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :relu_dp_zyf_s       { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_relu_dp_zyf_s_f      ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :relu_leaky_dp_zyf_s { func : .f { BODY_ASSERT_VVV; bhvm_lop_ar2_relu_leaky_dp_zyf_s_f( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }; };
-    stamp :softmax_dp_zyf_s    { func : .f; };
+    stamp :abs_dp_zaf_s        func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_abs_dp_zaf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :exp_dp_zyf_s        func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_exp_dp_zyf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :log_dp_zaf_s        func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_log_dp_zaf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :inv_dp_zyf_s        func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_inv_dp_zyf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :sqr_dp_zaf_s        func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_sqr_dp_zaf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :srt_dp_zyf_s        func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_srt_dp_zyf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :sigm_dp_zyf_s       func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_sigm_dp_zyf_s_f( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :sigm_hard_dp_zyf_s  func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_sigm_hard_dp_zyf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :sigm_leaky_dp_zyf_s func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_sigm_leaky_dp_zyf_s_f( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :tanh_dp_zyf_s       func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_tanh_dp_zyf_s_f      ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :tanh_hard_dp_zyf_s  func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_tanh_hard_dp_zyf_s_f ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :tanh_leaky_dp_zyf_s func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_tanh_leaky_dp_zyf_s_f( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :softplus_dp_zyf_s   func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_softplus_dp_zyf_s_f  ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :relu_dp_zyf_s       func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_relu_dp_zyf_s_f      ( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :relu_leaky_dp_zyf_s func :.f { BODY_ASSERT_VVV; bhvm_lop_ar2_relu_leaky_dp_zyf_s_f( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.v.size ); }
+    stamp :softmax_dp_zyf_s    func :.f;
 
     /// mul axon pass ----------------------------------------------------------
+    stamp :mul_mvv_s func :.f { BODY_ASSERT_MVV; bhvm_lop_ar2_mul_mvv_s_f_m( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, a.s.[ 1 ], a.s.[ 0 ] ); }
+    stamp :mul_vmv_s func :.f { BODY_ASSERT_VMV; bhvm_lop_ar2_mul_vmv_s_f_m( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, b.s.[ 1 ], b.s.[ 0 ] ); }
+    stamp :mul_vvm_s func :.f { BODY_ASSERT_VVM; bhvm_lop_ar2_mul_vvm_s_f_m( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.s.[ 1 ], r.s.[ 0 ] ); }
+    stamp :mul_tvv_s func :.f { BODY_ASSERT_TVV; bhvm_lop_ar2_mul_vmv_s_f_m( BKNIT_FA3( b.v.type, a.v.type, r.v.type ), b.v.data, a.v.data, r.v.data, a.s.[ 1 ], a.s.[ 0 ] ); }
+    stamp :mul_vtv_s func :.f { BODY_ASSERT_VTV; bhvm_lop_ar2_mul_mvv_s_f_m( BKNIT_FA3( b.v.type, a.v.type, r.v.type ), b.v.data, a.v.data, r.v.data, b.s.[ 1 ], b.s.[ 0 ] ); }
 
-    stamp :mul_mvv_s { func : .f { BODY_ASSERT_MVV; bhvm_lop_ar2_mul_mvv_s_f_m( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, a.s.[ 1 ], a.s.[ 0 ] ); }; };
-    stamp :mul_vmv_s { func : .f { BODY_ASSERT_VMV; bhvm_lop_ar2_mul_vmv_s_f_m( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, b.s.[ 1 ], b.s.[ 0 ] ); }; };
-    stamp :mul_vvm_s { func : .f { BODY_ASSERT_VVM; bhvm_lop_ar2_mul_vvm_s_f_m( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.s.[ 1 ], r.s.[ 0 ] ); }; };
-    stamp :mul_tvv_s { func : .f { BODY_ASSERT_TVV; bhvm_lop_ar2_mul_vmv_s_f_m( BKNIT_FA3( b.v.type, a.v.type, r.v.type ), b.v.data, a.v.data, r.v.data, a.s.[ 1 ], a.s.[ 0 ] ); }; };
-    stamp :mul_vtv_s { func : .f { BODY_ASSERT_VTV; bhvm_lop_ar2_mul_mvv_s_f_m( BKNIT_FA3( b.v.type, a.v.type, r.v.type ), b.v.data, a.v.data, r.v.data, b.s.[ 1 ], b.s.[ 0 ] ); }; };
-
-    stamp :mul_mmm_s { func : .f; };
-    stamp :mul_mtm_s { func : .f; };
-    stamp :mul_tmm_s { func : .f; };
-    stamp :mul_ttm_s { func : .f; };
+    stamp :mul_mmm_s func :.f;
+    stamp :mul_mtm_s func :.f;
+    stamp :mul_tmm_s func :.f;
+    stamp :mul_ttm_s func :.f;
 
     /// mul accumulate ---------------------------------------------------------
 
-    stamp :mul_acc_mvv_s { func : .f { BODY_ASSERT_MVV; bhvm_lop_ar2_mul_acc_mvv_s_f_m( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, a.s.[ 1 ], a.s.[ 0 ] ); }; };
-    stamp :mul_acc_vmv_s { func : .f { BODY_ASSERT_VMV; bhvm_lop_ar2_mul_acc_vmv_s_f_m( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, b.s.[ 1 ], b.s.[ 0 ] ); }; };
-    stamp :mul_acc_tvv_s { func : .f { BODY_ASSERT_TVV; bhvm_lop_ar2_mul_acc_vmv_s_f_m( BKNIT_FA3( b.v.type, a.v.type, r.v.type ), b.v.data, a.v.data, r.v.data, a.s.[ 1 ], a.s.[ 0 ] ); }; };
-    stamp :mul_acc_vtv_s { func : .f { BODY_ASSERT_VTV; bhvm_lop_ar2_mul_acc_mvv_s_f_m( BKNIT_FA3( b.v.type, a.v.type, r.v.type ), b.v.data, a.v.data, r.v.data, b.s.[ 1 ], b.s.[ 0 ] ); }; };
-    stamp :mul_acc_vvm_s { func : .f { BODY_ASSERT_VVM; bhvm_lop_ar2_mul_acc_vvm_s_f_m( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.s.[ 1 ], r.s.[ 0 ] ); }; };
+    stamp :mul_acc_mvv_s func :.f { BODY_ASSERT_MVV; bhvm_lop_ar2_mul_acc_mvv_s_f_m( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, a.s.[ 1 ], a.s.[ 0 ] ); }
+    stamp :mul_acc_vmv_s func :.f { BODY_ASSERT_VMV; bhvm_lop_ar2_mul_acc_vmv_s_f_m( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, b.s.[ 1 ], b.s.[ 0 ] ); }
+    stamp :mul_acc_tvv_s func :.f { BODY_ASSERT_TVV; bhvm_lop_ar2_mul_acc_vmv_s_f_m( BKNIT_FA3( b.v.type, a.v.type, r.v.type ), b.v.data, a.v.data, r.v.data, a.s.[ 1 ], a.s.[ 0 ] ); }
+    stamp :mul_acc_vtv_s func :.f { BODY_ASSERT_VTV; bhvm_lop_ar2_mul_acc_mvv_s_f_m( BKNIT_FA3( b.v.type, a.v.type, r.v.type ), b.v.data, a.v.data, r.v.data, b.s.[ 1 ], b.s.[ 0 ] ); }
+    stamp :mul_acc_vvm_s func :.f { BODY_ASSERT_VVM; bhvm_lop_ar2_mul_acc_vvm_s_f_m( BKNIT_FA3( a.v.type, b.v.type, r.v.type ), a.v.data, b.v.data, r.v.data, r.s.[ 1 ], r.s.[ 0 ] ); }
 
-    stamp :mul_acc_mmm_s { func : .f; };
-    stamp :mul_acc_mtm_s { func : .f; };
-    stamp :mul_acc_tmm_s { func : .f; };
-    stamp :mul_acc_ttm_s { func : .f; };
+    stamp :mul_acc_mmm_s func :.f;
+    stamp :mul_acc_mtm_s func :.f;
+    stamp :mul_acc_tmm_s func :.f;
+    stamp :mul_acc_ttm_s func :.f;
 
     /// other -----------------------------------------------------------------
 
-    stamp :cat_s  { func : .f { a.cat ( b, r ); }; };
-    stamp :ccat_s { func : .f { a.ccat( b, r ); }; };
-};
+    stamp :cat_s  func :.f a.cat ( b, r );
+    stamp :ccat_s func :.f a.ccat( b, r );
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -363,15 +362,15 @@ group :ar2_eci =
 
     /// axon pass --------------------------------------------------------------
 
-    stamp :add_acc_s { func : .f2 { return a + b; };           func : .f3 { return a + b; };           func : .f = :body_acc; };
-    stamp :sub_acc_s { func : .f2 { return a - b; };           func : .f3 { return a - b; };           func : .f = :body_acc; };
-    stamp :mul_acc_s { func : .f2 { return a * b; };           func : .f3 { return a * b; };           func : .f = :body_acc; };
-    stamp :div_acc_s { func : .f2 { return a * f2_inv( b ); }; func : .f3 { return a * f3_inv( b ); }; func : .f = :body_acc; };
-    stamp :pow_acc_s { func : .f2 { return  f2_pow( a, b ); }; func : .f3 { return  f3_pow( a, b ); }; func : .f = :body_acc; };
+    stamp :add_acc_s { func :.f2 = a + b;           func :.f3 = a + b;           func :.f :body_acc; }
+    stamp :sub_acc_s { func :.f2 = a - b;           func :.f3 = a - b;           func :.f :body_acc; }
+    stamp :mul_acc_s { func :.f2 = a * b;           func :.f3 = a * b;           func :.f :body_acc; }
+    stamp :div_acc_s { func :.f2 = a * f2_inv( b ); func :.f3 = a * f3_inv( b ); func :.f :body_acc; }
+    stamp :pow_acc_s { func :.f2 =  f2_pow( a, b ); func :.f3 =  f3_pow( a, b ); func :.f :body_acc; }
 
-    stamp :add_s =
+    stamp :add_s
     {
-        func : .f
+        func :.f
         {
             if( a == r || b == r )
             {
@@ -385,12 +384,12 @@ group :ar2_eci =
                 r.v.zro();
                 :add_acc_s_f( a, b, r );
             }
-        };
-    };
+        }
+    }
 
-    stamp :sub_s =
+    stamp :sub_s
     {
-        func : .f
+        func :.f
         {
             if( a == r || b == r )
             {
@@ -404,12 +403,12 @@ group :ar2_eci =
                  r.v.zro();
                 :sub_acc_s_f( a, b, r );
             }
-        };
-    };
+        }
+    }
 
-    stamp :mul_s =
+    stamp :mul_s
     {
-        func : .f
+        func :.f
         {
             if( a == r || b == r )
             {
@@ -423,12 +422,12 @@ group :ar2_eci =
                 r.v.zro();
                 :mul_acc_s_f( a, b, r );
             }
-        };
-    };
+        }
+    }
 
-    stamp :div_s =
+    stamp :div_s
     {
-        func : .f
+        func :.f
         {
             if( a == r || b == r )
             {
@@ -442,12 +441,12 @@ group :ar2_eci =
                 r.v.zro();
                 :div_acc_s_f( a, b, r );
             }
-        };
-    };
+        }
+    }
 
-    stamp :pow_s =
+    stamp :pow_s
     {
-        func : .f
+        func :.f
         {
             if( a == r || b == r )
             {
@@ -461,8 +460,8 @@ group :ar2_eci =
                 r.v.zro();
                 :pow_acc_s_f( a, b, r );
             }
-        };
-    };
+        }
+    }
 
     /// logic ------------------------------------------------------------------
 
@@ -470,31 +469,31 @@ group :ar2_eci =
     {
         extending stump verbatim :_s = aware : {};
 
-        body body_equal         { return a == b ? 1 : -1; };
-        body body_unequal       { return a != b ? 1 : -1; };
-        body body_larger        { return a >  b ? 1 : -1; };
-        body body_smaller       { return a <  b ? 1 : -1; };
-        body body_larger_equal  { return a >= b ? 1 : -1; };
-        body body_smaller_equal { return a <= b ? 1 : -1; };
-        body body_and           { return ( ( a > 0 ) && ( b > 0 ) ) ? 1 : -1; };
-        body body_or            { return ( ( a > 0 ) || ( b > 0 ) ) ? 1 : -1; };
+        body body_equal         { = a == b ? 1 : -1; };
+        body body_unequal       { = a != b ? 1 : -1; };
+        body body_larger        { = a >  b ? 1 : -1; };
+        body body_smaller       { = a <  b ? 1 : -1; };
+        body body_larger_equal  { = a >= b ? 1 : -1; };
+        body body_smaller_equal { = a <= b ? 1 : -1; };
+        body body_and           { = ( ( a > 0 ) && ( b > 0 ) ) ? 1 : -1; };
+        body body_or            { = ( ( a > 0 ) || ( b > 0 ) ) ? 1 : -1; };
 
-        stamp :equal_s         { func :: .f2 = :body_equal;         func :: .f3 = :body_equal;         func :: .f = ::body_set; };
-        stamp :unequal_s       { func :: .f2 = :body_unequal;       func :: .f3 = :body_unequal;       func :: .f = ::body_set; };
-        stamp :larger_s        { func :: .f2 = :body_larger;        func :: .f3 = :body_larger;        func :: .f = ::body_set; };
-        stamp :smaller_s       { func :: .f2 = :body_smaller;       func :: .f3 = :body_smaller;       func :: .f = ::body_set; };
-        stamp :larger_equal_s  { func :: .f2 = :body_larger_equal;  func :: .f3 = :body_larger_equal;  func :: .f = ::body_set; };
-        stamp :smaller_equal_s { func :: .f2 = :body_smaller_equal; func :: .f3 = :body_smaller_equal; func :: .f = ::body_set; };
-        stamp :and_s           { func :: .f2 = :body_and;           func :: .f3 = :body_and;           func :: .f = ::body_set; };
-        stamp :or_s            { func :: .f2 = :body_or;            func :: .f3 = :body_or;            func :: .f = ::body_set; };
+        stamp :equal_s         { func ::.f2 :body_equal;         func ::.f3 :body_equal;         func ::.f ::body_set; }
+        stamp :unequal_s       { func ::.f2 :body_unequal;       func ::.f3 :body_unequal;       func ::.f ::body_set; }
+        stamp :larger_s        { func ::.f2 :body_larger;        func ::.f3 :body_larger;        func ::.f ::body_set; }
+        stamp :smaller_s       { func ::.f2 :body_smaller;       func ::.f3 :body_smaller;       func ::.f ::body_set; }
+        stamp :larger_equal_s  { func ::.f2 :body_larger_equal;  func ::.f3 :body_larger_equal;  func ::.f ::body_set; }
+        stamp :smaller_equal_s { func ::.f2 :body_smaller_equal; func ::.f3 :body_smaller_equal; func ::.f ::body_set; }
+        stamp :and_s           { func ::.f2 :body_and;           func ::.f3 :body_and;           func ::.f ::body_set; }
+        stamp :or_s            { func ::.f2 :body_or;            func ::.f3 :body_or;            func ::.f ::body_set; }
     };
 
     /// dendrite pass ----------------------------------------------------------
 
-    body body_iff_dp_b { return ( a > 0 ) ? b : 0; };
-    body body_iff_dp_c { return ( a > 0 ) ? 0 : b; };
-    stamp :iff_dp_b_azg_s { func : .f2 = :body_iff_dp_b; func : .f3 = :body_iff_dp_b; func : .f = :body_acc; };
-    stamp :iff_dp_c_azh_s { func : .f2 = :body_iff_dp_c; func : .f3 = :body_iff_dp_c; func : .f = :body_acc; };
+    body body_iff_dp_b { = ( a > 0 ) ? b : 0; };
+    body body_iff_dp_c { = ( a > 0 ) ? 0 : b; };
+    stamp :iff_dp_b_azg_s { func :.f2 :body_iff_dp_b; func :.f3 :body_iff_dp_b; func :.f :body_acc; }
+    stamp :iff_dp_c_azh_s { func :.f2 :body_iff_dp_c; func :.f3 :body_iff_dp_c; func :.f :body_acc; }
 
 };
 
@@ -623,23 +622,23 @@ group :ar3_eci =
 
     /// logic ------------------------------------------------------------------
 
-    body body_iff  { return ( a > 0 ) ? b : c; };
-    stamp :iff_s     { func : .f2 = :body_iff; func : .f3 = :body_iff; func : .f = :body_set; };
-    stamp :iff_acc_s { func : .f2 = :body_iff; func : .f3 = :body_iff; func : .f = :body_acc; };
+    body body_iff  { = ( a > 0 ) ? b : c; };
+    stamp :iff_s     { func :.f2 :body_iff; func :.f3 :body_iff; func :.f :body_set; }
+    stamp :iff_acc_s { func :.f2 :body_iff; func :.f3 :body_iff; func :.f :body_acc; }
 
     /// dendrite pass ----------------------------------------------------------
 
-    body body_div_dp_zabg_f2 { return -a * b * f2_inv( c * c ); };
-    body body_div_dp_zabg_f3 { return -a * b * f3_inv( c * c ); };
-    stamp :div_dp_zabg_s { func : .f2 = :body_div_dp_zabg_f2; func : .f3 = :body_div_dp_zabg_f3; func : .f = :body_acc; };
+    body body_div_dp_zabg_f2 { = -a * b * f2_inv( c * c ); };
+    body body_div_dp_zabg_f3 { = -a * b * f3_inv( c * c ); };
+    stamp :div_dp_zabg_s { func :.f2 :body_div_dp_zabg_f2; func :.f3 :body_div_dp_zabg_f3; func :.f :body_acc; }
 
-    body body_pow_dp_abzf_f2 { return c * b * f2_pow( a, b - 1 ); };
-    body body_pow_dp_abzf_f3 { return c * b * f3_pow( a, b - 1 ); };
-    stamp :pow_dp_abzf_s { func : .f2 = :body_pow_dp_abzf_f2; func : .f3 = :body_pow_dp_abzf_f3; func : .f = :body_acc; };
+    body body_pow_dp_abzf_f2 { = c * b * f2_pow( a, b - 1 ); };
+    body body_pow_dp_abzf_f3 { = c * b * f3_pow( a, b - 1 ); };
+    stamp :pow_dp_abzf_s { func :.f2 :body_pow_dp_abzf_f2; func :.f3 :body_pow_dp_abzf_f3; func :.f :body_acc; }
 
-    body body_pow_dp_ayzg_f2 { return ( a > 0 ) ? b * c * logf( a ) : 0; };
-    body body_pow_dp_ayzg_f3 { return ( a > 0 ) ? b * c * log ( a ) : 0; };
-    stamp :pow_dp_ayzg_s { func : .f2 = :body_pow_dp_ayzg_f2; func : .f3 = :body_pow_dp_ayzg_f3; func : .f = :body_acc; };
+    body body_pow_dp_ayzg_f2 { = ( a > 0 ) ? b * c * logf( a ) : 0; };
+    body body_pow_dp_ayzg_f3 { = ( a > 0 ) ? b * c * log ( a ) : 0; };
+    stamp :pow_dp_ayzg_s { func :.f2 :body_pow_dp_ayzg_f2; func :.f3 :body_pow_dp_ayzg_f3; func :.f :body_acc; }
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
