@@ -15,11 +15,11 @@
 
 /**********************************************************************************************************************/
 
-group :mdct =
+group :mdct
 {
     /// multiplies two complex numbers and returns the real part
-    func (:f3_s) (f3_t mul_r( bmath_cf3_s* a, bmath_cf3_s* b )) { return a.r * b.r - a.i * b.i; };
-    func (:f2_s) (f3_t mul_r( bmath_cf2_s* a, bmath_cf2_s* b )) { return a.r * b.r - a.i * b.i; };
+    func (:f3_s) f3_t mul_r( bmath_cf3_s* a, bmath_cf3_s* b ) = a.r * b.r - a.i * b.i;
+    func (:f2_s) f3_t mul_r( bmath_cf2_s* a, bmath_cf2_s* b ) = a.r * b.r - a.i * b.i;
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -46,7 +46,7 @@ group :mdct =
         w0.urt( -1 * ( 1 + n ), 8 * n );
         w1.urt( -2 * ( 1 + n ), 8 * n );
         for( sz_t i = 0; i < n; i++ ) { dst[ i ] = o.mul_r( dc2[ i ], w0 ); w1.mul( w0, w0 ); }
-    };
+    }
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -74,8 +74,7 @@ group :mdct =
         w0.urt(  0, 4 * n ).mul_f3( 1.0 / n, w0 );
         w1.urt( -1, 4 * n );
         for( sz_t i = 0; i < dst_size; i++ ) { dst[ i ] = o.mul_r( dc2[ i ], w0 ); w1.mul( w0, w0 ); }
-
-    };
+    }
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -84,8 +83,7 @@ group :mdct =
         if( dst != src ) dst.set_size( src.size >> 1 );
         o.ff( src.data, dst.data, src.size );
         if( dst == src ) dst.set_size( src.size >> 1 );
-        return dst;
-    };
+    }
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -93,12 +91,11 @@ group :mdct =
     {
         dst.set_size( src.size << 1 ); // in case dst == src space is increased but data retained
         o.fi( src.data, dst.data, dst.size );
-        return dst;
-    };
+    }
 
     //------------------------------------------------------------------------------------------------------------------
 
-    func (:f3_s) (void selftest())
+    func (:f3_s) void selftest()
     {
         sz_t n = 1024;
         bmath_vf3_s^ v1.set_size( n ).set_random( 1.0, -1.0, 1.0, NULL );
@@ -115,7 +112,7 @@ group :mdct =
         for( sz_t i = ( n >> 1 ); i < n; i++ ) dev += f3_sqr( ( v1.[ i ] + v1.[ n + ( n >> 1 ) - i - 1 ] ) * 0.5 - v3.[ i ] );
 
         ASSERT( dev < 1E-15 );
-    };
+    }
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -170,8 +167,7 @@ group :mdct =
         w0.urt(  0, 4 * n ).mul_f2( 1.0 / n, w0 );
         w1.urt( -1, 4 * n );
         for( sz_t i = 0; i < dst_size; i++ ) { dst[ i ] = o.mul_r( dc2[ i ], w0 ); w1.mul( w0, w0 ); }
-
-    };
+    }
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -180,8 +176,7 @@ group :mdct =
         if( dst != src ) dst.set_size( src.size >> 1 );
         o.ff( src.data, dst.data, src.size );
         if( dst == src ) dst.set_size( src.size >> 1 );
-        return dst;
-    };
+    }
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -189,12 +184,11 @@ group :mdct =
     {
         dst.set_size( src.size << 1 ); // in case dst == src space is increased but data retained
         o.fi( src.data, dst.data, dst.size );
-        return dst;
-    };
+    }
 
     //------------------------------------------------------------------------------------------------------------------
 
-    func (:f2_s) (void selftest())
+    func (:f2_s) void selftest()
     {
         sz_t n = 1024;
         bmath_vf2_s^ v1.set_size( n ).set_random( 1.0, -1.0, 1.0, NULL );
@@ -211,8 +205,8 @@ group :mdct =
         for( sz_t i = ( n >> 1 ); i < n; i++ ) dev += f2_sqr( ( v1.[ i ] + v1.[ n + ( n >> 1 ) - i - 1 ] ) * 0.5 - v3.[ i ] );
 
         ASSERT( dev < 1E-6 );
-    };
-};
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -220,11 +214,11 @@ group :mdct =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (void selftest())
+func void selftest()
 {
     :mdct_f3_s_selftest();
     :mdct_f2_s_selftest();
-};
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

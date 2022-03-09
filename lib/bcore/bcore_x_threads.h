@@ -37,69 +37,65 @@ forward :mutex_s;
 //----------------------------------------------------------------------------------------------------------------------
 
 // locks a mutex during lifetime
-stamp :lock_s =
+stamp :lock_s
 {
     private :mutex_s * mutex;
 
-    func (o set( m@* o, m :mutex_s* mutex ))
+    func o set( m@* o, m :mutex_s* mutex )
     {
         o.release();
         o.mutex = mutex;
         o.mutex.lock();
-        return o;
-    };
+    }
 
-    func (o release( m@* o ))
+    func o release( m@* o )
     {
         if( o.mutex ) o.mutex.unlock();
         o.mutex = NULL;
-        return o;
-    };
+    }
 
-    func bcore_inst_call.down_e { o.release(); };
-};
+    func bcore_inst_call.down_e o.release();
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
 // unlocks a mutex during lifetime
-stamp :unlock_s =
+stamp :unlock_s
 {
     private :mutex_s * mutex;
 
-    func (o set( m@* o, m :mutex_s* mutex ))
+    func o set( m@* o, m :mutex_s* mutex )
     {
         o.release();
         o.mutex = mutex;
         o.mutex.unlock();
-        return o;
-    };
+    }
 
-    func (o release( m@* o ))
+    func o release( m@* o )
     {
         if( o.mutex ) o.mutex.lock();
         o.mutex = NULL;
-        return o;
-    };
+    }
 
-    func bcore_inst_call.down_e { o.release(); };
-};
+    func bcore_inst_call.down_e o.release();
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp :mutex_s =
+stamp :mutex_s
 {
     private pthread_mutex_t _mutex; // do not access directly
     func bcore_inst_call.init_x;
     func bcore_inst_call.down_e;
-    func (void lock  (m@*o));
-    func (void unlock(m@*o));
-    func (d :lock_s*   create_lock(   m@* o ) ) { return :lock_s!.set( o );   };
-    func (d :unlock_s* create_unlock( m@* o ) ) { return :unlock_s!.set( o ); };
-};
+    func void lock  (m@*o);
+    func void unlock(m@*o);
+    func d :lock_s*   create_lock(   m@* o ) = :lock_s!.set( o );
+    func d :unlock_s* create_unlock( m@* o ) = :unlock_s!.set( o );
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp :condition_s =
+stamp :condition_s
 {
     private pthread_cond_t _cond; // do not access directly
     func bcore_inst_call.init_x;
@@ -111,14 +107,14 @@ stamp :condition_s =
      *  Beware of spurious wakeups: A wakeup may happen spuriously without
      *  actual cause from wake-trigger send to this condition.
      */
-    func (void sleep( m@* o, m x_mutex_s* mutex ));
+    func void sleep( m@* o, m x_mutex_s* mutex );
 
     /// wakes at least one thread if sleeping on this condition
-    func (void wake_one( m@* o ));
+    func void wake_one( m@* o );
 
     /// wakes all threads sleeping on this condition
-    func (void wake_all( m@* o ));
-};
+    func void wake_all( m@* o );
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -127,7 +123,7 @@ stamp :condition_s =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-group :thread =
+group :thread
 {
     /// Overload one of these functions in the thread-functor:
     feature x_inst* m_thread_func( m@* o );
@@ -145,20 +141,20 @@ group :thread =
         /** Calls thread_obj.m_thread_func() or thread_obj.c_thread_func() in a new joinable thread
          *  If o is unjoined, it is joined first.
          */
-        func (void call_m_thread_func( m@* o, m aware :* obj ));
+        func void call_m_thread_func( m@* o, m aware :* obj );
 
         /** Calls thread_obj.c_thread_func() in a new joinable thread
          *  If o is unjoined, it is joined first.
          */
-        func (void call_c_thread_func( m@* o, c aware :* obj ));
+        func void call_c_thread_func( m@* o, c aware :* obj );
 
         /** Waits for func( arg ) to finish and returns its return value (reentrant)
          *  In case the thread has already been joined (or is not joinable), the function
          *  returns NULL immediately.
          */
-        func (x_inst* join( m@* o ));
-    };
-};
+        func x_inst* join( m@* o );
+    }
+}
 
 
 /**********************************************************************************************************************/

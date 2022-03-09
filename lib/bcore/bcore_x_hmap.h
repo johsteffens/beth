@@ -55,7 +55,7 @@ XOILA_DEFINE_GROUP( x_hmap, x_inst )
 /** hashmap mapping tp_t to an aware object
  *  The object must be aware and have bcore_hmap_tpaw as first element.
  */
-group :tp =
+group :tp
 {
     /******************************************************************************************************************/
     /// Interface
@@ -86,7 +86,7 @@ group :tp =
     signature d bcore_arr_tp_s* all_keys( c@* o );
 
     /// This feature is automatically overloaded by stamps defining the transient type identifier 'TE' returning its actual type.
-    feature tp_t TE( @* o ) { = 0; }
+    feature tp_t TE( @* o ) = 0;
 
     /******************************************************************************************************************/
     /** First Element  (tp-map to aware objects)
@@ -97,16 +97,16 @@ group :tp =
         bcore_hmap_tpaw_s map;
         func :.c_get     { c vd_t* e = o.map.get( key ); = e ? e.0.cast( c x_inst* ) : NULL; }
         func :.m_get     { m vd_t* e = o.map.get( key ); = e ? e.0.cast( m x_inst* ) : NULL; }
-        func :.set_c     { = o.map.set_c( key, val ).cast( m x_inst* ); }
-        func :.set_d     { = o.map.set_d( key, val ).cast( m x_inst* ); }
-        func :.remove    { o.map.remove( key ); = o; }
-        func :.exists    { = o.map.exists( key ); }
-        func :.clear     { o.map.clear(); = o; }
-        func :.keys      { = o.map.keys(); }
-        func :.size      { = o.map.size(); }
-        func :.idx_key   { = o.map.idx_key( idx ); }
-        func :.c_idx_val { = o.map.idx_val( idx ).cast( c x_inst* ); }
-        func :.m_idx_val { = o.map.idx_val( idx ).cast( m x_inst* ); }
+        func :.set_c     = o.map.set_c( key, val ).cast( m x_inst* );
+        func :.set_d     = o.map.set_d( key, val ).cast( m x_inst* );
+        func :.remove    o.map.remove( key );
+        func :.exists    = o.map.exists( key );
+        func :.clear     o.map.clear();
+        func :.keys      = o.map.keys();
+        func :.size      = o.map.size();
+        func :.idx_key   = o.map.idx_key( idx );
+        func :.c_idx_val = o.map.idx_val( idx ).cast( c x_inst* );
+        func :.m_idx_val = o.map.idx_val( idx ).cast( m x_inst* );
     }
 
     /******************************************************************************************************************/
@@ -129,7 +129,7 @@ group :tp =
         = key_arr;
     }
 
-    func (:s) :.all_keys { = o.get_key_arr( bcore_arr_tp_s! ); }
+    func (:s) :.all_keys = o.get_key_arr( bcore_arr_tp_s! );
 
     func (:s) :.m_get_val_arr
     {
@@ -165,22 +165,22 @@ group :tp =
         = map.cast(c :s*);
     }
 
-    func c_get  { = o.c_map_().c_get( key ); }
-    func m_get  { = o.m_map_().m_get( key ); }
-    func set_c  { = o.m_map_().set_c( key, val ); }
-    func set_d  { = o.m_map_().set_d( key, val ); }
-    func remove { = o.m_map_().remove( key ); }
-    func exists { = o.c_map_().exists( key ); }
-    func clear  { = o.m_map_().clear(); }
-    func keys   { = o.c_map_().keys(); }
-    func size   { = o.c_map_().size(); }
-    func idx_key   { = o.c_map_().idx_key( idx ); }
-    func c_idx_val { = o.c_map_().c_idx_val( idx ); }
-    func m_idx_val { = o.m_map_().m_idx_val( idx ); }
-    func get_key_arr   { = o.c_map_().get_key_arr( key_arr ); }
-    func m_get_val_arr { = o.m_map_().m_get_val_arr( val_arr ); }
-    func c_get_val_arr { = o.c_map_().c_get_val_arr( val_arr ); }
-    func all_keys { = o.c_map_().all_keys(); }
+    func c_get  = o.c_map_().c_get( key );
+    func m_get  = o.m_map_().m_get( key );
+    func set_c  = o.m_map_().set_c( key, val );
+    func set_d  = o.m_map_().set_d( key, val );
+    func remove = o.m_map_().remove( key );
+    func exists = o.c_map_().exists( key );
+    func clear  = o.m_map_().clear();
+    func keys   = o.c_map_().keys();
+    func size   = o.c_map_().size();
+    func idx_key   = o.c_map_().idx_key( idx );
+    func c_idx_val = o.c_map_().c_idx_val( idx );
+    func m_idx_val = o.m_map_().m_idx_val( idx );
+    func get_key_arr   = o.c_map_().get_key_arr( key_arr );
+    func m_get_val_arr = o.m_map_().m_get_val_arr( val_arr );
+    func c_get_val_arr = o.c_map_().c_get_val_arr( val_arr );
+    func all_keys = o.c_map_().all_keys();
 
     func m_getf
     {

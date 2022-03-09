@@ -19,14 +19,14 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:tp_st_s) (d st_s* create_st_status( c@* o ))
+func (:tp_st_s) d st_s* create_st_status( c@* o )
 {
     d st_s* string = st_s_create();
     string.push_fa( "keys ........... #<sz_t>\n", o.keys() );
     string.push_fa( "nodes .......... #<sz_t>\n", o.size() );
     string.push_fa( "keys/nodes ..... #<f3_t>\n", o.size() > 0 ? ( f3_t )( o.keys() ) / o.size() : 0 );
     return string;
-};
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -39,18 +39,18 @@ group :tp_test =
 
     //----------------------------------------------------------------------------------------------------------------------
 
-    func (:map_s) (d st_s* create_st_status( c@* o ))
+    func (:map_s) d st_s* create_st_status( c@* o )
     {
         d st_s* string = st_s_create();
         string.push_fa( "keys ........... #<sz_t>\n", o.keys() );
         string.push_fa( "nodes .......... #<sz_t>\n", o.size() );
         string.push_fa( "keys/nodes ..... #<f3_t>\n", o.size() > 0 ? ( f3_t )( o.keys() ) / o.size() : 0 );
         return string;
-    };
+    }
 
     //----------------------------------------------------------------------------------------------------------------------
 
-    func (void selftest())
+    func void selftest()
     {
         m $* log = x_sink_stdout();
         log.push_fa( "#p80'='{== #<sc_t>_selftest }\n", bnameof( :~ ) );
@@ -193,8 +193,8 @@ group :tp_test =
         log.push_fa( "(#<f3_t>s)\n", ( f3_t )time/CLOCKS_PER_SEC );
         log.push_st_d( map.create_st_status() );
         log.push_fa( "#r80{=}\n" );
-    };
-};
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

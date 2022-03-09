@@ -132,7 +132,6 @@ stamp :eql_list_s x_array
     {
         splf.clear();
         foreach( $* e in o ) splf.push_xy( f3_log10( e.f ), e.( spl_1khz ) );
-        = splf;
     }
 }
 

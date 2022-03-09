@@ -65,14 +65,13 @@ stamp :c0_s x_array
     {
         ASSERT( o.size == 0 || o.[ o.size - 1 ].x < x );
         o.push()( x, y );
-        = o;
     }
 
     // linear splicing
-    func f3_t y_of_2( f3_t x, :xy_s* xy0, :xy_s* xy1 ) { = xy0.y + ( x - xy0.x ) * ( xy1.y - xy0.y ) / ( xy1.x - xy0.x ); }
+    func f3_t y_of_2( f3_t x, :xy_s* xy0, :xy_s* xy1 ) = xy0.y + ( x - xy0.x ) * ( xy1.y - xy0.y ) / ( xy1.x - xy0.x );
 
     // const
-    func f3_t y_of_1( f3_t x, :xy_s* xy0 ) { = xy0.y; }
+    func f3_t y_of_1( f3_t x, :xy_s* xy0 ) = xy0.y;
 
     // uses splicing via linear interpolation
     func f3_t y_( @*o, f3_t x, sz_t i1, sz_t i2 )
@@ -116,7 +115,6 @@ stamp :c1_s x_array
     {
         ASSERT( o.size == 0 || o.[ o.size - 1 ].x < x );
         o.push()( x, y );
-        = o;
     }
 
     // quadratic splicing
@@ -134,10 +132,10 @@ stamp :c1_s x_array
     }
 
     // linear splicing
-    func f3_t y_of_2( f3_t x, :xy_s* xy0, :xy_s* xy1 ) { = xy0.y + ( x - xy0.x ) * ( xy1.y - xy0.y ) / ( xy1.x - xy0.x ); }
+    func f3_t y_of_2( f3_t x, :xy_s* xy0, :xy_s* xy1 ) = xy0.y + ( x - xy0.x ) * ( xy1.y - xy0.y ) / ( xy1.x - xy0.x );
 
     // const
-    func f3_t y_of_1( f3_t x, :xy_s* xy0 ) { = xy0.y; }
+    func f3_t y_of_1( f3_t x, :xy_s* xy0 ) = xy0.y;
 
     // uses splicing such that the output is continuous in the 0th and 1st derivative (curve has no corners)
     func f3_t y_( @*o, f3_t x, sz_t i1, sz_t i2 )

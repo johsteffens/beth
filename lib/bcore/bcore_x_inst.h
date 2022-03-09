@@ -50,31 +50,31 @@ signature s2_t main( bcore_arr_st_s* args );
 /// existence
 
 // checks existence of type
-func (bl_t exists( tp_t type )) { return bcore_flect_exists( type ); };
+func bl_t exists( tp_t type ) = bcore_flect_exists( type );
 
 /**********************************************************************************************************************/
 /// create/copy/clone/discard
 
-/// func (d obliv x_inst* t_create( tp_t type )) { return bcore_inst_t_create( type ); }; // this is a default function for groups
-    func (d aware x_inst*   create( tp_t type )); // only for aware types (checked at runtime)
+/// func d obliv x_inst* t_create( tp_t type ) = bcore_inst_t_create( type ) // this is a default function for groups
+    func d aware x_inst*   create( tp_t type ); // only for aware types (checked at runtime)
 
-func (o t_copy( m obliv @* o, tp_t t, c@* src )) { bcore_inst_t_copy( t, o.cast( m bcore_inst* ), src ); return o; };
-func (o   copy( m aware @* o,         c@* src )) { bcore_inst_a_copy(    o.cast( m bcore_inst* ), src ); return o; };
+func o t_copy( m obliv @* o, tp_t t, c@* src ) bcore_inst_t_copy( t, o.cast( m bcore_inst* ), src );
+func o   copy( m aware @* o,         c@* src ) bcore_inst_a_copy(    o.cast( m bcore_inst* ), src );
 
-func (o t_copy_typed( m obliv @* o, tp_t t, tp_t type, c obliv @* src )) { bcore_inst_t_copy_typed( t, o.cast( m bcore_inst* ), type, src ); return o; };
-func (o   copy_typed( m aware @* o,         tp_t type, c obliv @* src )) { bcore_inst_a_copy_typed(    o.cast( m bcore_inst* ), type, src ); return o; };
+func o t_copy_typed( m obliv @* o, tp_t t, tp_t type, c obliv @* src ) bcore_inst_t_copy_typed( t, o.cast( m bcore_inst* ), type, src );
+func o   copy_typed( m aware @* o,         tp_t type, c obliv @* src ) bcore_inst_a_copy_typed(    o.cast( m bcore_inst* ), type, src );
 
-func (d (TO) @* t_clone( c obliv (TO) @* o, tp_t t )) { return bcore_inst_t_clone( t, o.cast( bcore_inst* ) ); };
-func (d (TO) @*   clone( c aware (TO) @* o         )) { return bcore_inst_a_clone(    o.cast( bcore_inst* ) ); };
+func d (TO) @* t_clone( c obliv (TO) @* o, tp_t t ) = bcore_inst_t_clone( t, o.cast( bcore_inst* ) );
+func d (TO) @*   clone( c aware (TO) @* o         ) = bcore_inst_a_clone(    o.cast( bcore_inst* ) );
 
-func (void t_discard( d obliv @* o, tp_t t )) { bcore_inst_t_discard( t, o.cast( m bcore_inst* ) ); };
-func (void   discard( d aware @* o         )) { bcore_inst_a_discard(    o.cast( m bcore_inst* ) ); };
+func void t_discard( d obliv @* o, tp_t t ) bcore_inst_t_discard( t, o.cast( m bcore_inst* ) );
+func void   discard( d aware @* o         ) bcore_inst_a_discard(    o.cast( m bcore_inst* ) );
 
 /**********************************************************************************************************************/
 /// ternary branch
 
-func (m (TO) :* ifd( m@* o, bl_t cond, m (TO) :* b )) { return cond ? o : b; };
-func (c (TO) :* ifc( c@* o, bl_t cond, c (TO) :* b )) { return cond ? o : b; };
+func m (TO) :* ifd( m@* o, bl_t cond, m (TO) :* b ) = cond ? o : b;
+func c (TO) :* ifc( c@* o, bl_t cond, c (TO) :* b ) = cond ? o : b;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -89,8 +89,8 @@ func create
     {
         ERR_fa( "Function 'x_inst:create' can only be used for aware types. Use 'x_inst:t_create' instead." );
     }
-    return bcore_inst_t_create( type );
-};
+    = bcore_inst_t_create( type );
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
