@@ -339,7 +339,7 @@ stamp bhpt_tutor_sampler_test_result_s = aware bhpt_test_result
 {
     f3_t error;
     f3_t bias;
-    func (o setup( m@* o, f3_t error, f3_t bias )) { o.error = error; o.bias = bias; return o; };
+    func o setup( m@* o, f3_t error, f3_t bias ) { o.error = error; o.bias = bias; return o; };
     func bhpt_test_result.to_sink { sink.pushf( "err: %5.3f, bias: %7.5f", o.error, o.bias ); return o; };
 };
 

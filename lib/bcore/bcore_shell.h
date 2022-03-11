@@ -59,7 +59,7 @@ group :op =
         m bcore_shell_control_s* control
     );
 
-    func (bl_t key_match( @* o, sc_t key ))
+    func bl_t key_match( @* o, sc_t key )
     {
         st_s^ st_key;
         o.get_key( st_key.1 );
@@ -84,7 +84,7 @@ group :op =
      *  false: No match. Nothing consumed. Go try next command.
      *  true:  Match. Keyword consumed. Continue with 'parse_param'.
      */
-    func (bl_t parse_match( m @* o, m x_source* source ))
+    func bl_t parse_match( m @* o, m x_source* source )
     {
         st_s^ key;
         source.parse_fa( "#=until' '", key.1 );
@@ -98,7 +98,7 @@ group :op =
      *  false: An error occurred. Discard this operation and continue with next command.
      *  true:  Parsing successful. Continue with 'run'
      */
-    func (bl_t parse_param( m @* o, m x_source* source, m bcore_sink* sink ))
+    func bl_t parse_param( m @* o, m x_source* source, m bcore_sink* sink )
     {
         sz_t direct_index = 0;
         source.parse_fa( "#skip' \t'" );
@@ -200,7 +200,7 @@ group :op =
     };
 
     /// Sends a description of operators argument signature to sink.
-    func (void arg_signature_to_sink( m @* o, m bcore_sink* sink ))
+    func void arg_signature_to_sink( m @* o, m bcore_sink* sink )
     {
         m x_stamp* v = o;
         for( sz_t i = 0; i < v.size(); i++ )
@@ -286,7 +286,7 @@ feature void push_op_groups( @* o, m bcore_arr_tp_s* list )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (d bcore_arr_tp_s* get_op_stamps( @* o ) )
+func d bcore_arr_tp_s* get_op_stamps( @* o )
 {
     bcore_arr_tp_s^ op_groups;
     o.push_op_groups( op_groups );
@@ -297,7 +297,7 @@ func (d bcore_arr_tp_s* get_op_stamps( @* o ) )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (void help_to_sink( m @* o, :control_s* control, m bcore_sink* sink ))
+func void help_to_sink( m @* o, :control_s* control, m bcore_sink* sink )
 {
     bcore_arr_tp_s^ op_groups;
     o.push_op_groups( op_groups );

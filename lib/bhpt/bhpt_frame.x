@@ -157,10 +157,10 @@ stamp :s = aware bcore_main
     hidden bl_t flag_interrupt_requested;
     hidden bcore_mutex_s flag_mutex;
 
-    func (void run_training_single_threaded( m@* o ));
-    func (void run_training_multi_threaded( m@* o ));
-    func (void run_training( m@* o ));
-    func (bl_t exit_training( m@* o )) { o.flag_mutex.create_lock()^; return o.flag_suspend_requested || o.flag_interrupt_requested || o.flag_exit_required; };
+    func void run_training_single_threaded( m@* o );
+    func void run_training_multi_threaded( m@* o );
+    func void run_training( m@* o );
+    func bl_t exit_training( m@* o ) { o.flag_mutex.create_lock()^; return o.flag_suspend_requested || o.flag_interrupt_requested || o.flag_exit_required; };
 
     func bcore_main.main;
 
@@ -168,9 +168,9 @@ stamp :s = aware bcore_main
     func bcore_main.on_interrupt   { o.flag_mutex.create_lock()^; o.flag_interrupt_requested = true; o.flag_exit_required = true; return true; };
     func bcore_main.on_termination { o.flag_mutex.create_lock()^; o.flag_exit_required       = true; return true; };
 
-    func (void clear_flags( m @* o )) { o.flag_mutex.create_lock()^; o.flag_suspend_requested = o.flag_interrupt_requested = o.flag_exit_required = false; };
+    func void clear_flags( m @* o ) { o.flag_mutex.create_lock()^; o.flag_suspend_requested = o.flag_interrupt_requested = o.flag_exit_required = false; };
 
-    func ( bl_t exit_required( @* o ) ) { o.cast( m $* ).flag_mutex.create_lock()^; return o.flag_exit_required; };
+    func bl_t exit_required( @* o ) { o.cast( m $* ).flag_mutex.create_lock()^; return o.flag_exit_required; };
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -308,7 +308,7 @@ func (:thread_base_s) :.run
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:s) (void adapt( m @* o ))
+func (:s) void adapt( m @* o )
 {
     m bhpt_adaptor_adl_s*   adaptor_adl = o.state.adaptor_adl;
     m bhpt_adaptive*        adaptive = o.state.adaptive;
@@ -325,7 +325,7 @@ func (:s) (void adapt( m @* o ))
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:s) (void backup( m@* o ))
+func (:s) void backup( m@* o )
 {
     sc_t path = o.state_path.sc;
 //    if( path[ 0 ] ) o.state.to_file_bin_ml( path );
@@ -371,7 +371,7 @@ stamp :test_result_s = aware bhpt_test_result
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:s) (void test( m@* o ))
+func (:s) void test( m@* o )
 {
     :test_result_s^ test_result;
     test_result.cycle = o.state.cycle;
@@ -476,7 +476,7 @@ func (:s) run_training
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:s) (void help_to_sink( m bcore_sink* sink ))
+func (:s) void help_to_sink( m bcore_sink* sink )
 {
     sink.push_fa( "-help:  Prints this help information.\n" );
     sink.push_fa( "-reset: Resets training. Discards previous training results.\n" );
@@ -592,7 +592,7 @@ func (:s) bcore_main.main
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:state_s) (er_t table_to_sink(:state_s* o, bcore_hmap_name_s* hmap_name, x_stamp_path_adl_s* path_adl, m bcore_sink* sink ))
+func (:state_s) er_t table_to_sink(:state_s* o, bcore_hmap_name_s* hmap_name, x_stamp_path_adl_s* path_adl, m bcore_sink* sink )
 {
     foreach( $* path in path_adl )
     {
@@ -638,7 +638,7 @@ func (:state_s) (er_t table_to_sink(:state_s* o, bcore_hmap_name_s* hmap_name, x
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:state_s) (void help_to_sink( m bcore_sink* sink ))
+func (:state_s) void help_to_sink( m bcore_sink* sink )
 {
     sink.push_fa( "-help:  Prints this help information.\n" );
     sink.push_fa( "-csv name1 name2 ... : creates comma-separated-values table of selected numeric array items.\n" );

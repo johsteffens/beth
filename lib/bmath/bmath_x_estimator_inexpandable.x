@@ -34,16 +34,16 @@ stamp bmath_estimator_s =
     bmath_mf3_s yx;  // accumulated yx outer product
 
     /// clears accumulators
-    func (o clear(m @* o ));
+    func o clear(m @* o );
 
     /// digests a weighted data sample
-    func (o digest( m@* o, f3_t weight, bmath_vf3_s* x, bmath_vf3_s* y ));
+    func o digest( m@* o, f3_t weight, bmath_vf3_s* x, bmath_vf3_s* y );
 
     /// re-weights by multiplying weight to all digested weights
-    func (o reweight( m@* o, f3_t weight ));
+    func o reweight( m@* o, f3_t weight );
 
     /// computes final affine matrix (use with bmath_mf3_s_mul_av1)
-    func (mat get_matrix( @* o, m bmath_mf3_s* mat ));
+    func mat get_matrix( @* o, m bmath_mf3_s* mat );
 };
 
 //----------------------------------------------------------------------------------------------------------------------

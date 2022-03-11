@@ -330,11 +330,11 @@ func (:bit_buffer_iterator_s) read_f3
 stamp :hist_s
 {
     bcore_hmap_tpuz_s hmap_tpuz;
-    func (o clear( m@* o )) { o.hmap_tpuz.clear(); = o; };
-    func (o count( m@* o, u2_t val )) { o.hmap_tpuz.fget( o.key( val ), 0 ).0++; = o; };
-    func (uz_t get( @* o, u2_t val )) { uz_t* p = o.hmap_tpuz.get( o.key( val ) ); = p ? p.0 : 0; };
-    func (tp_t key( @* o, u2_t val )) { = val.cast( tp_t ) + 1; };
-    func (u2_t val( @* o, tp_t key )) { = key - 1; };
+    func o clear( m@* o ) { o.hmap_tpuz.clear(); = o; };
+    func o count( m@* o, u2_t val ) { o.hmap_tpuz.fget( o.key( val ), 0 ).0++; = o; };
+    func uz_t get( @* o, u2_t val ) { uz_t* p = o.hmap_tpuz.get( o.key( val ) ); = p ? p.0 : 0; };
+    func tp_t key( @* o, u2_t val ) { = val.cast( tp_t ) + 1; };
+    func u2_t val( @* o, tp_t key ) { = key - 1; };
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -342,10 +342,10 @@ stamp :hist_s
 stamp :index_s
 {
     bcore_hmap_tpuz_s hmap_tpuz;
-    func (tp_t key( @* o, u2_t val )) { = val.cast( tp_t ) + 1; };
-    func (o clear( m@* o )) { o.hmap_tpuz.clear(); = o; };
-    func (o set( m@* o, u2_t val, uz_t index )) { o.hmap_tpuz.set( o.key( val ), index ); = o; };
-    func (uz_t get( @* o, u2_t val )) { uz_t* p = o.hmap_tpuz.get( o.key( val ) ); = p ? p.0 : 0; };
+    func tp_t key( @* o, u2_t val ) { = val.cast( tp_t ) + 1; };
+    func o clear( m@* o ) { o.hmap_tpuz.clear(); = o; };
+    func o set( m@* o, u2_t val, uz_t index ) { o.hmap_tpuz.set( o.key( val ), index ); = o; };
+    func uz_t get( @* o, u2_t val ) { uz_t* p = o.hmap_tpuz.get( o.key( val ) ); = p ? p.0 : 0; };
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -357,8 +357,8 @@ stamp :node_s obliv
     uz_t b0; // 0-branch-index or 0 (for leaf)
     uz_t b1; // 1-branch-index or 0 (for leaf)
     u2_t v;  // value
-    func (bl_t is_leaf( @* o ) ) { = o.b0 == 0; };
-    func (bl_t is_root( @* o ) ) { = o.p  == 0; };
+    func bl_t is_leaf( @* o ) { = o.b0 == 0; };
+    func bl_t is_root( @* o ) { = o.p  == 0; };
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -367,13 +367,13 @@ stamp :count_node_s obliv
 {
     u3_t c;
     u2_t v;
-    func (bl_t is_equal( @*o, @*b )) { = ( o.c == b.c ) && ( o.v == b.v ); };
+    func bl_t is_equal( @*o, @*b ) { = ( o.c == b.c ) && ( o.v == b.v ); };
 }
 
 stamp :count_map_s x_array
 {
     :count_node_s [];
-    func (o from_hist( m@* o, :hist_s* hist ) )
+    func o from_hist( m@* o, :hist_s* hist )
     {
         o.clear();
         for( sz_t i = 0; i < hist.hmap_tpuz.size; i++ )

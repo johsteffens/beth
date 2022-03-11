@@ -78,10 +78,10 @@ stamp :frame_s = aware bcore_inst
     /// object wrapped by this frame
     sr_s object_sr;
 
-    func (er_t exec( m @* o, bcore_arr_st_s* args ));
+    func er_t exec( m @* o, bcore_arr_st_s* args );
 
     /// to be called from main function
-    func (er_t main( mutable bcore_main_frame_s* o, sz_t argc, char** argv ));
+    func er_t main( mutable bcore_main_frame_s* o, sz_t argc, char** argv );
 };
 
 /// If available, this feature is called by function frame_s_main after loading the object.

@@ -1082,72 +1082,72 @@ stamp bmath_mf2_s = bmath_mf
     /******************************************************************************************************************/
     /// Basic matrix operations
 
-    func (void clear( m@* o ));
-    func (void set_size( m@* o, uz_t rows, uz_t cols ));
-    func (void set_random(    m@* o, bl_t hsm, bl_t pdf, sz_t rank_deficit, f2_t density, f2_t min, f2_t max, m bcore_prsg* prsg ));
-    func (void set_random_u3( m@* o, bl_t hsm, bl_t pdf, sz_t rank_deficit, f2_t density, f2_t min, f2_t max, u3_t* p_rval ));
-    func (void set_random_full_rank(    m@* o, bl_t pdf, f2_t eps, m bcore_prsg* prsg ));
-    func (void set_random_full_rank_u3( m@* o, bl_t pdf, f2_t eps, u3_t* p_rval ));
-    func (m@* create_set_size   ( uz_t rows, uz_t cols ));
-    func (m@* create_fill_random( uz_t rows, uz_t cols, f2_t min, f2_t max, u2_t* rval ));
-    func (void set_size_to( @* o, m@* res ));
-    func (bl_t is_equ_size( @* o,  @* op  ));
-    func (bl_t is_square  ( @* o ));
-    func (bl_t is_folded  ( @* o ));
+    func void clear( m@* o );
+    func void set_size( m@* o, uz_t rows, uz_t cols );
+    func void set_random(    m@* o, bl_t hsm, bl_t pdf, sz_t rank_deficit, f2_t density, f2_t min, f2_t max, m bcore_prsg* prsg );
+    func void set_random_u3( m@* o, bl_t hsm, bl_t pdf, sz_t rank_deficit, f2_t density, f2_t min, f2_t max, u3_t* p_rval );
+    func void set_random_full_rank(    m@* o, bl_t pdf, f2_t eps, m bcore_prsg* prsg );
+    func void set_random_full_rank_u3( m@* o, bl_t pdf, f2_t eps, u3_t* p_rval );
+    func m@* create_set_size   ( uz_t rows, uz_t cols );
+    func m@* create_fill_random( uz_t rows, uz_t cols, f2_t min, f2_t max, u2_t* rval );
+    func void set_size_to( @* o, m@* res );
+    func bl_t is_equ_size( @* o,  @* op  );
+    func bl_t is_square  ( @* o );
+    func bl_t is_folded  ( @* o );
 
     /******************************************************************************************************************/
     /// weak init & conversion (Returned object does not own its data and need not be shut down unless it is resized)
 
-    func (void init_weak( m@* o, uz_t rows, uz_t cols, uz_t stride, m f2_t* data ));
-    func ( d@* create_weak(      uz_t rows, uz_t cols, uz_t stride, m f2_t* data ));
-    func (bmath_vf2_s get_row_weak_vec( @* o, uz_t idx ));
+    func void init_weak( m@* o, uz_t rows, uz_t cols, uz_t stride, m f2_t* data );
+    func  d@* create_weak(      uz_t rows, uz_t cols, uz_t stride, m f2_t* data );
+    func bmath_vf2_s get_row_weak_vec( @* o, uz_t idx );
 
     /******************************************************************************************************************/
     /// checks, deviations
 
-    func (bl_t is_near_equ( @* o, @* op, f2_t max_dev )); // equality
-    func (bl_t is_near_one( @* o, f2_t max_dev )); // one (== identity)
-    func (bl_t is_near_zro( @* o, f2_t max_dev )); // zero
-    func (bl_t is_near_otn( @* o, f2_t max_dev )); // near orthonormal
-    func (bl_t is_near_uni( @* o, f2_t max_dev )); // near unitary
-    func (bl_t is_near_dag( @* o, f2_t max_dev )); // diagonal
-    func (bl_t is_near_trd( @* o, f2_t max_dev )); // symmetric tri-diagonal
-    func (bl_t is_near_utr( @* o, f2_t max_dev )); // upper triangle
-    func (bl_t is_near_ltr( @* o, f2_t max_dev )); // lower triangle
-    func (bl_t is_near_hsm( @* o, f2_t max_dev )); // symmetric
-    func (bl_t is_near_ubd( @* o, f2_t max_dev )); // upper bi-diagonal
-    func (bl_t is_near_lbd( @* o, f2_t max_dev )); // lower bi-diagonal
-    func (bl_t is_equ( @* o, @* op ));
-    func (bl_t is_one( @* o ));
-    func (bl_t is_zro( @* o ));
-    func (bl_t is_otn( @* o ));
-    func (bl_t is_uni( @* o ));
-    func (bl_t is_dag( @* o ));
-    func (bl_t is_trd( @* o ));
-    func (bl_t is_utr( @* o ));
-    func (bl_t is_ltr( @* o ));
-    func (bl_t is_hsm( @* o ));
-    func (bl_t is_ubd( @* o ));
-    func (bl_t is_lbd( @* o ));
-    func (bl_t is_nan( @* o ));
-    func (f2_t tss( @* o ));
+    func bl_t is_near_equ( @* o, @* op, f2_t max_dev ); // equality
+    func bl_t is_near_one( @* o, f2_t max_dev ); // one (== identity)
+    func bl_t is_near_zro( @* o, f2_t max_dev ); // zero
+    func bl_t is_near_otn( @* o, f2_t max_dev ); // near orthonormal
+    func bl_t is_near_uni( @* o, f2_t max_dev ); // near unitary
+    func bl_t is_near_dag( @* o, f2_t max_dev ); // diagonal
+    func bl_t is_near_trd( @* o, f2_t max_dev ); // symmetric tri-diagonal
+    func bl_t is_near_utr( @* o, f2_t max_dev ); // upper triangle
+    func bl_t is_near_ltr( @* o, f2_t max_dev ); // lower triangle
+    func bl_t is_near_hsm( @* o, f2_t max_dev ); // symmetric
+    func bl_t is_near_ubd( @* o, f2_t max_dev ); // upper bi-diagonal
+    func bl_t is_near_lbd( @* o, f2_t max_dev ); // lower bi-diagonal
+    func bl_t is_equ( @* o, @* op );
+    func bl_t is_one( @* o );
+    func bl_t is_zro( @* o );
+    func bl_t is_otn( @* o );
+    func bl_t is_uni( @* o );
+    func bl_t is_dag( @* o );
+    func bl_t is_trd( @* o );
+    func bl_t is_utr( @* o );
+    func bl_t is_ltr( @* o );
+    func bl_t is_hsm( @* o );
+    func bl_t is_ubd( @* o );
+    func bl_t is_lbd( @* o );
+    func bl_t is_nan( @* o );
+    func f2_t tss( @* o );
 
     ///------------------------------------------------------------------------------------------------------------------
     /// Frobenius norm
 
-    func (f2_t fdev_equ( @* o, @* op ));
-    func (f2_t fdev_zro( @* o ));
-    func (f2_t fdev_one( @* o ));
-    func (f2_t fdev_otn( @* o )); // f = o * oT or oT * o (whichever smaller); x = I
+    func f2_t fdev_equ( @* o, @* op );
+    func f2_t fdev_zro( @* o );
+    func f2_t fdev_one( @* o );
+    func f2_t fdev_otn( @* o ); // f = o * oT or oT * o (whichever smaller); x = I
 
     /******************************************************************************************************************/
     /// Retrieving basic properties
 
-    func (f2_t fx_max( @* o )); // maximum value
-    func (f2_t fx_min( @* o )); // minimum value
-    func (f2_t fx_sum( @* o )); // sum of all elements
-    func (f2_t fx_trc( @* o )); // trace
-    func (f2_t fx_sub_sqr( @* o, @* op )); // ( o - op )^2
+    func f2_t fx_max( @* o ); // maximum value
+    func f2_t fx_min( @* o ); // minimum value
+    func f2_t fx_sum( @* o ); // sum of all elements
+    func f2_t fx_trc( @* o ); // trace
+    func f2_t fx_sub_sqr( @* o, @* op ); // ( o - op )^2
 
     ///------------------------------------------------------------------------------------------------------------------
     /// Initializations
@@ -1176,26 +1176,26 @@ stamp bmath_mf2_s = bmath_mf
     ///------------------------------------------------------------------------------------------------------------------
     /// outer vector product
 
-    func (void opd(         m@* o, bmath_vf2_s* a, bmath_vf2_s* b ));               // opd( a, b )     -> o
-    func (void opd_add(     m@* o, bmath_vf2_s* a, bmath_vf2_s* b,         @* c )); // opd( a, b ) + c -> o
-    func (void opd_mul_add( m@* o, bmath_vf2_s* a, bmath_vf2_s* b, f3_t w, @* c )); // opd( a, b ) * w + c -> o
+    func void opd(         m@* o, bmath_vf2_s* a, bmath_vf2_s* b );               // opd( a, b )     -> o
+    func void opd_add(     m@* o, bmath_vf2_s* a, bmath_vf2_s* b,         @* c ); // opd( a, b ) + c -> o
+    func void opd_mul_add( m@* o, bmath_vf2_s* a, bmath_vf2_s* b, f3_t w, @* c ); // opd( a, b ) * w + c -> o
 
     ///------------------------------------------------------------------------------------------------------------------
     /// matrix * vector [ + vector] --> vector
 
-    func (void mul_vec    ( @* o, bmath_vf2_s* v,   m bmath_vf2_s* r )); // r = o * v
-    func (void mul_av1    ( @* o, bmath_vf2_s* av1, m bmath_vf2_s* r )); // affine transformation (see nomenclature 'av1')
-    func (void htp_mul_vec( @* o, bmath_vf2_s* v,   m bmath_vf2_s* r )); // r = o^T * v
-    func (void mul_vec_add    ( @* o, bmath_vf2_s* v, bmath_vf2_s* b, m bmath_vf2_s* r )); // r = o   * v + b  (in place for b==r)
-    func (void htp_mul_vec_add( @* o, bmath_vf2_s* v, bmath_vf2_s* b, m bmath_vf2_s* r )); // r = o^T * v + b  (in place for b==r)
+    func void mul_vec    ( @* o, bmath_vf2_s* v,   m bmath_vf2_s* r ); // r = o * v
+    func void mul_av1    ( @* o, bmath_vf2_s* av1, m bmath_vf2_s* r ); // affine transformation (see nomenclature 'av1')
+    func void htp_mul_vec( @* o, bmath_vf2_s* v,   m bmath_vf2_s* r ); // r = o^T * v
+    func void mul_vec_add    ( @* o, bmath_vf2_s* v, bmath_vf2_s* b, m bmath_vf2_s* r ); // r = o   * v + b  (in place for b==r)
+    func void htp_mul_vec_add( @* o, bmath_vf2_s* v, bmath_vf2_s* b, m bmath_vf2_s* r ); // r = o^T * v + b  (in place for b==r)
 
     ///------------------------------------------------------------------------------------------------------------------
     /// matrix * scalar + matrix --> matrix; supports folded r
 
-    func (void mul_scl(     @* o, f2_t* b,       m@* r )); // r = o * b
-    func (void mul_scl_add( @* o, f2_t* b, @* c, m@* r )); // r = o * b + c
-    func (void mul_scl_fx(     @* o, f2_t b,       m@* r ));
-    func (void mul_scl_fx_add( @* o, f2_t b, @* c, m@* r ));
+    func void mul_scl(     @* o, f2_t* b,       m@* r ); // r = o * b
+    func void mul_scl_add( @* o, f2_t* b, @* c, m@* r ); // r = o * b + c
+    func void mul_scl_fx(     @* o, f2_t b,       m@* r );
+    func void mul_scl_fx_add( @* o, f2_t b, @* c, m@* r );
 
     ///------------------------------------------------------------------------------------------------------------------
     /// matrix multiplication functions (see bmath_template_mfx_mul_h.h for details)
@@ -1208,10 +1208,10 @@ stamp bmath_mf2_s = bmath_mf
     func bmath_mf.htp_mul_esp;
     func bmath_mf.htp_mul_htp;
 
-    func (void mul_udu_htp(     @* u, const bmath_vf2_s* d, m@* r ));
-    func (void mul_udu_htp_esp( @* u, const bmath_vf2_s* d, m@* r ));
-    func (void mul_udv_htp(     @* u, const bmath_vf2_s* d, @* v, m@* r ));
-    func (void mul_udv_htp_esp( @* u, const bmath_vf2_s* d, @* v, m@* r ));
+    func void mul_udu_htp(     @* u, const bmath_vf2_s* d, m@* r );
+    func void mul_udu_htp_esp( @* u, const bmath_vf2_s* d, m@* r );
+    func void mul_udv_htp(     @* u, const bmath_vf2_s* d, @* v, m@* r );
+    func void mul_udv_htp_esp( @* u, const bmath_vf2_s* d, @* v, m@* r );
 
     func bmath_mf.mul_utv_htp;
     func bmath_mf.mul_utv_htp_esp;
@@ -1220,7 +1220,7 @@ stamp bmath_mf2_s = bmath_mf
     func bmath_mf.htp_mul_add;
     func bmath_mf.htp_mul_htp_add;
 
-    func (void mul_add_cps( bl_t htpa, @* a, bl_t htpb, @* b, f2_t c, @* d, f2_t e, m@* r ));
+    func void mul_add_cps( bl_t htpa, @* a, bl_t htpb, @* b, f2_t c, @* d, f2_t e, m@* r );
 
     //------------------------------------------------------------------------------------------------------------------
     /// matrix * matrix --> matrix (result matrix is allocated)
@@ -1237,60 +1237,60 @@ stamp bmath_mf2_s = bmath_mf
     //------------------------------------------------------------------------------------------------------------------
     /// inversion; pseudo-inversion;
 
-    func (bl_t inv(     @* o, m@* res )); // res = o^-1
-    func (bl_t inv_htp( @* o, m@* res )); // res = (o^-1)T
-    func (bl_t pdf_inv( @* o, m@* res )); // res = o^-1 in case o is positive definite (faster than bmath_mfx_s_inv)
-    func (bl_t inv_via_cld(     @* o, m@* res )); // inversion via Cholesky decomposition
-    func (bl_t piv(     @* o, f2_t eps, m@* res )); // general matrix o
-    func (bl_t hsm_piv( @* o, f2_t eps, m@* res )); // faster inversion in case o is symmetric
-    func (bl_t inv_av1(     @* o, m@* res ));
-    func (bl_t pdf_inv_av1( @* o, m@* res ));           // o positive definite
-    func (bl_t hsm_piv_av1( @* o, f2_t eps, m@* res )); // pseudo inversion; o symmetric
-    func (bl_t div( @* o, @* op, m@* res ));
+    func bl_t inv(     @* o, m@* res ); // res = o^-1
+    func bl_t inv_htp( @* o, m@* res ); // res = (o^-1)T
+    func bl_t pdf_inv( @* o, m@* res ); // res = o^-1 in case o is positive definite (faster than bmath_mfx_s_inv)
+    func bl_t inv_via_cld(     @* o, m@* res ); // inversion via Cholesky decomposition
+    func bl_t piv(     @* o, f2_t eps, m@* res ); // general matrix o
+    func bl_t hsm_piv( @* o, f2_t eps, m@* res ); // faster inversion in case o is symmetric
+    func bl_t inv_av1(     @* o, m@* res );
+    func bl_t pdf_inv_av1( @* o, m@* res );           // o positive definite
+    func bl_t hsm_piv_av1( @* o, f2_t eps, m@* res ); // pseudo inversion; o symmetric
+    func bl_t div( @* o, @* op, m@* res );
 
     /******************************************************************************************************************/
     /// element-access; col-access; row-access; sub-matrix
 
-    func (void set_row_by_data( m@* o, uz_t idx, f2_t* data ));
-    func (void set_col_by_data( m@* o, uz_t idx, f2_t* data ));
-    func (void set_dag_by_data( m@* o,           f2_t* data ));
-    func (void set_row_by_vec ( m@* o, uz_t idx, bmath_vf2_s* vec ));
-    func (void set_col_by_vec ( m@* o, uz_t idx, bmath_vf2_s* vec ));
-    func (void set_dag_by_vec ( m@* o,           bmath_vf2_s* vec ));
-    func (void get_row_vec( @* o, uz_t idx, m bmath_vf2_s* res ));
-    func (void get_col_vec( @* o, uz_t idx, m bmath_vf2_s* res ));
-    func (void get_dag_vec( @* o,           m bmath_vf2_s* res ));
-    func (void swap_row( m@* o, uz_t i, uz_t j )); // swaps rows i, j
-    func (void swap_col( m@* o, uz_t i, uz_t j )); // swaps cols i, j
-    func (void mul_fx_to_row( m@* o, f2_t v, uz_t i )); // multiplies v to all values in row i
-    func (void mul_fx_to_col( m@* o, f2_t v, uz_t i )); // multiplies v to all values in col i
-    func (void set_fx( m@* o, uz_t row, uz_t col, f2_t v ));
-    func (f2_t get_fx( @* o, uz_t row, uz_t col ));
+    func void set_row_by_data( m@* o, uz_t idx, f2_t* data );
+    func void set_col_by_data( m@* o, uz_t idx, f2_t* data );
+    func void set_dag_by_data( m@* o,           f2_t* data );
+    func void set_row_by_vec ( m@* o, uz_t idx, bmath_vf2_s* vec );
+    func void set_col_by_vec ( m@* o, uz_t idx, bmath_vf2_s* vec );
+    func void set_dag_by_vec ( m@* o,           bmath_vf2_s* vec );
+    func void get_row_vec( @* o, uz_t idx, m bmath_vf2_s* res );
+    func void get_col_vec( @* o, uz_t idx, m bmath_vf2_s* res );
+    func void get_dag_vec( @* o,           m bmath_vf2_s* res );
+    func void swap_row( m@* o, uz_t i, uz_t j ); // swaps rows i, j
+    func void swap_col( m@* o, uz_t i, uz_t j ); // swaps cols i, j
+    func void mul_fx_to_row( m@* o, f2_t v, uz_t i ); // multiplies v to all values in row i
+    func void mul_fx_to_col( m@* o, f2_t v, uz_t i ); // multiplies v to all values in col i
+    func void set_fx( m@* o, uz_t row, uz_t col, f2_t v );
+    func f2_t get_fx( @* o, uz_t row, uz_t col );
 
     /******************************************************************************************************************/
     /// Triangular decompositions, operations and solvers
 
-    func (bl_t decompose_cholesky( @* o, m@* res ));
-    func (bl_t ltr_inv( @* o, m@* res ));
-    func (bl_t ltr_inv_htp( @* o, m@* res ));
-    func (void ltr_mul_htp( @* o, m@* res )); // lower triangular
-    func (void utr_mul_htp( @* o, m@* res )); // upper triangular
-    func (void ltr_mul_vec( @* o, bmath_vf2_s* op, m bmath_vf2_s* res ));
-    func (void lt1_mul_vec( @* o, bmath_vf2_s* op, m bmath_vf2_s* res ));
-    func (void utr_mul_vec( @* o, bmath_vf2_s* op, m bmath_vf2_s* res ));
-    func (void luc_mul_vec( @* o, bmath_vf2_s* op, m bmath_vf2_s* res ));
-    func (void ltr_mul_htp_htp( @* o, @* op, m@* res ));
-    func (void lt1_mul_htp_htp( @* o, @* op, m@* res ));
-    func (void utr_mul_htp_htp( @* o, @* op, m@* res ));
-    func (void luc_mul_htp_htp( @* o, @* op, m@* res ));
-    func (void ltr_solve_vec( @* o, bmath_vf2_s* op, m bmath_vf2_s* res ));
-    func (void lt1_solve_vec( @* o, bmath_vf2_s* op, m bmath_vf2_s* res ));
-    func (void utr_solve_vec( @* o, bmath_vf2_s* op, m bmath_vf2_s* res ));
-    func (void luc_solve_vec( @* o, bmath_vf2_s* op, m bmath_vf2_s* res ));
-    func (void ltr_solve_htp_htp( @* o, @* op, m@* res ));
-    func (void lt1_solve_htp_htp( @* o, @* op, m@* res ));
-    func (void utr_solve_htp_htp( @* o, @* op, m@* res ));
-    func (void luc_solve_htp_htp( @* o, @* op, m@* res ));
+    func bl_t decompose_cholesky( @* o, m@* res );
+    func bl_t ltr_inv( @* o, m@* res );
+    func bl_t ltr_inv_htp( @* o, m@* res );
+    func void ltr_mul_htp( @* o, m@* res ); // lower triangular
+    func void utr_mul_htp( @* o, m@* res ); // upper triangular
+    func void ltr_mul_vec( @* o, bmath_vf2_s* op, m bmath_vf2_s* res );
+    func void lt1_mul_vec( @* o, bmath_vf2_s* op, m bmath_vf2_s* res );
+    func void utr_mul_vec( @* o, bmath_vf2_s* op, m bmath_vf2_s* res );
+    func void luc_mul_vec( @* o, bmath_vf2_s* op, m bmath_vf2_s* res );
+    func void ltr_mul_htp_htp( @* o, @* op, m@* res );
+    func void lt1_mul_htp_htp( @* o, @* op, m@* res );
+    func void utr_mul_htp_htp( @* o, @* op, m@* res );
+    func void luc_mul_htp_htp( @* o, @* op, m@* res );
+    func void ltr_solve_vec( @* o, bmath_vf2_s* op, m bmath_vf2_s* res );
+    func void lt1_solve_vec( @* o, bmath_vf2_s* op, m bmath_vf2_s* res );
+    func void utr_solve_vec( @* o, bmath_vf2_s* op, m bmath_vf2_s* res );
+    func void luc_solve_vec( @* o, bmath_vf2_s* op, m bmath_vf2_s* res );
+    func void ltr_solve_htp_htp( @* o, @* op, m@* res );
+    func void lt1_solve_htp_htp( @* o, @* op, m@* res );
+    func void utr_solve_htp_htp( @* o, @* op, m@* res );
+    func void luc_solve_htp_htp( @* o, @* op, m@* res );
 
     /******************************************************************************************************************/
     /// Bi/tri-diagonal decompositions
@@ -1326,22 +1326,22 @@ stamp bmath_mf2_s = bmath_mf
     /******************************************************************************************************************/
     /// Covariance
 
-    func (void set_covariance_on_section_fast( m@* o, m bmath_arr_vf2_s* arr_vec, uz_t start, uz_t end )); // fast
-    func (void set_covariance_on_section_sprc( m@* o, m bmath_arr_vf2_s* arr_vec, uz_t start, uz_t end )); // stochastically precise
+    func void set_covariance_on_section_fast( m@* o, m bmath_arr_vf2_s* arr_vec, uz_t start, uz_t end ); // fast
+    func void set_covariance_on_section_sprc( m@* o, m bmath_arr_vf2_s* arr_vec, uz_t start, uz_t end ); // stochastically precise
 
     /******************************************************************************************************************/
     /// Givens Rotations
 
-    func (void arow_rotate( m@* o, uz_t idx, bmath_grt_f2_s* grt, uz_t col_start, uz_t col_end ));
-    func (void drow_rotate( m@* o, uz_t a_idx, uz_t b_idx, bmath_grt_f2_s* grt, uz_t col_start, uz_t col_end ));
-    func (void acol_rotate( m@* o, uz_t idx, bmath_grt_f2_s* grt, uz_t row_start, uz_t row_end ));
-    func (void dcol_rotate( m@* o, uz_t a_idx, uz_t b_idx, bmath_grt_f2_s* grt, uz_t row_start, uz_t row_end ));
-    func (void arow_swipe_fwd( m@* o, uz_t idx, bmath_arr_grt_f2_s* grt, uz_t col_start, uz_t col_end ));
-    func (void arow_swipe_rev( m@* o, uz_t idx, bmath_arr_grt_f2_s* grt, uz_t col_start, uz_t col_end ));
-    func (void sweep_arow_rotate_fwd( m@* o, uz_t row_start, uz_t row_end, bmath_arr_grt_f2_s* grt, uz_t col_start, uz_t col_end ));
-    func (void sweep_arow_rotate_rev( m@* o, uz_t row_start, uz_t row_end, bmath_arr_grt_f2_s* grt, uz_t col_start, uz_t col_end ));
-    func (void sweep_acol_rotate_fwd( m@* o, uz_t col_start, uz_t col_end, bmath_arr_grt_f2_s* grt, uz_t row_start, uz_t row_end ));
-    func (void sweep_dcol_rotate_rev( m@* o, uz_t col_start, uz_t col_end, bmath_arr_grt_f2_s* grt, uz_t row_start, uz_t row_end ));
+    func void arow_rotate( m@* o, uz_t idx, bmath_grt_f2_s* grt, uz_t col_start, uz_t col_end );
+    func void drow_rotate( m@* o, uz_t a_idx, uz_t b_idx, bmath_grt_f2_s* grt, uz_t col_start, uz_t col_end );
+    func void acol_rotate( m@* o, uz_t idx, bmath_grt_f2_s* grt, uz_t row_start, uz_t row_end );
+    func void dcol_rotate( m@* o, uz_t a_idx, uz_t b_idx, bmath_grt_f2_s* grt, uz_t row_start, uz_t row_end );
+    func void arow_swipe_fwd( m@* o, uz_t idx, bmath_arr_grt_f2_s* grt, uz_t col_start, uz_t col_end );
+    func void arow_swipe_rev( m@* o, uz_t idx, bmath_arr_grt_f2_s* grt, uz_t col_start, uz_t col_end );
+    func void sweep_arow_rotate_fwd( m@* o, uz_t row_start, uz_t row_end, bmath_arr_grt_f2_s* grt, uz_t col_start, uz_t col_end );
+    func void sweep_arow_rotate_rev( m@* o, uz_t row_start, uz_t row_end, bmath_arr_grt_f2_s* grt, uz_t col_start, uz_t col_end );
+    func void sweep_acol_rotate_fwd( m@* o, uz_t col_start, uz_t col_end, bmath_arr_grt_f2_s* grt, uz_t row_start, uz_t row_end );
+    func void sweep_dcol_rotate_rev( m@* o, uz_t col_start, uz_t col_end, bmath_arr_grt_f2_s* grt, uz_t row_start, uz_t row_end );
 
     /******************************************************************************************************************/
     /// Convolution

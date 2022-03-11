@@ -60,7 +60,7 @@ stamp :s = aware bcore_inst
     func :.idx_val { return o.map.idx_val( idx ).cast( st_s* ); };
 };
 
-func (void selftest());
+func void selftest();
 
 #endif
 

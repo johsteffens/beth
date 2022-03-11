@@ -104,7 +104,7 @@ func (:utf8_s) bhpt_tutor.create_adaptive
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:utf8_s) (void get_string( m@* o, m bcore_prsg* prsg, sz_t size, m st_s* string ))
+func (:utf8_s) void get_string( m@* o, m bcore_prsg* prsg, sz_t size, m st_s* string )
 {
     if( !o->st )
     {
@@ -145,7 +145,7 @@ func (:utf8_s) (void get_string( m@* o, m bcore_prsg* prsg, sz_t size, m st_s* s
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:utf8_s) (void encode( c bhpt_tutor_language_utf8_s* o, u0_t c, m bhvm_value_s* v ))
+func (:utf8_s) void encode( c bhpt_tutor_language_utf8_s* o, u0_t c, m bhvm_value_s* v )
 {
     assert( v.type == TYPEOF_f3_t );
     m f3_t* v_data = v.data.cast( m f3_t* );
@@ -193,7 +193,7 @@ func (:utf8_s) bhpt_tutor.prime
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (:utf8_chatter_s) (void run( c@* o, c :utf8_s* tutor, m bhpt_adaptive* adaptive, m bcore_sink* log ))
+func (:utf8_chatter_s) void run( c@* o, c :utf8_s* tutor, m bhpt_adaptive* adaptive, m bcore_sink* log )
 {
     m bhvm_holor_s* hx = adaptive.get_format_en( bhvm_holor_s!^ ).fit_size().zro();
     m bhvm_holor_s* hy = adaptive.get_format_ex( bhvm_holor_s!^ ).fit_size().zro();

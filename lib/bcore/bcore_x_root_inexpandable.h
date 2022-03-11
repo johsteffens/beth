@@ -340,19 +340,19 @@ group bcore_img = bcore_inst
         /** Allocates image and initializes pixels with 0
          *  if o->format == 0: o->format = TYPEOF_bcore_img_u2_argb
          */
-        func (void set_size( m @* o, uz_t rows, uz_t cols ));
+        func void set_size( m @* o, uz_t rows, uz_t cols );
 
         // pnm format
-        func (void pnm_to_sink(       @* o, bcore_sink* dst ));
-        func (void pnm_to_file(       @* o, sc_t file ));
-        func (void pnm_from_source( m @* o, bcore_source* src ));
-        func (void pnm_from_file(   m @* o, sc_t file ));
+        func void pnm_to_sink(       @* o, bcore_sink* dst );
+        func void pnm_to_file(       @* o, sc_t file );
+        func void pnm_from_source( m @* o, bcore_source* src );
+        func void pnm_from_file(   m @* o, sc_t file );
 
         // pixel access
-        func (void set_pixel( m @* o, uz_t row, uz_t col, u2_t v ));
-        func (u2_t get_pixel(   @* o, uz_t row, uz_t col ));
-        func (void set_rgb( m @* o, uz_t row, uz_t col, u0_t  r, u0_t  g, u0_t  b ));
-        func (void get_rgb(   @* o, uz_t row, uz_t col, u0_t* r, u0_t* g, u0_t* b ));
+        func void set_pixel( m @* o, uz_t row, uz_t col, u2_t v );
+        func u2_t get_pixel(   @* o, uz_t row, uz_t col );
+        func void set_rgb( m @* o, uz_t row, uz_t col, u0_t  r, u0_t  g, u0_t  b );
+        func void get_rgb(   @* o, uz_t row, uz_t col, u0_t* r, u0_t* g, u0_t* b );
     };
 
 

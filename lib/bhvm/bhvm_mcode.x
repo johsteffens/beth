@@ -235,21 +235,21 @@ stamp :track_s = aware x_array
     };
 
     /// fills index_arr with all holor references; each index occurring only once
-    func (o get_index_arr( c @* o, m bcore_arr_sz_s* index_arr ));
+    func o get_index_arr( c @* o, m bcore_arr_sz_s* index_arr );
 
     /// replaces all indices where index map yields an index >= 0
-    func (void replace_index_via_map( m @* o, m bcore_arr_sz_s* index_map ));
+    func void replace_index_via_map( m @* o, m bcore_arr_sz_s* index_map );
 
     /**
      *  Replaces all matching inputs until (including) cyclic_idx occurs as output.
      *  Subsequent operators remain unchanged.
      */
-    func (void cyclic_split_replace( m @* o, sz_t idx, sz_t new_idx ));
+    func void cyclic_split_replace( m @* o, sz_t idx, sz_t new_idx );
 
     /// remove all operations there the output index is not mapped
-    func (void remove_unmapped_output( m @* o, m bcore_arr_sz_s* index_map ));
+    func void remove_unmapped_output( m @* o, m bcore_arr_sz_s* index_map );
 
-    func (void check_index( c@* o, sz_t hbase_size ));
+    func void check_index( c@* o, sz_t hbase_size );
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -366,9 +366,9 @@ stamp :frame_s = aware :
 
     func :.track_run { if( !o->lib ) return; o.lib.track_run_ah( name, o.hbase.holor_adl.data ); };
 
-    func (void check_integrity( c @* o ));
+    func void check_integrity( c @* o );
 
-    func (void reassign_mnodes( m@* o ));
+    func void reassign_mnodes( m@* o );
 
     func bcore_via_call.mutated { o.reassign_mnodes(); };
     func bcore_inst_call.copy_x { o.reassign_mnodes(); };

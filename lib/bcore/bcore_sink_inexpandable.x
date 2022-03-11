@@ -42,10 +42,10 @@ group bcore_sink = x_inst
     {
         /* format not disclosed */
 
-        func (m@* create_name( sc_t name )); // file is opened lazily when needed
-        func (sc_t get_name( @* o ));
-        func (void open(  m @* o )); // (re)opens file
-        func (void close( m @* o )); // closes file if open
+        func m@* create_name( sc_t name ); // file is opened lazily when needed
+        func sc_t get_name( @* o );
+        func void open(  m @* o ); // (re)opens file
+        func void close( m @* o ); // closes file if open
         func :.flush;
         func :.push_data;
     };

@@ -49,21 +49,21 @@ group bcore_source = x_inst
     {
         /* format not disclosed */
 
-        func( d @* create_from_string( c st_s* string ) );
-        func( d @* create_from_string_d( m st_s* string ) );
-        func( d @* create_from_sc( sc_t sc ) ); // same as ...create_sc
-        func( d @* create_sc( sc_t sc ) );
-        func( d @* create_fa( sc_t format, ... ) );
-        func( d @* create_fv( sc_t format, va_list args ) );
-        func( d @* create_parse_line( m bcore_source* source ) );
+        func d @* create_from_string( c st_s* string );
+        func d @* create_from_string_d( m st_s* string );
+        func d @* create_from_sc( sc_t sc ); // same as ...create_sc
+        func d @* create_sc( sc_t sc );
+        func d @* create_fa( sc_t format, ... );
+        func d @* create_fv( sc_t format, va_list args );
+        func d @* create_parse_line( m bcore_source* source );
 
-        func( m @* setup_from_string( m @* o, c st_s* string ) );
-        func( m @* setup_from_string_d( m @* o, m st_s* string ) );
-        func( m @* setup_from_sc( m @* o, sc_t sc ) ); // same as ...setup_sc
-        func( m @* setup_sc( m @* o, sc_t sc ) );
-        func( m @* setup_fa( m @* o, sc_t format, ... ) );
-        func( m @* setup_fv( m @* o, sc_t format, va_list args ) );
-        func( m @* setup_parse_line( m @* o, m bcore_source* source ) );
+        func m @* setup_from_string( m @* o, c st_s* string );
+        func m @* setup_from_string_d( m @* o, m st_s* string );
+        func m @* setup_from_sc( m @* o, sc_t sc ); // same as ...setup_sc
+        func m @* setup_sc( m @* o, sc_t sc );
+        func m @* setup_fa( m @* o, sc_t format, ... );
+        func m @* setup_fv( m @* o, sc_t format, va_list args );
+        func m @* setup_parse_line( m @* o, m bcore_source* source );
     };
 
 
@@ -72,23 +72,23 @@ group bcore_source = x_inst
         aware bcore_source -> source; // shallow reference
         s3_t index;
 
-        func( void set( m @* o, m bcore_source* source ) );
-        func( void parse_err_fv( c @* o, sc_t format, va_list args ) );
-        func( void parse_err_fa( c @* o, sc_t format, ... ) );
-        func( void parse_msg_fv( c @* o, sc_t format, va_list args ) );
-        func( void parse_msg_fa( c @* o, sc_t format, ... ) );
-        func( void parse_msg_to_sink_fv( c @* o, m bcore_sink* sink, sc_t format, va_list args ) );
-        func( void parse_msg_to_sink_fa( c @* o, m bcore_sink* sink, sc_t format, ... ) );
+        func void set( m @* o, m bcore_source* source );
+        func void parse_err_fv( c @* o, sc_t format, va_list args );
+        func void parse_err_fa( c @* o, sc_t format, ... );
+        func void parse_msg_fv( c @* o, sc_t format, va_list args );
+        func void parse_msg_fa( c @* o, sc_t format, ... );
+        func void parse_msg_to_sink_fv( c @* o, m bcore_sink* sink, sc_t format, va_list args );
+        func void parse_msg_to_sink_fa( c @* o, m bcore_sink* sink, sc_t format, ... );
 
         /// generates a parse error message and pushes it to the error stack (see bcore_error_manager.h); returns err_id
-        func( er_t parse_error_fv( c @* o, sc_t format, va_list args ) );
-        func( er_t parse_error_fa( c @* o, sc_t format, ... ) );
+        func er_t parse_error_fv( c @* o, sc_t format, va_list args );
+        func er_t parse_error_fa( c @* o, sc_t format, ... );
 
         /// creates a cloned source pointing to the index position of source point
-        func( d bcore_source* clone_source( c @* o ) );
+        func d bcore_source* clone_source( c @* o );
 
         /// write a source reference to sink in the form <file_path>:<line>:<col>
-        func( void source_reference_to_sink( c @* o, bl_t file_name_only, m bcore_sink* sink ) );
+        func void source_reference_to_sink( c @* o, bl_t file_name_only, m bcore_sink* sink );
     };
 
     stamp :context_s = x_inst

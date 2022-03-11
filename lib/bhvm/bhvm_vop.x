@@ -133,7 +133,7 @@ group :ar0 =
 {
     stamp :index_s = obliv bcore_inst { sz_t [ 1 ] v; func bcore_inst_call.init_x { o.v[0] = -1; }; };
 
-    func (o setup( m (TO) @* o, sz_t idx0 ))
+    func o setup( m (TO) @* o, sz_t idx0 )
     {
         = o.set_index_arr( verbatim_C{ ( sz_t[] ) { idx0 } }, 1 );
     }
@@ -220,7 +220,7 @@ group :ar1 =
 {
     stamp :index_s obliv bcore_inst { sz_t [ 2 ] v; func bcore_inst_call.init_x { o.v[0] = o.v[1] = -1; } }
 
-    func (o setup( m (TO) @* o, sz_t idx0, sz_t idx1 ))
+    func o setup( m (TO) @* o, sz_t idx0, sz_t idx1 )
     {
         = o.set_index_arr( verbatim_C{ ( sz_t[] ) { idx0, idx1 } }, 2 );
     }

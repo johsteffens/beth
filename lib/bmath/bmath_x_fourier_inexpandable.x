@@ -46,8 +46,8 @@ group bmath_fourier =
      *      f2: tolerable accuracy at size <= 1<<8
      *      f3: accuracy limit probably between size 1<<17 and 1<<20
      */
-    func (void f2_dft( const bmath_cf2_s* src, bmath_cf2_s* dst, uz_t size ));
-    func (void f3_dft( const bmath_cf3_s* src, bmath_cf3_s* dst, uz_t size ));
+    func void f2_dft( const bmath_cf2_s* src, bmath_cf2_s* dst, uz_t size );
+    func void f3_dft( const bmath_cf3_s* src, bmath_cf3_s* dst, uz_t size );
 
     /** Fast Fourier Transformation for vector size being power of 2.
      *  - Complexity O(n*log(n))
@@ -56,16 +56,16 @@ group bmath_fourier =
      *              Deviation remains below 0.1% of vector norm for all tested sizes.
      *  - AVX2 optimized
      */
-    func (void f2_fft( const bmath_cf2_s* src, bmath_cf2_s* dst, uz_t size ));
-    func (void f3_fft( const bmath_cf3_s* src, bmath_cf3_s* dst, uz_t size ));
+    func void f2_fft( const bmath_cf2_s* src, bmath_cf2_s* dst, uz_t size );
+    func void f3_fft( const bmath_cf3_s* src, bmath_cf3_s* dst, uz_t size );
 
     /** FFT with reusable buffer. Return value is buffer to be discarded or reused by caller.
      *  Start with buf = NULL or buf = bcore_malloc( sizeof( bmath_cfx_s ) * size )
      *  Continue with buf = return from previous call (size <= size of first call)
      *  Finish by keeping ownership of returned_buf (e.g. bcore_free( returned_buf ))
      */
-    func (vd_t f2_fft_buf( const bmath_cf2_s* src, bmath_cf2_s* dst, uz_t size, vd_t buf ));
-    func (vd_t f3_fft_buf( const bmath_cf3_s* src, bmath_cf3_s* dst, uz_t size, vd_t buf ));
+    func vd_t f2_fft_buf( const bmath_cf2_s* src, bmath_cf2_s* dst, uz_t size, vd_t buf );
+    func vd_t f3_fft_buf( const bmath_cf3_s* src, bmath_cf3_s* dst, uz_t size, vd_t buf );
 };
 
 //----------------------------------------------------------------------------------------------------------------------

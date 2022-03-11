@@ -77,31 +77,31 @@ name error_stack; // error stack is not zero (usually a subsequent error for fun
 /// interface functions
 
 /// Returns number of errors on stack
-func(sz_t stack_size());
+func sz_t stack_size();
 
 /// Removes all errors from stack
-func(void clear_stack());
+func void clear_stack();
 
 /// Removes last error from stack (if any)
-func(void remove_last());
+func void remove_last();
 
 /// Pushes an error onto stack; returns id
-func(er_t push_sc( er_t id, sc_t msg ));
-func(er_t push_fv( er_t id, sc_t format, va_list args ));
-func(er_t push_fa( er_t id, sc_t format, ... ));
+func er_t push_sc( er_t id, sc_t msg );
+func er_t push_fv( er_t id, sc_t format, va_list args );
+func er_t push_fa( er_t id, sc_t format, ... );
 
 /// returns last error id on stack; returns 0 in case of no error; does not change error stack
-func(er_t last());
+func er_t last();
 
 /// Takes last error from stack; returns false if stack was empty
-func(bl_t pop_st( m er_t* id, m st_s* msg ));
-func(bl_t pop_to_sink( m bcore_sink* sink ));
-func(bl_t pop_to_stderr());
+func bl_t pop_st( m er_t* id, m st_s* msg );
+func bl_t pop_to_sink( m bcore_sink* sink );
+func bl_t pop_to_stderr();
 
 /// Takes all errors from stack; returns false in case stack was empty
-func(bl_t pop_all_to_sink( m bcore_sink* sink ));
-func(bl_t pop_all_to_stderr());
-func(bl_t pop_all());
+func bl_t pop_all_to_sink( m bcore_sink* sink );
+func bl_t pop_all_to_stderr();
+func bl_t pop_all();
 
 //----------------------------------------------------------------------------------------------------------------------
 

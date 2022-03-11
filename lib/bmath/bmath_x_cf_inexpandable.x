@@ -35,53 +35,53 @@ stamp bmath_cf2_s = obliv
     $ f2_t r;
     $ f2_t i;
 
-    func (bl_t is_equ( @* o, @* op ));
-    func (bl_t is_zro( @* o ));
-    func (bl_t is_one( @* o ));
-    func (void add( @* o, @* op, m@* res ));
-    func (void zro( m@* o ));
-    func (   o urt( m@* o, s3_t k, s3_t n )); // urt(k,n) = e^i*2*pi*k/n
-    func (void neg( @* o, m@* res ));
-    func (void sub( @* o, @* op, m@* res ));
-    func (void mul( @* o, @* op, m@* res ));
-    func (void sqr( @* o, m@* res ));
-    func (f2_t tss( @* o )); // sum of squares
-    func (f2_t mag( @* o )); // magnitude (srt( tss ))
-    func (f2_t arg( @* o )); // phase [-pi pi]
+    func bl_t is_equ( @* o, @* op );
+    func bl_t is_zro( @* o );
+    func bl_t is_one( @* o );
+    func void add( @* o, @* op, m@* res );
+    func void zro( m@* o );
+    func    o urt( m@* o, s3_t k, s3_t n ); // urt(k,n) = e^i*2*pi*k/n
+    func void neg( @* o, m@* res );
+    func void sub( @* o, @* op, m@* res );
+    func void mul( @* o, @* op, m@* res );
+    func void sqr( @* o, m@* res );
+    func f2_t tss( @* o ); // sum of squares
+    func f2_t mag( @* o ); // magnitude (srt( tss ))
+    func f2_t arg( @* o ); // phase [-pi pi]
 
     // sets complex number via magnitude and phase
-    func (o set_mag_arg( m@* o, f2_t mag, f2_t arg ));
+    func o set_mag_arg( m@* o, f2_t mag, f2_t arg );
 
     // res = ( o - op )^2
-    func (void sub_sqr( @* o, @* op, m@* res ));
+    func void sub_sqr( @* o, @* op, m@* res );
 
     // res = o^2 + op
-    func (void sqr_add( @* o, @* op, m@* res ));
+    func void sqr_add( @* o, @* op, m@* res );
 
-    func (void mul_f2( @* o, f2_t op, m@* res ));
+    func void mul_f2( @* o, f2_t op, m@* res );
 
     // res = o + ( op1 * op2 )
-    func (void add_prod( @* o, @* op1, @* op2, m@* res ));
+    func void add_prod( @* o, @* op1, @* op2, m@* res );
 
     // res = o - ( op1 * op2 )
-    func (void sub_prod( @* o, @* op1, @* op2, m@* res ));
+    func void sub_prod( @* o, @* op1, @* op2, m@* res );
 
     // res = o * ( op1 - op2 )
-    func (void mul_diff( @* o, @* op1, @* op2, m@* res ));
+    func void mul_diff( @* o, @* op1, @* op2, m@* res );
 
-    func (void one( m@* o ));
-    func (void inv( @* o, m@* res ));
-    func (void div( @* o, @* op, m@* res ));
-    func (void cnj( @* o, m@* res ));
-    func (void self_cnj( m@* o ));
+    func void one( m@* o );
+    func void inv( @* o, m@* res );
+    func void div( @* o, @* op, m@* res );
+    func void cnj( @* o, m@* res );
+    func void self_cnj( m@* o );
 
     /// For easy inspection
-    func (void to_stdout( @* o ));
+    func void to_stdout( @* o );
 
     /// Type conversion ...
-    func (void copy_typed( m@* o, tp_t type, vc_t src ));
-    func (void copy_t( m@* o, tp_t type, vc_t src ));
-    func (m@* clone_t( tp_t type, vc_t src ));
+    func void copy_typed( m@* o, tp_t type, vc_t src );
+    func void copy_t( m@* o, tp_t type, vc_t src );
+    func m@* clone_t( tp_t type, vc_t src );
 };
 
 identifier bmath_cf2_init;
@@ -106,53 +106,53 @@ stamp bmath_cf3_s = obliv
     $ f2_t r;
     $ f2_t i;
 
-    func (bl_t is_equ( @* o, @* op ));
-    func (bl_t is_zro( @* o ));
-    func (bl_t is_one( @* o ));
-    func (void add( @* o, @* op, m@* res ));
-    func (void zro( m@* o ));
-    func (   o urt( m@* o, s3_t k, s3_t n )); // urt(k,n) = e^i*2*pi*k/n
-    func (void neg( @* o, m@* res ));
-    func (void sub( @* o, @* op, m@* res ));
-    func (void mul( @* o, @* op, m@* res ));
-    func (void sqr( @* o, m@* res ));
-    func (f3_t tss( @* o )); // sum of squares
-    func (f3_t mag( @* o )); // magnitude (srt( tss ))
-    func (f3_t arg( @* o )); // phase [-pi pi]
+    func bl_t is_equ( @* o, @* op );
+    func bl_t is_zro( @* o );
+    func bl_t is_one( @* o );
+    func void add( @* o, @* op, m@* res );
+    func void zro( m@* o );
+    func    o urt( m@* o, s3_t k, s3_t n ); // urt(k,n) = e^i*2*pi*k/n
+    func void neg( @* o, m@* res );
+    func void sub( @* o, @* op, m@* res );
+    func void mul( @* o, @* op, m@* res );
+    func void sqr( @* o, m@* res );
+    func f3_t tss( @* o ); // sum of squares
+    func f3_t mag( @* o ); // magnitude (srt( tss ))
+    func f3_t arg( @* o ); // phase [-pi pi]
 
     // sets complex number via magnitude and phase
-    func (o set_mag_arg( m@* o, f3_t mag, f3_t arg ));
+    func o set_mag_arg( m@* o, f3_t mag, f3_t arg );
 
     // res = ( o - op )^2
-    func (void sub_sqr( @* o, @* op, m@* res ));
+    func void sub_sqr( @* o, @* op, m@* res );
 
     // res = o^2 + op
-    func (void sqr_add( @* o, @* op, m@* res ));
+    func void sqr_add( @* o, @* op, m@* res );
 
-    func (void mul_f3( @* o, f3_t op, m@* res ));
+    func void mul_f3( @* o, f3_t op, m@* res );
 
     // res = o + ( op1 * op2 )
-    func (void add_prod( @* o, @* op1, @* op2, m@* res ));
+    func void add_prod( @* o, @* op1, @* op2, m@* res );
 
     // res = o - ( op1 * op2 )
-    func (void sub_prod( @* o, @* op1, @* op2, m@* res ));
+    func void sub_prod( @* o, @* op1, @* op2, m@* res );
 
     // res = o * ( op1 - op2 )
-    func (void mul_diff( @* o, @* op1, @* op2, m@* res ));
+    func void mul_diff( @* o, @* op1, @* op2, m@* res );
 
-    func (void one( m@* o ));
-    func (void inv( @* o, m@* res ));
-    func (void div( @* o, @* op, m@* res ));
-    func (void cnj( @* o, m@* res ));
-    func (void self_cnj( m@* o ));
+    func void one( m@* o );
+    func void inv( @* o, m@* res );
+    func void div( @* o, @* op, m@* res );
+    func void cnj( @* o, m@* res );
+    func void self_cnj( m@* o );
 
     /// For easy inspection
-    func (void to_stdout( @* o ));
+    func void to_stdout( @* o );
 
     /// Type conversion ...
-    func (void copy_typed( m@* o, tp_t type, vc_t src ));
-    func (void copy_t( m@* o, tp_t type, vc_t src ));
-    func (m@* clone_t( tp_t type, vc_t src ));
+    func void copy_typed( m@* o, tp_t type, vc_t src );
+    func void copy_t( m@* o, tp_t type, vc_t src );
+    func m@* clone_t( tp_t type, vc_t src );
 };
 
 identifier bmath_cf3_init;
