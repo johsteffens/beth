@@ -52,6 +52,8 @@ identifier f3_log;
 identifier f3_log10;
 identifier f3_pow;
 identifier f3_erf;
+identifier f3_sin;
+identifier f3_cos;
 
 identifier f2_pi;
 identifier f2_pi_2; // PI / 2
@@ -62,6 +64,8 @@ identifier f2_log;
 identifier f2_log10;
 identifier f2_pow;
 identifier f2_erf;
+identifier f2_sin;
+identifier f2_cos;
 
 //----------------------------------------------------------------------------------------------------------------------
 

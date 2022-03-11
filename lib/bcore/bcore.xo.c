@@ -1,4 +1,4 @@
-//  Last update: 2022-03-09T20:03:06Z
+//  Last update: 2022-03-11T13:26:53Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -52,7 +52,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0xE87EE986FDFA4E6Cull
+// HKEYOF_bcore 0xC6430BDBA4BE7DDAull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -768,7 +768,7 @@ void x_stamp_selftest( void )
     state = (*(((const u3_t*)(x_stamp_c_get(((const x_stamp*)(&( lcg))),btypeof( "state" ) )))));
     ASSERT( state == 12345 );
     
-    const x_inst* inst = x_stamp_path_s_c_get_in(((x_stamp_path_s*)(x_stamp_path_s_parse_sc(((x_stamp_path_s*)BLM_LEVEL_T_PUSH(0,x_stamp_path_s,x_stamp_path_s_create())),"state" ))),((const x_inst*)(&(lcg ))));
+    const x_inst* inst = x_stamp_path_s_c_get_in(x_stamp_path_s_parse_sc(((x_stamp_path_s*)BLM_LEVEL_T_PUSH(0,x_stamp_path_s,x_stamp_path_s_create())),"state" ),((const x_inst*)(&(lcg ))));
     ASSERT( inst );
     ASSERT( (*(((const u3_t*)(inst)))) == 12345 );
     
@@ -776,11 +776,11 @@ void x_stamp_selftest( void )
     
     sr_s sr = sr_null();
     
-    sr = x_stamp_path_s_get_sr_in(((x_stamp_path_s*)(x_stamp_path_s_parse_sc(((x_stamp_path_s*)BLM_LEVEL_T_PUSH(0,x_stamp_path_s,x_stamp_path_s_create())),"[0].[1].vdata.data2.[1]" ))),zoo );
+    sr = x_stamp_path_s_get_sr_in(x_stamp_path_s_parse_sc(((x_stamp_path_s*)BLM_LEVEL_T_PUSH(0,x_stamp_path_s,x_stamp_path_s_create())),"[0].[1].vdata.data2.[1]" ),zoo );
     ASSERT( sr_s_type(&(sr)) == TYPEOF_u3_t );
     ASSERT( sr_s_to_u3(&(sr)) == 0 );
     
-    sr = x_stamp_path_s_set_sr_ret_in(((x_stamp_path_s*)(x_stamp_path_s_parse_sc(((x_stamp_path_s*)BLM_LEVEL_T_PUSH(0,x_stamp_path_s,x_stamp_path_s_create())),"[0].[1].vdata.data2.[1]" ))),zoo, sr_u3(20 ) );
+    sr = x_stamp_path_s_set_sr_ret_in(x_stamp_path_s_parse_sc(((x_stamp_path_s*)BLM_LEVEL_T_PUSH(0,x_stamp_path_s,x_stamp_path_s_create())),"[0].[1].vdata.data2.[1]" ),zoo, sr_u3(20 ) );
     ASSERT( sr_s_type(&(sr)) == TYPEOF_u3_t );
     ASSERT( sr_s_to_u3(&(sr)) == 20 );
     BLM_DOWN();
@@ -2200,7 +2200,7 @@ void bcore_shell_loop( bcore_shell* o, const bcore_main_frame_s* frame, bcore_sh
     ASSERT( control );
     while( !x_source_eos(control->source) && !bcore_shell_control_s_exit_loop(control) )
     {BLM_INIT_LEVEL(1);
-        x_sink_flush(((x_sink*)(x_sink_push_fa(control->sink,"\n#<sc_t>#<sc_t>(#<sc_t>)> ", control->path.sc, control->path.size ? " " : "", bnameof( o->_ ) ))));
+        x_sink_flush(x_sink_push_fa(control->sink,"\n#<sc_t>#<sc_t>(#<sc_t>)> ", control->path.sc, control->path.size ? " " : "", bnameof( o->_ ) ));
         bcore_shell_control_s_reset(control);
     
         st_s expression;BLM_T_INIT_SPUSH(st_s, &expression);;
@@ -2475,7 +2475,7 @@ void bcore_shell_op_default_ls_s_run( bcore_shell_op_default_ls_s* o, bcore_shel
 {
     // bcore_shell.h:418:9
     BLM_INIT_LEVEL(0);
-    x_stamp_path_s path;BLM_T_INIT_SPUSH(x_stamp_path_s, &path);((x_stamp_path_s*)(x_stamp_path_s_parse(&(path),((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(o->path.sc ))) )));
+    x_stamp_path_s path;BLM_T_INIT_SPUSH(x_stamp_path_s, &path);x_stamp_path_s_parse(&(path),((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(o->path.sc ))) );
     sr_s sr = x_stamp_path_s_get_sr_in(&(path),((const x_inst*)(obj )));
     
     if( sr.o )
@@ -2533,7 +2533,7 @@ void bcore_shell_op_default_enter_s_run( bcore_shell_op_default_enter_s* o, bcor
 {
     // bcore_shell.h:470:9
     BLM_INIT_LEVEL(0);
-    const x_stamp_path_s* path = ((x_stamp_path_s*)(x_stamp_path_s_parse(((x_stamp_path_s*)BLM_LEVEL_T_PUSH(0,x_stamp_path_s,x_stamp_path_s_create())),((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(&(o->path )))) )));
+    const x_stamp_path_s* path = x_stamp_path_s_parse(((x_stamp_path_s*)BLM_LEVEL_T_PUSH(0,x_stamp_path_s,x_stamp_path_s_create())),((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(&(o->path )))) );
     if( path->size == 0 )
     {
         bcore_sink_a_push_fa(sink,"Path '#<sc_t>' not found.\n", o->path.sc );
@@ -2588,7 +2588,7 @@ void bcore_shell_op_default_get_s_run( bcore_shell_op_default_get_s* o, bcore_sh
 {
     // bcore_shell.h:518:9
     BLM_INIT_LEVEL(0);
-    sr_s sr = x_stamp_path_s_get_sr_in(((x_stamp_path_s*)(x_stamp_path_s_parse(((x_stamp_path_s*)BLM_LEVEL_T_PUSH(0,x_stamp_path_s,x_stamp_path_s_create())),((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(&(o->path )))) ))),((const x_inst*)(obj )));
+    sr_s sr = x_stamp_path_s_get_sr_in(x_stamp_path_s_parse(((x_stamp_path_s*)BLM_LEVEL_T_PUSH(0,x_stamp_path_s,x_stamp_path_s_create())),((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(&(o->path )))) ),((const x_inst*)(obj )));
     if( sr.o )
     {
         x_btml_t_to_sink(((const x_btml*)( sr.o)),sr_s_type(&( sr )),((x_sink*)( sink )));
@@ -2614,7 +2614,7 @@ void bcore_shell_op_default_set_s_run( bcore_shell_op_default_set_s* o, bcore_sh
 {
     // bcore_shell.h:538:9
     BLM_INIT_LEVEL(0);
-    sr_s sr = x_stamp_path_s_get_sr_in(((x_stamp_path_s*)(x_stamp_path_s_parse(((x_stamp_path_s*)BLM_LEVEL_T_PUSH(0,x_stamp_path_s,x_stamp_path_s_create())),((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(&(o->path )))) ))),((const x_inst*)(obj )));
+    sr_s sr = x_stamp_path_s_get_sr_in(x_stamp_path_s_parse(((x_stamp_path_s*)BLM_LEVEL_T_PUSH(0,x_stamp_path_s,x_stamp_path_s_create())),((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(&(o->path )))) ),((const x_inst*)(obj )));
     if( sr.o )
     {
         if( o->source.size == 0 )
@@ -2741,7 +2741,7 @@ bcore_huffman_codec_s* bcore_huffman_codec_s_scan_u3( bcore_huffman_codec_s* o, 
 {
     // bcore_huffman.x:76:1
     
-    return  ((bcore_huffman_codec_s*)(bcore_huffman_codec_s_scan_u2(((bcore_huffman_codec_s*)(bcore_huffman_codec_s_scan_u2(o,val ))),val >> 32 )));
+    return  bcore_huffman_codec_s_scan_u2(bcore_huffman_codec_s_scan_u2(o,val ),val >> 32 );
 }
 
 bcore_huffman_codec_s* bcore_huffman_codec_s_scan_end( bcore_huffman_codec_s* o )
@@ -2815,7 +2815,7 @@ const bcore_huffman_codec_s* bcore_huffman_codec_s_encode_u3( const bcore_huffma
 {
     // bcore_huffman.x:155:1
     
-    return  ((const bcore_huffman_codec_s*)(bcore_huffman_codec_s_encode_u2(((const bcore_huffman_codec_s*)(bcore_huffman_codec_s_encode_u2(o,val, bit_buffer ))),val >> 32, bit_buffer )));
+    return  bcore_huffman_codec_s_encode_u2(bcore_huffman_codec_s_encode_u2(o,val, bit_buffer ),val >> 32, bit_buffer );
 }
 
 u3_t bcore_huffman_codec_s_decode_u3( const bcore_huffman_codec_s* o, bcore_huffman_bit_buffer_iterator_s* iterator )
@@ -2888,7 +2888,7 @@ bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_packed_u3( bcore_huf
     // bcore_huffman.x:232:1
     
     sz_t bits = sz_max( 1, bcore_huffman_min_bits(val, 64 ) );
-    return  ((bcore_huffman_bit_buffer_s*)(bcore_huffman_bit_buffer_s_push_u3(((bcore_huffman_bit_buffer_s*)(bcore_huffman_bit_buffer_s_push_u3(o,bits - 1, 6 ))),val, bits )));
+    return  bcore_huffman_bit_buffer_s_push_u3(bcore_huffman_bit_buffer_s_push_u3(o,bits - 1, 6 ),val, bits );
 }
 
 bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_s3( bcore_huffman_bit_buffer_s* o, s3_t val, sz_t bits )
@@ -3199,9 +3199,9 @@ void bcore_huffman_selftest( void )
     bcore_huffman_codec_s_encode(&(codec),&(bit_buffer ));
     for(sz_t i = 0; i < n; i++ ) bcore_huffman_codec_s_encode_s3(&(codec),arr_s3.data[ i ],&( bit_buffer ));
     
-    bcore_huffman_bit_buffer_iterator_s iterator;BLM_T_INIT_SPUSH(bcore_huffman_bit_buffer_iterator_s, &iterator);((bcore_huffman_bit_buffer_iterator_s*)(bcore_huffman_bit_buffer_iterator_s_setup(&(iterator),&(bit_buffer ))));
+    bcore_huffman_bit_buffer_iterator_s iterator;BLM_T_INIT_SPUSH(bcore_huffman_bit_buffer_iterator_s, &iterator);bcore_huffman_bit_buffer_iterator_s_setup(&(iterator),&(bit_buffer ));
     
-    bcore_huffman_codec_s codec2;BLM_T_INIT_SPUSH(bcore_huffman_codec_s, &codec2);((bcore_huffman_codec_s*)(bcore_huffman_codec_s_decode(&(codec2),&(iterator ))));
+    bcore_huffman_codec_s codec2;BLM_T_INIT_SPUSH(bcore_huffman_codec_s, &codec2);bcore_huffman_codec_s_decode(&(codec2),&(iterator ));
     for(sz_t i = 0; i < n; i++ ) ASSERT( bcore_huffman_codec_s_decode_s3(&(codec2),&(iterator )) == arr_s3.data[ i ] );
     BLM_DOWN();
 }
@@ -3317,7 +3317,7 @@ void bcore_indexer_selftest( void )
     bcore_arr_s3_s arr;BLM_T_INIT_SPUSH(bcore_arr_s3_s, &arr);bcore_arr_s3_s_set_size(&(arr),n );
     {const bcore_arr_s3_s* __a=&(arr );if(__a)for(sz_t __i=0;__i<__a->size;__i++){s3_t* e=&(__a->data[__i]); { (*(e)) = bcore_prsg_lcg_u3_00_s_gen_f3(&(prsg),0.0, m ); }
     
-    }}bcore_indexer_s indexer;BLM_T_INIT_SPUSH(bcore_indexer_s, &indexer);((bcore_indexer_s*)(bcore_indexer_s_setup(&(indexer),&(arr ))));
+    }}bcore_indexer_s indexer;BLM_T_INIT_SPUSH(bcore_indexer_s, &indexer);bcore_indexer_s_setup(&(indexer),&(arr ));
     
     s3_t sum = 0;
     {const bcore_arr_s3_s* __a=&(arr );if(__a)for(sz_t __i=0;__i<__a->size;__i++){s3_t* e=&(__a->data[__i]); { sum += (*(e)); }
@@ -5012,5 +5012,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x16DA160E33FCDE84
-// XOICO_FILE_SIGNATURE 0x856F2D1E2BE11A6A
+// XOICO_BODY_SIGNATURE 0xBC84701C173C36A1
+// XOICO_FILE_SIGNATURE 0x97EB4A5AA0ED8266

@@ -39,6 +39,8 @@ static inline f3_t f3_log  ( f3_t v ) { return v > 0 ? log  ( v ) : -f3_lim_max;
 static inline f3_t f3_log10( f3_t v ) { return v > 0 ? log10( v ) : -f3_lim_max; }
 static inline f3_t f3_pow( f3_t a, f3_t b ) { return ( a > 0 ) ? pow( a, b ) : 0; }
 static inline f3_t f3_erf( f3_t a ) { return erf( a ); }
+static inline f3_t f3_sin( f3_t a ) { return sin( a ); }
+static inline f3_t f3_cos( f3_t a ) { return cos( a ); }
 
 /// random generator (range -1, 1)
 static inline f3_t f3_rnd_sym(  u3_t* rv ) { return ( *rv = bcore_lcg01_u3( *rv ) ) * ( 2.0 / 0xFFFFFFFFFFFFFFFFull ) - 1.0; }
@@ -72,6 +74,8 @@ static inline f2_t f2_log  ( f2_t v ) { return v > 0 ? logf  ( v ) : -f2_lim_max
 static inline f2_t f2_log10( f2_t v ) { return v > 0 ? log10f( v ) : -f2_lim_max; }
 static inline f2_t f2_pow( f2_t a, f2_t b ) { return ( a > 0 ) ? powf( a, b ) : 0; }
 static inline f2_t f2_erf( f2_t a ) { return erff( a ); }
+static inline f3_t f2_sin( f2_t a ) { return sinf( a ); }
+static inline f3_t f2_cos( f2_t a ) { return cosf( a ); }
 
 /// random generator (range -1, 1)
 static inline f2_t f2_rnd_sym(  u3_t* rv ) { return ( *rv = bcore_lcg01_u3( *rv ) ) * ( 2.0 / 0xFFFFFFFFFFFFFFFFull ) - 1.0; }
