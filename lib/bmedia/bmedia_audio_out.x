@@ -33,7 +33,7 @@ stamp :hwparams_s
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (er_t error( sc_t context, s2_t errnum ))
+func er_t error( sc_t context, s2_t errnum )
 {
     sc_t snd_msg = snd_strerror( errnum );
     = bcore_error_push_fa( TYPEOF_general_error, "#<sc_t>: #<sc_t>\n", context, snd_msg );

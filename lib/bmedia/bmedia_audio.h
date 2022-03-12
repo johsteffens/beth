@@ -263,10 +263,10 @@ stamp :sequence_iterator_s =
     bl_t eos = true;
 
     /// setup; sets index to zero
-    func (o setup( m@* o, :sequence_s* sequence ));
+    func o setup( m@* o, :sequence_s* sequence );
 
     /// sets index to zero
-    func (o reset( m@* o ));
+    func o reset( m@* o );
 
     /** Move to new position.
      *  diff(erence) can be positive or negative.
