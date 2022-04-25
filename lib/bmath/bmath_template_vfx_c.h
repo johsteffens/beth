@@ -613,8 +613,9 @@ fx_t BCATU(bmath_vfx_s,fx_sub_sqr)( const bmath_vfx_s* o, const bmath_vfx_s* vec
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static fx_t fx_max( fx_t a, fx_t b ) { return ( a > b ) ? a : b; }
-static fx_t fx_min( fx_t a, fx_t b ) { return ( a < b ) ? a : b; }
+static fx_t fx_max( fx_t a, fx_t b ) { return ( a > b ) ?  a : b; }
+static fx_t fx_min( fx_t a, fx_t b ) { return ( a < b ) ?  a : b; }
+static fx_t fx_abs( fx_t a         ) { return ( a < 0 ) ? -a : a; }
 
 static fx_t fx_s_fx_max( const fx_t* v1, uz_t size )
 {
@@ -625,10 +626,28 @@ static fx_t fx_s_fx_max( const fx_t* v1, uz_t size )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static fx_t fx_s_fx_max_abs( const fx_t* v1, uz_t size )
+{
+    fx_t max = ( size > 0 ) ? fx_abs( v1[ 0 ] ) : 0;
+    for( uz_t i = 1; i < size; i++ ) max = fx_max( max, fx_abs( v1[ i ] ) );
+    return max;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static fx_t fx_s_fx_min( const fx_t* v1, uz_t size )
 {
     fx_t min = ( size > 0 ) ? v1[ 0 ] : 0;
     for( uz_t i = 1; i < size; i++ ) min = fx_min( min, v1[ i ] );
+    return min;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static fx_t fx_s_fx_min_abs( const fx_t* v1, uz_t size )
+{
+    fx_t min = ( size > 0 ) ? fx_abs( v1[ 0 ] ) : 0;
+    for( uz_t i = 1; i < size; i++ ) min = fx_min( min, fx_abs( v1[ i ] ) );
     return min;
 }
 
@@ -671,9 +690,23 @@ fx_t BCATU(bmath_vfx_s,fx_max)( const bmath_vfx_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+fx_t BCATU(bmath_vfx_s,fx_max_abs)( const bmath_vfx_s* o )
+{
+    return fx_s_fx_max_abs( o->data, o->size );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 fx_t BCATU(bmath_vfx_s,fx_min)( const bmath_vfx_s* o )
 {
     return fx_s_fx_min( o->data, o->size );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+fx_t BCATU(bmath_vfx_s,fx_min_abs)( const bmath_vfx_s* o )
+{
+    return fx_s_fx_min_abs( o->data, o->size );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

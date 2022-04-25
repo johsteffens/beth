@@ -118,7 +118,9 @@ stamp bmath_vf2_s =
     func f2_t fx_sqr(     @* o );
     func f2_t fx_sub_sqr( @* o, @* vec2 );
     func f2_t fx_max(     @* o );
+    func f2_t fx_max_abs( @* o );
     func f2_t fx_min(     @* o );
+    func f2_t fx_min_abs( @* o );
     func f2_t fx_sum(     @* o );
     func f2_t fx_avg(     @* o );
     func f2_t fx_var(     @* o );
@@ -249,7 +251,9 @@ stamp bmath_vf3_s =
     func f3_t fx_sqr(     @* o );
     func f3_t fx_sub_sqr( @* o, @* vec2 );
     func f3_t fx_max(     @* o );
+    func f3_t fx_max_abs( @* o );
     func f3_t fx_min(     @* o );
+    func f3_t fx_min_abs( @* o );
     func f3_t fx_sum(     @* o );
     func f3_t fx_avg(     @* o );
     func f3_t fx_var(     @* o );

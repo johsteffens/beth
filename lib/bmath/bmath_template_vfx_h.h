@@ -148,7 +148,9 @@ fx_t BCATU(bmath_vfx_s,fx_mul_vec)( const bmath_vfx_s* o, const bmath_vfx_s* vec
 fx_t BCATU(bmath_vfx_s,fx_sqr)(     const bmath_vfx_s* o );
 fx_t BCATU(bmath_vfx_s,fx_sub_sqr)( const bmath_vfx_s* o, const bmath_vfx_s* vec2 );
 fx_t BCATU(bmath_vfx_s,fx_max)(     const bmath_vfx_s* o );
+fx_t BCATU(bmath_vfx_s,fx_max_abs)( const bmath_vfx_s* o );
 fx_t BCATU(bmath_vfx_s,fx_min)(     const bmath_vfx_s* o );
+fx_t BCATU(bmath_vfx_s,fx_min_abs)( const bmath_vfx_s* o );
 fx_t BCATU(bmath_vfx_s,fx_sum)(     const bmath_vfx_s* o );
 fx_t BCATU(bmath_vfx_s,fx_avg)(     const bmath_vfx_s* o );
 fx_t BCATU(bmath_vfx_s,fx_var)(     const bmath_vfx_s* o );
