@@ -34,7 +34,7 @@ XOILA_DEFINE_GROUP( x_sink, x_inst )
 /** Create functions: Create a stream
  *  create_from_file returns NULL in case the file could not be opened for writing.
  */
-func d x_sink* create_from_file( sc_t path ) { = bcore_file_try_open_sink( path ); };
+func d x_sink* create_from_file( sc_t path ) = bcore_file_try_open_sink( path );
 
 //----------------------------------------------------------------------------------------------------------------------
 
