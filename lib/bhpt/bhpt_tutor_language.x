@@ -27,7 +27,7 @@ include "bhvm_std.h";
 
 /** Generates automatic text from a trigger
  */
-stamp :utf8_chatter_s = aware :
+stamp :utf8_chatter_s :
 {
     bl_t cyclic_reset = false;
     st_s trigger    = "The chatter trigger:";
@@ -35,7 +35,7 @@ stamp :utf8_chatter_s = aware :
     sz_t size_lines = 4;
     bl_t newline_to_space = true;
     f3_t heat       = 0.2;
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ stamp :utf8_chatter_s = aware :
  *  "The Unreasonable Effectiveness of Recurrent Neural Networks", May, 2015,
  *  http://karpathy.github.io/2015/05/21/rnn-effectiveness/
  */
-stamp :utf8_s = aware bhpt_tutor
+stamp :utf8_s bhpt_tutor
 {
     aware bhpt_builder => builder;
     aware bhpt_adaptor => adaptor;
@@ -76,7 +76,7 @@ stamp :utf8_s = aware bhpt_tutor
 
     func bhpt_tutor.reset { o->prsg_priming =< bcore_prsg_lcg_u3_00_s!; };
     func bhpt_tutor.create_adaptive;
-    func bhpt_tutor.create_adaptor { return o.adaptor.clone(); };
+    func bhpt_tutor.create_adaptor = o.adaptor.clone();
     func bhpt_tutor.prime;
     func bhpt_tutor.test;
     func bhpt_tutor.status_to_sink
@@ -85,8 +85,8 @@ stamp :utf8_s = aware bhpt_tutor
         {
             bcore_sink_a_push_fa( sink, "#<sc_t>", ifnameof( o._ ) );
         }
-    };
-};
+    }
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -99,8 +99,8 @@ func (:utf8_s) bhpt_tutor.create_adaptive
     m$* builder = o.builder.clone()^;
     builder.set_format_en( bhvm_holor_s!^.set_type_vector_vacant( TYPEOF_f3_t, 256 ) );
     builder.set_format_ex( bhvm_holor_s!^.set_type_vector_vacant( TYPEOF_f3_t, 256 ) );
-    return builder.create_adaptive();
-};
+    = builder.create_adaptive();
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -141,7 +141,7 @@ func (:utf8_s) void get_string( m@* o, m bcore_prsg* prsg, sz_t size, m st_s* st
 
     string.set_size( 0, size );
     for( sz_t i = 0; i < size; i++ ) string.[ i ] = o.st.[ ( i + index ) % o.st.size ];
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -150,7 +150,7 @@ func (:utf8_s) void encode( c bhpt_tutor_language_utf8_s* o, u0_t c, m bhvm_valu
     assert( v.type == TYPEOF_f3_t );
     m f3_t* v_data = v.data.cast( m f3_t* );
     for( sz_t i = 0; i < v.size; i++ ) v_data[ i ] = ( i == c ) ? o.tgt_pos : o.tgt_neg;
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -189,7 +189,7 @@ func (:utf8_s) bhpt_tutor.prime
         adaptive.dendrite_pass( hy, NULL );
         index++;
     }
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -291,7 +291,7 @@ func (:utf8_chatter_s) void run( c@* o, c :utf8_s* tutor, m bhpt_adaptive* adapt
     }
 
     log.push_fa( "\n#rn{=}\n", o.size_line );
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -311,9 +311,9 @@ stamp :test_result_s = aware bhpt_test_result
         }
 
         sink.pushf( "err: %5.3f, bias: %7.5f", o.error, o.bias );
-        return o;
-    };
-};
+        = o;
+    }
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -393,8 +393,8 @@ func (:utf8_s) bhpt_tutor.test
     test_result.db_size = o.st.size;
     if( o.chatter ) o.chatter.run( o, adaptive_test, test_result.chatter! );
 
-    return test_result;
-};
+    = test_result;
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 

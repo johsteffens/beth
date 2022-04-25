@@ -33,14 +33,14 @@ feature strict sz_t get_size_ex( c @* o );
 /** Type: Classifier
  *  Problem: Distinguish between a sine wave of arbitrary amplitude and frequency from a random walk curve.
  */
-stamp :sine_random_s = aware :
+stamp :sine_random_s :
 {
     sz_t size_en = 32;
     f3_t pos_tgt =  0.9;
     f3_t neg_tgt = -0.9;
 
-    func :.get_size_en { return o.size_en; };
-    func :.get_size_ex { return 1; };
+    func :.get_size_en = o.size_en;
+    func :.get_size_ex = 1;
     func :.fetch
     {
         ASSERT( en.size == o->size_en );
@@ -76,22 +76,22 @@ stamp :sine_random_s = aware :
             }
             ex_data[ 0 ] = o.neg_tgt;
         }
-    };
-};
+    }
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 /** Type: Encoder
  *  Problem: Add two unsigned integer variables.
  */
-stamp :binary_add_s = aware :
+stamp :binary_add_s :
 {
     sz_t bits  = 4; // input size = bits * 2; output size = bits + 1
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
 
-    func :.get_size_en { return o.bits * 2; };
-    func :.get_size_ex { return o.bits + 1; };
+    func :.get_size_en = o.bits * 2;
+    func :.get_size_ex = o.bits + 1;
     func :.fetch
     {
         ASSERT( en.size == o.bits * 2 );
@@ -116,22 +116,22 @@ stamp :binary_add_s = aware :
         {
             ex_data[ i ] = ( ( vo & ( 1 << i ) ) != 0 ) ? o.val_h : o.val_l;
         }
-    };
-};
+    }
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 /** Type: Encoder
  *  Problem: Multiply two unsigned integer variables.
  */
-stamp :binary_mul_s = aware :
+stamp :binary_mul_s :
 {
     sz_t bits  = 4; // input size = bits * 2; output size = bits * 2
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
 
-    func :.get_size_en { return o.bits * 2; };
-    func :.get_size_ex { return o.bits * 2; };
+    func :.get_size_en = o.bits * 2;
+    func :.get_size_ex = o.bits * 2;
     func :.fetch
     {
         ASSERT( en.size == o.bits * 2 );
@@ -156,22 +156,22 @@ stamp :binary_mul_s = aware :
         {
             ex_data[ i ] = ( ( vo & ( 1 << i ) ) != 0 ) ? o.val_h : o.val_l;
         }
-    };
-};
+    }
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 /** Type: Encoder
  *  Problem: Forward randomization.
  */
-stamp :binary_lcg00_s = aware :
+stamp :binary_lcg00_s :
 {
     sz_t bits  = 4; // input size = bits; output size = bits
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
 
-    func :.get_size_en { return o.bits; };
-    func :.get_size_ex { return o.bits; };
+    func :.get_size_en = o.bits;
+    func :.get_size_ex = o.bits;
     func :.fetch
     {
         ASSERT( en.size == o.bits );
@@ -194,22 +194,22 @@ stamp :binary_lcg00_s = aware :
         {
             ex_data[ i ] = ( ( vo & ( 1 << i ) ) != 0 ) ? o.val_h : o.val_l;
         }
-    };
-};
+    }
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 /** Type: Encoder
  *  Problem: (Reverse) Hashing.
  */
-stamp :binary_hash_s = aware :
+stamp :binary_hash_s :
 {
     sz_t bits  = 4; // input size = bits; output size = bits
     f3_t val_h =  0.9;
     f3_t val_l = -0.9;
     bl_t reverse = false;
-    func :.get_size_en { return o.bits; };
-    func :.get_size_ex { return o.bits; };
+    func :.get_size_en = o.bits;
+    func :.get_size_ex = o.bits;
     func :.fetch
     {
         ASSERT( en.size == o.bits );
@@ -234,22 +234,22 @@ stamp :binary_hash_s = aware :
         {
             ex_data[ i ] = ( ( vo & ( 1 << i ) ) != 0 ) ? o.val_h : o.val_l;
         }
-    };
-};
+    }
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 /** Type: Regression
  *  Problem: Estimate polynomial coefficients for a signal within range -1, 1.
  */
-stamp :polynom_s = aware :
+stamp :polynom_s :
 {
     sz_t size_en = 32;
     sz_t size_ex = 3;   // polynomial order + 1
     f3_t range   = 1.0; // +/- range of coefficients
     f3_t noise_level = 0;   // additive noise to input signal
-    func :.get_size_en { return o.size_en; };
-    func :.get_size_ex { return o.size_ex; };
+    func :.get_size_en = o.size_en;
+    func :.get_size_ex = o.size_ex;
     func :.fetch
     {
         ASSERT( en.size == o.size_en );
@@ -274,12 +274,12 @@ stamp :polynom_s = aware :
 
             en_data[ i ] = y + o.noise_level * prsg.gen_f3( -1, 1 );
         }
-    };
-};
+    }
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-stamp bhpt_tutor_sampler_s = aware bhpt_tutor
+stamp bhpt_tutor_sampler_s bhpt_tutor
 {
     aware bhpt_builder => builder;
     aware bhpt_adaptor => adaptor;
@@ -295,17 +295,17 @@ stamp bhpt_tutor_sampler_s = aware bhpt_tutor
 
     hidden bcore_mutex_s mutex;
 
-    func bhpt_tutor.reset {};
+    func bhpt_tutor.reset {}
 
     func bhpt_tutor.create_adaptive
     {
         m bhpt_builder* builder = o.builder.clone()^;
         builder.set_format_en( bhvm_holor_s!^.set_type_vector_vacant( TYPEOF_f3_t, o.sampler.get_size_en() ) );
         builder.set_format_ex( bhvm_holor_s!^.set_type_vector_vacant( TYPEOF_f3_t, o.sampler.get_size_ex() ) );
-        return builder.create_adaptive();
-    };
+        = builder.create_adaptive();
+    }
 
-    func bhpt_tutor.create_adaptor { return o.adaptor.clone(); };
+    func bhpt_tutor.create_adaptor = o.adaptor.clone();
     func bhpt_tutor.test;
     func bhpt_tutor.status_to_sink
     {
@@ -313,7 +313,7 @@ stamp bhpt_tutor_sampler_s = aware bhpt_tutor
         {
             sink.push_fa( "#<sc_t> : #<sc_t>", ifnameof( o._ ), ifnameof( o.sampler ? o.sampler._ : 0 ) );
         }
-    };
+    }
 
     func bhpt_tutor.prime
     {
@@ -326,8 +326,8 @@ stamp bhpt_tutor_sampler_s = aware bhpt_tutor
         adaptive.axon_pass( hx, hf );
         bhvm_hop_ar2_eci_sub_s_f( hy, hf, hy );
         adaptive.dendrite_pass( hy, NULL );
-    };
-};
+    }
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -335,13 +335,13 @@ stamp bhpt_tutor_sampler_s = aware bhpt_tutor
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-stamp bhpt_tutor_sampler_test_result_s = aware bhpt_test_result
+stamp bhpt_tutor_sampler_test_result_s bhpt_test_result
 {
     f3_t error;
     f3_t bias;
-    func o setup( m@* o, f3_t error, f3_t bias ) { o.error = error; o.bias = bias; return o; };
-    func bhpt_test_result.to_sink { sink.pushf( "err: %5.3f, bias: %7.5f", o.error, o.bias ); return o; };
-};
+    func o setup( m@* o, f3_t error, f3_t bias ) { o.error = error; o.bias = bias; = o; };
+    func bhpt_test_result.to_sink { sink.pushf( "err: %5.3f, bias: %7.5f", o.error, o.bias ); = o; };
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -396,8 +396,8 @@ func (bhpt_tutor_sampler_s) bhpt_tutor.test
 
     f3_t bias = f3_srt( eb2 * f3_inv( vy ) );
 
-    return bhpt_tutor_sampler_test_result_s!.setup( error, bias );
-};
+    = bhpt_tutor_sampler_test_result_s!.setup( error, bias );
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 

@@ -24,10 +24,10 @@ include 'h' "bhvm_std.h";
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-group :thread =
+group :thread
 {
     /// shared object in a thread base
-    stamp :share_s = aware :
+    stamp :share_s :
     {
         aware bhpt_tutor    -> tutor;
         aware bhpt_adaptive -> adaptive;
@@ -36,14 +36,14 @@ group :thread =
         bcore_mutex_s        => mutex; // mutex for share
 
         sz_t finished_count  = 0;      // number is incremented by item when a task was finished
-    };
+    }
 
     signature vd_t loop(       m @* o ); // thread function
     signature void loop_enter( m @* o );
     signature void loop_exit(  m @* o );
     signature void wait_while_locked( m @* o ); // lock-unlock in sequence (used to test if the item is unlocked and waits otherwise)
 
-    stamp :item_s = aware :
+    stamp :item_s :
     {
         bl_t running = false;
         sz_t prime_cycles = 0; // number of prime cycles yet to be executed
@@ -52,22 +52,22 @@ group :thread =
         :share_s             -> share;
         aware bhpt_adaptive  => adaptive; // local adaptive
 
-        func bcore_inst_call.down_e { ASSERT( !o.running ); };
+        func bcore_inst_call.down_e { ASSERT( !o.running ); }
 
         func :.loop;
         func :.loop_enter;
         func :.loop_exit;
         func :.wait_while_locked { o.mutex.lock(); o.mutex.unlock(); };
-    };
+    }
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    stamp :ads_s = aware x_array
+    stamp :ads_s x_array
     {
         :item_s [];
         wrap x_array.set_size;
         wrap x_array.clear;
-    };
+    }
 
     // -----------------------------------------------------------------------------------------------------------------
 
@@ -75,7 +75,7 @@ group :thread =
     signature void tdown( m @* o ); // thread function
     signature void run( m @* o, sz_t cycles_per_thread );
 
-    stamp :base_s = aware :
+    stamp :base_s :
     {
         :ads_s ads;
         :share_s => share;
@@ -84,14 +84,14 @@ group :thread =
         func :.tdown;
         func :.run;
 
-        func bcore_inst_call.down_e { o.tdown(); };
-        func bcore_inst_call.copy_e { o.tdown(); };
-    };
-};
+        func bcore_inst_call.down_e o.tdown();
+        func bcore_inst_call.copy_e o.tdown();
+    }
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-stamp :state_s = aware :
+stamp :state_s :
 {
     sz_t cycle;
     sz_t last_cycle_adapt;
@@ -102,12 +102,12 @@ stamp :state_s = aware :
     bhpt_test_result_adl_s => test_result_adl;
 
     func bcore_main.main;
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 /// Adaptive framework
-stamp :s = aware bcore_main
+stamp :s bcore_main
 {
     /// ========= parameters ================
     aware bhpt_tutor   => tutor;
@@ -160,18 +160,18 @@ stamp :s = aware bcore_main
     func void run_training_single_threaded( m@* o );
     func void run_training_multi_threaded( m@* o );
     func void run_training( m@* o );
-    func bl_t exit_training( m@* o ) { o.flag_mutex.create_lock()^; return o.flag_suspend_requested || o.flag_interrupt_requested || o.flag_exit_required; };
+    func bl_t exit_training( m@* o ) { o.flag_mutex.create_lock()^; = o.flag_suspend_requested || o.flag_interrupt_requested || o.flag_exit_required; }
 
     func bcore_main.main;
 
-    func bcore_main.on_suspend     { o.flag_mutex.create_lock()^; o.flag_suspend_requested   = true; return true; };
-    func bcore_main.on_interrupt   { o.flag_mutex.create_lock()^; o.flag_interrupt_requested = true; o.flag_exit_required = true; return true; };
-    func bcore_main.on_termination { o.flag_mutex.create_lock()^; o.flag_exit_required       = true; return true; };
+    func bcore_main.on_suspend     { o.flag_mutex.create_lock()^; o.flag_suspend_requested   = true; = true; }
+    func bcore_main.on_interrupt   { o.flag_mutex.create_lock()^; o.flag_interrupt_requested = true; o.flag_exit_required = true; = true; }
+    func bcore_main.on_termination { o.flag_mutex.create_lock()^; o.flag_exit_required       = true; = true; }
 
-    func void clear_flags( m @* o ) { o.flag_mutex.create_lock()^; o.flag_suspend_requested = o.flag_interrupt_requested = o.flag_exit_required = false; };
+    func void clear_flags( m @* o ) { o.flag_mutex.create_lock()^; o.flag_suspend_requested = o.flag_interrupt_requested = o.flag_exit_required = false; }
 
-    func bl_t exit_required( @* o ) { o.cast( m $* ).flag_mutex.create_lock()^; return o.flag_exit_required; };
-};
+    func bl_t exit_required( @* o ) { o.cast( m $* ).flag_mutex.create_lock()^; = o.flag_exit_required; }
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -206,8 +206,8 @@ func (:thread_item_s) :.loop
         o.share.condition_item.sleep( o.mutex );
     }
 
-    return NULL;
-};
+    = NULL;
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -227,7 +227,7 @@ func (:thread_item_s) :.loop_enter
     {
         bcore_thread_s_call( o->thread, ( bcore_fp_thread )bhpt_frame_thread_item_s_loop, o );
     }
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -237,7 +237,7 @@ func (:thread_item_s) :.loop_exit
     o.mutex.lock();
     o.running = false;
     o.mutex.unlock();
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -264,7 +264,7 @@ func (:thread_base_s) :.tsetup
     }
 
     foreach( m $* e in o.ads ) e.loop_enter();
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -275,7 +275,7 @@ func (:thread_base_s) :.tdown
     o.share.condition_item.wake_all();
     o.ads.clear();
     o.share.condition_item =< NULL;
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -304,7 +304,7 @@ func (:thread_base_s) :.run
         busy = o.share.finished_count < o.ads.size;
         o.share.mutex.unlock();
     }
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -321,7 +321,7 @@ func (:s) void adapt( m @* o )
     o.stats_grad.acc_stats( stats_grad );
 
     foreach( m$* e in adaptor_adl ) e.adapt( probe.[ __i ] );
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -330,7 +330,7 @@ func (:s) void backup( m@* o )
     sc_t path = o.state_path.sc;
 //    if( path[ 0 ] ) o.state.to_file_bin_ml( path );
     if( path[ 0 ] ) o.state.cast( x_bbml* ).to_file( path );
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -367,7 +367,7 @@ stamp :test_result_s = aware bhpt_test_result
 
         return o;
     };
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -388,7 +388,7 @@ func (:s) void test( m@* o )
     o.state.test_result_adl!.push_c( test_result );
 
     o.stats_grad.clear();
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -421,7 +421,7 @@ func (:s) run_training_single_threaded
             o.backup();
         }
     }
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -456,7 +456,7 @@ func (:s) run_training_multi_threaded
     }
 
     o.thread_base =< NULL;
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -472,7 +472,7 @@ func (:s) run_training
     {
         o.run_training_multi_threaded();
     }
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -481,7 +481,7 @@ func (:s) void help_to_sink( m bcore_sink* sink )
     sink.push_fa( "-help:  Prints this help information.\n" );
     sink.push_fa( "-reset: Resets training. Discards previous training results.\n" );
     sink.push_fa( "-continue: (Default) Continues training from last saved training state.\n" );
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -587,8 +587,8 @@ func (:s) bcore_main.main
     o.backup();
     o.log.push_fa( "Exiting cleanly.\n" );
 
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -633,8 +633,8 @@ func (:state_s) er_t table_to_sink(:state_s* o, bcore_hmap_name_s* hmap_name, x_
         }
         sink.push_sc( "\n" );
     }
-    return 0;
-};
+    = 0;
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -645,7 +645,7 @@ func (:state_s) void help_to_sink( m bcore_sink* sink )
     sink.push_fa( "   Example: -csv cycle, test_result.error, test_result.bias \n" );
     sink.push_fa( "-adaptive '<command string>': Passes a command string to the adaptive.\n" );
     sink.push_fa( "   Example: -csv cycle, test_result.error, test_result.bias \n" );
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -698,8 +698,8 @@ func (:state_s) bcore_main.main
         }
     }
 
-    return 0;
-};
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -708,28 +708,28 @@ group :op = retrievable
 {
     stamp :run_s =
     {
-        func bcore_shell_op.key { return "run"; };
-        func bcore_shell_op.info { return "starts/continues training; C-z: interactive exit; C-c: terminating exit"; };
+        func bcore_shell_op.key = "run";
+        func bcore_shell_op.info = "starts/continues training; C-z: interactive exit; C-c: terminating exit";
         func bcore_shell_op.run
         {
             m$* frame = obj.cast( m ::s* );
             frame.run_training();
             if( frame.exit_required() ) control.request_exit_loop();
-        };
-    };
+        }
+    }
 
     stamp :safe_s =
     {
-        func bcore_shell_op.key { return "safe"; };
-        func bcore_shell_op.info { return "saves current status"; };
+        func bcore_shell_op.key = "safe";
+        func bcore_shell_op.info = "saves current status";
         func bcore_shell_op.run
         {
             m$* frame = obj.cast( m ::s* );
             sink.push_fa( "Saving state at cycle #<sz_t>\n", frame.state.cycle );
             frame.backup();
-        };
-    };
-};
+        }
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
