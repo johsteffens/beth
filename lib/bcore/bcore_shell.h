@@ -39,15 +39,15 @@ forward :control_s;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-group :op =
+group :op
 {
     /// Implement 'key' (simple string) or 'get_key' (formatted string)
     feature 'a' sc_t key(  @* o );
-    feature 'a' void get_key(  @* o, m st_s* key ) { key.copy_sc( o.key() ); };
+    feature 'a' void get_key(  @* o, m st_s* key ) key.copy_sc( o.key() );
 
     /// Implement 'info' (simple string) or 'get_info' (formatted string)
     feature 'a' sc_t info( @* o );
-    feature 'a' void get_info( @* o, m st_s* info ) { info.copy_sc( o.info() ); };
+    feature 'a' void get_info( @* o, m st_s* info ) info.copy_sc( o.info() );
 
     feature 'a' void run
     (
@@ -74,11 +74,11 @@ group :op =
                 if( c == ' ' || c== ',' ) break;
                 name.push_char( c );
             }
-            if( name.size == 0 ) return false;
-            if( name.equal_sc( key ) ) return true;
+            if( name.size == 0 ) = false;
+            if( name.equal_sc( key ) ) = true;
         }
-        return false;
-    };
+        = false;
+    }
 
     /** Tests for keyword match.
      *  false: No match. Nothing consumed. Go try next command.
@@ -88,11 +88,11 @@ group :op =
     {
         st_s^ key;
         source.parse_fa( "#=until' '", key.1 );
-        if( key.size == 0 ) return false;
-        if( !o.key_match( key.sc ) ) return false;
+        if( key.size == 0 ) = false;
+        if( !o.key_match( key.sc ) ) = false;
         source.parse_fa( "#-until' '" );
-        return true;
-    };
+        = true;
+    }
 
     /** Parses parameters of operator.
      *  false: An error occurred. Discard this operation and continue with next command.
@@ -117,7 +117,7 @@ group :op =
                 if( index == stamp.size() )
                 {
                     sink.push_fa( "Invalid parameter '#<sc_t>'\n", name.sc );
-                    return false;
+                    = false;
                 }
                 source.parse_fa( "#skip' '" );
 
@@ -170,7 +170,7 @@ group :op =
                     default:
                     {
                         sink.push_fa( "Parameter '#<sc_t>' is of unhandled type '#<sc_t>'.\n", name.sc, bnameof( type ) );
-                        return false;
+                        = false;
                     }
                 }
             }
@@ -179,7 +179,7 @@ group :op =
                 if( direct_index >= stamp.size() )
                 {
                     sink.push_fa( "Passing excess argument. This command has only #<sz_t> arguments.\n", stamp.size() );
-                    return false;
+                    = false;
                 }
 
                 tp_t type = stamp.type_i( direct_index );
@@ -187,7 +187,7 @@ group :op =
                 if( x_btml_t_body_from_source( inst, type, source ) )
                 {
                     bcore_error_pop_all_to_sink( sink );
-                    return false;
+                    = false;
                 }
 
                 stamp.set_sr_i( direct_index, sr_tsd( type, inst.fork() ) );
@@ -195,9 +195,8 @@ group :op =
             }
             source.parse_fa( "#skip' \t'" );
         }
-
-        return true;
-    };
+        = true;
+    }
 
     /// Sends a description of operators argument signature to sink.
     func void arg_signature_to_sink( m @* o, m bcore_sink* sink )
@@ -234,7 +233,7 @@ group :op =
                 break;
             }
         }
-    };
+    }
 
     //----------------------------------------------------------------------------------------------------------------------
 
@@ -262,11 +261,11 @@ group :control =
 
         bl_t exit_loop;
         st_s path;
-        func :.reset             { o.exit_loop = false; return o; };
-        func :.request_exit_loop { o.exit_loop = true; };
-        func :.request_exit_all  { o.exit_loop = true; if( o.parent ) o.parent.request_exit_all(); };
-        func :.exit_loop         { return o.exit_loop; };
-        func :.spawn             { d @* r = o.clone(); r.parent = o; return r; };
+        func :.reset             o.exit_loop = false;
+        func :.request_exit_loop o.exit_loop = true;
+        func :.request_exit_all  { o.exit_loop = true; if( o.parent ) o.parent.request_exit_all(); }
+        func :.exit_loop         = o.exit_loop;
+        func :.spawn             { d @* r = o.clone(); r.parent = o; = r; }
     };
 };
 
@@ -275,14 +274,14 @@ group :control =
 /// Overload one of features below to register groups with operators.
 
 // Overload this to always include default operators
-feature tp_t op_group( @* o ) { return :op_default~; };
+feature tp_t op_group( @* o ) = :op_default~;
 
 // Overload this to handle multiple groups (if default group is wanted, it must be explicitly added to list)
 feature void push_op_groups( @* o, m bcore_arr_tp_s* list )
 {
     list.push( o.op_group() );
     if( !list.exists( :op_default~ ) ) list.push( :op_default~ );
-};
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -292,8 +291,8 @@ func d bcore_arr_tp_s* get_op_stamps( @* o )
     o.push_op_groups( op_groups );
     d $* op_stamps = bcore_arr_tp_s!;
     foreach( tp_t t in op_groups ) op_stamps.push_arr( x_group_get_arr_traitline_stamps( t ) );
-    return op_stamps;
-};
+    = op_stamps;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -339,8 +338,7 @@ func void help_to_sink( m @* o, :control_s* control, m bcore_sink* sink )
         }
         table.table_to_sink( -1, 2, sink );
     }
-
-};
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -395,7 +393,7 @@ func loop
     }
 
     control.exit_loop = false;
-};
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -403,17 +401,17 @@ group :op_default = retrievable
 {
     stamp :help_s =
     {
-        func ::op.key { return "?,help"; };
-        func ::op.info { return "Lists available commands"; };
-        func ::op.run { obj.help_to_sink( control, sink ); };
+        func ::op.key  = "?,help";
+        func ::op.info = "Lists available commands";
+        func ::op.run obj.help_to_sink( control, sink );
     };
 
-    stamp :ls_s =
+    stamp :ls_s
     {
         st_s path;
 
-        func ::op.get_key { key.push_fa( "ls" ); };
-        func ::op.get_info { info.push_fa( "Lists all visible members" ); };
+        func ::op.get_key  key.push_fa( "ls" );
+        func ::op.get_info info.push_fa( "Lists all visible members" );
         func ::op.run
         {
             x_stamp_path_s^ path.parse( x_source_create_from_sc( o.path.sc )^ );
@@ -458,14 +456,14 @@ group :op_default = retrievable
             {
                 sink.push_fa( "Path not found.\n" );
             }
-        };
-    };
+        }
+    }
 
-    stamp :enter_s =
+    stamp :enter_s
     {
         st_s path;
-        func ::op.key { return "n,enter"; };
-        func ::op.info { return "Enters object"; };
+        func ::op.key  = "n,enter";
+        func ::op.info = "Enters object";
         func ::op.run
         {
             x_stamp_path_s* path = x_stamp_path_s!^.parse( x_source_create_from_st( o.path )^ );
@@ -498,22 +496,22 @@ group :op_default = retrievable
             {
                 sink.push_fa( "Path '#<sc_t>' not found.\n", o.path.sc );
             }
-        };
-    };
+        }
+    }
 
-    stamp :exit_s =
+    stamp :exit_s
     {
         bl_t a = false;
-        func ::op.key { return "x,exit"; };
-        func ::op.info { return "Exits object; -a: exits all parent objects"; };
-        func ::op.run { if( o.a ) control.request_exit_all(); else control.request_exit_loop(); };
-    };
+        func ::op.key  = "x,exit";
+        func ::op.info = "Exits object; -a: exits all parent objects";
+        func ::op.run { if( o.a ) control.request_exit_all(); else control.request_exit_loop(); }
+    }
 
-    stamp :get_s =
+    stamp :get_s
     {
         st_s path;
-        func ::op.key { return "get"; };
-        func ::op.info { return "Outputs object as btml"; };
+        func ::op.key  = "get";
+        func ::op.info = "Outputs object as btml";
         func ::op.run
         {
             sr_s sr = x_stamp_path_s!^.parse( x_source_create_from_st( o.path )^ ).get_sr_in( obj );
@@ -525,15 +523,15 @@ group :op_default = retrievable
             {
                 sink.push_fa( "Path '#<sc_t>' not found.\n", o.path.sc );
             }
-        };
-    };
+        }
+    }
 
-    stamp :set_s =
+    stamp :set_s
     {
         st_s path;
         st_s source;
-        func ::op.key { return "set"; };
-        func ::op.info { return "Sets object from btml"; };
+        func ::op.key  = "set";
+        func ::op.info = "Sets object from btml";
         func ::op.run
         {
             sr_s sr = x_stamp_path_s!^.parse( x_source_create_from_st( o.path )^ ).get_sr_in( obj );
@@ -560,15 +558,15 @@ group :op_default = retrievable
             {
                 sink.push_fa( "Path '#<sc_t>' not found.\n", o.path.sc );
             }
-        };
-    };
+        }
+    }
 
-    stamp :alias_s =
+    stamp :alias_s
     {
         st_s key;
         st_s expression;
-        func ::op.key  { return "alias"; };
-        func ::op.info { return "Defines an alias."; };
+        func ::op.key  = "alias";
+        func ::op.info = "Defines an alias.";
         func ::op.run
         {
             if( o.key.size == 0 )
@@ -585,24 +583,23 @@ group :op_default = retrievable
             {
                 control.hmap_alias.remove( tp_key );
             }
-        };
-    };
+        }
+    }
 
-    stamp :stdin_s =
+    stamp :stdin_s
     {
-        func ::op.key { return "stdin"; };
-        func ::op.info { return "Sets shell-control source to stdin"; };
-        func ::op.run { control.source =< x_source_stdin().fork(); };
-    };
+        func ::op.key  = "stdin";
+        func ::op.info = "Sets shell-control source to stdin";
+        func ::op.run control.source =< x_source_stdin().fork();
+    }
 
-    stamp :stdout_s =
+    stamp :stdout_s
     {
-        func ::op.key { return "stdout"; };
-        func ::op.info { return "Sets shell-control sink to stdout"; };
-        func ::op.run { control.sink =< x_sink_stdout().fork(); };
-    };
-
-};
+        func ::op.key  = "stdout";
+        func ::op.info = "Sets shell-control sink to stdout";
+        func ::op.run control.sink =< x_sink_stdout().fork();
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
