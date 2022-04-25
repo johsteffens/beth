@@ -44,6 +44,11 @@ include 'c' "bcore_file.h";
  *  Implementing a function with this signature causes xoico to generate the main function of a program:
  *  int main( int argc, char** argv)
  */
+
+/// C-style main function
+signature s2_t main_c( int argc, m char** argv );
+
+/// Main function where all arguments are copied into args
 signature s2_t main( bcore_arr_st_s* args );
 
 /**********************************************************************************************************************/
@@ -91,6 +96,22 @@ func create
     }
     = bcore_inst_t_create( type );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/** Functional support: This function switches typespec from object o to another object a.
+ *  This allows constructing a functional expressions where otherwise a procedure would be necessary.
+ *
+ *  Example (atomic access to value)
+ *
+ *  Procedural:
+ *    o.mutex.create_lock()^;
+ *    = o.value;
+ *
+ *  Functional:
+ *    = o.mutex.create_lock()^.attend( o ).value;
+ */
+func a attend( @* o, @* a ) = a;
 
 //----------------------------------------------------------------------------------------------------------------------
 
