@@ -3060,7 +3060,7 @@ static st_s* tbman_s_memtest( void )
     st_s_push_char_n( log, '=', 80 - log->size );
     st_s_push_char( log, '\n' );
 
-    uz_t table_size = 100000;
+    uz_t table_size = 10000;
     uz_t cycles     = 5;
     uz_t max_alloc  = 65536;
     uz_t seed       = 1237;
