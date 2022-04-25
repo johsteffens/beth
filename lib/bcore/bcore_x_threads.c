@@ -182,6 +182,33 @@ const x_inst* x_thread_s_join( x_thread_s* o )
     return ret;
 }
 
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void x_threads_sleep_ns( u3_t ns )
+{
+    struct timespec ts = { 0 };
+    ts.tv_sec  = ns / 1000000000;
+    ts.tv_nsec = ns % 1000000000;
+
+    // it seems the nanosleep prototype is not necessarily defined in <time.h>
+    // so we do it here.
+    int nanosleep( const struct timespec* requested, struct timespec* remaining );
+
+    nanosleep( &ts, NULL );
+}
+
+void x_threads_sleep_us( u3_t us )
+{
+    bcore_sleep_ns( us * 1000 );
+}
+
+void x_threads_sleep_ms( u3_t ms )
+{
+    bcore_sleep_ns( ms * 1000000 );
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
