@@ -1,4 +1,4 @@
-//  Last update: 2022-03-11T13:26:53Z
+//  Last update: 2022-04-13T12:33:43Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -52,7 +52,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0xC6430BDBA4BE7DDAull
+// HKEYOF_bcore 0x2F6AFA17CCDD8C50ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -81,7 +81,7 @@ XOILA_DEFINE_SPECT( bcore_inst, x_inst )
 
 x_inst* x_inst_create( tp_t type )
 {
-    // bcore_x_inst.h:87:1
+    // bcore_x_inst.h:92:1
     
     if( type != 0 && !x_stamp_t_is_aware(type ) )
     {
@@ -990,7 +990,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_main_set_s )
 
 er_t bcore_main_set_s_main( bcore_main_set_s* o, bcore_main_frame_s* frame )
 {
-    // bcore_main.h:120:5
+    // bcore_main.h:117:5
     
     {const bcore_main_arr_s* __a=&(o->arr );if(__a)for(sz_t __i=0;__i<__a->size;__i++){bcore_main* e=__a->data[__i];
     {
@@ -1006,7 +1006,7 @@ er_t bcore_main_set_s_main( bcore_main_set_s* o, bcore_main_frame_s* frame )
 
 bl_t bcore_main_set_s_on_termination( bcore_main_set_s* o, const bcore_main_frame_s* frame )
 {
-    // bcore_main.h:134:5
+    // bcore_main.h:131:5
     BLM_INIT_LEVEL(0);
     bcore_lock_s lock;BLM_T_INIT_SPUSH(bcore_lock_s, &lock);bcore_lock_s_set(&(lock),&(o->mutex_current_object ));
     BLM_RETURNV(bl_t, o->current_object ? bcore_main_a_on_termination(o->current_object,frame ) : false)
@@ -1014,7 +1014,7 @@ bl_t bcore_main_set_s_on_termination( bcore_main_set_s* o, const bcore_main_fram
 
 bl_t bcore_main_set_s_on_interrupt( bcore_main_set_s* o, const bcore_main_frame_s* frame )
 {
-    // bcore_main.h:140:5
+    // bcore_main.h:137:5
     BLM_INIT_LEVEL(0);
     bcore_lock_s lock;BLM_T_INIT_SPUSH(bcore_lock_s, &lock);bcore_lock_s_set(&(lock),&(o->mutex_current_object ));
     BLM_RETURNV(bl_t, o->current_object ? bcore_main_a_on_interrupt(o->current_object,frame ) : false)
@@ -1022,7 +1022,7 @@ bl_t bcore_main_set_s_on_interrupt( bcore_main_set_s* o, const bcore_main_frame_
 
 bl_t bcore_main_set_s_on_suspend( bcore_main_set_s* o, const bcore_main_frame_s* frame )
 {
-    // bcore_main.h:146:5
+    // bcore_main.h:143:5
     BLM_INIT_LEVEL(0);
     bcore_lock_s lock;BLM_T_INIT_SPUSH(bcore_lock_s, &lock);bcore_lock_s_set(&(lock),&(o->mutex_current_object ));
     BLM_RETURNV(bl_t, o->current_object ? bcore_main_a_on_suspend(o->current_object,frame ) : false)
@@ -1189,17 +1189,6 @@ XOILA_DEFINE_SPECT( bcore_inst, bcore_prsg )
     "feature aware bcore_prsg : reseed = bcore_prsg_reseed_default;"
 "}";
 
-bcore_prsg* bcore_prsg_set_state_mix_default( bcore_prsg* o, const bcore_prsg* a, const bcore_prsg* b )
-{
-    // bcore_prsg.h:74:1
-    
-    /* Different mixing methods are thinkable:
-     * Adding, multiplying or xoring should all be suitable.
-     * We should just stick to the same method.
-     */
-    return  bcore_prsg_a_set_state_u3( o,bcore_prsg_a_state_u3( a ) + bcore_prsg_a_state_u3( b ) );
-}
-
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_prsg_lcg
 
@@ -1220,51 +1209,20 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_00_s )
     "func ^:gen;"
 "}";
 
-u3_t bcore_prsg_lcg_u2_00_s_gen_u3( bcore_prsg_lcg_u2_00_s* o )
-{
-    // bcore_prsg.h:90:5
-    
-    bcore_prsg_lcg_u2_00_s_gen( o );
-    return  bcore_prsg_lcg_u2_00_s_state_u3( o );
-}
-
 u3_t bcore_prsg_lcg_u2_00_s_state_bits_u3( const bcore_prsg_lcg_u2_00_s* o, sz_t bits )
 {
-    // bcore_prsg.h:96:5
+    // bcore_prsg.h:89:5
     
     assert( bits >= 0 && bits <= 64 );
-    sz_t o_bits = bcore_prsg_lcg_u2_00_s_bits( o );
+    sz_t o_bits = bcore_prsg_lcg_u2_00_s_bits(o);
     if( o_bits >= bits )
     {
-        return  bcore_prsg_lcg_u2_00_s_state_u3( o ) >> ( o_bits - bits );
+        return  bcore_prsg_lcg_u2_00_s_state_u3(o) >> ( o_bits - bits );
     }
     else
     {
-        return  bcore_prsg_lcg_u2_00_s_state_u3( o ) << ( bits - o_bits );
+        return  bcore_prsg_lcg_u2_00_s_state_u3(o) << ( bits - o_bits );
     }
-}
-
-u3_t bcore_prsg_lcg_u2_00_s_gen_bits_u3( bcore_prsg_lcg_u2_00_s* o, sz_t bits )
-{
-    // bcore_prsg.h:110:5
-    
-    bcore_prsg_lcg_u2_00_s_gen( o );
-    return  bcore_prsg_lcg_u2_00_s_state_bits_u3( o,bits );
-}
-
-f3_t bcore_prsg_lcg_u2_00_s_state_f3( const bcore_prsg_lcg_u2_00_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:116:5
-    
-    return  min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u2_00_s_state_u3( o ) - bcore_prsg_lcg_u2_00_s_min_u3( o ) ) / ( bcore_prsg_lcg_u2_00_s_max_u3( o ) - bcore_prsg_lcg_u2_00_s_min_u3( o ) ) );
-}
-
-f3_t bcore_prsg_lcg_u2_00_s_gen_f3( bcore_prsg_lcg_u2_00_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:121:5
-    
-    bcore_prsg_lcg_u2_00_s_gen( o );
-    return  bcore_prsg_lcg_u2_00_s_state_f3( o,min, max );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_01_s )
@@ -1284,51 +1242,20 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_01_s )
     "func ^:gen;"
 "}";
 
-u3_t bcore_prsg_lcg_u2_01_s_gen_u3( bcore_prsg_lcg_u2_01_s* o )
-{
-    // bcore_prsg.h:90:5
-    
-    bcore_prsg_lcg_u2_01_s_gen( o );
-    return  bcore_prsg_lcg_u2_01_s_state_u3( o );
-}
-
 u3_t bcore_prsg_lcg_u2_01_s_state_bits_u3( const bcore_prsg_lcg_u2_01_s* o, sz_t bits )
 {
-    // bcore_prsg.h:96:5
+    // bcore_prsg.h:89:5
     
     assert( bits >= 0 && bits <= 64 );
-    sz_t o_bits = bcore_prsg_lcg_u2_01_s_bits( o );
+    sz_t o_bits = bcore_prsg_lcg_u2_01_s_bits(o);
     if( o_bits >= bits )
     {
-        return  bcore_prsg_lcg_u2_01_s_state_u3( o ) >> ( o_bits - bits );
+        return  bcore_prsg_lcg_u2_01_s_state_u3(o) >> ( o_bits - bits );
     }
     else
     {
-        return  bcore_prsg_lcg_u2_01_s_state_u3( o ) << ( bits - o_bits );
+        return  bcore_prsg_lcg_u2_01_s_state_u3(o) << ( bits - o_bits );
     }
-}
-
-u3_t bcore_prsg_lcg_u2_01_s_gen_bits_u3( bcore_prsg_lcg_u2_01_s* o, sz_t bits )
-{
-    // bcore_prsg.h:110:5
-    
-    bcore_prsg_lcg_u2_01_s_gen( o );
-    return  bcore_prsg_lcg_u2_01_s_state_bits_u3( o,bits );
-}
-
-f3_t bcore_prsg_lcg_u2_01_s_state_f3( const bcore_prsg_lcg_u2_01_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:116:5
-    
-    return  min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u2_01_s_state_u3( o ) - bcore_prsg_lcg_u2_01_s_min_u3( o ) ) / ( bcore_prsg_lcg_u2_01_s_max_u3( o ) - bcore_prsg_lcg_u2_01_s_min_u3( o ) ) );
-}
-
-f3_t bcore_prsg_lcg_u2_01_s_gen_f3( bcore_prsg_lcg_u2_01_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:121:5
-    
-    bcore_prsg_lcg_u2_01_s_gen( o );
-    return  bcore_prsg_lcg_u2_01_s_state_f3( o,min, max );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_02_s )
@@ -1348,51 +1275,20 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_02_s )
     "func ^:gen;"
 "}";
 
-u3_t bcore_prsg_lcg_u2_02_s_gen_u3( bcore_prsg_lcg_u2_02_s* o )
-{
-    // bcore_prsg.h:90:5
-    
-    bcore_prsg_lcg_u2_02_s_gen( o );
-    return  bcore_prsg_lcg_u2_02_s_state_u3( o );
-}
-
 u3_t bcore_prsg_lcg_u2_02_s_state_bits_u3( const bcore_prsg_lcg_u2_02_s* o, sz_t bits )
 {
-    // bcore_prsg.h:96:5
+    // bcore_prsg.h:89:5
     
     assert( bits >= 0 && bits <= 64 );
-    sz_t o_bits = bcore_prsg_lcg_u2_02_s_bits( o );
+    sz_t o_bits = bcore_prsg_lcg_u2_02_s_bits(o);
     if( o_bits >= bits )
     {
-        return  bcore_prsg_lcg_u2_02_s_state_u3( o ) >> ( o_bits - bits );
+        return  bcore_prsg_lcg_u2_02_s_state_u3(o) >> ( o_bits - bits );
     }
     else
     {
-        return  bcore_prsg_lcg_u2_02_s_state_u3( o ) << ( bits - o_bits );
+        return  bcore_prsg_lcg_u2_02_s_state_u3(o) << ( bits - o_bits );
     }
-}
-
-u3_t bcore_prsg_lcg_u2_02_s_gen_bits_u3( bcore_prsg_lcg_u2_02_s* o, sz_t bits )
-{
-    // bcore_prsg.h:110:5
-    
-    bcore_prsg_lcg_u2_02_s_gen( o );
-    return  bcore_prsg_lcg_u2_02_s_state_bits_u3( o,bits );
-}
-
-f3_t bcore_prsg_lcg_u2_02_s_state_f3( const bcore_prsg_lcg_u2_02_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:116:5
-    
-    return  min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u2_02_s_state_u3( o ) - bcore_prsg_lcg_u2_02_s_min_u3( o ) ) / ( bcore_prsg_lcg_u2_02_s_max_u3( o ) - bcore_prsg_lcg_u2_02_s_min_u3( o ) ) );
-}
-
-f3_t bcore_prsg_lcg_u2_02_s_gen_f3( bcore_prsg_lcg_u2_02_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:121:5
-    
-    bcore_prsg_lcg_u2_02_s_gen( o );
-    return  bcore_prsg_lcg_u2_02_s_state_f3( o,min, max );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_03_s )
@@ -1412,51 +1308,20 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_03_s )
     "func ^:gen;"
 "}";
 
-u3_t bcore_prsg_lcg_u2_03_s_gen_u3( bcore_prsg_lcg_u2_03_s* o )
-{
-    // bcore_prsg.h:90:5
-    
-    bcore_prsg_lcg_u2_03_s_gen( o );
-    return  bcore_prsg_lcg_u2_03_s_state_u3( o );
-}
-
 u3_t bcore_prsg_lcg_u2_03_s_state_bits_u3( const bcore_prsg_lcg_u2_03_s* o, sz_t bits )
 {
-    // bcore_prsg.h:96:5
+    // bcore_prsg.h:89:5
     
     assert( bits >= 0 && bits <= 64 );
-    sz_t o_bits = bcore_prsg_lcg_u2_03_s_bits( o );
+    sz_t o_bits = bcore_prsg_lcg_u2_03_s_bits(o);
     if( o_bits >= bits )
     {
-        return  bcore_prsg_lcg_u2_03_s_state_u3( o ) >> ( o_bits - bits );
+        return  bcore_prsg_lcg_u2_03_s_state_u3(o) >> ( o_bits - bits );
     }
     else
     {
-        return  bcore_prsg_lcg_u2_03_s_state_u3( o ) << ( bits - o_bits );
+        return  bcore_prsg_lcg_u2_03_s_state_u3(o) << ( bits - o_bits );
     }
-}
-
-u3_t bcore_prsg_lcg_u2_03_s_gen_bits_u3( bcore_prsg_lcg_u2_03_s* o, sz_t bits )
-{
-    // bcore_prsg.h:110:5
-    
-    bcore_prsg_lcg_u2_03_s_gen( o );
-    return  bcore_prsg_lcg_u2_03_s_state_bits_u3( o,bits );
-}
-
-f3_t bcore_prsg_lcg_u2_03_s_state_f3( const bcore_prsg_lcg_u2_03_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:116:5
-    
-    return  min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u2_03_s_state_u3( o ) - bcore_prsg_lcg_u2_03_s_min_u3( o ) ) / ( bcore_prsg_lcg_u2_03_s_max_u3( o ) - bcore_prsg_lcg_u2_03_s_min_u3( o ) ) );
-}
-
-f3_t bcore_prsg_lcg_u2_03_s_gen_f3( bcore_prsg_lcg_u2_03_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:121:5
-    
-    bcore_prsg_lcg_u2_03_s_gen( o );
-    return  bcore_prsg_lcg_u2_03_s_state_f3( o,min, max );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_04_s )
@@ -1476,51 +1341,20 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_04_s )
     "func ^:gen;"
 "}";
 
-u3_t bcore_prsg_lcg_u2_04_s_gen_u3( bcore_prsg_lcg_u2_04_s* o )
-{
-    // bcore_prsg.h:90:5
-    
-    bcore_prsg_lcg_u2_04_s_gen( o );
-    return  bcore_prsg_lcg_u2_04_s_state_u3( o );
-}
-
 u3_t bcore_prsg_lcg_u2_04_s_state_bits_u3( const bcore_prsg_lcg_u2_04_s* o, sz_t bits )
 {
-    // bcore_prsg.h:96:5
+    // bcore_prsg.h:89:5
     
     assert( bits >= 0 && bits <= 64 );
-    sz_t o_bits = bcore_prsg_lcg_u2_04_s_bits( o );
+    sz_t o_bits = bcore_prsg_lcg_u2_04_s_bits(o);
     if( o_bits >= bits )
     {
-        return  bcore_prsg_lcg_u2_04_s_state_u3( o ) >> ( o_bits - bits );
+        return  bcore_prsg_lcg_u2_04_s_state_u3(o) >> ( o_bits - bits );
     }
     else
     {
-        return  bcore_prsg_lcg_u2_04_s_state_u3( o ) << ( bits - o_bits );
+        return  bcore_prsg_lcg_u2_04_s_state_u3(o) << ( bits - o_bits );
     }
-}
-
-u3_t bcore_prsg_lcg_u2_04_s_gen_bits_u3( bcore_prsg_lcg_u2_04_s* o, sz_t bits )
-{
-    // bcore_prsg.h:110:5
-    
-    bcore_prsg_lcg_u2_04_s_gen( o );
-    return  bcore_prsg_lcg_u2_04_s_state_bits_u3( o,bits );
-}
-
-f3_t bcore_prsg_lcg_u2_04_s_state_f3( const bcore_prsg_lcg_u2_04_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:116:5
-    
-    return  min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u2_04_s_state_u3( o ) - bcore_prsg_lcg_u2_04_s_min_u3( o ) ) / ( bcore_prsg_lcg_u2_04_s_max_u3( o ) - bcore_prsg_lcg_u2_04_s_min_u3( o ) ) );
-}
-
-f3_t bcore_prsg_lcg_u2_04_s_gen_f3( bcore_prsg_lcg_u2_04_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:121:5
-    
-    bcore_prsg_lcg_u2_04_s_gen( o );
-    return  bcore_prsg_lcg_u2_04_s_state_f3( o,min, max );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_05_s )
@@ -1540,51 +1374,20 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_05_s )
     "func ^:gen;"
 "}";
 
-u3_t bcore_prsg_lcg_u2_05_s_gen_u3( bcore_prsg_lcg_u2_05_s* o )
-{
-    // bcore_prsg.h:90:5
-    
-    bcore_prsg_lcg_u2_05_s_gen( o );
-    return  bcore_prsg_lcg_u2_05_s_state_u3( o );
-}
-
 u3_t bcore_prsg_lcg_u2_05_s_state_bits_u3( const bcore_prsg_lcg_u2_05_s* o, sz_t bits )
 {
-    // bcore_prsg.h:96:5
+    // bcore_prsg.h:89:5
     
     assert( bits >= 0 && bits <= 64 );
-    sz_t o_bits = bcore_prsg_lcg_u2_05_s_bits( o );
+    sz_t o_bits = bcore_prsg_lcg_u2_05_s_bits(o);
     if( o_bits >= bits )
     {
-        return  bcore_prsg_lcg_u2_05_s_state_u3( o ) >> ( o_bits - bits );
+        return  bcore_prsg_lcg_u2_05_s_state_u3(o) >> ( o_bits - bits );
     }
     else
     {
-        return  bcore_prsg_lcg_u2_05_s_state_u3( o ) << ( bits - o_bits );
+        return  bcore_prsg_lcg_u2_05_s_state_u3(o) << ( bits - o_bits );
     }
-}
-
-u3_t bcore_prsg_lcg_u2_05_s_gen_bits_u3( bcore_prsg_lcg_u2_05_s* o, sz_t bits )
-{
-    // bcore_prsg.h:110:5
-    
-    bcore_prsg_lcg_u2_05_s_gen( o );
-    return  bcore_prsg_lcg_u2_05_s_state_bits_u3( o,bits );
-}
-
-f3_t bcore_prsg_lcg_u2_05_s_state_f3( const bcore_prsg_lcg_u2_05_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:116:5
-    
-    return  min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u2_05_s_state_u3( o ) - bcore_prsg_lcg_u2_05_s_min_u3( o ) ) / ( bcore_prsg_lcg_u2_05_s_max_u3( o ) - bcore_prsg_lcg_u2_05_s_min_u3( o ) ) );
-}
-
-f3_t bcore_prsg_lcg_u2_05_s_gen_f3( bcore_prsg_lcg_u2_05_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:121:5
-    
-    bcore_prsg_lcg_u2_05_s_gen( o );
-    return  bcore_prsg_lcg_u2_05_s_state_f3( o,min, max );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_00_s )
@@ -1604,51 +1407,20 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_00_s )
     "func ^:gen;"
 "}";
 
-u3_t bcore_prsg_lcg_u3_00_s_gen_u3( bcore_prsg_lcg_u3_00_s* o )
-{
-    // bcore_prsg.h:90:5
-    
-    bcore_prsg_lcg_u3_00_s_gen( o );
-    return  bcore_prsg_lcg_u3_00_s_state_u3( o );
-}
-
 u3_t bcore_prsg_lcg_u3_00_s_state_bits_u3( const bcore_prsg_lcg_u3_00_s* o, sz_t bits )
 {
-    // bcore_prsg.h:96:5
+    // bcore_prsg.h:89:5
     
     assert( bits >= 0 && bits <= 64 );
-    sz_t o_bits = bcore_prsg_lcg_u3_00_s_bits( o );
+    sz_t o_bits = bcore_prsg_lcg_u3_00_s_bits(o);
     if( o_bits >= bits )
     {
-        return  bcore_prsg_lcg_u3_00_s_state_u3( o ) >> ( o_bits - bits );
+        return  bcore_prsg_lcg_u3_00_s_state_u3(o) >> ( o_bits - bits );
     }
     else
     {
-        return  bcore_prsg_lcg_u3_00_s_state_u3( o ) << ( bits - o_bits );
+        return  bcore_prsg_lcg_u3_00_s_state_u3(o) << ( bits - o_bits );
     }
-}
-
-u3_t bcore_prsg_lcg_u3_00_s_gen_bits_u3( bcore_prsg_lcg_u3_00_s* o, sz_t bits )
-{
-    // bcore_prsg.h:110:5
-    
-    bcore_prsg_lcg_u3_00_s_gen( o );
-    return  bcore_prsg_lcg_u3_00_s_state_bits_u3( o,bits );
-}
-
-f3_t bcore_prsg_lcg_u3_00_s_state_f3( const bcore_prsg_lcg_u3_00_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:116:5
-    
-    return  min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u3_00_s_state_u3( o ) - bcore_prsg_lcg_u3_00_s_min_u3( o ) ) / ( bcore_prsg_lcg_u3_00_s_max_u3( o ) - bcore_prsg_lcg_u3_00_s_min_u3( o ) ) );
-}
-
-f3_t bcore_prsg_lcg_u3_00_s_gen_f3( bcore_prsg_lcg_u3_00_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:121:5
-    
-    bcore_prsg_lcg_u3_00_s_gen( o );
-    return  bcore_prsg_lcg_u3_00_s_state_f3( o,min, max );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_01_s )
@@ -1668,51 +1440,20 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_01_s )
     "func ^:gen;"
 "}";
 
-u3_t bcore_prsg_lcg_u3_01_s_gen_u3( bcore_prsg_lcg_u3_01_s* o )
-{
-    // bcore_prsg.h:90:5
-    
-    bcore_prsg_lcg_u3_01_s_gen( o );
-    return  bcore_prsg_lcg_u3_01_s_state_u3( o );
-}
-
 u3_t bcore_prsg_lcg_u3_01_s_state_bits_u3( const bcore_prsg_lcg_u3_01_s* o, sz_t bits )
 {
-    // bcore_prsg.h:96:5
+    // bcore_prsg.h:89:5
     
     assert( bits >= 0 && bits <= 64 );
-    sz_t o_bits = bcore_prsg_lcg_u3_01_s_bits( o );
+    sz_t o_bits = bcore_prsg_lcg_u3_01_s_bits(o);
     if( o_bits >= bits )
     {
-        return  bcore_prsg_lcg_u3_01_s_state_u3( o ) >> ( o_bits - bits );
+        return  bcore_prsg_lcg_u3_01_s_state_u3(o) >> ( o_bits - bits );
     }
     else
     {
-        return  bcore_prsg_lcg_u3_01_s_state_u3( o ) << ( bits - o_bits );
+        return  bcore_prsg_lcg_u3_01_s_state_u3(o) << ( bits - o_bits );
     }
-}
-
-u3_t bcore_prsg_lcg_u3_01_s_gen_bits_u3( bcore_prsg_lcg_u3_01_s* o, sz_t bits )
-{
-    // bcore_prsg.h:110:5
-    
-    bcore_prsg_lcg_u3_01_s_gen( o );
-    return  bcore_prsg_lcg_u3_01_s_state_bits_u3( o,bits );
-}
-
-f3_t bcore_prsg_lcg_u3_01_s_state_f3( const bcore_prsg_lcg_u3_01_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:116:5
-    
-    return  min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u3_01_s_state_u3( o ) - bcore_prsg_lcg_u3_01_s_min_u3( o ) ) / ( bcore_prsg_lcg_u3_01_s_max_u3( o ) - bcore_prsg_lcg_u3_01_s_min_u3( o ) ) );
-}
-
-f3_t bcore_prsg_lcg_u3_01_s_gen_f3( bcore_prsg_lcg_u3_01_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:121:5
-    
-    bcore_prsg_lcg_u3_01_s_gen( o );
-    return  bcore_prsg_lcg_u3_01_s_state_f3( o,min, max );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_02_s )
@@ -1732,51 +1473,20 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_02_s )
     "func ^:gen;"
 "}";
 
-u3_t bcore_prsg_lcg_u3_02_s_gen_u3( bcore_prsg_lcg_u3_02_s* o )
-{
-    // bcore_prsg.h:90:5
-    
-    bcore_prsg_lcg_u3_02_s_gen( o );
-    return  bcore_prsg_lcg_u3_02_s_state_u3( o );
-}
-
 u3_t bcore_prsg_lcg_u3_02_s_state_bits_u3( const bcore_prsg_lcg_u3_02_s* o, sz_t bits )
 {
-    // bcore_prsg.h:96:5
+    // bcore_prsg.h:89:5
     
     assert( bits >= 0 && bits <= 64 );
-    sz_t o_bits = bcore_prsg_lcg_u3_02_s_bits( o );
+    sz_t o_bits = bcore_prsg_lcg_u3_02_s_bits(o);
     if( o_bits >= bits )
     {
-        return  bcore_prsg_lcg_u3_02_s_state_u3( o ) >> ( o_bits - bits );
+        return  bcore_prsg_lcg_u3_02_s_state_u3(o) >> ( o_bits - bits );
     }
     else
     {
-        return  bcore_prsg_lcg_u3_02_s_state_u3( o ) << ( bits - o_bits );
+        return  bcore_prsg_lcg_u3_02_s_state_u3(o) << ( bits - o_bits );
     }
-}
-
-u3_t bcore_prsg_lcg_u3_02_s_gen_bits_u3( bcore_prsg_lcg_u3_02_s* o, sz_t bits )
-{
-    // bcore_prsg.h:110:5
-    
-    bcore_prsg_lcg_u3_02_s_gen( o );
-    return  bcore_prsg_lcg_u3_02_s_state_bits_u3( o,bits );
-}
-
-f3_t bcore_prsg_lcg_u3_02_s_state_f3( const bcore_prsg_lcg_u3_02_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:116:5
-    
-    return  min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u3_02_s_state_u3( o ) - bcore_prsg_lcg_u3_02_s_min_u3( o ) ) / ( bcore_prsg_lcg_u3_02_s_max_u3( o ) - bcore_prsg_lcg_u3_02_s_min_u3( o ) ) );
-}
-
-f3_t bcore_prsg_lcg_u3_02_s_gen_f3( bcore_prsg_lcg_u3_02_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:121:5
-    
-    bcore_prsg_lcg_u3_02_s_gen( o );
-    return  bcore_prsg_lcg_u3_02_s_state_f3( o,min, max );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_03_s )
@@ -1796,51 +1506,20 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_03_s )
     "func ^:gen;"
 "}";
 
-u3_t bcore_prsg_lcg_u3_03_s_gen_u3( bcore_prsg_lcg_u3_03_s* o )
-{
-    // bcore_prsg.h:90:5
-    
-    bcore_prsg_lcg_u3_03_s_gen( o );
-    return  bcore_prsg_lcg_u3_03_s_state_u3( o );
-}
-
 u3_t bcore_prsg_lcg_u3_03_s_state_bits_u3( const bcore_prsg_lcg_u3_03_s* o, sz_t bits )
 {
-    // bcore_prsg.h:96:5
+    // bcore_prsg.h:89:5
     
     assert( bits >= 0 && bits <= 64 );
-    sz_t o_bits = bcore_prsg_lcg_u3_03_s_bits( o );
+    sz_t o_bits = bcore_prsg_lcg_u3_03_s_bits(o);
     if( o_bits >= bits )
     {
-        return  bcore_prsg_lcg_u3_03_s_state_u3( o ) >> ( o_bits - bits );
+        return  bcore_prsg_lcg_u3_03_s_state_u3(o) >> ( o_bits - bits );
     }
     else
     {
-        return  bcore_prsg_lcg_u3_03_s_state_u3( o ) << ( bits - o_bits );
+        return  bcore_prsg_lcg_u3_03_s_state_u3(o) << ( bits - o_bits );
     }
-}
-
-u3_t bcore_prsg_lcg_u3_03_s_gen_bits_u3( bcore_prsg_lcg_u3_03_s* o, sz_t bits )
-{
-    // bcore_prsg.h:110:5
-    
-    bcore_prsg_lcg_u3_03_s_gen( o );
-    return  bcore_prsg_lcg_u3_03_s_state_bits_u3( o,bits );
-}
-
-f3_t bcore_prsg_lcg_u3_03_s_state_f3( const bcore_prsg_lcg_u3_03_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:116:5
-    
-    return  min + ( max - min ) * ( ( f3_t )( bcore_prsg_lcg_u3_03_s_state_u3( o ) - bcore_prsg_lcg_u3_03_s_min_u3( o ) ) / ( bcore_prsg_lcg_u3_03_s_max_u3( o ) - bcore_prsg_lcg_u3_03_s_min_u3( o ) ) );
-}
-
-f3_t bcore_prsg_lcg_u3_03_s_gen_f3( bcore_prsg_lcg_u3_03_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:121:5
-    
-    bcore_prsg_lcg_u3_03_s_gen( o );
-    return  bcore_prsg_lcg_u3_03_s_state_f3( o,min, max );
 }
 
 XOILA_DEFINE_SPECT( bcore_prsg, bcore_prsg_lcg )
@@ -1868,51 +1547,20 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_00_s )
     "func ^:gen;"
 "}";
 
-u3_t bcore_prsg_xsg_u2_00_s_gen_u3( bcore_prsg_xsg_u2_00_s* o )
-{
-    // bcore_prsg.h:90:5
-    
-    bcore_prsg_xsg_u2_00_s_gen( o );
-    return  bcore_prsg_xsg_u2_00_s_state_u3( o );
-}
-
 u3_t bcore_prsg_xsg_u2_00_s_state_bits_u3( const bcore_prsg_xsg_u2_00_s* o, sz_t bits )
 {
-    // bcore_prsg.h:96:5
+    // bcore_prsg.h:89:5
     
     assert( bits >= 0 && bits <= 64 );
-    sz_t o_bits = bcore_prsg_xsg_u2_00_s_bits( o );
+    sz_t o_bits = bcore_prsg_xsg_u2_00_s_bits(o);
     if( o_bits >= bits )
     {
-        return  bcore_prsg_xsg_u2_00_s_state_u3( o ) >> ( o_bits - bits );
+        return  bcore_prsg_xsg_u2_00_s_state_u3(o) >> ( o_bits - bits );
     }
     else
     {
-        return  bcore_prsg_xsg_u2_00_s_state_u3( o ) << ( bits - o_bits );
+        return  bcore_prsg_xsg_u2_00_s_state_u3(o) << ( bits - o_bits );
     }
-}
-
-u3_t bcore_prsg_xsg_u2_00_s_gen_bits_u3( bcore_prsg_xsg_u2_00_s* o, sz_t bits )
-{
-    // bcore_prsg.h:110:5
-    
-    bcore_prsg_xsg_u2_00_s_gen( o );
-    return  bcore_prsg_xsg_u2_00_s_state_bits_u3( o,bits );
-}
-
-f3_t bcore_prsg_xsg_u2_00_s_state_f3( const bcore_prsg_xsg_u2_00_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:116:5
-    
-    return  min + ( max - min ) * ( ( f3_t )( bcore_prsg_xsg_u2_00_s_state_u3( o ) - bcore_prsg_xsg_u2_00_s_min_u3( o ) ) / ( bcore_prsg_xsg_u2_00_s_max_u3( o ) - bcore_prsg_xsg_u2_00_s_min_u3( o ) ) );
-}
-
-f3_t bcore_prsg_xsg_u2_00_s_gen_f3( bcore_prsg_xsg_u2_00_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:121:5
-    
-    bcore_prsg_xsg_u2_00_s_gen( o );
-    return  bcore_prsg_xsg_u2_00_s_state_f3( o,min, max );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_01_s )
@@ -1932,51 +1580,20 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_01_s )
     "func ^:gen;"
 "}";
 
-u3_t bcore_prsg_xsg_u2_01_s_gen_u3( bcore_prsg_xsg_u2_01_s* o )
-{
-    // bcore_prsg.h:90:5
-    
-    bcore_prsg_xsg_u2_01_s_gen( o );
-    return  bcore_prsg_xsg_u2_01_s_state_u3( o );
-}
-
 u3_t bcore_prsg_xsg_u2_01_s_state_bits_u3( const bcore_prsg_xsg_u2_01_s* o, sz_t bits )
 {
-    // bcore_prsg.h:96:5
+    // bcore_prsg.h:89:5
     
     assert( bits >= 0 && bits <= 64 );
-    sz_t o_bits = bcore_prsg_xsg_u2_01_s_bits( o );
+    sz_t o_bits = bcore_prsg_xsg_u2_01_s_bits(o);
     if( o_bits >= bits )
     {
-        return  bcore_prsg_xsg_u2_01_s_state_u3( o ) >> ( o_bits - bits );
+        return  bcore_prsg_xsg_u2_01_s_state_u3(o) >> ( o_bits - bits );
     }
     else
     {
-        return  bcore_prsg_xsg_u2_01_s_state_u3( o ) << ( bits - o_bits );
+        return  bcore_prsg_xsg_u2_01_s_state_u3(o) << ( bits - o_bits );
     }
-}
-
-u3_t bcore_prsg_xsg_u2_01_s_gen_bits_u3( bcore_prsg_xsg_u2_01_s* o, sz_t bits )
-{
-    // bcore_prsg.h:110:5
-    
-    bcore_prsg_xsg_u2_01_s_gen( o );
-    return  bcore_prsg_xsg_u2_01_s_state_bits_u3( o,bits );
-}
-
-f3_t bcore_prsg_xsg_u2_01_s_state_f3( const bcore_prsg_xsg_u2_01_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:116:5
-    
-    return  min + ( max - min ) * ( ( f3_t )( bcore_prsg_xsg_u2_01_s_state_u3( o ) - bcore_prsg_xsg_u2_01_s_min_u3( o ) ) / ( bcore_prsg_xsg_u2_01_s_max_u3( o ) - bcore_prsg_xsg_u2_01_s_min_u3( o ) ) );
-}
-
-f3_t bcore_prsg_xsg_u2_01_s_gen_f3( bcore_prsg_xsg_u2_01_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:121:5
-    
-    bcore_prsg_xsg_u2_01_s_gen( o );
-    return  bcore_prsg_xsg_u2_01_s_state_f3( o,min, max );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_02_s )
@@ -1996,51 +1613,20 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_02_s )
     "func ^:gen;"
 "}";
 
-u3_t bcore_prsg_xsg_u2_02_s_gen_u3( bcore_prsg_xsg_u2_02_s* o )
-{
-    // bcore_prsg.h:90:5
-    
-    bcore_prsg_xsg_u2_02_s_gen( o );
-    return  bcore_prsg_xsg_u2_02_s_state_u3( o );
-}
-
 u3_t bcore_prsg_xsg_u2_02_s_state_bits_u3( const bcore_prsg_xsg_u2_02_s* o, sz_t bits )
 {
-    // bcore_prsg.h:96:5
+    // bcore_prsg.h:89:5
     
     assert( bits >= 0 && bits <= 64 );
-    sz_t o_bits = bcore_prsg_xsg_u2_02_s_bits( o );
+    sz_t o_bits = bcore_prsg_xsg_u2_02_s_bits(o);
     if( o_bits >= bits )
     {
-        return  bcore_prsg_xsg_u2_02_s_state_u3( o ) >> ( o_bits - bits );
+        return  bcore_prsg_xsg_u2_02_s_state_u3(o) >> ( o_bits - bits );
     }
     else
     {
-        return  bcore_prsg_xsg_u2_02_s_state_u3( o ) << ( bits - o_bits );
+        return  bcore_prsg_xsg_u2_02_s_state_u3(o) << ( bits - o_bits );
     }
-}
-
-u3_t bcore_prsg_xsg_u2_02_s_gen_bits_u3( bcore_prsg_xsg_u2_02_s* o, sz_t bits )
-{
-    // bcore_prsg.h:110:5
-    
-    bcore_prsg_xsg_u2_02_s_gen( o );
-    return  bcore_prsg_xsg_u2_02_s_state_bits_u3( o,bits );
-}
-
-f3_t bcore_prsg_xsg_u2_02_s_state_f3( const bcore_prsg_xsg_u2_02_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:116:5
-    
-    return  min + ( max - min ) * ( ( f3_t )( bcore_prsg_xsg_u2_02_s_state_u3( o ) - bcore_prsg_xsg_u2_02_s_min_u3( o ) ) / ( bcore_prsg_xsg_u2_02_s_max_u3( o ) - bcore_prsg_xsg_u2_02_s_min_u3( o ) ) );
-}
-
-f3_t bcore_prsg_xsg_u2_02_s_gen_f3( bcore_prsg_xsg_u2_02_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:121:5
-    
-    bcore_prsg_xsg_u2_02_s_gen( o );
-    return  bcore_prsg_xsg_u2_02_s_state_f3( o,min, max );
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_03_s )
@@ -2060,51 +1646,20 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_03_s )
     "func ^:gen;"
 "}";
 
-u3_t bcore_prsg_xsg_u2_03_s_gen_u3( bcore_prsg_xsg_u2_03_s* o )
-{
-    // bcore_prsg.h:90:5
-    
-    bcore_prsg_xsg_u2_03_s_gen( o );
-    return  bcore_prsg_xsg_u2_03_s_state_u3( o );
-}
-
 u3_t bcore_prsg_xsg_u2_03_s_state_bits_u3( const bcore_prsg_xsg_u2_03_s* o, sz_t bits )
 {
-    // bcore_prsg.h:96:5
+    // bcore_prsg.h:89:5
     
     assert( bits >= 0 && bits <= 64 );
-    sz_t o_bits = bcore_prsg_xsg_u2_03_s_bits( o );
+    sz_t o_bits = bcore_prsg_xsg_u2_03_s_bits(o);
     if( o_bits >= bits )
     {
-        return  bcore_prsg_xsg_u2_03_s_state_u3( o ) >> ( o_bits - bits );
+        return  bcore_prsg_xsg_u2_03_s_state_u3(o) >> ( o_bits - bits );
     }
     else
     {
-        return  bcore_prsg_xsg_u2_03_s_state_u3( o ) << ( bits - o_bits );
+        return  bcore_prsg_xsg_u2_03_s_state_u3(o) << ( bits - o_bits );
     }
-}
-
-u3_t bcore_prsg_xsg_u2_03_s_gen_bits_u3( bcore_prsg_xsg_u2_03_s* o, sz_t bits )
-{
-    // bcore_prsg.h:110:5
-    
-    bcore_prsg_xsg_u2_03_s_gen( o );
-    return  bcore_prsg_xsg_u2_03_s_state_bits_u3( o,bits );
-}
-
-f3_t bcore_prsg_xsg_u2_03_s_state_f3( const bcore_prsg_xsg_u2_03_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:116:5
-    
-    return  min + ( max - min ) * ( ( f3_t )( bcore_prsg_xsg_u2_03_s_state_u3( o ) - bcore_prsg_xsg_u2_03_s_min_u3( o ) ) / ( bcore_prsg_xsg_u2_03_s_max_u3( o ) - bcore_prsg_xsg_u2_03_s_min_u3( o ) ) );
-}
-
-f3_t bcore_prsg_xsg_u2_03_s_gen_f3( bcore_prsg_xsg_u2_03_s* o, f3_t min, f3_t max )
-{
-    // bcore_prsg.h:121:5
-    
-    bcore_prsg_xsg_u2_03_s_gen( o );
-    return  bcore_prsg_xsg_u2_03_s_state_f3( o,min, max );
 }
 
 XOILA_DEFINE_SPECT( bcore_prsg, bcore_prsg_xsg )
@@ -2128,7 +1683,7 @@ XOILA_DEFINE_SPECT( x_inst, bcore_shell )
 
 void bcore_shell_push_op_groups_default( const bcore_shell* o, bcore_arr_tp_s* list )
 {
-    // bcore_shell.h:282:1
+    // bcore_shell.h:281:1
     
     bcore_arr_tp_s_push(list,bcore_shell_a_op_group(o) );
     if( !bcore_arr_tp_s_exists(list,((tp_t)(TYPEOF_bcore_shell_op_default)) ) ) bcore_arr_tp_s_push(list,((tp_t)(TYPEOF_bcore_shell_op_default)) );
@@ -2136,7 +1691,7 @@ void bcore_shell_push_op_groups_default( const bcore_shell* o, bcore_arr_tp_s* l
 
 bcore_arr_tp_s* bcore_shell_get_op_stamps( const bcore_shell* o )
 {
-    // bcore_shell.h:290:1
+    // bcore_shell.h:289:1
     BLM_INIT_LEVEL(0);
     bcore_arr_tp_s op_groups;BLM_T_INIT_SPUSH(bcore_arr_tp_s, &op_groups);;
     bcore_shell_a_push_op_groups(o,&(op_groups ));
@@ -2147,7 +1702,7 @@ bcore_arr_tp_s* bcore_shell_get_op_stamps( const bcore_shell* o )
 
 void bcore_shell_help_to_sink( bcore_shell* o, const bcore_shell_control_s* control, bcore_sink* sink )
 {
-    // bcore_shell.h:301:1
+    // bcore_shell.h:300:1
     BLM_INIT_LEVEL(0);
     bcore_arr_tp_s op_groups;BLM_T_INIT_SPUSH(bcore_arr_tp_s, &op_groups);;
     bcore_shell_a_push_op_groups(o,&(op_groups ));
@@ -2189,13 +1744,12 @@ void bcore_shell_help_to_sink( bcore_shell* o, const bcore_shell_control_s* cont
         }
         bcore_arr_st_s_table_to_sink(&(table),-1, 2, sink );
     BLM_DOWN();}
-    
     BLM_DOWN();
 }
 
 void bcore_shell_loop( bcore_shell* o, const bcore_main_frame_s* frame, bcore_shell_control_s* control )
 {
-    // bcore_shell.h:355:1
+    // bcore_shell.h:353:1
     BLM_INIT_LEVEL(0);
     ASSERT( control );
     while( !x_source_eos(control->source) && !bcore_shell_control_s_exit_loop(control) )
@@ -2389,13 +1943,12 @@ bl_t bcore_shell_op_parse_param( bcore_shell_op* o, x_source* source, bcore_sink
         BLM_DOWN();}
         BLM_TRY_EXIT(x_source_parse_fa(source,"#skip' \t'" ))
     }
-    
     return  true;
 }
 
 void bcore_shell_op_arg_signature_to_sink( bcore_shell_op* o, bcore_sink* sink )
 {
-    // bcore_shell.h:204:5
+    // bcore_shell.h:203:5
     
     x_stamp* v =((x_stamp*)( o));
     for(sz_t i = 0; i < x_stamp_size(v); i++ )
@@ -2473,7 +2026,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_shell_op_default_ls_s )
 
 void bcore_shell_op_default_ls_s_run( bcore_shell_op_default_ls_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, x_source* source, bcore_sink* sink, bcore_shell_control_s* control )
 {
-    // bcore_shell.h:418:9
+    // bcore_shell.h:416:9
     BLM_INIT_LEVEL(0);
     x_stamp_path_s path;BLM_T_INIT_SPUSH(x_stamp_path_s, &path);x_stamp_path_s_parse(&(path),((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(o->path.sc ))) );
     sr_s sr = x_stamp_path_s_get_sr_in(&(path),((const x_inst*)(obj )));
@@ -2531,7 +2084,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_shell_op_default_enter_s )
 
 void bcore_shell_op_default_enter_s_run( bcore_shell_op_default_enter_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, x_source* source, bcore_sink* sink, bcore_shell_control_s* control )
 {
-    // bcore_shell.h:470:9
+    // bcore_shell.h:468:9
     BLM_INIT_LEVEL(0);
     const x_stamp_path_s* path = x_stamp_path_s_parse(((x_stamp_path_s*)BLM_LEVEL_T_PUSH(0,x_stamp_path_s,x_stamp_path_s_create())),((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(&(o->path )))) );
     if( path->size == 0 )
@@ -2586,7 +2139,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_shell_op_default_get_s )
 
 void bcore_shell_op_default_get_s_run( bcore_shell_op_default_get_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, x_source* source, bcore_sink* sink, bcore_shell_control_s* control )
 {
-    // bcore_shell.h:518:9
+    // bcore_shell.h:516:9
     BLM_INIT_LEVEL(0);
     sr_s sr = x_stamp_path_s_get_sr_in(x_stamp_path_s_parse(((x_stamp_path_s*)BLM_LEVEL_T_PUSH(0,x_stamp_path_s,x_stamp_path_s_create())),((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(&(o->path )))) ),((const x_inst*)(obj )));
     if( sr.o )
@@ -2612,7 +2165,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_shell_op_default_set_s )
 
 void bcore_shell_op_default_set_s_run( bcore_shell_op_default_set_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, x_source* source, bcore_sink* sink, bcore_shell_control_s* control )
 {
-    // bcore_shell.h:538:9
+    // bcore_shell.h:536:9
     BLM_INIT_LEVEL(0);
     sr_s sr = x_stamp_path_s_get_sr_in(x_stamp_path_s_parse(((x_stamp_path_s*)BLM_LEVEL_T_PUSH(0,x_stamp_path_s,x_stamp_path_s_create())),((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(&(o->path )))) ),((const x_inst*)(obj )));
     if( sr.o )
@@ -2653,7 +2206,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_shell_op_default_alias_s )
 
 void bcore_shell_op_default_alias_s_run( bcore_shell_op_default_alias_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, x_source* source, bcore_sink* sink, bcore_shell_control_s* control )
 {
-    // bcore_shell.h:573:9
+    // bcore_shell.h:571:9
     
     if( o->key.size == 0 )
     {
@@ -2895,14 +2448,13 @@ bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_s3( bcore_huffman_bi
 {
     // bcore_huffman.x:240:1
     
-    bcore_huffman_bit_buffer_s_push_bl(o,val >= 0 ? true : false );
-    bcore_huffman_bit_buffer_s_push_u3(o,val >= 0 ? val : -val, bits );
-    return  o;
+    bcore_huffman_bit_buffer_s_push_u3(o,val, bits );
+    return o;
 }
 
 bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_packed_s3( bcore_huffman_bit_buffer_s* o, s3_t val )
 {
-    // bcore_huffman.x:249:1
+    // bcore_huffman.x:247:1
     
     bcore_huffman_bit_buffer_s_push_bl(o,val >= 0 ? true : false );
     bcore_huffman_bit_buffer_s_push_packed_u3(o,val >= 0 ? val : -val );
@@ -2911,7 +2463,7 @@ bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_packed_s3( bcore_huf
 
 bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_f3( bcore_huffman_bit_buffer_s* o, f3_t v, sz_t bits )
 {
-    // bcore_huffman.x:258:1
+    // bcore_huffman.x:256:1
     
     ASSERT( bits <= 31 );
     int int_exp = 0;
@@ -2920,6 +2472,19 @@ bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_f3( bcore_huffman_bi
     bcore_huffman_bit_buffer_s_push_s3(o,man, bits );
     bcore_huffman_bit_buffer_s_push_packed_s3(o,exp );
     return  o;
+}
+
+bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_bit_buffer( bcore_huffman_bit_buffer_s* o, const bcore_huffman_bit_buffer_s* src )
+{
+    // bcore_huffman.x:269:1
+    
+    u3_t bits = src->bits;
+    for(sz_t i = 0; ( i < src->size ) && ( bits > 0 ); i++ )
+    {
+        bcore_huffman_bit_buffer_s_push_u3(o,src->data[ i ], u3_min( 8, bits ) );
+        bits -= u3_min( 8, bits );
+    }
+    return o;
 }
 
 BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_bit_buffer_iterator_s )
@@ -2931,7 +2496,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_bit_buffer_iterator_s )
 
 bl_t bcore_huffman_bit_buffer_iterator_s_read_bl( bcore_huffman_bit_buffer_iterator_s* o )
 {
-    // bcore_huffman.x:271:1
+    // bcore_huffman.x:285:1
     
     if( !o->bit_buffer ) ERR_fa( "No buffer assigned. Call setup first." );
     if( o->bit_index >= o->bit_buffer->bits ) ERR_fa( "Reading past end of buffer" );
@@ -2943,7 +2508,7 @@ bl_t bcore_huffman_bit_buffer_iterator_s_read_bl( bcore_huffman_bit_buffer_itera
 
 u3_t bcore_huffman_bit_buffer_iterator_s_read_u3( bcore_huffman_bit_buffer_iterator_s* o, sz_t bits )
 {
-    // bcore_huffman.x:283:1
+    // bcore_huffman.x:297:1
     
     u3_t val = 0;
     for(sz_t i = 0; i < bits; i++ ) val = val | ( ((u3_t)(bcore_huffman_bit_buffer_iterator_s_read_bl(o))) << i );
@@ -2952,23 +2517,26 @@ u3_t bcore_huffman_bit_buffer_iterator_s_read_u3( bcore_huffman_bit_buffer_itera
 
 u3_t bcore_huffman_bit_buffer_iterator_s_read_packed_u3( bcore_huffman_bit_buffer_iterator_s* o )
 {
-    // bcore_huffman.x:292:1
+    // bcore_huffman.x:306:1
     
     return  bcore_huffman_bit_buffer_iterator_s_read_u3(o,bcore_huffman_bit_buffer_iterator_s_read_u3(o,6 ) + 1 );
 }
 
 s3_t bcore_huffman_bit_buffer_iterator_s_read_s3( bcore_huffman_bit_buffer_iterator_s* o, sz_t bits )
 {
-    // bcore_huffman.x:299:1
+    // bcore_huffman.x:313:1
     
-    s3_t sign = bcore_huffman_bit_buffer_iterator_s_read_bl(o) ? 1 : -1;
-    s3_t val = bcore_huffman_bit_buffer_iterator_s_read_u3(o,bits );
-    return  val * sign;
+    u3_t u3 = bcore_huffman_bit_buffer_iterator_s_read_u3(o,bits );
+    if( bits > 0 )
+    {
+        if( ( bits > 0 ) && ( u3 >> ( bits - 1 ) ) ) u3 = ( 0xFFFFFFFFFFFFFFFFull << bits ) | u3;
+    }
+    return  u3;
 }
 
 u3_t bcore_huffman_bit_buffer_iterator_s_read_packed_s3( bcore_huffman_bit_buffer_iterator_s* o )
 {
-    // bcore_huffman.x:308:1
+    // bcore_huffman.x:325:1
     
     s3_t sign = bcore_huffman_bit_buffer_iterator_s_read_bl(o) ? 1 : -1;
     s3_t val = bcore_huffman_bit_buffer_iterator_s_read_packed_u3(o);
@@ -2977,7 +2545,7 @@ u3_t bcore_huffman_bit_buffer_iterator_s_read_packed_s3( bcore_huffman_bit_buffe
 
 f3_t bcore_huffman_bit_buffer_iterator_s_read_f3( bcore_huffman_bit_buffer_iterator_s* o, sz_t bits )
 {
-    // bcore_huffman.x:317:1
+    // bcore_huffman.x:334:1
     
     ASSERT( bits <= 31 );
     s3_t man = bcore_huffman_bit_buffer_iterator_s_read_s3(o,bits );
@@ -3022,7 +2590,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_count_map_s )
 
 bcore_huffman_count_map_s* bcore_huffman_count_map_s_from_hist( bcore_huffman_count_map_s* o, const bcore_huffman_hist_s* hist )
 {
-    // bcore_huffman.x:377:5
+    // bcore_huffman.x:394:5
     
     x_array_clear(((x_array*)(o)));
     for(sz_t i = 0; i < hist->hmap_tpuz.size; i++ )
@@ -3040,7 +2608,7 @@ bcore_huffman_count_map_s* bcore_huffman_count_map_s_from_hist( bcore_huffman_co
 
 bl_t bcore_huffman_count_map_s_is_sorted( const bcore_huffman_count_map_s* o )
 {
-    // bcore_huffman.x:393:5
+    // bcore_huffman.x:410:5
     
     for(sz_t i = 1; i < o->size; i++ ) if( o->data[ i - 1 ].c > o->data[ i ].c ) return  false;
     return  true;
@@ -3048,7 +2616,7 @@ bl_t bcore_huffman_count_map_s_is_sorted( const bcore_huffman_count_map_s* o )
 
 bl_t bcore_huffman_count_map_s_is_equal( const bcore_huffman_count_map_s* o, const bcore_huffman_count_map_s* b )
 {
-    // bcore_huffman.x:399:5
+    // bcore_huffman.x:416:5
     
     if( o->size != b->size ) return  false;
     for(sz_t i = 1; i < o->size; i++ ) if( !bcore_huffman_count_node_s_is_equal(&(o->data[ i ]),&(b->data[ i ] )) ) return  false;
@@ -3057,7 +2625,7 @@ bl_t bcore_huffman_count_map_s_is_equal( const bcore_huffman_count_map_s* o, con
 
 bcore_huffman_count_map_s* bcore_huffman_count_map_s_encode( bcore_huffman_count_map_s* o, bcore_huffman_bit_buffer_s* out )
 {
-    // bcore_huffman.x:409:1
+    // bcore_huffman.x:426:1
     
     if( !bcore_huffman_count_map_s_is_sorted(o) ) ERR_fa( "Map is not sorted." );
     
@@ -3096,7 +2664,7 @@ bcore_huffman_count_map_s* bcore_huffman_count_map_s_encode( bcore_huffman_count
 
 bcore_huffman_count_map_s* bcore_huffman_count_map_s_decode( bcore_huffman_count_map_s* o, bcore_huffman_bit_buffer_iterator_s* in )
 {
-    // bcore_huffman.x:448:1
+    // bcore_huffman.x:465:1
     
     x_array_clear(((x_array*)(o)));
     sz_t size = bcore_huffman_bit_buffer_iterator_s_read_packed_u3(in);
@@ -3130,7 +2698,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_tree_s )
 
 bcore_huffman_tree_s* bcore_huffman_tree_s_build( bcore_huffman_tree_s* o, const bcore_huffman_count_map_s* count_map, bcore_huffman_index_s* leaf_index )
 {
-    // bcore_huffman.x:481:5
+    // bcore_huffman.x:498:5
     
     x_array_set_size(((x_array*)(o)),1 );
     for(sz_t i = 0; i < count_map->size; i++ )
@@ -3174,10 +2742,8 @@ sz_t bcore_huffman_min_bits( u3_t v, sz_t n )
 
 void bcore_huffman_selftest( void )
 {
-    // bcore_huffman.x:518:1
+    // bcore_huffman.x:535:1
     BLM_INIT_LEVEL(0);
-    bcore_huffman_codec_s codec;BLM_T_INIT_SPUSH(bcore_huffman_codec_s, &codec);;
-    
     bcore_prsg_lcg_u3_00_s prsg;BLM_T_INIT_SPUSH(bcore_prsg_lcg_u3_00_s, &prsg);;
     
     sz_t n = 100000;
@@ -3190,19 +2756,40 @@ void bcore_huffman_selftest( void )
         bcore_arr_s3_s_push(&(arr_s3),x );
     }
     
-    bcore_huffman_codec_s_scan_start(&(codec));
-    for(sz_t i = 0; i < n; i++ ) bcore_huffman_codec_s_scan_s3(&(codec),arr_s3.data[ i ] );
-    bcore_huffman_codec_s_scan_end(&(codec));
     
-    bcore_huffman_bit_buffer_s bit_buffer;BLM_T_INIT_SPUSH(bcore_huffman_bit_buffer_s, &bit_buffer);;
+    /// huffman codec
+    {BLM_INIT_LEVEL(1);
+        bcore_huffman_codec_s codec;BLM_T_INIT_SPUSH(bcore_huffman_codec_s, &codec);;
+        bcore_huffman_codec_s_scan_start(&(codec));
+        for(sz_t i = 0; i < n; i++ ) bcore_huffman_codec_s_scan_s3(&(codec),arr_s3.data[ i ] );
+        bcore_huffman_codec_s_scan_end(&(codec));
     
-    bcore_huffman_codec_s_encode(&(codec),&(bit_buffer ));
-    for(sz_t i = 0; i < n; i++ ) bcore_huffman_codec_s_encode_s3(&(codec),arr_s3.data[ i ],&( bit_buffer ));
+        bcore_huffman_bit_buffer_s bit_buffer;BLM_T_INIT_SPUSH(bcore_huffman_bit_buffer_s, &bit_buffer);;
     
-    bcore_huffman_bit_buffer_iterator_s iterator;BLM_T_INIT_SPUSH(bcore_huffman_bit_buffer_iterator_s, &iterator);bcore_huffman_bit_buffer_iterator_s_setup(&(iterator),&(bit_buffer ));
+        bcore_huffman_codec_s_encode(&(codec),&(bit_buffer ));
+        for(sz_t i = 0; i < n; i++ ) bcore_huffman_codec_s_encode_s3(&(codec),arr_s3.data[ i ],&( bit_buffer ));
     
-    bcore_huffman_codec_s codec2;BLM_T_INIT_SPUSH(bcore_huffman_codec_s, &codec2);bcore_huffman_codec_s_decode(&(codec2),&(iterator ));
-    for(sz_t i = 0; i < n; i++ ) ASSERT( bcore_huffman_codec_s_decode_s3(&(codec2),&(iterator )) == arr_s3.data[ i ] );
+        bcore_huffman_bit_buffer_iterator_s iterator;BLM_T_INIT_SPUSH(bcore_huffman_bit_buffer_iterator_s, &iterator);bcore_huffman_bit_buffer_iterator_s_setup(&(iterator),&(bit_buffer ));
+    
+        bcore_huffman_codec_s codec2;BLM_T_INIT_SPUSH(bcore_huffman_codec_s, &codec2);bcore_huffman_codec_s_decode(&(codec2),&(iterator ));
+        for(sz_t i = 0; i < n; i++ ) ASSERT( bcore_huffman_codec_s_decode_s3(&(codec2),&(iterator )) == arr_s3.data[ i ] );
+    BLM_DOWN();}
+    
+    /// direct s3 codec
+    {BLM_INIT_LEVEL(1);
+        s3_t max = bcore_arr_s3_s_max(&(arr_s3));
+        s3_t min = bcore_arr_s3_s_min(&(arr_s3));
+        sz_t bits = 0;
+        while( ( max >> bits ) > 0 || ( min >> bits ) < -1 ) bits++;
+        bits++;
+    
+        bcore_huffman_bit_buffer_s bit_buffer;BLM_T_INIT_SPUSH(bcore_huffman_bit_buffer_s, &bit_buffer);;
+        for(sz_t i = 0; i < n; i++ ) bcore_huffman_bit_buffer_s_push_s3(&(bit_buffer),arr_s3.data[ i ], bits );
+    
+        bcore_huffman_bit_buffer_iterator_s iterator;BLM_T_INIT_SPUSH(bcore_huffman_bit_buffer_iterator_s, &iterator);bcore_huffman_bit_buffer_iterator_s_setup(&(iterator),&(bit_buffer ));
+        for(sz_t i = 0; i < n; i++ ) ASSERT( bcore_huffman_bit_buffer_iterator_s_read_s3(&(iterator),bits ) == arr_s3.data[ i ] );
+    BLM_DOWN();}
+    
     BLM_DOWN();
 }
 
@@ -5012,5 +4599,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0xBC84701C173C36A1
-// XOICO_FILE_SIGNATURE 0x97EB4A5AA0ED8266
+// XOICO_BODY_SIGNATURE 0x8E36DF3286DD426D
+// XOICO_FILE_SIGNATURE 0x88321E86987807E5

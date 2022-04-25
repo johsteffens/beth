@@ -2648,8 +2648,6 @@ void flect_test_create_struct()
 //    bcore_txt_ml_a_to_stdout( self );
 
     bcore_self_s_struct_to_sink( self, 0, BCORE_STDOUT );
-
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
