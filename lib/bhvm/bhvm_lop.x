@@ -34,7 +34,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 
 /// nullary operators
-group :ar0 =
+group :ar0
 {
     extending stump verbatim :_s = aware : {};
 
@@ -53,7 +53,7 @@ group :ar0 =
             case BKNIT_F3: { f3_t v = @_f3(); for(sz_t i=0; i<s; i++) { cast(r,m f3_t* restrict)[i]=v; } } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
-    };
+    }
 
     stamp :zro_s { func :.f2 = 0; func :.f3 = 0; func :.f :body_cv; }
     stamp :one_s { func :.f2 = 1; func :.f3 = 1; func :.f :body_cv; }
@@ -87,7 +87,7 @@ group :ar1 =
             case BKNIT_F33: for(sz_t i=0; i<s; i++) { cast(r,m f3_t* restrict)[i]=@_f3(cast(a,m f3_t*)[i]); } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
-    };
+    }
 
     // vector <- vector
     body body_v_av
@@ -101,7 +101,7 @@ group :ar1 =
             case BKNIT_F33: for(sz_t i=0; i<s; i++) { cast(r,m f3_t* restrict)[i]+=@_f3(cast(a,m f3_t*)[i]); } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
-    };
+    }
 
     // vector <- scalar
     body body_s_cv
@@ -115,7 +115,7 @@ group :ar1 =
             case BKNIT_F33: for(sz_t i=0; i<s; i++) { cast(r,m f3_t* restrict)[i]=@_f3(cast(a,m f3_t*)[0]); } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
-    };
+    }
 
     // scalar <- vector
     body body_v_cs
@@ -129,7 +129,7 @@ group :ar1 =
             case BKNIT_F33: cast(r,m f3_t*)[0] = 0; for(sz_t i=0; i<s; i++) { cast(r,m f3_t* restrict)[0]+=@_f3(cast(a,m f3_t*)[i]); } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
-    };
+    }
 
     /// axon pass --------------------------------------------------------------
 
@@ -149,15 +149,15 @@ group :ar1 =
     stamp :sqrsum_s   { func :.f2 = f2_sqr(a); func :.f3 = f3_sqr(a); func :.f :body_v_cs; } // squared sum
     stamp :srt_s      { func :.f2 = f2_srt(a); func :.f3 = f3_srt(a); func :.f :body_v_cv; }
 
-    body body_sigm       { = ( a > -700 ) ? ( 1.0 / ( 1.0 + exp( - cast( a, f3_t ) ) ) ) : 0; };
-    body body_sigm_hard  { = ( a < -2.0 ) ? 0.0 : ( a > 2.0 ) ? 1.0 : 0.25 * ( a + 2.0 ); };
-    body body_sigm_leaky { = ( a < -2.0 ) ? 0.01 * ( a + 2.0 ) : ( a > 2.0 ) ? 1.0 + 0.01 * ( a - 2.0 ) : 0.25 * ( a + 2.0 ); };
-    body body_tanh       { = ( a < 350 ) ? ( 1.0 - ( 2.0 / ( exp( 2.0 * cast( a, f3_t ) ) + 1.0 ) ) ) : 1.0; };
-    body body_tanh_hard  { = ( a < -1.0 ) ? -1.0 : ( a > 1.0 ) ? 1.0 : a; };
-    body body_tanh_leaky { = ( a < -1.0 ) ? -1.0 + 0.01 * ( a + 1.0 ) : ( a > 1.0 ) ? 1.0 + 0.01 * ( a - 1.0 ) : a; };
-    body body_softplus   { = ( a < 700 ) ? log( 1.0 + exp( cast( a, f3_t ) ) ) : a; };
-    body body_relu       { = a > 0 ? a : 0; };
-    body body_relu_leaky { = a > 0 ? a : a * 0.01; };
+    body body_sigm       = ( a > -700 ) ? ( 1.0 / ( 1.0 + exp( - cast( a, f3_t ) ) ) ) : 0;
+    body body_sigm_hard  = ( a < -2.0 ) ? 0.0 : ( a > 2.0 ) ? 1.0 : 0.25 * ( a + 2.0 );
+    body body_sigm_leaky = ( a < -2.0 ) ? 0.01 * ( a + 2.0 ) : ( a > 2.0 ) ? 1.0 + 0.01 * ( a - 2.0 ) : 0.25 * ( a + 2.0 );
+    body body_tanh       = ( a < 350 ) ? ( 1.0 - ( 2.0 / ( exp( 2.0 * cast( a, f3_t ) ) + 1.0 ) ) ) : 1.0;
+    body body_tanh_hard  = ( a < -1.0 ) ? -1.0 : ( a > 1.0 ) ? 1.0 : a;
+    body body_tanh_leaky = ( a < -1.0 ) ? -1.0 + 0.01 * ( a + 1.0 ) : ( a > 1.0 ) ? 1.0 + 0.01 * ( a - 1.0 ) : a;
+    body body_softplus   = ( a < 700 ) ? log( 1.0 + exp( cast( a, f3_t ) ) ) : a;
+    body body_relu       = a > 0 ? a : 0;
+    body body_relu_leaky = a > 0 ? a : a * 0.01;
 
     stamp :tanh_s       { func :.f2 :body_tanh;       func :.f3 :body_tanh;       func :.f :body_v_cv; }
     stamp :tanh_hard_s  { func :.f2 :body_tanh_hard;  func :.f3 :body_tanh_hard;  func :.f :body_v_cv; }
@@ -174,12 +174,12 @@ group :ar1 =
     /// simple accumulation
     stamp :acc_s  { func :.f2 =  a; func :.f3 =  a; func :.f :body_v_av; }
     stamp :accn_s { func :.f2 = -a; func :.f3 = -a; func :.f :body_v_av; }
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 /// binary operators
-group :ar2 =
+group :ar2
 {
     extending stump verbatim :_s = aware : {};
 
@@ -205,7 +205,7 @@ group :ar2 =
             case BKNIT_F333: for(sz_t i=0; i<s; i++) { cast(r,m f3_t* restrict)[i]=@_f3(cast(a,m f3_t*)[i],cast(b,m f3_t*)[i]); } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
-    };
+    }
 
     // vector += vector <op> vector
     body body_vv_av
@@ -223,7 +223,7 @@ group :ar2 =
             case BKNIT_F333: for(sz_t i=0; i<s; i++) { cast(r,m f3_t* restrict)[i]+=@_f3(cast(a,m f3_t*)[i],cast(b,m f3_t*)[i]); } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
-    };
+    }
 
     // vector += scalar <op> vector
     body body_sv_av
@@ -241,13 +241,13 @@ group :ar2 =
             case BKNIT_F333: for(sz_t i=0; i<s; i++) { cast(r,m f3_t* restrict)[i]+=@_f3(cast(a,m f3_t*)[0],cast(b,m f3_t*)[i]); } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
-    };
+    }
 
-    body body_mul    { = a * b; };
-    body body_add    { = a + b; };
-    body body_sub    { = a - b; };
-    body body_div_f3 { = a * f3_inv( b ); };
-    body body_div_f2 { = a * f2_inv( b ); };
+    body body_mul    = a * b;
+    body body_add    = a + b;
+    body body_sub    = a - b;
+    body body_div_f3 = a * f3_inv( b );
+    body body_div_f2 = a * f2_inv( b );
 
     stamp :sub_sqrsum_s = { func :.f; }; // r = ( a - b )^2
     stamp :sub_l1_s     = { func :.f; }; // r = l1 norm of ( a - b )
@@ -268,7 +268,7 @@ group :ar2 =
     signature extending :f_m f_vv_cm();
     signature extending :f_m f_vv_am();
 
-    stamp verbatim :mul_body_s = aware bcore_inst
+    stamp verbatim :mul_body_s bcore_inst
     {
         func :.f2 :body_mul; func :.f3 :body_mul;
         func :.f_vv_cv;
@@ -303,16 +303,16 @@ group :ar2 =
     stamp :sqr_dp_zaf_s { func :.f2 =  2*a*b;     func :.f3 =  2*a*b;     func :.f :body_vv_av; }
     stamp :srt_dp_zyf_s { func :.f2 :body_div_f2; func :.f3 :body_div_f3; func :.f :body_vv_av; }
 
-    body body_abs_dp_zaf        { = b >= 0 ? a : -a; };
-    body body_sigm_dp_zyf       { = b * ( 1.0 - b ) * a; };
-    body body_sigm_hard_dp_zyf  { = ( b <  0.0 ) ? 0.0 : ( b > 1.0 ) ? 0.0 : 0.25 * a; };
-    body body_sigm_leaky_dp_zyf { = ( b <  0.0 ) ? 0.01 * a : ( b > 1.0 ) ? 0.01 * a : 0.25 * a; };
-    body body_tanh_dp_zyf       { = ( 1.0 - f3_sqr( b ) ) * a; };
-    body body_tanh_hard_dp_zyf  { = ( b < -1.0 ) ?  0.0 : ( b > 1.0 ) ? 0.0 : a; };
-    body body_tanh_leaky_dp_zyf { = ( b < -1.0 ) ?  0.01 * a : ( b > 1.0 ) ? 0.01 * a : a; };
-    body body_softplus_dp_zyf   { f3_t u = exp( b ); = a * ( u - 1.0 ) * f3_inv( u ); };
-    body body_relu_dp_zyf       { = b > 0 ? a : 0; };
-    body body_relu_leaky_dp_zyf { = b > 0 ? a : 0.01 * a; };
+    body body_abs_dp_zaf        = b >= 0 ? a : -a;
+    body body_sigm_dp_zyf       = b * ( 1.0 - b ) * a;
+    body body_sigm_hard_dp_zyf  = ( b <  0.0 ) ? 0.0 : ( b > 1.0 ) ? 0.0 : 0.25 * a;
+    body body_sigm_leaky_dp_zyf = ( b <  0.0 ) ? 0.01 * a : ( b > 1.0 ) ? 0.01 * a : 0.25 * a;
+    body body_tanh_dp_zyf       = ( 1.0 - f3_sqr( b ) ) * a;
+    body body_tanh_hard_dp_zyf  = ( b < -1.0 ) ?  0.0 : ( b > 1.0 ) ? 0.0 : a;
+    body body_tanh_leaky_dp_zyf = ( b < -1.0 ) ?  0.01 * a : ( b > 1.0 ) ? 0.01 * a : a;
+    body body_softplus_dp_zyf   { f3_t u = exp( b ); = a * ( u - 1.0 ) * f3_inv( u ); }
+    body body_relu_dp_zyf       = b > 0 ? a : 0;
+    body body_relu_leaky_dp_zyf = b > 0 ? a : 0.01 * a;
 
     stamp :abs_dp_zaf_s        { func :.f2 :body_abs_dp_zaf;        func :.f3 :body_abs_dp_zaf;        func :.f :body_vv_av; }
     stamp :sigm_dp_zyf_s       { func :.f2 :body_sigm_dp_zyf;       func :.f3 :body_sigm_dp_zyf;       func :.f :body_vv_av; }
@@ -330,14 +330,14 @@ group :ar2 =
 
     /// logic ------------------------------------------------------------------
 
-    body body_equal         { = a == b ? 1 : -1; };
-    body body_unequal       { = a != b ? 1 : -1; };
-    body body_larger        { = a >  b ? 1 : -1; };
-    body body_smaller       { = a <  b ? 1 : -1; };
-    body body_larger_equal  { = a >= b ? 1 : -1; };
-    body body_smaller_equal { = a <= b ? 1 : -1; };
-    body body_logic_and     { = ( ( a > 0 ) && ( b > 0 ) ) ? 1 : -1; };
-    body body_logic_or      { = ( ( a > 0 ) || ( b > 0 ) ) ? 1 : -1; };
+    body body_equal         = a == b ? 1 : -1;
+    body body_unequal       = a != b ? 1 : -1;
+    body body_larger        = a >  b ? 1 : -1;
+    body body_smaller       = a <  b ? 1 : -1;
+    body body_larger_equal  = a >= b ? 1 : -1;
+    body body_smaller_equal = a <= b ? 1 : -1;
+    body body_logic_and     = ( ( a > 0 ) && ( b > 0 ) ) ? 1 : -1;
+    body body_logic_or      = ( ( a > 0 ) || ( b > 0 ) ) ? 1 : -1;
 
     stamp :equal_s         { func :.f2 :body_equal;         func :.f3 :body_equal;         func :.f :body_vv_cv; }
     stamp :unequal_s       { func :.f2 :body_unequal;       func :.f3 :body_unequal;       func :.f :body_vv_cv; }
@@ -355,7 +355,7 @@ group :ar2 =
 /// ternary operators
 group :ar3
 {
-    extending stump verbatim :_s = aware : {};
+    extending stump verbatim :_s : {};
 
     signature f2_t f2( f2_t a, f2_t b, f2_t c );
     signature f3_t f3( f3_t a, f3_t b, f3_t c );
@@ -385,7 +385,7 @@ group :ar3
             case BKNIT_F3333: for(sz_t i=0; i<s; i++) { cast(r,m f3_t* restrict)[i]=@_f3(cast(a,m f3_t*)[i],cast(b,m f3_t*)[i],cast(c,m f3_t*)[i]); } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
-    };
+    }
 
     body body_vvv_av
     {
@@ -410,12 +410,12 @@ group :ar3
             case BKNIT_F3333: for(sz_t i=0; i<s; i++) { cast(r,m f3_t* restrict)[i]+=@_f3(cast(a,m f3_t*)[i],cast(b,m f3_t*)[i],cast(c,m f3_t*)[i]); } break;
             default: ERR_fa( "Invalid tknit '#<tp_t>'.", tknit );
         }
-    };
+    }
 
     stamp :branch_vvvv_s { func :.f2 = a > 0 ? b : c; func :.f3 = a > 0 ? b : c; func :.f :body_vvv_cv; }
 
     /// dendrite pass ----------------------------------------------------------
 
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------

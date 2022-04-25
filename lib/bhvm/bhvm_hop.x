@@ -24,7 +24,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 
 /// nullary operators
-group :ar0 =
+group :ar0
 {
     extending stump verbatim :_s = aware : {};
     signature void f( m bhvm_holor_s* r );
@@ -37,12 +37,12 @@ group :ar0 =
     /// dendrite pass ----------------------------------------------------------
 
     stamp :nul_dp_s func :.f {}; // no action
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 /// unary operators
-group :ar1 =
+group :ar1
 {
     extending stump verbatim :_s = aware : {};
     signature void f( c bhvm_holor_s* a, m bhvm_holor_s* r );
@@ -91,7 +91,7 @@ group :ar1 =
 // ---------------------------------------------------------------------------------------------------------------------
 
 /// extended unary operators (elementary cyclic indexing)
-group :ar1_eci =
+group :ar1_eci
 {
     extending stump verbatim :_s = aware : {};
 
@@ -129,7 +129,7 @@ group :ar1_eci =
         }
 
         #undef BHVM_ACC_CASE
-    };
+    }
 
     stamp :cpy_acc_s { func :.f2 =  a;          func :.f3 =  a;          func :.f :body_acc; }
     stamp :neg_acc_s { func :.f2 = -a;          func :.f3 = -a;          func :.f :body_acc; }
@@ -276,7 +276,7 @@ group :ar2
 // ---------------------------------------------------------------------------------------------------------------------
 
 /// extended binary operators (elementary cyclic indexing)
-group :ar2_eci =
+group :ar2_eci
 {
     extending stump verbatim :_s = aware : {};
 
@@ -320,7 +320,7 @@ group :ar2_eci =
         }
 
         #undef BHVM_SET_CASE
-    };
+    }
 
     /// accumulates the target value: r += op( a, b )
     body body_acc
@@ -358,7 +358,7 @@ group :ar2_eci =
         }
 
         #undef BHVM_ACC_CASE
-    };
+    }
 
     /// axon pass --------------------------------------------------------------
 
@@ -465,7 +465,7 @@ group :ar2_eci =
 
     /// logic ------------------------------------------------------------------
 
-    group :logic =
+    group :logic
     {
         extending stump verbatim :_s = aware : {};
 
@@ -486,21 +486,21 @@ group :ar2_eci =
         stamp :smaller_equal_s { func ::.f2 :body_smaller_equal; func ::.f3 :body_smaller_equal; func ::.f ::body_set; }
         stamp :and_s           { func ::.f2 :body_and;           func ::.f3 :body_and;           func ::.f ::body_set; }
         stamp :or_s            { func ::.f2 :body_or;            func ::.f3 :body_or;            func ::.f ::body_set; }
-    };
+    }
 
     /// dendrite pass ----------------------------------------------------------
 
-    body body_iff_dp_b { = ( a > 0 ) ? b : 0; };
-    body body_iff_dp_c { = ( a > 0 ) ? 0 : b; };
+    body body_iff_dp_b = ( a > 0 ) ? b : 0;
+    body body_iff_dp_c = ( a > 0 ) ? 0 : b;
     stamp :iff_dp_b_azg_s { func :.f2 :body_iff_dp_b; func :.f3 :body_iff_dp_b; func :.f :body_acc; }
     stamp :iff_dp_c_azh_s { func :.f2 :body_iff_dp_c; func :.f3 :body_iff_dp_c; func :.f :body_acc; }
 
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 /// ternary operators
-group :ar3 =
+group :ar3
 {
     extending stump verbatim :_s = aware : {};
     signature void f( c bhvm_holor_s* a, c bhvm_holor_s* b, c bhvm_holor_s* c, m bhvm_holor_s* r );
@@ -509,12 +509,12 @@ group :ar3 =
 
     /// dendrite pass ----------------------------------------------------------
 
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 /// extended ternary operators (elementary cyclic indexing)
-group :ar3_eci =
+group :ar3_eci
 {
     extending stump verbatim :_s = aware : {};
 
@@ -568,7 +568,7 @@ group :ar3_eci =
         }
 
         #undef BHVM_SET_CASE
-    };
+    }
 
     /// accumulates the target value: r += op( a, b, c )
     body body_acc
@@ -616,30 +616,30 @@ group :ar3_eci =
         }
 
         #undef BHVM_ACC_CASE
-    };
+    }
 
     /// axon pass --------------------------------------------------------------
 
     /// logic ------------------------------------------------------------------
 
-    body body_iff  { = ( a > 0 ) ? b : c; };
+    body body_iff  = ( a > 0 ) ? b : c;
     stamp :iff_s     { func :.f2 :body_iff; func :.f3 :body_iff; func :.f :body_set; }
     stamp :iff_acc_s { func :.f2 :body_iff; func :.f3 :body_iff; func :.f :body_acc; }
 
     /// dendrite pass ----------------------------------------------------------
 
-    body body_div_dp_zabg_f2 { = -a * b * f2_inv( c * c ); };
-    body body_div_dp_zabg_f3 { = -a * b * f3_inv( c * c ); };
+    body body_div_dp_zabg_f2 = -a * b * f2_inv( c * c );
+    body body_div_dp_zabg_f3 = -a * b * f3_inv( c * c );
     stamp :div_dp_zabg_s { func :.f2 :body_div_dp_zabg_f2; func :.f3 :body_div_dp_zabg_f3; func :.f :body_acc; }
 
-    body body_pow_dp_abzf_f2 { = c * b * f2_pow( a, b - 1 ); };
-    body body_pow_dp_abzf_f3 { = c * b * f3_pow( a, b - 1 ); };
+    body body_pow_dp_abzf_f2 = c * b * f2_pow( a, b - 1 );
+    body body_pow_dp_abzf_f3 = c * b * f3_pow( a, b - 1 );
     stamp :pow_dp_abzf_s { func :.f2 :body_pow_dp_abzf_f2; func :.f3 :body_pow_dp_abzf_f3; func :.f :body_acc; }
 
-    body body_pow_dp_ayzg_f2 { = ( a > 0 ) ? b * c * logf( a ) : 0; };
-    body body_pow_dp_ayzg_f3 { = ( a > 0 ) ? b * c * log ( a ) : 0; };
+    body body_pow_dp_ayzg_f2 = ( a > 0 ) ? b * c * logf( a ) : 0;
+    body body_pow_dp_ayzg_f3 = ( a > 0 ) ? b * c * log ( a ) : 0;
     stamp :pow_dp_ayzg_s { func :.f2 :body_pow_dp_ayzg_f2; func :.f3 :body_pow_dp_ayzg_f3; func :.f :body_acc; }
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 

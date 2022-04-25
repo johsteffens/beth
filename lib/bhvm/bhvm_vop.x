@@ -22,7 +22,7 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-stamp :arr_s = aware x_array
+stamp :arr_s x_array
 {
     aware bhvm_vop => [];
     wrap x_array.push_d;
@@ -65,7 +65,7 @@ feature o set_index_arr( m @* o, m sz_t* idx_arr, sz_t size )
 
 signature void push_ci( m @* o, u0_t c, sz_t i );
 
-stamp :ci_s = obliv bcore_inst
+stamp :ci_s obliv bcore_inst
 {
     u0_t c; sz_t i;
     func : .push_ci { o.c = c; o.i = i; };
@@ -74,7 +74,7 @@ stamp :ci_s = obliv bcore_inst
 signature sz_t i_of_c( c @* o, u0_t c );
 signature u0_t c_of_i( c @* o, sz_t i );
 
-stamp :arr_ci_s = aware x_array
+stamp :arr_ci_s x_array
 {
     :ci_s [];
     func : .push_ci
@@ -120,11 +120,7 @@ feature void set_arg( m @* o, m :ci_s* ci )
     }
 }
 
-feature o set_args( m @* o, c :arr_ci_s* arr )
-{
-    foreach( m $* e in arr ) :a_set_arg( o, e );
-    = o;
-}
+feature o set_args( m @* o, c :arr_ci_s* arr ) foreach( m $* e in arr ) o.set_arg( e );
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -181,10 +177,10 @@ group :ar0 =
     /** Randomizer with internal seed state and updating seed at each use
       * The internal state is protected via mutex
       */
-    stamp :rand_s =
+    stamp :rand_s
     {
         aware bcore_prsg => prsg;
-        u3_t rval    = 1234; // depracted, use prsg instead
+        u3_t rval    = 1234; // deprecated, use prsg instead
         f3_t min     = -0.5;
         f3_t max     =  0.5;
         f3_t density =  1.0;
@@ -209,23 +205,22 @@ group :ar0 =
         }
 
         func ::.sig = "y";
-    };
-
-};
+    }
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 /// unary operators
 group :ar1 =
 {
-    stamp :index_s obliv bcore_inst { sz_t [ 2 ] v; func bcore_inst_call.init_x { o.v[0] = o.v[1] = -1; } }
+    stamp :index_s obliv bcore_inst { sz_t [ 2 ] v; func bcore_inst_call.init_x o.v[0] = o.v[1] = -1; }
 
     func o setup( m (TO) @* o, sz_t idx0, sz_t idx1 )
     {
         = o.set_index_arr( verbatim_C{ ( sz_t[] ) { idx0, idx1 } }, 2 );
     }
 
-    extending stump verbatim :_s = aware :
+    extending stump verbatim :_s :
     {
         :index_s i;
         func ::.arity = 1;
@@ -346,7 +341,7 @@ group :ar1 =
 /// binary operators
 group :ar2 =
 {
-    stamp :index_s = obliv bcore_inst { sz_t [ 3 ] v; func bcore_inst_call . init_x { o.v[0] = o.v[1] = o.v[2] = -1; }; }
+    stamp :index_s obliv bcore_inst { sz_t [ 3 ] v; func bcore_inst_call . init_x o.v[0] = o.v[1] = o.v[2] = -1; }
 
     func o setup( m (TO) @* o, sz_t idx0, sz_t idx1, sz_t idx2 )
     {
@@ -439,7 +434,7 @@ group :ar2 =
 
     stamp :iff_dp_b_s { func ::.run bhvm_hop_ar2_eci_iff_dp_b_azg_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); func ::.sig = "azg"; }
     stamp :iff_dp_c_s { func ::.run bhvm_hop_ar2_eci_iff_dp_c_azh_s_f( ah[o.i.v[0]], ah[o.i.v[1]], ah[o.i.v[2]] ); func ::.sig = "azh"; }
-};
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
