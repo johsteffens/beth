@@ -292,8 +292,23 @@ func (:sequence_s) wav_from_source
         = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (bits_per_sample) Unhandled value (#<u1_t>", block_alignment );
     }
 
+    if( source.parse_bl( "#?'LIST'" ) ) // list chunk (RIFF extension)
+    {
+        u2_t chunk_length = 0;
+
+        if( source.get_data( chunk_length.1, sizeof( chunk_length ) ) != sizeof( chunk_length ) )
+        {
+            = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: LIST-chunk: (chunk_length) File format error." );
+        }
+
+        /// we skip over this chunk
+        for( sz_t i = 0; i < chunk_length; i++ ) source.get_char();
+    }
+
+    source.parse_bl( "#?'data'" );
+
     u2_t data_length = 0;
-    source.parse_fa( "data" );
+
     if( source.get_data( data_length.1, sizeof( data_length ) ) != sizeof( data_length ) )
     {
         = bcore_error_push_fa( TYPEOF_general_error, "wav_from_source: (data_length) File format error." );

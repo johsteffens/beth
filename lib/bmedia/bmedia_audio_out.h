@@ -90,7 +90,7 @@ stamp :s
 
     /** Number of channels (normally 2 (stereo))
      */
-    s2_t channels = 2;
+    $ s2_t channels = 2;
 
     /** Requested values can be overridden by the hardware.
      *  A negative value indicates that no value is requested.
@@ -99,7 +99,7 @@ stamp :s
      */
 
     /// Requested rate in hertz
-    s2_t requested_rate = 44100;
+    $ s2_t requested_rate = 44100;
 
     /** Requested Number of periods in the data (ring-)buffer.
      *  A period is a data-fragment that is bulk-transferred between ordinary memory and hardware.
