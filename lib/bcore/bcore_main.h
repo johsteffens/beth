@@ -53,7 +53,7 @@
 XOILA_DEFINE_GROUP( bcore_main, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stamp :frame_s = aware bcore_inst
+stamp :frame_s bcore_inst
 {
     /// ==== Parameters ====
 
@@ -90,26 +90,23 @@ feature 'ar' er_t main( m @* o, m :frame_s* frame );
 /** On exit is called when a exit is required (typically when SIGTERM was received)
  *  The implementation should return 'true' when the signal was handled and consumed.
  */
-feature 'ar' bl_t on_termination( mutable @* o, :frame_s* frame ) { return false; };
+feature 'ar' bl_t on_termination( mutable @* o, :frame_s* frame ) = false;
 
 /** On interrupt is called on SIGINT (C-c).
  *  This is typically used to cleanly exit and close the program.
  *  The implementation should return 'true' when the signal was handled and consumed.
  */
-feature 'ar' bl_t on_interrupt( mutable @* o, :frame_s* frame ) { return false; };
+feature 'ar' bl_t on_interrupt( mutable @* o, :frame_s* frame ) = false;
 
 /** On suspend is called on SIGTSTP (C-z).
  *  This is typically used to cleanly leave a long running function for interactive purposes.
  *  The implementation should return 'true' when the signal was handled and consumed.
  */
-feature 'ar' bl_t on_suspend( mutable @* o, :frame_s* frame ) { return false; };
+feature 'ar' bl_t on_suspend( mutable @* o, :frame_s* frame ) = false;
 
-stamp :arr_s = aware x_array
-{
-    aware : => [];
-};
+stamp :arr_s = x_array { : => []; }
 
-stamp :set_s = aware :
+stamp :set_s
 {
     :arr_s arr;
 
@@ -127,27 +124,27 @@ stamp :set_s = aware :
             try( e.main( frame ) );
         };
         o.current_object = NULL;
-        return 0;
-    };
+        = 0;
+    }
 
     func :.on_termination
     {
         bcore_lock_s^ lock.set( o.mutex_current_object );
-        return o.current_object ? o.current_object.on_termination( frame ) : false;
-    };
+        = o.current_object ? o.current_object.on_termination( frame ) : false;
+    }
 
     func :.on_interrupt
     {
         bcore_lock_s^ lock.set( o.mutex_current_object );
-        return o.current_object ? o.current_object.on_interrupt( frame ) : false;
-    };
+        = o.current_object ? o.current_object.on_interrupt( frame ) : false;
+    }
 
     func :.on_suspend
     {
         bcore_lock_s^ lock.set( o.mutex_current_object );
-        return o.current_object ? o.current_object.on_suspend( frame ) : false;
-    };
-};
+        = o.current_object ? o.current_object.on_suspend( frame ) : false;
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
