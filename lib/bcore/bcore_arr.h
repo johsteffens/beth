@@ -152,8 +152,8 @@ bcore_arr_s3_s* bcore_arr_s3_s_reorder(   bcore_arr_s3_s* o, const bcore_arr_uz_
 uz_t            bcore_arr_s3_s_count_equal( const bcore_arr_s3_s* o, s3_t val ); // number of occurrence
 
 uz_t            bcore_arr_s3_s_find(    const bcore_arr_s3_s* o, uz_t start, uz_t end, s3_t v ); // behaves like st_s_find_*
-sz_t            bcore_arr_s3_s_max(     const bcore_arr_s3_s* o );
-sz_t            bcore_arr_s3_s_min(     const bcore_arr_s3_s* o );
+s3_t            bcore_arr_s3_s_max(     const bcore_arr_s3_s* o );
+s3_t            bcore_arr_s3_s_min(     const bcore_arr_s3_s* o );
 uz_t            bcore_arr_s3_s_idx_max( const bcore_arr_s3_s* o );
 uz_t            bcore_arr_s3_s_idx_min( const bcore_arr_s3_s* o );
 

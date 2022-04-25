@@ -149,8 +149,8 @@ group :s3 = :
     signature s3_t pop        ( m @* o );
     signature uz_t count_equal( c @* o, s3_t val ); // number of occurrence
     signature uz_t find       ( c @* o,   uz_t start, uz_t end, s3_t v ); // behaves like st_s_find_*
-    signature sz_t max        ( c @* o );
-    signature sz_t min        ( c @* o );
+    signature s3_t max        ( c @* o );
+    signature s3_t min        ( c @* o );
     signature uz_t idx_max    ( c @* o );
     signature uz_t idx_min    ( c @* o );
 
