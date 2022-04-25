@@ -123,7 +123,7 @@ stamp :bit_buffer_s = x_array
     /// Writes an unsigned integer. Stores number of used bits eliminating leading zeros. (7 ... 70 bits)
     func o push_packed_u3( m@* o, u3_t val );
 
-    /// Writes a signed integer with a specified number of bits + 1 bit for the sign
+    /// Writes a signed integer as two-s complement with a specified number of bits
     func o push_s3( m@* o, s3_t val, sz_t bits );
 
     /// Writes a signed integer. Stores number of used bits eliminating leading zeros. (7 ... 70 bits); Uses one extra bit for the sign
@@ -131,6 +131,9 @@ stamp :bit_buffer_s = x_array
 
     /// Writes a float. Accuracy bits used to loss-encode the mantissa, exponent is encoded lossless
     func o push_f3( m@* o, f3_t v, sz_t bits );
+
+    /// Appends a bit buffer
+    func o push_bit_buffer( m@* o, @* src );
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -158,7 +161,7 @@ stamp :bit_buffer_iterator_s =
     /// Reads a compacted unsigned integer; complementary to :bit_buffer_s.push_packed_u3
     func u3_t read_packed_u3( m@* o );
 
-    /// Reads an signed integer with a specified number of bits; complementary to :bit_buffer_s.push_s3
+    /// Reads an signed integer as two's complement; complementary to :bit_buffer_s.push_s3
     func s3_t read_s3( m@* o, sz_t bits );
 
     /// Reads a compacted signed integer; complementary to :bit_buffer_s.push_packed_s3

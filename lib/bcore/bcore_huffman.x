@@ -238,9 +238,7 @@ func (:bit_buffer_s) push_packed_u3
 
 func (:bit_buffer_s) push_s3
 {
-    o.push_bl( val >= 0 ? true : false );
-    o.push_u3( val >= 0 ? val : -val, bits );
-    = o;
+    o.push_u3( val, bits );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -264,6 +262,22 @@ func (:bit_buffer_s) push_f3
     o.push_packed_s3( exp );
     = o;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bit_buffer_s) push_bit_buffer
+{
+    u3_t bits = src.bits;
+    for( sz_t i = 0; ( i < src.size ) && ( bits > 0 ); i++ )
+    {
+        o.push_u3( src.[ i ], u3_min( 8, bits ) );
+        bits -= u3_min( 8, bits );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -297,9 +311,12 @@ func (:bit_buffer_iterator_s) read_packed_u3
 
 func (:bit_buffer_iterator_s) read_s3
 {
-    s3_t sign = o.read_bl() ? 1 : -1;
-    s3_t val = o.read_u3( bits );
-    = val * sign;
+    u3_t u3 = o.read_u3( bits );
+    if( bits > 0 )
+    {
+        if( ( bits > 0 ) && ( u3 >> ( bits - 1 ) ) ) u3 = ( 0xFFFFFFFFFFFFFFFFull << bits ) | u3;
+    }
+    = u3;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -516,8 +533,6 @@ stamp :tree_s x_array
 
 func void selftest()
 {
-    :codec_s^ codec;
-
     bcore_prsg_lcg_u3_00_s^ prsg;
 
     sz_t n = 100000;
@@ -530,19 +545,40 @@ func void selftest()
         arr_s3.push( x );
     }
 
-    codec.scan_start();
-    for( sz_t i = 0; i < n; i++ ) codec.scan_s3( arr_s3.[ i ] );
-    codec.scan_end();
 
-    :bit_buffer_s^ bit_buffer;
+    /// huffman codec
+    {
+        :codec_s^ codec;
+        codec.scan_start();
+        for( sz_t i = 0; i < n; i++ ) codec.scan_s3( arr_s3.[ i ] );
+        codec.scan_end();
 
-    codec.encode( bit_buffer );
-    for( sz_t i = 0; i < n; i++ ) codec.encode_s3( arr_s3.[ i ], bit_buffer );
+        :bit_buffer_s^ bit_buffer;
 
-    :bit_buffer_iterator_s^ iterator.setup( bit_buffer );
+        codec.encode( bit_buffer );
+        for( sz_t i = 0; i < n; i++ ) codec.encode_s3( arr_s3.[ i ], bit_buffer );
 
-    :codec_s^ codec2.decode( iterator );
-    for( sz_t i = 0; i < n; i++ ) ASSERT( codec2.decode_s3( iterator ) == arr_s3.[ i ] );
+        :bit_buffer_iterator_s^ iterator.setup( bit_buffer );
+
+        :codec_s^ codec2.decode( iterator );
+        for( sz_t i = 0; i < n; i++ ) ASSERT( codec2.decode_s3( iterator ) == arr_s3.[ i ] );
+    }
+
+    /// direct s3 codec
+    {
+        s3_t max = arr_s3.max();
+        s3_t min = arr_s3.min();
+        sz_t bits = 0;
+        while( ( max >> bits ) > 0 || ( min >> bits ) < -1 ) bits++;
+        bits++;
+
+        :bit_buffer_s^ bit_buffer;
+        for( sz_t i = 0; i < n; i++ ) bit_buffer.push_s3( arr_s3.[ i ], bits );
+
+        :bit_buffer_iterator_s^ iterator.setup( bit_buffer );
+        for( sz_t i = 0; i < n; i++ ) ASSERT( iterator.read_s3( bits ) == arr_s3.[ i ] );
+    }
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
