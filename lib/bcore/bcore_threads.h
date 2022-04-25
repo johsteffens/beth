@@ -216,7 +216,7 @@ vd_t bcore_thread_arr_s_join_pop( bcore_thread_arr_s* o );
 /**********************************************************************************************************************/
 // other thread related functions
 
-/// suspends current thread for period ns given in ...
+/// suspends current thread for a period given in ...
 void bcore_sleep_ns( u3_t ns ); /// ... nanoseconds
 void bcore_sleep_us( u3_t us ); /// ... microseconds
 void bcore_sleep_ms( u3_t ms ); /// ... milliseconds
