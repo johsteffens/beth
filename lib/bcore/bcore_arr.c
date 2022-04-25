@@ -1190,6 +1190,80 @@ uz_t bcore_arr_s3_s_count_equal( const bcore_arr_s3_s* o, s3_t val )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+uz_t bcore_arr_s3_s_find( const bcore_arr_s3_s* o, uz_t start, uz_t end, s3_t v )
+{
+    if( end >= start )
+    {
+        uz_t end_l = end < o->size ? end : o->size;
+        for( uz_t j = start; j < end_l; j++ ) if( o->data[ j ] == v ) return j;
+        return end_l;
+    }
+    else
+    {
+        uz_t start_l = start < o->size ? start : o->size;
+        for( uz_t j = start_l - 1;  j < start_l && j >= end; j-- ) if( o->data[ j ] == v ) return j;
+        return start_l;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+s3_t bcore_arr_s3_s_max( const bcore_arr_s3_s* o )
+{
+    if( o->size == 0 ) return 0;
+    s3_t max = o->data[ 0 ];
+    for( uz_t i = 1; i < o->size; i++ ) max = o->data[ i ] > max ? o->data[ i ] : max;
+    return max;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+s3_t bcore_arr_s3_s_min( const bcore_arr_s3_s* o )
+{
+    if( o->size == 0 ) return 0;
+    s3_t min = o->data[ 0 ];
+    for( uz_t i = 1; i < o->size; i++ ) min = o->data[ i ] < min ? o->data[ i ] : min;
+    return min;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+uz_t bcore_arr_s3_s_idx_max( const bcore_arr_s3_s* o )
+{
+    if( o->size == 0 ) return 0;
+    s3_t max = o->data[ 0 ];
+    uz_t idx = 0;
+    for( uz_t i = 1; i < o->size; i++ )
+    {
+        if( o->data[ i ] > max )
+        {
+            max = o->data[ i ];
+            idx = i;
+        }
+    }
+    return idx;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+uz_t bcore_arr_s3_s_idx_min( const bcore_arr_s3_s* o )
+{
+    if( o->size == 0 ) return 0;
+    s3_t min = o->data[ 0 ];
+    uz_t idx = 0;
+    for( uz_t i = 1; i < o->size; i++ )
+    {
+        if( o->data[ i ] < min )
+        {
+            min = o->data[ i ];
+            idx = i;
+        }
+    }
+    return idx;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 // bcore_arr_tp_s
 

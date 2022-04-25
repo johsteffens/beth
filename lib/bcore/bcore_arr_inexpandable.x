@@ -148,6 +148,11 @@ group :s3 = :
     signature m @* push_left  ( m @* o, s3_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature s3_t pop        ( m @* o );
     signature uz_t count_equal( c @* o, s3_t val ); // number of occurrence
+    signature uz_t find       ( c @* o,   uz_t start, uz_t end, s3_t v ); // behaves like st_s_find_*
+    signature sz_t max        ( c @* o );
+    signature sz_t min        ( c @* o );
+    signature uz_t idx_max    ( c @* o );
+    signature uz_t idx_min    ( c @* o );
 
     stamp :s = aware x_inst
     {
@@ -165,6 +170,11 @@ group :s3 = :
         func  : .pop;
         func :: .cmp;
         func  : .count_equal;
+        func  : .find;
+        func  : .max;
+        func  : .min;
+        func  : .idx_max;
+        func  : .idx_min;
     };
 };
 
