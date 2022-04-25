@@ -121,6 +121,15 @@ static inline s2_t s2_abs( s2_t v ) { return v < 0 ? -v : v; }
 static inline void s2_t_swap( s2_t* v1, s2_t* v2 ) { s2_t t = *v1; *v1 = *v2; *v2 = t; }
 
 /**********************************************************************************************************************/
+// s1_t
+
+static inline s1_t s1_min( s1_t a, s1_t b ) { return a < b ? a : b; }
+static inline s1_t s1_max( s1_t a, s1_t b ) { return a > b ? a : b; }
+static inline s1_t s1_sig( s1_t v ) { return v < 0 ? -1 : 1; }
+static inline s1_t s1_abs( s1_t v ) { return v < 0 ? -v : v; }
+static inline void s1_t_swap( s1_t* v1, s1_t* v2 ) { s1_t t = *v1; *v1 = *v2; *v2 = t; }
+
+/**********************************************************************************************************************/
 // u3_t
 
 static inline u3_t u3_min( u3_t a, u3_t b ) { return a < b ? a : b; }
@@ -133,6 +142,13 @@ static inline void u3_t_swap( u3_t* v1, u3_t* v2 ) { u3_t t = *v1; *v1 = *v2; *v
 static inline u2_t u2_min( u2_t a, u2_t b ) { return a < b ? a : b; }
 static inline u2_t u2_max( u2_t a, u2_t b ) { return a > b ? a : b; }
 static inline void u2_t_swap( u2_t* v1, u2_t* v2 ) { u2_t t = *v1; *v1 = *v2; *v2 = t; }
+
+/**********************************************************************************************************************/
+// u1_t
+
+static inline u1_t u1_min( u1_t a, u1_t b ) { return a < b ? a : b; }
+static inline u1_t u1_max( u1_t a, u1_t b ) { return a > b ? a : b; }
+static inline void u1_t_swap( u1_t* v1, u1_t* v2 ) { u1_t t = *v1; *v1 = *v2; *v2 = t; }
 
 /**********************************************************************************************************************/
 
