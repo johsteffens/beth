@@ -109,9 +109,10 @@ func create
  *    = o.value;
  *
  *  Functional:
- *    = o.mutex.create_lock()^.attend( o ).value;
+ *    = o.mutex.create_lock()^.attn( o ).value;
  */
 func a attend( @* o, @* a ) = a;
+func a attn  ( @* o, @* a ) = a;
 
 //----------------------------------------------------------------------------------------------------------------------
 
