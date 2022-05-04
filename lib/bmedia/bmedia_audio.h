@@ -87,6 +87,8 @@ stamp :buffer_s x_array
     func o set_frames( m@* o, sz_t frames, sz_t channels ) { = o.set_size( frames * channels, channels ); };
     func o set_zero( m@* o ) { foreach( m$* e in o ) e.0 = 0; = o; };
 
+    func sz_t frames( @* o ) = o.channels > 0 ? o.size / o.channels : 0;
+
     /// converts buffer channel into vector with value range [ -1.0 , +1.0 [
     func vec get_vf2( @* o, m bmath_vf2_s* vec, sz_t channel );
 
@@ -122,21 +124,14 @@ stamp :buffer_s x_array
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// General buffer for audio data
-stamp :buffer_adl_s x_array
-{
-    :buffer_s => [];
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 /** Self contained audio sequence.
  *  Can be used as simple container or FIFO queue.
  *  Buffers are organized in a deque.
- *  deque elements are managed by a ring buffer.
  */
-stamp :sequence_s
+stamp :sequence_s x_deque trans(TE :buffer_s)
 {
+    x_deque_inst_s deque;
+
     /// Number of channels (2 == stereo); -1: not specified
     s2_t channels = -1;
 
@@ -146,19 +141,16 @@ stamp :sequence_s
     /** Preferred Frames per Buffer
      *  This number is used where a buffer size needs to be specified
      *  but was not already provided externally.
-     *  Note that the buffer adl can hold buffers of arbitrary size
+     *  Note that the sequence may hold buffers of arbitrary size
      *  regardless of this number.
      */
     sz_t preferred_frames_per_buffer = 32768;
 
-    :buffer_adl_s adl;
+    func x_deque.size = o.deque.size;
+    func x_deque.m_get = o.deque.m_get( index ).cast( m :buffer_s* );
+    func x_deque.c_get = o.deque.c_get( index ).cast( c :buffer_s* );
 
-    sz_t first; // index to first element
-    sz_t size;  // number of used elements
-
-    func o clear( m@* o ) { o.adl.clear(); o.first = o.size = 0; = o; }
-
-    func o set_zero( m@* o ) { foreach( m$* e in o.adl ) e.set_zero(); = o; }
+    func o set_zero( m@* o ) { for( sz_t i = 0; i < o.size(); i++ ) o.m_get( i ).set_zero(); }
 
     /// sets up empty sequence
     func o setup( m@* o, s2_t channels, s2_t rate ) { o.clear(); o.channels = channels; o.rate = rate; = o; }
@@ -169,22 +161,28 @@ stamp :sequence_s
     /// creates difference (a - b) of sequences a and b
     func o setup_diff( m@* o, @* a, @* b );
 
+    /// setup from src by forking all buffers in src
+    func o setup_fork_buffers( m@* o, m @* src );
+
     /// Access function: Returns NULL if out of range
-    func m :buffer_s* buffer_m( m@* o, sz_t index ) { = ( index >= 0 && index < o.size ) ? o.adl.[ ( o.first + index ) % o.adl.size ] : NULL; }
-    func c :buffer_s* buffer_c( c@* o, sz_t index ) { = o.cast( m@* ).buffer_m( index ); }
-    func m :buffer_s* last_m( m@* o ) { = o.buffer_m( o.size - 1 ); }
-    func c :buffer_s* last_c( m@* o ) { = o.cast( m@* ).last_m(); }
+    func m :buffer_s* buffer_m( m@* o, sz_t index ) = ( index >= 0 && index < o.deque.size ) ? o.m_get( index ) : NULL;
+    func c :buffer_s* buffer_c( c@* o, sz_t index ) = o.cast( m@* ).buffer_m( index );
+    func m :buffer_s* first_m( m@* o ) = o.buffer_m( 0 );
+    func c :buffer_s* first_c( m@* o ) = o.cast( m@* ).first_m();
+    func m :buffer_s* last_m( m@* o )  = o.buffer_m( o.size() - 1 );
+    func c :buffer_s* last_c( m@* o )  = o.cast( m@* ).last_m();
 
     /// Appends new element to sequence
-    func m :buffer_s* push_empty_buffer( m@* o );
-    func m :buffer_s* push_copy_buffer( m@* o, :buffer_s* buffer ) { m :buffer_s* b = o.push_empty_buffer(); b.copy( buffer ); = b; }
+    func m :buffer_s* push_buffer_d( m@* o, d :buffer_s* buffer );
+    func m :buffer_s* push_buffer_c( m@* o,   :buffer_s* buffer ) = o.push_buffer_d( buffer.clone() );
+    func m :buffer_s* push_empty_buffer( m@* o ) = o.push_buffer_d( :buffer_s! );
 
     /// Takes first element from sequence
-    func d :buffer_s* pop_first_buffer( m@* o );
+    func d :buffer_s* pop_first_buffer( m@* o ) = o.d_pop_first();
 
     /// Sum of all buffer sizes
     func sz_t sum_buffer_size( @* o );
-    func sz_t sum_buffer_frames( @* o ) { = o.sum_buffer_size() / o.channels; };
+    func sz_t sum_buffer_frames( @* o ) = o.sum_buffer_size() / o.channels;
 
     /// Sends sequence in RIFF-WAVE format to sink
     func er_t wav_to_sink( @* o, m x_sink* sink );
@@ -197,27 +195,27 @@ stamp :sequence_s
     func f3_t energy( @* o )
     {
         f3_t sum = 0;
-        for( sz_t i = 0; i < o.size; i++ ) sum += o.buffer_c( i ).energy();
+        for( sz_t i = 0; i < o.size(); i++ ) sum += o.buffer_c( i ).energy();
         = sum;
     }
 
     func f3_t sum( @* o )
     {
         f3_t sum = 0;
-        for( sz_t i = 0; i < o.size; i++ ) sum += o.buffer_c( i ).sum();
+        for( sz_t i = 0; i < o.size(); i++ ) sum += o.buffer_c( i ).sum();
         = sum;
     }
 
     func f3_t max_abs( @* o )
     {
         f3_t max_abs = 0;
-        for( sz_t i = 0; i < o.size; i++ ) max_abs = f3_max( max_abs, o.buffer_c( i ).max_abs() );
+        for( sz_t i = 0; i < o.size(); i++ ) max_abs = f3_max( max_abs, o.buffer_c( i ).max_abs() );
         = max_abs;
     }
 
     func void gain( m@* o, f3_t factor )
     {
-        for( sz_t i = 0; i < o.size; i++ ) o.buffer_m( i ).gain( factor );
+        for( sz_t i = 0; i < o.size(); i++ ) o.buffer_m( i ).gain( factor );
     }
 
     /// returns an iterator for sequence
@@ -290,7 +288,9 @@ stamp :sequence_iterator_s =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// Indexer providing fast liner access to sequence
+/** Indexer providing fast linear access to sequence.
+ *  While in use the underlying sequence should not add or remove buffers.
+ */
 stamp :sequence_indexer_s =
 {
     hidden :sequence_s* sequence;

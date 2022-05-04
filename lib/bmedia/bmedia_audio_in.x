@@ -247,7 +247,7 @@ func (:s) stream_record
 func (:s) stream_record_to_sequence
 {
     if( !o.is_setup_ ) o.setup();
-    if( sequence.size == 0 )
+    if( sequence.size() == 0 )
     {
         sequence.rate = o.actual_rate;
         sequence.channels = o.channels;

@@ -49,7 +49,7 @@ func (:buffer_s) set_from_vf2
 
 func (:sequence_s) setup_frames
 {
-    o.adl.clear();
+    o.clear();
     o.channels = channels;
     o.rate = rate;
     while( frames > 0 )
@@ -97,46 +97,31 @@ func (:sequence_s) setup_diff
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:sequence_s) push_empty_buffer
+func (:sequence_s) setup_fork_buffers
 {
-    if( o.size == o.adl.size )
-    {
-        sz_t old_adl_size = o.adl.size;
-        o.adl.set_size( sz_max( 1, old_adl_size * 2 ) );
-
-        /// unwrap deque
-        sz_t size_wrap = o.first + o.size - old_adl_size;
-        for( sz_t i = 0; i < size_wrap; i++ )
-        {
-            o.adl.[ i + old_adl_size ] = o.adl.[ i ];
-            o.adl.[ i ] = NULL;
-        }
-    }
-
-    sz_t index = ( o.first + o.size ) % o.adl.size;
-    assert( o.adl.[ index ] == NULL );
-    o.size++;
-
-    d$* buffer = :buffer_s!;
-    buffer.channels = o.channels;
-    = o.adl.[ index ] = buffer;
+    o.setup( src.channels, src.rate );
+    for( sz_t i = 0; i < src.size(); i++ ) o.push_buffer_d( src.buffer_m( i ).fork() );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:sequence_s) pop_first_buffer
+func (:sequence_s) push_buffer_d
 {
-    d :buffer_s* buffer = NULL;
-
-    if( o.size > 0 )
+    if( o.channels < 0 )
     {
-        buffer = o.adl.[ o.first ];
-        o.adl.[ o.first ] = NULL;
-        o.first = ( o.first + 1 ) % o.adl.size;
-        o.size--;
+        ASSERT( buffer.channels >= 0 );
+        o.channels = buffer.channels;
+    }
+    else if( buffer.size == 0 )
+    {
+        buffer.channels = o.channels;
+    }
+    else
+    {
+        ASSERT( buffer.channels == o.channels );
     }
 
-    = buffer;
+    = o.push_last_d( buffer );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -144,7 +129,7 @@ func (:sequence_s) pop_first_buffer
 func (:sequence_s) sum_buffer_size
 {
     sz_t sum = 0;
-    for( sz_t i = 0; i < o.size; i++ ) sum += o.buffer_c( i ).size;
+    for( sz_t i = 0; i < o.size(); i++ ) sum += o.buffer_c( i ).size;
     = sum;
 }
 
@@ -184,7 +169,7 @@ func (:sequence_s) wav_to_sink
     sink.push_sc( "data" );
     sink.push_data( data_length.1, sizeof( data_length ) );
 
-    for( sz_t i = 0; i < o.size; i++ )
+    for( sz_t i = 0; i < o.size(); i++ )
     {
         :buffer_s* buffer = o.buffer_c( i );
         sink.push_data( buffer.data, sizeof( s1_t ) * buffer.size );
@@ -411,7 +396,7 @@ func (:sequence_iterator_s) move
             o.global_frame_index += frames;
             o.buffer_index++;
             o.frame_index = 0;
-            o.eos = ( o.buffer_index >= o.sequence.size );
+            o.eos = ( o.buffer_index >= o.sequence.size() );
         }
     }
 
@@ -473,7 +458,7 @@ func (:sequence_iterator_s) get_frames
             {
                 o.buffer_index++;
                 o.frame_index = 0;
-                o.eos = ( o.buffer_index >= o.sequence.size );
+                o.eos = ( o.buffer_index >= o.sequence.size() );
             }
             else
             {
@@ -520,7 +505,7 @@ func (:sequence_indexer_s) setup
 {
     o.sequence = sequence;
     o.channels = sequence.channels;
-    bcore_arr_s3_s^ arr.set_size( sequence.size );
+    bcore_arr_s3_s^ arr.set_size( sequence.size() );
     foreach( m$* e in arr ) e.0 = sequence.buffer_c( __i ).size / o.channels;
     o.indexer.setup( arr );
     o.size = o.indexer.size;
