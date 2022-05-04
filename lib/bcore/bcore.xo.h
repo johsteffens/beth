@@ -1,4 +1,4 @@
-//  Last update: 2022-04-10T14:25:21Z
+//  Last update: 2022-05-02T11:27:03Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -32,6 +32,7 @@
  *  bcore_x_btml.h
  *  bcore_x_bbml.h
  *  bcore_x_hmap.h
+ *  bcore_x_deque.h
  *  bcore_arr_inexpandable.x
  *  bcore_flect_inexpandable.x
  *  bcore_hmap_inexpandable.x
@@ -98,6 +99,7 @@
   static inline const x_inst* x_inst_ifc( const x_inst* o, bl_t cond, const x_inst* b ); \
   x_inst* x_inst_create( tp_t type ); \
   static inline const x_inst* x_inst_attend( const x_inst* o, const x_inst* a ); \
+  static inline const x_inst* x_inst_attn( const x_inst* o, const x_inst* a ); \
   XOILA_DECLARE_SPECT( x_inst ) \
   { \
       bcore_spect_header_s header; \
@@ -114,7 +116,8 @@
   static inline void x_inst_discard( x_inst* o ){bcore_inst_a_discard(    ((bcore_inst*)(o)) );} \
   static inline x_inst* x_inst_ifd( x_inst* o, bl_t cond, x_inst* b ){return  cond ? o : b;} \
   static inline const x_inst* x_inst_ifc( const x_inst* o, bl_t cond, const x_inst* b ){return  cond ? o : b;} \
-  static inline const x_inst* x_inst_attend( const x_inst* o, const x_inst* a ){return  a;}
+  static inline const x_inst* x_inst_attend( const x_inst* o, const x_inst* a ){return  a;} \
+  static inline const x_inst* x_inst_attn( const x_inst* o, const x_inst* a ){return  a;}
 
 /**********************************************************************************************************************/
 // source: bcore_x_source.h
@@ -2478,6 +2481,91 @@
   BETH_EXPAND_ITEM_x_hmap_tp_test_map_s
 
 /**********************************************************************************************************************/
+// source: bcore_x_deque.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_deque
+
+#define TYPEOF_x_deque 0xD6DC16133A49F2A4ull
+#define TYPEOF_x_deque_spect_s 0xD53402FBE0FED69Cull
+#define TYPEOF_x_deque_inst_adl_s 0x751854D4A643B3C7ull
+#define BETH_EXPAND_ITEM_x_deque_inst_adl_s \
+  BCORE_DECLARE_OBJECT( x_deque_inst_adl_s ) \
+  { \
+      aware_t _; \
+      BCORE_ARRAY_DYN_LINK_STATIC_S( x_inst, ); \
+  };
+#define TYPEOF_x_deque_inst_s 0xEC22DB67742F0797ull
+#define BETH_EXPAND_ITEM_x_deque_inst_s \
+  BCORE_DECLARE_OBJECT( x_deque_inst_s ) \
+  { \
+      aware_t _; \
+      x_deque_inst_adl_s adl; \
+      sz_t size; \
+      sz_t first; \
+  }; \
+  x_deque_inst_s* x_deque_inst_s_set_space( x_deque_inst_s* o, sz_t space ); \
+  x_deque_inst_s* x_deque_inst_s_clear( x_deque_inst_s* o ); \
+  static inline sz_t x_deque_inst_s_adl_idx( const x_deque_inst_s* o, sz_t index ); \
+  static inline x_inst* x_deque_inst_s_m_get( x_deque_inst_s* o, sz_t index ); \
+  static inline const x_inst* x_deque_inst_s_c_get( const x_deque_inst_s* o, sz_t index ); \
+  static inline x_inst* x_deque_inst_s_m_get_first( x_deque_inst_s* o ); \
+  static inline const x_inst* x_deque_inst_s_c_get_first( const x_deque_inst_s* o ); \
+  static inline x_inst* x_deque_inst_s_m_get_last( x_deque_inst_s* o ); \
+  static inline const x_inst* x_deque_inst_s_c_get_last( const x_deque_inst_s* o ); \
+  x_deque_inst_s* x_deque_inst_s_inc_adl_size( x_deque_inst_s* o ); \
+  x_inst* x_deque_inst_s_push_last_d( x_deque_inst_s* o, x_inst* inst ); \
+  x_inst* x_deque_inst_s_push_first_d( x_deque_inst_s* o, x_inst* inst ); \
+  x_inst* x_deque_inst_s_d_pop_last( x_deque_inst_s* o ); \
+  x_inst* x_deque_inst_s_d_pop_first( x_deque_inst_s* o ); \
+  static inline sz_t x_deque_inst_s_adl_idx( const x_deque_inst_s* o, sz_t index ){return  ( o->first + index ) % o->adl.size;} \
+  static inline x_inst* x_deque_inst_s_m_get( x_deque_inst_s* o, sz_t index ){return  ( index >= 0 && index < o->size ) ? o->adl.data[ x_deque_inst_s_adl_idx(o,index ) ] : NULL;} \
+  static inline const x_inst* x_deque_inst_s_c_get( const x_deque_inst_s* o, sz_t index ){return  ( index >= 0 && index < o->size ) ? o->adl.data[ x_deque_inst_s_adl_idx(o,index ) ] : NULL;} \
+  static inline x_inst* x_deque_inst_s_m_get_first( x_deque_inst_s* o ){return  ( o->size > 0 ) ? o->adl.data[ o->first ] : NULL;} \
+  static inline const x_inst* x_deque_inst_s_c_get_first( const x_deque_inst_s* o ){return  ( o->size > 0 ) ? o->adl.data[ o->first ] : NULL;} \
+  static inline x_inst* x_deque_inst_s_m_get_last( x_deque_inst_s* o ){return  ( o->size > 0 ) ? o->adl.data[ x_deque_inst_s_adl_idx(o,o->size - 1 ) ] : NULL;} \
+  static inline const x_inst* x_deque_inst_s_c_get_last( const x_deque_inst_s* o ){return  ( o->size > 0 ) ? o->adl.data[ x_deque_inst_s_adl_idx(o,o->size - 1 ) ] : NULL;}
+#define BETH_EXPAND_GROUP_x_deque \
+  BCORE_FORWARD_OBJECT( x_deque ); \
+  BCORE_FORWARD_OBJECT( x_deque_inst_adl_s ); \
+  BCORE_FORWARD_OBJECT( x_deque_inst_s ); \
+  x_deque_inst_s* x_deque_m_inst_( x_deque* o ); \
+  const x_deque_inst_s* x_deque_c_inst_( const x_deque* o ); \
+  static inline x_deque* x_deque_set_space( x_deque* o, sz_t space ); \
+  static inline x_deque* x_deque_clear( x_deque* o ); \
+  static inline sz_t x_deque_size( const x_deque* o ); \
+  static inline x_inst* x_deque_m_get( x_deque* o, sz_t index ); \
+  static inline const x_inst* x_deque_c_get( const x_deque* o, sz_t index ); \
+  static inline x_inst* x_deque_m_get_first( x_deque* o ); \
+  static inline const x_inst* x_deque_c_get_first( const x_deque* o ); \
+  static inline x_inst* x_deque_m_get_last( x_deque* o ); \
+  static inline const x_inst* x_deque_c_get_last( const x_deque* o ); \
+  static inline x_inst* x_deque_push_last_d( x_deque* o, x_inst* inst ); \
+  static inline x_inst* x_deque_push_first_d( x_deque* o, x_inst* inst ); \
+  static inline x_inst* x_deque_d_pop_last( x_deque* o ); \
+  static inline x_inst* x_deque_d_pop_first( x_deque* o ); \
+  XOILA_DECLARE_SPECT( x_deque ) \
+  { \
+      bcore_spect_header_s header; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_deque ) \
+  BETH_EXPAND_ITEM_x_deque_inst_adl_s \
+  BETH_EXPAND_ITEM_x_deque_inst_s \
+  static inline x_deque* x_deque_set_space( x_deque* o, sz_t space ){ x_deque_inst_s_set_space(x_deque_m_inst_(o),space ); return  o;} \
+  static inline x_deque* x_deque_clear( x_deque* o ){ x_deque_inst_s_clear(x_deque_m_inst_(o));            return  o;} \
+  static inline sz_t x_deque_size( const x_deque* o ){return  x_deque_c_inst_(o)->size;} \
+  static inline x_inst* x_deque_m_get( x_deque* o, sz_t index ){return  x_deque_inst_s_m_get(x_deque_m_inst_(o),index );} \
+  static inline const x_inst* x_deque_c_get( const x_deque* o, sz_t index ){return  x_deque_inst_s_c_get(x_deque_c_inst_(o),index );} \
+  static inline x_inst* x_deque_m_get_first( x_deque* o ){return  x_deque_inst_s_m_get_first(x_deque_m_inst_(o));} \
+  static inline const x_inst* x_deque_c_get_first( const x_deque* o ){return  x_deque_inst_s_c_get_first(x_deque_c_inst_(o));} \
+  static inline x_inst* x_deque_m_get_last( x_deque* o ){return  x_deque_inst_s_m_get_last(x_deque_m_inst_(o));} \
+  static inline const x_inst* x_deque_c_get_last( const x_deque* o ){return  x_deque_inst_s_c_get_last(x_deque_c_inst_(o));} \
+  static inline x_inst* x_deque_push_last_d( x_deque* o, x_inst* inst ){return  x_deque_inst_s_push_last_d(x_deque_m_inst_(o),inst );} \
+  static inline x_inst* x_deque_push_first_d( x_deque* o, x_inst* inst ){return  x_deque_inst_s_push_first_d(x_deque_m_inst_(o),inst );} \
+  static inline x_inst* x_deque_d_pop_last( x_deque* o ){return  x_deque_inst_s_d_pop_last(x_deque_m_inst_(o));} \
+  static inline x_inst* x_deque_d_pop_first( x_deque* o ){return  x_deque_inst_s_d_pop_first(x_deque_m_inst_(o));}
+
+/**********************************************************************************************************************/
 
 vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
@@ -2486,5 +2574,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x8D822BA10B0D9DCD
-// XOICO_FILE_SIGNATURE 0xF5CD9572BF3C17EA
+// XOICO_BODY_SIGNATURE 0xC9C5AE50EC6FFC4E
+// XOICO_FILE_SIGNATURE 0x130B6F1DDEA027EC

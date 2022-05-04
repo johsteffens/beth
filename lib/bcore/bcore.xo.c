@@ -1,4 +1,4 @@
-//  Last update: 2022-04-13T12:33:43Z
+//  Last update: 2022-05-02T11:27:03Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -32,6 +32,7 @@
  *  bcore_x_btml.h
  *  bcore_x_bbml.h
  *  bcore_x_hmap.h
+ *  bcore_x_deque.h
  *  bcore_arr_inexpandable.x
  *  bcore_flect_inexpandable.x
  *  bcore_hmap_inexpandable.x
@@ -52,7 +53,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0x2F6AFA17CCDD8C50ull
+// HKEYOF_bcore 0x644A23A50523CB3Cull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -4083,6 +4084,128 @@ void x_hmap_tp_test_selftest( void )
 }
 
 /**********************************************************************************************************************/
+// source: bcore_x_deque.h
+#include "bcore_x_deque.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_deque
+
+BCORE_DEFINE_OBJECT_INST_P( x_deque_inst_adl_s )
+"aware x_array"
+"{"
+    "aware x_inst => [];"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( x_deque_inst_s )
+"aware x_deque"
+"{"
+    "x_deque_inst_adl_s adl;"
+    "sz_t size;"
+    "sz_t first;"
+"}";
+
+x_deque_inst_s* x_deque_inst_s_set_space( x_deque_inst_s* o, sz_t space )
+{
+    // bcore_x_deque.h:81:5
+    
+    ASSERT( space >= o->size );
+    x_array_set_space(((x_array*)(&(o->adl))),space );
+    return o;
+}
+
+x_deque_inst_s* x_deque_inst_s_clear( x_deque_inst_s* o )
+{
+    // bcore_x_deque.h:87:5
+    
+    x_array_clear(((x_array*)(&(o->adl))));
+    o->first = o->size = 0;
+    return o;
+}
+
+x_deque_inst_s* x_deque_inst_s_inc_adl_size( x_deque_inst_s* o )
+{
+    // bcore_x_deque.h:101:5
+    
+    x_array_set_size(((x_array*)(&(o->adl))),sz_max( 1, o->adl.size * 2 ) );
+    for(sz_t i = 0; i < o->first; i++ )
+    {
+        o->adl.data[ i + o->size ] = o->adl.data[ i ];
+        o->adl.data[ i          ] = NULL;
+    }
+    return o;
+}
+
+x_inst* x_deque_inst_s_push_last_d( x_deque_inst_s* o, x_inst* inst )
+{
+    // bcore_x_deque.h:111:5
+    
+    if( o->size == o->adl.size ) x_deque_inst_s_inc_adl_size(o);
+    x_inst_a_attach( &(o->adl.data[ ( o->first + o->size ) % o->adl.size ] ), (x_inst*)( inst));
+    o->size++;
+    return  ((x_inst*)(inst));
+}
+
+x_inst* x_deque_inst_s_push_first_d( x_deque_inst_s* o, x_inst* inst )
+{
+    // bcore_x_deque.h:119:5
+    
+    if( o->size == o->adl.size )  x_deque_inst_s_inc_adl_size(o);
+    o->first = ( o->first == 0 ) ? o->adl.size - 1 : o->first - 1;
+    x_inst_a_attach( &(o->adl.data[ o->first ] ), (x_inst*)( inst));
+    o->size++;
+    return  ((x_inst*)(inst));
+}
+
+x_inst* x_deque_inst_s_d_pop_last( x_deque_inst_s* o )
+{
+    // bcore_x_deque.h:128:5
+    
+    if( o->size == 0 ) return  NULL;
+    sz_t adl_idx = x_deque_inst_s_adl_idx(o,o->size - 1 );
+    x_inst* inst = ((x_inst*)(o->adl.data[ adl_idx ]));
+    o->adl.data[ adl_idx ] = NULL;
+    o->size--;
+    return  inst;
+}
+
+x_inst* x_deque_inst_s_d_pop_first( x_deque_inst_s* o )
+{
+    // bcore_x_deque.h:138:5
+    
+    if( o->size == 0 ) return  NULL;
+    x_inst* inst = ((x_inst*)(o->adl.data[ o->first ]));
+    o->adl.data[ o->first ] = NULL;
+    o->size--;
+    o->first = ( o->first + 1 ) % o->adl.size;
+    return  inst;
+}
+
+XOILA_DEFINE_SPECT( x_inst, x_deque )
+"{"
+    "bcore_spect_header_s header;"
+"}";
+
+x_deque_inst_s* x_deque_m_inst_( x_deque* o )
+{
+    // bcore_x_deque.h:151:1
+    
+    assert( x_stamp_is_aware(((const x_stamp*)(o))) );
+    x_inst* que = x_stamp_m_get_i(((x_stamp*)(o)),0 );
+    if( !que || que->_ != TYPEOF_x_deque_inst_s ) ERR_fa( "First element of '#<sc_t>' must be of type '#<sc_t>'", bnameof( o->_ ), bnameof( ((tp_t)(TYPEOF_x_deque_inst_s)) ) );
+    return  ((x_deque_inst_s*)(que));
+}
+
+const x_deque_inst_s* x_deque_c_inst_( const x_deque* o )
+{
+    // bcore_x_deque.h:159:1
+    
+    assert( x_stamp_is_aware(((const x_stamp*)(o))) );
+    const x_inst* que = x_stamp_c_get_i(((x_stamp*)(o)),0 );
+    if( !que || que->_ != TYPEOF_x_deque_inst_s ) ERR_fa( "First element of '#<sc_t>' must be of type '#<sc_t>'", bnameof( o->_ ), bnameof( ((tp_t)(TYPEOF_x_deque_inst_s)) ) );
+    return  ((const x_deque_inst_s*)(que));
+}
+
+/**********************************************************************************************************************/
 
 
 vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
@@ -4593,11 +4716,19 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( x_hmap_tp_test_val_s );
             BCORE_REGISTER_OBJECT( x_hmap_tp_test_map_s );
             XOILA_REGISTER_SPECT( x_hmap_tp_test );
+
+            // --------------------------------------------------------------------
+            // source: bcore_x_deque.h
+
+            // group: x_deque
+            BCORE_REGISTER_OBJECT( x_deque_inst_adl_s );
+            BCORE_REGISTER_OBJECT( x_deque_inst_s );
+            XOILA_REGISTER_SPECT( x_deque );
         }
         break;
         default: break;
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x8E36DF3286DD426D
-// XOICO_FILE_SIGNATURE 0x88321E86987807E5
+// XOICO_BODY_SIGNATURE 0xFE8F55C598060E32
+// XOICO_FILE_SIGNATURE 0xAE5551064BDD618B
