@@ -127,6 +127,10 @@ identifier bcore_error_pop_to_sink;
 identifier bcore_error_stack_size;
 identifier bcore_error_pop_all_to_stderr;
 
+identifier bcore_get_time;
+identifier bcore_time_us; /// returns (full) time in microseconds
+identifier bcore_time_ms; /// returns (full) time in milliseconds
+
 identifier bcore_folder_get_current;
 
 identifier sz_max;
@@ -153,6 +157,19 @@ identifier u2_abs;
 identifier u1_max;
 identifier u1_min;
 identifier u1_abs;
+identifier sz_t_swap;
+identifier uz_t_swap;
+identifier s3_t_swap;
+identifier s2_t_swap;
+identifier s1_t_swap;
+identifier u3_t_swap;
+identifier u2_t_swap;
+identifier u1_t_swap;
+identifier tp_t_swap;
+identifier f3_t_swap;
+identifier f2_t_swap;
+identifier vd_t_swap;
+identifier vc_t_swap;
 
 identifier sc_t_equal;
 
