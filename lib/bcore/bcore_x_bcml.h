@@ -15,37 +15,26 @@
 
 /**
 
-BTML: Beth binary markup language.
-Stores full information of an object including names, types, existence ensuring maximum (automatic) compatibility
-to version changes.
-
-Version handling without version declaration:
-    New elements:
-    An incomplete set of members is handled by setting unspecified elements to their respective default.
-
-    Retired elements:
-    An unrecognized element name is ignored by the parser. (The object of that element might be temporarily created and parsed)
-
-    Changed type:
-    A type change invokes type conversion
-
-    Changed indirection (static vs link):
-    Changed indirection is converted properly
+BTML: Beth compact binary markup language.
+Stores only necessary information to reconstruct an object.
+Names are never stored. Types are only stored in dynamically typed cases. Existence is only stored in case of links.
+Always expects all non-hidden elements to be present in the file in the correct order.
+No version changes allowed.
 
 Overloaded I/O: Overload following features:
-    bbml_body_from_source
-    bbml_body_to_sink
+    bcml_body_from_source
+    bcml_body_to_sink
 
 Platform dependent variable sizes:
     Variables uz_t, sz_t are converted to u3_t, s3_t to ensure cross-platform I/O compatibility
 
 Overhead:
-    For each variable, the type and a boolean flag is also stored.
+    Overhead is minimized in this ML.
 
 */
 
-#ifndef BCORE_X_BBML_H
-#define BCORE_X_BBML_H
+#ifndef BCORE_X_BCML_H
+#define BCORE_X_BCML_H
 
 #include "bcore_sr.h"
 #include "bcore.xo.h"
@@ -54,7 +43,7 @@ Overhead:
 
 /**********************************************************************************************************************/
 
-XOILA_DEFINE_GROUP( x_bbml, x_inst )
+XOILA_DEFINE_GROUP( x_bcml, x_inst )
 
 #ifdef XOILA_SECTION
 
@@ -105,15 +94,15 @@ func sz_t   test_transfer( @* o ) = o.t_test_transfer( o._ );
 /** Overload these features for objects that define their own markup syntax.
  *  Note: Always overload both features with compatible syntax to ensure I/O consistency.
  */
-feature 'at' er_t bbml_body_from_source( m@* o, m x_source* source );
-feature 'at' void bbml_body_to_sink(     c@* o, m x_sink* sink );
+feature 'at' er_t bcml_body_from_source( m@* o, m x_source* source );
+feature 'at' void bcml_body_to_sink(     c@* o, m x_sink* sink );
 
 //----------------------------------------------------------------------------------------------------------------------
 
 func t_from_source
 {
     sr_s sr = sr_null();
-    :parse_create_object( source, sr.1 );
+    :parse_create_object( true, 0, source, sr.1 );
     x_inst_t_copy_typed( o, t, sr_s_o_type( sr.1 ), sr.o );
     sr_s_down( sr );
     = bcore_error_last();
@@ -124,7 +113,7 @@ func t_from_source
 func create_from_source_t
 {
     sr_s sr = sr_null();
-    :parse_create_object( source, sr.1 );
+    :parse_create_object( true, 0, source, sr.1 );
     if( sr.o && type ) type.0 = sr_s_o_type( sr );
     = sr.o.cast( d @* ); // sr.o is NULL in case of error
 }
@@ -146,7 +135,7 @@ func create_from_source
 
 func t_to_sink
 {
-    o.t_translate_recursive( t, 0, true, sink );
+    o.t_translate_recursive( t, true, true, true, sink );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -175,11 +164,11 @@ func appears_valid
 /** On entering obj should be sr_null
  *  In case of error obj need not be discarded
  */
-func er_t parse_create_object( m x_source* source, m sr_s* obj )
+func er_t parse_create_object( bl_t parse_existence, tp_t given_type, m x_source* source, m sr_s* obj )
 {
     er_t er = 0;
-    tp_t type = :parse_type( source );
-    bl_t flag = :parse_flag( source );
+    tp_t type = given_type ? given_type : :parse_type( source );
+    bl_t flag = parse_existence ? :parse_flag( source ) : true;
 
     if( type )
     {
@@ -234,12 +223,39 @@ func er_t t_parse_leaf_body( m @* o, tp_t t, m x_source* source )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func er_t t_parse_leaf_arr_body( m @* o, tp_t t, sz_t size, m x_source* source )
+{
+    switch( t )
+    {
+        case TYPEOF_aware_t : source.get_data( o, size * sizeof( aware_t ) ); break;
+        case TYPEOF_bl_t    : source.get_data( o, size * sizeof( bl_t ) ); break;
+        case TYPEOF_f2_t    : source.get_data( o, size * sizeof( f2_t ) ); break;
+        case TYPEOF_f3_t    : source.get_data( o, size * sizeof( f3_t ) ); break;
+        case TYPEOF_s0_t    : source.get_data( o, size * sizeof( s0_t ) ); break;
+        case TYPEOF_s1_t    : source.get_data( o, size * sizeof( s1_t ) ); break;
+        case TYPEOF_s2_t    : source.get_data( o, size * sizeof( s2_t ) ); break;
+        case TYPEOF_s3_t    : source.get_data( o, size * sizeof( s3_t ) ); break;
+        case TYPEOF_sc_t    : break; // c-style constant strings are skipped over
+        case TYPEOF_sz_t    : { for( sz_t i = 0; i < size; i++ ) { s3_t v = 0; source.get_data( v.1, sizeof( s3_t ) ); o.cast( m sz_t* )[ i ] = v; } } break;
+        case TYPEOF_uz_t    : { for( sz_t i = 0; i < size; i++ ) { u3_t v = 0; source.get_data( v.1, sizeof( u3_t ) ); o.cast( m uz_t* )[ i ] = v; } } break;
+        case TYPEOF_tp_t    : source.get_data( o, size * sizeof( tp_t ) ); break;
+        case TYPEOF_u0_t    : source.get_data( o, size * sizeof( u0_t ) ); break;
+        case TYPEOF_u1_t    : source.get_data( o, size * sizeof( u1_t ) ); break;
+        case TYPEOF_u2_t    : source.get_data( o, size * sizeof( u2_t ) ); break;
+        case TYPEOF_u3_t    : source.get_data( o, size * sizeof( u3_t ) ); break;
+        default: ERR_fa( "Cannot convert array of type '#<sc_t>' from a binary stream.", bnameof( t ) );
+    }
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func er_t t_parse_body( m @* o, tp_t t, m x_source* source )
 {
     m x_stamp* stamp = o;
-    if( o.t_defines_bbml_body_from_source( t ) )
+    if( o.t_defines_bcml_body_from_source( t ) )
     {
-        o.t_bbml_body_from_source( t, source );
+        o.t_bcml_body_from_source( t, source );
     }
     else if( t == st_s~ )
     {
@@ -257,56 +273,44 @@ func er_t t_parse_body( m @* o, tp_t t, m x_source* source )
         m x_array* arr = stamp;
 
         if( arr.t_is_mutable_mono_typed( t ) ) arr.t_set_gtype( t, :parse_type( source ) );
+        bl_t is_of_links = arr.t_is_of_links( t );
+        tp_t static_type = arr.t_get_static_type( t );
 
         sz_t size = :parse_size( source );
 
         if( arr.t_is_fixed( t ) )
         {
             sz_t arr_size = arr.t_size( t );
-
-            for( sz_t i = 0; i < size; i++ )
-            {
-                sr_s sr = sr_null();
-                :parse_create_object( source, sr.1 );
-                if( i < arr_size )
-                {
-                    arr.t_set_sr( t, i, sr );
-                }
-                else
-                {
-                    sr_down( sr );
-                }
-            }
+            if( arr_size != size ) ERR_fa( "Fixed array size (#<sz_t>) differs from stored size (#<sz_t>).", arr_size, size );
         }
         else
         {
             arr.t_set_size( t, size );
+        }
+
+        if( ( !is_of_links ) && ( static_type != 0 ) && x_stamp_t_is_leaf( static_type ) )
+        {
+            :t_parse_leaf_arr_body( arr.t_get_data_m( t ), static_type, size, source );
+        }
+        else
+        {
             for( sz_t i = 0; i < size; i++ )
             {
                 sr_s sr = sr_null();
-                :parse_create_object( source, sr.1 );
+                :parse_create_object( is_of_links, static_type, source, sr.1 );
                 arr.t_set_sr( t, i, sr );
             }
         }
     }
     else
     {
-        while( !source.eos() )
+        sz_t size = stamp.t_size( t );
+        for( sz_t i = 0; i < size; i++ )
         {
-            // non existing member variables are parsed but not assigned
-            tp_t tp_name = :parse_type( source );
-            if( !tp_name ) break;
-
             sr_s sr = sr_null();
-            :parse_create_object( source, sr.1 );
-            if( stamp.t_exists( t, tp_name ) )
-            {
-                stamp.t_set_sr( t, tp_name, sr );
-            }
-            else
-            {
-                sr_down( sr );
-            }
+            tp_t type = stamp.t_is_static_i( t, i ) ? stamp.t_type_i( t, i ) : 0;
+            :parse_create_object( stamp.t_is_link_i( t, i ), type, source, sr.1 );
+            stamp.t_set_sr_i( t, i, sr );
         }
     }
 
@@ -346,28 +350,50 @@ func void push_leaf( m x_sink* sink, tp_t t, x_inst* leaf )
     }
 }
 
-func void t_translate_recursive( @* o, tp_t t, tp_t name, bl_t shelve, m x_sink* sink )
+func void push_leaf_arr( m x_sink* sink, tp_t t, x_inst* leaf, sz_t size )
+{
+    switch( t )
+    {
+        case TYPEOF_aware_t : sink.push_data( leaf, size * sizeof( aware_t ) ); break;
+        case TYPEOF_bl_t    : sink.push_data( leaf, size * sizeof( bl_t ) ); break;
+        case TYPEOF_f2_t    : sink.push_data( leaf, size * sizeof( f2_t ) ); break;
+        case TYPEOF_f3_t    : sink.push_data( leaf, size * sizeof( f3_t ) ); break;
+        case TYPEOF_s0_t    : sink.push_data( leaf, size * sizeof( s0_t ) ); break;
+        case TYPEOF_s1_t    : sink.push_data( leaf, size * sizeof( s1_t ) ); break;
+        case TYPEOF_s2_t    : sink.push_data( leaf, size * sizeof( s2_t ) ); break;
+        case TYPEOF_s3_t    : sink.push_data( leaf, size * sizeof( s3_t ) ); break;
+        case TYPEOF_sc_t    : break; // c-style constant strings are skipped over
+        case TYPEOF_sz_t    : { for( sz_t i = 0; i < size; i++ ) { s3_t v = leaf.cast( sz_t* )[ i ]; sink.push_data( v, sizeof( s3_t ) ); } } break;
+        case TYPEOF_uz_t    : { for( sz_t i = 0; i < size; i++ ) { u3_t v = leaf.cast( uz_t* )[ i ]; sink.push_data( v, sizeof( u3_t ) ); } } break;
+        case TYPEOF_tp_t    : sink.push_data( leaf, size * sizeof( tp_t ) ); break;
+        case TYPEOF_u0_t    : sink.push_data( leaf, size * sizeof( u0_t ) ); break;
+        case TYPEOF_u1_t    : sink.push_data( leaf, size * sizeof( u1_t ) ); break;
+        case TYPEOF_u2_t    : sink.push_data( leaf, size * sizeof( u2_t ) ); break;
+        case TYPEOF_u3_t    : sink.push_data( leaf, size * sizeof( u3_t ) ); break;
+        default: ERR_fa( "Cannot convert array of type '#<sc_t>' into a binary stream.", bnameof( t ) );
+    }
+}
+
+func void t_translate_recursive( @* o, tp_t t, bl_t push_existence, bl_t push_type, bl_t shelve, m x_sink* sink )
 {
     // shelving obj_l
     if( o && shelve && bcore_via_call_t_defines_shelve( t ) )
     {
         d @* o_clone = o.cast( x_inst* ).t_clone( t ); // no scoping (o_clone is obliv)
         o_clone.cast( m x_stamp* ).t_shelve( t );
-        o_clone.t_translate_recursive( t, name, false, sink );
+        o_clone.t_translate_recursive( t, push_existence, push_type, false, sink );
         o_clone.cast( d x_inst* ).discard();
         return;
     }
 
-    if( name ) :push_type( sink, name );
-
-    :push_type( sink, t );
-    :push_flag( sink, o != NULL );
+    if( push_type )      :push_type( sink, t );
+    if( push_existence ) :push_flag( sink, o != NULL );
 
     if( o )
     {
-        if( o.t_defines_bbml_body_to_sink( t ) )
+        if( o.t_defines_bcml_body_to_sink( t ) )
         {
-            o.t_bbml_body_to_sink( t, sink );
+            o.t_bcml_body_to_sink( t, sink );
         }
         else if( t == TYPEOF_st_s ) // strings
         {
@@ -386,11 +412,21 @@ func void t_translate_recursive( @* o, tp_t t, tp_t name, bl_t shelve, m x_sink*
                 if( arr.t_is_mutable_mono_typed( t ) ) :push_type( sink, arr.t_get_mono_type( t ) );
                 sz_t size = arr.t_size( t );
                 :push_size( sink, size );
-                for( sz_t i = 0; i < size; i++ )
+                bl_t is_of_links = arr.t_is_of_links( t );
+                tp_t static_type = arr.t_get_static_type( t );
+
+                if( ( !is_of_links ) && ( static_type != 0 ) && x_stamp_t_is_leaf( static_type ) )
                 {
-                    sr_s sr = arr.t_c_get_sr( t, i );
-                    :t_translate_recursive( sr.o, sr.o_type(), 0, true, sink );
-                    sr_down( sr );
+                    :push_leaf_arr( sink, static_type, arr.t_get_data_c( t ), size );
+                }
+                else
+                {
+                    for( sz_t i = 0; i < size; i++ )
+                    {
+                        sr_s sr = arr.t_c_get_sr( t, i );
+                        :t_translate_recursive( sr.o, sr.o_type(), is_of_links, static_type == 0, true, sink );
+                        sr_down( sr );
+                    }
                 }
             }
             else
@@ -400,13 +436,9 @@ func void t_translate_recursive( @* o, tp_t t, tp_t name, bl_t shelve, m x_sink*
                 for( sz_t i = 0; i < size; i++ )
                 {
                     sr_s sr = stamp.t_c_get_sr_i( t, i );
-                    tp_t name = stamp.t_name( t, i );
-                    :t_translate_recursive( sr.o, sr.o_type(), name, true, sink );
+                    :t_translate_recursive( sr.o, sr.o_type(), stamp.t_is_link_i( t, i ), !stamp.t_is_static_i( t, i ), true, sink );
                     sr_down( sr );
                 }
-
-                /// we push a terminating '0' to indicate the end of the parameter list
-                :push_type( sink, 0 );
             }
         }
     }
@@ -457,7 +489,7 @@ func void selftest()
     sz_t size = zoo.o.cast( @* ).t_test_transfer( sr_s_o_type( zoo ) );
     time = clock() - time;
 
-    bcore_msg_fa( "x_bbml transfer #<f3_t>s; size: #<sz_t> bytes\n", ( f3_t )time/CLOCKS_PER_SEC, size );
+    bcore_msg_fa( "x_bcml transfer #<f3_t>s; size: #<sz_t> bytes\n", ( f3_t )time/CLOCKS_PER_SEC, size );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -466,4 +498,4 @@ func void selftest()
 
 #endif // XOILA_SECTION
 
-#endif  // BCORE_X_BBML_H
+#endif  // BCORE_X_BCML_H

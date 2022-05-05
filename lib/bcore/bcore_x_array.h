@@ -83,13 +83,27 @@ func bl_t   is_is_multi_typed( @* o ) = o.t_is_is_multi_typed( o._ );
 func tp_t t_get_static_type( tp_t t ) = bcore_array_p_get_static_type( bcore_array_s_get_typed( t ) );
 func tp_t   get_static_type( @* o ) = o.t_get_static_type( o._ );
 
-/// returns type if monotyped; (o can be NULL on static typed arrays)
+/// returns type if monotyped, 0 otherwise; (o can be NULL on static typed arrays)
 func tp_t t_get_mono_type( @* o, tp_t t ) = bcore_array_p_get_mono_type( bcore_array_s_get_typed( t ), o );
 func tp_t   get_mono_type( @* o ) = o.t_get_mono_type( o._ );
 
 ///  returns type of indexed element; returns 0 when type cannot be determined
 func tp_t t_get_type( c obliv @* o, tp_t t, sz_t index ) = bcore_array_p_get_type( bcore_array_s_get_typed( t ), o, index );
 func tp_t   get_type( c aware @* o,         sz_t index ) = o.t_get_type( o._, index );
+
+/// Direct data access (data pointer dereferencing and stepping depends on array structure) ...
+
+// returns arr_caps->data (note that this is either vc_t or vc_t* depending on linkage-indirection
+func c x_inst* t_get_data_c( c obliv @* o, tp_t t ) = bcore_array_p_get_c_data( bcore_array_s_get_typed( t ), o );
+func c x_inst*   get_data_c( c aware @* o ) = o.t_get_data_c( o._ );
+
+// returns arr_caps->data (note that this is either vd_t or vd_t* depending on linkage-indirection
+func m x_inst* t_get_data_m( m obliv @* o, tp_t t ) = bcore_array_p_get_d_data( bcore_array_s_get_typed( t ), o );
+func m x_inst*   get_data_m( m aware @* o ) = o.t_get_data_m( o._ );
+
+// spacing between data elements (item_p->size or sizeof(vd_t))
+func uz_t t_get_unit_size( c obliv @* o, tp_t t ) = bcore_array_p_get_unit_size ( bcore_array_s_get_typed( t ), o );
+func uz_t   get_unit_size( c aware @* o ) = o.t_get_unit_size( o._ );
 
 //----------------------------------------------------------------------------------------------------------------------
 

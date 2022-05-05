@@ -134,6 +134,15 @@ stamp :bit_buffer_s = x_array
 
     /// Appends a bit buffer
     func o push_bit_buffer( m@* o, @* src );
+
+    /// computes a hash value from content
+    func tp_t get_hash( @* o );
+
+    /// Compact I/O
+    func x_bcml.bcml_body_to_sink;
+    func x_bcml.bcml_body_from_source;
+    func x_bbml.bbml_body_to_sink o.bcml_body_to_sink( sink );
+    func x_bbml.bbml_body_from_source = o.bcml_body_from_source( source );
 };
 
 //----------------------------------------------------------------------------------------------------------------------

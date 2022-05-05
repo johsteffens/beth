@@ -60,8 +60,16 @@ func tp_t   index( c aware @* o, tp_t name ) = bcore_via_a_nget_index( o.cast( c
 func tp_t t_index( tp_t t,       tp_t name ) = bcore_via_t_nget_index( t, NULL, name );
 
 /// checks if given name exists
-func bl_t   exists( c aware @* o, tp_t name ) = bcore_via_a_nexists(    o.cast( c bcore_via* ), name );
+func bl_t   exists( c aware @* o, tp_t name ) = bcore_via_a_nexists( o.cast( c bcore_via* ), name );
 func bl_t t_exists( tp_t t,       tp_t name ) = bcore_via_t_nexists( t, NULL, name );
+
+/// checks if element is static (type need not be recorded)
+func bl_t   is_static_i( aware @* o, sz_t index ) = bcore_via_a_iis_static( o.cast( c bcore_via* ), index );
+func bl_t t_is_static_i( tp_t t, sz_t index )     = bcore_via_t_iis_static( t, NULL, index );
+
+/// checks if element is a link (means that it can be NULL); (Note: An array is a distinct static object -> not a link)
+func bl_t   is_link_i( aware @* o, sz_t index ) = bcore_via_a_iis_link( o.cast( c bcore_via* ), index );
+func bl_t t_is_link_i( tp_t t, sz_t index )     = bcore_via_t_iis_link( t, NULL, index );
 
 /// returns type of element (not that the type might be defined at runtime, hence the object o is always required)
 func tp_t   type  ( aware @* o,         tp_t name  ) = bcore_via_a_nget_type(    o.cast( c bcore_via* ), name );

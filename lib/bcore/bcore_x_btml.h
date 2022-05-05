@@ -40,20 +40,32 @@ stamp myobject =
     id:<tp_t>1234</>
 </>
 
+For various types simplified encoding is possible:
+    e.g. - numbers by just stating the value\
+         - strings by using quotes "..."
+
 Version tolerance:
+    Changes in the object do not (generally) produce a parser error.
+    This allows handling of different object version as follows:
 
-Changes in the object do not (generally) produce a parser error.
-This allows handling of different object version as follows:
+    New elements:
+    An incomplete set of members is allowed by setting unspecified elements to their respective default.
 
-New elements:
-An incomplete set of members is allowed by setting unspecified elements to their respective default.
+    Retired elements:
+    An unrecognized element name is ignored by the parser.
 
-Retired elements:
-An unrecognized element name is ignored by the parser.
+    Changed type:
+    A type change invokes type conversion
 
-Retired types:
-An unrecognized object type is skipped by the parser and treated as if 'NULL' was parsed.
+    Changed indirection (static vs link):
+    Changed indirection is converted properly
 
+    Retired types:
+    An unrecognized object type is skipped by the parser and treated as if 'NULL' was parsed.
+
+Overloaded I/O: Overload following features:
+    btml_body_to_sink
+    btml_body_from_source
 */
 
 #ifndef BCORE_X_BTML_H
@@ -133,15 +145,15 @@ func void   to_file( c@* o,         sc_t file ) o.t_to_file( o._, file );
 func void t_to_stdout( c@* o, tp_t t ) o.t_to_sink( t, x_sink_stdout() );
 func void   to_stdout( c@* o,        ) o.t_to_stdout( o._ );
 
-/// runs a transfer-test (write-read-compare) on given object; in case of a mismatch a descriptive error is created.
-func void t_test_transfer( @* o, tp_t t );
-func void   test_transfer( @* o ) o.t_test_transfer( o._ );
+/// runs a transfer-test (write-read-compare) on given object; in case of a mismatch a descriptive error is created. Returns file/stream size involved.
+func sz_t t_test_transfer( @* o, tp_t t );
+func sz_t   test_transfer( @* o ) = o.t_test_transfer( o._ );
 
 /** Overload these features for objects that define their own markup syntax.
  *  Note: Always overload both features with compatible syntax to ensure I/O consistency.
  */
-feature 'at' er_t feature_body_from_source( m@* o, m x_source* source );
-feature 'at' void feature_body_to_sink(     c@* o, m x_sink* sink );
+feature 'at' er_t btml_body_from_source( m@* o, m x_source* source );
+feature 'at' void btml_body_to_sink(     c@* o, m x_sink* sink );
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -269,7 +281,7 @@ func t_appears_valid
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/** On entering obj should be sr_null
+/** On entering, obj should be sr_null
  *  In case of error obj need not be discarded
  */
 func er_t parse_create_object( m x_source* source, m sr_s* obj )
@@ -378,9 +390,9 @@ func er_t parse_create_object( m x_source* source, m sr_s* obj )
 func er_t t_parse_body( m @* o, tp_t t, m x_source* source )
 {
     m x_stamp* stamp = o;
-    if( o.t_defines_feature_body_from_source( t ) )
+    if( o.t_defines_btml_body_from_source( t ) )
     {
-        o.t_feature_body_from_source( t, source );
+        o.t_btml_body_from_source( t, source );
     }
 
     /// supported string formats: '"..."' or any text terminated by whitespace or '</>'
@@ -542,9 +554,9 @@ func void t_translate_recursive( @* o, tp_t t, tp_t name, bl_t shelve, m x_sink*
     {
         sink.push_fa( "<#<sc_t>>", :name_of( t, buf ) );
 
-        if( o.t_defines_feature_body_to_sink( t ) )
+        if( o.t_defines_btml_body_to_sink( t ) )
         {
-            o.t_feature_body_to_sink( t, sink );
+            o.t_btml_body_to_sink( t, sink );
         }
         else if( t == TYPEOF_st_s ) // strings
         {
@@ -599,6 +611,7 @@ func t_test_transfer
 {
     d st_s* string = st_s!;
     o.t_to_sink( t, string );
+    sz_t file_size = string.size;
     m x_source* source = x_source_create_from_st_d( string )^;
 
     d @* o2 = x_inst_t_create( t );
@@ -623,6 +636,7 @@ func t_test_transfer
     }
 
     o2.t_discard( t );
+    = file_size;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -632,10 +646,10 @@ func void selftest()
     sr_s^ zoo; zoo = bcore_spect_via_create_zoo( 1000 );
 
     clock_t time = clock();
-    zoo.o.cast( @* ).t_test_transfer( sr_s_o_type( zoo ) );
+    sz_t size = zoo.o.cast( @* ).t_test_transfer( sr_s_o_type( zoo ) );
     time = clock() - time;
 
-    bcore_msg( "x_bbml transfer %5.3fs\n", ( double )time/CLOCKS_PER_SEC );
+    bcore_msg_fa( "x_btml transfer #<f3_t>s; size: #<sz_t> bytes\n", ( f3_t )time/CLOCKS_PER_SEC, size );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

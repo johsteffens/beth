@@ -1,4 +1,4 @@
-//  Last update: 2022-05-02T11:27:03Z
+//  Last update: 2022-05-05T21:29:26Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -31,6 +31,7 @@
  *  bcore_indexer.h
  *  bcore_x_btml.h
  *  bcore_x_bbml.h
+ *  bcore_x_bcml.h
  *  bcore_x_hmap.h
  *  bcore_x_deque.h
  *  bcore_arr_inexpandable.x
@@ -297,6 +298,12 @@
   static inline tp_t x_array_get_mono_type( const x_array* o ); \
   static inline tp_t x_array_t_get_type( const x_array* o, tp_t t, sz_t index ); \
   static inline tp_t x_array_get_type( const x_array* o, sz_t index ); \
+  static inline const x_inst* x_array_t_get_data_c( const x_array* o, tp_t t ); \
+  static inline const x_inst* x_array_get_data_c( const x_array* o ); \
+  static inline x_inst* x_array_t_get_data_m( x_array* o, tp_t t ); \
+  static inline x_inst* x_array_get_data_m( x_array* o ); \
+  static inline uz_t x_array_t_get_unit_size( const x_array* o, tp_t t ); \
+  static inline uz_t x_array_get_unit_size( const x_array* o ); \
   static inline void x_array_t_set_gtype( x_array* o, tp_t t, tp_t type ); \
   static inline void x_array_set_gtype( x_array* o, tp_t type ); \
   static inline void x_array_t_push_sr( x_array* o, tp_t t, sr_s sr ); \
@@ -356,6 +363,12 @@
   static inline tp_t x_array_get_mono_type( const x_array* o ){return  x_array_t_get_mono_type(o,o->_ );} \
   static inline tp_t x_array_t_get_type( const x_array* o, tp_t t, sz_t index ){return  bcore_array_p_get_type( bcore_array_s_get_typed( t ), o, index );} \
   static inline tp_t x_array_get_type( const x_array* o, sz_t index ){return  x_array_t_get_type(o,o->_, index );} \
+  static inline const x_inst* x_array_t_get_data_c( const x_array* o, tp_t t ){return  bcore_array_p_get_c_data( bcore_array_s_get_typed( t ), o );} \
+  static inline const x_inst* x_array_get_data_c( const x_array* o ){return  x_array_t_get_data_c(o,o->_ );} \
+  static inline x_inst* x_array_t_get_data_m( x_array* o, tp_t t ){return  bcore_array_p_get_d_data( bcore_array_s_get_typed( t ), o );} \
+  static inline x_inst* x_array_get_data_m( x_array* o ){return  x_array_t_get_data_m(o,o->_ );} \
+  static inline uz_t x_array_t_get_unit_size( const x_array* o, tp_t t ){return  bcore_array_p_get_unit_size ( bcore_array_s_get_typed( t ), o );} \
+  static inline uz_t x_array_get_unit_size( const x_array* o ){return  x_array_t_get_unit_size(o,o->_ );} \
   static inline void x_array_t_set_gtype( x_array* o, tp_t t, tp_t type ){bcore_array_p_set_gtype( bcore_array_s_get_typed( t ), ((bcore_array*)(o)), type );} \
   static inline void x_array_set_gtype( x_array* o, tp_t type ){x_array_t_set_gtype(o,o->_, type );} \
   static inline void x_array_t_push_sr( x_array* o, tp_t t, sr_s sr ){bcore_array_t_push( t, ( bcore_array* )o, sr );} \
@@ -468,6 +481,10 @@
   static inline tp_t x_stamp_t_index( tp_t t, tp_t name ); \
   static inline bl_t x_stamp_exists( const x_stamp* o, tp_t name ); \
   static inline bl_t x_stamp_t_exists( tp_t t, tp_t name ); \
+  static inline bl_t x_stamp_is_static_i( const x_stamp* o, sz_t index ); \
+  static inline bl_t x_stamp_t_is_static_i( tp_t t, sz_t index ); \
+  static inline bl_t x_stamp_is_link_i( const x_stamp* o, sz_t index ); \
+  static inline bl_t x_stamp_t_is_link_i( tp_t t, sz_t index ); \
   static inline tp_t x_stamp_type( const x_stamp* o, tp_t name ); \
   static inline tp_t x_stamp_t_type( const x_stamp* o, tp_t t, tp_t name ); \
   static inline tp_t x_stamp_type_i( const x_stamp* o, sz_t index ); \
@@ -524,8 +541,12 @@
   static inline tp_t x_stamp_t_name( tp_t t, sz_t index ){return  bcore_via_t_iget_name( t, NULL, index );} \
   static inline tp_t x_stamp_index( const x_stamp* o, tp_t name ){return  bcore_via_a_nget_index( ((const bcore_via*)(o)),name );} \
   static inline tp_t x_stamp_t_index( tp_t t, tp_t name ){return  bcore_via_t_nget_index( t, NULL, name );} \
-  static inline bl_t x_stamp_exists( const x_stamp* o, tp_t name ){return  bcore_via_a_nexists(    ((const bcore_via*)(o)),name );} \
+  static inline bl_t x_stamp_exists( const x_stamp* o, tp_t name ){return  bcore_via_a_nexists( ((const bcore_via*)(o)),name );} \
   static inline bl_t x_stamp_t_exists( tp_t t, tp_t name ){return  bcore_via_t_nexists( t, NULL, name );} \
+  static inline bl_t x_stamp_is_static_i( const x_stamp* o, sz_t index ){return  bcore_via_a_iis_static( ((const bcore_via*)(o)),index );} \
+  static inline bl_t x_stamp_t_is_static_i( tp_t t, sz_t index ){return  bcore_via_t_iis_static( t, NULL, index );} \
+  static inline bl_t x_stamp_is_link_i( const x_stamp* o, sz_t index ){return  bcore_via_a_iis_link( ((const bcore_via*)(o)),index );} \
+  static inline bl_t x_stamp_t_is_link_i( tp_t t, sz_t index ){return  bcore_via_t_iis_link( t, NULL, index );} \
   static inline tp_t x_stamp_type( const x_stamp* o, tp_t name ){return  bcore_via_a_nget_type(    ((const bcore_via*)(o)),name );} \
   static inline tp_t x_stamp_t_type( const x_stamp* o, tp_t t, tp_t name ){return  bcore_via_t_nget_type( t, ((const bcore_via*)(o)), name );} \
   static inline tp_t x_stamp_type_i( const x_stamp* o, sz_t index ){return  bcore_via_a_iget_type(    ((const bcore_via*)(o)),index );} \
@@ -1928,6 +1949,8 @@
       u3_t bits; \
       BCORE_ARRAY_DYN_SOLID_STATIC_S( u0_t, ); \
   }; \
+  static inline void bcore_huffman_bit_buffer_s_bbml_body_to_sink( const bcore_huffman_bit_buffer_s* o, x_sink* sink ); \
+  static inline er_t bcore_huffman_bit_buffer_s_bbml_body_from_source( bcore_huffman_bit_buffer_s* o, x_source* source ); \
   bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_clear( bcore_huffman_bit_buffer_s* o ); \
   bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_bl( bcore_huffman_bit_buffer_s* o, bl_t bit ); \
   bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_u3( bcore_huffman_bit_buffer_s* o, u3_t val, sz_t bits ); \
@@ -1935,7 +1958,12 @@
   bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_s3( bcore_huffman_bit_buffer_s* o, s3_t val, sz_t bits ); \
   bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_packed_s3( bcore_huffman_bit_buffer_s* o, s3_t val ); \
   bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_f3( bcore_huffman_bit_buffer_s* o, f3_t v, sz_t bits ); \
-  bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_bit_buffer( bcore_huffman_bit_buffer_s* o, const bcore_huffman_bit_buffer_s* src );
+  bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_push_bit_buffer( bcore_huffman_bit_buffer_s* o, const bcore_huffman_bit_buffer_s* src ); \
+  tp_t bcore_huffman_bit_buffer_s_get_hash( const bcore_huffman_bit_buffer_s* o ); \
+  void bcore_huffman_bit_buffer_s_bcml_body_to_sink( const bcore_huffman_bit_buffer_s* o, x_sink* sink ); \
+  er_t bcore_huffman_bit_buffer_s_bcml_body_from_source( bcore_huffman_bit_buffer_s* o, x_source* source ); \
+  static inline void bcore_huffman_bit_buffer_s_bbml_body_to_sink( const bcore_huffman_bit_buffer_s* o, x_sink* sink ){bcore_huffman_bit_buffer_s_bcml_body_to_sink(o,sink );} \
+  static inline er_t bcore_huffman_bit_buffer_s_bbml_body_from_source( bcore_huffman_bit_buffer_s* o, x_source* source ){return  bcore_huffman_bit_buffer_s_bcml_body_from_source(o,source );}
 #define TYPEOF_bcore_huffman_bit_buffer_iterator_s 0x093943E0EF30024Cull
 #define BETH_EXPAND_ITEM_bcore_huffman_bit_buffer_iterator_s \
   BCORE_DECLARE_OBJECT( bcore_huffman_bit_buffer_iterator_s ) \
@@ -2170,7 +2198,7 @@
   static inline void x_btml_to_file( const x_btml* o, sc_t file ); \
   static inline void x_btml_t_to_stdout( const x_btml* o, tp_t t ); \
   static inline void x_btml_to_stdout( const x_btml* o ); \
-  static inline void x_btml_test_transfer( const x_btml* o ); \
+  static inline sz_t x_btml_test_transfer( const x_btml* o ); \
   er_t x_btml_t_from_source( x_btml* o, tp_t t, x_source* source ); \
   x_btml* x_btml_create_from_source_t( x_source* source, tp_t* type ); \
   x_btml* x_btml_create_from_source( x_source* source ); \
@@ -2183,25 +2211,25 @@
   er_t x_btml_t_parse_body( x_btml* o, tp_t t, x_source* source ); \
   er_t x_btml_skip_body( x_source* source ); \
   void x_btml_t_translate_recursive( const x_btml* o, tp_t t, tp_t name, bl_t shelve, x_sink* sink, sz_t depth ); \
-  void x_btml_t_test_transfer( const x_btml* o, tp_t t ); \
+  sz_t x_btml_t_test_transfer( const x_btml* o, tp_t t ); \
   void x_btml_selftest( void ); \
-  typedef er_t (*x_btml_feature_body_from_source)(x_btml* o, x_source* source ); \
-  typedef void (*x_btml_feature_body_to_sink)(const x_btml* o, x_sink* sink ); \
+  typedef er_t (*x_btml_btml_body_from_source)(x_btml* o, x_source* source ); \
+  typedef void (*x_btml_btml_body_to_sink)(const x_btml* o, x_sink* sink ); \
   XOILA_DECLARE_SPECT( x_btml ) \
   { \
       bcore_spect_header_s header; \
-      x_btml_feature_body_from_source feature_body_from_source; \
-      x_btml_feature_body_to_sink feature_body_to_sink; \
+      x_btml_btml_body_from_source btml_body_from_source; \
+      x_btml_btml_body_to_sink btml_body_to_sink; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_btml ) \
-  static inline er_t x_btml_a_feature_body_from_source( x_btml* o, x_source* source ){ const x_btml_spect_s* p = x_btml_spect_s_get_aware( o ); assert( p->feature_body_from_source ); return p->feature_body_from_source( o, source );} \
-  static inline bl_t x_btml_defines_feature_body_from_source( const x_btml* o ){  return x_btml_spect_s_get_aware( o )->feature_body_from_source != NULL;} \
-  static inline er_t x_btml_t_feature_body_from_source( x_btml* o, tp_t t, x_source* source ){ const x_btml_spect_s* p = x_btml_spect_s_get_typed( t ); assert( p->feature_body_from_source ); return p->feature_body_from_source( o, source );} \
-  static inline bl_t x_btml_t_defines_feature_body_from_source( tp_t t ){  return x_btml_spect_s_get_typed( t )->feature_body_from_source != NULL;} \
-  static inline void x_btml_a_feature_body_to_sink( const x_btml* o, x_sink* sink ){ const x_btml_spect_s* p = x_btml_spect_s_get_aware( o ); assert( p->feature_body_to_sink ); p->feature_body_to_sink( o, sink );} \
-  static inline bl_t x_btml_defines_feature_body_to_sink( const x_btml* o ){  return x_btml_spect_s_get_aware( o )->feature_body_to_sink != NULL;} \
-  static inline void x_btml_t_feature_body_to_sink( const x_btml* o, tp_t t, x_sink* sink ){ const x_btml_spect_s* p = x_btml_spect_s_get_typed( t ); assert( p->feature_body_to_sink ); p->feature_body_to_sink( o, sink );} \
-  static inline bl_t x_btml_t_defines_feature_body_to_sink( tp_t t ){  return x_btml_spect_s_get_typed( t )->feature_body_to_sink != NULL;} \
+  static inline er_t x_btml_a_btml_body_from_source( x_btml* o, x_source* source ){ const x_btml_spect_s* p = x_btml_spect_s_get_aware( o ); assert( p->btml_body_from_source ); return p->btml_body_from_source( o, source );} \
+  static inline bl_t x_btml_defines_btml_body_from_source( const x_btml* o ){  return x_btml_spect_s_get_aware( o )->btml_body_from_source != NULL;} \
+  static inline er_t x_btml_t_btml_body_from_source( x_btml* o, tp_t t, x_source* source ){ const x_btml_spect_s* p = x_btml_spect_s_get_typed( t ); assert( p->btml_body_from_source ); return p->btml_body_from_source( o, source );} \
+  static inline bl_t x_btml_t_defines_btml_body_from_source( tp_t t ){  return x_btml_spect_s_get_typed( t )->btml_body_from_source != NULL;} \
+  static inline void x_btml_a_btml_body_to_sink( const x_btml* o, x_sink* sink ){ const x_btml_spect_s* p = x_btml_spect_s_get_aware( o ); assert( p->btml_body_to_sink ); p->btml_body_to_sink( o, sink );} \
+  static inline bl_t x_btml_defines_btml_body_to_sink( const x_btml* o ){  return x_btml_spect_s_get_aware( o )->btml_body_to_sink != NULL;} \
+  static inline void x_btml_t_btml_body_to_sink( const x_btml* o, tp_t t, x_sink* sink ){ const x_btml_spect_s* p = x_btml_spect_s_get_typed( t ); assert( p->btml_body_to_sink ); p->btml_body_to_sink( o, sink );} \
+  static inline bl_t x_btml_t_defines_btml_body_to_sink( tp_t t ){  return x_btml_spect_s_get_typed( t )->btml_body_to_sink != NULL;} \
   static inline er_t x_btml_from_source( x_btml* o, x_source* source ){return  x_btml_t_from_source(o,o->_, source );} \
   static inline er_t x_btml_t_from_file( x_btml* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_btml_t_from_source(o,t, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_check_create_from_file(file ))) ))} \
   static inline er_t x_btml_from_file( x_btml* o, sc_t file ){return  x_btml_t_from_file(o,o->_, file );} \
@@ -2226,7 +2254,7 @@
   static inline void x_btml_to_file( const x_btml* o, sc_t file ){x_btml_t_to_file(o,o->_, file );} \
   static inline void x_btml_t_to_stdout( const x_btml* o, tp_t t ){x_btml_t_to_sink(o,t, x_sink_stdout() );} \
   static inline void x_btml_to_stdout( const x_btml* o ){x_btml_t_to_stdout(o,o->_ );} \
-  static inline void x_btml_test_transfer( const x_btml* o ){x_btml_t_test_transfer(o,o->_ );}
+  static inline sz_t x_btml_test_transfer( const x_btml* o ){return  x_btml_t_test_transfer(o,o->_ );}
 
 /**********************************************************************************************************************/
 // source: bcore_x_bbml.h
@@ -2252,7 +2280,7 @@
   static inline void x_bbml_to_sink( const x_bbml* o, x_sink* sink ); \
   static inline void x_bbml_t_to_file( const x_bbml* o, tp_t t, sc_t file ); \
   static inline void x_bbml_to_file( const x_bbml* o, sc_t file ); \
-  static inline void x_bbml_test_transfer( const x_bbml* o ); \
+  static inline sz_t x_bbml_test_transfer( const x_bbml* o ); \
   er_t x_bbml_t_from_source( x_bbml* o, tp_t t, x_source* source ); \
   x_bbml* x_bbml_create_from_source_t( x_source* source, tp_t* type ); \
   x_bbml* x_bbml_create_from_source( x_source* source ); \
@@ -2262,30 +2290,32 @@
   static inline sz_t x_bbml_parse_size( x_source* source ); \
   bl_t x_bbml_appears_valid( x_source* source ); \
   er_t x_bbml_parse_create_object( x_source* source, sr_s* obj ); \
+  er_t x_bbml_t_parse_leaf_body( x_bbml* o, tp_t t, x_source* source ); \
   er_t x_bbml_t_parse_body( x_bbml* o, tp_t t, x_source* source ); \
   static inline void x_bbml_push_type( x_sink* sink, tp_t type ); \
   static inline void x_bbml_push_flag( x_sink* sink, bl_t flag ); \
-  static inline void x_bbml_push_size( x_sink* sink, sz_t size ); \
+  static inline void x_bbml_push_size( x_sink* sink, s3_t size ); \
+  void x_bbml_push_leaf( x_sink* sink, tp_t t, const x_inst* leaf ); \
   void x_bbml_t_translate_recursive( const x_bbml* o, tp_t t, tp_t name, bl_t shelve, x_sink* sink ); \
-  void x_bbml_t_test_transfer( const x_bbml* o, tp_t t ); \
+  sz_t x_bbml_t_test_transfer( const x_bbml* o, tp_t t ); \
   void x_bbml_selftest( void ); \
-  typedef er_t (*x_bbml_feature_body_from_source)(x_bbml* o, x_source* source ); \
-  typedef void (*x_bbml_feature_body_to_sink)(const x_bbml* o, x_sink* sink ); \
+  typedef er_t (*x_bbml_bbml_body_from_source)(x_bbml* o, x_source* source ); \
+  typedef void (*x_bbml_bbml_body_to_sink)(const x_bbml* o, x_sink* sink ); \
   XOILA_DECLARE_SPECT( x_bbml ) \
   { \
       bcore_spect_header_s header; \
-      x_bbml_feature_body_from_source feature_body_from_source; \
-      x_bbml_feature_body_to_sink feature_body_to_sink; \
+      x_bbml_bbml_body_from_source bbml_body_from_source; \
+      x_bbml_bbml_body_to_sink bbml_body_to_sink; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_bbml ) \
-  static inline er_t x_bbml_a_feature_body_from_source( x_bbml* o, x_source* source ){ const x_bbml_spect_s* p = x_bbml_spect_s_get_aware( o ); assert( p->feature_body_from_source ); return p->feature_body_from_source( o, source );} \
-  static inline bl_t x_bbml_defines_feature_body_from_source( const x_bbml* o ){  return x_bbml_spect_s_get_aware( o )->feature_body_from_source != NULL;} \
-  static inline er_t x_bbml_t_feature_body_from_source( x_bbml* o, tp_t t, x_source* source ){ const x_bbml_spect_s* p = x_bbml_spect_s_get_typed( t ); assert( p->feature_body_from_source ); return p->feature_body_from_source( o, source );} \
-  static inline bl_t x_bbml_t_defines_feature_body_from_source( tp_t t ){  return x_bbml_spect_s_get_typed( t )->feature_body_from_source != NULL;} \
-  static inline void x_bbml_a_feature_body_to_sink( const x_bbml* o, x_sink* sink ){ const x_bbml_spect_s* p = x_bbml_spect_s_get_aware( o ); assert( p->feature_body_to_sink ); p->feature_body_to_sink( o, sink );} \
-  static inline bl_t x_bbml_defines_feature_body_to_sink( const x_bbml* o ){  return x_bbml_spect_s_get_aware( o )->feature_body_to_sink != NULL;} \
-  static inline void x_bbml_t_feature_body_to_sink( const x_bbml* o, tp_t t, x_sink* sink ){ const x_bbml_spect_s* p = x_bbml_spect_s_get_typed( t ); assert( p->feature_body_to_sink ); p->feature_body_to_sink( o, sink );} \
-  static inline bl_t x_bbml_t_defines_feature_body_to_sink( tp_t t ){  return x_bbml_spect_s_get_typed( t )->feature_body_to_sink != NULL;} \
+  static inline er_t x_bbml_a_bbml_body_from_source( x_bbml* o, x_source* source ){ const x_bbml_spect_s* p = x_bbml_spect_s_get_aware( o ); assert( p->bbml_body_from_source ); return p->bbml_body_from_source( o, source );} \
+  static inline bl_t x_bbml_defines_bbml_body_from_source( const x_bbml* o ){  return x_bbml_spect_s_get_aware( o )->bbml_body_from_source != NULL;} \
+  static inline er_t x_bbml_t_bbml_body_from_source( x_bbml* o, tp_t t, x_source* source ){ const x_bbml_spect_s* p = x_bbml_spect_s_get_typed( t ); assert( p->bbml_body_from_source ); return p->bbml_body_from_source( o, source );} \
+  static inline bl_t x_bbml_t_defines_bbml_body_from_source( tp_t t ){  return x_bbml_spect_s_get_typed( t )->bbml_body_from_source != NULL;} \
+  static inline void x_bbml_a_bbml_body_to_sink( const x_bbml* o, x_sink* sink ){ const x_bbml_spect_s* p = x_bbml_spect_s_get_aware( o ); assert( p->bbml_body_to_sink ); p->bbml_body_to_sink( o, sink );} \
+  static inline bl_t x_bbml_defines_bbml_body_to_sink( const x_bbml* o ){  return x_bbml_spect_s_get_aware( o )->bbml_body_to_sink != NULL;} \
+  static inline void x_bbml_t_bbml_body_to_sink( const x_bbml* o, tp_t t, x_sink* sink ){ const x_bbml_spect_s* p = x_bbml_spect_s_get_typed( t ); assert( p->bbml_body_to_sink ); p->bbml_body_to_sink( o, sink );} \
+  static inline bl_t x_bbml_t_defines_bbml_body_to_sink( tp_t t ){  return x_bbml_spect_s_get_typed( t )->bbml_body_to_sink != NULL;} \
   static inline er_t x_bbml_from_source( x_bbml* o, x_source* source ){return  x_bbml_t_from_source(o,o->_, source );} \
   static inline er_t x_bbml_t_from_file( x_bbml* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_bbml_t_from_source(o,t, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_check_create_from_file(file ))) ))} \
   static inline er_t x_bbml_from_file( x_bbml* o, sc_t file ){return  x_bbml_t_from_file(o,o->_, file );} \
@@ -2300,13 +2330,97 @@
   static inline void x_bbml_to_sink( const x_bbml* o, x_sink* sink ){x_bbml_t_to_sink(o,o->_, sink );} \
   static inline void x_bbml_t_to_file( const x_bbml* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0);x_bbml_t_to_sink(o,t,((x_sink*)( ((bcore_sink*)BLM_LEVEL_A_PUSH(0,bcore_file_open_sink(file ))) )));BLM_DOWN();} \
   static inline void x_bbml_to_file( const x_bbml* o, sc_t file ){x_bbml_t_to_file(o,o->_, file );} \
-  static inline void x_bbml_test_transfer( const x_bbml* o ){x_bbml_t_test_transfer(o,o->_ );} \
+  static inline sz_t x_bbml_test_transfer( const x_bbml* o ){return  x_bbml_t_test_transfer(o,o->_ );} \
   static inline tp_t x_bbml_parse_type( x_source* source ){ tp_t type = 0; x_source_get_data(source,((x_inst*)((&(type)))), sizeof( type ) ); return  type;} \
   static inline bl_t x_bbml_parse_flag( x_source* source ){ u0_t flag = 0; x_source_get_data(source,((x_inst*)((&(flag)))), sizeof( flag ) ); return  flag;} \
-  static inline sz_t x_bbml_parse_size( x_source* source ){ sz_t size = 0; x_source_get_data(source,((x_inst*)((&(size)))), sizeof( size ) ); return  size;} \
+  static inline sz_t x_bbml_parse_size( x_source* source ){ s3_t size = 0; x_source_get_data(source,((x_inst*)((&(size)))), sizeof( size ) ); return  size;} \
   static inline void x_bbml_push_type( x_sink* sink, tp_t type ){x_sink_push_data(sink,((const x_inst*)((&(type)))), sizeof( type ) );} \
   static inline void x_bbml_push_flag( x_sink* sink, bl_t flag ){ u0_t v = flag ? 1 : 0; x_sink_push_data(sink,((const x_inst*)((&(v)))), 1 );} \
-  static inline void x_bbml_push_size( x_sink* sink, sz_t size ){x_sink_push_data(sink,((const x_inst*)((&(size)))), sizeof( size ) );}
+  static inline void x_bbml_push_size( x_sink* sink, s3_t size ){x_sink_push_data(sink,((const x_inst*)((&(size)))), sizeof( size ) );}
+
+/**********************************************************************************************************************/
+// source: bcore_x_bcml.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_bcml
+
+#define TYPEOF_x_bcml 0x8FBECEC2AE3DEA96ull
+#define TYPEOF_x_bcml_spect_s 0x5E7680C51C63B122ull
+#define BETH_EXPAND_GROUP_x_bcml \
+  BCORE_FORWARD_OBJECT( x_bcml ); \
+  static inline er_t x_bcml_from_source( x_bcml* o, x_source* source ); \
+  static inline er_t x_bcml_t_from_file( x_bcml* o, tp_t t, sc_t file ); \
+  static inline er_t x_bcml_from_file( x_bcml* o, sc_t file ); \
+  static inline er_t x_bcml_t_from_st( x_bcml* o, tp_t t, const st_s* st ); \
+  static inline er_t x_bcml_from_st( x_bcml* o, const st_s* st ); \
+  static inline er_t x_bcml_t_from_sc( x_bcml* o, tp_t t, sc_t sc ); \
+  static inline er_t x_bcml_from_sc( x_bcml* o, sc_t sc ); \
+  static inline x_bcml* x_bcml_create_from_st_t( const st_s* st, tp_t* type ); \
+  static inline x_bcml* x_bcml_create_from_sc_t( sc_t sc, tp_t* type ); \
+  static inline x_bcml* x_bcml_create_from_st( const st_s* st ); \
+  static inline x_bcml* x_bcml_create_from_sc( sc_t sc ); \
+  static inline void x_bcml_to_sink( const x_bcml* o, x_sink* sink ); \
+  static inline void x_bcml_t_to_file( const x_bcml* o, tp_t t, sc_t file ); \
+  static inline void x_bcml_to_file( const x_bcml* o, sc_t file ); \
+  static inline sz_t x_bcml_test_transfer( const x_bcml* o ); \
+  er_t x_bcml_t_from_source( x_bcml* o, tp_t t, x_source* source ); \
+  x_bcml* x_bcml_create_from_source_t( x_source* source, tp_t* type ); \
+  x_bcml* x_bcml_create_from_source( x_source* source ); \
+  void x_bcml_t_to_sink( const x_bcml* o, tp_t t, x_sink* sink ); \
+  static inline tp_t x_bcml_parse_type( x_source* source ); \
+  static inline bl_t x_bcml_parse_flag( x_source* source ); \
+  static inline sz_t x_bcml_parse_size( x_source* source ); \
+  bl_t x_bcml_appears_valid( x_source* source ); \
+  er_t x_bcml_parse_create_object( bl_t parse_existence, tp_t given_type, x_source* source, sr_s* obj ); \
+  er_t x_bcml_t_parse_leaf_body( x_bcml* o, tp_t t, x_source* source ); \
+  er_t x_bcml_t_parse_leaf_arr_body( x_bcml* o, tp_t t, sz_t size, x_source* source ); \
+  er_t x_bcml_t_parse_body( x_bcml* o, tp_t t, x_source* source ); \
+  static inline void x_bcml_push_type( x_sink* sink, tp_t type ); \
+  static inline void x_bcml_push_flag( x_sink* sink, bl_t flag ); \
+  static inline void x_bcml_push_size( x_sink* sink, s3_t size ); \
+  void x_bcml_push_leaf( x_sink* sink, tp_t t, const x_inst* leaf ); \
+  void x_bcml_push_leaf_arr( x_sink* sink, tp_t t, const x_inst* leaf, sz_t size ); \
+  void x_bcml_t_translate_recursive( const x_bcml* o, tp_t t, bl_t push_existence, bl_t push_type, bl_t shelve, x_sink* sink ); \
+  sz_t x_bcml_t_test_transfer( const x_bcml* o, tp_t t ); \
+  void x_bcml_selftest( void ); \
+  typedef er_t (*x_bcml_bcml_body_from_source)(x_bcml* o, x_source* source ); \
+  typedef void (*x_bcml_bcml_body_to_sink)(const x_bcml* o, x_sink* sink ); \
+  XOILA_DECLARE_SPECT( x_bcml ) \
+  { \
+      bcore_spect_header_s header; \
+      x_bcml_bcml_body_from_source bcml_body_from_source; \
+      x_bcml_bcml_body_to_sink bcml_body_to_sink; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_bcml ) \
+  static inline er_t x_bcml_a_bcml_body_from_source( x_bcml* o, x_source* source ){ const x_bcml_spect_s* p = x_bcml_spect_s_get_aware( o ); assert( p->bcml_body_from_source ); return p->bcml_body_from_source( o, source );} \
+  static inline bl_t x_bcml_defines_bcml_body_from_source( const x_bcml* o ){  return x_bcml_spect_s_get_aware( o )->bcml_body_from_source != NULL;} \
+  static inline er_t x_bcml_t_bcml_body_from_source( x_bcml* o, tp_t t, x_source* source ){ const x_bcml_spect_s* p = x_bcml_spect_s_get_typed( t ); assert( p->bcml_body_from_source ); return p->bcml_body_from_source( o, source );} \
+  static inline bl_t x_bcml_t_defines_bcml_body_from_source( tp_t t ){  return x_bcml_spect_s_get_typed( t )->bcml_body_from_source != NULL;} \
+  static inline void x_bcml_a_bcml_body_to_sink( const x_bcml* o, x_sink* sink ){ const x_bcml_spect_s* p = x_bcml_spect_s_get_aware( o ); assert( p->bcml_body_to_sink ); p->bcml_body_to_sink( o, sink );} \
+  static inline bl_t x_bcml_defines_bcml_body_to_sink( const x_bcml* o ){  return x_bcml_spect_s_get_aware( o )->bcml_body_to_sink != NULL;} \
+  static inline void x_bcml_t_bcml_body_to_sink( const x_bcml* o, tp_t t, x_sink* sink ){ const x_bcml_spect_s* p = x_bcml_spect_s_get_typed( t ); assert( p->bcml_body_to_sink ); p->bcml_body_to_sink( o, sink );} \
+  static inline bl_t x_bcml_t_defines_bcml_body_to_sink( tp_t t ){  return x_bcml_spect_s_get_typed( t )->bcml_body_to_sink != NULL;} \
+  static inline er_t x_bcml_from_source( x_bcml* o, x_source* source ){return  x_bcml_t_from_source(o,o->_, source );} \
+  static inline er_t x_bcml_t_from_file( x_bcml* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_bcml_t_from_source(o,t, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_check_create_from_file(file ))) ))} \
+  static inline er_t x_bcml_from_file( x_bcml* o, sc_t file ){return  x_bcml_t_from_file(o,o->_, file );} \
+  static inline er_t x_bcml_t_from_st( x_bcml* o, tp_t t, const st_s* st ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_bcml_t_from_source(o,t, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))) ))} \
+  static inline er_t x_bcml_from_st( x_bcml* o, const st_s* st ){return  x_bcml_t_from_st(o,o->_, st );} \
+  static inline er_t x_bcml_t_from_sc( x_bcml* o, tp_t t, sc_t sc ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_bcml_t_from_source(o,t, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))} \
+  static inline er_t x_bcml_from_sc( x_bcml* o, sc_t sc ){return  x_bcml_t_from_sc(o,o->_, sc );} \
+  static inline x_bcml* x_bcml_create_from_st_t( const st_s* st, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bcml*, x_bcml_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))), type ))} \
+  static inline x_bcml* x_bcml_create_from_sc_t( sc_t sc, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bcml*, x_bcml_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))), type ))} \
+  static inline x_bcml* x_bcml_create_from_st( const st_s* st ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bcml*, x_bcml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))) ))} \
+  static inline x_bcml* x_bcml_create_from_sc( sc_t sc ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bcml*, x_bcml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))} \
+  static inline void x_bcml_to_sink( const x_bcml* o, x_sink* sink ){x_bcml_t_to_sink(o,o->_, sink );} \
+  static inline void x_bcml_t_to_file( const x_bcml* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0);x_bcml_t_to_sink(o,t,((x_sink*)( ((bcore_sink*)BLM_LEVEL_A_PUSH(0,bcore_file_open_sink(file ))) )));BLM_DOWN();} \
+  static inline void x_bcml_to_file( const x_bcml* o, sc_t file ){x_bcml_t_to_file(o,o->_, file );} \
+  static inline sz_t x_bcml_test_transfer( const x_bcml* o ){return  x_bcml_t_test_transfer(o,o->_ );} \
+  static inline tp_t x_bcml_parse_type( x_source* source ){ tp_t type = 0; x_source_get_data(source,((x_inst*)((&(type)))), sizeof( type ) ); return  type;} \
+  static inline bl_t x_bcml_parse_flag( x_source* source ){ u0_t flag = 0; x_source_get_data(source,((x_inst*)((&(flag)))), sizeof( flag ) ); return  flag;} \
+  static inline sz_t x_bcml_parse_size( x_source* source ){ s3_t size = 0; x_source_get_data(source,((x_inst*)((&(size)))), sizeof( size ) ); return  size;} \
+  static inline void x_bcml_push_type( x_sink* sink, tp_t type ){x_sink_push_data(sink,((const x_inst*)((&(type)))), sizeof( type ) );} \
+  static inline void x_bcml_push_flag( x_sink* sink, bl_t flag ){ u0_t v = flag ? 1 : 0; x_sink_push_data(sink,((const x_inst*)((&(v)))), 1 );} \
+  static inline void x_bcml_push_size( x_sink* sink, s3_t size ){x_sink_push_data(sink,((const x_inst*)((&(size)))), sizeof( size ) );}
 
 /**********************************************************************************************************************/
 // source: bcore_x_hmap.h
@@ -2574,5 +2688,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xC9C5AE50EC6FFC4E
-// XOICO_FILE_SIGNATURE 0x130B6F1DDEA027EC
+// XOICO_BODY_SIGNATURE 0xBA7122077CC66957
+// XOICO_FILE_SIGNATURE 0xC72383A054DD016E
