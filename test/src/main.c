@@ -96,6 +96,8 @@ int main( void )
 
     x_btml_selftest();
     x_bbml_selftest();
+    x_bcml_selftest();
+
     selftest( "bcore_txt_ml" );
     selftest( "bcore_bin_ml" );
 
