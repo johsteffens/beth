@@ -1,4 +1,4 @@
-//  Last update: 2022-05-05T21:40:18Z
+//  Last update: 2022-05-06T17:00:01Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -54,7 +54,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0x8ABE43FBD4A08232ull
+// HKEYOF_bcore 0x7062F4C0A32113A3ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -109,14 +109,14 @@ BCORE_DEFINE_OBJECT_INST_P( x_source_point_s )
 
 void x_source_point_s_parse_msg_fv( const x_source_point_s* o, sc_t format, va_list args )
 {
-    // bcore_x_source.h:163:1
+    // bcore_x_source.h:195:1
     
     x_source_point_s_parse_msg_to_sink_fv(o,x_sink_stdout(), format, args );
 }
 
 x_source* x_source_point_s_clone_source( const x_source_point_s* o )
 {
-    // bcore_x_source.h:170:1
+    // bcore_x_source.h:202:1
     
     x_source* source = x_source_a_clone(o->source);
     x_source_set_index(source,o->index );
@@ -125,7 +125,7 @@ x_source* x_source_point_s_clone_source( const x_source_point_s* o )
 
 void x_source_point_s_parse_msg_to_sink_fv( const x_source_point_s* o, x_sink* sink, sc_t format, va_list args )
 {
-    // bcore_x_source.h:179:1
+    // bcore_x_source.h:211:1
     
     if( o->source )
     {
@@ -142,7 +142,7 @@ void x_source_point_s_parse_msg_to_sink_fv( const x_source_point_s* o, x_sink* s
 
 er_t x_source_point_s_parse_error_fv( const x_source_point_s* o, sc_t format, va_list args )
 {
-    // bcore_x_source.h:196:1
+    // bcore_x_source.h:228:1
     
     er_t err = 0;
     if( o->source )
@@ -161,7 +161,7 @@ er_t x_source_point_s_parse_error_fv( const x_source_point_s* o, sc_t format, va
 
 void x_source_point_s_source_reference_to_sink( const x_source_point_s* o, bl_t file_name_only, x_sink* sink )
 {
-    // bcore_x_source.h:215:1
+    // bcore_x_source.h:247:1
     BLM_INIT_LEVEL(0);
     if( !o->source ) BLM_RETURN();
     s3_t index = x_source_get_index(o->source);
@@ -197,7 +197,7 @@ x_source* x_source_check_create_from_file( sc_t path )
 
 void x_source_parse_msg_fv( const x_source* o, sc_t format, va_list args )
 {
-    // bcore_x_source.h:114:1
+    // bcore_x_source.h:146:1
     
     x_source_parse_msg_to_sink_fv(o,x_sink_stdout(), format, args );
 }
@@ -2508,7 +2508,7 @@ void bcore_huffman_bit_buffer_s_bcml_body_to_sink( const bcore_huffman_bit_buffe
     // bcore_huffman.x:291:1
     
     u3_t bits = o->bits;
-    x_sink_push_data(sink,((const x_inst*)(&(bits))), sizeof( u3_t ) );
+    x_sink_push_u3(sink,bits );
     sz_t size = ( bits / 8 ) + ( ( bits % 8 ) ? 1 : 0 );
     x_sink_push_data(sink,((const x_inst*)(o->data)), size * sizeof( u0_t ) );
 }
@@ -2517,8 +2517,7 @@ er_t bcore_huffman_bit_buffer_s_bcml_body_from_source( bcore_huffman_bit_buffer_
 {
     // bcore_huffman.x:301:1
     
-    u3_t bits = 0;
-    x_source_get_data(source,((x_inst*)((&(bits)))), sizeof( u3_t ) );
+    u3_t bits = x_source_get_u3(source);
     sz_t size = ( bits / 8 ) + ( ( bits % 8 ) ? 1 : 0 );
     x_array_set_size(((x_array*)(o)),size );
     o->bits = bits;
@@ -2535,7 +2534,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_bit_buffer_iterator_s )
 
 bl_t bcore_huffman_bit_buffer_iterator_s_read_bl( bcore_huffman_bit_buffer_iterator_s* o )
 {
-    // bcore_huffman.x:318:1
+    // bcore_huffman.x:317:1
     
     if( !o->bit_buffer ) ERR_fa( "No buffer assigned. Call setup first." );
     if( o->bit_index >= o->bit_buffer->bits ) ERR_fa( "Reading past end of buffer" );
@@ -2547,7 +2546,7 @@ bl_t bcore_huffman_bit_buffer_iterator_s_read_bl( bcore_huffman_bit_buffer_itera
 
 u3_t bcore_huffman_bit_buffer_iterator_s_read_u3( bcore_huffman_bit_buffer_iterator_s* o, sz_t bits )
 {
-    // bcore_huffman.x:330:1
+    // bcore_huffman.x:329:1
     
     u3_t val = 0;
     for(sz_t i = 0; i < bits; i++ ) val = val | ( ((u3_t)(bcore_huffman_bit_buffer_iterator_s_read_bl(o))) << i );
@@ -2556,14 +2555,14 @@ u3_t bcore_huffman_bit_buffer_iterator_s_read_u3( bcore_huffman_bit_buffer_itera
 
 u3_t bcore_huffman_bit_buffer_iterator_s_read_packed_u3( bcore_huffman_bit_buffer_iterator_s* o )
 {
-    // bcore_huffman.x:339:1
+    // bcore_huffman.x:338:1
     
     return  bcore_huffman_bit_buffer_iterator_s_read_u3(o,bcore_huffman_bit_buffer_iterator_s_read_u3(o,6 ) + 1 );
 }
 
 s3_t bcore_huffman_bit_buffer_iterator_s_read_s3( bcore_huffman_bit_buffer_iterator_s* o, sz_t bits )
 {
-    // bcore_huffman.x:346:1
+    // bcore_huffman.x:345:1
     
     u3_t u3 = bcore_huffman_bit_buffer_iterator_s_read_u3(o,bits );
     if( bits > 0 )
@@ -2575,7 +2574,7 @@ s3_t bcore_huffman_bit_buffer_iterator_s_read_s3( bcore_huffman_bit_buffer_itera
 
 u3_t bcore_huffman_bit_buffer_iterator_s_read_packed_s3( bcore_huffman_bit_buffer_iterator_s* o )
 {
-    // bcore_huffman.x:358:1
+    // bcore_huffman.x:357:1
     
     s3_t sign = bcore_huffman_bit_buffer_iterator_s_read_bl(o) ? 1 : -1;
     s3_t val = bcore_huffman_bit_buffer_iterator_s_read_packed_u3(o);
@@ -2584,7 +2583,7 @@ u3_t bcore_huffman_bit_buffer_iterator_s_read_packed_s3( bcore_huffman_bit_buffe
 
 f3_t bcore_huffman_bit_buffer_iterator_s_read_f3( bcore_huffman_bit_buffer_iterator_s* o, sz_t bits )
 {
-    // bcore_huffman.x:367:1
+    // bcore_huffman.x:366:1
     
     ASSERT( bits <= 31 );
     s3_t man = bcore_huffman_bit_buffer_iterator_s_read_s3(o,bits );
@@ -2629,7 +2628,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_count_map_s )
 
 bcore_huffman_count_map_s* bcore_huffman_count_map_s_from_hist( bcore_huffman_count_map_s* o, const bcore_huffman_hist_s* hist )
 {
-    // bcore_huffman.x:427:5
+    // bcore_huffman.x:426:5
     
     x_array_clear(((x_array*)(o)));
     for(sz_t i = 0; i < hist->hmap_tpuz.size; i++ )
@@ -2647,7 +2646,7 @@ bcore_huffman_count_map_s* bcore_huffman_count_map_s_from_hist( bcore_huffman_co
 
 bl_t bcore_huffman_count_map_s_is_sorted( const bcore_huffman_count_map_s* o )
 {
-    // bcore_huffman.x:443:5
+    // bcore_huffman.x:442:5
     
     for(sz_t i = 1; i < o->size; i++ ) if( o->data[ i - 1 ].c > o->data[ i ].c ) return  false;
     return  true;
@@ -2655,7 +2654,7 @@ bl_t bcore_huffman_count_map_s_is_sorted( const bcore_huffman_count_map_s* o )
 
 bl_t bcore_huffman_count_map_s_is_equal( const bcore_huffman_count_map_s* o, const bcore_huffman_count_map_s* b )
 {
-    // bcore_huffman.x:449:5
+    // bcore_huffman.x:448:5
     
     if( o->size != b->size ) return  false;
     for(sz_t i = 1; i < o->size; i++ ) if( !bcore_huffman_count_node_s_is_equal(&(o->data[ i ]),&(b->data[ i ] )) ) return  false;
@@ -2664,7 +2663,7 @@ bl_t bcore_huffman_count_map_s_is_equal( const bcore_huffman_count_map_s* o, con
 
 bcore_huffman_count_map_s* bcore_huffman_count_map_s_encode( bcore_huffman_count_map_s* o, bcore_huffman_bit_buffer_s* out )
 {
-    // bcore_huffman.x:459:1
+    // bcore_huffman.x:458:1
     
     if( !bcore_huffman_count_map_s_is_sorted(o) ) ERR_fa( "Map is not sorted." );
     
@@ -2703,7 +2702,7 @@ bcore_huffman_count_map_s* bcore_huffman_count_map_s_encode( bcore_huffman_count
 
 bcore_huffman_count_map_s* bcore_huffman_count_map_s_decode( bcore_huffman_count_map_s* o, bcore_huffman_bit_buffer_iterator_s* in )
 {
-    // bcore_huffman.x:498:1
+    // bcore_huffman.x:497:1
     
     x_array_clear(((x_array*)(o)));
     sz_t size = bcore_huffman_bit_buffer_iterator_s_read_packed_u3(in);
@@ -2737,7 +2736,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_tree_s )
 
 bcore_huffman_tree_s* bcore_huffman_tree_s_build( bcore_huffman_tree_s* o, const bcore_huffman_count_map_s* count_map, bcore_huffman_index_s* leaf_index )
 {
-    // bcore_huffman.x:531:5
+    // bcore_huffman.x:530:5
     
     x_array_set_size(((x_array*)(o)),1 );
     for(sz_t i = 0; i < count_map->size; i++ )
@@ -2781,7 +2780,7 @@ sz_t bcore_huffman_min_bits( u3_t v, sz_t n )
 
 void bcore_huffman_selftest( void )
 {
-    // bcore_huffman.x:568:1
+    // bcore_huffman.x:567:1
     BLM_INIT_LEVEL(0);
     bcore_prsg_lcg_u3_00_s prsg;BLM_T_INIT_SPUSH(bcore_prsg_lcg_u3_00_s, &prsg);;
     
@@ -3594,22 +3593,22 @@ er_t x_bbml_t_parse_leaf_body( x_bbml* o, tp_t t, x_source* source )
     
     switch( t )
     {
-        case TYPEOF_aware_t : x_source_get_data(source,((x_inst*)(o)), sizeof( aware_t ) ); break;
-        case TYPEOF_bl_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( bl_t ) ); break;
-        case TYPEOF_f2_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( f2_t ) ); break;
-        case TYPEOF_f3_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( f3_t ) ); break;
-        case TYPEOF_s0_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( s0_t ) ); break;
-        case TYPEOF_s1_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( s1_t ) ); break;
-        case TYPEOF_s2_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( s2_t ) ); break;
-        case TYPEOF_s3_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( s3_t ) ); break;
+        case TYPEOF_aware_t : (*(((tp_t*)(o)))) = x_source_get_tp(source); break;
+        case TYPEOF_bl_t    : (*(((bl_t*)(o)))) = x_source_get_bl(source); break;
+        case TYPEOF_f2_t    : (*(((f2_t*)(o)))) = x_source_get_f2(source); break;
+        case TYPEOF_f3_t    : (*(((f3_t*)(o)))) = x_source_get_f3(source); break;
+        case TYPEOF_s0_t    : (*(((s0_t*)(o)))) = x_source_get_s0(source); break;
+        case TYPEOF_s1_t    : (*(((s1_t*)(o)))) = x_source_get_s1(source); break;
+        case TYPEOF_s2_t    : (*(((s2_t*)(o)))) = x_source_get_s2(source); break;
+        case TYPEOF_s3_t    : (*(((s3_t*)(o)))) = x_source_get_s3(source); break;
         case TYPEOF_sc_t    : break; // c-style constant strings are skipped over
-        case TYPEOF_sz_t    : { s3_t v = 0; x_source_get_data(source,((x_inst*)((&(v)))), sizeof( s3_t ) ); (*(((sz_t*)(o)))) = v; } break;
-        case TYPEOF_uz_t    : { u3_t v = 0; x_source_get_data(source,((x_inst*)((&(v)))), sizeof( u3_t ) ); (*(((uz_t*)(o)))) = v; } break;
-        case TYPEOF_tp_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( tp_t ) ); break;
-        case TYPEOF_u0_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( u0_t ) ); break;
-        case TYPEOF_u1_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( u1_t ) ); break;
-        case TYPEOF_u2_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( u2_t ) ); break;
-        case TYPEOF_u3_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( u3_t ) ); break;
+        case TYPEOF_sz_t    : (*(((sz_t*)(o)))) = x_source_get_sz(source); break;
+        case TYPEOF_uz_t    : (*(((uz_t*)(o)))) = x_source_get_uz(source); break;
+        case TYPEOF_tp_t    : (*(((tp_t*)(o)))) = x_source_get_tp(source); break;
+        case TYPEOF_u0_t    : (*(((u0_t*)(o)))) = x_source_get_u0(source); break;
+        case TYPEOF_u1_t    : (*(((u1_t*)(o)))) = x_source_get_u1(source); break;
+        case TYPEOF_u2_t    : (*(((u2_t*)(o)))) = x_source_get_u2(source); break;
+        case TYPEOF_u3_t    : (*(((u3_t*)(o)))) = x_source_get_u3(source); break;
         default: ERR_fa( "Cannot convert type '#<sc_t>' from a binary stream.", bnameof( t ) );
     }
     return  0;
@@ -3705,22 +3704,22 @@ void x_bbml_push_leaf( x_sink* sink, tp_t t, const x_inst* leaf )
     
     switch( t )
     {
-        case TYPEOF_aware_t : x_sink_push_data(sink,leaf, sizeof( aware_t ) ); break;
-        case TYPEOF_bl_t    : x_sink_push_data(sink,leaf, sizeof( bl_t ) ); break;
-        case TYPEOF_f2_t    : x_sink_push_data(sink,leaf, sizeof( f2_t ) ); break;
-        case TYPEOF_f3_t    : x_sink_push_data(sink,leaf, sizeof( f3_t ) ); break;
-        case TYPEOF_s0_t    : x_sink_push_data(sink,leaf, sizeof( s0_t ) ); break;
-        case TYPEOF_s1_t    : x_sink_push_data(sink,leaf, sizeof( s1_t ) ); break;
-        case TYPEOF_s2_t    : x_sink_push_data(sink,leaf, sizeof( s2_t ) ); break;
-        case TYPEOF_s3_t    : x_sink_push_data(sink,leaf, sizeof( s3_t ) ); break;
+        case TYPEOF_aware_t : x_sink_push_tp(sink,*(((const tp_t*)(leaf)) )); break;
+        case TYPEOF_bl_t    : x_sink_push_bl(sink,*(((const bl_t*)(leaf)) )); break;
+        case TYPEOF_f2_t    : x_sink_push_f2(sink,*(((const f2_t*)(leaf)) )); break;
+        case TYPEOF_f3_t    : x_sink_push_f3(sink,*(((const f3_t*)(leaf)) )); break;
+        case TYPEOF_s0_t    : x_sink_push_s0(sink,*(((const s0_t*)(leaf)) )); break;
+        case TYPEOF_s1_t    : x_sink_push_s1(sink,*(((const s1_t*)(leaf)) )); break;
+        case TYPEOF_s2_t    : x_sink_push_s2(sink,*(((const s2_t*)(leaf)) )); break;
+        case TYPEOF_s3_t    : x_sink_push_s3(sink,*(((const s3_t*)(leaf)) )); break;
         case TYPEOF_sc_t    : break; // c-style constant strings are skipped over
-        case TYPEOF_sz_t    : { s3_t v = (*(((const sz_t*)(leaf)))); x_sink_push_data(sink,((const x_inst*)(&(v))), sizeof( s3_t ) ); } break;
-        case TYPEOF_uz_t    : { u3_t v = (*(((const uz_t*)(leaf)))); x_sink_push_data(sink,((const x_inst*)(&(v))), sizeof( u3_t ) ); } break;
-        case TYPEOF_tp_t    : x_sink_push_data(sink,leaf, sizeof( tp_t ) ); break;
-        case TYPEOF_u0_t    : x_sink_push_data(sink,leaf, sizeof( u0_t ) ); break;
-        case TYPEOF_u1_t    : x_sink_push_data(sink,leaf, sizeof( u1_t ) ); break;
-        case TYPEOF_u2_t    : x_sink_push_data(sink,leaf, sizeof( u2_t ) ); break;
-        case TYPEOF_u3_t    : x_sink_push_data(sink,leaf, sizeof( u3_t ) ); break;
+        case TYPEOF_sz_t    : x_sink_push_sz(sink,*(((const sz_t*)(leaf)) )); break;
+        case TYPEOF_uz_t    : x_sink_push_uz(sink,*(((const uz_t*)(leaf)) )); break;
+        case TYPEOF_tp_t    : x_sink_push_tp(sink,*(((const tp_t*)(leaf)) )); break;
+        case TYPEOF_u0_t    : x_sink_push_u0(sink,*(((const u0_t*)(leaf)) )); break;
+        case TYPEOF_u1_t    : x_sink_push_u1(sink,*(((const u1_t*)(leaf)) )); break;
+        case TYPEOF_u2_t    : x_sink_push_u2(sink,*(((const u2_t*)(leaf)) )); break;
+        case TYPEOF_u3_t    : x_sink_push_u3(sink,*(((const u3_t*)(leaf)) )); break;
         default: ERR_fa( "Cannot convert type '#<sc_t>' into a binary stream.", bnameof( t ) );
     }
 }
@@ -3946,22 +3945,22 @@ er_t x_bcml_t_parse_leaf_body( x_bcml* o, tp_t t, x_source* source )
     
     switch( t )
     {
-        case TYPEOF_aware_t : x_source_get_data(source,((x_inst*)(o)), sizeof( aware_t ) ); break;
-        case TYPEOF_bl_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( bl_t ) ); break;
-        case TYPEOF_f2_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( f2_t ) ); break;
-        case TYPEOF_f3_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( f3_t ) ); break;
-        case TYPEOF_s0_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( s0_t ) ); break;
-        case TYPEOF_s1_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( s1_t ) ); break;
-        case TYPEOF_s2_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( s2_t ) ); break;
-        case TYPEOF_s3_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( s3_t ) ); break;
+        case TYPEOF_aware_t : (*(((tp_t*)(o)))) = x_source_get_tp(source); break;
+        case TYPEOF_bl_t    : (*(((bl_t*)(o)))) = x_source_get_bl(source); break;
+        case TYPEOF_f2_t    : (*(((f2_t*)(o)))) = x_source_get_f2(source); break;
+        case TYPEOF_f3_t    : (*(((f3_t*)(o)))) = x_source_get_f3(source); break;
+        case TYPEOF_s0_t    : (*(((s0_t*)(o)))) = x_source_get_s0(source); break;
+        case TYPEOF_s1_t    : (*(((s1_t*)(o)))) = x_source_get_s1(source); break;
+        case TYPEOF_s2_t    : (*(((s2_t*)(o)))) = x_source_get_s2(source); break;
+        case TYPEOF_s3_t    : (*(((s3_t*)(o)))) = x_source_get_s3(source); break;
         case TYPEOF_sc_t    : break; // c-style constant strings are skipped over
-        case TYPEOF_sz_t    : { s3_t v = 0; x_source_get_data(source,((x_inst*)((&(v)))), sizeof( s3_t ) ); (*(((sz_t*)(o)))) = v; } break;
-        case TYPEOF_uz_t    : { u3_t v = 0; x_source_get_data(source,((x_inst*)((&(v)))), sizeof( u3_t ) ); (*(((uz_t*)(o)))) = v; } break;
-        case TYPEOF_tp_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( tp_t ) ); break;
-        case TYPEOF_u0_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( u0_t ) ); break;
-        case TYPEOF_u1_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( u1_t ) ); break;
-        case TYPEOF_u2_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( u2_t ) ); break;
-        case TYPEOF_u3_t    : x_source_get_data(source,((x_inst*)(o)), sizeof( u3_t ) ); break;
+        case TYPEOF_sz_t    : (*(((sz_t*)(o)))) = x_source_get_sz(source); break;
+        case TYPEOF_uz_t    : (*(((uz_t*)(o)))) = x_source_get_uz(source); break;
+        case TYPEOF_tp_t    : (*(((tp_t*)(o)))) = x_source_get_tp(source); break;
+        case TYPEOF_u0_t    : (*(((u0_t*)(o)))) = x_source_get_u0(source); break;
+        case TYPEOF_u1_t    : (*(((u1_t*)(o)))) = x_source_get_u1(source); break;
+        case TYPEOF_u2_t    : (*(((u2_t*)(o)))) = x_source_get_u2(source); break;
+        case TYPEOF_u3_t    : (*(((u3_t*)(o)))) = x_source_get_u3(source); break;
         default: ERR_fa( "Cannot convert type '#<sc_t>' from a binary stream.", bnameof( t ) );
     }
     return  0;
@@ -3974,7 +3973,7 @@ er_t x_bcml_t_parse_leaf_arr_body( x_bcml* o, tp_t t, sz_t size, x_source* sourc
     switch( t )
     {
         case TYPEOF_aware_t : x_source_get_data(source,((x_inst*)(o)), size * sizeof( aware_t ) ); break;
-        case TYPEOF_bl_t    : x_source_get_data(source,((x_inst*)(o)), size * sizeof( bl_t ) ); break;
+        case TYPEOF_bl_t    : { for(sz_t i = 0; i < size; i++ ) { ((bl_t*)(o))[ i ] = x_source_get_bl(source); } } break; // bl is converted
         case TYPEOF_f2_t    : x_source_get_data(source,((x_inst*)(o)), size * sizeof( f2_t ) ); break;
         case TYPEOF_f3_t    : x_source_get_data(source,((x_inst*)(o)), size * sizeof( f3_t ) ); break;
         case TYPEOF_s0_t    : x_source_get_data(source,((x_inst*)(o)), size * sizeof( s0_t ) ); break;
@@ -3982,8 +3981,8 @@ er_t x_bcml_t_parse_leaf_arr_body( x_bcml* o, tp_t t, sz_t size, x_source* sourc
         case TYPEOF_s2_t    : x_source_get_data(source,((x_inst*)(o)), size * sizeof( s2_t ) ); break;
         case TYPEOF_s3_t    : x_source_get_data(source,((x_inst*)(o)), size * sizeof( s3_t ) ); break;
         case TYPEOF_sc_t    : break; // c-style constant strings are skipped over
-        case TYPEOF_sz_t    : { for(sz_t i = 0; i < size; i++ ) { s3_t v = 0; x_source_get_data(source,((x_inst*)((&(v)))), sizeof( s3_t ) ); ((sz_t*)(o))[ i ] = v; } } break;
-        case TYPEOF_uz_t    : { for(sz_t i = 0; i < size; i++ ) { u3_t v = 0; x_source_get_data(source,((x_inst*)((&(v)))), sizeof( u3_t ) ); ((uz_t*)(o))[ i ] = v; } } break;
+        case TYPEOF_sz_t    : { for(sz_t i = 0; i < size; i++ ) { ((sz_t*)(o))[ i ] = x_source_get_sz(source); } } break; // sz is converted
+        case TYPEOF_uz_t    : { for(sz_t i = 0; i < size; i++ ) { ((uz_t*)(o))[ i ] = x_source_get_uz(source); } } break; // uz is converted
         case TYPEOF_tp_t    : x_source_get_data(source,((x_inst*)(o)), size * sizeof( tp_t ) ); break;
         case TYPEOF_u0_t    : x_source_get_data(source,((x_inst*)(o)), size * sizeof( u0_t ) ); break;
         case TYPEOF_u1_t    : x_source_get_data(source,((x_inst*)(o)), size * sizeof( u1_t ) ); break;
@@ -4072,22 +4071,22 @@ void x_bcml_push_leaf( x_sink* sink, tp_t t, const x_inst* leaf )
     
     switch( t )
     {
-        case TYPEOF_aware_t : x_sink_push_data(sink,leaf, sizeof( aware_t ) ); break;
-        case TYPEOF_bl_t    : x_sink_push_data(sink,leaf, sizeof( bl_t ) ); break;
-        case TYPEOF_f2_t    : x_sink_push_data(sink,leaf, sizeof( f2_t ) ); break;
-        case TYPEOF_f3_t    : x_sink_push_data(sink,leaf, sizeof( f3_t ) ); break;
-        case TYPEOF_s0_t    : x_sink_push_data(sink,leaf, sizeof( s0_t ) ); break;
-        case TYPEOF_s1_t    : x_sink_push_data(sink,leaf, sizeof( s1_t ) ); break;
-        case TYPEOF_s2_t    : x_sink_push_data(sink,leaf, sizeof( s2_t ) ); break;
-        case TYPEOF_s3_t    : x_sink_push_data(sink,leaf, sizeof( s3_t ) ); break;
+        case TYPEOF_aware_t : x_sink_push_tp(sink,*(((const tp_t*)(leaf)) )); break;
+        case TYPEOF_bl_t    : x_sink_push_bl(sink,*(((const bl_t*)(leaf)) )); break;
+        case TYPEOF_f2_t    : x_sink_push_f2(sink,*(((const f2_t*)(leaf)) )); break;
+        case TYPEOF_f3_t    : x_sink_push_f3(sink,*(((const f3_t*)(leaf)) )); break;
+        case TYPEOF_s0_t    : x_sink_push_s0(sink,*(((const s0_t*)(leaf)) )); break;
+        case TYPEOF_s1_t    : x_sink_push_s1(sink,*(((const s1_t*)(leaf)) )); break;
+        case TYPEOF_s2_t    : x_sink_push_s2(sink,*(((const s2_t*)(leaf)) )); break;
+        case TYPEOF_s3_t    : x_sink_push_s3(sink,*(((const s3_t*)(leaf)) )); break;
         case TYPEOF_sc_t    : break; // c-style constant strings are skipped over
-        case TYPEOF_sz_t    : { s3_t v = (*(((const sz_t*)(leaf)))); x_sink_push_data(sink,((const x_inst*)(&(v))), sizeof( s3_t ) ); } break;
-        case TYPEOF_uz_t    : { u3_t v = (*(((const uz_t*)(leaf)))); x_sink_push_data(sink,((const x_inst*)(&(v))), sizeof( u3_t ) ); } break;
-        case TYPEOF_tp_t    : x_sink_push_data(sink,leaf, sizeof( tp_t ) ); break;
-        case TYPEOF_u0_t    : x_sink_push_data(sink,leaf, sizeof( u0_t ) ); break;
-        case TYPEOF_u1_t    : x_sink_push_data(sink,leaf, sizeof( u1_t ) ); break;
-        case TYPEOF_u2_t    : x_sink_push_data(sink,leaf, sizeof( u2_t ) ); break;
-        case TYPEOF_u3_t    : x_sink_push_data(sink,leaf, sizeof( u3_t ) ); break;
+        case TYPEOF_sz_t    : x_sink_push_sz(sink,*(((const sz_t*)(leaf)) )); break;
+        case TYPEOF_uz_t    : x_sink_push_uz(sink,*(((const uz_t*)(leaf)) )); break;
+        case TYPEOF_tp_t    : x_sink_push_tp(sink,*(((const tp_t*)(leaf)) )); break;
+        case TYPEOF_u0_t    : x_sink_push_u0(sink,*(((const u0_t*)(leaf)) )); break;
+        case TYPEOF_u1_t    : x_sink_push_u1(sink,*(((const u1_t*)(leaf)) )); break;
+        case TYPEOF_u2_t    : x_sink_push_u2(sink,*(((const u2_t*)(leaf)) )); break;
+        case TYPEOF_u3_t    : x_sink_push_u3(sink,*(((const u3_t*)(leaf)) )); break;
         default: ERR_fa( "Cannot convert type '#<sc_t>' into a binary stream.", bnameof( t ) );
     }
 }
@@ -4099,7 +4098,7 @@ void x_bcml_push_leaf_arr( x_sink* sink, tp_t t, const x_inst* leaf, sz_t size )
     switch( t )
     {
         case TYPEOF_aware_t : x_sink_push_data(sink,leaf, size * sizeof( aware_t ) ); break;
-        case TYPEOF_bl_t    : x_sink_push_data(sink,leaf, size * sizeof( bl_t ) ); break;
+        case TYPEOF_bl_t    : { for(sz_t i = 0; i < size; i++ ) x_sink_push_bl(sink,((const bl_t*)(leaf))[ i ] ); } break; // bl is converted
         case TYPEOF_f2_t    : x_sink_push_data(sink,leaf, size * sizeof( f2_t ) ); break;
         case TYPEOF_f3_t    : x_sink_push_data(sink,leaf, size * sizeof( f3_t ) ); break;
         case TYPEOF_s0_t    : x_sink_push_data(sink,leaf, size * sizeof( s0_t ) ); break;
@@ -4107,8 +4106,8 @@ void x_bcml_push_leaf_arr( x_sink* sink, tp_t t, const x_inst* leaf, sz_t size )
         case TYPEOF_s2_t    : x_sink_push_data(sink,leaf, size * sizeof( s2_t ) ); break;
         case TYPEOF_s3_t    : x_sink_push_data(sink,leaf, size * sizeof( s3_t ) ); break;
         case TYPEOF_sc_t    : break; // c-style constant strings are skipped over
-        case TYPEOF_sz_t    : { for(sz_t i = 0; i < size; i++ ) { s3_t v = ((const sz_t*)(leaf))[ i ]; x_sink_push_data(sink,((const x_inst*)(&(v))), sizeof( s3_t ) ); } } break;
-        case TYPEOF_uz_t    : { for(sz_t i = 0; i < size; i++ ) { u3_t v = ((const uz_t*)(leaf))[ i ]; x_sink_push_data(sink,((const x_inst*)(&(v))), sizeof( u3_t ) ); } } break;
+        case TYPEOF_sz_t    : { for(sz_t i = 0; i < size; i++ ) x_sink_push_s3(sink,((const sz_t*)(leaf))[ i ] ); } break; // sz is converted
+        case TYPEOF_uz_t    : { for(sz_t i = 0; i < size; i++ ) x_sink_push_u3(sink,((const uz_t*)(leaf))[ i ] ); } break; // uz is converted
         case TYPEOF_tp_t    : x_sink_push_data(sink,leaf, size * sizeof( tp_t ) ); break;
         case TYPEOF_u0_t    : x_sink_push_data(sink,leaf, size * sizeof( u0_t ) ); break;
         case TYPEOF_u1_t    : x_sink_push_data(sink,leaf, size * sizeof( u1_t ) ); break;
@@ -5195,5 +5194,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x7A895136E869CBD4
-// XOICO_FILE_SIGNATURE 0xCEB98AD3BE169385
+// XOICO_BODY_SIGNATURE 0x9D2CC2813AB0F2BD
+// XOICO_FILE_SIGNATURE 0xBBF9F904FBD8128B

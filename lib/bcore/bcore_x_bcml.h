@@ -200,22 +200,22 @@ func er_t t_parse_leaf_body( m @* o, tp_t t, m x_source* source )
 {
     switch( t )
     {
-        case TYPEOF_aware_t : source.get_data( o, sizeof( aware_t ) ); break;
-        case TYPEOF_bl_t    : source.get_data( o, sizeof( bl_t ) ); break;
-        case TYPEOF_f2_t    : source.get_data( o, sizeof( f2_t ) ); break;
-        case TYPEOF_f3_t    : source.get_data( o, sizeof( f3_t ) ); break;
-        case TYPEOF_s0_t    : source.get_data( o, sizeof( s0_t ) ); break;
-        case TYPEOF_s1_t    : source.get_data( o, sizeof( s1_t ) ); break;
-        case TYPEOF_s2_t    : source.get_data( o, sizeof( s2_t ) ); break;
-        case TYPEOF_s3_t    : source.get_data( o, sizeof( s3_t ) ); break;
+        case TYPEOF_aware_t : o.cast( m tp_t* ).0 = source.get_tp(); break;
+        case TYPEOF_bl_t    : o.cast( m bl_t* ).0 = source.get_bl(); break;
+        case TYPEOF_f2_t    : o.cast( m f2_t* ).0 = source.get_f2(); break;
+        case TYPEOF_f3_t    : o.cast( m f3_t* ).0 = source.get_f3(); break;
+        case TYPEOF_s0_t    : o.cast( m s0_t* ).0 = source.get_s0(); break;
+        case TYPEOF_s1_t    : o.cast( m s1_t* ).0 = source.get_s1(); break;
+        case TYPEOF_s2_t    : o.cast( m s2_t* ).0 = source.get_s2(); break;
+        case TYPEOF_s3_t    : o.cast( m s3_t* ).0 = source.get_s3(); break;
         case TYPEOF_sc_t    : break; // c-style constant strings are skipped over
-        case TYPEOF_sz_t    : { s3_t v = 0; source.get_data( v.1, sizeof( s3_t ) ); o.cast( m sz_t* ).0 = v; } break;
-        case TYPEOF_uz_t    : { u3_t v = 0; source.get_data( v.1, sizeof( u3_t ) ); o.cast( m uz_t* ).0 = v; } break;
-        case TYPEOF_tp_t    : source.get_data( o, sizeof( tp_t ) ); break;
-        case TYPEOF_u0_t    : source.get_data( o, sizeof( u0_t ) ); break;
-        case TYPEOF_u1_t    : source.get_data( o, sizeof( u1_t ) ); break;
-        case TYPEOF_u2_t    : source.get_data( o, sizeof( u2_t ) ); break;
-        case TYPEOF_u3_t    : source.get_data( o, sizeof( u3_t ) ); break;
+        case TYPEOF_sz_t    : o.cast( m sz_t* ).0 = source.get_sz(); break;
+        case TYPEOF_uz_t    : o.cast( m uz_t* ).0 = source.get_uz(); break;
+        case TYPEOF_tp_t    : o.cast( m tp_t* ).0 = source.get_tp(); break;
+        case TYPEOF_u0_t    : o.cast( m u0_t* ).0 = source.get_u0(); break;
+        case TYPEOF_u1_t    : o.cast( m u1_t* ).0 = source.get_u1(); break;
+        case TYPEOF_u2_t    : o.cast( m u2_t* ).0 = source.get_u2(); break;
+        case TYPEOF_u3_t    : o.cast( m u3_t* ).0 = source.get_u3(); break;
         default: ERR_fa( "Cannot convert type '#<sc_t>' from a binary stream.", bnameof( t ) );
     }
     = 0;
@@ -228,7 +228,7 @@ func er_t t_parse_leaf_arr_body( m @* o, tp_t t, sz_t size, m x_source* source )
     switch( t )
     {
         case TYPEOF_aware_t : source.get_data( o, size * sizeof( aware_t ) ); break;
-        case TYPEOF_bl_t    : source.get_data( o, size * sizeof( bl_t ) ); break;
+        case TYPEOF_bl_t    : { for( sz_t i = 0; i < size; i++ ) { o.cast( m bl_t* )[ i ] = source.get_bl(); } } break; // bl is converted
         case TYPEOF_f2_t    : source.get_data( o, size * sizeof( f2_t ) ); break;
         case TYPEOF_f3_t    : source.get_data( o, size * sizeof( f3_t ) ); break;
         case TYPEOF_s0_t    : source.get_data( o, size * sizeof( s0_t ) ); break;
@@ -236,8 +236,8 @@ func er_t t_parse_leaf_arr_body( m @* o, tp_t t, sz_t size, m x_source* source )
         case TYPEOF_s2_t    : source.get_data( o, size * sizeof( s2_t ) ); break;
         case TYPEOF_s3_t    : source.get_data( o, size * sizeof( s3_t ) ); break;
         case TYPEOF_sc_t    : break; // c-style constant strings are skipped over
-        case TYPEOF_sz_t    : { for( sz_t i = 0; i < size; i++ ) { s3_t v = 0; source.get_data( v.1, sizeof( s3_t ) ); o.cast( m sz_t* )[ i ] = v; } } break;
-        case TYPEOF_uz_t    : { for( sz_t i = 0; i < size; i++ ) { u3_t v = 0; source.get_data( v.1, sizeof( u3_t ) ); o.cast( m uz_t* )[ i ] = v; } } break;
+        case TYPEOF_sz_t    : { for( sz_t i = 0; i < size; i++ ) { o.cast( m sz_t* )[ i ] = source.get_sz(); } } break; // sz is converted
+        case TYPEOF_uz_t    : { for( sz_t i = 0; i < size; i++ ) { o.cast( m uz_t* )[ i ] = source.get_uz(); } } break; // uz is converted
         case TYPEOF_tp_t    : source.get_data( o, size * sizeof( tp_t ) ); break;
         case TYPEOF_u0_t    : source.get_data( o, size * sizeof( u0_t ) ); break;
         case TYPEOF_u1_t    : source.get_data( o, size * sizeof( u1_t ) ); break;
@@ -330,22 +330,22 @@ func void push_leaf( m x_sink* sink, tp_t t, x_inst* leaf )
 {
     switch( t )
     {
-        case TYPEOF_aware_t : sink.push_data( leaf, sizeof( aware_t ) ); break;
-        case TYPEOF_bl_t    : sink.push_data( leaf, sizeof( bl_t ) ); break;
-        case TYPEOF_f2_t    : sink.push_data( leaf, sizeof( f2_t ) ); break;
-        case TYPEOF_f3_t    : sink.push_data( leaf, sizeof( f3_t ) ); break;
-        case TYPEOF_s0_t    : sink.push_data( leaf, sizeof( s0_t ) ); break;
-        case TYPEOF_s1_t    : sink.push_data( leaf, sizeof( s1_t ) ); break;
-        case TYPEOF_s2_t    : sink.push_data( leaf, sizeof( s2_t ) ); break;
-        case TYPEOF_s3_t    : sink.push_data( leaf, sizeof( s3_t ) ); break;
+        case TYPEOF_aware_t : sink.push_tp( leaf.cast( tp_t* ) ); break;
+        case TYPEOF_bl_t    : sink.push_bl( leaf.cast( bl_t* ) ); break;
+        case TYPEOF_f2_t    : sink.push_f2( leaf.cast( f2_t* ) ); break;
+        case TYPEOF_f3_t    : sink.push_f3( leaf.cast( f3_t* ) ); break;
+        case TYPEOF_s0_t    : sink.push_s0( leaf.cast( s0_t* ) ); break;
+        case TYPEOF_s1_t    : sink.push_s1( leaf.cast( s1_t* ) ); break;
+        case TYPEOF_s2_t    : sink.push_s2( leaf.cast( s2_t* ) ); break;
+        case TYPEOF_s3_t    : sink.push_s3( leaf.cast( s3_t* ) ); break;
         case TYPEOF_sc_t    : break; // c-style constant strings are skipped over
-        case TYPEOF_sz_t    : { s3_t v = leaf.cast( sz_t* ).0; sink.push_data( v, sizeof( s3_t ) ); } break;
-        case TYPEOF_uz_t    : { u3_t v = leaf.cast( uz_t* ).0; sink.push_data( v, sizeof( u3_t ) ); } break;
-        case TYPEOF_tp_t    : sink.push_data( leaf, sizeof( tp_t ) ); break;
-        case TYPEOF_u0_t    : sink.push_data( leaf, sizeof( u0_t ) ); break;
-        case TYPEOF_u1_t    : sink.push_data( leaf, sizeof( u1_t ) ); break;
-        case TYPEOF_u2_t    : sink.push_data( leaf, sizeof( u2_t ) ); break;
-        case TYPEOF_u3_t    : sink.push_data( leaf, sizeof( u3_t ) ); break;
+        case TYPEOF_sz_t    : sink.push_sz( leaf.cast( sz_t* ) ); break;
+        case TYPEOF_uz_t    : sink.push_uz( leaf.cast( uz_t* ) ); break;
+        case TYPEOF_tp_t    : sink.push_tp( leaf.cast( tp_t* ) ); break;
+        case TYPEOF_u0_t    : sink.push_u0( leaf.cast( u0_t* ) ); break;
+        case TYPEOF_u1_t    : sink.push_u1( leaf.cast( u1_t* ) ); break;
+        case TYPEOF_u2_t    : sink.push_u2( leaf.cast( u2_t* ) ); break;
+        case TYPEOF_u3_t    : sink.push_u3( leaf.cast( u3_t* ) ); break;
         default: ERR_fa( "Cannot convert type '#<sc_t>' into a binary stream.", bnameof( t ) );
     }
 }
@@ -355,7 +355,7 @@ func void push_leaf_arr( m x_sink* sink, tp_t t, x_inst* leaf, sz_t size )
     switch( t )
     {
         case TYPEOF_aware_t : sink.push_data( leaf, size * sizeof( aware_t ) ); break;
-        case TYPEOF_bl_t    : sink.push_data( leaf, size * sizeof( bl_t ) ); break;
+        case TYPEOF_bl_t    : { for( sz_t i = 0; i < size; i++ ) sink.push_bl( leaf.cast( bl_t* )[ i ] ); } break; // bl is converted
         case TYPEOF_f2_t    : sink.push_data( leaf, size * sizeof( f2_t ) ); break;
         case TYPEOF_f3_t    : sink.push_data( leaf, size * sizeof( f3_t ) ); break;
         case TYPEOF_s0_t    : sink.push_data( leaf, size * sizeof( s0_t ) ); break;
@@ -363,8 +363,8 @@ func void push_leaf_arr( m x_sink* sink, tp_t t, x_inst* leaf, sz_t size )
         case TYPEOF_s2_t    : sink.push_data( leaf, size * sizeof( s2_t ) ); break;
         case TYPEOF_s3_t    : sink.push_data( leaf, size * sizeof( s3_t ) ); break;
         case TYPEOF_sc_t    : break; // c-style constant strings are skipped over
-        case TYPEOF_sz_t    : { for( sz_t i = 0; i < size; i++ ) { s3_t v = leaf.cast( sz_t* )[ i ]; sink.push_data( v, sizeof( s3_t ) ); } } break;
-        case TYPEOF_uz_t    : { for( sz_t i = 0; i < size; i++ ) { u3_t v = leaf.cast( uz_t* )[ i ]; sink.push_data( v, sizeof( u3_t ) ); } } break;
+        case TYPEOF_sz_t    : { for( sz_t i = 0; i < size; i++ ) sink.push_s3( leaf.cast( sz_t* )[ i ] ); } break; // sz is converted
+        case TYPEOF_uz_t    : { for( sz_t i = 0; i < size; i++ ) sink.push_u3( leaf.cast( uz_t* )[ i ] ); } break; // uz is converted
         case TYPEOF_tp_t    : sink.push_data( leaf, size * sizeof( tp_t ) ); break;
         case TYPEOF_u0_t    : sink.push_data( leaf, size * sizeof( u0_t ) ); break;
         case TYPEOF_u1_t    : sink.push_data( leaf, size * sizeof( u1_t ) ); break;

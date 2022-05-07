@@ -290,7 +290,7 @@ func (:bit_buffer_s) get_hash
 func (:bit_buffer_s) x_bcml.bcml_body_to_sink
 {
     u3_t bits = o.bits;
-    sink.push_data( bits, sizeof( u3_t ) );
+    sink.push_u3( bits );
     sz_t size = ( bits / 8 ) + ( ( bits % 8 ) ? 1 : 0 );
     sink.push_data( o.data, size * sizeof( u0_t ) );
 }
@@ -299,8 +299,7 @@ func (:bit_buffer_s) x_bcml.bcml_body_to_sink
 
 func (:bit_buffer_s) x_bcml.bcml_body_from_source
 {
-    u3_t bits = 0;
-    source.get_data( bits.1, sizeof( u3_t ) );
+    u3_t bits = source.get_u3();
     sz_t size = ( bits / 8 ) + ( ( bits % 8 ) ? 1 : 0 );
     o.set_size( size );
     o.bits = bits;

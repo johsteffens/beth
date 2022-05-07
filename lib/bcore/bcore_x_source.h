@@ -67,10 +67,42 @@ func bl_t eos( m @*o ) = o.cast( m bcore_source* ).eos();
  */
 func sz_t get_data(     m @*o, m obliv x_inst* data, sz_t size ) = o.cast( m bcore_source* ).get_data( data, size );
 func sz_t inspect_data( m @*o, m obliv x_inst* data, sz_t size ) = o.cast( m bcore_source* ).inspect_data( data, size );
-func u0_t get_u0(       m @*o ) = o.cast( m bcore_source* ).get_u0();
-func u0_t inspect_u0(   c @*o ) = o.cast( m bcore_source* ).inspect_u0();
-func char get_char(     c @*o ) = o.cast( m bcore_source* ).get_char();
-func char inspect_char( c @*o ) = o.cast( m bcore_source* ).inspect_char();
+func char get_char(     m @*o ) = o.cast( m bcore_source* ).get_char();
+func char inspect_char( m @*o ) = o.cast( m bcore_source* ).inspect_char();
+
+func s3_t get_s3( m @*o ) { s3_t v = 0; o.get_data( v.1, sizeof( v ) ); = v; }
+func s2_t get_s2( m @*o ) { s2_t v = 0; o.get_data( v.1, sizeof( v ) ); = v; }
+func s1_t get_s1( m @*o ) { s1_t v = 0; o.get_data( v.1, sizeof( v ) ); = v; }
+func s0_t get_s0( m @*o ) { s0_t v = 0; o.get_data( v.1, sizeof( v ) ); = v; }
+func u3_t get_u3( m @*o ) { u3_t v = 0; o.get_data( v.1, sizeof( v ) ); = v; }
+func u2_t get_u2( m @*o ) { u2_t v = 0; o.get_data( v.1, sizeof( v ) ); = v; }
+func u1_t get_u1( m @*o ) { u1_t v = 0; o.get_data( v.1, sizeof( v ) ); = v; }
+func u0_t get_u0( m @*o ) = o.cast( m bcore_source* ).get_u0();
+func f3_t get_f3( m @*o ) { f3_t v = 0; o.get_data( v.1, sizeof( v ) ); = v; }
+func f2_t get_f2( m @*o ) { f2_t v = 0; o.get_data( v.1, sizeof( v ) ); = v; }
+func bl_t get_bl( m @*o ) = o.cast( m bcore_source* ).get_u0();  // bl treated as u0 to avoid cross platform inconsistencies
+func tp_t get_tp( m @*o ) { tp_t v = 0; o.get_data( v.1, sizeof( v ) ); = v; }
+
+// sz, uz are stored as s3,u3 to avoid cross platform inconsistencies
+func sz_t get_sz( m @*o ) { /*!must be s3*/ s3_t v = 0; o.get_data( v.1, sizeof( v ) ); = v; }
+func uz_t get_uz( m @*o ) { /*!must be u3*/ u3_t v = 0; o.get_data( v.1, sizeof( v ) ); = v; }
+
+func s3_t inspect_s3( m @*o ) { s3_t v = 0; o.inspect_data( v.1, sizeof( v ) ); = v; }
+func s2_t inspect_s2( m @*o ) { s2_t v = 0; o.inspect_data( v.1, sizeof( v ) ); = v; }
+func s1_t inspect_s1( m @*o ) { s1_t v = 0; o.inspect_data( v.1, sizeof( v ) ); = v; }
+func s0_t inspect_s0( m @*o ) { s0_t v = 0; o.inspect_data( v.1, sizeof( v ) ); = v; }
+func u3_t inspect_u3( m @*o ) { u3_t v = 0; o.inspect_data( v.1, sizeof( v ) ); = v; }
+func u2_t inspect_u2( m @*o ) { u2_t v = 0; o.inspect_data( v.1, sizeof( v ) ); = v; }
+func u1_t inspect_u1( m @*o ) { u1_t v = 0; o.inspect_data( v.1, sizeof( v ) ); = v; }
+func u0_t inspect_u0( m @*o ) = o.cast( m bcore_source* ).inspect_u0();
+func f3_t inspect_f3( m @*o ) { f3_t v = 0; o.inspect_data( v.1, sizeof( v ) ); = v; }
+func f2_t inspect_f2( m @*o ) { f2_t v = 0; o.inspect_data( v.1, sizeof( v ) ); = v; }
+func bl_t inspect_bl( m @*o ) { bl_t v = 0; o.inspect_data( v.1, sizeof( v ) ); = v; }
+func tp_t inspect_tp( m @*o ) { tp_t v = 0; o.inspect_data( v.1, sizeof( v ) ); = v; }
+
+// sz, uz are stored as s3,u3 to allow platform independence
+func sz_t inspect_sz( m @*o ) { /*!must be s3*/ s3_t v = 0; o.inspect_data( v.1, sizeof( v ) ); = v; }
+func uz_t inspect_uz( m @*o ) { /*!must be u3*/ u3_t v = 0; o.inspect_data( v.1, sizeof( v ) ); = v; }
 
 //----------------------------------------------------------------------------------------------------------------------
 

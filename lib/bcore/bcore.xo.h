@@ -1,4 +1,4 @@
-//  Last update: 2022-05-05T21:29:26Z
+//  Last update: 2022-05-06T11:18:09Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -166,10 +166,36 @@
   static inline bl_t x_source_eos( x_source* o ); \
   static inline sz_t x_source_get_data( x_source* o, x_inst* data, sz_t size ); \
   static inline sz_t x_source_inspect_data( x_source* o, x_inst* data, sz_t size ); \
+  static inline char x_source_get_char( x_source* o ); \
+  static inline char x_source_inspect_char( x_source* o ); \
+  static inline s3_t x_source_get_s3( x_source* o ); \
+  static inline s2_t x_source_get_s2( x_source* o ); \
+  static inline s1_t x_source_get_s1( x_source* o ); \
+  static inline s0_t x_source_get_s0( x_source* o ); \
+  static inline u3_t x_source_get_u3( x_source* o ); \
+  static inline u2_t x_source_get_u2( x_source* o ); \
+  static inline u1_t x_source_get_u1( x_source* o ); \
   static inline u0_t x_source_get_u0( x_source* o ); \
-  static inline u0_t x_source_inspect_u0( const x_source* o ); \
-  static inline char x_source_get_char( const x_source* o ); \
-  static inline char x_source_inspect_char( const x_source* o ); \
+  static inline f3_t x_source_get_f3( x_source* o ); \
+  static inline f2_t x_source_get_f2( x_source* o ); \
+  static inline bl_t x_source_get_bl( x_source* o ); \
+  static inline tp_t x_source_get_tp( x_source* o ); \
+  static inline sz_t x_source_get_sz( x_source* o ); \
+  static inline uz_t x_source_get_uz( x_source* o ); \
+  static inline s3_t x_source_inspect_s3( x_source* o ); \
+  static inline s2_t x_source_inspect_s2( x_source* o ); \
+  static inline s1_t x_source_inspect_s1( x_source* o ); \
+  static inline s0_t x_source_inspect_s0( x_source* o ); \
+  static inline u3_t x_source_inspect_u3( x_source* o ); \
+  static inline u2_t x_source_inspect_u2( x_source* o ); \
+  static inline u1_t x_source_inspect_u1( x_source* o ); \
+  static inline u0_t x_source_inspect_u0( x_source* o ); \
+  static inline f3_t x_source_inspect_f3( x_source* o ); \
+  static inline f2_t x_source_inspect_f2( x_source* o ); \
+  static inline bl_t x_source_inspect_bl( x_source* o ); \
+  static inline tp_t x_source_inspect_tp( x_source* o ); \
+  static inline sz_t x_source_inspect_sz( x_source* o ); \
+  static inline uz_t x_source_inspect_uz( x_source* o ); \
   static inline s3_t x_source_get_index( const x_source* o ); \
   static inline void x_source_set_index( x_source* o, s3_t index ); \
   static inline bl_t x_source_parse_bl( x_source* o, sc_t format ); \
@@ -198,10 +224,36 @@
   static inline bl_t x_source_eos( x_source* o ){return  bcore_source_a_eos(((bcore_source*)(o)));} \
   static inline sz_t x_source_get_data( x_source* o, x_inst* data, sz_t size ){return  bcore_source_a_get_data(((bcore_source*)(o)),data, size );} \
   static inline sz_t x_source_inspect_data( x_source* o, x_inst* data, sz_t size ){return  bcore_source_a_inspect_data(((bcore_source*)(o)),data, size );} \
+  static inline char x_source_get_char( x_source* o ){return  bcore_source_a_get_char(((bcore_source*)(o)));} \
+  static inline char x_source_inspect_char( x_source* o ){return  bcore_source_a_inspect_char(((bcore_source*)(o)));} \
+  static inline s3_t x_source_get_s3( x_source* o ){ s3_t v = 0; x_source_get_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline s2_t x_source_get_s2( x_source* o ){ s2_t v = 0; x_source_get_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline s1_t x_source_get_s1( x_source* o ){ s1_t v = 0; x_source_get_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline s0_t x_source_get_s0( x_source* o ){ s0_t v = 0; x_source_get_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline u3_t x_source_get_u3( x_source* o ){ u3_t v = 0; x_source_get_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline u2_t x_source_get_u2( x_source* o ){ u2_t v = 0; x_source_get_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline u1_t x_source_get_u1( x_source* o ){ u1_t v = 0; x_source_get_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
   static inline u0_t x_source_get_u0( x_source* o ){return  bcore_source_a_get_u0(((bcore_source*)(o)));} \
-  static inline u0_t x_source_inspect_u0( const x_source* o ){return  bcore_source_a_inspect_u0(((bcore_source*)(o)));} \
-  static inline char x_source_get_char( const x_source* o ){return  bcore_source_a_get_char(((bcore_source*)(o)));} \
-  static inline char x_source_inspect_char( const x_source* o ){return  bcore_source_a_inspect_char(((bcore_source*)(o)));} \
+  static inline f3_t x_source_get_f3( x_source* o ){ f3_t v = 0; x_source_get_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline f2_t x_source_get_f2( x_source* o ){ f2_t v = 0; x_source_get_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline bl_t x_source_get_bl( x_source* o ){return  bcore_source_a_get_u0(((bcore_source*)(o)));} \
+  static inline tp_t x_source_get_tp( x_source* o ){ tp_t v = 0; x_source_get_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline sz_t x_source_get_sz( x_source* o ){ /*!must be s3*/ s3_t v = 0; x_source_get_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline uz_t x_source_get_uz( x_source* o ){ /*!must be u3*/ u3_t v = 0; x_source_get_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline s3_t x_source_inspect_s3( x_source* o ){ s3_t v = 0; x_source_inspect_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline s2_t x_source_inspect_s2( x_source* o ){ s2_t v = 0; x_source_inspect_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline s1_t x_source_inspect_s1( x_source* o ){ s1_t v = 0; x_source_inspect_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline s0_t x_source_inspect_s0( x_source* o ){ s0_t v = 0; x_source_inspect_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline u3_t x_source_inspect_u3( x_source* o ){ u3_t v = 0; x_source_inspect_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline u2_t x_source_inspect_u2( x_source* o ){ u2_t v = 0; x_source_inspect_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline u1_t x_source_inspect_u1( x_source* o ){ u1_t v = 0; x_source_inspect_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline u0_t x_source_inspect_u0( x_source* o ){return  bcore_source_a_inspect_u0(((bcore_source*)(o)));} \
+  static inline f3_t x_source_inspect_f3( x_source* o ){ f3_t v = 0; x_source_inspect_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline f2_t x_source_inspect_f2( x_source* o ){ f2_t v = 0; x_source_inspect_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline bl_t x_source_inspect_bl( x_source* o ){ bl_t v = 0; x_source_inspect_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline tp_t x_source_inspect_tp( x_source* o ){ tp_t v = 0; x_source_inspect_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline sz_t x_source_inspect_sz( x_source* o ){ /*!must be s3*/ s3_t v = 0; x_source_inspect_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
+  static inline uz_t x_source_inspect_uz( x_source* o ){ /*!must be u3*/ u3_t v = 0; x_source_inspect_data(o,((x_inst*)((&(v)))), sizeof( v ) ); return  v;} \
   static inline s3_t x_source_get_index( const x_source* o ){return  bcore_source_a_get_index(((const bcore_source*)(o)));} \
   static inline void x_source_set_index( x_source* o, s3_t index ){bcore_source_a_set_index(((bcore_source*)(o)),index );} \
   static inline bl_t x_source_parse_bl( x_source* o, sc_t format ){return  bcore_source_a_parse_bl(((bcore_source*)(o)),format );} \
@@ -227,7 +279,6 @@
   BCORE_FORWARD_OBJECT( x_sink ); \
   static inline x_sink* x_sink_create_from_file( sc_t path ); \
   static inline sz_t x_sink_push_data( x_sink* o, const x_inst* data, sz_t size ); \
-  static inline x_sink* x_sink_push_u0( x_sink* o, u0_t u ); \
   static inline x_sink* x_sink_push_char( x_sink* o, char c ); \
   static inline x_sink* x_sink_push_sc( x_sink* o, sc_t sc ); \
   static inline x_sink* x_sink_push_st( x_sink* o, const st_s* st ); \
@@ -235,6 +286,20 @@
   static inline x_sink* x_sink_push_fv( x_sink* o, sc_t format, va_list args ); \
   static inline x_sink* x_sink_push_fa( x_sink* o, sc_t format, ... ); \
   static inline x_sink* x_sink_flush( x_sink* o ); \
+  static inline x_sink* x_sink_push_s3( x_sink* o, s3_t v ); \
+  static inline x_sink* x_sink_push_s2( x_sink* o, s2_t v ); \
+  static inline x_sink* x_sink_push_s1( x_sink* o, s1_t v ); \
+  static inline x_sink* x_sink_push_s0( x_sink* o, s0_t v ); \
+  static inline x_sink* x_sink_push_u3( x_sink* o, u3_t v ); \
+  static inline x_sink* x_sink_push_u2( x_sink* o, u2_t v ); \
+  static inline x_sink* x_sink_push_u1( x_sink* o, u1_t v ); \
+  static inline x_sink* x_sink_push_u0( x_sink* o, u0_t v ); \
+  static inline x_sink* x_sink_push_f3( x_sink* o, f3_t v ); \
+  static inline x_sink* x_sink_push_f2( x_sink* o, f2_t v ); \
+  static inline x_sink* x_sink_push_bl( x_sink* o, bl_t v ); \
+  static inline x_sink* x_sink_push_tp( x_sink* o, tp_t v ); \
+  static inline x_sink* x_sink_push_sz( x_sink* o, sz_t v ); \
+  static inline x_sink* x_sink_push_uz( x_sink* o, uz_t v ); \
   static inline x_sink* x_sink_stdout( void ); \
   static inline x_sink* x_sink_stderr( void ); \
   XOILA_DECLARE_SPECT( x_sink ) \
@@ -244,7 +309,6 @@
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_sink ) \
   static inline x_sink* x_sink_create_from_file( sc_t path ){return ((x_sink*)( bcore_file_try_open_sink(path )));} \
   static inline sz_t x_sink_push_data( x_sink* o, const x_inst* data, sz_t size ){return  bcore_sink_a_push_data(((bcore_sink*)(o)),data, size );} \
-  static inline x_sink* x_sink_push_u0( x_sink* o, u0_t u ){return ((x_sink*)( bcore_sink_a_push_u0(((bcore_sink*)(o)),u )));} \
   static inline x_sink* x_sink_push_char( x_sink* o, char c ){return ((x_sink*)( bcore_sink_a_push_char(((bcore_sink*)(o)),c )));} \
   static inline x_sink* x_sink_push_sc( x_sink* o, sc_t sc ){return ((x_sink*)( bcore_sink_a_push_sc(((bcore_sink*)(o)),sc )));} \
   static inline x_sink* x_sink_push_st( x_sink* o, const st_s* st ){return ((x_sink*)( bcore_sink_a_push_string(((bcore_sink*)(o)),st )));} \
@@ -252,6 +316,20 @@
   static inline x_sink* x_sink_push_fv( x_sink* o, sc_t format, va_list args ){return ((x_sink*)( bcore_sink_a_push_fv(((bcore_sink*)(o)),format, args )));} \
   static inline x_sink* x_sink_push_fa( x_sink* o, sc_t format, ... ){ va_list a; va_start( a, format ); x_sink_push_fv(o,format, a ); va_end( a ); return o;} \
   static inline x_sink* x_sink_flush( x_sink* o ){return ((x_sink*)( bcore_sink_a_flush(((bcore_sink*)(o)))));} \
+  static inline x_sink* x_sink_push_s3( x_sink* o, s3_t v ){x_sink_push_data(o,((const x_inst*)((&(v)))), sizeof( v ) );return o;} \
+  static inline x_sink* x_sink_push_s2( x_sink* o, s2_t v ){x_sink_push_data(o,((const x_inst*)((&(v)))), sizeof( v ) );return o;} \
+  static inline x_sink* x_sink_push_s1( x_sink* o, s1_t v ){x_sink_push_data(o,((const x_inst*)((&(v)))), sizeof( v ) );return o;} \
+  static inline x_sink* x_sink_push_s0( x_sink* o, s0_t v ){x_sink_push_data(o,((const x_inst*)((&(v)))), sizeof( v ) );return o;} \
+  static inline x_sink* x_sink_push_u3( x_sink* o, u3_t v ){x_sink_push_data(o,((const x_inst*)((&(v)))), sizeof( v ) );return o;} \
+  static inline x_sink* x_sink_push_u2( x_sink* o, u2_t v ){x_sink_push_data(o,((const x_inst*)((&(v)))), sizeof( v ) );return o;} \
+  static inline x_sink* x_sink_push_u1( x_sink* o, u1_t v ){x_sink_push_data(o,((const x_inst*)((&(v)))), sizeof( v ) );return o;} \
+  static inline x_sink* x_sink_push_u0( x_sink* o, u0_t v ){return ((x_sink*)( bcore_sink_a_push_u0(((bcore_sink*)(o)),v )));} \
+  static inline x_sink* x_sink_push_f3( x_sink* o, f3_t v ){x_sink_push_data(o,((const x_inst*)((&(v)))), sizeof( v ) );return o;} \
+  static inline x_sink* x_sink_push_f2( x_sink* o, f2_t v ){x_sink_push_data(o,((const x_inst*)((&(v)))), sizeof( v ) );return o;} \
+  static inline x_sink* x_sink_push_bl( x_sink* o, bl_t v ){return ((x_sink*)( bcore_sink_a_push_u0(((bcore_sink*)(o)),v )));} \
+  static inline x_sink* x_sink_push_tp( x_sink* o, tp_t v ){x_sink_push_data(o,((const x_inst*)((&(v)))), sizeof( v ) );return o;} \
+  static inline x_sink* x_sink_push_sz( x_sink* o, sz_t v ){x_sink_push_s3(o,v );return o;} \
+  static inline x_sink* x_sink_push_uz( x_sink* o, uz_t v ){x_sink_push_u3(o,v );return o;} \
   static inline x_sink* x_sink_stdout( void ){return  ( x_sink* )BCORE_STDOUT;} \
   static inline x_sink* x_sink_stderr( void ){return  ( x_sink* )BCORE_STDERR;}
 
@@ -2688,5 +2766,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xBA7122077CC66957
-// XOICO_FILE_SIGNATURE 0xC72383A054DD016E
+// XOICO_BODY_SIGNATURE 0x6321C262B277B2F4
+// XOICO_FILE_SIGNATURE 0x94C68EEE2517C5FB
