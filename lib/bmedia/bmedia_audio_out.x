@@ -263,7 +263,7 @@ func (:s) stream_play_sequence
     {
         = bcore_error_push_fa( TYPEOF_general_error, "stream_play_sequence: Stream channels (#<sz_t>) and audio channels (#<sz_t>) mismatch.\n", sequence.channels, o.channels );
     }
-    for( sz_t i = 0; i < sequence.size(); i++ ) o.stream_play_buffer( sequence.buffer_c( i ) );
+    for( sz_t i = 0; i < sequence.size(); i++ ) o.stream_play_buffer( sequence.c_buffer( i ) );
     = 0;
 }
 
@@ -415,7 +415,7 @@ func (:player_s) play
 
     while( frames > 0 )
     {
-        m bmedia_audio_buffer_s* buf = o.sequence.last_m();
+        m bmedia_audio_buffer_s* buf = o.sequence.m_last();
         if( !buf || buf.size == buf.space )
         {
             buf = o.sequence.push_empty_buffer().set_space( buf_space );
@@ -452,7 +452,7 @@ func (:player_s) play_sequence
         o.audio.setup();
         o.mutex.unlock();
     }
-    for( sz_t i = 0; i < sequence.size(); i++ ) o.play_buffer( sequence.buffer_c( i ) );
+    for( sz_t i = 0; i < sequence.size(); i++ ) o.play_buffer( sequence.c_buffer( i ) );
     = 0;
 }
 

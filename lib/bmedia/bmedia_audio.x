@@ -100,7 +100,7 @@ func (:sequence_s) setup_diff
 func (:sequence_s) setup_fork_buffers
 {
     o.setup( src.channels, src.rate );
-    for( sz_t i = 0; i < src.size(); i++ ) o.push_buffer_d( src.buffer_m( i ).fork() );
+    for( sz_t i = 0; i < src.size(); i++ ) o.push_buffer_d( src.m_buffer( i ).fork() );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -129,7 +129,7 @@ func (:sequence_s) push_buffer_d
 func (:sequence_s) sum_buffer_size
 {
     sz_t sum = 0;
-    for( sz_t i = 0; i < o.size(); i++ ) sum += o.buffer_c( i ).size;
+    for( sz_t i = 0; i < o.size(); i++ ) sum += o.c_buffer( i ).size;
     = sum;
 }
 
@@ -171,7 +171,7 @@ func (:sequence_s) wav_to_sink
 
     for( sz_t i = 0; i < o.size(); i++ )
     {
-        :buffer_s* buffer = o.buffer_c( i );
+        :buffer_s* buffer = o.c_buffer( i );
         sink.push_data( buffer.data, sizeof( s1_t ) * buffer.size );
     }
 
@@ -380,7 +380,7 @@ func (:sequence_iterator_s) move
     while( frames_left > 0 )
     {
         if( o.eos ) = o;
-        :buffer_s* buffer = o.sequence.buffer_c( o.buffer_index );
+        :buffer_s* buffer = o.sequence.c_buffer( o.buffer_index );
         sz_t bsize = buffer.size % o.channels;
 
         if( bsize - o.frame_index > frames_left )
@@ -406,7 +406,7 @@ func (:sequence_iterator_s) move
         {
             if( o.buffer_index == 0 ) = o;
             o.buffer_index--;
-            :buffer_s* buffer = o.sequence.buffer_c( o.buffer_index );
+            :buffer_s* buffer = o.sequence.c_buffer( o.buffer_index );
             sz_t bsize = buffer.size % o.channels;
             o.frame_index = bsize;
             o.eos = false;
@@ -447,7 +447,7 @@ func (:sequence_iterator_s) get_frames
     {
         if( !o.eos )
         {
-            :buffer_s* buffer = o.sequence.buffer_c( o.buffer_index );
+            :buffer_s* buffer = o.sequence.c_buffer( o.buffer_index );
             sz_t buf_size = buffer.size - ( buffer.size % o.channels );
 
             sz_t buf_start = o.frame_index * o.channels;
@@ -506,7 +506,7 @@ func (:sequence_indexer_s) setup
     o.sequence = sequence;
     o.channels = sequence.channels;
     bcore_arr_s3_s^ arr.set_size( sequence.size() );
-    foreach( m$* e in arr ) e.0 = sequence.buffer_c( __i ).size / o.channels;
+    foreach( m$* e in arr ) e.0 = sequence.c_buffer( __i ).size / o.channels;
     o.indexer.setup( arr );
     o.size = o.indexer.size;
     = o;
@@ -530,7 +530,7 @@ func (:sequence_indexer_s) get_data
 
     while( frames > 0 && o.indexer.get_io( index, io ) )
     {
-        s1_t* o_data = o.sequence.buffer_c( io.i ).data + io.o * o.channels;
+        s1_t* o_data = o.sequence.c_buffer( io.i ).data + io.o * o.channels;
         sz_t size = o.indexer.cs_arr.[ io.i ].s - io.o;
         size = sz_min( size, frames );
         bcore_memcpy( data, o_data, sizeof( s1_t ) * size * o.channels );
@@ -560,7 +560,7 @@ func (:sequence_indexer_s) set_data
 
     while( frames > 0 && o.indexer.get_io( index, io ) )
     {
-        m s1_t* o_data = o.sequence.buffer_m( io.i ).data + io.o * o.channels;
+        m s1_t* o_data = o.sequence.m_buffer( io.i ).data + io.o * o.channels;
         sz_t size = o.indexer.cs_arr.[ io.i ].s - io.o;
         size = sz_min( size, frames );
         bcore_memcpy( o_data, data, sizeof( s1_t ) * size * o.channels );

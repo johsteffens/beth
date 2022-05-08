@@ -165,12 +165,12 @@ stamp :sequence_s x_deque trans(TE :buffer_s)
     func o setup_fork_buffers( m@* o, m @* src );
 
     /// Access function: Returns NULL if out of range
-    func m :buffer_s* buffer_m( m@* o, sz_t index ) = ( index >= 0 && index < o.deque.size ) ? o.m_get( index ) : NULL;
-    func c :buffer_s* buffer_c( c@* o, sz_t index ) = o.cast( m@* ).buffer_m( index );
-    func m :buffer_s* first_m( m@* o ) = o.buffer_m( 0 );
-    func c :buffer_s* first_c( m@* o ) = o.cast( m@* ).first_m();
-    func m :buffer_s* last_m( m@* o )  = o.buffer_m( o.size() - 1 );
-    func c :buffer_s* last_c( m@* o )  = o.cast( m@* ).last_m();
+    func m :buffer_s* m_buffer( m@* o, sz_t index ) = ( index >= 0 && index < o.deque.size ) ? o.m_get( index ) : NULL;
+    func c :buffer_s* c_buffer( c@* o, sz_t index ) = o.cast( m@* ).m_buffer( index );
+    func m :buffer_s* m_first ( m@* o ) = o.m_buffer( 0 );
+    func c :buffer_s* c_first ( c@* o ) = o.cast( m@* ).m_first();
+    func m :buffer_s* m_last  ( m@* o ) = o.m_buffer( o.size() - 1 );
+    func c :buffer_s* c_last  ( c@* o ) = o.cast( m@* ).m_last();
 
     /// Appends new element to sequence
     func m :buffer_s* push_buffer_d( m@* o, d :buffer_s* buffer );
@@ -195,27 +195,27 @@ stamp :sequence_s x_deque trans(TE :buffer_s)
     func f3_t energy( @* o )
     {
         f3_t sum = 0;
-        for( sz_t i = 0; i < o.size(); i++ ) sum += o.buffer_c( i ).energy();
+        for( sz_t i = 0; i < o.size(); i++ ) sum += o.c_buffer( i ).energy();
         = sum;
     }
 
     func f3_t sum( @* o )
     {
         f3_t sum = 0;
-        for( sz_t i = 0; i < o.size(); i++ ) sum += o.buffer_c( i ).sum();
+        for( sz_t i = 0; i < o.size(); i++ ) sum += o.c_buffer( i ).sum();
         = sum;
     }
 
     func f3_t max_abs( @* o )
     {
         f3_t max_abs = 0;
-        for( sz_t i = 0; i < o.size(); i++ ) max_abs = f3_max( max_abs, o.buffer_c( i ).max_abs() );
+        for( sz_t i = 0; i < o.size(); i++ ) max_abs = f3_max( max_abs, o.c_buffer( i ).max_abs() );
         = max_abs;
     }
 
     func void gain( m@* o, f3_t factor )
     {
-        for( sz_t i = 0; i < o.size(); i++ ) o.buffer_m( i ).gain( factor );
+        for( sz_t i = 0; i < o.size(); i++ ) o.m_buffer( i ).gain( factor );
     }
 
     /// returns an iterator for sequence
