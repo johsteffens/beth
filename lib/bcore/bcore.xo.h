@@ -1,4 +1,4 @@
-//  Last update: 2022-05-06T11:18:09Z
+//  Last update: 2022-05-07T18:51:58Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -2271,6 +2271,7 @@
   static inline x_btml* x_btml_create_from_sc_t( sc_t sc, tp_t* type ); \
   static inline x_btml* x_btml_create_from_st( const st_s* st ); \
   static inline x_btml* x_btml_create_from_sc( sc_t sc ); \
+  static inline x_btml* x_btml_create_from_file( sc_t file ); \
   static inline void x_btml_to_sink( const x_btml* o, x_sink* sink ); \
   static inline void x_btml_t_to_file( const x_btml* o, tp_t t, sc_t file ); \
   static inline void x_btml_to_file( const x_btml* o, sc_t file ); \
@@ -2327,6 +2328,7 @@
   static inline x_btml* x_btml_create_from_sc_t( sc_t sc, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btml*, x_btml_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))), type ))} \
   static inline x_btml* x_btml_create_from_st( const st_s* st ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btml*, x_btml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))) ))} \
   static inline x_btml* x_btml_create_from_sc( sc_t sc ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btml*, x_btml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))} \
+  static inline x_btml* x_btml_create_from_file( sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btml*, x_btml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))) ))} \
   static inline void x_btml_to_sink( const x_btml* o, x_sink* sink ){x_btml_t_to_sink(o,o->_, sink );} \
   static inline void x_btml_t_to_file( const x_btml* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0);x_btml_t_to_sink(o,t,((x_sink*)( ((bcore_sink*)BLM_LEVEL_A_PUSH(0,bcore_file_open_sink(file ))) )));BLM_DOWN();} \
   static inline void x_btml_to_file( const x_btml* o, sc_t file ){x_btml_t_to_file(o,o->_, file );} \
@@ -2355,6 +2357,7 @@
   static inline x_bbml* x_bbml_create_from_sc_t( sc_t sc, tp_t* type ); \
   static inline x_bbml* x_bbml_create_from_st( const st_s* st ); \
   static inline x_bbml* x_bbml_create_from_sc( sc_t sc ); \
+  static inline x_bbml* x_bbml_create_from_file( sc_t file ); \
   static inline void x_bbml_to_sink( const x_bbml* o, x_sink* sink ); \
   static inline void x_bbml_t_to_file( const x_bbml* o, tp_t t, sc_t file ); \
   static inline void x_bbml_to_file( const x_bbml* o, sc_t file ); \
@@ -2405,6 +2408,7 @@
   static inline x_bbml* x_bbml_create_from_sc_t( sc_t sc, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bbml*, x_bbml_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))), type ))} \
   static inline x_bbml* x_bbml_create_from_st( const st_s* st ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bbml*, x_bbml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))) ))} \
   static inline x_bbml* x_bbml_create_from_sc( sc_t sc ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bbml*, x_bbml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))} \
+  static inline x_bbml* x_bbml_create_from_file( sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bbml*, x_bbml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))) ))} \
   static inline void x_bbml_to_sink( const x_bbml* o, x_sink* sink ){x_bbml_t_to_sink(o,o->_, sink );} \
   static inline void x_bbml_t_to_file( const x_bbml* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0);x_bbml_t_to_sink(o,t,((x_sink*)( ((bcore_sink*)BLM_LEVEL_A_PUSH(0,bcore_file_open_sink(file ))) )));BLM_DOWN();} \
   static inline void x_bbml_to_file( const x_bbml* o, sc_t file ){x_bbml_t_to_file(o,o->_, file );} \
@@ -2437,6 +2441,7 @@
   static inline x_bcml* x_bcml_create_from_sc_t( sc_t sc, tp_t* type ); \
   static inline x_bcml* x_bcml_create_from_st( const st_s* st ); \
   static inline x_bcml* x_bcml_create_from_sc( sc_t sc ); \
+  static inline x_bcml* x_bcml_create_from_file( sc_t file ); \
   static inline void x_bcml_to_sink( const x_bcml* o, x_sink* sink ); \
   static inline void x_bcml_t_to_file( const x_bcml* o, tp_t t, sc_t file ); \
   static inline void x_bcml_to_file( const x_bcml* o, sc_t file ); \
@@ -2489,6 +2494,7 @@
   static inline x_bcml* x_bcml_create_from_sc_t( sc_t sc, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bcml*, x_bcml_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))), type ))} \
   static inline x_bcml* x_bcml_create_from_st( const st_s* st ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bcml*, x_bcml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))) ))} \
   static inline x_bcml* x_bcml_create_from_sc( sc_t sc ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bcml*, x_bcml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))} \
+  static inline x_bcml* x_bcml_create_from_file( sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bcml*, x_bcml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))) ))} \
   static inline void x_bcml_to_sink( const x_bcml* o, x_sink* sink ){x_bcml_t_to_sink(o,o->_, sink );} \
   static inline void x_bcml_t_to_file( const x_bcml* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0);x_bcml_t_to_sink(o,t,((x_sink*)( ((bcore_sink*)BLM_LEVEL_A_PUSH(0,bcore_file_open_sink(file ))) )));BLM_DOWN();} \
   static inline void x_bcml_to_file( const x_bcml* o, sc_t file ){x_bcml_t_to_file(o,o->_, file );} \
@@ -2766,5 +2772,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x6321C262B277B2F4
-// XOICO_FILE_SIGNATURE 0x94C68EEE2517C5FB
+// XOICO_BODY_SIGNATURE 0x293D01EB01CCF89C
+// XOICO_FILE_SIGNATURE 0x6FF6B339DEFA22F6

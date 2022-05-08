@@ -75,8 +75,9 @@ func d obliv @* create_from_source_t( m x_source* source, m tp_t* type );
 func d obliv @* create_from_st_t( c st_s* st, m tp_t* type ) = :create_from_source_t( x_source_create_from_st( st )^, type );
 func d obliv @* create_from_sc_t(   sc_t  sc, m tp_t* type ) = :create_from_source_t( x_source_create_from_sc( sc )^, type );
 func d aware @* create_from_source( m x_source* source );
-func d aware @* create_from_st( c st_s* st ) = :create_from_source( x_source_create_from_st( st )^ );
-func d aware @* create_from_sc(   sc_t  sc ) = :create_from_source( x_source_create_from_sc( sc )^ );
+func d aware @* create_from_st( c st_s* st )  = :create_from_source( x_source_create_from_st( st )^ );
+func d aware @* create_from_sc(   sc_t  sc )  = :create_from_source( x_source_create_from_sc( sc )^ );
+func d aware @* create_from_file( sc_t file ) = :create_from_source( x_source_create_from_file( file )^ );
 
 /// Tests initial source content for validity. Restores index.
 func bl_t appears_valid( m x_source* source );
