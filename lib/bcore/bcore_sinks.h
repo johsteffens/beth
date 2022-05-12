@@ -86,6 +86,7 @@ void                 bcore_sink_buffer_s_discard(     bcore_sink_buffer_s* o );
 bcore_sink_buffer_s* bcore_sink_buffer_s_clone( const bcore_sink_buffer_s* o );
 bcore_sink_buffer_s* bcore_sink_buffer_s_flush(       bcore_sink_buffer_s* o );
 uz_t                 bcore_sink_buffer_s_push_data(   bcore_sink_buffer_s* o, vc_t data, uz_t size );
+s3_t                 bcore_sink_buffer_s_get_size( const bcore_sink_buffer_s* o ); // current buffer size
 
 /// Specifies an external consumer (sink); consumer is not owned by this object
 void bcore_sink_buffer_s_set_consumer( bcore_sink_buffer_s* o, vd_t consumer );
