@@ -1296,7 +1296,10 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 default: break;
             }
         }
+
         case TYPEOF_tp_t:
+        case TYPEOF_aware_t:
+        case TYPEOF_er_t:
         {
             tp_t* dst_l = dst;
             switch( type )
@@ -1315,31 +1318,12 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
                 case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
                 case TYPEOF_tp_t: *dst_l = *( tp_t* )src; return;
                 case TYPEOF_er_t: *dst_l = *( er_t* )src; return;
+                case TYPEOF_sc_t: *dst_l = btypeof(  *( sc_t* )src       ); return;
+                case TYPEOF_st_s: *dst_l = btypeof( ( ( st_s* )src )->sc ); return;
                 default: break;
             }
         }
-        case TYPEOF_er_t:
-        {
-            er_t* dst_l = dst;
-            switch( type )
-            {
-                case TYPEOF_s3_t: *dst_l = *( s3_t* )src; return;
-                case TYPEOF_s2_t: *dst_l = *( s2_t* )src; return;
-                case TYPEOF_s1_t: *dst_l = *( s1_t* )src; return;
-                case TYPEOF_s0_t: *dst_l = *( s0_t* )src; return;
-                case TYPEOF_u3_t: *dst_l = *( u3_t* )src; return;
-                case TYPEOF_u2_t: *dst_l = *( u2_t* )src; return;
-                case TYPEOF_u1_t: *dst_l = *( u1_t* )src; return;
-                case TYPEOF_u0_t: *dst_l = *( u0_t* )src; return;
-                case TYPEOF_f3_t: *dst_l = *( f3_t* )src; return;
-                case TYPEOF_f2_t: *dst_l = *( f2_t* )src; return;
-                case TYPEOF_sz_t: *dst_l = *( sz_t* )src; return;
-                case TYPEOF_uz_t: *dst_l = *( uz_t* )src; return;
-                case TYPEOF_tp_t: *dst_l = *( tp_t* )src; return;
-                case TYPEOF_er_t: *dst_l = *( er_t* )src; return;
-                default: break;
-            }
-        }
+
         default: break;
     }
 
@@ -1349,7 +1333,13 @@ static void copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
     }
     else
     {
-        ERR( "Type conversion '%s' --> '%s' is not defined", ifnameof( type ), ifnameof( dst_type ) );
+        ERR_fa
+        (
+            "Type conversion '#<sc_t>' --> '#<sc_t>' is not defined.\n"
+            "Consider implementing feature bcore_fp.copy_typed.\n",
+            ifnameof( type ),
+            ifnameof( dst_type )
+        );
     }
 }
 
