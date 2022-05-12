@@ -63,6 +63,17 @@ Version tolerance:
     Retired types:
     An unrecognized object type is skipped by the parser and treated as if 'NULL' was parsed.
 
+  Supports 'brief' <#file> and <#path> syntax:
+     Syntax <#file>|<#path> <string in quotes> </>
+     (Closing '</>' is optional)
+     The string is taken as a file-path. If it is relative, the root folder is the file folder (if any) from which the stream comes.
+     <#file> represents the object to be constructed from the file's location (error if file does not exist)
+     <#path> represents a st_s containing the path.
+
+     Example: <#file> "data/my_file.txt" </>
+     The file contains the entire object: <type> <body> </>
+     The inclusion can be used at any place where an object is expected
+
 Overloaded I/O: Overload following features:
     btml_body_to_sink
     btml_body_from_source
@@ -92,11 +103,6 @@ XOILA_DEFINE_GROUP( x_btml, x_inst )
  *  Allows recovering from parse errors and conversion errors.
  *  Checks error-stack after copy_typed.
  *  In case of a parse error o is not being changed.
- *
- *  Supports 'brief' <#file> inclusion syntax:
- *     Example: <#file> "data/my_file.txt" </>
- *     The file contains the entire object: <type> <body> </>
- *     The inclusion can be used at any place where an object is expected
  */
 func er_t t_from_source( m@* o, tp_t t, m x_source* source );
 func er_t   from_source( m@* o,         m x_source* source ) = o.t_from_source( o._, source );
@@ -171,6 +177,11 @@ func t_from_source
 
 func create_from_source_t
 {
+    if( !source )
+    {
+        type.0 = 0;
+        = NULL;
+    }
     sr_s sr = sr_null();
     :parse_create_object( source, sr.1 );
     if( sr.o && type ) type.0 = sr_s_o_type( sr );
@@ -250,6 +261,7 @@ func appears_valid
             tp_t type = :type_of( type_string );
             if( bcore_flect_exists( type ) )      valid = true;
             else if( type == btypeof( "#file" ) ) valid = true;
+            else if( type == btypeof( "#path" ) ) valid = true;
         }
     }
 
@@ -312,37 +324,49 @@ func er_t parse_create_object( m x_source* source, m sr_s* obj )
                     obj.0 = sr_tsd( type, inst.fork() );
                 }
             }
-            else if( type == btypeof( "#file" ) )
+            else
             {
-                m st_s* file = st_s!^;
-                source.parse_fa( " #string </>", file );
-
-                if( file.[ 0 ] != '/' ) // make path relative to current file path
+                tp_t typeof_file = btypeof( "#file" );
+                tp_t typeof_path = btypeof( "#path" );
+                if( type == typeof_file || type == typeof_path )
                 {
-                    m st_s* cur_file = st_s_create_sc( source.get_file() )^;
-                    if( cur_file.size > 0 )
+                    m st_s* path = st_s!^;
+                    source.parse_fa( " #string #-?'</>'", path );
+
+                    if( path.[ 0 ] != '/' ) // make path relative to current file path
                     {
-                        sz_t idx = cur_file.find_char( cur_file.size, 0, '/' );
-                        if( idx < cur_file.size )
+                        m st_s* cur_file = st_s_create_sc( source.get_file() )^;
+                        if( cur_file.size > 0 )
                         {
-                            cur_file.[ idx ] = 0;
-                            file.copy( st_s_create_fa( "#<sc_t>/#<sc_t>", cur_file.sc, file.sc )^ );
+                            sz_t idx = cur_file.find_char( cur_file.size, 0, '/' );
+                            if( idx < cur_file.size )
+                            {
+                                cur_file.[ idx ] = 0;
+                                path.copy( st_s_create_fa( "#<sc_t>/#<sc_t>", cur_file.sc, path.sc )^ );
+                            }
                         }
                     }
-                }
 
-                if( bcore_file_exists( file.sc ) )
-                {
-                    :parse_create_object( bcore_file_open_source( file.sc )^, obj );
+                    if( type == typeof_file )
+                    {
+                        if( bcore_file_exists( path.sc ) )
+                        {
+                            :parse_create_object( bcore_file_open_source( path.sc )^, obj );
+                        }
+                        else
+                        {
+                            = source.parse_error_fa( "File '#<sc_t>' not found.", path.sc );
+                        }
+                    }
+                    else
+                    {
+                        obj.0 = sr_asd( path.fork() );
+                    }
                 }
                 else
                 {
-                    = source.parse_error_fa( "File '#<sc_t>' not found.", file.sc );
+                    = source.parse_error_fa( "Type '#<sc_t>' has no reflection.", type_string.sc );
                 }
-            }
-            else
-            {
-                = source.parse_error_fa( "Type '#<sc_t>' has no reflection.", type_string.sc );
             }
         }
         else
@@ -469,12 +493,12 @@ func er_t t_parse_body( m @* o, tp_t t, m x_source* source )
     {
         while( !source.parse_bl( " #=?'</>'" ) )
         {
-            // non existing member variables are parsed but not assigned
             m st_s* name = st_s!^;
             source.parse_fa( " #name :", name );
             tp_t tp_name = btypeof( name.sc );
             sr_s sr = sr_null();
             :parse_create_object( source, sr.1 );
+            // non existing member variables are parsed but not assigned
             if( stamp.t_exists( t, tp_name ) )
             {
                 stamp.t_set_sr( t, tp_name, sr );
