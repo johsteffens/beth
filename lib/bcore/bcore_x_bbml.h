@@ -124,6 +124,11 @@ func t_from_source
 
 func create_from_source_t
 {
+    if( !source )
+    {
+        type.0 = 0;
+        = NULL;
+    }
     sr_s sr = sr_null();
     :parse_create_object( source, sr.1 );
     if( sr.o && type ) type.0 = sr_s_o_type( sr );
