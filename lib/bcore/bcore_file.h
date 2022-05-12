@@ -26,6 +26,8 @@
 
 BCORE_FORWARD_OBJECT( bcore_source );
 BCORE_FORWARD_OBJECT( bcore_sink );
+BCORE_FORWARD_OBJECT( x_source );
+BCORE_FORWARD_OBJECT( x_sink );
 
 /**********************************************************************************************************************/
 
@@ -57,6 +59,18 @@ stamp :path_s = aware bcore_inst
             o->full = st_s_create_fa( "#<sc_t>/#<sc_t>", o->root->sc, o->name.sc );
         }
     };
+
+    func bcore_fp.copy_typed
+    {
+        if( type == TYPEOF_st_s )
+        {
+            o.name.copy( ( st_s* )src );
+        }
+        else
+        {
+            ERR_fa( "Cannot copy from '#<sc_t>'\n", bnameof( type ) );
+        }
+    }
 
     func d @* create_sc(   sc_t  sc );
     func d @* create_st( c st_s* st );
@@ -109,6 +123,13 @@ func bl_t exists( sc_t name ); // checks if file exists
 func bl_t touch(  sc_t name ); // creates empty file if not existing; returns success (no effect if existing)
 func bl_t delete( sc_t name ); // deletes file if existing; returns success
 func bl_t rename( sc_t src_name, sc_t dst_name ); // renames file if existing; returns success
+
+
+/** Returns time of last modification in microseconds from 00:00 Jan 1 1970.
+ *  Returns 0 in case file does not exist or file statistics could not be retrieved.
+ *  Note that actual resolution is currently just 'seconds' (return value is a multiple of 1000000).
+ */
+func u3_t last_modification_time_us( sc_t name );
 
 /** Searches for a file <folder>/<name>, descending the tree through parent folders of <folder>.
  *  Returns false if not found.

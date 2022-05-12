@@ -14,6 +14,7 @@
  */
 
 #include <stdio.h>
+#include <sys/stat.h>
 
 #include "bcore_file.h"
 #include "bcore_sources.h"
@@ -170,17 +171,30 @@ st_s* bcore_file_folder_name( sc_t path )
     st_s* s2 = st_s_create_sc( bcore_file_name( s1->sc ) );
     st_s_discard( s1 );
     return s2;
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 bl_t bcore_file_exists( sc_t name )
 {
-    vd_t handle = fopen( name, "rb" );
-    if( !handle ) return false;
-    fclose( handle );
+    struct stat file_stat;
+    if( stat( name, &file_stat ) != 0 ) return false;
     return true;
+
+//    vd_t handle = fopen( name, "rb" );
+//    if( !handle ) return false;
+//    fclose( handle );
+//    return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+u3_t bcore_file_last_modification_time_us( sc_t name )
+{
+    struct stat file_stat;
+    if( stat( name, &file_stat ) != 0 ) return 0;
+    u3_t us = ( u3_t )file_stat.st_mtime * 1000000;
+    return us;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
