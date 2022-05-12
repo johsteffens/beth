@@ -101,9 +101,10 @@ stamp :condition_s
     func bcore_inst_call.init_x;
     func bcore_inst_call.down_e;
 
-    /** Suspends current thread until woken from another thread.
-     *  A mutex-lock must have been obtained before. The mutex is unlocked
-     *  during sleep and re-locked when woken up.
+    /** Suspends calling thread until woken from another thread.
+     *  This function may be called from multiple different threads.
+     *  The mutex passed must be locked.
+     *  The mutex is unlocked during sleep and re-locked when woken up.
      *  Beware of spurious wakeups: A wakeup may happen spuriously without
      *  actual cause from wake-trigger send to this condition.
      */

@@ -1,4 +1,4 @@
-//  Last update: 2022-05-07T18:51:58Z
+//  Last update: 2022-05-11T14:05:18Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -789,6 +789,7 @@
   void bcore_file_path_s_source( bcore_file_path_s* o, bcore_source* source ); \
   static inline sc_t bcore_file_path_s_get_sc( const bcore_file_path_s* o ); \
   void bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name ); \
+  void bcore_file_path_s_copy_typed( bcore_file_path_s* o, tp_t type, vc_t src ); \
   bcore_file_path_s* bcore_file_path_s_create_sc( sc_t sc ); \
   bcore_file_path_s* bcore_file_path_s_create_st( const st_s* st ); \
   static inline sc_t bcore_file_path_s_get_sc( const bcore_file_path_s* o ){ return  o->full ? o->full->sc : o->name.sc;}
@@ -805,6 +806,7 @@
   bl_t bcore_file_touch( sc_t name ); \
   bl_t bcore_file_delete( sc_t name ); \
   bl_t bcore_file_rename( sc_t src_name, sc_t dst_name ); \
+  u3_t bcore_file_last_modification_time_us( sc_t name ); \
   bl_t bcore_file_find_descend( sc_t folder, sc_t name, st_s* result ); \
   bcore_source* bcore_file_open_source( sc_t name ); \
   bcore_source* bcore_file_open_source_path( const bcore_file_path_s* path ); \
@@ -928,7 +930,7 @@
       sr_s object_sr; \
   }; \
   er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args ); \
-  er_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, const char** argv );
+  er_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, char** argv );
 #define TYPEOF_bcore_main_arr_s 0xAB5CAE6CCF6EDB68ull
 #define BETH_EXPAND_ITEM_bcore_main_arr_s \
   BCORE_DECLARE_OBJECT( bcore_main_arr_s ) \
@@ -2772,5 +2774,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x293D01EB01CCF89C
-// XOICO_FILE_SIGNATURE 0x6FF6B339DEFA22F6
+// XOICO_BODY_SIGNATURE 0xB481ECCC98B287EA
+// XOICO_FILE_SIGNATURE 0xB6C5A54D211B0F26

@@ -1,4 +1,4 @@
-//  Last update: 2022-05-07T18:51:58Z
+//  Last update: 2022-05-12T08:54:23Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -54,7 +54,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0x36205786D1783E49ull
+// HKEYOF_bcore 0xA507A002CD93EF5Full
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -900,17 +900,32 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_file_path_s )
     "hidden st_s => root;"
     "hidden st_s => full;"
     "func bcore_via_call:source;"
+    "func bcore_fp:copy_typed;"
 "}";
 
 void bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name )
 {
-    // bcore_file.h:52:5
+    // bcore_file.h:54:5
     
     st_s_attach( &(o->full ),  NULL);
     st_s_copy_sc(&(o->name),name );
     if( name[ 0 ] != '/' && o->root != NULL )
     {
         o->full = st_s_create_fa("#<sc_t>/#<sc_t>", o->root->sc, o->name.sc );
+    }
+}
+
+void bcore_file_path_s_copy_typed( bcore_file_path_s* o, tp_t type, vc_t src )
+{
+    // bcore_file.h:64:5
+    
+    if( type == TYPEOF_st_s )
+    {
+        st_s_copy(&(o->name),( st_s* )src );
+    }
+    else
+    {
+        ERR_fa( "Cannot copy from '#<sc_t>'\n", bnameof( type ) );
     }
 }
 
@@ -3000,7 +3015,7 @@ XOILA_DEFINE_SPECT( x_inst, x_btml )
 
 er_t x_btml_t_from_source( x_btml* o, tp_t t, x_source* source )
 {
-    // bcore_x_btml.h:162:1
+    // bcore_x_btml.h:168:1
     
     sr_s sr = sr_null();
     BLM_TRY(x_btml_parse_create_object(source, (&(sr)) ))
@@ -3011,8 +3026,13 @@ er_t x_btml_t_from_source( x_btml* o, tp_t t, x_source* source )
 
 x_btml* x_btml_create_from_source_t( x_source* source, tp_t* type )
 {
-    // bcore_x_btml.h:173:1
+    // bcore_x_btml.h:179:1
     
+    if( !source )
+    {
+        (*(type)) = 0;
+        return  NULL;
+    }
     sr_s sr = sr_null();
     BLM_TRY_EXIT(x_btml_parse_create_object(source, (&(sr)) ))
     if( sr.o && type ) (*(type)) = sr_s_o_type(&( sr ));
@@ -3021,7 +3041,7 @@ x_btml* x_btml_create_from_source_t( x_source* source, tp_t* type )
 
 x_btml* x_btml_create_from_source( x_source* source )
 {
-    // bcore_x_btml.h:183:1
+    // bcore_x_btml.h:194:1
     
     tp_t t = 0;
     x_btml* o = x_btml_create_from_source_t(source, (&(t)) );
@@ -3034,14 +3054,14 @@ x_btml* x_btml_create_from_source( x_source* source )
 
 void x_btml_t_to_sink( const x_btml* o, tp_t t, x_sink* sink )
 {
-    // bcore_x_btml.h:196:1
+    // bcore_x_btml.h:207:1
     
     x_btml_t_translate_recursive(o,t, 0, true, sink, 0 );
 }
 
 sc_t x_btml_name_of( tp_t type, st_s* buf )
 {
-    // bcore_x_btml.h:208:1
+    // bcore_x_btml.h:219:1
     
     sc_t n = bcore_name_try_name( type );
     if( n ) return  n;
@@ -3051,7 +3071,7 @@ sc_t x_btml_name_of( tp_t type, st_s* buf )
 
 tp_t x_btml_type_of( const st_s* name )
 {
-    // bcore_x_btml.h:218:1
+    // bcore_x_btml.h:229:1
     
     tp_t tp = 0;
     if( name->size == 0 )
@@ -3071,7 +3091,7 @@ tp_t x_btml_type_of( const st_s* name )
 
 bl_t x_btml_appears_valid( x_source* source )
 {
-    // bcore_x_btml.h:238:1
+    // bcore_x_btml.h:249:1
     BLM_INIT_LEVEL(0);
     bl_t valid = false;
     sz_t index = x_source_get_index(source);
@@ -3087,6 +3107,7 @@ bl_t x_btml_appears_valid( x_source* source )
             tp_t type = x_btml_type_of(type_string );
             if( bcore_flect_exists( type ) )      valid = true;
             else if( type == btypeof( "#file" ) ) valid = true;
+            else if( type == btypeof( "#path" ) ) valid = true;
         }
     }
     
@@ -3096,7 +3117,7 @@ bl_t x_btml_appears_valid( x_source* source )
 
 bl_t x_btml_t_appears_valid( tp_t type, x_source* source )
 {
-    // bcore_x_btml.h:263:1
+    // bcore_x_btml.h:275:1
     BLM_INIT_LEVEL(0);
     bl_t valid = false;
     sz_t index = x_source_get_index(source);
@@ -3119,7 +3140,7 @@ bl_t x_btml_t_appears_valid( tp_t type, x_source* source )
 
 er_t x_btml_parse_create_object( x_source* source, sr_s* obj )
 {
-    // bcore_x_btml.h:289:1
+    // bcore_x_btml.h:301:1
     BLM_INIT_LEVEL(0);
     er_t er = 0;
     st_s* type_string = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
@@ -3146,37 +3167,49 @@ er_t x_btml_parse_create_object( x_source* source, sr_s* obj )
                     (*(obj)) = sr_tsd(type, ((x_inst*)bcore_fork(inst)) );
                 }
             }
-            else if( type == btypeof( "#file" ) )
-            {BLM_INIT_LEVEL(4);
-                st_s* file = ((st_s*)BLM_LEVEL_T_PUSH(4,st_s,st_s_create()));
-                BLM_TRY(x_source_parse_fa(source," #string </>", file ))
+            else
+            {
+                tp_t typeof_file = btypeof( "#file" );
+                tp_t typeof_path = btypeof( "#path" );
+                if( type == typeof_file || type == typeof_path )
+                {BLM_INIT_LEVEL(4);
+                    st_s* path = ((st_s*)BLM_LEVEL_T_PUSH(4,st_s,st_s_create()));
+                    BLM_TRY(x_source_parse_fa(source," #string #-?'</>'", path ))
     
-                if( file->data[ 0 ] != '/' ) // make path relative to current file path
-                {BLM_INIT_LEVEL(5);
-                    st_s* cur_file = ((st_s*)BLM_LEVEL_T_PUSH(5,st_s,st_s_create_sc(x_source_get_file(source) )));
-                    if( cur_file->size > 0 )
+                    if( path->data[ 0 ] != '/' ) // make path relative to current file path
+                    {BLM_INIT_LEVEL(5);
+                        st_s* cur_file = ((st_s*)BLM_LEVEL_T_PUSH(5,st_s,st_s_create_sc(x_source_get_file(source) )));
+                        if( cur_file->size > 0 )
+                        {
+                            sz_t idx = st_s_find_char(cur_file,cur_file->size, 0, '/' );
+                            if( idx < cur_file->size )
+                            {BLM_INIT_LEVEL(7);
+                                cur_file->data[ idx ] = 0;
+                                st_s_copy(path,((st_s*)BLM_LEVEL_T_PUSH(7,st_s,st_s_create_fa("#<sc_t>/#<sc_t>", cur_file->sc, path->sc ))) );
+                            BLM_DOWN();}
+                        }
+                    BLM_DOWN();}
+    
+                    if( type == typeof_file )
                     {
-                        sz_t idx = st_s_find_char(cur_file,cur_file->size, 0, '/' );
-                        if( idx < cur_file->size )
-                        {BLM_INIT_LEVEL(7);
-                            cur_file->data[ idx ] = 0;
-                            st_s_copy(file,((st_s*)BLM_LEVEL_T_PUSH(7,st_s,st_s_create_fa("#<sc_t>/#<sc_t>", cur_file->sc, file->sc ))) );
+                        if( bcore_file_exists(path->sc ) )
+                        {BLM_INIT_LEVEL(6);
+                            BLM_TRY(x_btml_parse_create_object(((x_source*)(((bcore_source*)BLM_LEVEL_A_PUSH(6,bcore_file_open_source(path->sc ))))), obj ))
                         BLM_DOWN();}
+                        else
+                        {
+                            BLM_RETURNV(er_t, x_source_parse_error_fa(source,"File '#<sc_t>' not found.", path->sc ))
+                        }
                     }
-                BLM_DOWN();}
-    
-                if( bcore_file_exists(file->sc ) )
-                {BLM_INIT_LEVEL(5);
-                    BLM_TRY(x_btml_parse_create_object(((x_source*)(((bcore_source*)BLM_LEVEL_A_PUSH(5,bcore_file_open_source(file->sc ))))), obj ))
+                    else
+                    {
+                        (*(obj)) = sr_asd(((x_inst*)( ((st_s*)bcore_fork(path)) )));
+                    }
                 BLM_DOWN();}
                 else
                 {
-                    BLM_RETURNV(er_t, x_source_parse_error_fa(source,"File '#<sc_t>' not found.", file->sc ))
+                    BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Type '#<sc_t>' has no reflection.", type_string->sc ))
                 }
-            BLM_DOWN();}
-            else
-            {
-                BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Type '#<sc_t>' has no reflection.", type_string->sc ))
             }
         }
         else
@@ -3222,7 +3255,7 @@ er_t x_btml_parse_create_object( x_source* source, sr_s* obj )
 
 er_t x_btml_t_parse_body( x_btml* o, tp_t t, x_source* source )
 {
-    // bcore_x_btml.h:392:1
+    // bcore_x_btml.h:416:1
     
     x_stamp* stamp =((x_stamp*)( o));
     if( x_btml_t_defines_btml_body_from_source(t ) )
@@ -3303,12 +3336,12 @@ er_t x_btml_t_parse_body( x_btml* o, tp_t t, x_source* source )
     {
         while( !x_source_parse_bl(source," #=?'</>'" ) )
         {BLM_INIT_LEVEL(2);
-            // non existing member variables are parsed but not assigned
             st_s* name = ((st_s*)BLM_LEVEL_T_PUSH(2,st_s,st_s_create()));
             BLM_TRY(x_source_parse_fa(source," #name :", name ))
             tp_t tp_name = btypeof( name->sc );
             sr_s sr = sr_null();
             BLM_TRY(x_btml_parse_create_object(source, (&(sr)) ))
+            // non existing member variables are parsed but not assigned
             if( x_stamp_t_exists(t, tp_name ) )
             {
                 x_stamp_t_set_sr(stamp,t, tp_name, sr );
@@ -3328,7 +3361,7 @@ er_t x_btml_t_parse_body( x_btml* o, tp_t t, x_source* source )
 
 er_t x_btml_skip_body( x_source* source )
 {
-    // bcore_x_btml.h:498:1
+    // bcore_x_btml.h:522:1
     
     while( !x_source_eos(source) )
     {
@@ -3353,7 +3386,7 @@ er_t x_btml_skip_body( x_source* source )
 
 void x_btml_t_translate_recursive( const x_btml* o, tp_t t, tp_t name, bl_t shelve, x_sink* sink, sz_t depth )
 {
-    // bcore_x_btml.h:523:1
+    // bcore_x_btml.h:547:1
     BLM_INIT_LEVEL(0);
     sz_t indent = 4 * depth;
     st_s* buf = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
@@ -3443,7 +3476,7 @@ void x_btml_t_translate_recursive( const x_btml* o, tp_t t, tp_t name, bl_t shel
 
 sz_t x_btml_t_test_transfer( const x_btml* o, tp_t t )
 {
-    // bcore_x_btml.h:612:1
+    // bcore_x_btml.h:636:1
     BLM_INIT_LEVEL(0);
     st_s* string = st_s_create();
     x_btml_t_to_sink(o,t,((x_sink*)( string )));
@@ -3477,7 +3510,7 @@ sz_t x_btml_t_test_transfer( const x_btml* o, tp_t t )
 
 void x_btml_selftest( void )
 {
-    // bcore_x_btml.h:646:1
+    // bcore_x_btml.h:670:1
     BLM_INIT_LEVEL(0);
     sr_s zoo;BLM_T_INIT_SPUSH(sr_s, &zoo);; zoo = bcore_spect_via_create_zoo( 1000 );
     
@@ -3518,6 +3551,11 @@ x_bbml* x_bbml_create_from_source_t( x_source* source, tp_t* type )
 {
     // bcore_x_bbml.h:126:1
     
+    if( !source )
+    {
+        (*(type)) = 0;
+        return  NULL;
+    }
     sr_s sr = sr_null();
     BLM_TRY_EXIT(x_bbml_parse_create_object(source, (&(sr)) ))
     if( sr.o && type ) (*(type)) = sr_s_o_type(&( sr ));
@@ -3526,7 +3564,7 @@ x_bbml* x_bbml_create_from_source_t( x_source* source, tp_t* type )
 
 x_bbml* x_bbml_create_from_source( x_source* source )
 {
-    // bcore_x_bbml.h:136:1
+    // bcore_x_bbml.h:141:1
     
     tp_t t = 0;
     x_bbml* o = x_bbml_create_from_source_t(source, (&(t)) );
@@ -3539,14 +3577,14 @@ x_bbml* x_bbml_create_from_source( x_source* source )
 
 void x_bbml_t_to_sink( const x_bbml* o, tp_t t, x_sink* sink )
 {
-    // bcore_x_bbml.h:149:1
+    // bcore_x_bbml.h:154:1
     
     x_bbml_t_translate_recursive(o,t, 0, true, sink );
 }
 
 bl_t x_bbml_appears_valid( x_source* source )
 {
-    // bcore_x_bbml.h:166:1
+    // bcore_x_bbml.h:171:1
     
     sz_t index = x_source_get_index(source);
     tp_t type = x_bbml_parse_type(source );
@@ -3557,7 +3595,7 @@ bl_t x_bbml_appears_valid( x_source* source )
 
 er_t x_bbml_parse_create_object( x_source* source, sr_s* obj )
 {
-    // bcore_x_bbml.h:180:1
+    // bcore_x_bbml.h:185:1
     BLM_INIT_LEVEL(0);
     er_t er = 0;
     tp_t type = x_bbml_parse_type(source );
@@ -3589,7 +3627,7 @@ er_t x_bbml_parse_create_object( x_source* source, sr_s* obj )
 
 er_t x_bbml_t_parse_leaf_body( x_bbml* o, tp_t t, x_source* source )
 {
-    // bcore_x_bbml.h:212:1
+    // bcore_x_bbml.h:217:1
     
     switch( t )
     {
@@ -3616,7 +3654,7 @@ er_t x_bbml_t_parse_leaf_body( x_bbml* o, tp_t t, x_source* source )
 
 er_t x_bbml_t_parse_body( x_bbml* o, tp_t t, x_source* source )
 {
-    // bcore_x_bbml.h:239:1
+    // bcore_x_bbml.h:244:1
     
     x_stamp* stamp =((x_stamp*)( o));
     if( x_bbml_t_defines_bbml_body_from_source(t ) )
@@ -3700,7 +3738,7 @@ er_t x_bbml_t_parse_body( x_bbml* o, tp_t t, x_source* source )
 
 void x_bbml_push_leaf( x_sink* sink, tp_t t, const x_inst* leaf )
 {
-    // bcore_x_bbml.h:327:1
+    // bcore_x_bbml.h:332:1
     
     switch( t )
     {
@@ -3726,7 +3764,7 @@ void x_bbml_push_leaf( x_sink* sink, tp_t t, const x_inst* leaf )
 
 void x_bbml_t_translate_recursive( const x_bbml* o, tp_t t, tp_t name, bl_t shelve, x_sink* sink )
 {
-    // bcore_x_bbml.h:351:1
+    // bcore_x_bbml.h:356:1
     
     // shelving obj_l
     if( o && shelve && bcore_via_call_t_defines_shelve(t ) )
@@ -3794,7 +3832,7 @@ void x_bbml_t_translate_recursive( const x_bbml* o, tp_t t, tp_t name, bl_t shel
 
 sz_t x_bbml_t_test_transfer( const x_bbml* o, tp_t t )
 {
-    // bcore_x_bbml.h:419:1
+    // bcore_x_bbml.h:424:1
     BLM_INIT_LEVEL(0);
     st_s* string = st_s_create();
     x_bbml_t_to_sink(o,t,((x_sink*)( string )));
@@ -3829,7 +3867,7 @@ sz_t x_bbml_t_test_transfer( const x_bbml* o, tp_t t )
 
 void x_bbml_selftest( void )
 {
-    // bcore_x_bbml.h:454:1
+    // bcore_x_bbml.h:459:1
     BLM_INIT_LEVEL(0);
     sr_s zoo;BLM_T_INIT_SPUSH(sr_s, &zoo);; zoo = bcore_spect_via_create_zoo( 1000 );
     
@@ -3870,6 +3908,11 @@ x_bcml* x_bcml_create_from_source_t( x_source* source, tp_t* type )
 {
     // bcore_x_bcml.h:115:1
     
+    if( !source )
+    {
+        (*(type)) = 0;
+        return  NULL;
+    }
     sr_s sr = sr_null();
     BLM_TRY_EXIT(x_bcml_parse_create_object(true, 0, source, (&(sr)) ))
     if( sr.o && type ) (*(type)) = sr_s_o_type(&( sr ));
@@ -3878,7 +3921,7 @@ x_bcml* x_bcml_create_from_source_t( x_source* source, tp_t* type )
 
 x_bcml* x_bcml_create_from_source( x_source* source )
 {
-    // bcore_x_bcml.h:125:1
+    // bcore_x_bcml.h:130:1
     
     tp_t t = 0;
     x_bcml* o = x_bcml_create_from_source_t(source, (&(t)) );
@@ -3891,14 +3934,14 @@ x_bcml* x_bcml_create_from_source( x_source* source )
 
 void x_bcml_t_to_sink( const x_bcml* o, tp_t t, x_sink* sink )
 {
-    // bcore_x_bcml.h:138:1
+    // bcore_x_bcml.h:143:1
     
     x_bcml_t_translate_recursive(o,t, true, true, true, sink );
 }
 
 bl_t x_bcml_appears_valid( x_source* source )
 {
-    // bcore_x_bcml.h:155:1
+    // bcore_x_bcml.h:160:1
     
     sz_t index = x_source_get_index(source);
     tp_t type = x_bcml_parse_type(source );
@@ -3909,7 +3952,7 @@ bl_t x_bcml_appears_valid( x_source* source )
 
 er_t x_bcml_parse_create_object( bl_t parse_existence, tp_t given_type, x_source* source, sr_s* obj )
 {
-    // bcore_x_bcml.h:169:1
+    // bcore_x_bcml.h:174:1
     BLM_INIT_LEVEL(0);
     er_t er = 0;
     tp_t type = given_type ? given_type : x_bcml_parse_type(source );
@@ -3941,7 +3984,7 @@ er_t x_bcml_parse_create_object( bl_t parse_existence, tp_t given_type, x_source
 
 er_t x_bcml_t_parse_leaf_body( x_bcml* o, tp_t t, x_source* source )
 {
-    // bcore_x_bcml.h:201:1
+    // bcore_x_bcml.h:206:1
     
     switch( t )
     {
@@ -3968,7 +4011,7 @@ er_t x_bcml_t_parse_leaf_body( x_bcml* o, tp_t t, x_source* source )
 
 er_t x_bcml_t_parse_leaf_arr_body( x_bcml* o, tp_t t, sz_t size, x_source* source )
 {
-    // bcore_x_bcml.h:228:1
+    // bcore_x_bcml.h:233:1
     
     switch( t )
     {
@@ -3995,7 +4038,7 @@ er_t x_bcml_t_parse_leaf_arr_body( x_bcml* o, tp_t t, sz_t size, x_source* sourc
 
 er_t x_bcml_t_parse_body( x_bcml* o, tp_t t, x_source* source )
 {
-    // bcore_x_bcml.h:255:1
+    // bcore_x_bcml.h:260:1
     
     x_stamp* stamp =((x_stamp*)( o));
     if( x_bcml_t_defines_bcml_body_from_source(t ) )
@@ -4067,7 +4110,7 @@ er_t x_bcml_t_parse_body( x_bcml* o, tp_t t, x_source* source )
 
 void x_bcml_push_leaf( x_sink* sink, tp_t t, const x_inst* leaf )
 {
-    // bcore_x_bcml.h:331:1
+    // bcore_x_bcml.h:336:1
     
     switch( t )
     {
@@ -4093,7 +4136,7 @@ void x_bcml_push_leaf( x_sink* sink, tp_t t, const x_inst* leaf )
 
 void x_bcml_push_leaf_arr( x_sink* sink, tp_t t, const x_inst* leaf, sz_t size )
 {
-    // bcore_x_bcml.h:355:1
+    // bcore_x_bcml.h:360:1
     
     switch( t )
     {
@@ -4119,7 +4162,7 @@ void x_bcml_push_leaf_arr( x_sink* sink, tp_t t, const x_inst* leaf, sz_t size )
 
 void x_bcml_t_translate_recursive( const x_bcml* o, tp_t t, bl_t push_existence, bl_t push_type, bl_t shelve, x_sink* sink )
 {
-    // bcore_x_bcml.h:379:1
+    // bcore_x_bcml.h:384:1
     
     // shelving obj_l
     if( o && shelve && bcore_via_call_t_defines_shelve(t ) )
@@ -4191,7 +4234,7 @@ void x_bcml_t_translate_recursive( const x_bcml* o, tp_t t, bl_t push_existence,
 
 sz_t x_bcml_t_test_transfer( const x_bcml* o, tp_t t )
 {
-    // bcore_x_bcml.h:451:1
+    // bcore_x_bcml.h:456:1
     BLM_INIT_LEVEL(0);
     st_s* string = st_s_create();
     x_bcml_t_to_sink(o,t,((x_sink*)( string )));
@@ -4226,7 +4269,7 @@ sz_t x_bcml_t_test_transfer( const x_bcml* o, tp_t t )
 
 void x_bcml_selftest( void )
 {
-    // bcore_x_bcml.h:486:1
+    // bcore_x_bcml.h:491:1
     BLM_INIT_LEVEL(0);
     sr_s zoo;BLM_T_INIT_SPUSH(sr_s, &zoo);; zoo = bcore_spect_via_create_zoo( 1000 );
     
@@ -4746,6 +4789,7 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
 
             // group: bcore_file
             BCORE_REGISTER_FFUNC( bcore_via_call_source, bcore_file_path_s_source );
+            BCORE_REGISTER_FFUNC( bcore_fp_copy_typed, bcore_file_path_s_copy_typed );
             BCORE_REGISTER_OBJECT( bcore_file_path_s );
             XOILA_REGISTER_SPECT( bcore_file );
 
@@ -5194,5 +5238,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x975D5A453CB08D8E
-// XOICO_FILE_SIGNATURE 0xC4BA1FEF3F52818A
+// XOICO_BODY_SIGNATURE 0xC2B9BDB8D68FC227
+// XOICO_FILE_SIGNATURE 0x19C482BD3C7CF543

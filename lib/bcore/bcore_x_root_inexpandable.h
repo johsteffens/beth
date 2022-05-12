@@ -232,6 +232,9 @@ identifier f2_rs2;
 identifier f2_rs3;
 identifier f2_t_swap;
 
+identifier bcore_abort;
+identifier bcore_exit;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 group bcore_inst  = bcore_inst {};

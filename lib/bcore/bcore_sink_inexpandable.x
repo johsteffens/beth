@@ -36,6 +36,7 @@ group bcore_sink = x_inst
 
         func :.flush;
         func :.push_data;
+        func s3_t get_size( @* o ); //current buffer size
     };
 
     stamp :file_s =
