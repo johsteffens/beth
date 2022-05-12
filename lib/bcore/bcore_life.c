@@ -145,6 +145,7 @@ bcore_life_item_s* bcore_life_s_push_item( bcore_life_s* o )
 
 vd_t bcore_life_s_push( bcore_life_s* o, bcore_fp_discard discard, vd_t object )
 {
+    if( !object ) return NULL;
     bcore_life_item_s* item = bcore_life_s_push_item( o );
     item->down_or_discard = discard;
     item->object  = object;
@@ -155,6 +156,7 @@ vd_t bcore_life_s_push( bcore_life_s* o, bcore_fp_discard discard, vd_t object )
 
 vd_t bcore_life_s_spush( bcore_life_s* o, bcore_fp_down down, vd_t object )
 {
+    if( !object ) return NULL;
     bcore_life_item_s* item = bcore_life_s_push_item( o );
     item->down_or_discard = down;
     item->object  = object;
@@ -165,6 +167,7 @@ vd_t bcore_life_s_spush( bcore_life_s* o, bcore_fp_down down, vd_t object )
 
 vd_t bcore_life_s_push_typed( bcore_life_s* o, tp_t type, vd_t object )
 {
+    if( !object ) return NULL;
     bcore_life_item_s* item = bcore_life_s_push_item( o );
     item->type   = type;
     item->object = object;
@@ -176,6 +179,7 @@ vd_t bcore_life_s_push_typed( bcore_life_s* o, tp_t type, vd_t object )
 
 vd_t bcore_life_s_push_level_typed( bcore_life_s* o, sz_t level, tp_t type, vd_t object )
 {
+    if( !object ) return NULL;
     bcore_life_item_s* item = bcore_life_s_push_level_item( o, level );
     item->type   = type;
     item->object = object;
@@ -187,6 +191,7 @@ vd_t bcore_life_s_push_level_typed( bcore_life_s* o, sz_t level, tp_t type, vd_t
 
 vd_t bcore_life_s_spush_typed( bcore_life_s* o, tp_t type, vd_t object )
 {
+    if( !object ) return NULL;
     bcore_life_item_s* item = bcore_life_s_push_item( o );
     item->type   = type;
     item->object = object;
@@ -212,6 +217,7 @@ sr_s bcore_life_s_push_sr( bcore_life_s* o, sr_s object )
 
 vd_t bcore_life_s_push_aware( bcore_life_s* o, vd_t object )
 {
+    if( !object ) return NULL;
     assert( bcore_flect_exists( *( aware_t* )object ) );
     bcore_life_item_s* item = bcore_life_s_push_item( o );
     item->down_or_discard = ( bcore_fp_down_or_discard )bcore_inst_a_discard;
@@ -223,6 +229,7 @@ vd_t bcore_life_s_push_aware( bcore_life_s* o, vd_t object )
 
 vd_t bcore_life_s_push_level_aware( bcore_life_s* o, sz_t level, vd_t object )
 {
+    if( !object ) return NULL;
     assert( bcore_flect_exists( *( aware_t* )object ) );
     bcore_life_item_s* item = bcore_life_s_push_level_item( o, level );
     item->down_or_discard = ( bcore_fp_down_or_discard )bcore_inst_a_discard;
@@ -234,6 +241,7 @@ vd_t bcore_life_s_push_level_aware( bcore_life_s* o, sz_t level, vd_t object )
 
 vd_t bcore_life_s_spush_aware( bcore_life_s* o, vd_t object )
 {
+    if( !object ) return NULL;
     assert( bcore_flect_exists( *( aware_t* )object ) );
     bcore_life_item_s* item = bcore_life_s_push_item( o );
     item->down_or_discard = ( bcore_fp_down_or_discard )bcore_inst_a_down;
@@ -245,6 +253,7 @@ vd_t bcore_life_s_spush_aware( bcore_life_s* o, vd_t object )
 
 vd_t bcore_life_s_push_free( bcore_life_s* o, vd_t object )
 {
+    if( !object ) return NULL;
     bcore_life_item_s* item = bcore_life_s_push_item( o );
     item->down_or_discard = ( bcore_fp_down_or_discard )bcore_free;
     item->object  = object;
