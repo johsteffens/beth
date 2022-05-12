@@ -17,7 +17,7 @@
  *
  *  In function int main( int argc, char** argv ):
  *    - Instantiate and setup bcore_main_frame_s
- *    - call int bcore_main_s_main( bcore_main_s* o, sz_t argc, sc_t* argv )
+ *    - call er_t bcore_main_s_main( bcore_main_frame_s* o, sz_t argc, sc_t* argv )
  *         return value is intended to be the return of the program.
 
  *  In a suitable object:
@@ -81,7 +81,7 @@ stamp :frame_s bcore_inst
     func er_t exec( m @* o, bcore_arr_st_s* args );
 
     /// to be called from main function
-    func er_t main( mutable bcore_main_frame_s* o, sz_t argc, char** argv );
+    func er_t main( mutable bcore_main_frame_s* o, sz_t argc, m char** argv );
 };
 
 /// If available, this feature is called by function frame_s_main after loading the object.

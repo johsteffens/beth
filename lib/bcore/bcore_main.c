@@ -52,7 +52,10 @@ static void signal_callback( int signal_received )
             }
             else
             {
-                if( bcore_default_sigint ) bcore_default_sigint( signal_received );
+                // calling default bcore_default_sigint only exits at second interrupt
+                exit( 0 );
+
+                // if( bcore_default_sigint ) bcore_default_sigint( signal_received );
             }
         }
         break;
@@ -131,7 +134,7 @@ er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args 
     if( file )
     {
         /// redirect signals
-        bcore_default_sigint = signal( SIGINT , signal_callback );
+        bcore_default_sigint  = signal( SIGINT , signal_callback );
         bcore_default_sigterm = signal( SIGTERM, signal_callback );
         bcore_default_sigtstp = signal( SIGTSTP, signal_callback );
 
@@ -199,7 +202,7 @@ er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-er_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, const char** argv )
+er_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, char** argv )
 {
     bcore_arr_st_s* args = bcore_arr_st_s_create();
     for( sz_t i = 0; i < argc; i++ ) bcore_arr_st_s_push_sc( args, argv[ i ] );
