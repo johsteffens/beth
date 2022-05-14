@@ -13,313 +13,234 @@
  *  limitations under the License.
  */
 
+/** Audio Play Interface (based on the ALSA API)
+ *
+ *  Usage for continuous recording:
+ *
+ *  Setup and start capturing:
+ *  - Create instance: bmedia_audio_out_s^ my_audio;
+ *  - Change parameters in my_audio. (if needed)
+ *  - Run: my_audio.setup()
+ *  - Check/Process status values in my_audio. (if desired)
+ *  - Call my_audio.stream_start()  (Turns streaming on)
+ *  - Call repeatedly
+ *        my_audio.stream_play( ... )
+ *
+ *  Stop capturing (optional):
+ *  - Call my_audio.stream_stop() or my_audio.stream_cut()
+ *
+ *  Clean shut down:
+ *  - Destroy my_audio or call my_audio.shut_down()
+ *
+ *  ---------------------------------
+ *
+ *  Usage for one-time playing:
+ *  - Create instance: bmedia_audio_in_s^ my_audio;
+ *  - Change parameters in my_audio. (if needed)
+ *  - Run: my_audio.setup()
+ *  - Check/Process status values in my_audio. (if desired)
+ *  - Call my_audio.stream_play( ... ).
+ *
+ *  ---------------------------------
+ *
+ *  Usage via bmedia_audio_out_player_s:
+ *  - m$* player = bmedia_audio_in_player_s!.setup( audio );
+ *  - Call player.play any time to feed more data
+ *  - When finished capturing simply destroy player.
+ *
+ *  ---------------------------------
+ *
+ *  References (used for development):
+ *    - ALSA Project: https://www.alsa-project.org/alsa-doc/alsa-lib/index.html
+ */
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp :hwparams_s
-{
-    private snd_pcm_hw_params_t* v;
-    func bcore_inst_call.init_x
-    {
-        if( snd_pcm_hw_params_malloc( o.v.2 ) ) ERR_fa( "Failed allocating hw_params" );
-    }
-
-    func bcore_inst_call.down_e
-    {
-        if( o.v ) snd_pcm_hw_params_free( o.v.1 );
-    }
-}
+type snd_pcm_t;
+type snd_pcm_hwparams_t;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func er_t error( sc_t context, s2_t errnum )
-{
-    sc_t snd_msg = snd_strerror( errnum );
-    = bcore_error_push_fa( TYPEOF_general_error, "#<sc_t>: #<sc_t>\n", context, snd_msg );
-}
+/**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp :shut_down_s
+stamp :s
 {
-    private :s* v;
-    func void setup( m@* o, m :s* v ) { o.v = v; };
-    func void clear( m@* o ) { o.v = NULL; };
-    func bcore_inst_call.down_e { if( o.v ) o.v.shut_down(); };
-}
+    /// =========== parameters ===========
 
-func (:s) setup
-{
-    if( o.is_setup_ ) = 0;
-    s2_t err = 0;
-    err = snd_pcm_open( o.handle_.2, o.device_name.sc, SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK );
-    if( err < 0 ) = :error( "snd_pcm_open", err );
-    o.is_open_ = true;
+    /// Set these parameters before calling 'setup'
+    //st_s device_name = "hw:0,0";
+    st_s device_name = "default";
 
-    :hwparams_s^ hw_params;
-    :shut_down_s^ auto_shut_down.setup( o ); // shut down functor in case of error
-
-    // obtains configuration space for given device
-    err = snd_pcm_hw_params_any( o.handle_, hw_params.v );
-    if( err < 0 ) = :error( "snd_pcm_hw_params_any", err );
-
-    // restricts configuration space to real hardware rates
-    err = snd_pcm_hw_params_set_rate_resample( o.handle_, hw_params.v, 1 );
-    if( err < 0 ) = :error( "snd_pcm_hw_params_set_rate_resample", err );
-
-    // restricts configuration space to interleaved sampling (LRLR...)
-    err = snd_pcm_hw_params_set_access( o.handle_, hw_params.v, SND_PCM_ACCESS_RW_INTERLEAVED );
-    if( err < 0 ) = :error( "snd_pcm_hw_params_set_access", err );
-
-    // sets sample value format to 16bit little-endian
-    err = snd_pcm_hw_params_set_format( o.handle_, hw_params.v, SND_PCM_FORMAT_S16_LE );
-    if( err < 0 ) = :error( "snd_pcm_hw_params_set_format", err );
-
-    // sets number of channels (2 = stereo)
-    err = snd_pcm_hw_params_set_channels( o.handle_, hw_params.v, o.channels );
-    if( err < 0 ) = :error( "snd_pcm_hw_params_set_channels", err );
-
-    /* sets sampling rate in hertz
-     * 'rate' contains the requested value and is modified to the actual (nearest supported) value
+    /** Number of channels (normally 2 (stereo))
      */
-    if( o.requested_rate < 0 )
-    {
-        unsigned int rate = 0;
-        err = snd_pcm_hw_params_get_rate( hw_params.v, &rate, NULL );
-        if( err < 0 ) = :error( "snd_pcm_hw_params_get_rate", err );
-        o.actual_rate = rate;
-    }
-    else
-    {
-        unsigned int rate = o.requested_rate;
-        err = snd_pcm_hw_params_set_rate_near( o.handle_, hw_params.v, &rate, NULL );
-        if( err < 0 ) = :error( "snd_pcm_hw_params_set_rate", err );
-        o.actual_rate = rate;
-    }
+    $ s2_t channels = 2;
 
-    if( o.requested_periods < 0 )
-    {
-        unsigned int periods = 0;
-        err = snd_pcm_hw_params_get_periods( hw_params.v, &periods, NULL );
-        if( err < 0 ) = :error( "snd_pcm_hw_params_get_periods", err );
-        o.actual_periods = periods;
-    }
-    else
-    {
-        unsigned int periods = o.requested_periods;
-        err = snd_pcm_hw_params_set_periods_near( o.handle_, hw_params.v, &periods, NULL );
-        if( err < 0 ) = :error( "snd_pcm_hw_params_set_periods_near", err );
-        o.actual_periods = periods;
-    }
+    /** Requested values can be overridden by the hardware.
+     *  A negative value indicates that no value is requested.
+     *  After setup the corresponding actual values (see 'status')
+     *  reflect the setting used by the alsa interface.
+     */
 
+    /// Requested rate in hertz
+    $ s2_t requested_rate = 44100;
 
-    if( o.requested_frames_per_period  < 0 )
-    {
-        snd_pcm_uframes_t buffer_size = 0;
-        err = snd_pcm_hw_params_get_buffer_size( hw_params.v, &buffer_size );
-        if( err < 0 ) = :error( "snd_pcm_hw_params_get_buffer_size", err );
-        o.actual_frames_per_period = buffer_size / o.actual_periods;
-    }
-    else
-    {
-        snd_pcm_uframes_t buffer_size = o.actual_periods * o.requested_frames_per_period;
-        err = snd_pcm_hw_params_set_buffer_size_near( o.handle_, hw_params.v, &buffer_size );
-        if( err < 0 ) = :error( "snd_pcm_hw_params_set_buffer_size_near", err );
-        o.actual_frames_per_period = buffer_size / o.actual_periods;
-    }
+    /** Requested Number of periods in the data (ring-)buffer.
+     *  A period is a data-fragment that is bulk-transferred between ordinary memory and hardware.
+     *  See also: frames_per_period
+     */
+    s2_t requested_periods = 2;
 
-    // applies hardware parameters
-    err = snd_pcm_hw_params( o.handle_, hw_params.v );
-    if( err < 0 ) = :error( "snd_pcm_hw_params", err );
+    /** Requested period-size given by number of frames per period.
+     *  Increasing this size increases latency but reduces synchronization-frequency and transfer-overhead.
+     *  A frame is the data set for all channels (e.g. 4 bytes for stereo and SND_PCM_FORMAT_S16)
+     */
+    s2_t requested_frames_per_period = 2048;
 
-    auto_shut_down.clear();
-    o.is_setup_ = true;
-    = 0;
+    /// ==================================
+
+    /// =========== status ===============
+    /// Check these values after calling 'setup'
+
+    /// Sampling rate in hertz
+    private s2_t actual_rate;
+
+    /// Number of periods in the hw-ring-buffer.
+    private s2_t actual_periods;
+
+    /// Period-size given by number of frames per period.
+    private s2_t actual_frames_per_period;
+
+    /// ==================================
+
+    /// =========== functions ============
+
+    func er_t setup( m@* o );
+    func er_t shut_down( m@* o );
+
+    /** Plays a sequence in one sitting.
+     *  A single frame contains <o.channels> samples.
+     *  Not intended for seamless concatenation of multiple sequences.
+     *  See also stream-functions below.
+     */
+    func er_t play( m@* o, s1_t* interleaved_samples, u2_t frames );
+    func er_t play_buffer( m@* o, bmedia_audio_buffer_s* buf ) { = o.play( buf.data, buf.size / o.channels ); }
+
+    /// Resets player to sequence channels and rate if needed
+    func er_t play_sequence( m@* o, bmedia_audio_sequence_s* sequence );
+
+    /// Starts a continuous stream (no effect if already started)
+    func er_t stream_start( m@* o );
+
+    /// Stops an ongoing stream (if any). Starts a continuous stream.
+    func er_t stream_restart( m@* o );
+
+    /** Plays interleaved samples as part of a continuous stream.
+     *  A single frame contains <o.channels> samples.
+     *  This function seamlessly concatenates subsequent samples to a continuous stream.
+     *  To avoid underruns, a subsequent call must be initiated before the last finishes playing.
+     */
+    func er_t stream_play       ( m@* o, s1_t* interleaved_samples, u2_t frames );
+    func er_t stream_play_buffer( m@* o, bmedia_audio_buffer_s* buf ) { = o.stream_play( buf.data, buf.size / o.channels ); }
+    func er_t stream_play_zero  ( m@* o, u2_t frames ) { = ( frames > 0 ) ? o.stream_play_buffer( bmedia_audio_buffer_s!^.set_size( frames * o.channels, o.channels ) ) : 0; }
+    func er_t stream_play_sequence( m@* o, bmedia_audio_sequence_s* sequence ); // error if sequence rate and channels settings mismatch audio settings
+
+    /// Gentle stop of a continuous stream (by draining) (no effect if not streaming)
+    func er_t stream_stop( m@* o );
+
+    /// Forced stop of a continuous stream (by dropping frames) (no effect if not streaming)
+    func er_t stream_cut( m@* o );
+
+    /// Plays a test sound
+    func er_t sound_check( m@* o );
+
+    /// ==================================
+
+    /// other internal status data
+    private snd_pcm_t* handle_;
+    private bl_t is_open_ = false;
+    private bl_t is_setup_ = false;
+    private bl_t is_streaming_ = false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) shut_down
+/** Dedicated Audio Player using a background thread.
+ *  Simplifies setup and control for one-time or continuous playing.
+ *  Usage:
+ *      m$* player = bmedia_audio_out_player_s!;
+ *      my_thread.setup( audio );
+ *      call player.play( ... ) anytime
+ *      when finished, simply destroy player.
+ *
+ *  - Takes ownership of audio object
+ *  - Unlimited buffer space.
+ *
+ */
+stamp :player_s
 {
-    if( o.is_open_ )
-    {
-        if( o.is_setup_ )
-        {
-            if( o.is_streaming_ ) o.stream_cut();
-            o.is_setup_ = false;
-        }
+    /// =========== parameters ===========
 
-        s2_t err = 0;
-        err = snd_pcm_close( o.handle_.1 );
-        if( err ) = :error( "snd_pcm_close", err );
-        o.handle_ = 0;
-        o.is_open_ = false;
-    }
+    /** Maximum buffer size of a single sequence-element.
+     *  When shutting down, the maximum latency is given by this value.
+     */
+    sz_t buf_frames = 16384;
 
-    = 0;
-}
+    /// ==================================
 
-func (:s) bcore_inst_call.down_e { o.shut_down(); }
+    :s -> audio;
 
-//----------------------------------------------------------------------------------------------------------------------
+    hidden bmedia_audio_sequence_s sequence;
 
-func (:s) play
-{
-    o.stream_restart();
-    o.stream_play( interleaved_samples, frames );
-    o.stream_stop();
-    = 0;
-}
+    hidden x_thread_s    thread;
+    hidden x_mutex_s     mutex;
+    hidden x_condition_s condition_play;
+    hidden x_condition_s condition_buffer_empty;
 
-//----------------------------------------------------------------------------------------------------------------------
+    hidden bl_t thread_exit_;
+    hidden bl_t is_setup_;
+    hidden er_t thread_error_;
 
-func (:s) play_sequence
-{
-    if( sequence.size() == 0 ) = 0;
-    if( o.actual_rate != sequence.rate || o.channels != sequence.channels )
-    {
-        o.shut_down();
-        o.requested_rate = sequence.rate;
-        o.channels = sequence.channels;
-    }
-    o.stream_restart();
-    o.stream_play_sequence( sequence );
-    o.stream_stop();
-    = 0;
-}
+    func x_thread.m_thread_func;
 
-//----------------------------------------------------------------------------------------------------------------------
+    func er_t setup( m@* o, d :s* audio );
 
-func (:s) stream_start
-{
-    if( o.is_streaming_ ) = 0;
-    if( !o.is_setup_ ) o.setup();
-    snd_pcm_start( o.handle_.1 );
-    o.is_streaming_ = true;
-    = 0;
-}
+    /// sets up audio parameters according to sequence
+    func er_t setup_from_sequence( m@* o, bmedia_audio_sequence_s* sequence );
 
-//----------------------------------------------------------------------------------------------------------------------
+    func er_t shut_down( m@* o );
 
-func (:s) stream_restart
-{
-    if( o.is_streaming_ ) o.stream_stop();
-    o.stream_start();
-    = 0;
-}
+    /** Appends data to the play-buffer.
+     *  If not already playing, playing is triggered.
+     */
+    func er_t play( m@* o, s1_t* interleaved_samples, u2_t frames );
+    func er_t play_buffer( m@* o, bmedia_audio_buffer_s* buf ) { ASSERT( o.audio ); = o.play( buf.data, buf.size / o.audio.channels ); }
+    func er_t play_zero( m@* o, u2_t frames ) { ASSERT( o.audio ); = ( frames > 0 ) ? o.play_buffer( bmedia_audio_buffer_s!^.set_size( frames * o.audio.channels, o.audio.channels ) ) : 0; }
 
-//----------------------------------------------------------------------------------------------------------------------
+    /** Plays entire sequence.
+     *  This function resets player to sequence channels and rate if needed.
+     */
+    func er_t play_sequence( m@* o, bmedia_audio_sequence_s* sequence );
 
-func (:s) stream_play
-{
-    if( !o.is_setup_ ) o.setup();
-    if( !o.is_streaming_ ) o.stream_start();
-    s2_t frames_left = frames;
-    s1_t* data_ptr = interleaved_samples;
-    while( frames_left > 0 )
-    {
-        snd_pcm_wait( o.handle_.1, 100 );
-        s2_t frames = frames_left > o.actual_frames_per_period ? o.actual_frames_per_period : frames_left;
-        s2_t frames_written = snd_pcm_writei( o.handle_.1, data_ptr, frames );
-        if( frames_written < 0 ) frames_written = snd_pcm_recover( o.handle_.1, frames_written, 1 );
+    /** Plays sequence from iterator position for number of frames or until end (whichever occurs first).
+     *  frames == -1: Plays until end.
+     *  This function resets player to sequence channels and rate if needed.
+     */
+    func er_t play_iterator( m@* o, m bmedia_audio_sequence_iterator_s* iterator, sz_t frames );
 
-        if( frames_written < 0 )
-        {
-            switch( frames_written )
-            {
-                case EBADFD:
-                {
-                    = bcore_error_push_fa( TYPEOF_general_error, "snd_pcm_writei: PCM is in an improper state." );
-                }
-                break;
+    /// Returns current (unplayed) buffer frames
+    func bl_t buffer_frames( m@* o );
 
-                default:
-                {
-                    snd_pcm_prepare( o.handle_.1 );
-                }
-                break;
-            }
-        }
-        else
-        {
-            data_ptr += frames_written * o.channels;
-            frames_left -= frames_written;
-        }
-    }
-    = 0;
-}
+    /// Checks if play-buffer is empty
+    func bl_t is_empty( m@* o );
 
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) stream_play_sequence
-{
-    if( sequence.rate != o.actual_rate )
-    {
-        = bcore_error_push_fa( TYPEOF_general_error, "stream_play_sequence: Stream rate (#<sz_t>) and audio rate (#<sz_t>) mismatch.\n", sequence.rate, o.actual_rate );
-    }
-
-    if( sequence.channels != o.channels )
-    {
-        = bcore_error_push_fa( TYPEOF_general_error, "stream_play_sequence: Stream channels (#<sz_t>) and audio channels (#<sz_t>) mismatch.\n", sequence.channels, o.channels );
-    }
-    for( sz_t i = 0; i < sequence.size(); i++ ) o.stream_play_buffer( sequence.c_buffer( i ) );
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) stream_stop
-{
-    if( !o.is_streaming_ ) = 0;
-    snd_pcm_drain( o.handle_.1 );
-    o.is_streaming_ = false;
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) stream_cut
-{
-    if( !o.is_streaming_ ) = 0;
-    snd_pcm_drop( o.handle_.1 );
-    o.is_streaming_ = false;
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) sound_check
-{
-    ASSERT( o.channels == 2 );
-    o.setup();
-    sz_t frames = 4 * o.actual_frames_per_period;
-
-    bmedia_audio_buffer_s^ buf.set_size( frames * 2, 2 );
-
-    f3_t pi = 3.1415926535897932384626434;
-    f3_t tau = pi * 2;
-
-    f3_t rate = o.actual_rate;
-    f3_t f_l = 1000;
-    f3_t f_r = 1100;
-
-    s2_t level_l = 16000;
-    s2_t level_r = 16000;
-
-    sz_t cycles = 3;
-
-    for( sz_t i = 0; i < frames; i++ )
-    {
-        buf.[ i * 2 + 0 ] = level_l * sin( i * tau * f_l / rate ) * exp( -3.0 * i / frames );
-        buf.[ i * 2 + 1 ] = level_r * sin( i * tau * f_r / rate ) * exp( -6.0 * i / frames );
-    }
-
-    for( sz_t j = 0; j < cycles; j++ ) o.stream_play( buf.data, frames );
-
-    o.stream_stop();
-
-    = 0;
+    /// Suspends calling thread until play-buffer is empty
+    func er_t wait_until_empty( m@* o );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -328,193 +249,8 @@ func (:s) sound_check
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:player_s) setup
-{
-    o.shut_down();
-    o.thread_exit_ = false;
-    o.audio =< audio;
-    o.audio.setup();
-    o.thread.call_m_thread_func( o );
-    o.is_setup_ = true;
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:player_s) setup_from_sequence
-{
-    d$* audio = bmedia_audio_out_s!;
-    audio.requested_rate = sequence.rate;
-    audio.channels = sequence.channels;
-    = o.setup( audio );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:player_s) shut_down
-{
-    if( !o.is_setup_ ) = 0;
-    o.mutex.lock();
-    o.thread_exit_ = true;
-    o.mutex.unlock();
-    o.condition_play.wake_one();
-    o.thread.join();
-    if( o.audio ) o.audio.stream_cut();
-    o.audio =< NULL;
-    o.is_setup_ = false;
-    er_t thread_error_ = o.thread_error_;
-    o.thread_error_ = 0;
-    = thread_error_;
-}
-
-func (:player_s) bcore_inst_call.down_e { o.shut_down(); }
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:player_s) m_thread_func
-{
-    o.mutex.lock();
-    while( !o.thread_exit_ )
-    {
-        if( o.sequence.size() > 0 )
-        {
-            bmedia_audio_buffer_s* buffer = o.sequence.pop_first_buffer()^;
-            o.mutex.unlock();
-            er_t thread_error = o.audio.stream_play_buffer( buffer );
-            o.mutex.lock();
-            if( thread_error )
-            {
-                o.thread_error_ = thread_error;
-                o.thread_exit_ = true;
-            }
-        }
-        else
-        {
-            o.condition_buffer_empty.wake_one();
-            o.condition_play.sleep( o.mutex );
-        }
-    };
-    o.condition_buffer_empty.wake_one();
-    o.audio.stream_stop();
-    o.mutex.unlock();
-    = NULL;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:player_s) play
-{
-    if( !o.is_setup_ ) o.setup( bmedia_audio_out_s! );
-    if( frames == 0 ) = 0;
-    o.mutex.lock();
-
-    sz_t channels = o.audio.channels;
-    sz_t buf_space = o.buf_frames * channels;
-
-    if( o.sequence.size() == 0 ) o.sequence.push_empty_buffer().set_space( buf_space );
-
-    while( frames > 0 )
-    {
-        m bmedia_audio_buffer_s* buf = o.sequence.m_last();
-        if( !buf || buf.size == buf.space )
-        {
-            buf = o.sequence.push_empty_buffer().set_space( buf_space );
-        }
-        sz_t values = sz_min( buf.space - buf.size, frames * channels );
-        m s1_t* buf_ptr = buf.data + buf.size;
-        assert( buf.size + values <= buf.space );
-        for( sz_t i = 0; i < values; i++ ) buf_ptr[ i ] = interleaved_samples[ i ];
-        buf.size += values;
-        interleaved_samples += values;
-        frames -= values / channels;
-    }
-
-    o.condition_play.wake_one();
-    o.mutex.unlock();
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:player_s) play_sequence
-{
-    if( !o.is_setup_ ) o.setup( bmedia_audio_out_s! );
-    if( sequence.size() == 0 ) = 0;
-    if( sequence.rate < 0 || sequence.channels < 0 ) ERR_fa( "Sequence rate or channels have not been set." );
-
-    if( o.audio.actual_rate != sequence.rate || o.audio.channels != sequence.channels )
-    {
-        o.wait_until_empty();
-        o.mutex.lock();
-        o.audio.shut_down();
-        o.audio.requested_rate = sequence.rate;
-        o.audio.channels = sequence.channels;
-        o.audio.setup();
-        o.mutex.unlock();
-    }
-    for( sz_t i = 0; i < sequence.size(); i++ ) o.play_buffer( sequence.c_buffer( i ) );
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:player_s) play_iterator
-{
-    if( !o.is_setup_ ) o.setup( bmedia_audio_out_s! );
-    if( iterator.eos ) = 0;
-    if( o.audio.actual_rate != iterator.sequence.rate || o.audio.channels != iterator.sequence.channels )
-    {
-        o.wait_until_empty();
-        o.mutex.lock();
-        o.audio.shut_down();
-        o.audio.requested_rate = iterator.sequence.rate;
-        o.audio.channels = iterator.sequence.channels;
-        o.audio.setup();
-        o.mutex.unlock();
-    }
-
-    s3_t frames_ = frames;
-    if( frames == -1 || frames + iterator.global_frame_index >= iterator.total_frames )
-    {
-        frames_ = iterator.total_frames - iterator.global_frame_index;
-    }
-
-    o.play_buffer( iterator.create_buffer( frames_ )^ );
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:player_s) buffer_frames
-{
-    o.mutex.lock();
-    sz_t frames = o.sequence.sum_buffer_size() / o.audio.channels;
-    o.mutex.unlock();
-    = frames;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:player_s) is_empty
-{
-    o.mutex.lock();
-    bl_t is_empty = ( o.sequence.size() == 0 );
-    o.mutex.unlock();
-    = is_empty;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:player_s) wait_until_empty
-{
-    o.mutex.lock();
-    while( o.sequence.size() > 0 ) o.condition_buffer_empty.sleep( o.mutex );
-    er_t thread_error = o.thread_error_;
-    o.mutex.unlock();
-    = thread_error;
-}
+embed "bmedia_audio_out.emb.x";
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
-

@@ -51,18 +51,6 @@
  *  [3] Fletcher, H. and Munson, W.A. "Loudness, its definition, measurement and calculation", Journal of the Acoustical Society of America 5, 82–108 (1933)
  */
 
-#ifndef BMEDIA_ISO226_H
-#define BMEDIA_ISO226_H
-
-#include "bcore_std.h"
-#include "bmath_std.h"
-
-//----------------------------------------------------------------------------------------------------------------------
-
-XOILA_DEFINE_GROUP( bmedia_iso226, x_inst )
-
-#ifdef XOILA_SECTION
-
 /**********************************************************************************************************************/
 
 /// iso-226 L_p functor from key parameters
@@ -138,7 +126,3 @@ stamp :eql_list_s x_array
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
-
-#endif // XOILA_SECTION
-
-#endif // BMEDIA_ISO226_H

@@ -13,336 +13,275 @@
  *  limitations under the License.
  */
 
+/** Audio Capture Interface (based on the ALSA API)
+ *
+ *  Usage for continuous recording:
+ *  - In 'my_capture_stamp':
+ *    - Implement feature bmedia_audio_in.capture_feed  (mandatory, should be thread-safe)
+ *  - In 'my_exit_stamp':
+ *    - Implement feature bmedia_audio_in.capture_exit  (optional, should be thread-safe)
+ *
+ *  Setup and start capturing:
+ *  - Create instance: bmedia_audio_in_s^ my_audio;
+ *  - Change parameters in my_audio. (if needed)
+ *  - Run: my_audio.setup()
+ *  - Check/Process status values in my_audio. (if desired)
+ *  - Call my_audio.stream_start()  (Turns streaming on)
+ *  - Call my_audio.capture_loop( my_capture_stamp, my_exit_stamp (or NULL) )  (This function is typically called from a dedicated thread)
+ *
+ *  Stop capturing (optional):
+ *  - Have bmedia_audio_in.capture_exit return 'true'
+ *    . This causes my_audio.capture_loop to return.
+ *    . Streaming stays on (!)
+ *    . Call my_audio.capture_loop to restart capturing.
+ *
+ *  Clean shut down:
+ *  - Destroy my_audio or call my_audio.shut_down()
+ *    . Stops capturing.
+ *    . Turns streaming off.
+ *
+ *  ---------------------------------
+ *
+ *  Usage via bmedia_audio_in_capture_thread_s:
+ *  - m$* thread = bmedia_audio_in_capture_thread_s!.setup( audio, capture_feed );
+ *  - When finished capturing simply destroy thread.
+ *
+ *  ---------------------------------
+ *
+ *  Usage for one-time recording:
+ *  - Create instance: bmedia_audio_in_s^ my_audio;
+ *  - Change parameters in my_audio. (if needed)
+ *  - Run: my_audio.setup()
+ *  - Check/Process status values in my_audio. (if desired)
+ *  - Call my_audio.stream_record( ... ) to get the desired number of frames.
+ *
+ *  ---------------------------------
+ *
+ *  References (used for development):
+ *    - ALSA Project: https://www.alsa-project.org/alsa-doc/alsa-lib/index.html
+ */
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp :hwparams_s
-{
-    private snd_pcm_hw_params_t* v;
-    func bcore_inst_call.init_x
-    {
-        if( snd_pcm_hw_params_malloc( o.v.2 ) ) ERR_fa( "Failed allocating hw_params" );
-    }
-
-    func bcore_inst_call.down_e
-    {
-        if( o.v ) snd_pcm_hw_params_free( o.v.1 );
-    }
-}
+type snd_pcm_t;
+type snd_pcm_hwparams_t;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func er_t error( sc_t context, s2_t errnum )
-{
-    sc_t snd_msg = snd_strerror( errnum );
-    = bcore_error_push_fa( TYPEOF_general_error, "#<sc_t>: #<sc_t>\n", context, snd_msg );
-}
+/** Callback feature. Called when a new fragment is available.
+ *  Image data is laid out in YUYV format.
+ */
+feature void capture_feed( m@* o, bmedia_audio_buffer_s* buf );
+
+/// Optional callback for each loop cycle; return true to exit loop
+feature bl_t capture_exit( m@* o ) { = false; };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp :shut_down_s
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+stamp :s
 {
-    private :s* v;
-    func void setup( m@* o, m :s* v ) { o.v = v; };
-    func void clear( m@* o ) { o.v = NULL; };
-    func bcore_inst_call.down_e { if( o.v ) o.v.shut_down(); };
-}
+    /// =========== parameters ===========
 
-func (:s) setup
-{
-    if( o.is_setup_ ) = 0;
-    s2_t err = 0;
-    err = snd_pcm_open( o.handle_.2, o.device_name.sc, SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK );
-    if( err < 0 ) = :error( "snd_pcm_open", err );
-    o.is_open_ = true;
+    /// Set these parameters before calling 'setup'
+    //st_s device_name = "hw:0,0";
+    st_s device_name = "default";
 
-    :hwparams_s^ hw_params;
-    :shut_down_s^ auto_shut_down.setup( o ); // shut down functor in case of error
-
-    // obtains configuration space for given device
-    err = snd_pcm_hw_params_any( o.handle_, hw_params.v );
-    if( err < 0 ) = :error( "snd_pcm_hw_params_any", err );
-
-    // restricts configuration space to real hardware rates
-    err = snd_pcm_hw_params_set_rate_resample( o.handle_, hw_params.v, 1 );
-    if( err < 0 ) = :error( "snd_pcm_hw_params_set_rate_resample", err );
-
-    // restricts configuration space to interleaved sampling (LRLR...)
-    err = snd_pcm_hw_params_set_access( o.handle_, hw_params.v, SND_PCM_ACCESS_RW_INTERLEAVED );
-    if( err < 0 ) = :error( "snd_pcm_hw_params_set_access", err );
-
-    // sets sample value format to 16bit little-endian
-    err = snd_pcm_hw_params_set_format( o.handle_, hw_params.v, SND_PCM_FORMAT_S16_LE );
-    if( err < 0 ) = :error( "snd_pcm_hw_params_set_format", err );
-
-    // sets number of channels
-    err = snd_pcm_hw_params_set_channels( o.handle_, hw_params.v, o.channels );
-    if( err < 0 ) = :error( "snd_pcm_hw_params_set_channels", err );
-
-    /* sets sampling rate in hertz
-     * 'rate' contains the requested value and is modified to the actual (nearest supported) value
+    /** Number of channels.
+     *  Sound hardware might expect value '2' (== stereo) here
+     *  even though the input is connected to only one microphone.
      */
-    if( o.requested_rate < 0 )
-    {
-        unsigned int rate = 0;
-        err = snd_pcm_hw_params_get_rate( hw_params.v, &rate, NULL );
-        if( err < 0 ) = :error( "snd_pcm_hw_params_get_rate", err );
-        o.actual_rate = rate;
-    }
-    else
-    {
-        unsigned int rate = o.requested_rate;
-        err = snd_pcm_hw_params_set_rate_near( o.handle_, hw_params.v, &rate, NULL );
-        if( err < 0 ) = :error( "snd_pcm_hw_params_set_rate", err );
-        o.actual_rate = rate;
-    }
+    s2_t channels = 2;
 
-    if( o.requested_periods < 0 )
-    {
-        unsigned int periods = 0;
-        err = snd_pcm_hw_params_get_periods( hw_params.v, &periods, NULL );
-        if( err < 0 ) = :error( "snd_pcm_hw_params_get_periods", err );
-        o.actual_periods = periods;
-    }
-    else
-    {
-        unsigned int periods = o.requested_periods;
-        err = snd_pcm_hw_params_set_periods_near( o.handle_, hw_params.v, &periods, NULL );
-        if( err < 0 ) = :error( "snd_pcm_hw_params_set_periods_near", err );
-        o.actual_periods = periods;
-    }
+    /** Requested values can be overridden by the hardware.
+     *  A negative value indicates that no value is requested.
+     *  After setup the corresponding actual values (see 'status')
+     *  reflect the setting used by the alsa interface.
+     */
 
+    /// Requested rate in hertz
+    s2_t requested_rate = 44100;
 
-    if( o.requested_frames_per_period  < 0 )
-    {
-        snd_pcm_uframes_t buffer_size = 0;
-        err = snd_pcm_hw_params_get_buffer_size( hw_params.v, &buffer_size );
-        if( err < 0 ) = :error( "snd_pcm_hw_params_get_buffer_size", err );
-        o.actual_frames_per_period = buffer_size / o.actual_periods;
-    }
-    else
-    {
-        snd_pcm_uframes_t buffer_size = o.actual_periods * o.requested_frames_per_period;
-        err = snd_pcm_hw_params_set_buffer_size_near( o.handle_, hw_params.v, &buffer_size );
-        if( err < 0 ) = :error( "snd_pcm_hw_params_set_buffer_size_near", err );
-        o.actual_frames_per_period = buffer_size / o.actual_periods;
-    }
+    /** Number of periods in the data (ring-)buffer.
+     *  A period is a data-fragment that is bulk-transferred between ordinary memory and hardware.
+     *  See also: frames_per_period
+     */
+    s2_t requested_periods = 2; // number of periods (fragments)
 
-    // applies hardware parameters
-    err = snd_pcm_hw_params( o.handle_, hw_params.v );
-    if( err < 0 ) = :error( "snd_pcm_hw_params", err );
+    /** Period-size given by number of frames per period.
+     *  Increasing this size increases latency but reduces synchronization-frequency and transfer-overhead.
+     *  A frame is the data set for all channels (e.g. 4 bytes for stereo and SND_PCM_FORMAT_S16)
+     *  The permissible value range is hardware dependent.
+     */
+    s2_t requested_frames_per_period = 2048;
 
-    auto_shut_down.clear();
-    o.is_setup_ = true;
-    = 0;
-}
+    /// ==================================
 
-//----------------------------------------------------------------------------------------------------------------------
+    /// =========== status ===============
+    /// Check these values after calling 'setup'
 
-func (:s) shut_down
-{
-    o.mutex_exit_capture_loop_.lock();
-    o.exit_capture_loop_ = true;
-    o.mutex_exit_capture_loop_.unlock();
-    x_lock_s^ lock.set( o.mutex_ );
+    /// Sampling rate in hertz
+    private s2_t actual_rate;
 
-    if( o.is_open_ )
-    {
-        if( o.is_setup_ )
-        {
-            if( o.is_streaming_ ) o.stream_cut();
-            o.is_setup_ = false;
-        }
+    /// Number of periods in the data (ring-)buffer.
+    private s2_t actual_periods;
 
-        s2_t err = 0;
-        err = snd_pcm_close( o.handle_.1 );
-        if( err ) = :error( "snd_pcm_close", err );
-        o.handle_ = 0;
+    /// Period-size given by number of frames per period.
+    private s2_t actual_frames_per_period;
 
-        o.is_open_ = false;
-    }
+    /// ==================================
 
-    o.mutex_exit_capture_loop_.lock();
-    o.exit_capture_loop_ = false;
-    o.mutex_exit_capture_loop_.unlock();
-    = 0;
-}
+    /// =========== functions ============
 
-func (:s) bcore_inst_call.down_e { o.shut_down(); }
+    func er_t setup( m@* o );
+    func er_t shut_down( m@* o );
 
-//----------------------------------------------------------------------------------------------------------------------
+    /// Records interleaved samples in a single session.
+    func er_t record( m@* o, m s1_t* interleaved_samples, sz_t frames );
 
-func (:s) stream_start
-{
-    if( !o.is_setup_ ) o.setup();
-    if( o.is_streaming_ ) = 0;
+    /// Records (appends) to sequence. If sequence is empty, 'rate' and 'channels' are set appropriately.
+    func er_t record_to_sequence( m@* o, m bmedia_audio_sequence_s* sequence, sz_t frames );
 
-    // the return value should be ignored
-    snd_pcm_start( o.handle_.1 );
+    /// Starts a continuous stream (no effect if already started)
+    func er_t stream_start( m@* o );
 
-    o.is_streaming_ = true;
-    = 0;
-}
+    /// Stops an ongoing stream (if any). Starts a continuous stream.
+    func er_t stream_restart( m@* o );
 
-//----------------------------------------------------------------------------------------------------------------------
+    /** Records interleaved samples as part of a continuous stream.
+     *  This function seamlessly concatenates subsequent recordings to a continuous stream.
+     *  To avoid underruns, a subsequent recording must be initiated before the buffer fills up.
+     */
+    func er_t stream_record( m@* o, m s1_t* interleaved_samples, sz_t frames );
 
-func (:s) stream_restart
-{
-    if( o.is_streaming_ ) o.stream_stop();
-    o.stream_start();
-    = 0;
-}
+    /// Records (appends) to sequence. If sequence is empty, 'rate' and 'channels' are set appropriately.
+    func er_t stream_record_to_sequence( m@* o, m bmedia_audio_sequence_s* sequence, sz_t frames );
 
-//----------------------------------------------------------------------------------------------------------------------
+    /// Gentle stop of a continuous stream (by draining)
+    func er_t stream_stop( m@* o );
 
-func (:s) stream_record
-{
-    if( !o.is_setup_ ) o.setup();
-    if( !o.is_streaming_ ) o.stream_start();
-    sz_t frames_left = frames;
-    m s1_t* data_ptr = interleaved_samples;
-    while( frames_left > 0 )
-    {
-        /** Wait suspends the CPU until new data is available.
-         *  (Otherwise this loop consumes one full CPU.)
-         *  snd_pcm_wait may timeout even though data is available.
-         *  Therefore, the timeout time should not be too large.
-         *  A timeout does not constitute an error.
-         */
-        snd_pcm_wait( o.handle_.1, 100 );
+    /// Forced stop of a continuous stream (by dropping frames)
+    func er_t stream_cut( m@* o );
 
-        s2_t frames = frames_left > o.actual_frames_per_period ? o.actual_frames_per_period : frames_left.cast( s2_t );
-        s2_t frames_recorded = snd_pcm_readi( o.handle_.1, data_ptr, frames );
-        if( frames_recorded < 0 ) frames_recorded = snd_pcm_recover( o.handle_.1, frames_recorded, 1 );
+    /** 'capture_loop' calls 'feed.capture_feed' for each new fragment.
+     *  The loop terminates when 'shut_down' is called or when 'feed.capture_exit()' returns 'false'.
+     *
+     *  Other actions:
+     *  Sets up stamp in case it was not yet set up.
+     *  Activates audio streaming if not already streaming.
+     *
+     *  Note:
+     *  This function may run in a dedicated thread.
+     *  Features 'capture_exit' and 'capture_feed' are called directly from this function.
+     *  If a condition terminates the loop, it can be restarted.
+     */
+    func er_t capture_loop( m@* o, m:* capture_feed, m:* capture_exit /* can be NULL */ );
 
-        if( frames_recorded < 0 )
-        {
-            switch( frames_recorded )
-            {
-                case EBADFD:
-                {
-                    = bcore_error_push_fa( TYPEOF_general_error, "snd_pcm_readi: PCM is in an improper state." );
-                }
-                break;
+    /// ==================================
 
-                default:
-                {
-                    snd_pcm_prepare( o.handle_.1 );
-                }
-                break;
-            }
-        }
-        else
-        {
-            data_ptr += frames_recorded * o.channels;
-            frames_left -= frames_recorded;
-        }
-    }
-    = 0;
-}
+    /// other internal status data
+    private snd_pcm_t* handle_;
+    private bl_t is_open_ = false;
+    private bl_t is_setup_ = false;
+    private bl_t is_streaming_ = false;
 
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) stream_record_to_sequence
-{
-    if( !o.is_setup_ ) o.setup();
-    if( sequence.size() == 0 )
-    {
-        sequence.rate = o.actual_rate;
-        sequence.channels = o.channels;
-    }
-    else
-    {
-        if( sequence.rate != o.actual_rate )
-        {
-            = bcore_error_push_fa( TYPEOF_general_error, "stream_record_to_sequence: Stream rate and audio rate mismatch.\n" );
-        }
-
-        if( sequence.channels != o.channels )
-        {
-            = bcore_error_push_fa( TYPEOF_general_error, "stream_record_to_sequence: Stream channels and audio channels mismatch.\n" );
-        }
-    }
-    sz_t frames_left = frames;
-    while( frames_left > 0 )
-    {
-        sz_t frames = ( frames_left > o.actual_frames_per_period ) ? o.actual_frames_per_period.cast( sz_t ) : frames_left;
-        m bmedia_audio_buffer_s* buffer = sequence.push_empty_buffer().set_size( frames * o.channels, o.channels );
-        o.stream_record( buffer.data, frames );
-        frames_left -= frames;
-    }
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) stream_stop
-{
-    if( !o.is_streaming_ ) = 0;
-    snd_pcm_drain( o.handle_.1 );
-    o.is_streaming_ = false;
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) stream_cut
-{
-    if( !o.is_streaming_ ) = 0;
-    snd_pcm_drop( o.handle_.1 );
-    o.is_streaming_ = false;
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) record
-{
-    o.stream_restart();
-    o.stream_record( interleaved_samples, frames );
-    o.stream_cut();
-    = 0;
+    hidden x_mutex_s mutex_;
+    hidden x_mutex_s mutex_exit_capture_loop_;
+    hidden bl_t            exit_capture_loop_ = false;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) record_to_sequence
-{
-    o.stream_restart();
-    o.stream_record_to_sequence( sequence, frames );
-    o.stream_cut();
-    = 0;
-}
+/**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) capture_loop
+/** Dedicated thread for the capture loop.
+ *  Simplifies setup and control for continuous audio recording.
+ *  Usage:
+ *      m$* my_thread = bmedia_audio_in_capture_thread_s!;
+ *      my_thread.setup( audio, capture_feed );
+ *
+ *  When done, simply destroy my_thread.
+ *
+ *  - Takes ownership of audio object
+ *  - No ownership of capture_feed object
+ *  - Audio stream is started during setup if not started already.
+ *  - capture_loop_error_ holds an error occurring in the thread.
+ */
+stamp :capture_thread_s =
 {
-    x_lock_s^ _.set( o.mutex_ );
+    hidden :s -> audio;
+    private aware :* capture_feed;
 
-    if( !o.is_streaming_ )
+    x_thread_s thread;
+    x_mutex_s  mutex;
+    bl_t exit_loop_;
+    er_t capture_loop_error_ = 0;
+
+    func er_t setup( m@* o, d :s* audio, m aware :* capture_feed )
     {
-        x_unlock_s^ _.set( o.mutex_ );
-        o.stream_start();
+        o.shut_down();
+        o.audio =< audio;
+        o.audio.stream_start();
+        o.capture_feed = capture_feed;
+        o.exit_loop_ = false;
+        o.thread.call_m_thread_func( o );
+        = 0;
     }
 
-    bmedia_audio_buffer_s^ buf.set_size( o.actual_frames_per_period * o.channels, o.channels );
-
-    while( capture_exit ? !capture_exit.capture_exit() : true )
+    func x_thread.m_thread_func
     {
-        o.mutex_exit_capture_loop_.lock();
-        bl_t exit_loop = o.exit_capture_loop_;
-        o.mutex_exit_capture_loop_.unlock();
-        if( exit_loop ) break;
-        o.stream_record( buf.data, o.actual_frames_per_period );
-        capture_feed.capture_feed( buf );
+        er_t error = o.audio.capture_loop( o.capture_feed, o );
+        if( error )
+        {
+            o.mutex.lock();
+            o.capture_loop_error_ = error;
+            o.mutex.unlock();
+        }
+        = NULL;
     }
 
-    = 0;
-}
+    func bmedia_audio_in.capture_exit
+    {
+        o.mutex.lock();
+        bl_t exit_loop_ = o.exit_loop_;
+        o.mutex.unlock();
+        = exit_loop_;
+    }
+
+    func er_t shut_down( m@* o )
+    {
+        o.mutex.lock();
+        o.exit_loop_ = true;
+        o.mutex.unlock();
+        o.thread.join();
+        if( o.audio ) o.audio.stream_cut();
+        o.audio =< NULL;
+        o.capture_feed = NULL;
+        er_t capture_loop_error_ = o.capture_loop_error_;
+        o.capture_loop_error_ = 0;
+        = capture_loop_error_;
+    }
+
+    func bcore_inst_call.down_e { o.shut_down(); }
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 
+//----------------------------------------------------------------------------------------------------------------------
+
+embed "bmedia_audio_in.emb.x";
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
