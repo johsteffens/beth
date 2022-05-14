@@ -15,6 +15,45 @@
 
 /** Audio codec interface.
  *
+ *  --------------------------------------------------------------------
+ *
+ *  Encoder Usage:
+ *
+ *  Setup parameters from file (or instantiate class directly form target codec):
+ *  m$* param = x_btml_create_from_file( "audio_codec_waw_120kbps.param.cfg" )^;
+ *
+ *  Set rate and channels:
+ *  param.set_rate( 44100 );
+ *  param.set_channels( 2 );
+ *
+ *  Create encoder and assign parameters:
+ *  m$* encoder = param.create_encoder()^;
+ *
+ *  Push audio buffers:
+ *  while( ... ) encoder.push_d( buffer.fork() );
+ *
+ *  Get encoded sequence (this finalizes encoding and resets encoder)
+ *  m bmedia_audio_codec_sequence* sequence = encoder.d_get_sequence()^;
+ *
+ *  Save/Stream as compatible x_bbml or ultra compact x_bcml.
+ *
+ *  --------------------------------------------------------------------
+ *
+ *  Decoder Usage:
+ *
+ *  Obtain encoded sequence:
+ *  m bmedia_audio_codec_sequence* sequence = ... ;
+ *
+ *  Obtain parameters used for encoding:
+ *  c bmedia_audio_codec_param* param = sequence.param();
+ *
+ *  Create decoder and assign sequence:
+ *  m$* decoder = param.create_decoder()^.set_sequence_d( sequence.fork() );
+ *
+ *  Pull buffers until function returns NULL or decoder.eos():
+ *  while( !decoder.eos() ) { d$* buffer = decoder.d_get_buffer(); ... }
+ *
+ *  --------------------------------------------------------------------
  */
 
 /**********************************************************************************************************************/
