@@ -14,6 +14,7 @@
  */
 
 #include <stdio.h>
+#include <sys/time.h>
 
 #include "bcore_control.h"
 #include "bcore_tbman.h"

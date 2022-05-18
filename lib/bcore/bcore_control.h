@@ -17,10 +17,13 @@
 #define BCORE_CONTROL_H
 
 #include <stdarg.h>
-#include <time.h>
 
 /// if this include causes an ERROR, try disable it (dependencies, if any, should not be critical)
+#include <time.h>
 #include <sys/time.h>
+
+// This definition prevents clashes with redefining some POSIX types in other libraries (here: struct timespec)
+#define _POSIX_C_SOURCE 1
 
 #include "bcore_first.h"
 #include "bcore_types.h"
