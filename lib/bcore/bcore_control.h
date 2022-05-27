@@ -23,7 +23,9 @@
 #include <sys/time.h>
 
 // This definition prevents clashes with redefining some POSIX types in other libraries (here: struct timespec)
+#ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 1
+#endif
 
 #include "bcore_first.h"
 #include "bcore_types.h"
