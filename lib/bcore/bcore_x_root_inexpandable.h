@@ -235,6 +235,8 @@ identifier f2_t_swap;
 identifier bcore_abort;
 identifier bcore_exit;
 
+identifier TYPEOF_;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 group bcore_inst  = bcore_inst {};
