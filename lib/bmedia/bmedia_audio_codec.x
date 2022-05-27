@@ -68,6 +68,7 @@ group :context
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// General codec parameters
 group :param
 {
     feature d (Tencoder) ::encoder* create_encoder( @* o );
@@ -85,6 +86,15 @@ group :param
     feature s2_t get_channels( @* o );
 
     feature o setup( m@* o ); // setup for general processing
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Generic map applied on a vector inside a codec
+group :map
+{
+    // map function v_in and v_out can be identical
+    feature v_out _( @* o, ::param* param, c bmath_vf2_s* v_in, m bmath_vf2_s* v_out );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
