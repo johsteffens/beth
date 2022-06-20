@@ -342,7 +342,7 @@ func void help_to_sink( m @* o, :control_s* control, m bcore_sink* sink )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-signature void loop
+signature er_t loop
 (
     m @* o,
     bcore_main_frame_s* frame,
@@ -351,7 +351,10 @@ signature void loop
 
 func loop
 {
-    ASSERT( control );
+    if( !control        ) control = :control_s!^^;
+    if( !control.source ) control.source =< frame.source.fork();
+    if( !control.sink   ) control.sink   =< frame.sink.fork();
+
     while( !control.source.eos() && !control.exit_loop() )
     {
         control.sink.push_fa( "\n#<sc_t>#<sc_t>(#<sc_t>)> ", control.path.sc, control.path.size ? " " : "", bnameof( o._ ) ).flush();
@@ -393,6 +396,7 @@ func loop
     }
 
     control.exit_loop = false;
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
