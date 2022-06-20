@@ -1,0 +1,36 @@
+TARGET = bin/beth_test
+
+CC      = gcc
+CFLAGS  = -Wall -O3 -std=c11 
+LDFLAGS = -lbeth -lm -lpthread -latomic
+
+MAIN_SRC = src
+BETH_LIB = ../out/libbeth.a
+
+LIB_FOLDERS = \
+	-L ../out
+
+INCLUDES = \
+  $(addprefix -I , $(wildcard ../lib/*/.))
+
+SRCS = \
+	$(wildcard $(MAIN_SRC)/*.c)
+
+.PHONY: clean
+.PHONY: run
+
+$(TARGET): $(SRCS) $(BETH_LIB)
+	mkdir -p $(dir $(TARGET) )
+	$(CC) -o $@ $(CFLAGS) $(INCLUDES) $(SRCS) $(LIB_FOLDERS) $(LDFLAGS)
+
+$(BETH_LIB):
+	make -C ..
+
+run: $(TARGET) $(SRCS) $(BETH_LIB)
+	mkdir -p temp
+	$(TARGET)
+
+clean:
+	rm -f $(TARGET)
+	rm -rf temp
+

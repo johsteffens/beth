@@ -1,4 +1,4 @@
-//  Last update: 2022-05-11T14:05:18Z
+//  Last update: 2022-06-07T14:00:37Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -1741,7 +1741,7 @@
   BCORE_FORWARD_OBJECT( bcore_shell_op_default ); \
   bcore_arr_tp_s* bcore_shell_get_op_stamps( const bcore_shell* o ); \
   void bcore_shell_help_to_sink( bcore_shell* o, const bcore_shell_control_s* control, bcore_sink* sink ); \
-  void bcore_shell_loop( bcore_shell* o, const bcore_main_frame_s* frame, bcore_shell_control_s* control ); \
+  er_t bcore_shell_loop( bcore_shell* o, const bcore_main_frame_s* frame, bcore_shell_control_s* control ); \
   typedef tp_t (*bcore_shell_op_group)(const bcore_shell* o ); \
   typedef void (*bcore_shell_push_op_groups)(const bcore_shell* o, bcore_arr_tp_s* list ); \
   XOILA_DECLARE_SPECT( bcore_shell ) \
@@ -2718,13 +2718,19 @@
   x_inst* x_deque_inst_s_push_first_d( x_deque_inst_s* o, x_inst* inst ); \
   x_inst* x_deque_inst_s_d_pop_last( x_deque_inst_s* o ); \
   x_inst* x_deque_inst_s_d_pop_first( x_deque_inst_s* o ); \
+  static inline x_deque_inst_s* x_deque_inst_s_remove_first( x_deque_inst_s* o ); \
+  static inline x_deque_inst_s* x_deque_inst_s_remove_last( x_deque_inst_s* o ); \
+  x_deque_inst_s* x_deque_inst_s_remove_first_n( x_deque_inst_s* o, sz_t n ); \
+  x_deque_inst_s* x_deque_inst_s_remove_last_n( x_deque_inst_s* o, sz_t n ); \
   static inline sz_t x_deque_inst_s_adl_idx( const x_deque_inst_s* o, sz_t index ){return  ( o->first + index ) % o->adl.size;} \
   static inline x_inst* x_deque_inst_s_m_get( x_deque_inst_s* o, sz_t index ){return  ( index >= 0 && index < o->size ) ? o->adl.data[ x_deque_inst_s_adl_idx(o,index ) ] : NULL;} \
   static inline const x_inst* x_deque_inst_s_c_get( const x_deque_inst_s* o, sz_t index ){return  ( index >= 0 && index < o->size ) ? o->adl.data[ x_deque_inst_s_adl_idx(o,index ) ] : NULL;} \
   static inline x_inst* x_deque_inst_s_m_get_first( x_deque_inst_s* o ){return  ( o->size > 0 ) ? o->adl.data[ o->first ] : NULL;} \
   static inline const x_inst* x_deque_inst_s_c_get_first( const x_deque_inst_s* o ){return  ( o->size > 0 ) ? o->adl.data[ o->first ] : NULL;} \
   static inline x_inst* x_deque_inst_s_m_get_last( x_deque_inst_s* o ){return  ( o->size > 0 ) ? o->adl.data[ x_deque_inst_s_adl_idx(o,o->size - 1 ) ] : NULL;} \
-  static inline const x_inst* x_deque_inst_s_c_get_last( const x_deque_inst_s* o ){return  ( o->size > 0 ) ? o->adl.data[ x_deque_inst_s_adl_idx(o,o->size - 1 ) ] : NULL;}
+  static inline const x_inst* x_deque_inst_s_c_get_last( const x_deque_inst_s* o ){return  ( o->size > 0 ) ? o->adl.data[ x_deque_inst_s_adl_idx(o,o->size - 1 ) ] : NULL;} \
+  static inline x_deque_inst_s* x_deque_inst_s_remove_first( x_deque_inst_s* o ){x_inst_discard(x_deque_inst_s_d_pop_first(o));return o;} \
+  static inline x_deque_inst_s* x_deque_inst_s_remove_last( x_deque_inst_s* o ){x_inst_discard(x_deque_inst_s_d_pop_last(o));return o;}
 #define BETH_EXPAND_GROUP_x_deque \
   BCORE_FORWARD_OBJECT( x_deque ); \
   BCORE_FORWARD_OBJECT( x_deque_inst_adl_s ); \
@@ -2744,6 +2750,10 @@
   static inline x_inst* x_deque_push_first_d( x_deque* o, x_inst* inst ); \
   static inline x_inst* x_deque_d_pop_last( x_deque* o ); \
   static inline x_inst* x_deque_d_pop_first( x_deque* o ); \
+  static inline x_deque* x_deque_remove_last( x_deque* o ); \
+  static inline x_deque* x_deque_remove_first( x_deque* o ); \
+  static inline x_deque* x_deque_remove_last_n( x_deque* o, sz_t n ); \
+  static inline x_deque* x_deque_remove_first_n( x_deque* o, sz_t n ); \
   XOILA_DECLARE_SPECT( x_deque ) \
   { \
       bcore_spect_header_s header; \
@@ -2763,7 +2773,11 @@
   static inline x_inst* x_deque_push_last_d( x_deque* o, x_inst* inst ){return  x_deque_inst_s_push_last_d(x_deque_m_inst_(o),inst );} \
   static inline x_inst* x_deque_push_first_d( x_deque* o, x_inst* inst ){return  x_deque_inst_s_push_first_d(x_deque_m_inst_(o),inst );} \
   static inline x_inst* x_deque_d_pop_last( x_deque* o ){return  x_deque_inst_s_d_pop_last(x_deque_m_inst_(o));} \
-  static inline x_inst* x_deque_d_pop_first( x_deque* o ){return  x_deque_inst_s_d_pop_first(x_deque_m_inst_(o));}
+  static inline x_inst* x_deque_d_pop_first( x_deque* o ){return  x_deque_inst_s_d_pop_first(x_deque_m_inst_(o));} \
+  static inline x_deque* x_deque_remove_last( x_deque* o ){return ((x_deque*)( x_deque_inst_s_remove_last(x_deque_m_inst_(o))));} \
+  static inline x_deque* x_deque_remove_first( x_deque* o ){return ((x_deque*)( x_deque_inst_s_remove_first(x_deque_m_inst_(o))));} \
+  static inline x_deque* x_deque_remove_last_n( x_deque* o, sz_t n ){return ((x_deque*)( x_deque_inst_s_remove_last_n(x_deque_m_inst_(o),n )));} \
+  static inline x_deque* x_deque_remove_first_n( x_deque* o, sz_t n ){return ((x_deque*)( x_deque_inst_s_remove_first_n(x_deque_m_inst_(o),n )));}
 
 /**********************************************************************************************************************/
 
@@ -2774,5 +2788,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xB481ECCC98B287EA
-// XOICO_FILE_SIGNATURE 0xB6C5A54D211B0F26
+// XOICO_BODY_SIGNATURE 0x38F93B71A2A80AAA
+// XOICO_FILE_SIGNATURE 0x51D13D86137DACEB

@@ -12,34 +12,22 @@ XOICO_CFGS = \
   lib/lib_xoico.cfg
 
 INCLUDES = \
-  -I lib/bcore  \
-  -I lib/bclos  \
-  -I lib/bmath  \
-  -I lib/badapt \
-  -I lib/bhvm   \
-  -I lib/bhpt
+  $(addprefix -I , $(wildcard lib/*/.))
 
 SRCS = \
-  $(wildcard lib/bcore/*.c)\
-  $(wildcard lib/bclos/*.c)\
-  $(wildcard lib/bmath/*.c)\
-  $(wildcard lib/badapt/*.c)\
-  $(wildcard lib/bhvm/*.c)\
-  $(wildcard lib/bhpt/*.c)
+  $(wildcard lib/*/*.c)
 
 HDRS = \
-  $(wildcard lib/bcore/*.h)\
-  $(wildcard lib/bclos/*.h)\
-  $(wildcard lib/bmath/*.h)\
-  $(wildcard lib/badapt/*.h)\
-  $(wildcard lib/bhvm/*.h)\
-  $(wildcard lib/bhpt/*.h)
+  $(wildcard lib/*/*.h)
+
+XSRCS = \
+  $(wildcard lib/*/*.x)
 
 OBJS = $(SRCS:lib/%.c=out/%.o)
 
 .PHONY: clean cleanall pass2
 
-$(TARGET): $(XOICO) $(SRCS) $(HDRS)
+$(TARGET): $(XOICO) $(SRCS) $(HDRS) $(XSRCS)
 	$(XOICO) $(XOICO_CFGS)
 	$(MAKE) -C . pass2 # second pass to capture changes by xoico
 
@@ -58,7 +46,6 @@ clean:
 	rm -rf out
 
 cleanall:
-	rm -f $(TARGET)
-	rm -rf out
+	$(MAKE) clean
 	$(MAKE) -C $(XOICODIR) clean
 
