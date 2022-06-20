@@ -63,10 +63,14 @@ signature m (TE) x_inst* m_get_first( m@* o );
 signature c (TE) x_inst* c_get_first( c@* o );
 signature m (TE) x_inst* m_get_last(  m@* o );
 signature c (TE) x_inst* c_get_last(  c@* o );
-signature m (TE) x_inst* push_last_d( m@* o, d (TE) x_inst* inst ); // push to end of queue
+signature m (TE) x_inst* push_last_d ( m@* o, d (TE) x_inst* inst ); // push to end of queue
 signature m (TE) x_inst* push_first_d( m@* o, d (TE) x_inst* inst ); // push to front of queue
-signature d (TE) x_inst* d_pop_last(  m@* o );                      // pop from end of queue
+signature d (TE) x_inst* d_pop_last (  m@* o );                      // pop from end of queue
 signature d (TE) x_inst* d_pop_first(  m@* o );                      // pop from front of queue
+signature o remove_last (   m@* o );   // remove 1 from end of queue if possible
+signature o remove_first(   m@* o );   // remove 1 from front of queue if possible
+signature o remove_last_n ( m@* o, sz_t n ); // remove (maximally) n from end of queue
+signature o remove_first_n( m@* o, sz_t n ); // remove (maximally) n from front of queue
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -143,6 +147,19 @@ stamp :inst_s
         o.first = ( o.first + 1 ) % o.adl.size;
         = inst;
     }
+
+    func :.remove_first o.d_pop_first().discard();
+    func :.remove_last  o.d_pop_last().discard();
+
+    func :.remove_first_n
+    {
+        for( sz_t i = 0; i < n && o.size > 0; i++ ) o.remove_first();
+    }
+
+    func :.remove_last_n
+    {
+        for( sz_t i = 0; i < n && o.size > 0; i++ ) o.remove_last();
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -176,6 +193,10 @@ func push_last_d  = o.m_inst_().push_last_d( inst );
 func push_first_d = o.m_inst_().push_first_d( inst );
 func d_pop_last   = o.m_inst_().d_pop_last();
 func d_pop_first  = o.m_inst_().d_pop_first();
+func remove_last  = o.m_inst_().remove_last();
+func remove_first = o.m_inst_().remove_first();
+func remove_last_n  = o.m_inst_().remove_last_n( n );
+func remove_first_n = o.m_inst_().remove_first_n( n );
 
 //----------------------------------------------------------------------------------------------------------------------
 
