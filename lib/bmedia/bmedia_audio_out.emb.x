@@ -36,7 +36,7 @@ stamp :hwparams_s
 func er_t error( sc_t context, s2_t errnum )
 {
     sc_t snd_msg = snd_strerror( errnum );
-    = bcore_error_push_fa( TYPEOF_general_error, "#<sc_t>: #<sc_t>\n", context, snd_msg );
+    = bcore_error_push_fa( TYPEOF_general_error, "audio_out: #<sc_t>: #<sc_t>\n", context, snd_msg );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -391,9 +391,20 @@ func (:player_s) m_thread_func
         else
         {
             o.condition_buffer_empty.wake_one();
-            o.condition_play.sleep( o.mutex );
+
+            if( o.idle_zero_frames > 0 )
+            {
+                o.mutex.unlock();
+                o.audio.stream_play_zero( o.idle_zero_frames );
+                o.mutex.lock();
+            }
+            else
+            {
+                o.condition_play.sleep( o.mutex );
+            }
         }
     };
+
     o.condition_buffer_empty.wake_one();
     o.audio.stream_stop();
     o.mutex.unlock();

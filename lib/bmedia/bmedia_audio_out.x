@@ -191,6 +191,11 @@ stamp :player_s
      */
     sz_t buf_frames = 16384;
 
+    /** If this value is > 0 the player keeps sending zeros (buffers) while idle (empty) to audio until real data arrive.
+     *  This is useful to keep the audio interface in stream-playing mode in case playable data arrive at larger time gaps.
+     */
+    sz_t idle_zero_frames = 0;
+
     /// ==================================
 
     :s -> audio;
@@ -219,7 +224,7 @@ stamp :player_s
      *  If not already playing, playing is triggered.
      */
     func er_t play( m@* o, s1_t* interleaved_samples, u2_t frames );
-    func er_t play_buffer( m@* o, bmedia_audio_buffer_s* buf ) { ASSERT( o.audio ); = o.play( buf.data, buf.size / o.audio.channels ); }
+    func er_t play_buffer( m@* o, bmedia_audio_buffer_s* buf ) { ASSERT( o.audio && o.audio.channels == buf.channels ); = o.play( buf.data, buf.size / o.audio.channels ); }
     func er_t play_zero( m@* o, u2_t frames ) { ASSERT( o.audio ); = ( frames > 0 ) ? o.play_buffer( bmedia_audio_buffer_s!^.set_size( frames * o.audio.channels, o.audio.channels ) ) : 0; }
 
     /** Plays entire sequence.

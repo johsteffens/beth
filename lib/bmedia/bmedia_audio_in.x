@@ -72,9 +72,7 @@ type snd_pcm_hwparams_t;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/** Callback feature. Called when a new fragment is available.
- *  Image data is laid out in YUYV format.
- */
+/// Callback feature. Called when a new fragment is available.
 feature void capture_feed( m@* o, bmedia_audio_buffer_s* buf );
 
 /// Optional callback for each loop cycle; return true to exit loop
@@ -106,21 +104,25 @@ stamp :s
      *  reflect the setting used by the alsa interface.
      */
 
-    /// Requested rate in hertz
+    /** Requested rate in hertz
+     *  Check actual_rate after setup to obtain the selected value.
+     */
     s2_t requested_rate = 44100;
 
     /** Number of periods in the data (ring-)buffer.
      *  A period is a data-fragment that is bulk-transferred between ordinary memory and hardware.
      *  See also: frames_per_period
+     *  Check actual_periods after setup to obtain the selected value.
      */
     s2_t requested_periods = 2; // number of periods (fragments)
 
     /** Period-size given by number of frames per period.
      *  Increasing this size increases latency but reduces synchronization-frequency and transfer-overhead.
      *  A frame is the data set for all channels (e.g. 4 bytes for stereo and SND_PCM_FORMAT_S16)
-     *  The permissible value range is hardware dependent.
+     *  The permissible value range is hardware dependent:
+     *  Check actual_frames_per_period after setup to obtain the selected value.
      */
-    s2_t requested_frames_per_period = 2048;
+    s2_t requested_frames_per_period = 512; //2048;
 
     /// ==================================
 

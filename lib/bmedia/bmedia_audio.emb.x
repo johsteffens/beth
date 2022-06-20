@@ -43,6 +43,63 @@ func (:buffer_s) set_from_vf2
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:buffer_s) scale_lin
+{
+    sz_t frames = o.frames();
+    f3_t step = ( o.size > 0 ) ? ( end_factor - start_factor ) / frames : 0;
+    f3_t f = start_factor;
+
+    for( sz_t i = 0; i < frames; i++ )
+    {
+        for( sz_t j = 0; j < o.channels; j++ )
+        {
+            o.[ i * o.channels + j ] = f3_min( 32767, f3_max( -32768, o.[ i * o.channels + j ] * f ) );
+        }
+        f += step;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:buffer_s) scale_exp
+{
+    sz_t frames = o.frames();
+    f3_t step = 0;
+    if( frames > 0 && end_factor > 0 && start_factor > 0 )
+    {
+        step = f3_pow( end_factor / start_factor, 1.0 / frames );
+    }
+    f3_t f = start_factor;
+
+    for( sz_t i = 0; i < frames; i++ )
+    {
+        for( sz_t j = 0; j < o.channels; j++ )
+        {
+            o.[ i * o.channels + j ] = f3_min( 32767, f3_max( -32768, o.[ i * o.channels + j ] * f ) );
+        }
+        f *= step;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:buffer_s) copy_spread_channels
+{
+    ASSERT( src.channels > 0 );
+    sz_t frames = src.size / src.channels;
+    o.set_frames( frames, dst_channels );
+    for( sz_t i = 0; i < frames; i++ )
+    {
+        for( sz_t j = 0; j < dst_channels; j++ )
+        {
+            o  .[ i * o  .channels + j ] =
+            src.[ i * src.channels + ( ( j < src.channels ) ? j : src.channels - 1 ) ];
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------

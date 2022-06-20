@@ -109,10 +109,19 @@ stamp :buffer_s x_array
         = max_abs;
     }
 
-    func void gain( m@* o, f3_t factor )
+    func o scale( m@* o, f3_t factor )
     {
         foreach( m$*e in o ) e.0 = f3_min( 32767, f3_max( -32768, e.0 * factor ) );
     }
+
+    // scales frames linearly across buffer from start_factor to end_factor
+    func o scale_lin( m@* o, f3_t start_factor, f3_t end_factor );
+
+    // scales frames exponentially across buffer from start_factor to end_factor
+    func o scale_exp( m@* o, f3_t start_factor, f3_t end_factor );
+
+    // in case channels mismatch, trailing channels are truncated or duplicated into o
+    func o copy_spread_channels( m@* o, sz_t dst_channels, @* src );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -206,9 +215,9 @@ stamp :sequence_s x_deque trans(TE :buffer_s)
         = max_abs;
     }
 
-    func void gain( m@* o, f3_t factor )
+    func o scale( m@* o, f3_t factor )
     {
-        for( sz_t i = 0; i < o.size(); i++ ) o.m_buffer( i ).gain( factor );
+        for( sz_t i = 0; i < o.size(); i++ ) o.m_buffer( i ).scale( factor );
     }
 
     /// returns an iterator for sequence
