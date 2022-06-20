@@ -1905,7 +1905,7 @@ uz_t bcore_arr_st_s_count_equal( const bcore_arr_st_s* o, const st_s* val )
 void bcore_arr_st_s_table_to_sink( const bcore_arr_st_s* o, sz_t rows, sz_t cols, bcore_sink* sink )
 {
     rows = ( rows < 0 ) ? ( ( cols > 0 ) ? o->size / cols : o->size ) : rows;
-    cols = ( cols < 0 ) ? o->size / rows : cols;
+    cols = ( cols < 0 ) ? ( ( rows > 0 ) ? o->size / rows : o->size ) : cols;
     rows = ( cols * rows > o->size ) ? o->size / cols : rows;
 
     bcore_arr_sz_s* col_sz = bcore_arr_sz_s_create();
