@@ -9,7 +9,7 @@
 LIB_NAME = $(notdir $(CURDIR))
 BIN_DIR  = $(BETH_DIR)/bin
 OBJ_DIR  = $(BIN_DIR)/obj/$(LIB_NAME)
-XC_DIR   = $(BETH_DIR)/../xoico
+XC_DIR   = $(BETH_DIR)/xoico
 
 TARGET   = $(BIN_DIR)/lib$(LIB_NAME).a
 
