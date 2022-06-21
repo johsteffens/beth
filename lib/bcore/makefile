@@ -1,6 +1,6 @@
 BETH_DIR  = ../..
-BETH_DEPS =
+DEPENDENCIES =
 DO_NOT_CLEAN_XO_FILES = 1
 
-include ../lib.mk
+include $(BETH_DIR)/mk/lib.mk
 

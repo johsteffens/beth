@@ -1,5 +1,5 @@
 BETH_DIR  = ../..
-BETH_DEPS = bhvm bmath bcore
+DEPENDENCIES = ../bhvm ../bmath ../bcore
 
-include ../lib.mk
+include $(BETH_DIR)/mk/lib.mk
 
