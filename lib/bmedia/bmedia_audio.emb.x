@@ -36,7 +36,7 @@ func (:buffer_s) set_from_vf2
     {
         f2_t v = k < vec.size ? vec.[ k++ ] : 0;
         v = f2_min( 1.0, f2_max( -1.0, v ));
-        o.[ i ] = lrintf( f2_min( 32767, f2_max( -32768, v * 32768.0 ) ) );
+        o.[ i ] = f3_rs2( f2_min( 32767, f2_max( -32768, v * 32768.0 ) ) );
     }
     = o;
 }
@@ -53,7 +53,7 @@ func (:buffer_s) scale_lin
     {
         for( sz_t j = 0; j < o.channels; j++ )
         {
-            o.[ i * o.channels + j ] = f3_min( 32767, f3_max( -32768, o.[ i * o.channels + j ] * f ) );
+            o.[ i * o.channels + j ] = f3_rs2( f3_min( 32767, f3_max( -32768, o.[ i * o.channels + j ] * f ) ) );
         }
         f += step;
     }
@@ -75,7 +75,7 @@ func (:buffer_s) scale_exp
     {
         for( sz_t j = 0; j < o.channels; j++ )
         {
-            o.[ i * o.channels + j ] = f3_min( 32767, f3_max( -32768, o.[ i * o.channels + j ] * f ) );
+            o.[ i * o.channels + j ] = f3_rs2( f3_min( 32767, f3_max( -32768, o.[ i * o.channels + j ] * f ) ) );
         }
         f *= step;
     }
@@ -92,9 +92,32 @@ func (:buffer_s) copy_spread_channels
     {
         for( sz_t j = 0; j < dst_channels; j++ )
         {
-            o  .[ i * o  .channels + j ] =
-            src.[ i * src.channels + ( ( j < src.channels ) ? j : src.channels - 1 ) ];
+            f3_t v = src.[ i * src.channels + ( ( j < src.channels ) ? j : src.channels - 1 ) ];
+            o.[ i * o  .channels + j ] = f3_rs2( f3_min( 32767, f3_max( -32768, v * scale_factor ) ) );
         }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:buffer_s) copy_resample
+{
+    ASSERT( frame_index >= 0 && frame_step > 0 );
+    o.set_size( 0, src.channels );
+    while( frame_index < src.frames() )
+    {
+        sz_t int_index = frame_index;
+        f3_t offs = frame_index - int_index;
+        for( sz_t j = 0; j < o.channels; j++ )
+        {
+            uz_t i0 = int_index * o.channels + j;
+            uz_t i1 = i0 + o.channels;
+            f3_t v0 = i0 < src.size ? src.[ i0 ] : 0;
+            f3_t v1 = i1 < src.size ? src.[ i1 ] : ( next && ( i1 - src.size < next.size ) ) ? next.[ i1 - src.size ] : 0;
+            f3_t v = v0 * ( 1.0 - offs ) + v1 * offs;
+            o.push().0 = f3_rs2( f3_min( 32767, f3_max( -32768, v * scale_factor ) ) );
+        }
+        frame_index += frame_step;
     }
 }
 

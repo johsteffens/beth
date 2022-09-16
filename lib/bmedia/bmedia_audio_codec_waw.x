@@ -1252,7 +1252,7 @@ stamp :encoder_s bmedia_audio_codec_encoder
     {
         if( buffer.channels != o.param.channels )
         {
-            ERR_fa( "buffer.channels '#<sz_t>' differs from param.channels '#<sz_t>'.", (sz_t)buffer.channels, (sz_t)o.param.channels );
+            buffer = bmedia_audio_buffer_s!.copy_spread_channels( 1.0, o.param.channels, buffer^ );
         }
         o.add_frames( buffer.frames() ).sequence_buf.push_buffer_d( buffer );
     }

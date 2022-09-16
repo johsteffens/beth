@@ -220,6 +220,12 @@ stamp :player_s
 
     func er_t shut_down( m@* o );
 
+    /// retrieves sample rate
+    func sz_t rate( c@* o ) = o.audio ? o.audio.actual_rate : 0;
+
+    /// retrieves channels
+    func sz_t channels( c@* o ) = o.audio ? o.audio.channels : 0;
+
     /** Appends data to the play-buffer.
      *  If not already playing, playing is triggered.
      */

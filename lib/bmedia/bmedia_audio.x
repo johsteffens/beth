@@ -61,7 +61,6 @@
  *    - ALSA Project: https://www.alsa-project.org/alsa-doc/alsa-lib/index.html
  */
 
-include <alsa/asoundlib.h>; // link with -lasound
 include "bcore_std.h";
 include "bmath_std.h";
 
@@ -120,8 +119,20 @@ stamp :buffer_s x_array
     // scales frames exponentially across buffer from start_factor to end_factor
     func o scale_exp( m@* o, f3_t start_factor, f3_t end_factor );
 
-    // in case channels mismatch, trailing channels are truncated or duplicated into o
-    func o copy_spread_channels( m@* o, sz_t dst_channels, @* src );
+    // copy_spread_channels with scaling
+    func o copy_spread_channels( m@* o, f3_t scale_factor, sz_t dst_channels, @* src );
+
+    /** Copies from src buffer while resampling with interpolation.
+     *  frame_step (>0):
+     *     Stepping across frames in src.
+     *     >1 leads to higher pitch
+     *     <1 leads to lower pitch
+     *  frame_index (>=0) is the starting index in src
+     *     If src is the first buffer in a sequence frame_index is normally '0'.
+     *     For subsequent buffers: frame_index --> frame_index + frame_step * o.frames() - src.frames().
+     *  'next' can be NULL, otherwise it represents the next buffer in a sequence.
+     */
+    func o copy_resample( m@* o, f3_t frame_index, f3_t frame_step, f3_t scale_factor, @* src, @* next );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -218,6 +229,35 @@ stamp :sequence_s x_deque trans(TE :buffer_s)
     func o scale( m@* o, f3_t factor )
     {
         for( sz_t i = 0; i < o.size(); i++ ) o.m_buffer( i ).scale( factor );
+    }
+
+    func o copy_scale( m@* o, @* src, f3_t factor )
+    {
+        o.setup( src.channels, src.rate );
+        for( sz_t i = 0; i < src.size(); i++ ) o.push_buffer_d( src.c_buffer( i ).clone().scale( factor ) );
+    }
+
+    /** Copies from src sequence while resampling with interpolation.
+     *  frame_step (>0):
+     *     Stepping across frames in src.
+     *     >1 leads to higher pitch
+     *     <1 leads to lower pitch
+     *  frame_index (>=0) is the starting index in src
+     *     If src is the first buffer in a sequence frame_index is normally '0'.
+     *     For subsequent buffers: frame_index --> frame_index + frame_step * o.frames() - src.frames().
+     *  'next' can be NULL, otherwise it represents the next buffer in a sequence.
+     */
+    func o copy_resample( m@* o, f3_t frame_index, f3_t frame_step, f3_t scale_factor, @* src, @* next )
+    {
+        o.setup( src.channels, src.rate );
+        for( sz_t i = 0; i < src.size(); i++ )
+        {
+            bmedia_audio_buffer_s* src_buf = src.c_buffer( i );
+            bmedia_audio_buffer_s* next_buf = ( i + 1 < src.size() ) ? src.c_buffer( i + 1 ) : ( next && next.size() > 0 ) ? next.c_buffer( 0 ) : NULL;
+            m bmedia_audio_buffer_s* buf = o.push_empty_buffer();
+            buf.copy_resample( frame_index, frame_step, scale_factor, src_buf, next_buf );
+            frame_index += frame_step * buf.frames() - src_buf.frames();
+        }
     }
 
     /// returns an iterator for sequence

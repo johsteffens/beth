@@ -71,8 +71,8 @@ group :context
 /// General codec parameters
 group :param
 {
-    feature d (Tencoder) ::encoder* create_encoder( @* o );
-    feature d (Tdecoder) ::decoder* create_decoder( @* o );
+    feature d (Tencoder) ::encoder* create_encoder( @* o ); // creates encoder and sets parameters
+    feature d (Tdecoder) ::decoder* create_decoder( @* o ); // creates decoder
     feature d (Tcontext) ::context* create_context( @* o );
     feature d (Tpage   ) ::page*    create_page   ( @* o );
 
