@@ -39,6 +39,11 @@ forward :control_s;
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// Callback feature, called in each loop cycle. Returning true causes loop-exit.
+feature bl_t loop_callback( m @* o ) = false;
+
+//----------------------------------------------------------------------------------------------------------------------
+
 group :op
 {
     /// Implement 'key' (simple string) or 'get_key' (formatted string)
@@ -87,10 +92,10 @@ group :op
     func bl_t parse_match( m @* o, m x_source* source )
     {
         st_s^ key;
-        source.parse_fa( "#=until' '", key.1 );
+        source.parse_fa( "#=name", key.1 );
         if( key.size == 0 ) = false;
         if( !o.key_match( key.sc ) ) = false;
-        source.parse_fa( "#-until' '" );
+        source.parse_fa( "#-name" );
         = true;
     }
 
@@ -102,7 +107,7 @@ group :op
     {
         sz_t direct_index = 0;
         source.parse_fa( "#skip' \t'" );
-        while( !source.eos() && !source.parse_bl( "#?'\n'" ) )
+        while( !source.eos() && !source.parse_bl( "#?([0]==';'||[0]=='\n')" ) )
         {
             m x_stamp* stamp = o;
 
@@ -261,6 +266,8 @@ group :control =
 
         bl_t exit_loop;
         st_s path;
+        st_s prompt;
+
         func :.reset             o.exit_loop = false;
         func :.request_exit_loop o.exit_loop = true;
         func :.request_exit_all  { o.exit_loop = true; if( o.parent ) o.parent.request_exit_all(); }
@@ -342,54 +349,87 @@ func void help_to_sink( m @* o, :control_s* control, m bcore_sink* sink )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-signature er_t loop
+/** Interactive single expression
+ *  Call with x_source_create_from_st( expression )^
+ *  in case expression is given as string
+ */
+func bl_t run_expression
+(
+    m @* o,
+    bcore_main_frame_s* frame,
+    m bcore_shell_control_s* control,
+    m x_source* expression
+)
+{
+    bl_t found = false;
+
+    expression.parse_fa( " #-?';' " );
+
+    foreach( tp_t t in o.get_op_stamps()^ )
+    {
+        m :op* op = x_inst_t_create( t ).t_scope( t );
+        if( op.parse_match( expression ) )
+        {
+            if( op.parse_param( expression, control.sink ) )
+            {
+                op.run
+                (
+                    o,
+                    frame,
+                    control ? control.source : x_source_stdin(),
+                    control ? control.sink   : x_sink_stdout(),
+                    control
+                );
+            }
+            found = true;
+            break;
+        }
+    }
+
+    expression.parse_fa( " " );
+    = ( found && !expression.eos() ) ? o.run_expression( frame, control, expression ) || found : found;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/** Interactive loop via control.source or stdin
+ */
+func er_t loop
 (
     m @* o,
     bcore_main_frame_s* frame,
     m bcore_shell_control_s* control
-);
-
-func loop
+)
 {
     if( !control        ) control = :control_s!^^;
     if( !control.source ) control.source =< frame.source.fork();
     if( !control.sink   ) control.sink   =< frame.sink.fork();
 
-    while( !control.source.eos() && !control.exit_loop() )
+    while( !control.source.eos() && !control.exit_loop() && !o.loop_callback() )
     {
-        control.sink.push_fa( "\n#<sc_t>#<sc_t>(#<sc_t>)> ", control.path.sc, control.path.size ? " " : "", bnameof( o._ ) ).flush();
+        if( control.prompt.size > 0 )
+        {
+            control.sink.push_fa( "\n#<sc_t>> ", control.prompt.sc ).flush();
+        }
+        else
+        {
+            control.sink.push_fa( "\n#<sc_t>#<sc_t>(#<sc_t>)> ", control.path.sc, control.path.size ? " " : "", bnameof( o._ ) ).flush();
+        }
         control.reset();
 
         st_s^ expression;
         control.source.parse_fa( " #until'\n'#skip'\n'", expression.1 );
-        if( control.hmap_alias.exists( btypeof( expression.sc ) ) )
-        {
-            expression.copy( control.hmap_alias.c_get( btypeof( expression.sc ) ) );
-        }
-
-        m$* line_source = x_source_create_from_st( expression )^;
 
         if( expression.size > 0 )
         {
-            bl_t found = false;
-
-            foreach( tp_t t in o.get_op_stamps()^ )
+            if( control.hmap_alias.exists( btypeof( expression.sc ) ) )
             {
-                m :op* op = x_inst_t_create( t ).t_scope( t );
-                if( op.parse_match( line_source ) )
-                {
-                    if( op.parse_param( line_source, control.sink ) )
-                    {
-                        op.run( o, frame, control.source, control.sink, control );
-                    }
-                    found = true;
-                    break;
-                }
+                expression.copy( control.hmap_alias.c_get( btypeof( expression.sc ) ) );
             }
 
-            if( !found )
+            if( !o.run_expression( frame, control, x_source_create_from_st( expression )^ ) )
             {
-                control.sink.push_fa( "Syntax error.\n" );
+                control.sink.push_fa( "Syntax error in expression '#<sc_t>'\n", expression.sc );
                 o.help_to_sink( control, control.sink );
             }
         }
@@ -440,6 +480,7 @@ group :op_default = retrievable
                         case u0_t~: case u1_t~: case u2_t~: case u3_t~:
                         case s0_t~: case s1_t~: case s2_t~: case s3_t~:
                         case bl_t~: case uz_t~: case sz_t~: case tp_t~:
+                        case f2_t~: case f3_t~:
                         {
                             sr_s^ sr;
                             sr = x_stamp_t_c_get_sr( v, t, name );

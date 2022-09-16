@@ -51,7 +51,7 @@ void bcore_img_u2_s_set_size( bcore_img_u2_s* o, uz_t rows, uz_t cols )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bcore_img_u2_s_pnm_to_sink( const bcore_img_u2_s* o, bcore_sink* snk )
+const bcore_img_u2_s* bcore_img_u2_s_pnm_to_sink( const bcore_img_u2_s* o, bcore_sink* snk )
 {
     bcore_sink_a_push_fa( snk, "P6\n#<uz_t> #<uz_t>\n255\n", o->cols, o->rows );
     for( sz_t i = 0; i < o->rows; i++ )
@@ -63,20 +63,22 @@ void bcore_img_u2_s_pnm_to_sink( const bcore_img_u2_s* o, bcore_sink* snk )
             bcore_sink_a_push_data( snk, rgb, 3 );
         }
     }
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bcore_img_u2_s_pnm_to_file( const bcore_img_u2_s* o, sc_t file )
+const bcore_img_u2_s* bcore_img_u2_s_pnm_to_file( const bcore_img_u2_s* o, sc_t file )
 {
     bcore_sink* snk = ( bcore_sink* )bcore_sink_open_file( file );
     bcore_img_u2_s_pnm_to_sink( o, snk );
     bcore_inst_a_discard( snk );
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bcore_img_u2_s_pnm_from_source( bcore_img_u2_s* o, bcore_source* source )
+bcore_img_u2_s* bcore_img_u2_s_pnm_from_source( bcore_img_u2_s* o, bcore_source* source )
 {
     BLM_INIT();
 
@@ -118,15 +120,17 @@ void bcore_img_u2_s_pnm_from_source( bcore_img_u2_s* o, bcore_source* source )
     }
 
     BLM_DOWN();
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bcore_img_u2_s_pnm_from_file( bcore_img_u2_s* o, sc_t file )
+bcore_img_u2_s* bcore_img_u2_s_pnm_from_file( bcore_img_u2_s* o, sc_t file )
 {
     bcore_source* src = ( bcore_source* )bcore_source_open_file( file );
     bcore_img_u2_s_pnm_from_source( o, src );
     bcore_inst_a_discard( src );
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-//  Last update: 2022-06-07T14:00:37Z
+//  Last update: 2022-08-24T12:03:38Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -1741,16 +1741,22 @@
   BCORE_FORWARD_OBJECT( bcore_shell_op_default ); \
   bcore_arr_tp_s* bcore_shell_get_op_stamps( const bcore_shell* o ); \
   void bcore_shell_help_to_sink( bcore_shell* o, const bcore_shell_control_s* control, bcore_sink* sink ); \
+  bl_t bcore_shell_run_expression( bcore_shell* o, const bcore_main_frame_s* frame, bcore_shell_control_s* control, x_source* expression ); \
   er_t bcore_shell_loop( bcore_shell* o, const bcore_main_frame_s* frame, bcore_shell_control_s* control ); \
+  typedef bl_t (*bcore_shell_loop_callback)(bcore_shell* o ); \
   typedef tp_t (*bcore_shell_op_group)(const bcore_shell* o ); \
   typedef void (*bcore_shell_push_op_groups)(const bcore_shell* o, bcore_arr_tp_s* list ); \
   XOILA_DECLARE_SPECT( bcore_shell ) \
   { \
       bcore_spect_header_s header; \
+      bcore_shell_loop_callback loop_callback; \
       bcore_shell_op_group op_group; \
       bcore_shell_push_op_groups push_op_groups; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_shell ) \
+  static inline bl_t bcore_shell_a_loop_callback( bcore_shell* o ){ const bcore_shell_spect_s* p = bcore_shell_spect_s_get_aware( o ); assert( p->loop_callback ); return p->loop_callback( o );} \
+  static inline bl_t bcore_shell_defines_loop_callback( const bcore_shell* o ){ return  true;} \
+  static inline bl_t bcore_shell_loop_callback_default( bcore_shell* o ){return  false;} \
   BETH_EXPAND_GROUP_bcore_shell_op \
   BETH_EXPAND_GROUP_bcore_shell_control \
   static inline tp_t bcore_shell_a_op_group( const bcore_shell* o ){ const bcore_shell_spect_s* p = bcore_shell_spect_s_get_aware( o ); assert( p->op_group ); return p->op_group( o );} \
@@ -1817,6 +1823,7 @@
       x_hmap_tp_st_s hmap_alias; \
       bl_t exit_loop; \
       st_s path; \
+      st_s prompt; \
   }; \
   static inline bcore_shell_control_s* bcore_shell_control_s_reset( bcore_shell_control_s* o ); \
   static inline void bcore_shell_control_s_request_exit_loop( bcore_shell_control_s* o ); \
@@ -2788,5 +2795,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x38F93B71A2A80AAA
-// XOICO_FILE_SIGNATURE 0x51D13D86137DACEB
+// XOICO_BODY_SIGNATURE 0x5CA63CE79E8B0826
+// XOICO_FILE_SIGNATURE 0xADBCB079693B4B15

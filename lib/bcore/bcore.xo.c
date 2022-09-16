@@ -1,4 +1,4 @@
-//  Last update: 2022-06-07T15:13:02Z
+//  Last update: 2022-09-14T19:32:13Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -38,6 +38,7 @@
  *  bcore_flect_inexpandable.x
  *  bcore_hmap_inexpandable.x
  *  bcore_huffman.x
+ *  bcore_img_inexpandable.x
  *  bcore_sink_inexpandable.x
  *  bcore_source_inexpandable.x
  *  bcore_sr_inexpandable.x
@@ -54,7 +55,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0xAF1834E37B48D8BBull
+// HKEYOF_bcore 0x5B232FA2F323882Aull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -1694,13 +1695,14 @@ XOILA_DEFINE_SPECT( bcore_prsg, bcore_prsg_xsg )
 XOILA_DEFINE_SPECT( x_inst, bcore_shell )
 "{"
     "bcore_spect_header_s header;"
+    "feature aware bcore_shell : loop_callback = bcore_shell_loop_callback_default;"
     "feature aware bcore_shell : op_group = bcore_shell_op_group_default;"
     "feature aware bcore_shell : push_op_groups = bcore_shell_push_op_groups_default;"
 "}";
 
 void bcore_shell_push_op_groups_default( const bcore_shell* o, bcore_arr_tp_s* list )
 {
-    // bcore_shell.h:281:1
+    // bcore_shell.h:288:1
     
     bcore_arr_tp_s_push(list,bcore_shell_a_op_group(o) );
     if( !bcore_arr_tp_s_exists(list,((tp_t)(TYPEOF_bcore_shell_op_default)) ) ) bcore_arr_tp_s_push(list,((tp_t)(TYPEOF_bcore_shell_op_default)) );
@@ -1708,7 +1710,7 @@ void bcore_shell_push_op_groups_default( const bcore_shell* o, bcore_arr_tp_s* l
 
 bcore_arr_tp_s* bcore_shell_get_op_stamps( const bcore_shell* o )
 {
-    // bcore_shell.h:289:1
+    // bcore_shell.h:296:1
     BLM_INIT_LEVEL(0);
     bcore_arr_tp_s op_groups;BLM_T_INIT_SPUSH(bcore_arr_tp_s, &op_groups);;
     bcore_shell_a_push_op_groups(o,&(op_groups ));
@@ -1719,7 +1721,7 @@ bcore_arr_tp_s* bcore_shell_get_op_stamps( const bcore_shell* o )
 
 void bcore_shell_help_to_sink( bcore_shell* o, const bcore_shell_control_s* control, bcore_sink* sink )
 {
-    // bcore_shell.h:300:1
+    // bcore_shell.h:307:1
     BLM_INIT_LEVEL(0);
     bcore_arr_tp_s op_groups;BLM_T_INIT_SPUSH(bcore_arr_tp_s, &op_groups);;
     bcore_shell_a_push_op_groups(o,&(op_groups ));
@@ -1764,52 +1766,73 @@ void bcore_shell_help_to_sink( bcore_shell* o, const bcore_shell_control_s* cont
     BLM_DOWN();
 }
 
+bl_t bcore_shell_run_expression( bcore_shell* o, const bcore_main_frame_s* frame, bcore_shell_control_s* control, x_source* expression )
+{
+    // bcore_shell.h:363:1
+    BLM_INIT_LEVEL(0);
+    bl_t found = false;
+    
+    BLM_TRY_EXIT(x_source_parse_fa(expression," #-?';' " ))
+    
+    {BLM_INIT_LEVEL(1);const bcore_arr_tp_s* __a=((bcore_arr_tp_s*)BLM_LEVEL_T_PUSH(1,bcore_arr_tp_s,bcore_shell_get_op_stamps(o))) ;if(__a)for(sz_t __i=0;__i<__a->size;__i++){tp_t t=__a->data[__i];
+    {
+        bcore_shell_op* op =((bcore_shell_op*)( ((x_inst*)BLM_LEVEL_TV_PUSH(0,t ,x_inst_t_create(t )))));
+        if( bcore_shell_op_parse_match(op,expression ) )
+        {
+            if( bcore_shell_op_parse_param(op,expression,((bcore_sink*)( control->sink ))) )
+            {
+                bcore_shell_op_a_run(op,o,
+                    frame,
+                    control ? control->source : x_source_stdin(),((bcore_sink*)(
+                    control ? control->sink   : x_sink_stdout())),
+                    control
+                );
+            }
+            found = true;
+            break;
+        }
+    }
+    
+    }BLM_DOWN();}BLM_TRY_EXIT(x_source_parse_fa(expression," " ))
+    BLM_RETURNV(bl_t, ( found && !x_source_eos(expression) ) ? bcore_shell_run_expression(o,frame, control, expression ) || found : found)
+}
+
 er_t bcore_shell_loop( bcore_shell* o, const bcore_main_frame_s* frame, bcore_shell_control_s* control )
 {
-    // bcore_shell.h:353:1
+    // bcore_shell.h:403:1
     BLM_INIT_LEVEL(0);
     if( !control        ) control = ((bcore_shell_control_s*)BLM_LEVEL_T_PUSH(0,bcore_shell_control_s,bcore_shell_control_s_create()));
     if( !control->source ) x_source_a_attach( &(control->source ), (x_source*)( ((bcore_source*)bcore_fork(frame->source))));
     if( !control->sink   ) x_sink_a_attach( &(control->sink   ), (x_sink*)( ((bcore_sink*)bcore_fork(frame->sink))));
     
-    while( !x_source_eos(control->source) && !bcore_shell_control_s_exit_loop(control) )
+    while( !x_source_eos(control->source) && !bcore_shell_control_s_exit_loop(control) && !bcore_shell_a_loop_callback(o) )
     {BLM_INIT_LEVEL(1);
-        x_sink_flush(x_sink_push_fa(control->sink,"\n#<sc_t>#<sc_t>(#<sc_t>)> ", control->path.sc, control->path.size ? " " : "", bnameof( o->_ ) ));
+        if( control->prompt.size > 0 )
+        {
+            x_sink_flush(x_sink_push_fa(control->sink,"\n#<sc_t>> ", control->prompt.sc ));
+        }
+        else
+        {
+            x_sink_flush(x_sink_push_fa(control->sink,"\n#<sc_t>#<sc_t>(#<sc_t>)> ", control->path.sc, control->path.size ? " " : "", bnameof( o->_ ) ));
+        }
         bcore_shell_control_s_reset(control);
     
         st_s expression;BLM_T_INIT_SPUSH(st_s, &expression);;
         BLM_TRY(x_source_parse_fa(control->source," #until'\n'#skip'\n'", (&(expression)) ))
-        if( x_hmap_tp_exists(((const x_hmap_tp*)(&(control->hmap_alias))),btypeof( expression.sc ) ) )
-        {
-            st_s_copy(&(expression),((const st_s*)(x_hmap_tp_c_get(((const x_hmap_tp*)(&(control->hmap_alias))),btypeof( expression.sc ) ))) );
-        }
-    
-        x_source* line_source = ((x_source*)BLM_LEVEL_A_PUSH(1,x_source_create_from_st(&(expression ))));
     
         if( expression.size > 0 )
-        {
-            bl_t found = false;
-    
-            {BLM_INIT_LEVEL(3);const bcore_arr_tp_s* __a=((bcore_arr_tp_s*)BLM_LEVEL_T_PUSH(3,bcore_arr_tp_s,bcore_shell_get_op_stamps(o))) ;if(__a)for(sz_t __i=0;__i<__a->size;__i++){tp_t t=__a->data[__i];
+        {BLM_INIT_LEVEL(2);
+            if( x_hmap_tp_exists(((const x_hmap_tp*)(&(control->hmap_alias))),btypeof( expression.sc ) ) )
             {
-                bcore_shell_op* op =((bcore_shell_op*)( ((x_inst*)BLM_LEVEL_TV_PUSH(0,t ,x_inst_t_create(t )))));
-                if( bcore_shell_op_parse_match(op,line_source ) )
-                {
-                    if( bcore_shell_op_parse_param(op,line_source,((bcore_sink*)( control->sink ))) )
-                    {
-                        bcore_shell_op_a_run(op,o, frame, control->source,((bcore_sink*)( control->sink)), control );
-                    }
-                    found = true;
-                    break;
-                }
+                st_s_copy(&(expression),((const st_s*)(x_hmap_tp_c_get(((const x_hmap_tp*)(&(control->hmap_alias))),btypeof( expression.sc ) ))) );
             }
     
-            }BLM_DOWN();}if( !found )
+            if( !bcore_shell_run_expression(o,frame, control, ((x_source*)BLM_LEVEL_A_PUSH(2,x_source_create_from_st(&(expression )))) ) )
             {
-                x_sink_push_fa(control->sink,"Syntax error.\n" );
+                x_sink_push_fa(control->sink,"Syntax error in expression '#<sc_t>'\n", expression.sc );
                 bcore_shell_help_to_sink(o,control,((bcore_sink*)( control->sink )));
             }
-        }
+        BLM_DOWN();}
     BLM_DOWN();}
     
     control->exit_loop = false;
@@ -1831,7 +1854,7 @@ XOILA_DEFINE_SPECT( bcore_shell, bcore_shell_op )
 
 bl_t bcore_shell_op_key_match( const bcore_shell_op* o, sc_t key )
 {
-    // bcore_shell.h:63:5
+    // bcore_shell.h:68:5
     BLM_INIT_LEVEL(0);
     st_s st_key;BLM_T_INIT_SPUSH(st_s, &st_key);;
     bcore_shell_op_a_get_key(o,(&(st_key)) );
@@ -1854,23 +1877,23 @@ bl_t bcore_shell_op_key_match( const bcore_shell_op* o, sc_t key )
 
 bl_t bcore_shell_op_parse_match( bcore_shell_op* o, x_source* source )
 {
-    // bcore_shell.h:88:5
+    // bcore_shell.h:93:5
     BLM_INIT_LEVEL(0);
     st_s key;BLM_T_INIT_SPUSH(st_s, &key);;
-    BLM_TRY_EXIT(x_source_parse_fa(source,"#=until' '", (&(key)) ))
+    BLM_TRY_EXIT(x_source_parse_fa(source,"#=name", (&(key)) ))
     if( key.size == 0 ) BLM_RETURNV(bl_t, false)
     if( !bcore_shell_op_key_match(o,key.sc ) ) BLM_RETURNV(bl_t, false)
-    BLM_TRY_EXIT(x_source_parse_fa(source,"#-until' '" ))
+    BLM_TRY_EXIT(x_source_parse_fa(source,"#-name" ))
     BLM_RETURNV(bl_t, true)
 }
 
 bl_t bcore_shell_op_parse_param( bcore_shell_op* o, x_source* source, bcore_sink* sink )
 {
-    // bcore_shell.h:102:5
+    // bcore_shell.h:107:5
     
     sz_t direct_index = 0;
     BLM_TRY_EXIT(x_source_parse_fa(source,"#skip' \t'" ))
-    while( !x_source_eos(source) && !x_source_parse_bl(source,"#?'\n'" ) )
+    while( !x_source_eos(source) && !x_source_parse_bl(source,"#?([0]==';'||[0]=='\n')" ) )
     {
         x_stamp* stamp =((x_stamp*)( o));
     
@@ -1968,7 +1991,7 @@ bl_t bcore_shell_op_parse_param( bcore_shell_op* o, x_source* source, bcore_sink
 
 void bcore_shell_op_arg_signature_to_sink( bcore_shell_op* o, bcore_sink* sink )
 {
-    // bcore_shell.h:203:5
+    // bcore_shell.h:208:5
     
     x_stamp* v =((x_stamp*)( o));
     for(sz_t i = 0; i < x_stamp_size(v); i++ )
@@ -2017,6 +2040,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_shell_control_s )
     "x_hmap_tp_st_s hmap_alias;"
     "bl_t exit_loop;"
     "st_s path;"
+    "st_s prompt;"
 "}";
 
 XOILA_DEFINE_SPECT( bcore_shell, bcore_shell_control )
@@ -2046,7 +2070,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_shell_op_default_ls_s )
 
 void bcore_shell_op_default_ls_s_run( bcore_shell_op_default_ls_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, x_source* source, bcore_sink* sink, bcore_shell_control_s* control )
 {
-    // bcore_shell.h:420:9
+    // bcore_shell.h:460:9
     BLM_INIT_LEVEL(0);
     x_stamp_path_s path;BLM_T_INIT_SPUSH(x_stamp_path_s, &path);x_stamp_path_s_parse(&(path),((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(o->path.sc ))) );
     sr_s sr = x_stamp_path_s_get_sr_in(&(path),((const x_inst*)(obj )));
@@ -2070,7 +2094,8 @@ void bcore_shell_op_default_ls_s_run( bcore_shell_op_default_ls_s* o, bcore_shel
                 case ((tp_t)(TYPEOF_u0_t)): case ((tp_t)(TYPEOF_u1_t)): case ((tp_t)(TYPEOF_u2_t)): case ((tp_t)(TYPEOF_u3_t)):
                 case ((tp_t)(TYPEOF_s0_t)): case ((tp_t)(TYPEOF_s1_t)): case ((tp_t)(TYPEOF_s2_t)): case ((tp_t)(TYPEOF_s3_t)):
                 case ((tp_t)(TYPEOF_bl_t)): case ((tp_t)(TYPEOF_uz_t)): case ((tp_t)(TYPEOF_sz_t)): case ((tp_t)(TYPEOF_tp_t)):
-                {BLM_INIT_LEVEL(17);
+                case ((tp_t)(TYPEOF_f2_t)): case ((tp_t)(TYPEOF_f3_t)):
+                {BLM_INIT_LEVEL(19);
                     sr_s sr;BLM_T_INIT_SPUSH(sr_s, &sr);;
                     sr = x_stamp_t_c_get_sr( v,t, name );
                     if( sr.o )
@@ -2104,7 +2129,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_shell_op_default_enter_s )
 
 void bcore_shell_op_default_enter_s_run( bcore_shell_op_default_enter_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, x_source* source, bcore_sink* sink, bcore_shell_control_s* control )
 {
-    // bcore_shell.h:472:9
+    // bcore_shell.h:513:9
     BLM_INIT_LEVEL(0);
     const x_stamp_path_s* path = x_stamp_path_s_parse(((x_stamp_path_s*)BLM_LEVEL_T_PUSH(0,x_stamp_path_s,x_stamp_path_s_create())),((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(&(o->path )))) );
     if( path->size == 0 )
@@ -2159,7 +2184,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_shell_op_default_get_s )
 
 void bcore_shell_op_default_get_s_run( bcore_shell_op_default_get_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, x_source* source, bcore_sink* sink, bcore_shell_control_s* control )
 {
-    // bcore_shell.h:520:9
+    // bcore_shell.h:561:9
     BLM_INIT_LEVEL(0);
     sr_s sr = x_stamp_path_s_get_sr_in(x_stamp_path_s_parse(((x_stamp_path_s*)BLM_LEVEL_T_PUSH(0,x_stamp_path_s,x_stamp_path_s_create())),((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(&(o->path )))) ),((const x_inst*)(obj )));
     if( sr.o )
@@ -2185,7 +2210,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_shell_op_default_set_s )
 
 void bcore_shell_op_default_set_s_run( bcore_shell_op_default_set_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, x_source* source, bcore_sink* sink, bcore_shell_control_s* control )
 {
-    // bcore_shell.h:540:9
+    // bcore_shell.h:581:9
     BLM_INIT_LEVEL(0);
     sr_s sr = x_stamp_path_s_get_sr_in(x_stamp_path_s_parse(((x_stamp_path_s*)BLM_LEVEL_T_PUSH(0,x_stamp_path_s,x_stamp_path_s_create())),((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(&(o->path )))) ),((const x_inst*)(obj )));
     if( sr.o )
@@ -2226,7 +2251,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_shell_op_default_alias_s )
 
 void bcore_shell_op_default_alias_s_run( bcore_shell_op_default_alias_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, x_source* source, bcore_sink* sink, bcore_shell_control_s* control )
 {
-    // bcore_shell.h:575:9
+    // bcore_shell.h:616:9
     
     if( o->key.size == 0 )
     {
@@ -5098,6 +5123,8 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             // source: bcore_shell.h
 
             // group: bcore_shell
+            BCORE_REGISTER_FEATURE( bcore_shell_loop_callback );
+            BCORE_REGISTER_FFUNC( bcore_shell_loop_callback, bcore_shell_loop_callback_default );
             BCORE_REGISTER_FEATURE( bcore_shell_op_group );
             BCORE_REGISTER_FFUNC( bcore_shell_op_group, bcore_shell_op_group_default );
             BCORE_REGISTER_FEATURE( bcore_shell_push_op_groups );
@@ -5257,5 +5284,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x5CB036D9368904E7
-// XOICO_FILE_SIGNATURE 0xD7FF8E74B02F92AF
+// XOICO_BODY_SIGNATURE 0x9FCC9EB0C1D02316
+// XOICO_FILE_SIGNATURE 0x9C83482F245A70F3
