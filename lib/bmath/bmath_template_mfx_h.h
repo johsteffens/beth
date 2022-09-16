@@ -133,7 +133,7 @@ typedef bl_t (*BCATU(bmath_fp,mfx,s,hsm_piv))( const bmath_mfx_s* o, fx_t eps, b
 /// Matrix object of fx_t (bmath_mfx_s)
 
 void BCATU(bmath_mfx_s,clear)(    bmath_mfx_s* o );
-void BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols );
+bmath_mfx_s* BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols );
 
 /** Sets all matrix elements to random values.
  *  hsm: true: Creates a symmetric matrix

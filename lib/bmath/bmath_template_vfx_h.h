@@ -99,19 +99,14 @@ static inline bl_t BCATU(bmath_vfx_s,is_equ)( const bmath_vfx_s* o, const bmath_
 static inline bl_t BCATU(bmath_vfx_s,is_zro)( const bmath_vfx_s* o ) { return BCATU(bmath_vfx_s,is_near_zro)( o, 0 ); }
 
 /// sqrt(sum over squared differences)
-fx_t BCATU(bmath_vfx_s,fdev)( const bmath_vfx_s* o, const bmath_vfx_s* op );
+f3_t BCATU(bmath_vfx_s,fdev)( const bmath_vfx_s* o, const bmath_vfx_s* op );
 
 /// vector is nan if at least one element is nan
 bl_t BCATU(bmath_vfx_s,is_nan)( const bmath_vfx_s* o );
 
 /// total sum of squares
 fx_t BCATU(bmath_vfx_s,fx_tss)( const bmath_vfx_s* o );
-
-// backward compatibility
-static inline fx_t BCATU(bmath_vfx_s,tss)( const bmath_vfx_s* o )
-{
-    return BCATU(bmath_vfx_s,fx_tss)( o );
-}
+f3_t BCATU(bmath_vfx_s,tss)   ( const bmath_vfx_s* o );
 
 /** fdev = ||f(o) - x||
  *  '|| ... ||' = Frobenius norm  ( sqrt(sum over squares) )

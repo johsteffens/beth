@@ -32,9 +32,10 @@ void BCATU(bmath_mfx_s,clear)( bmath_mfx_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols )
+bmath_mfx_s* BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols )
 {
     bcore_matrix_a_set_size( ( bcore_matrix* )o, rows, cols );
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

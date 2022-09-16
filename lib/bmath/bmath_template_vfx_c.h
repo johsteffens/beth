@@ -308,12 +308,12 @@ bl_t BCATU(bmath_vfx_s,is_near_zro)( const bmath_vfx_s* o, fx_t max_dev )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-fx_t BCATU(bmath_vfx_s,fdev)( const bmath_vfx_s* o, const bmath_vfx_s* op )
+f3_t BCATU(bmath_vfx_s,fdev)( const bmath_vfx_s* o, const bmath_vfx_s* op )
 {
     ASSERT( o->size == op->size );
-    fx_t sum = 0;
-    for( sz_t i = 0 ; i < o->size;  i++ ) sum += BCATU(fx,sqr)( o->data[ i ] - op->data[ i ] );
-    return BCATU(fx,srt)( sum );
+    f3_t sum = 0;
+    for( sz_t i = 0 ; i < o->size;  i++ ) sum += f3_sqr( o->data[ i ] - op->data[ i ] );
+    return f3_srt( sum );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -330,6 +330,15 @@ fx_t BCATU(bmath_vfx_s,fx_tss)( const bmath_vfx_s* o )
 {
     fx_t sum = 0;
     for( uz_t i = 0; i < o->size; i++ ) sum += BCATU(fx,sqr)( o->data[ i ] );
+    return sum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+f3_t BCATU(bmath_vfx_s,tss)( const bmath_vfx_s* o )
+{
+    f3_t sum = 0;
+    for( uz_t i = 0; i < o->size; i++ ) sum += f3_sqr( o->data[ i ] );
     return sum;
 }
 

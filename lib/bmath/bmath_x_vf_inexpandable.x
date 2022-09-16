@@ -81,7 +81,8 @@ stamp bmath_vf2_s =
     func bl_t is_nan( @* o );
 
     /// total sum of squares
-    func f2_t fx_tss( @* o );
+    func f2_t fx_tss( @* o ); // deprecated (use tss())
+    func f3_t tss( @* o );
 
     /** fdev = ||f(o) - x||
      *  '|| ... ||' = Frobenius norm  ( sqrt(sum over squares) )
@@ -214,7 +215,8 @@ stamp bmath_vf3_s =
     func bl_t is_nan( @* o );
 
     /// total sum of squares
-    func f3_t fx_tss( @* o );
+    func f3_t fx_tss( @* o ); // deprecated (use tss)
+    func f3_t tss( @* o );
 
     /** fdev = ||f(o) - x||
      *  '|| ... ||' = Frobenius norm  ( sqrt(sum over squares) )
