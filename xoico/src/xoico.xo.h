@@ -1,4 +1,4 @@
-//  Last update: 2022-05-19T09:35:58Z
+//  Last update: 2022-07-05T14:42:04Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -1243,7 +1243,7 @@
   static inline bl_t xoico_compiler_s_update_required( xoico_compiler_s* o ); \
   static inline sz_t xoico_compiler_s_get_verbosity( const xoico_compiler_s* o ); \
   static inline tp_t xoico_compiler_s_entypeof( xoico_compiler_s* o, sc_t name ); \
-  static inline sc_t xoico_compiler_s_nameof( const xoico_compiler_s* o, tp_t type ); \
+  sc_t xoico_compiler_s_nameof( const xoico_compiler_s* o, tp_t type ); \
   void xoico_compiler_s_init_x( xoico_compiler_s* o ); \
   void xoico_compiler_s_push_d( xoico_compiler_s* o, xoico_target_s* target ); \
   static inline void xoico_compiler_s_clear_flags( xoico_compiler_s* o ); \
@@ -1270,7 +1270,6 @@
   static inline bl_t xoico_compiler_s_update_required( xoico_compiler_s* o ){ return  xoico_compiler_s_to_be_modified(o);} \
   static inline sz_t xoico_compiler_s_get_verbosity( const xoico_compiler_s* o ){ return  o->verbosity;} \
   static inline tp_t xoico_compiler_s_entypeof( xoico_compiler_s* o, sc_t name ){ return  bcore_hmap_name_s_set_sc(&(o->name_map),name );} \
-  static inline sc_t xoico_compiler_s_nameof( const xoico_compiler_s* o, tp_t type ){ return  bcore_hmap_name_s_get_sc(&(o->name_map),type );} \
   static inline void xoico_compiler_s_clear_flags( xoico_compiler_s* o ){ {const xoico_compiler_s* __a=o ;if(__a)for(sz_t __i=0;__i<__a->size;__i++){xoico_target_s* e=__a->data[__i]; e->flag = false;}}}
 #define BETH_EXPAND_GROUP_xoico_compiler \
   BCORE_FORWARD_OBJECT( xoico_compiler ); \
@@ -2019,5 +2018,5 @@ BETH_EXPAND_GROUP_xoico_builder
 BETH_EXPAND_GROUP_xoico_main
 
 #endif // __xoico_xo_H
-// XOICO_BODY_SIGNATURE 0x92FEB976CC652D8B
-// XOICO_FILE_SIGNATURE 0x21C10E1272C5FFDA
+// XOICO_BODY_SIGNATURE 0xC3EE328402A06948
+// XOICO_FILE_SIGNATURE 0x3F2C6F21C30CC425

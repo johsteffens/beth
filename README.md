@@ -21,7 +21,6 @@
 
 ```
 $ git clone https://github.com/johsteffens/beth.git
-$ git clone https://github.com/johsteffens/xoico.git
 $ cd beth
 $ make
 ```
@@ -182,7 +181,7 @@ X provides many high level features such as polymorphism, reflection, object ref
 object lifetime management, generic dynamic arrays, dynamic arrays of virtual objects, iteration,
 generic serialization (binary and editable text), namespaces, etc.
 
-The language is defined by the compiler [xoico](https://github.com/johsteffens/xoico), 
+The language is defined by the compiler [xoico](https://github.com/johsteffens/beth/xoico), 
 which is itself 100% coded in xoila. Xoico and Beth form an ecosystem.
 
 Dedicated (pure) X code resides in files with extension *.x.

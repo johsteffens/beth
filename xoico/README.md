@@ -15,8 +15,7 @@ Configuration files `*_xoico.cfg` specify how xoico is to navigate through the s
 
 ```
 $ git clone https://github.com/johsteffens/beth
-$ git clone https://github.com/johsteffens/xoico
-$ cd xoico
+$ cd beth/xoico
 $ make
 ```
 
@@ -32,7 +31,7 @@ with a C-Compiler.
 
 ## About Xoila
 
-Xoila is a programming-language, which was designed along with
+Xoila is a programming-language, which was conceived along with
 the [beth](https://github.com/johsteffens/beth)-framework.
 
 Xoila-code is can be embedded in c-header files. 

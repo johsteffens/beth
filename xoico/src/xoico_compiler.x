@@ -278,7 +278,12 @@ stamp :s = aware :
     func :.get_verbosity { return o.verbosity; };
 
     func :.entypeof { return o.name_map.set_sc( name ); };
-    func :.nameof   { return o.name_map.get_sc( type ); };
+    func :.nameof
+    {
+        sc_t name = o.name_map.get_sc( type );
+        if( !name ) name = ifnameof( type );
+        return name;
+    };
 
     func bcore_inst_call.init_x
     {
