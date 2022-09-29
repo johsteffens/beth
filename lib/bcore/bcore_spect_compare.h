@@ -18,6 +18,7 @@
 
 /** Generic comparison of two objects of the same type.
  *  Determines equality and induces a canonic order of instances.
+ *  Only elements accessible by via perspective are considered.
  *  The comparison function returns...
  *      ==0 when both objects are equal.
  *       >0 when object1 is ordered before object2
