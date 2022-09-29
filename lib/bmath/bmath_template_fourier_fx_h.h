@@ -54,6 +54,7 @@ void BCATU(bmath_fourier,fx,dft)( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t
  *  - Accuracy: f2,f3 both stable up to very large sizes (see function test_fourier_accuracy)
  *              Deviation remains below 0.1% of vector norm for all tested sizes.
  *  - AVX2 optimized
+ *  - Allocates an internal buffer. Use fft_buf below to use a preallocated buffer
  */
 void BCATU(bmath_fourier,fx,fft)( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t size );
 
@@ -61,6 +62,8 @@ void BCATU(bmath_fourier,fx,fft)( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t
  *  Start with buf = NULL or buf = bcore_malloc( sizeof( bmath_cfx_s ) * size )
  *  Continue with buf = return from previous call (size <= size of first call)
  *  Finish by keeping ownership of returned_buf (e.g. bcore_free( returned_buf ))
+ *  - dst==src allowed when buf!=src
+ *  - buf==src allowed when dst!=src
  */
 vd_t BCATU(bmath_fourier,fx,fft_buf)( const bmath_cfx_s* src, bmath_cfx_s* dst, uz_t size, vd_t buf );
 

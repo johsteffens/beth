@@ -55,6 +55,7 @@ group bmath_fourier =
      *  - Accuracy: f2,f3 both stable up to very large sizes (see function test_fourier_accuracy)
      *              Deviation remains below 0.1% of vector norm for all tested sizes.
      *  - AVX2 optimized
+     *  - Allocates an internal buffer. Use fft_buf below to re-use a preallocated buffer.
      */
     func void f2_fft( const bmath_cf2_s* src, bmath_cf2_s* dst, uz_t size );
     func void f3_fft( const bmath_cf3_s* src, bmath_cf3_s* dst, uz_t size );
@@ -63,6 +64,12 @@ group bmath_fourier =
      *  Start with buf = NULL or buf = bcore_malloc( sizeof( bmath_cfx_s ) * size )
      *  Continue with buf = return from previous call (size <= size of first call)
      *  Finish by keeping ownership of returned_buf (e.g. bcore_free( returned_buf ))
+     *
+     *  - buf!=dst required
+     *  - dst==src allowed
+     *  - buf==src allowed
+     *
+     *  Other specs: see fx_fft above
      */
     func vd_t f2_fft_buf( const bmath_cf2_s* src, bmath_cf2_s* dst, uz_t size, vd_t buf );
     func vd_t f3_fft_buf( const bmath_cf3_s* src, bmath_cf3_s* dst, uz_t size, vd_t buf );

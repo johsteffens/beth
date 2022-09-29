@@ -30,6 +30,75 @@ XOILA_DEFINE_GROUP( bmath_cosine, x_inst )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/** Discrete cosine transform.
+ */
+group :dct
+{
+    stamp :f3_s
+    {
+        /// reusable buffer for temporary data
+        $ hidden bmath_vcf3_s => buf_;
+
+        // DCT2 direct implementation (slow)
+        func void df( c f3_t* src, m f3_t* dst, sz_t size );
+        func dst dfv( m@* o, c bmath_vf3_s* src, m bmath_vf3_s* dst );
+
+        // Inverse of DCT2 direct implementation (slow)  (DCT3 with factor 2/N)
+        func void di( c f3_t* src, m f3_t* dst, sz_t size );
+        func dst div( m@* o, c bmath_vf3_s* src, m bmath_vf3_s* dst );
+
+        /** DCT Fast Forward Transformation (via FFT)
+         *  Transforms size source-samples into size destination samples
+         *  src, dst can be the same pointer
+         */
+        func void ff( m@* o, c f3_t* src, m f3_t* dst, sz_t size );
+        func dst ffv( m@* o, c bmath_vf3_s* src, m bmath_vf3_s* dst );
+
+        /** DCT2 Fast Inverse Transformation (via FFT)  (DCT3 with factor 2/N)
+         *  Transforms size source-samples into size destination samples
+         *  src, dst can be the same pointer
+         */
+        func void fi( m@* o, c f3_t* src, m f3_t* dst, sz_t size );
+        func dst fiv( m@* o, c bmath_vf3_s* src, m bmath_vf3_s* dst );
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    stamp :f2_s
+    {
+        /// reusable buffer for temporary data
+        $ hidden bmath_vcf2_s => buf_;
+
+        // DCT2 direct implementation (slow)
+        func void df( c f2_t* src, m f2_t* dst, sz_t size );
+        func dst dfv( m@* o, c bmath_vf2_s* src, m bmath_vf2_s* dst );
+
+        // Inverse of DCT2 direct implementation (slow)  (DCT3 with factor 2/N)
+        func void di( c f2_t* src, m f2_t* dst, sz_t size );
+        func dst div( m@* o, c bmath_vf2_s* src, m bmath_vf2_s* dst );
+
+        /** DCT Fast Forward Transformation (via FFT)
+         *  Transforms size source-samples into size destination samples
+         *  src, dst can be the same pointer
+         */
+        func void ff( m@* o, c f2_t* src, m f2_t* dst, sz_t size );
+        func dst ffv( m@* o, c bmath_vf2_s* src, m bmath_vf2_s* dst );
+
+        /** DCT2 Fast Inverse Transformation (via FFT)  (DCT3 with factor 2/N)
+         *  Transforms size source-samples into size destination samples
+         *  src, dst can be the same pointer
+         */
+        func void fi( m@* o, c f2_t* src, m f2_t* dst, sz_t size );
+        func dst fiv( m@* o, c bmath_vf2_s* src, m bmath_vf2_s* dst );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /** Modified discrete cosine transform.
  *  See beth/doc/MDCT_VIA_DFT.odt for details.
  */

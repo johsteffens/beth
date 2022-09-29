@@ -275,9 +275,14 @@ fx_t BCATU(bmath_mfx_s,fdev_otn)( const bmath_mfx_s* o ); // f = o * oT or oT * 
 fx_t BCATU(bmath_mfx_s,fx_max)( const bmath_mfx_s* o ); // maximum value
 fx_t BCATU(bmath_mfx_s,fx_min)( const bmath_mfx_s* o ); // minimum value
 fx_t BCATU(bmath_mfx_s,fx_sum)( const bmath_mfx_s* o ); // sum of all elements
-
 fx_t BCATU(bmath_mfx_s,fx_trc)( const bmath_mfx_s* o ); // trace
 fx_t BCATU(bmath_mfx_s,fx_sub_sqr)( const bmath_mfx_s* o, const bmath_mfx_s* op ); // ( o - op )^2
+
+f3_t BCATU(bmath_mfx_s,max)( const bmath_mfx_s* o ); // maximum value
+f3_t BCATU(bmath_mfx_s,min)( const bmath_mfx_s* o ); // minimum value
+f3_t BCATU(bmath_mfx_s,sum)( const bmath_mfx_s* o ); // sum of all elements
+f3_t BCATU(bmath_mfx_s,trc)( const bmath_mfx_s* o ); // trace
+f3_t BCATU(bmath_mfx_s,sub_sqr)( const bmath_mfx_s* o, const bmath_mfx_s* op ); // ( o - op )^2
 
 // functions below support folded target
 void BCATU(bmath_mfx_s,zro)(       bmath_mfx_s* o ); // set zero;                             supports folded matrix

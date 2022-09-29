@@ -212,10 +212,16 @@ group bmath_mf =
     /******************************************************************************************************************/
     /// Retrieving basic properties
 
+    signature f3_t max( @* o ); // maximum value
+    signature f3_t min( @* o ); // minimum value
+    signature f3_t sum( @* o ); // sum of all elements
+    signature f3_t trc( @* o ); // trace
+    signature f3_t sub_sqr( @* o, @* op ); // ( o - op )^2
+
+    // deprecated ...
     signature f3_t fx_max( @* o ); // maximum value
     signature f3_t fx_min( @* o ); // minimum value
     signature f3_t fx_sum( @* o ); // sum of all elements
-
     signature f3_t fx_trc( @* o ); // trace
     signature f3_t fx_sub_sqr( @* o, @* op ); // ( o - op )^2
 
@@ -846,10 +852,16 @@ stamp bmath_mf3_s = bmath_mf
     /******************************************************************************************************************/
     /// Retrieving basic properties
 
+    func bmath_mf.max;
+    func bmath_mf.min;
+    func bmath_mf.sum;
+    func bmath_mf.trc;
+    func bmath_mf.sub_sqr;
+
+    // deprecated ...
     func bmath_mf.fx_max;
     func bmath_mf.fx_min;
     func bmath_mf.fx_sum;
-
     func bmath_mf.fx_trc;
     func bmath_mf.fx_sub_sqr;
 
@@ -1143,6 +1155,13 @@ stamp bmath_mf2_s = bmath_mf
     /******************************************************************************************************************/
     /// Retrieving basic properties
 
+    func bmath_mf.max;
+    func bmath_mf.min;
+    func bmath_mf.sum;
+    func bmath_mf.trc;
+    func bmath_mf.sub_sqr;
+
+    // deprecated ...
     func f2_t fx_max( @* o ); // maximum value
     func f2_t fx_min( @* o ); // minimum value
     func f2_t fx_sum( @* o ); // sum of all elements

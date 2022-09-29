@@ -610,6 +610,75 @@ fx_t BCATU(bmath_mfx_s,fx_sub_sqr)( const bmath_mfx_s* o, const bmath_mfx_s* op 
 
 //----------------------------------------------------------------------------------------------------------------------
 
+f3_t BCATU(bmath_mfx_s,max)( const bmath_mfx_s* o )
+{
+    f3_t max = ( o->rows * o->cols > 0 ) ? o->data[ 0 ] : 0;
+
+    for( uz_t i = 0; i < o->rows; i++ )
+    {
+        const fx_t* oi = o->data + i * o->stride;
+        for( uz_t j = 0; j < o->cols; j++ ) max = f3_max( max, oi[ j ] );
+    }
+
+    return max;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+f3_t BCATU(bmath_mfx_s,min)( const bmath_mfx_s* o )
+{
+    f3_t min = ( o->rows * o->cols > 0 ) ? o->data[ 0 ] : 0;
+
+    for( uz_t i = 0; i < o->rows; i++ )
+    {
+        const fx_t* oi = o->data + i * o->stride;
+        for( uz_t j = 0; j < o->cols; j++ ) min = f3_min( min, oi[ j ] );
+    }
+    return min;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+f3_t BCATU(bmath_mfx_s,sum)( const bmath_mfx_s* o )
+{
+    f3_t sum = 0;
+
+    for( uz_t i = 0; i < o->rows; i++ )
+    {
+        const fx_t* oi = o->data + i * o->stride;
+        for( uz_t j = 0; j < o->cols; j++ ) sum += oi[ j ];
+    }
+
+    return sum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+f3_t BCATU(bmath_mfx_s,trc)( const bmath_mfx_s* o )
+{
+    ASSERT( o->cols == o->rows );
+    f3_t sum = 0;
+    for( uz_t i = 0; i < o->rows; i++ ) sum += o->data[ i * ( o->stride + 1 ) ];
+    return sum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+f3_t BCATU(bmath_mfx_s,sub_sqr)( const bmath_mfx_s* o, const bmath_mfx_s* op )
+{
+    ASSERT( BCATU(bmath_mfx_s,is_equ_size)( o, op ) );
+    f3_t sum = 0;
+    for( uz_t i = 0; i < o->rows; i++ )
+    {
+        const fx_t* v1 =  o->data + i *  o->stride;
+        const fx_t* v2 = op->data + i * op->stride;
+        for( uz_t i = 0; i < o->cols; i++ ) sum += f3_sqr( v1[ i ] - v2[ i ] );
+    }
+    return sum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void BCATU(bmath_mfx_s,add)( const bmath_mfx_s* o, const bmath_mfx_s* b, bmath_mfx_s* r )
 {
     ASSERT( BCATU(bmath_mfx_s,is_equ_size)( o, b ) );

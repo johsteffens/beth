@@ -13,53 +13,7 @@
  *  limitations under the License.
  */
 
-/** Audio Capture Interface (based on the ALSA API)
- *
- *  Usage for continuous recording:
- *  - In 'my_capture_stamp':
- *    - Implement feature bmedia_audio_in.capture_feed  (mandatory, should be thread-safe)
- *  - In 'my_exit_stamp':
- *    - Implement feature bmedia_audio_in.capture_exit  (optional, should be thread-safe)
- *
- *  Setup and start capturing:
- *  - Create instance: bmedia_audio_in_s^ my_audio;
- *  - Change parameters in my_audio. (if needed)
- *  - Run: my_audio.setup()
- *  - Check/Process status values in my_audio. (if desired)
- *  - Call my_audio.stream_start()  (Turns streaming on)
- *  - Call my_audio.capture_loop( my_capture_stamp, my_exit_stamp (or NULL) )  (This function is typically called from a dedicated thread)
- *
- *  Stop capturing (optional):
- *  - Have bmedia_audio_in.capture_exit return 'true'
- *    . This causes my_audio.capture_loop to return.
- *    . Streaming stays on (!)
- *    . Call my_audio.capture_loop to restart capturing.
- *
- *  Clean shut down:
- *  - Destroy my_audio or call my_audio.shut_down()
- *    . Stops capturing.
- *    . Turns streaming off.
- *
- *  ---------------------------------
- *
- *  Usage via bmedia_audio_in_capture_thread_s:
- *  - m$* thread = bmedia_audio_in_capture_thread_s!.setup( audio, capture_feed );
- *  - When finished capturing simply destroy thread.
- *
- *  ---------------------------------
- *
- *  Usage for one-time recording:
- *  - Create instance: bmedia_audio_in_s^ my_audio;
- *  - Change parameters in my_audio. (if needed)
- *  - Run: my_audio.setup()
- *  - Check/Process status values in my_audio. (if desired)
- *  - Call my_audio.stream_record( ... ) to get the desired number of frames.
- *
- *  ---------------------------------
- *
- *  References (used for development):
- *    - ALSA Project: https://www.alsa-project.org/alsa-doc/alsa-lib/index.html
- */
+/// Audio data buffering and sequencing.
 
 include "bcore_std.h";
 include "bmath_std.h";
