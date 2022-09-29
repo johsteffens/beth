@@ -136,6 +136,7 @@ identifier bcore_folder_get_current;
 identifier sz_max;
 identifier sz_min;
 identifier sz_abs;
+identifier sz_sqr;
 identifier s3_max;
 identifier s3_min;
 identifier s3_sig;
