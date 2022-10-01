@@ -79,7 +79,7 @@ stamp :context_s
 {
     bmath_cosine_mdct_f2_s mdct;
     bmath_vf2_s mdct_vec;
-    bmedia_audio_buffer_s audio_buffer;
+    bcodec_audio_buffer_s audio_buffer;
     bmath_vf2_s audio_vec;
 }
 
@@ -321,7 +321,7 @@ group :param
         }
 
         {
-            bmedia_iso226_eql_list_s^ list;
+            bcodec_iso226_eql_list_s^ list;
 
             $* equal_loudness_func = list.eql_func_log10_f_spl( bmath_spliced_func_c1_s!^, 40 ); // 40DB curve
             $* loudness_mask_func = o.loudness_mask.log_spliced_func()^;
@@ -1198,14 +1198,14 @@ stamp :sequence_s x_array
 stamp :encoder_thread_s
 {
     :page -> page;
-    bmedia_audio_sequence_s => sequence;
+    bcodec_audio_sequence_s => sequence;
     s3_t frame_offset;
     :param_s -> param;
 
     x_thread_s thread;
     func bcore_inst_call.down_e o.thread.join();
 
-    func o ( m@* o, d : *page, d bmedia_audio_sequence_s* sequence, s3_t frame_offset, d :param_s* param, d :context_s * shared_context )
+    func o ( m@* o, d : *page, d bcodec_audio_sequence_s* sequence, s3_t frame_offset, d :param_s* param, d :context_s * shared_context )
     {
         o.thread.join();
         o.page =< page;
@@ -1235,7 +1235,7 @@ stamp :encoder_s bmedia_audio_codec_encoder
     bl_t is_setup;
 
                 :sequence_s => sequence;
-    bmedia_audio_sequence_s => sequence_buf;
+    bcodec_audio_sequence_s => sequence_buf;
 
     :encoder_thread_queue_s thread_queue;
     func bcore_inst_call.down_e o.thread_queue.clear();
@@ -1248,11 +1248,11 @@ stamp :encoder_s bmedia_audio_codec_encoder
 
     func o add_frames( m@* o, sz_t frames ) { o.pushed_frames += frames; o.buffer_frames += frames; }
 
-    func o push_buffer_d( m@* o, d bmedia_audio_buffer_s* buffer )
+    func o push_buffer_d( m@* o, d bcodec_audio_buffer_s* buffer )
     {
         if( buffer.channels != o.param.channels )
         {
-            buffer = bmedia_audio_buffer_s!.copy_spread_channels( 1.0, o.param.channels, buffer^ );
+            buffer = bcodec_audio_buffer_s!.copy_spread_channels( 1.0, o.param.channels, buffer^ );
         }
         o.add_frames( buffer.frames() ).sequence_buf.push_buffer_d( buffer );
     }
@@ -1325,7 +1325,7 @@ func (:encoder_s) o encode( m@* o, bl_t finish )
             d $* thread = :encoder_thread_s!.
             (
                 o.sequence.push_d( o.param.create_page() ).fork(),
-                bmedia_audio_sequence_s!.setup_fork_buffers( o.sequence_buf ),
+                bcodec_audio_sequence_s!.setup_fork_buffers( o.sequence_buf ),
                 o.buffer_digested_frames,
                 o.param.fork(),
                 o.context.fork()
@@ -1359,7 +1359,7 @@ func (:encoder_s) o encode( m@* o, bl_t finish )
 stamp :decoder_thread_s
 {
     :page -> page;
-    bmedia_audio_sequence_s => sequence;
+    bcodec_audio_sequence_s => sequence;
     s3_t frame_offset;
     :param_s -> param;
     :context_s -> shared_context;
@@ -1374,7 +1374,7 @@ stamp :decoder_thread_s
     (
         m@* o,
         d : *page,
-        d bmedia_audio_sequence_s* sequence,
+        d bcodec_audio_sequence_s* sequence,
         s3_t frame_offset,
         d :param_s* param,
         d :context_s* shared_context,
@@ -1412,7 +1412,7 @@ stamp :decoder_s bmedia_audio_codec_decoder
     :param_s => param;
 
                 :sequence_s => sequence;
-    bmedia_audio_sequence_s => sequence_buf;
+    bcodec_audio_sequence_s => sequence_buf;
 
     :decoder_thread_queue_s thread_queue;
     func bcore_inst_call.down_e o.thread_queue.clear();
@@ -1493,7 +1493,7 @@ func (:decoder_s) o decode( m@* o )
         d $* thread = :decoder_thread_s!.
         (
             o.sequence.[ o.sequence_index ].fork(),
-            bmedia_audio_sequence_s!.setup_fork_buffers( o.sequence_buf ),
+            bcodec_audio_sequence_s!.setup_fork_buffers( o.sequence_buf ),
             o.buffer_decoding_index * o.param.frames_per_slice(),
             o.param.fork(),
             o.context.fork(),
@@ -1518,7 +1518,7 @@ func (:decoder_s) o decode( m@* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:decoder_s) d bmedia_audio_buffer_s* pop_first_buffer( m@* o )
+func (:decoder_s) d bcodec_audio_buffer_s* pop_first_buffer( m@* o )
 {
     if( o.eos() ) = NULL;
     o.buffer_decoding_index--;

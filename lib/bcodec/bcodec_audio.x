@@ -206,18 +206,12 @@ stamp :sequence_s x_deque trans(TE :buffer_s)
         o.setup( src.channels, src.rate );
         for( sz_t i = 0; i < src.size(); i++ )
         {
-            bmedia_audio_buffer_s* src_buf = src.c_buffer( i );
-            bmedia_audio_buffer_s* next_buf = ( i + 1 < src.size() ) ? src.c_buffer( i + 1 ) : ( next && next.size() > 0 ) ? next.c_buffer( 0 ) : NULL;
-            m bmedia_audio_buffer_s* buf = o.push_empty_buffer();
+            bcodec_audio_buffer_s* src_buf = src.c_buffer( i );
+            bcodec_audio_buffer_s* next_buf = ( i + 1 < src.size() ) ? src.c_buffer( i + 1 ) : ( next && next.size() > 0 ) ? next.c_buffer( 0 ) : NULL;
+            m bcodec_audio_buffer_s* buf = o.push_empty_buffer();
             buf.copy_resample( frame_index, frame_step, scale_factor, src_buf, next_buf );
             frame_index += frame_step * buf.frames() - src_buf.frames();
         }
-    }
-
-    /// returns an iterator for sequence
-    func d :sequence_iterator_s* create_iterator( @* o )
-    {
-        = :sequence_iterator_s!.setup( o );
     }
 
     /// returns an indexer for sequence
@@ -225,61 +219,6 @@ stamp :sequence_s x_deque trans(TE :buffer_s)
     {
         = :sequence_indexer_s!.setup( o.cast( m$* ) );
     }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/** Deprecated: Use indexer below.
- *  Iterator used to seamlessly extract frames from a sequence.
- *  While the iterator is in use, the sequence should not be modified.
- */
-stamp :sequence_iterator_s =
-{
-    /// pointer to sequence
-    hidden :sequence_s* sequence;
-
-    /// copied form sequence.channels
-    s2_t channels;
-
-    /// index to current buffer in sequence
-    sz_t buffer_index;
-
-    /// index to current frame in current buffer
-    sz_t frame_index;
-
-    /// total number of frames in sequence
-    s3_t total_frames;
-
-    /// global frame index
-    s3_t global_frame_index;
-
-    /// end of sequence was reached
-    bl_t eos = true;
-
-    /// setup; sets index to zero
-    func o setup( m@* o, :sequence_s* sequence );
-
-    /// sets index to zero
-    func o reset( m@* o );
-
-    /** Move to new position.
-     *  diff(erence) can be positive or negative.
-     *  Moving to or past end of sequenced sets eos flag.
-     *  End position is truncated in case destination is out of range.
-     */
-    func o move( m@* o, s3_t diff );
-
-    /// goes to the global index (via move)
-    func o go_to( m@* o, s3_t global_frame_index );
-
-    /// obtains given number of frames; excess frames are padded with zeros
-    func o get_frames( m@* o, m s1_t* data, sz_t frames );
-
-    /// obtains given number of frames; excess frames are padded with zeros; allocates buffer
-    func o get_buffer( m@* o, m :buffer_s* buffer, sz_t frames );
-
-    /// obtains given number of frames; excess frames are padded with zeros; returns buffer of copied data
-    func d :buffer_s* create_buffer( m@* o, sz_t frames );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -320,7 +259,7 @@ stamp :sequence_indexer_s =
 
 //----------------------------------------------------------------------------------------------------------------------
 
-embed "bmedia_audio.emb.x";
+embed "bcodec_audio.emb.x";
 
 //----------------------------------------------------------------------------------------------------------------------
 

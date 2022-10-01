@@ -73,7 +73,7 @@ type snd_pcm_hwparams_t;
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Callback feature. Called when a new fragment is available.
-feature void capture_feed( m@* o, bmedia_audio_buffer_s* buf );
+feature void capture_feed( m@* o, bcodec_audio_buffer_s* buf );
 
 /// Optional callback for each loop cycle; return true to exit loop
 feature bl_t capture_exit( m@* o ) { = false; };
@@ -149,7 +149,7 @@ stamp :s
     func er_t record( m@* o, m s1_t* interleaved_samples, sz_t frames );
 
     /// Records (appends) to sequence. If sequence is empty, 'rate' and 'channels' are set appropriately.
-    func er_t record_to_sequence( m@* o, m bmedia_audio_sequence_s* sequence, sz_t frames );
+    func er_t record_to_sequence( m@* o, m bcodec_audio_sequence_s* sequence, sz_t frames );
 
     /// Starts a continuous stream (no effect if already started)
     func er_t stream_start( m@* o );
@@ -164,7 +164,7 @@ stamp :s
     func er_t stream_record( m@* o, m s1_t* interleaved_samples, sz_t frames );
 
     /// Records (appends) to sequence. If sequence is empty, 'rate' and 'channels' are set appropriately.
-    func er_t stream_record_to_sequence( m@* o, m bmedia_audio_sequence_s* sequence, sz_t frames );
+    func er_t stream_record_to_sequence( m@* o, m bcodec_audio_sequence_s* sequence, sz_t frames );
 
     /// Gentle stop of a continuous stream (by draining)
     func er_t stream_stop( m@* o );

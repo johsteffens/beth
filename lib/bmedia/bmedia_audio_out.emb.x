@@ -297,7 +297,7 @@ func (:s) sound_check
     o.setup();
     sz_t frames = 4 * o.actual_frames_per_period;
 
-    bmedia_audio_buffer_s^ buf.set_size( frames * 2, 2 );
+    bcodec_audio_buffer_s^ buf.set_size( frames * 2, 2 );
 
     f3_t pi = 3.1415926535897932384626434;
     f3_t tau = pi * 2;
@@ -380,7 +380,7 @@ func (:player_s) m_thread_func
     {
         if( o.sequence.size() > 0 )
         {
-            bmedia_audio_buffer_s* buffer = o.sequence.pop_first_buffer()^;
+            bcodec_audio_buffer_s* buffer = o.sequence.pop_first_buffer()^;
             o.mutex.unlock();
             er_t thread_error = o.audio.stream_play_buffer( buffer );
             o.mutex.lock();
@@ -428,7 +428,7 @@ func (:player_s) play
 
     while( frames > 0 )
     {
-        m bmedia_audio_buffer_s* buf = o.sequence.m_last();
+        m bcodec_audio_buffer_s* buf = o.sequence.m_last();
         if( !buf || buf.size == buf.space )
         {
             buf = o.sequence.push_empty_buffer().set_space( buf_space );
@@ -466,33 +466,6 @@ func (:player_s) play_sequence
         o.mutex.unlock();
     }
     for( sz_t i = 0; i < sequence.size(); i++ ) o.play_buffer( sequence.c_buffer( i ) );
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:player_s) play_iterator
-{
-    if( !o.is_setup_ ) o.setup( bmedia_audio_out_s! );
-    if( iterator.eos ) = 0;
-    if( o.audio.actual_rate != iterator.sequence.rate || o.audio.channels != iterator.sequence.channels )
-    {
-        o.wait_until_empty();
-        o.mutex.lock();
-        o.audio.shut_down();
-        o.audio.requested_rate = iterator.sequence.rate;
-        o.audio.channels = iterator.sequence.channels;
-        o.audio.setup();
-        o.mutex.unlock();
-    }
-
-    s3_t frames_ = frames;
-    if( frames == -1 || frames + iterator.global_frame_index >= iterator.total_frames )
-    {
-        frames_ = iterator.total_frames - iterator.global_frame_index;
-    }
-
-    o.play_buffer( iterator.create_buffer( frames_ )^ );
     = 0;
 }
 

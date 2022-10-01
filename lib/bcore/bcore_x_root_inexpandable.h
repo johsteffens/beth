@@ -178,6 +178,8 @@ identifier va_start;
 identifier va_end;
 identifier bcore_push_traits_of_ancestor;
 identifier bcore_msg_fa;
+identifier bcore_memset;
+identifier bcore_memcpy;
 
 identifier bcore_tp_init;
 identifier bcore_tp_fold_tp;

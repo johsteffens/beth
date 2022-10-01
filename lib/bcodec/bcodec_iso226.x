@@ -25,8 +25,9 @@
  *
  *  EQL and SPL are both measured in DB.
  *  1kHz is the reference frequency at which loudness and SPL have the same value.
- *  This framework can compute a frequency-loudness function for an arbitrary 1kHz SPL.
+ *  This framework can compute a frequency-loudness function for any SPL at 1kHz reference frequency.
  *
+ *  Non-iso extension:
  *  The iso standard only covers values up to 12500 Hz. This implementation extends the table
  *  to 20kHz, roughly approximating the expected rise in EQL to higher frequency, but without any
  *  claim to psychoacousic accuracy. (While this implementation outputs finite SPL >= 20kHz,
@@ -35,7 +36,7 @@
  *
  *
  *  Usage:
- *    bmedia_iso226_eql_list_s^ list;
+ *    bcodec_iso226_eql_list_s^ list;
  *    $* func = list.eql_func_log10_f_spl( bmath_spliced_func_c1_s!^, 40 ); // 40DB curve
  *    f3_t loudness = func( f3_log10( 300 ) ); // loudness at 300 Hz
  *

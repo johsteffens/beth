@@ -103,7 +103,7 @@ group :page
 {
     feature o encode
     (
-        m@* o, c bmedia_audio_sequence_indexer_s* indexer,
+        m@* o, c bcodec_audio_sequence_indexer_s* indexer,
         s3_t offset,
         c (Tparam) ::param* param,
         m (Tcontext) ::context* context
@@ -112,7 +112,7 @@ group :page
     feature o decode
     (
         c@* o,
-        m bmedia_audio_sequence_indexer_s* indexer,
+        m bcodec_audio_sequence_indexer_s* indexer,
         s3_t offset,
         c (Tparam  ) ::param* param,
         m (Tcontext) ::context* context,
@@ -134,8 +134,8 @@ group :sequence
 group :encoder
 {
     feature o set_param( m@* o, (Tparam) ::param* param );
-    feature o push_d   ( m@* o, d bmedia_audio_buffer_s* buffer );
-    feature o push_c   ( m@* o, c bmedia_audio_buffer_s* buffer ) = o.push_d( buffer.clone() );
+    feature o push_d   ( m@* o, d bcodec_audio_buffer_s* buffer );
+    feature o push_c   ( m@* o, c bcodec_audio_buffer_s* buffer ) = o.push_d( buffer.clone() );
     feature d (Tsequence) ::sequence* d_get_sequence( m@* o );
     feature c (Tcontext ) ::context* get_context( c@* o ) = NULL;
 }
@@ -146,7 +146,7 @@ group :decoder
 {
     feature o set_sequence_d( m@* o, d (Tsequence) ::sequence* sequence );
     feature bl_t eos( @* o );
-    feature d bmedia_audio_buffer_s* d_get_buffer( m@* o );
+    feature d bcodec_audio_buffer_s* d_get_buffer( m@* o );
     feature c (Tcontext) ::context* get_context( c@* o ) = NULL;
 }
 
