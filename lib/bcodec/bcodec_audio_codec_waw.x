@@ -13,9 +13,7 @@
  *  limitations under the License.
  */
 
-/** Deprecated: Use bcodec_audio_codec_waw.x instead
- *
- *  Beth Audio Codec Waw.
+/** Beth Audio Codec Waw.
  *
  *  'Waw' denotes the 'sixth iteration' of an audio codec development project in Beth.
  *

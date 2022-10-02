@@ -33,7 +33,7 @@
  *  while( ... ) encoder.push_d( buffer.fork() );
  *
  *  Get encoded sequence (this finalizes encoding and resets encoder)
- *  m bmedia_audio_codec_sequence* sequence = encoder.d_get_sequence()^;
+ *  m bcodec_audio_codec_sequence* sequence = encoder.d_get_sequence()^;
  *
  *  Save/Stream as compatible x_bbml or ultra compact x_bcml.
  *
@@ -42,10 +42,10 @@
  *  Decoder Usage:
  *
  *  Obtain encoded sequence:
- *  m bmedia_audio_codec_sequence* sequence = ... ;
+ *  m bcodec_audio_codec_sequence* sequence = ... ;
  *
  *  Obtain parameters used for encoding:
- *  c bmedia_audio_codec_param* param = sequence.param();
+ *  c bcodec_audio_codec_param* param = sequence.param();
  *
  *  Create decoder and assign sequence:
  *  m$* decoder = param.create_decoder()^.set_sequence_d( sequence.fork() );
