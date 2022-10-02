@@ -166,7 +166,7 @@ func (:s) setup
 
     for( sz_t i = 0; i < o.buffers; i++ )
     {
-        m :image_s* image = o.image_adl_.push_d( :image_s! ).set_size( o.bytes_per_image );
+        m bcodec_image_yuyv_s* image = o.image_adl_.push_d( bcodec_image_yuyv_s! ).set_size( o.bytes_per_image );
         image.width = o.actual_width;
         image.height = o.actual_height;
         image.bytes_per_line = o.bytes_per_line;
@@ -257,7 +257,7 @@ func (:s) capture_loop
 
         if( valid )
         {
-            foreach( :image_s* e in o.image_adl_ )
+            foreach( bcodec_image_yuyv_s* e in o.image_adl_ )
             {
                 if( buf.m.userptr == (intptr_t)e.data )
                 {
@@ -297,40 +297,6 @@ func (:s) shut_down
 
     o.is_setup_ = false;
     = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func u0_t clamp16( s2_t v ) { = s2_min( 255, s2_max( 0, v >> 8 ) ); }
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:image_s) convert_to_argb
-{
-    assert( ( o.width & 1 ) == 0 );
-    img.format = TYPEOF_bcore_img_u2_argb;
-    img.set_size( o.height, o.width );
-
-    for( sz_t j = 0; j < img.rows; j++ )
-    {
-        u0_t* yp = o.data + o.bytes_per_line * j;
-
-        m u2_t* u2_row = img.data + img.stride * j;
-        for( sz_t i = 0; i < img.cols; i += 2 )
-        {
-            u2_t y1 = ( ( ( s2_t )yp[ i * 2     ] - 16 ) * 298 ) + 128;
-            s2_t u  =     ( s2_t )yp[ i * 2 + 1 ] - 128;
-            u2_t y2 = ( ( ( s2_t )yp[ i * 2 + 2 ] - 16 ) * 298 ) + 128;
-            s2_t v  =     ( s2_t )yp[ i * 2 + 3 ] - 128;
-
-            s2_t rp =             409 * v;
-            s2_t gp = - 100 * u - 208 * v;
-            s2_t bp =   516 * u;
-
-            u2_row[ i     ] = bcore_img_u2_pixel_from_rgb( img.format, :clamp16( y1 + rp ), :clamp16( y1 + gp ), :clamp16( y1 + bp ) );
-            u2_row[ i + 1 ] = bcore_img_u2_pixel_from_rgb( img.format, :clamp16( y2 + rp ), :clamp16( y2 + gp ), :clamp16( y2 + bp ) );
-        }
-    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -59,25 +59,15 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp :image_s x_array
-{
-    sz_t width;
-    sz_t height;
-    sz_t bytes_per_line;
-    u0_t [];
-
-    func void convert_to_argb( @* o, m bcore_img_u2_s* img );
-}
-
 /** Callback feature. Called when a new image is available.
  *  Image data is laid out in YUYV format.
  */
-feature void capture_feed( m@* o, :image_s* image );
+feature void capture_feed( m@* o, bcodec_image_yuyv_s* image );
 
 /// Optional callback for each loop cycle; return true to exit loop
 feature bl_t capture_exit( m@* o ) { = false; };
 
-stamp :image_adl_s x_array { :image_s => []; }
+stamp :image_adl_s x_array { bcodec_image_yuyv_s => []; }
 
 stamp :s
 {
