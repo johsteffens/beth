@@ -34,6 +34,7 @@ stamp :s = aware :
     tp_t trait_name;
     bl_t is_aware = true;
     bl_t has_compact_initializer = false;
+    bl_t finalized; // set to true after completion of finalize function
 
     :arr_self_item_s => arr_self_item;
 
@@ -47,6 +48,7 @@ stamp :s = aware :
 
     private aware xoico_group_s* group;
     x_source_point_s source_point;
+
 
     func xoico.get_hash
     {
@@ -698,6 +700,8 @@ func (:s) xoico.finalize
 {
     //if( o.has_compact_initializer ) o.push_compact_initializer_func();
 
+    if( o.finalized ) return o.source_point.parse_error_fa( "In stamp '#<sc_t>': Attempting to finalize stamp twice.", o.st_name.sc );
+
     m $* compiler = o.group.compiler;
     st_s^ self_buf;
 
@@ -831,6 +835,8 @@ func (:s) xoico.finalize
         trait_name = group.trait_name != group.tp_name ? group.trait_name : 0;
         if( group.is_retrievable ) group.retrievable_stamps!.push( o.tp_name );
     }
+
+    o.finalized = true;
 
     return 0;
 };

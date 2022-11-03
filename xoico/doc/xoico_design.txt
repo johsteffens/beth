@@ -178,6 +178,68 @@ Functions:
   Exceptions:
     Symbol ':' immediately followed by a name serves as namespace expander
 
+Functor-style stamp declaration:
+  A functor in this context is a stamp that is created to represent one specific function.
+  Here, a simplified syntax can makes the code better readable
+
+  Syntax:
+  stamp <stamp_decl_syntax> ( initializer arguments ) func <func_decl_syntax> { <function body> }
+
+  In this context (initializer arguments) specify the compact initializer function arguments from which the stamp members are derived.
+
+  Examples:
+
+    (1) stamp without data members and with anonymous function
+
+    stamp functor1_s func o( @*o ) = o;
+
+    -- is equivalent to --
+
+    stamp functor1_s
+    {
+        func o( @*o ) = o;
+    }
+
+    -------------------------
+
+    (2) stamp with simple data members and with anonymous function
+
+    stamp functor2_s( f3_t a, f3_t b ) func f3_t( @*o, f3_t c )
+    {
+        = o.a + o.b + c;
+    }
+
+    -- is equivalent to --
+
+    stamp functor2_s
+    {
+        $ f3_t a;
+        $ f3_t b;
+        func f3_t( @*o, f3_t c )
+        {
+            = o.a + o.b + c;
+        }
+    }
+
+    -------------------------
+
+    (3) (stamp with advanced data members)
+
+    stamp functor3_s( m st_s* a, d st_s* b, d aware my_group* c, c aware my_group* d );
+
+    -- is equivalent to --
+
+    stamp functor3_s
+    {
+        $ hidden st_s * a;     // pointer assigned
+        $ st_s => b;           // pointer assigned
+        $ aware my_group => c; // pointer assigned
+        $ aware my_group => d; // object cloned
+    }
+
+    -------------------------
+
+
 ----------------------------------------------------------------------------------------------
 
 set:
@@ -530,19 +592,23 @@ FEATURES, BUGS ...
 
 - (fixed) bug: a feature's signature defined with transient types does not retain transient properties on group level
 - (fixed) bug: crash in case group's' trait name is not a group
+- (done) allow calling a global function as member function of an object: obj.<global_func_name>( .... )
 
-TODO:
-
-- stamp: allow function-style readonly request of a member variable even if the function was not defined
-
-- introduce a functor:
+- (speculative) introduce a functor:
   syntax on group level.
   Example:
   functor sz_t fu_s( sz_t a, sz_t b ).( sz_t c ) { = a + b + c; };
   Resolves to
   stamp :fu_s { $ sz_t a; $ sz_t_b; func sz_t ( sz_t c ) { = o.a + o.b + c; }; };
+  Issues:
+  - Alternative exists: functor-style stamp declaration availabe
+        stamp fu_s( sz_t a, sz_t b ) func sz_t ( sz_t c ) = o.a + o.b + c;
+  - The term 'functor' carries a different meaning in mathematics.
 
-- bug: binary operator not recognized after unregistered member function
+TODO:
+
+- stamp: allow function-style readonly request of a member variable even if the function was not defined
+
 - introduce builtin ternary operator 'iff' as builtin function (might be solved by a transient function in x_inst)
 - make traitline of all groups end in x_inst
 - make 'fork' a transient function in x_inst rather than a builtin function

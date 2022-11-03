@@ -619,6 +619,15 @@ func (:s) get_type_member_function_info
         if( info.func ) success = true;
     }
 
+    if( !success )
+    {
+        if( o.is_func( name ) )
+        {
+            info.func = o.cast( m $* ).get_func( name );
+            success = true;
+        }
+    }
+
     return success;
 };
 

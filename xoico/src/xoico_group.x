@@ -531,6 +531,16 @@ func (:s) :.parse
                     }
 
                     m xoico_stamp_s* stamp = compiler.get_stamp( tp_stamp_name );
+
+                    if( stamp.finalized )
+                    {
+                        return source.parse_error_fa
+                        (
+                            "Stamp '#<sc_t>' has already been finalized. Attempting to extend stamp outside its declarative scope.",
+                            stamp_name.sc
+                        );
+                    }
+
                     stamp.parse_func( source );
                     o.pre_hash = bcore_tp_fold_tp( o.pre_hash, stamp.get_hash() );
                     is_group_function = false;

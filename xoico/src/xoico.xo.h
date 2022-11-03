@@ -1,4 +1,4 @@
-//  Last update: 2022-07-05T14:42:04Z
+//  Last update: 2022-11-02T17:05:57Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -978,6 +978,7 @@
       tp_t trait_name; \
       bl_t is_aware; \
       bl_t has_compact_initializer; \
+      bl_t finalized; \
       xoico_stamp_arr_self_item_s* arr_self_item; \
       st_s* self_source; \
       bcore_self_s* self; \
@@ -2018,5 +2019,5 @@ BETH_EXPAND_GROUP_xoico_builder
 BETH_EXPAND_GROUP_xoico_main
 
 #endif // __xoico_xo_H
-// XOICO_BODY_SIGNATURE 0xC3EE328402A06948
-// XOICO_FILE_SIGNATURE 0x3F2C6F21C30CC425
+// XOICO_BODY_SIGNATURE 0xA649BA93031308D2
+// XOICO_FILE_SIGNATURE 0x59D9BBB11F5257A2

@@ -145,7 +145,7 @@ func (:s) er_t trans_typespec_member
                 o.trans_function( source, info.func, result_object_expr, in_typespec, result, typespec_ret );
                 o.trans_typespec_expression( source, result, typespec_ret, out_typespec );
             }
-            /// possibly a compact function of a member object
+            // possibly a compact function of a member object
             else if( o.compiler.get_type_member_object_info( in_typespec.type, tp_identifier, info ) )
             {
                 try_member_object = true;
