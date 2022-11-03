@@ -141,14 +141,17 @@ identifier s3_max;
 identifier s3_min;
 identifier s3_sig;
 identifier s3_abs;
+identifier s3_sqr;
 identifier s2_max;
 identifier s2_min;
 identifier s2_sig;
 identifier s2_abs;
+identifier s2_sqr;
 identifier s1_max;
 identifier s1_min;
 identifier s1_sig;
 identifier s1_abs;
+identifier s1_sqr;
 identifier u3_max;
 identifier u3_min;
 identifier u3_abs;
@@ -239,6 +242,29 @@ identifier bcore_abort;
 identifier bcore_exit;
 
 identifier TYPEOF_;
+
+/// compare ...
+identifier bcore_compare_spect;
+identifier bcore_compare_typed;
+identifier bcore_compare_bityped;
+identifier bcore_compare_sr;
+identifier bcore_compare_q_sr;
+
+identifier bcore_equal_spect;
+identifier bcore_equal_typed;
+identifier bcore_equal_bityped;
+
+/// Aware operations can handle objects of different type by imposing a type order.
+identifier bcore_compare_aware;
+identifier bcore_equal_aware;
+
+/// diff: in case values differ, a string is created describing the nature of difference
+identifier bcore_diff_spect;
+identifier bcore_diff_typed;
+identifier bcore_diff_bityped;
+identifier bcore_diff_aware;
+identifier bcore_diff_sr;
+identifier bcore_diff_q_sr;
 
 //----------------------------------------------------------------------------------------------------------------------
 

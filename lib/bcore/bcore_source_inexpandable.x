@@ -45,6 +45,18 @@ group bcore_source = x_inst
     feature void set_index( m @* o, s3_t index );
     feature void move_index( m @* o, s3_t delta ); // set_index( get_index() + delta );
 
+    stamp :buffer_s = aware x_array
+    {
+        u0_t [];
+
+        uz_t index;
+        private vd_t ext_supplier;  // optional external supplier (source) turning this source into a buffer; (ext_supplier is not owned by bcore_source_buffer_s)
+        uz_t prefetch_size; // data amount prefetched from supplier (if present) (default: 4096)
+
+        func uz_t get_data( m@* o, vd_t data, uz_t size );
+        func d@* create_from_data( vc_t data, uz_t size );
+    };
+
     stamp :string_s = aware :
     {
         /* format not disclosed */

@@ -1,4 +1,4 @@
-//  Last update: 2022-08-24T12:03:38Z
+//  Last update: 2022-10-21T10:35:01Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -38,6 +38,7 @@
  *  bcore_flect_inexpandable.x
  *  bcore_hmap_inexpandable.x
  *  bcore_huffman.x
+ *  bcore_img_inexpandable.x
  *  bcore_sink_inexpandable.x
  *  bcore_source_inexpandable.x
  *  bcore_sr_inexpandable.x
@@ -278,6 +279,7 @@
 #define BETH_EXPAND_GROUP_x_sink \
   BCORE_FORWARD_OBJECT( x_sink ); \
   static inline x_sink* x_sink_create_from_file( sc_t path ); \
+  x_sink* x_sink_check_create_from_file( sc_t path ); \
   static inline sz_t x_sink_push_data( x_sink* o, const x_inst* data, sz_t size ); \
   static inline x_sink* x_sink_push_char( x_sink* o, char c ); \
   static inline x_sink* x_sink_push_sc( x_sink* o, sc_t sc ); \
@@ -2795,5 +2797,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x5CA63CE79E8B0826
-// XOICO_FILE_SIGNATURE 0xADBCB079693B4B15
+// XOICO_BODY_SIGNATURE 0xFA76122B0C4CB2A2
+// XOICO_FILE_SIGNATURE 0x4FFBD4ADF08DB0F4

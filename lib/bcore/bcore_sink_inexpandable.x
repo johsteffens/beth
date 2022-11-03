@@ -30,9 +30,11 @@ group bcore_sink = x_inst
     feature o push_string(   m @* o, c st_s* string );
     feature o push_string_d( m @* o, d st_s* string );
 
-    stamp :buffer_s =
+    stamp :buffer_s x_array
     {
-        /* format not disclosed */
+        u0_t [];
+        private vd_t consumer; // optional external consumer (sink) turning this sink into a buffer; (ext_consumer is not owned by bcore_sink_buffer_s)
+        uz_t entrepot_size;    // data amount to pile up before transfered to consumer (if present) (default: 4096)
 
         func :.flush;
         func :.push_data;

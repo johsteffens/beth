@@ -36,6 +36,14 @@ XOILA_DEFINE_GROUP( x_sink, x_inst )
  */
 func d x_sink* create_from_file( sc_t path ) = bcore_file_try_open_sink( path );
 
+/// error in case file does not exist
+func d x_sink* check_create_from_file( sc_t path )
+{
+    d x_sink* sink = bcore_file_try_open_sink( path );
+    if( !sink ) ERR_fa( "Could no open file '#<sc_t>' as sink.", path );
+    = sink;
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 func sz_t push_data( m @* o, c obliv x_inst* data, sz_t size ) = o.cast( m bcore_sink* ).push_data( data, size );

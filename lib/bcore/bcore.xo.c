@@ -1,4 +1,4 @@
-//  Last update: 2022-09-14T19:32:13Z
+//  Last update: 2022-10-21T10:35:01Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -55,7 +55,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0x5B232FA2F323882Aull
+// HKEYOF_bcore 0x20FFB33DFB5441B4ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -214,6 +214,15 @@ XOILA_DEFINE_SPECT( x_inst, x_sink )
 "{"
     "bcore_spect_header_s header;"
 "}";
+
+x_sink* x_sink_check_create_from_file( sc_t path )
+{
+    // bcore_x_sink.h:41:1
+    
+    x_sink* sink =((x_sink*)( bcore_file_try_open_sink(path )));
+    if( !sink ) ERR_fa( "Could no open file '#<sc_t>' as sink.", path );
+    return  sink;
+}
 
 /**********************************************************************************************************************/
 // source: bcore_x_array.h
@@ -5284,5 +5293,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x9FCC9EB0C1D02316
-// XOICO_FILE_SIGNATURE 0x9C83482F245A70F3
+// XOICO_BODY_SIGNATURE 0x418477422B6A9967
+// XOICO_FILE_SIGNATURE 0xD00E0E8831AB1C73
