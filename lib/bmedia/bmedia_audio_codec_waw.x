@@ -14,6 +14,10 @@
  */
 
 /** Deprecated: Use bcodec_audio_codec_waw.x instead
+ *  This codec is kept for historic reasons. Some (preliminary/old) binary audio encodings
+ *  still use it.
+ *
+ * ===================================================================================
  *
  *  Beth Audio Codec Waw.
  *

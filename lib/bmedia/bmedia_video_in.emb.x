@@ -166,10 +166,11 @@ func (:s) setup
 
     for( sz_t i = 0; i < o.buffers; i++ )
     {
-        m bcodec_image_yuyv_s* image = o.image_adl_.push_d( bcodec_image_yuyv_s! ).set_size( o.bytes_per_image );
-        image.width = o.actual_width;
-        image.height = o.actual_height;
-        image.bytes_per_line = o.bytes_per_line;
+        m bcodec_image_yuyv_s* image = o.image_adl_.push_d( bcodec_image_yuyv_s! );
+        image.cast( m x_array* ).set_size( o.bytes_per_image );
+        image.cols = o.actual_width;
+        image.rows = o.actual_height;
+        image.bytes_per_row = o.bytes_per_line;
 
         struct v4l2_buffer v_buf = { 0 };
 
