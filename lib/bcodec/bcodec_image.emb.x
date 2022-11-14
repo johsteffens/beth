@@ -234,7 +234,7 @@ func (:bgra_s) fdev_zro
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:bgra_s) generate_striped
+func (:bgra_s) gen_striped
 {
     sz_t p = period > 0 ? period : 64;
     sz_t h = p >> 1;
@@ -254,90 +254,81 @@ func (:bgra_s) generate_striped
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func o set_random_white( m bmath_mf2_s* o, sz_t rows, sz_t cols, m bcore_prsg* prsg, f3_t min, f3_t max )
+group :gen
 {
-    o.set_size( rows, cols );
-    for( sz_t i = 0; i < rows; i++ )
+    func o rescale( m bmath_mf2_s* o, f3_t min, f3_t max )
     {
-        for( sz_t j = 0; j < cols; j++ )
+        f3_t m_min = o.min();
+        f3_t m_max = o.max();
+        f3_t inv_m_range = ( m_max > m_min ) ? 1.0 / ( m_max - m_min ) : 0;
+        f3_t range = max - min;
+        f3_t fac = inv_m_range * range;
+
+        for( sz_t i = 0; i < o.rows; i++ )
         {
-            o.[ i * o.stride + j ] = prsg.gen_f3( 0, 255 );
+            m f2_t* row = o.data + i * o.stride;
+            for( sz_t j = 0; j < o.cols; j++ ) row[ j ] = ( ( row[ j ] - m_min ) * fac ) + min;
         }
     }
 
-    = o;
-}
-
-func (:bgra_s) generate_random_white
-{
-    if( !prsg )
+    func (:white_s) :.f
     {
-        prsg = bcore_prsg_lcg_u3_00_s!^^;
-        prsg.set_state_u3( 1234 );
+        if ( !o.prsg ) o.prsg =< bcore_prsg_lcg_u3_00_s!;
+        o.mat!.set_size( rows, cols );
+        for( sz_t i = 0; i < rows; i++ )
+        {
+            for( sz_t j = 0; j < cols; j++ ) o.mat.[ i * o.mat.stride + j ] = o.prsg.gen_f3( min, max );
+        }
+        = o.mat;
     }
-    bmath_mf2_s^ mat;
-    o.b_from_mf2( :set_random_white( mat, rows, cols, prsg, 0, 255 ) );
-    o.g_from_mf2( :set_random_white( mat, rows, cols, prsg, 0, 255 ) );
-    o.r_from_mf2( :set_random_white( mat, rows, cols, prsg, 0, 255 ) );
+
+    func (:red_s) :.f
+    {
+        if ( !o.prsg ) o.prsg =< bcore_prsg_lcg_u3_00_s!;
+        o.mat!.set_size( rows, cols );
+        :white_s!( o.mat.fork(), o.prsg.fork() )^.f( rows, cols, -1, 1 );
+
+        for( sz_t i = 0; i < rows; i++ )
+        {
+            m f2_t* row1 = o.mat.data + i * o.mat.stride;
+            for( sz_t j = 1; j < cols; j++ ) row1[ j ] = ( row1[ j ] + row1[ j - 1 ] ) * ( 1.0 - o.attn );
+        }
+
+        for( sz_t i = 1; i < rows; i++ )
+        {
+            m f2_t* row0 = o.mat.data + ( i - 1 ) * o.mat.stride;
+            m f2_t* row1 = o.mat.data + i * o.mat.stride;
+            for( sz_t j = 0; j < cols; j++ ) row1[ j ] = ( row1[ j ] + row0[ j ] ) * ( 1.0 - o.attn );
+        }
+
+        = o.mat.:rescale( min, max );
+    }
+
+    func (:jupiter_s) :.f
+    {
+        if ( !o.prsg ) o.prsg =< bcore_prsg_lcg_u3_00_s!;
+        o.mat!.set_size( rows, cols ).zro();
+        for( sz_t i = 0; i < rows; i++ )
+        {
+            for( sz_t j = 0; j < cols; j++ )
+            {
+                f3_t v = o.prsg.gen_f3( -1, 1 );
+                if( j > 0 ) v += o.mat.[ i * o.mat.stride + ( j - 1 ) ] * 0.5;
+                if( i > 0 ) v += o.mat.[ ( i - 1 ) * o.mat.stride + j ] * 0.5;
+                o.mat.[ i * o.mat.stride + j ] += v;
+            }
+        }
+        = o.mat.:rescale( min, max );
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:bgra_s) generate_random_brown
+func (:bgra_s) gen
 {
-    if( !prsg )
-    {
-        prsg = bcore_prsg_lcg_u3_00_s!^^;
-        prsg.set_state_u3( 1234 );
-    }
-    u3_t state = prsg.state_u3();
-
-    o.set_size( rows, cols );
-
-    f3_t min = 0; f3_t max = 0;
-    f3_t f = 0;
-
-    f3_t attenuation = 0.95;
-
-    for( sz_t c = 0; c < 2; c++ )
-    {
-        bmath_mf3_s^ m1.set_size( o.cols, 3 ).zro();
-        bmath_mf3_s^ m2.set_size( o.cols, 3 ).zro();
-        prsg.set_state_u3( state );
-
-        for( sz_t i = 0; i < o.rows; i++ )
-        {
-            for( sz_t j = 0; j < o.cols; j++ )
-            {
-                for( sz_t k = 0; k < 3; k++ )
-                {
-                    m1.[ j * 3 + k ] = ( ( ( j > 0 ) ? m1.[ ( j - 1 ) * 3 + k ] : 0 ) + prsg.gen_f3( -1.0, 1.0 ) ) * attenuation;
-                    m2.[ j * 3 + k ] = ( m2.[ j * 3 + k ] + m1.[ j * 3 + k ] ) * attenuation;
-                }
-
-                if( c == 1 )
-                {
-                    o.set_bgr
-                    (
-                        i, j,
-                        f3_rs3( ( m2.[ j * 3 + 0 ] - min ) * f ),
-                        f3_rs3( ( m2.[ j * 3 + 1 ] - min ) * f ),
-                        f3_rs3( ( m2.[ j * 3 + 2 ] - min ) * f )
-                    );
-                }
-            }
-
-            if( c == 0 )
-            {
-                min = f3_min( min, m2.min() );
-                max = f3_max( max, m2.max() );
-            }
-        }
-        f = ( max > min ) ? 255.0 / ( max - min ) : 0;
-    }
-
-    bcore_msg_fa( "[#<f3_t>,#<f3_t>]\n", min, max );
-
+    o.b_from_mf2( gen.f( rows, cols, 0, 255 ) );
+    o.g_from_mf2( gen.f( rows, cols, 0, 255 ) );
+    o.r_from_mf2( gen.f( rows, cols, 0, 255 ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -495,10 +486,7 @@ func (:yuyv_s) from_argb
 
 func (:bgra_s) void selftest()
 {
-    //:bgra_s^ i1.generate_striped( 128, 256, 16 );
-    :bgra_s^ i1.generate_random_white( 128, 256, NULL );
-    //:bgra_s^ i1.generate_random_brown( 128, 256, NULL );
-    //:bgra_s^ i1.generate_random_brown( 400, 500, NULL );
+    :bgra_s^ i1.gen( 128, 256, :gen_jupiter_s!^ );
 
     /// test pnm codec
     {
@@ -517,8 +505,8 @@ func (:bgra_s) void selftest()
         f3_t dev = bgra.fdev_equ( i1 ) / ( i1.rows * i1.cols );
         ASSERT( dev < 0.5 );
 
-         i1.pnm_to_file( "temp/bcodec_image_bgra_s_selftest.pnm" );
-         bgra.pnm_to_file( "temp/bcodec_image_bgra_s_selftest_2.pnm" );
+        //i1.pnm_to_file( "temp/bcodec_image_bgra_s_selftest.pnm" );
+        //bgra.pnm_to_file( "temp/bcodec_image_bgra_s_selftest_2.pnm" );
     }
 }
 

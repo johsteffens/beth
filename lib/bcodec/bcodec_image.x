@@ -18,6 +18,8 @@
 include "bcore_std.h";
 include "bmath_std.h";
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -96,13 +98,27 @@ stamp :bgra_s x_array
     /// generating images...
 
     /// striped image: horizontal: blue, vertical: green, diagonal: red; period: period-size in pixels (-1: defaults to 64)
-    func o generate_striped( m@* o, sz_t rows, sz_t cols, sz_t period );
+    func o gen_striped( m@* o, sz_t rows, sz_t cols, sz_t period );
 
-    /// white noise
-    func o generate_random_white( m@* o, sz_t rows, sz_t cols, m bcore_prsg* prsg );
+    /// using a gen-object; Example: :bgra_s!.gen( 128, 256, :gen_jupiter_s!^ );
+    func o gen( m@* o, sz_t rows, sz_t cols, m :gen* gen );
+}
 
-    /// brownian noise
-    func o generate_random_brown( m@* o, sz_t rows, sz_t cols, m bcore_prsg* prsg );
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Generator used by image-function 'gen'
+group :gen
+{
+    feature m bmath_mf2_s* f( m@*o, sz_t rows, sz_t cols, f3_t min, f3_t max );
+
+    // white noise
+    stamp :white_s   { $ bmath_mf2_s => mat; $ bcore_prsg => prsg; }
+
+    // red noise (approximation)
+    stamp :red_s     { $ bmath_mf2_s => mat; $ bcore_prsg => prsg; $ f3_t attn = 0.05; }
+
+    // diagonal striped noise (similarity to jupiter bands)
+    stamp :jupiter_s { $ bmath_mf2_s => mat; $ bcore_prsg => prsg; }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
