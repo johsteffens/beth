@@ -47,71 +47,71 @@ int main( void )
 
     selftest( "bcore_spect_inst" );
 
-//    selftest( "bcore_hmap" );
-//    x_hmap_tp_test_selftest();
-//
-//    selftest( "bcore_tp_fastmap" );
-//    selftest( "bcore_hmap_tp_sr" );
-//
-//    selftest( "bcore_st" );
-//    selftest( "bcore_prsg" );
-//    selftest( "bcore_sources" );
-//
-//    x_stamp_selftest();
-//
-//    bhvm_holor_selftest();
-//
-//    selftest( "bmath_matrix" );
-//    selftest( "bmath_complex" );
-//    selftest( "bmath_spect_algebraic" );
-//    selftest( "bmath_spect_vector" );
-//
-//    selftest( "bmath_mf2" );
-//    selftest( "bmath_mf3" );
-//    selftest( "bmath_asmf2" );
-//    selftest( "bmath_asmf2" );
-//    selftest( "bmath_xsmf3" );
-//    selftest( "bmath_xsmf3" );
-//    selftest( "bmath_vf2" );
-//    selftest( "bmath_vf3" );
-//    selftest( "bmath_arr_vf2" );
-//    selftest( "bmath_arr_vf3" );
-//    selftest( "bmath_cf2" );
-//    selftest( "bmath_cf3" );
-//    selftest( "bmath_fourier_f2" );
-//    selftest( "bmath_fourier_f3" );
-//    selftest( "bmath_vcf2" );
-//    selftest( "bmath_vcf3" );
-//
-//    selftest( "bcore_cday" );
-//    selftest( "bcore_plant_sample" );
-//
-//    selftest( "bclos_procedure" );
-//    selftest( "bclos_machine" );
-//
-//    selftest( "bcore_folder" );
-//    selftest( "bcore_flect" );
-//    selftest( "bcore_name_manager" );
-//    selftest( "bcore_spect_array" );
-//    selftest( "bcore_spect_via" );
-//    selftest( "bcore_spect_compare" );
-//
-//    x_btml_selftest();
-//    x_bbml_selftest();
-//    x_bcml_selftest();
-//
-//    selftest( "bcore_txt_ml" );
-//    selftest( "bcore_bin_ml" );
-//
-//    selftest( "bcore_btree" );
-//    selftest( "bcore_arr" );
-//    selftest( "bcore_img" );
-//    selftest( "bcore_spect_hash" );
-//    selftest( "bcore_tbman" );
-//
-//    bcore_huffman_selftest();
-//    bcore_indexer_selftest();
-//    bmath_cosine_selftest();
+    selftest( "bcore_hmap" );
+    x_hmap_tp_test_selftest();
+
+    selftest( "bcore_tp_fastmap" );
+    selftest( "bcore_hmap_tp_sr" );
+
+    selftest( "bcore_st" );
+    selftest( "bcore_prsg" );
+    selftest( "bcore_sources" );
+
+    x_stamp_selftest();
+
+    bhvm_holor_selftest();
+
+    selftest( "bmath_matrix" );
+    selftest( "bmath_complex" );
+    selftest( "bmath_spect_algebraic" );
+    selftest( "bmath_spect_vector" );
+
+    selftest( "bmath_mf2" );
+    selftest( "bmath_mf3" );
+    selftest( "bmath_asmf2" );
+    selftest( "bmath_asmf2" );
+    selftest( "bmath_xsmf3" );
+    selftest( "bmath_xsmf3" );
+    selftest( "bmath_vf2" );
+    selftest( "bmath_vf3" );
+    selftest( "bmath_arr_vf2" );
+    selftest( "bmath_arr_vf3" );
+    selftest( "bmath_cf2" );
+    selftest( "bmath_cf3" );
+    selftest( "bmath_fourier_f2" );
+    selftest( "bmath_fourier_f3" );
+    selftest( "bmath_vcf2" );
+    selftest( "bmath_vcf3" );
+
+    selftest( "bcore_cday" );
+    selftest( "bcore_plant_sample" );
+
+    selftest( "bclos_procedure" );
+    selftest( "bclos_machine" );
+
+    selftest( "bcore_folder" );
+    selftest( "bcore_flect" );
+    selftest( "bcore_name_manager" );
+    selftest( "bcore_spect_array" );
+    selftest( "bcore_spect_via" );
+    selftest( "bcore_spect_compare" );
+
+    x_btml_selftest();
+    x_bbml_selftest();
+    x_bcml_selftest();
+
+    selftest( "bcore_txt_ml" );
+    selftest( "bcore_bin_ml" );
+
+    selftest( "bcore_btree" );
+    selftest( "bcore_arr" );
+    selftest( "bcore_img" );
+    selftest( "bcore_spect_hash" );
+    selftest( "bcore_tbman" );
+
+    bcore_huffman_selftest();
+    bcore_indexer_selftest();
+    bmath_cosine_selftest();
 
     bcodec_image_bgra_s_selftest();
 
