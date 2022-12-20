@@ -1,4 +1,5 @@
 # Library make framework
+# Author: Johannes B. Steffens
 #
 # Library Structure:
 # Libraries have a root folder of arbitrary name <root>

@@ -1,4 +1,5 @@
 # Application make framework
+# Author: Johannes B. Steffens
 #
 # Application Structure:
 # Applications have a root folder that deremines the name of the application
