@@ -43,6 +43,50 @@ func (:buffer_s) set_from_vf2
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:buffer_s) sum
+{
+    f3_t sum = 0;
+    foreach( $e in o ) sum += e;
+    = sum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:buffer_s) sdev_equ
+{
+    ASSERT( o.size == b.size && o.channels == b.channels );
+    f3_t sum = 0;
+    for( sz_t i = 0; i < o.size; i++ ) sum += f3_sqr( ( f3_t )o.[ i ] - ( f3_t )b.[ i ] );
+    = sum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:buffer_s) sdev_zro
+{
+    f3_t sum = 0;
+    for( sz_t i = 0; i < o.size; i++ ) sum += f3_sqr( o.[ i ] );
+    = sum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:buffer_s) max_abs
+{
+    f3_t max_abs = 0;
+    foreach( $e in o ) max_abs = f3_max( max_abs, f3_abs( e ) );
+    = max_abs;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:buffer_s) scale
+{
+    foreach( m$*e in o ) e.0 = f3_min( 32767, f3_max( -32768, e.0 * factor ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:buffer_s) scale_lin
 {
     sz_t frames = o.frames();
@@ -408,6 +452,88 @@ func (:sequence_s) wav_from_file
     m x_source* source = x_source_create_from_file( path )^;
     if( !source ) = bcore_error_push_fa( TYPEOF_general_error, "Could not open file path '#<sc_t>'.", path );
     = o.wav_from_source( source );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:sequence_s) sdev_equ
+{
+    ASSERT( o.channels == b.channels );
+    :sequence_indexer_s* idx_o = o.create_indexer()^;
+    :sequence_indexer_s* idx_b = b.create_indexer()^;
+    ASSERT( idx_o.size == idx_b.size );
+
+    sz_t buf_frames = o.preferred_frames_per_buffer;
+    sz_t buf_size = buf_frames * o.channels;
+
+    :buffer_s^ buf_o.set_size( buf_size, o.channels );
+    :buffer_s^ buf_b.set_size( buf_size, o.channels );
+
+    f3_t sum = 0;
+    for( s3_t index = 0; index < idx_o.size; index += buf_frames )
+    {
+        idx_o.get_buffer( buf_o, index, buf_frames );
+        idx_b.get_buffer( buf_b, index, buf_frames );
+        sum += buf_o.sdev_equ( buf_b );
+    }
+    = sum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:sequence_s) sdev_zro
+{
+    f3_t sum = 0;
+    for( sz_t i = 0; i < o.size(); i++ ) sum += o.c_buffer( i ).sdev_zro();
+    = sum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:sequence_s) sum
+{
+    f3_t sum = 0;
+    for( sz_t i = 0; i < o.size(); i++ ) sum += o.c_buffer( i ).sum();
+    = sum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:sequence_s) max_abs
+{
+    f3_t max_abs = 0;
+    for( sz_t i = 0; i < o.size(); i++ ) max_abs = f3_max( max_abs, o.c_buffer( i ).max_abs() );
+    = max_abs;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:sequence_s) scale
+{
+    for( sz_t i = 0; i < o.size(); i++ ) o.m_buffer( i ).scale( factor );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:sequence_s) copy_scale
+{
+    o.setup( src.channels, src.rate );
+    for( sz_t i = 0; i < src.size(); i++ ) o.push_buffer_d( src.c_buffer( i ).clone().scale( factor ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:sequence_s) copy_resample
+{
+    o.setup( src.channels, src.rate );
+    for( sz_t i = 0; i < src.size(); i++ )
+    {
+        bcodec_audio_buffer_s* src_buf = src.c_buffer( i );
+        bcodec_audio_buffer_s* next_buf = ( i + 1 < src.size() ) ? src.c_buffer( i + 1 ) : ( next && next.size() > 0 ) ? next.c_buffer( 0 ) : NULL;
+        m bcodec_audio_buffer_s* buf = o.push_empty_buffer();
+        buf.copy_resample( frame_index, frame_step, scale_factor, src_buf, next_buf );
+        frame_index += frame_step * buf.frames() - src_buf.frames();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

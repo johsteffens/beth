@@ -29,6 +29,8 @@ stamp :buffer_s x_array
 {
     s1_t channels;
     s1_t [];
+
+    func o push_v( m@* o, s1_t v ) o.push_c( v );
     func o set_size( m@* o, sz_t size, sz_t channels ) { o.cast( m x_array* ).set_size( size ); o.channels = channels; = o; };
     func o set_frames( m@* o, sz_t frames, sz_t channels ) { = o.set_size( frames * channels, channels ); };
     func o set_zero( m@* o ) { foreach( m$* e in o ) e.0 = 0; = o; };
@@ -41,31 +43,33 @@ stamp :buffer_s x_array
     /// vector into buffer value for given channel (overflow-check by truncation)
     func o set_from_vf2( @* o, c bmath_vf2_s* vec, sz_t channel );
 
-    func f3_t energy( @* o )
-    {
-        f3_t sum = 0;
-        foreach( $e in o ) sum += f3_sqr( e );
-        = sum;
-    }
+    func f3_t sum( @* o );
 
-    func f3_t sum( @* o )
-    {
-        f3_t sum = 0;
-        foreach( $e in o ) sum += e;
-        = sum;
-    }
+    /// square sum deviation
+    func f3_t sdev_equ( @* o, @* b ); // deviation from equality
+    func f3_t sdev_zro( @* o );       // deviation from zero
 
-    func f3_t max_abs( @* o )
-    {
-        f3_t max_abs = 0;
-        foreach( $e in o ) max_abs = f3_max( max_abs, f3_abs( e ) );
-        = max_abs;
-    }
+    /// Frobenius norm
+    /** fdev = ||f(o) - x||
+     *  '|| ... ||' = Frobenius norm  ( sqrt(sum over squares) )
+     *  Note: By this definition fdev_zro is the Frobenius norm of o.
+     */
+    func f3_t fdev_equ( @* o, @* b ) = f3_srt( o.sdev_equ(b) );
+    func f3_t fdev_zro( @* o )       = f3_srt( o.sdev_zro( ) );
 
-    func o scale( m@* o, f3_t factor )
-    {
-        foreach( m$*e in o ) e.0 = f3_min( 32767, f3_max( -32768, e.0 * factor ) );
-    }
+    func f3_t inv_size( @*o ) = ( o.size > 0 ) ? 1.0 / o.size : 0;
+
+    /// RMS norm
+    func f3_t rdev_equ( @* o, @* b ) = f3_srt( o.sdev_equ(b) * o.inv_size() );
+    func f3_t rdev_zro( @* o )       = f3_srt( o.sdev_zro( ) * o.inv_size() );
+
+
+    func f3_t energy( @* o ) = o.sdev_zro();
+
+    func f3_t max_abs( @* o );
+
+    // scale with clipping
+    func o scale( m@* o, f3_t factor );
 
     // scales frames linearly across buffer from start_factor to end_factor
     func o scale_lin( m@* o, f3_t start_factor, f3_t end_factor );
@@ -148,8 +152,14 @@ stamp :sequence_s x_deque trans(TE :buffer_s)
     func d :buffer_s* pop_first_buffer( m@* o ) = o.d_pop_first();
 
     /// Sum of all buffer sizes
-    func sz_t sum_buffer_size( @* o );
+    func sz_t sum_buffer_size  ( @* o );
     func sz_t sum_buffer_frames( @* o ) = o.sum_buffer_size() / o.channels;
+
+    func sz_t frames( @* o ) = o.sum_buffer_frames();
+    func sz_t values( @* o ) = o.sum_buffer_size();
+
+    // 1/frames if values > 0 otherwise 0
+    func f3_t inv_values( @* o ) { sz_t n = o.values(); = ( n > 0 ) ? ( 1.0 / n ) : 0; }
 
     /// Sends sequence in RIFF-WAVE format to sink
     func er_t wav_to_sink( @* o, m x_sink* sink );
@@ -159,37 +169,28 @@ stamp :sequence_s x_deque trans(TE :buffer_s)
     func er_t wav_from_source( m@* o, m x_source* source );
     func er_t wav_from_file(   m@* o, sc_t path );
 
-    func f3_t energy( @* o )
-    {
-        f3_t sum = 0;
-        for( sz_t i = 0; i < o.size(); i++ ) sum += o.c_buffer( i ).energy();
-        = sum;
-    }
+    /// square sum deviation
+    func f3_t sdev_equ( @* o, @* b ); // deviation from equality
+    func f3_t sdev_zro( @* o );       // deviation from zero
 
-    func f3_t sum( @* o )
-    {
-        f3_t sum = 0;
-        for( sz_t i = 0; i < o.size(); i++ ) sum += o.c_buffer( i ).sum();
-        = sum;
-    }
+    /// Frobenius norm
+    /** fdev = ||f(o) - x||
+     *  '|| ... ||' = Frobenius norm  ( sqrt(sum over squares) )
+     *  Note: By this definition fdev_zro is the Frobenius norm of o.
+     */
+    func f3_t fdev_equ( @* o, @* b ) = f3_srt( o.sdev_equ(b) );
+    func f3_t fdev_zro( @* o )       = f3_srt( o.sdev_zro( ) );
 
-    func f3_t max_abs( @* o )
-    {
-        f3_t max_abs = 0;
-        for( sz_t i = 0; i < o.size(); i++ ) max_abs = f3_max( max_abs, o.c_buffer( i ).max_abs() );
-        = max_abs;
-    }
+    /// RMS norm
+    func f3_t rdev_equ( @* o, @* b ) = f3_srt( o.sdev_equ(b) * o.inv_values() );
+    func f3_t rdev_zro( @* o )       = f3_srt( o.sdev_zro( ) * o.inv_values() );
 
-    func o scale( m@* o, f3_t factor )
-    {
-        for( sz_t i = 0; i < o.size(); i++ ) o.m_buffer( i ).scale( factor );
-    }
+    func f3_t energy( @* o ) = o.sdev_zro();
 
-    func o copy_scale( m@* o, @* src, f3_t factor )
-    {
-        o.setup( src.channels, src.rate );
-        for( sz_t i = 0; i < src.size(); i++ ) o.push_buffer_d( src.c_buffer( i ).clone().scale( factor ) );
-    }
+    func f3_t sum( @* o );
+    func f3_t max_abs( @* o );
+    func o scale( m@* o, f3_t factor );
+    func o copy_scale( m@* o, @* src, f3_t factor );
 
     /** Copies from src sequence while resampling with interpolation.
      *  frame_step (>0):
@@ -201,24 +202,10 @@ stamp :sequence_s x_deque trans(TE :buffer_s)
      *     For subsequent buffers: frame_index --> frame_index + frame_step * o.frames() - src.frames().
      *  'next' can be NULL, otherwise it represents the next buffer in a sequence.
      */
-    func o copy_resample( m@* o, f3_t frame_index, f3_t frame_step, f3_t scale_factor, @* src, @* next )
-    {
-        o.setup( src.channels, src.rate );
-        for( sz_t i = 0; i < src.size(); i++ )
-        {
-            bcodec_audio_buffer_s* src_buf = src.c_buffer( i );
-            bcodec_audio_buffer_s* next_buf = ( i + 1 < src.size() ) ? src.c_buffer( i + 1 ) : ( next && next.size() > 0 ) ? next.c_buffer( 0 ) : NULL;
-            m bcodec_audio_buffer_s* buf = o.push_empty_buffer();
-            buf.copy_resample( frame_index, frame_step, scale_factor, src_buf, next_buf );
-            frame_index += frame_step * buf.frames() - src_buf.frames();
-        }
-    }
+    func o copy_resample( m@* o, f3_t frame_index, f3_t frame_step, f3_t scale_factor, @* src, @* next );
 
     /// returns an indexer for sequence
-    func d :sequence_indexer_s* create_indexer( @* o )
-    {
-        = :sequence_indexer_s!.setup( o.cast( m$* ) );
-    }
+    func d :sequence_indexer_s* create_indexer( @* o ) export = :sequence_indexer_s!.setup( o.cast( m$* ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
