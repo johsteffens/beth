@@ -64,6 +64,8 @@ void                  bcore_source_chain_s_set_index(       bcore_source_chain_s
 
 /**********************************************************************************************************************/
 
+BCORE_FORWARD_OBJECT( bcore_sink_buffer_s );
+
 /** Memory based data source supporting source and array perspectives.
  *  Can be used as buffer in a source-chain or as initial data source.
  */
@@ -94,6 +96,9 @@ bcore_source_buffer_s* bcore_source_buffer_s_create();
 void                   bcore_source_buffer_s_discard(       bcore_source_buffer_s* o );
 bcore_source_buffer_s* bcore_source_buffer_s_clone(   const bcore_source_buffer_s* o );
 uz_t                   bcore_source_buffer_s_get_data(      bcore_source_buffer_s* o, vd_t data, uz_t size );
+
+bcore_source_buffer_s* bcore_source_buffer_s_setup_from_data( bcore_source_buffer_s* o, vc_t data, uz_t size );
+bcore_source_buffer_s* bcore_source_buffer_s_setup_from_sink_buffer( bcore_source_buffer_s* o, const bcore_sink_buffer_s* buffer );
 
 bcore_source_buffer_s* bcore_source_buffer_s_create_from_data( vc_t data, uz_t size );
 

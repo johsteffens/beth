@@ -54,7 +54,10 @@ group bcore_source = x_inst
         uz_t prefetch_size; // data amount prefetched from supplier (if present) (default: 4096)
 
         func uz_t get_data( m@* o, vd_t data, uz_t size );
-        func d@* create_from_data( vc_t data, uz_t size );
+        func   o setup_from_data       ( m@* o, vc_t data, uz_t size );
+        func   o setup_from_sink_buffer( m@* o, bcore_sink_buffer_s* buffer );
+
+        func d@* create_from_data(       vc_t data, uz_t size );
     };
 
     stamp :string_s = aware :

@@ -406,13 +406,27 @@ static uz_t buffer_flow_src( bcore_source_buffer_s* o, vd_t data, uz_t size )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bcore_source_buffer_s* bcore_source_buffer_s_setup_from_data( bcore_source_buffer_s* o, vc_t data, uz_t size )
+{
+    o->data = bcore_b_alloc( o->data, size, &o->space );
+    bcore_memcpy( o->data, data, size );
+    o->size = size;
+    o->index = 0;
+    return o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bcore_source_buffer_s* bcore_source_buffer_s_setup_from_sink_buffer( bcore_source_buffer_s* o, const bcore_sink_buffer_s* buffer )
+{
+    return bcore_source_buffer_s_setup_from_data( o, buffer->data, buffer->size );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 bcore_source_buffer_s* bcore_source_buffer_s_create_from_data( vc_t data, uz_t size )
 {
-    bcore_source_buffer_s* buffer = bcore_source_buffer_s_create();
-    buffer->data = bcore_b_alloc( buffer->data, size, &buffer->space );
-    bcore_memcpy( buffer->data, data, size );
-    buffer->size = size;
-    return buffer;
+    return bcore_source_buffer_s_setup_from_data( bcore_source_buffer_s_create(), data, size );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
