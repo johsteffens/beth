@@ -32,7 +32,7 @@ bl_t bcore_folder_create( sc_t name ); // creates new folder in mode 0700 if not
 bl_t bcore_folder_delete( sc_t name ); // deletes empty folder if existing; returns true if success or folder did not exist in the first place
 bl_t bcore_folder_rename( sc_t src_name, sc_t dst_name ); // renames folder if existing; returns success
 
-void bcore_folder_get_current( st_s* name ); // obtains current folder
+st_s* bcore_folder_get_current( st_s* name ); // obtains current folder; returns name
 
 /**********************************************************************************************************************/
 /** bcore_folder_s represents a full directory tree with files and sub-folders
@@ -46,13 +46,17 @@ BCORE_DECLARE_OBJECT( bcore_folder_s )
     bcore_arr_st_s arr_file;                          // files in folder
 };
 
-void bcore_folder_s_clear( bcore_folder_s* o );
+/// Clears the objects content (does not delete any file or folder); returns o
+bcore_folder_s* bcore_folder_s_clear( bcore_folder_s* o );
 
 /** Sets up object by parsing file system from root folder 'path'.
  *  Returns false in case 'path' does not exist or is no folder.
  *  recurse: true: recurse into sub folders.
  */
 bl_t bcore_folder_s_parse( bcore_folder_s* o, sc_t path, bl_t recurse );
+
+/// Same as parse except in case of parse failure o is just cleared. Returns o.
+bcore_folder_s* bcore_folder_s_setup( bcore_folder_s* o, sc_t path, bl_t recurse );
 
 /**********************************************************************************************************************/
 

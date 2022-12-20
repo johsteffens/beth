@@ -68,14 +68,15 @@ bl_t bcore_folder_rename( sc_t src_name, sc_t dst_name )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_folder_get_current( st_s* name )
+st_s* bcore_folder_get_current( st_s* name )
 {
-    if( !name ) return;
+    if( !name ) return name;
     char *get_current_dir_name( void ); // prototype not defined in unistd.h
     sd_t sd = get_current_dir_name();
     ASSERT( sd );
     st_s_copy_sc( name, sd );
     free( sd );
+    return name;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -92,11 +93,12 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_folder_s )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_folder_s_clear( bcore_folder_s* o )
+bcore_folder_s* bcore_folder_s_clear( bcore_folder_s* o )
 {
     st_s_clear( &o->name );
     bcore_array_a_set_size( ( bcore_array* )o, 0 );
     bcore_arr_st_s_clear( &o->arr_file );
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -152,7 +154,17 @@ bl_t bcore_folder_s_parse( bcore_folder_s* o, sc_t path, bl_t recurse )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bcore_folder_s* bcore_folder_s_setup( bcore_folder_s* o, sc_t path, bl_t recurse )
+{
+    bcore_folder_s_parse( o, path, recurse );
+    return o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 vd_t bcore_folder_signal_handler( const bcore_signal_s* o )
 {
