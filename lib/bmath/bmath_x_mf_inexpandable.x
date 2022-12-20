@@ -218,6 +218,9 @@ group bmath_mf =
     signature f3_t trc( @* o ); // trace
     signature f3_t sub_sqr( @* o, @* op ); // ( o - op )^2
 
+    // min, max simultaneously (p_xxx can be NULL)
+    signature o get_min_max( @* o, f3_t* p_min, f3_t* p_max );
+
     // deprecated ...
     signature f3_t fx_max( @* o ); // maximum value
     signature f3_t fx_min( @* o ); // minimum value
@@ -229,20 +232,20 @@ group bmath_mf =
     /// Initializations
 
     /// functions below support folded target
-    signature void zro(       m@* o ); // set zero;                             supports folded matrix
-    signature void one(       m@* o ); // set diagonal elements one, rest zero; supports folded matrix
-    signature void neg( @* o, m@* r ); // negate
-    signature void cpy( @* o, m@* r ); // copies content o -> r  (does not change allocation of res)
+    signature o zro(       m@* o ); // set zero;                             supports folded matrix
+    signature o one(       m@* o ); // set diagonal elements one, rest zero; supports folded matrix
+    signature r neg( @* o, m@* r ); // negate
+    signature r cpy( @* o, m@* r ); // copies content o -> r  (does not change allocation of res)
 
     ///------------------------------------------------------------------------------------------------------------------
     /// transposition / permutation
 
-    signature void htp        ( @* o, m@* res );
-    signature void pmt_mul    ( @* o, const bmath_pmt_s* p, m@* res ); // B = P * A   ; row_p[k]( B ) = row_k( A )
-    signature void pmt_htp_mul( @* o, const bmath_pmt_s* p, m@* res ); // B = P^T * A ; row_k( B ) = row_p[k]( A )
-    signature void mul_pmt    ( @* o, const bmath_pmt_s* p, m@* res ); // B = A * P   ; col_k( B ) = col_p[k]( A )
-    signature void mul_pmt_htp( @* o, const bmath_pmt_s* p, m@* res ); // B = A * P^T ; col_p[k]( B ) = col_k( A )
-    signature void htp_set    ( @* o, m@* res );
+    signature res htp        ( @* o, m@* res );
+    signature res pmt_mul    ( @* o, const bmath_pmt_s* p, m@* res ); // B = P * A   ; row_p[k]( B ) = row_k( A )
+    signature res pmt_htp_mul( @* o, const bmath_pmt_s* p, m@* res ); // B = P^T * A ; row_k( B ) = row_p[k]( A )
+    signature res mul_pmt    ( @* o, const bmath_pmt_s* p, m@* res ); // B = A * P   ; col_k( B ) = col_p[k]( A )
+    signature res mul_pmt_htp( @* o, const bmath_pmt_s* p, m@* res ); // B = A * P^T ; col_p[k]( B ) = col_k( A )
+    signature res htp_set    ( @* o, m@* res );
 
     ///------------------------------------------------------------------------------------------------------------------
     /// addition, subtraction
@@ -854,10 +857,10 @@ stamp bmath_mf3_s = bmath_mf
 
     func bmath_mf.max;
     func bmath_mf.min;
+    func bmath_mf.get_min_max;
     func bmath_mf.sum;
     func bmath_mf.trc;
     func bmath_mf.sub_sqr;
-
     // deprecated ...
     func bmath_mf.fx_max;
     func bmath_mf.fx_min;
@@ -1071,7 +1074,7 @@ stamp bmath_mf3_s = bmath_mf
     /******************************************************************************************************************/
     /// Type conversion
 
-    func bmath_mf.copy_typed;
+    func bcore_fp.copy_typed;
     func bmath_mf.copy_t;
     func bmath_mf.copy_a;
     func bmath_mf.clone_t;
@@ -1157,6 +1160,7 @@ stamp bmath_mf2_s = bmath_mf
 
     func bmath_mf.max;
     func bmath_mf.min;
+    func bmath_mf.get_min_max;
     func bmath_mf.sum;
     func bmath_mf.trc;
     func bmath_mf.sub_sqr;
@@ -1377,7 +1381,7 @@ stamp bmath_mf2_s = bmath_mf
     /******************************************************************************************************************/
     /// Type conversion
 
-    func bmath_mf.copy_typed;
+    func bcore_fp.copy_typed;
     func bmath_mf.copy_t;
     func bmath_mf.copy_a;
     func bmath_mf.clone_t;
