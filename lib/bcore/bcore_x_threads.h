@@ -126,9 +126,11 @@ stamp :condition_s
 
 group :thread
 {
+    group :result {};
+
     /// Overload one of these functions in the thread-functor:
-    feature x_inst* m_thread_func( m@* o );
-    feature x_inst* c_thread_func( c@* o );
+    feature (TResult) :result* m_thread_func( m@* o );
+    feature (TResult) :result* c_thread_func( c@* o );
 
     /** Thread Controller.
      *  Joins automatically on shut-down.
@@ -139,21 +141,21 @@ group :thread
         bl_t _join;   // true in case thread needs joining
         func bcore_inst_call.down_e;
 
-        /** Calls thread_obj.m_thread_func() or thread_obj.c_thread_func() in a new joinable thread
+        /** Calls obj.m_thread_func() or obj.c_thread_func() in a new joinable thread
          *  If o is unjoined, it is joined first.
          */
-        func void call_m_thread_func( m@* o, m aware :* obj );
+        func o call_m_thread_func( m@* o, m aware :* obj );
 
-        /** Calls thread_obj.c_thread_func() in a new joinable thread
+        /** Calls obj.c_thread_func() in a new joinable thread
          *  If o is unjoined, it is joined first.
          */
-        func void call_c_thread_func( m@* o, c aware :* obj );
+        func o call_c_thread_func( m@* o, c aware :* obj );
 
-        /** Waits for func( arg ) to finish and returns its return value (reentrant)
+        /** Waits for obj.m_thread_func or obj.m_thread_func to finish and returns its result (reentrant).
          *  In case the thread has already been joined (or is not joinable), the function
          *  returns NULL immediately.
          */
-        func x_inst* join( m@* o );
+        func c (TResult) :result* join( m@* o );
     }
 }
 

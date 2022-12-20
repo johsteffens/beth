@@ -147,27 +147,29 @@ static vd_t x_c_thread_func( vd_t thread_obj )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void x_thread_s_call_m_thread_func( x_thread_s* o, x_thread* thread_obj )
+x_thread_s* x_thread_s_call_m_thread_func( x_thread_s* o, x_thread* thread_obj )
 {
     x_thread_s_join( o );
     int ern = pthread_create( &o->_thread, NULL, x_m_thread_func, thread_obj );
     if( ern ) ERR( "function returned error %i", ern );
     o->_join = true;
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void x_thread_s_call_c_thread_func( x_thread_s* o, const x_thread* thread_obj )
+x_thread_s* x_thread_s_call_c_thread_func( x_thread_s* o, const x_thread* thread_obj )
 {
     x_thread_s_join( o );
     int ern = pthread_create( &o->_thread, NULL, x_c_thread_func, ( vd_t )thread_obj );
     if( ern ) ERR( "function returned error %i", ern );
     o->_join = true;
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-const x_inst* x_thread_s_join( x_thread_s* o )
+const x_thread_result* x_thread_s_join( x_thread_s* o )
 {
     vd_t ret = NULL;
     if( o->_join )
