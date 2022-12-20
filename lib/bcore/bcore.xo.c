@@ -1,4 +1,4 @@
-//  Last update: 2022-10-21T10:35:01Z
+//  Last update: 2022-11-28T14:43:36Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -36,6 +36,7 @@
  *  bcore_x_deque.h
  *  bcore_arr_inexpandable.x
  *  bcore_flect_inexpandable.x
+ *  bcore_folder_inexpandable.x
  *  bcore_hmap_inexpandable.x
  *  bcore_huffman.x
  *  bcore_img_inexpandable.x
@@ -55,7 +56,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0x20FFB33DFB5441B4ull
+// HKEYOF_bcore 0xDFEB3BCAEBCA812Bull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -894,6 +895,14 @@ XOILA_DEFINE_SPECT( x, x_thread )
     "bcore_spect_header_s header;"
     "feature aware x_thread : m_thread_func;"
     "feature aware x_thread : c_thread_func;"
+"}";
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_thread_result
+
+XOILA_DEFINE_SPECT( x_thread, x_thread_result )
+"{"
+    "bcore_spect_header_s header;"
 "}";
 
 /**********************************************************************************************************************/
@@ -3089,11 +3098,12 @@ x_btml* x_btml_create_from_source( x_source* source )
     return  o;
 }
 
-void x_btml_t_to_sink( const x_btml* o, tp_t t, x_sink* sink )
+x_sink* x_btml_t_to_sink( const x_btml* o, tp_t t, x_sink* sink )
 {
     // bcore_x_btml.h:207:1
     
     x_btml_t_translate_recursive(o,t, 0, true, sink, 0 );
+    return sink;
 }
 
 sc_t x_btml_name_of( tp_t type, st_s* buf )
@@ -3612,11 +3622,12 @@ x_bbml* x_bbml_create_from_source( x_source* source )
     return  o;
 }
 
-void x_bbml_t_to_sink( const x_bbml* o, tp_t t, x_sink* sink )
+x_sink* x_bbml_t_to_sink( const x_bbml* o, tp_t t, x_sink* sink )
 {
     // bcore_x_bbml.h:154:1
     
     x_bbml_t_translate_recursive(o,t, 0, true, sink );
+    return sink;
 }
 
 bl_t x_bbml_appears_valid( x_source* source )
@@ -3969,11 +3980,12 @@ x_bcml* x_bcml_create_from_source( x_source* source )
     return  o;
 }
 
-void x_bcml_t_to_sink( const x_bcml* o, tp_t t, x_sink* sink )
+x_sink* x_bcml_t_to_sink( const x_bcml* o, tp_t t, x_sink* sink )
 {
     // bcore_x_bcml.h:143:1
     
     x_bcml_t_translate_recursive(o,t, true, true, true, sink );
+    return sink;
 }
 
 bl_t x_bcml_appears_valid( x_source* source )
@@ -4837,6 +4849,9 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( x_thread_s );
             XOILA_REGISTER_SPECT( x_thread );
 
+            // group: x_thread_result
+            XOILA_REGISTER_SPECT( x_thread_result );
+
             // --------------------------------------------------------------------
             // source: bcore_file.h
 
@@ -5293,5 +5308,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x418477422B6A9967
-// XOICO_FILE_SIGNATURE 0xD00E0E8831AB1C73
+// XOICO_BODY_SIGNATURE 0x2EED7903EB1F22A9
+// XOICO_FILE_SIGNATURE 0x12D1D430D2DB25A4

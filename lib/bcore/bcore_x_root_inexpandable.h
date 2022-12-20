@@ -180,7 +180,12 @@ identifier sc_t_equal;
 identifier va_start;
 identifier va_end;
 identifier bcore_push_traits_of_ancestor;
+
+identifier bcore_msgv;
+identifier bcore_msg;
+identifier bcore_msg_fv;
 identifier bcore_msg_fa;
+
 identifier bcore_memset;
 identifier bcore_memcpy;
 
@@ -395,6 +400,7 @@ embed "bcore_flect_inexpandable.x";
 embed "bcore_via_inexpandable.x";
 embed "bcore_sr_inexpandable.x";
 embed "bcore_img_inexpandable.x";
+embed "bcore_folder_inexpandable.x";
 
 #endif // XOILA_SECTION
 
