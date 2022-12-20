@@ -1366,7 +1366,7 @@ func (:s) er_t trans_expression
         if( o.is_builtin_func( tp_identifier ) )
         {
             m xoico_typespec_s* typespec_builtin = xoico_typespec_s!^^;
-            o.trans_builtin( tp_identifier, source, NULL, NULL, result, typespec_builtin );
+            o.trans_builtin( tp_identifier, source, false, NULL, NULL, result, typespec_builtin );
             o.trans_typespec_expression( source, result, typespec_builtin, out_typespec );
         }
 
@@ -1426,7 +1426,7 @@ func (:s) er_t trans_expression
             {
                 c xoico_func_s* func = o.get_func( tp_identifier );
                 m $* typespec_ret = xoico_typespec_s!^^;
-                o.trans_function( source, func, NULL, NULL, result, typespec_ret );
+                o.trans_function( source, false, func, NULL, NULL, result, typespec_ret );
                 o.trans_typespec_expression( source, result, typespec_ret, out_typespec );
             }
             else // function name used in untraced context

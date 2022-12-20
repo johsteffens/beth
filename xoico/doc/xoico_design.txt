@@ -135,15 +135,15 @@ stamp:
   C-Prototypes are generated and registered as featured function.
 
   Function Syntax:
-   func <group_name> . <signature_name> [ [=] { <body> }];
+   func <group_name> . <signature_name> [inline|export] [[{] <body> [}]];
          <signature_name> is a signature defined in group <group_name>
          Creates a function <stamp_name>_s_<signature_name>.
 
-   func <group_name> . <feature_name> [ [=] { <body> }];
+   func <group_name> . <feature_name> [inline|export] [[{] <body> [}]];
          <feature_name> is a feature defined in group <group_name>
          Creates a function <stamp_name>_s_<feature_name> and binds it to <group_name>_<feature_name>.
 
-   func (<signature-def>) [ [=] { <body> }];
+   func (<signature-def>) [inline|export] [[{] <body> [}]];
          Creates a function <stamp_name>_s_<signature_name>.
 
   Special conditions:
@@ -173,10 +173,10 @@ stamp:
       void push_d(    o, v    ) // pushes element by passing ownership  (whether element is copied depends on array-type)
 
 Functions:
-  Features and functions inside a stamp can have a body.
-  The body is enclosed in '{ ... }' and contains ordinary c-code.
-  Exceptions:
-    Symbol ':' immediately followed by a name serves as namespace expander
+  Features and functions can have a body.
+  The body is normally enclosed in '{ ... }' Braces can be omitted if the body contains only a single statement.
+  Symbol ':' immediately followed by a name serves as namespace expander
+  Keywords: 'inline', 'export' preceding the body forces inline or not-inline expansion.
 
 Functor-style stamp declaration:
   A functor in this context is a stamp that is created to represent one specific function.
@@ -593,6 +593,7 @@ FEATURES, BUGS ...
 - (fixed) bug: a feature's signature defined with transient types does not retain transient properties on group level
 - (fixed) bug: crash in case group's' trait name is not a group
 - (done) allow calling a global function as member function of an object: obj.<global_func_name>( .... )
+- (done) Keywords: 'inline', 'export' preceding the body forces inline or not-inline expansion
 
 - (speculative) introduce a functor:
   syntax on group level.
@@ -604,6 +605,10 @@ FEATURES, BUGS ...
   - Alternative exists: functor-style stamp declaration availabe
         stamp fu_s( sz_t a, sz_t b ) func sz_t ( sz_t c ) = o.a + o.b + c;
   - The term 'functor' carries a different meaning in mathematics.
+
+- (done) Add member shrotcuts:
+    .! expands to .clone()
+    .# expands to .fork()
 
 TODO:
 

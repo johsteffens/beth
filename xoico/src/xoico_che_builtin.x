@@ -40,6 +40,7 @@ func (:s) er_t trans_builtin
     m @* o,
     tp_t tp_builtin,
     m x_source* source,
+    bl_t source_without_brackets, // for functions generated from shortcuts with implicit arguments
     c :result* result_expr,
     c xoico_typespec_s* typespec_expr,
     m :result* result_out,
@@ -51,8 +52,8 @@ func (:s) er_t trans_builtin
         case TYPEOF_cast :   return o.trans_builtin_cast(    source, result_expr, typespec_expr, result_out, typespec_out );
         case TYPEOF_scope:   return o.trans_builtin_scope(   source, result_expr, typespec_expr, result_out, typespec_out );
         case TYPEOF_t_scope: return o.trans_builtin_t_scope( source, result_expr, typespec_expr, result_out, typespec_out );
-        case TYPEOF_fork:    return o.trans_builtin_fork(    source, result_expr, typespec_expr, result_out, typespec_out );
-        case TYPEOF_try:     return o.trans_builtin_try(     source, result_expr, typespec_expr, result_out, typespec_out );
+        case TYPEOF_fork:    return o.trans_builtin_fork(    source, source_without_brackets, result_expr, typespec_expr, result_out, typespec_out );
+        case TYPEOF_try:     return o.trans_builtin_try(     source, source_without_brackets, result_expr, typespec_expr, result_out, typespec_out );
         default: return source.parse_error_fa( "Internal error: Invalid builtin type '#<sc_t>'", ifnameof( tp_builtin ) );
     }
 };
@@ -89,9 +90,6 @@ func (:s) er_t trans_builtin_cast
     m $* typespec_cast = xoico_typespec_s!^^;
 
     typespec_cast.parse( o.host, source );
-
-    //o.take_typespec( source, typespec_cast, true );
-
 
     if( typespec_cast.type == type_object~ )
     {
@@ -360,6 +358,7 @@ func (:s) er_t trans_builtin_fork
 (
     m @* o,
     m x_source* source,
+    bl_t source_without_brackets, // for functions generated from shortcuts with implicit arguments
     c :result* result_expr,
     c xoico_typespec_s* typespec_expr,
     m :result* result_out,
@@ -368,7 +367,14 @@ func (:s) er_t trans_builtin_fork
 {
     if( result_expr ) // member call
     {
-        source.parse_fa( " ( " );
+        if( source_without_brackets )
+        {
+            source.parse_fa( " " );
+        }
+        else
+        {
+            source.parse_fa( " ( " );
+        }
         result_out.clear();
     }
     else // direct call
@@ -386,7 +392,14 @@ func (:s) er_t trans_builtin_fork
 
     result_out.push_sc( "((" );
 
-    source.parse_fa( " )" );
+    if( source_without_brackets )
+    {
+        source.parse_fa( " " );
+    }
+    else
+    {
+        source.parse_fa( " )" );
+    }
 
     if( typespec_fork.type        == 0 ) return source.parse_error_fa( "Operator 'fork': Expression not tractable." );
     if( typespec_fork.indirection != 1 ) return source.parse_error_fa( "Operator 'fork': Expression's indirection != 1." );
@@ -407,6 +420,7 @@ func (:s) er_t trans_builtin_try
 (
     m @* o,
     m x_source* source,
+    bl_t source_without_brackets, // for functions generated from shortcuts with implicit arguments
     c :result* result_expr,
     c xoico_typespec_s* typespec_expr,
     m :result* result_out,
@@ -417,7 +431,14 @@ func (:s) er_t trans_builtin_try
 
     if( result_expr ) // member call
     {
-        source.parse_fa( " ( " );
+        if( source_without_brackets )
+        {
+            source.parse_fa( " " );
+        }
+        else
+        {
+            source.parse_fa( " ( " );
+        }
         result_out.clear();
     }
     else // direct call
@@ -442,7 +463,15 @@ func (:s) er_t trans_builtin_try
 
     c xoico_typespec_s* typespec_try = typespec_expr;
 
-    source.parse_fa( " ) ;" );
+    if( source_without_brackets )
+    {
+        source.parse_fa( " ;" );
+    }
+    else
+    {
+        source.parse_fa( " ) ;" );
+    }
+
 
     if( typespec_try.type != 0 )
     {

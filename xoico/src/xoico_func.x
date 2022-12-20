@@ -99,21 +99,17 @@ func (:s) xoico.parse
 
     o.source_point.setup_from_source( source );
 
-    bl_t is_enclosed_signature = source.parse_bl( " #?'('" ); // old style enclosed signature
+    if( source.parse_bl( " #?'('" ) ) // old style enclosed signature
+    {
+        return source.parse_error_fa( "Signature-enclosure '( ...sig... )' is deprecated." );
+    }
 
     // We first try parsing a direct signature. If that fails, we assume the signature is referenced by an identifier.
     // This allows parsing without old style bracket enclosing. If that is a save practice under all circumstances is to be seen.
     s3_t index = source.get_index();
     m xoico_signature_s* signature = xoico_signature_s!^;
 
-    if( is_enclosed_signature )
-    {
-        return source.parse_error_fa( "Signature-enclosure '( ...sig... )' is deprecated." );
-
-        signature.parse( host, source );
-        source.parse_fa( " ) " );
-    }
-    else if( signature.parse( host, source ) != 0 )
+    if( signature.parse( host, source ) != 0 )
     {
         bcore_error_remove_last();
         source.set_index( index );

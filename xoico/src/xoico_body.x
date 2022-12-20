@@ -376,6 +376,9 @@ func (:s) xoico.parse
 {
     o.source_point.setup_from_source( source );
 
+    bl_t force_inline = source.parse_bl( " #?w'inline'" );
+    bl_t force_export = source.parse_bl( " #?w'export'" );
+
     if( source.parse_bl( " #=?'='" ) )
     {
         s3_t index = source.get_index();
@@ -390,6 +393,7 @@ func (:s) xoico.parse
     }
 
     o.parse_expression( host, source );
+    o.go_inline = force_inline ? true : force_export ? false : o.go_inline;
 
     m $* compiler = host.compiler();
     o.global_name = host.entypeof( st_s_create_fa( "#<sc_t>_#<sc_t>", compiler.nameof( host.obj_type() ), compiler.nameof( o.name ) )^^.sc );

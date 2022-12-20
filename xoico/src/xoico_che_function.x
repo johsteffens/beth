@@ -22,6 +22,7 @@ func (:s) er_t trans_function_args
 (
     m @* o,
     m x_source* source,
+    bl_t function_without_brackets, // x-function without brackets (typically shortcut with only implicit arguments)
     c xoico_func_s* func,
     c :result* result_object_expr,
     c xoico_typespec_s* typespec_object,
@@ -34,7 +35,15 @@ func (:s) er_t trans_function_args
     tp_t object_type = func.obj_type;
     c xoico_signature_s* signature = func.signature;
     typespec_return.type = 0;
-    o.trans( source, "(", result );
+
+    if( function_without_brackets )
+    {
+        result.push_sc( "(" );
+    }
+    else
+    {
+        o.trans( source, "(", result );
+    }
 
     tp_t cast_to_var = signature.typespec_ret.transient ? signature.typespec_ret.transient.cast_to_var : 0;
 
@@ -156,8 +165,16 @@ func (:s) er_t trans_function_args
         }
     }
 
-    source.parse_fa( " " );
-    o.trans( source, ")", result );
+    if( function_without_brackets )
+    {
+        result.push_sc( ")" );
+    }
+    else
+    {
+        source.parse_fa( " " );
+        o.trans( source, ")", result );
+    }
+
 
     if( typespec_return.type == 0 )
     {
@@ -173,6 +190,7 @@ func (:s) er_t trans_function
 (
     m @* o,
     m x_source* source,
+    bl_t function_without_brackets, // x-function without brackets (typically shortcut with only implicit arguments)
     c xoico_func_s* func,
     c :result* result_object_expr, // NULL on direct calls
     c xoico_typespec_s* typespec_object, // NULL on direct calls
@@ -183,7 +201,7 @@ func (:s) er_t trans_function
     m $* typespec_ret = xoico_typespec_s!^;
     m $* result_args = :result_arr_s!^;
 
-    o.trans_function_args( source, func, result_object_expr, typespec_object, result_args, typespec_ret );
+    o.trans_function_args( source, function_without_brackets, func, result_object_expr, typespec_object, result_args, typespec_ret );
 
     m $* result_expression = :result_arr_s!^;
     result_expression.push_sc( o.nameof( func.global_name ) );

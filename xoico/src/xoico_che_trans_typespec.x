@@ -42,11 +42,6 @@ func (:s) er_t trans_typespec_member
 
     char c = source.inspect_char();
 
-    if( c == '*' || c == '&' )
-    {
-        return source.parse_error_fa( "Postfix operators '&' and '*' are deprecated. Use numeric indirection level.\n" );
-    }
-
     if( c >= '0' && c <= '9' )
     {
         m $* typespec_adapted = in_typespec.clone()^^;
@@ -63,6 +58,11 @@ func (:s) er_t trans_typespec_member
         result.push_result_d( result_adapted.fork() );
         o.trans_typespec_expression( source, result, typespec_adapted, out_typespec );
         return 0;
+    }
+
+    if( c == '*' || c == '&' )
+    {
+        return source.parse_error_fa( "Postfix operators '&' and '*' are deprecated. Use numeric indirection level.\n" );
     }
 
     if( source.parse_bl( "#=?'['" ) || source.parse_bl( "#=?'?['" ) ) // array subscript
@@ -107,12 +107,25 @@ func (:s) er_t trans_typespec_member
     {
         m $* result_local = :result_arr_s!^;
 
+        /// function_without_brackets is used for shortcuts (e.g. .! or .#) that are expanded as unary member functions with implicit arguments
+        bl_t function_without_brackets = false;
+
         tp_t tp_identifier = o.get_identifier( source, true );
         if( !tp_identifier )
         {
             if( source.parse_bl( "#=?'('" ) ) // anonymous function call
             {
                 tp_identifier = o.entypeof( "" );
+            }
+            else if( source.parse_bl( "#?'!'" ) ) // function 'clone'
+            {
+                tp_identifier = o.entypeof( "clone" );
+                function_without_brackets = true;
+            }
+            else if( source.parse_bl( "#?'#'" ) ) // function 'fork'
+            {
+                tp_identifier = o.entypeof( "fork" );
+                function_without_brackets = true;
             }
             else
             {
@@ -123,9 +136,7 @@ func (:s) er_t trans_typespec_member
 
         o.trans_whitespace( source, result_local );
 
-        //-----------------------
-
-        bl_t try_member_function = source.parse_bl( "#=?'('" );
+        bl_t try_member_function = function_without_brackets || source.parse_bl( "#=?'('" );
         bl_t try_member_object   = !try_member_function;
 
         if( try_member_function )
@@ -133,7 +144,7 @@ func (:s) er_t trans_typespec_member
             if( o.is_builtin_func( tp_identifier ) )
             {
                 m xoico_typespec_s* typespec_builtin = xoico_typespec_s!^^;
-                o.trans_builtin( tp_identifier, source, result, in_typespec, result_local, typespec_builtin );
+                o.trans_builtin( tp_identifier, source, function_without_brackets, result, in_typespec, result_local, typespec_builtin );
                 result.copy( result_local );
                 o.trans_typespec_expression( source, result, typespec_builtin, out_typespec );
             }
@@ -142,7 +153,7 @@ func (:s) er_t trans_typespec_member
                 m $* typespec_ret = xoico_typespec_s!^;
                 m $* result_object_expr = result.clone()^;
                 result.clear();
-                o.trans_function( source, info.func, result_object_expr, in_typespec, result, typespec_ret );
+                o.trans_function( source, function_without_brackets, info.func, result_object_expr, in_typespec, result, typespec_ret );
                 o.trans_typespec_expression( source, result, typespec_ret, out_typespec );
             }
             // possibly a compact function of a member object
@@ -516,7 +527,7 @@ func (:s) er_t trans_typespec_expression
             m $* typespec_ret = xoico_typespec_s!^;
             m $* result_object_expr = result.clone()^;
             result.clear();
-            o.trans_function( source, info.func, result_object_expr, in_typespec, result, typespec_ret );
+            o.trans_function( source, false, info.func, result_object_expr, in_typespec, result, typespec_ret );
             o.trans_typespec_expression( source, result, typespec_ret, out_typespec );
         }
         else

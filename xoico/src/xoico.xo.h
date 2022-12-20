@@ -1,4 +1,4 @@
-//  Last update: 2022-11-02T17:05:57Z
+//  Last update: 2022-12-17T14:18:36Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -1443,15 +1443,15 @@
   er_t xoico_che_s_trans_typespec_attach( xoico_che_s* o, x_source* source, xoico_che_result* result, const xoico_typespec_s* in_typespec, xoico_typespec_s* out_typespec ); \
   er_t xoico_che_s_trans_typespec_assign( xoico_che_s* o, x_source* source, xoico_che_result* result, const xoico_typespec_s* in_typespec, xoico_typespec_s* out_typespec ); \
   er_t xoico_che_s_trans_typespec_expression( xoico_che_s* o, x_source* source, xoico_che_result* result, const xoico_typespec_s* in_typespec, xoico_typespec_s* out_typespec ); \
-  er_t xoico_che_s_trans_function_args( xoico_che_s* o, x_source* source, const xoico_func_s* func, const xoico_che_result* result_object_expr, const xoico_typespec_s* typespec_object, xoico_che_result* result, xoico_typespec_s* typespec_return ); \
-  er_t xoico_che_s_trans_function( xoico_che_s* o, x_source* source, const xoico_func_s* func, const xoico_che_result* result_object_expr, const xoico_typespec_s* typespec_object, xoico_che_result* result, xoico_typespec_s* return_typespec ); \
+  er_t xoico_che_s_trans_function_args( xoico_che_s* o, x_source* source, bl_t function_without_brackets, const xoico_func_s* func, const xoico_che_result* result_object_expr, const xoico_typespec_s* typespec_object, xoico_che_result* result, xoico_typespec_s* typespec_return ); \
+  er_t xoico_che_s_trans_function( xoico_che_s* o, x_source* source, bl_t function_without_brackets, const xoico_func_s* func, const xoico_che_result* result_object_expr, const xoico_typespec_s* typespec_object, xoico_che_result* result, xoico_typespec_s* return_typespec ); \
   bl_t xoico_che_s_is_builtin_func( const xoico_che_s* o, tp_t tp_identifier ); \
-  er_t xoico_che_s_trans_builtin( xoico_che_s* o, tp_t tp_builtin, x_source* source, const xoico_che_result* result_expr, const xoico_typespec_s* typespec_expr, xoico_che_result* result_out, xoico_typespec_s* typespec_out ); \
+  er_t xoico_che_s_trans_builtin( xoico_che_s* o, tp_t tp_builtin, x_source* source, bl_t source_without_brackets, const xoico_che_result* result_expr, const xoico_typespec_s* typespec_expr, xoico_che_result* result_out, xoico_typespec_s* typespec_out ); \
   er_t xoico_che_s_trans_builtin_cast( xoico_che_s* o, x_source* source, const xoico_che_result* result_expr, const xoico_typespec_s* typespec_expr, xoico_che_result* result_out, xoico_typespec_s* typespec_out ); \
   er_t xoico_che_s_trans_builtin_scope( xoico_che_s* o, x_source* source, const xoico_che_result* result_expr, const xoico_typespec_s* typespec_expr, xoico_che_result* result_out, xoico_typespec_s* typespec_out ); \
   er_t xoico_che_s_trans_builtin_t_scope( xoico_che_s* o, x_source* source, const xoico_che_result* result_expr, const xoico_typespec_s* typespec_expr, xoico_che_result* result_out, xoico_typespec_s* typespec_out ); \
-  er_t xoico_che_s_trans_builtin_fork( xoico_che_s* o, x_source* source, const xoico_che_result* result_expr, const xoico_typespec_s* typespec_expr, xoico_che_result* result_out, xoico_typespec_s* typespec_out ); \
-  er_t xoico_che_s_trans_builtin_try( xoico_che_s* o, x_source* source, const xoico_che_result* result_expr, const xoico_typespec_s* typespec_expr, xoico_che_result* result_out, xoico_typespec_s* typespec_out ); \
+  er_t xoico_che_s_trans_builtin_fork( xoico_che_s* o, x_source* source, bl_t source_without_brackets, const xoico_che_result* result_expr, const xoico_typespec_s* typespec_expr, xoico_che_result* result_out, xoico_typespec_s* typespec_out ); \
+  er_t xoico_che_s_trans_builtin_try( xoico_che_s* o, x_source* source, bl_t source_without_brackets, const xoico_che_result* result_expr, const xoico_typespec_s* typespec_expr, xoico_che_result* result_out, xoico_typespec_s* typespec_out ); \
   bl_t xoico_che_s_is_control_name( const xoico_che_s* o, tp_t tp_identifier ); \
   er_t xoico_che_s_trans_control( xoico_che_s* o, tp_t tp_control, x_source* source, xoico_che_result* result ); \
   er_t xoico_che_s_trans_control_for( xoico_che_s* o, x_source* source, xoico_che_result* result ); \
@@ -2019,5 +2019,5 @@ BETH_EXPAND_GROUP_xoico_builder
 BETH_EXPAND_GROUP_xoico_main
 
 #endif // __xoico_xo_H
-// XOICO_BODY_SIGNATURE 0xA649BA93031308D2
-// XOICO_FILE_SIGNATURE 0x59D9BBB11F5257A2
+// XOICO_BODY_SIGNATURE 0x89E9C7898F2CBA79
+// XOICO_FILE_SIGNATURE 0xE33726C332561E72
