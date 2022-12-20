@@ -145,8 +145,8 @@ func bl_t appears_valid( m x_source* source );
 func bl_t t_appears_valid( tp_t type, m x_source* source );
 
 /// Writes object to sink.
-func void t_to_sink( c@* o, tp_t t, m x_sink* sink );
-func void   to_sink( c@* o,         m x_sink* sink ) o.t_to_sink( o._, sink );
+func sink t_to_sink( c@* o, tp_t t, m x_sink* sink );
+func sink   to_sink( c@* o,         m x_sink* sink ) = o.t_to_sink( o._, sink );
 func void t_to_file( c@* o, tp_t t, sc_t file ) o.t_to_sink( t, bcore_file_open_sink( file )^ );
 func void   to_file( c@* o,         sc_t file ) o.t_to_file( o._, file );
 func void t_to_stdout( c@* o, tp_t t ) o.t_to_sink( t, x_sink_stdout() );

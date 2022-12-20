@@ -83,8 +83,8 @@ func d aware @* create_from_file( sc_t file ) = :create_from_source( x_source_cr
 func bl_t appears_valid( m x_source* source );
 
 /// Writes object to sink.
-func void t_to_sink( c@* o, tp_t t, m x_sink* sink );
-func void   to_sink( c@* o,         m x_sink* sink ) o.t_to_sink( o._, sink );
+func sink t_to_sink( c@* o, tp_t t, m x_sink* sink );
+func sink   to_sink( c@* o,         m x_sink* sink ) = o.t_to_sink( o._, sink );
 func void t_to_file( c@* o, tp_t t, sc_t file ) o.t_to_sink( t, bcore_file_open_sink( file )^ );
 func void   to_file( c@* o,         sc_t file ) o.t_to_file( o._, file );
 
