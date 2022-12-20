@@ -52,6 +52,30 @@
  *  Typical (usable) compression rates range between 56 ... 240 kbps (average on 2-channels at 44.1 kHz).
  *  At 240kbps the difference to the original is practically imperceptible.
  *
+ *  Terminology:
+ *
+ *  Slice:
+ *    The smallest set of consecutive audio data.
+ *    A slice fits the expansion of the window function.
+ *    A slice is passed though the MDCT.
+ *    In the decoded form, adjacent slices overlap by 50%.
+ *
+ *  Page:
+ *    A specified (typically fixed) number of adjacent slices form a page.
+ *    Huffman encoding is done on page level.
+ *    A compressed audio file consists of multiple pages.
+ *    An intermediate interface for continuous encoding and decoding operates on page level.
+ *
+ *  Stage:
+ *    Indicates a specific encoding/decoding level.
+ *    Pages and slices are passed though a series of stages from fully decoded to fully encoded.
+ *
+ *  Param:
+ *    Codec parameters and support functions.
+ *
+ *  Bank:
+ *    Container for encoded data.
+ *
  */
 
 /**********************************************************************************************************************/
@@ -82,43 +106,6 @@ stamp :context_s
     bcodec_audio_buffer_s audio_buffer;
     bmath_vf2_s audio_vec;
 }
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/**********************************************************************************************************************/
-
-//----------------------------------------------------------------------------------------------------------------------
-
-group :window_function =
-{
-    feature vec gen( @* o, sz_t size, m bmath_vf2_s* vec );
-
-    stamp :const_s func :.gen
-    {
-        vec.set_size( size );
-        f3_t v = f3_srt( 0.5 );
-        for( sz_t i = 0; i < size; i++ ) { vec.[ i ] = v; }
-        = vec;
-    };
-
-    stamp :cosine_s func :.gen
-    {
-        bmath_cf3_s^ c.urt( 1, size * 4 );
-        bmath_cf3_s^ w.urt( 1, size * 2 );
-        vec.set_size( size );
-        for( sz_t i = 0; i < size; i++ ) { vec.[ i ] = c.i; c.mul( w, c ); }
-        = vec;
-    };
-
-    stamp :sine_cosine_s func :.gen
-    {
-        bmath_cf3_s^ c.urt( 1, size * 4 );
-        bmath_cf3_s^ w.urt( 1, size * 2 );
-        vec.set_size( size );
-        for( sz_t i = 0; i < size; i++ ) { vec.[ i ] = sin( 0.5 * f3_pi() * c.i * c.i ); c.mul( w, c ); }
-        = vec;
-    };
-};
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -203,7 +190,7 @@ group :param
         s2_t rle_max_length = 32767; // RLE block: maximum length
 
         tp_t tp_page = :page_stage30_s;
-        tp_t tp_window_function = ::window_function_sine_cosine_s;
+        tp_t tp_window_function = bmath_cosine_mdct_window_function_sine_cosine_s;
 
         s1_t encoder_threads = 10;
         s1_t decoder_threads = 10;
@@ -220,14 +207,14 @@ group :param
         hidden bmath_vf2_s => window_function_vec;
         hidden bl_t is_setup;
 
-        func d ::window_function* create_window_function( @* o ) = x_inst_create( o.tp_window_function );
+        func d bmath_cosine_mdct_window_function* create_window_function( @* o ) = x_inst_create( o.tp_window_function );
 
         /// Interface
         func bcodec_audio_codec_param.setup;
         func bcodec_audio_codec_param.create_page;
-        func bcodec_audio_codec_param.create_encoder;
-        func bcodec_audio_codec_param.create_decoder;
-        func bcodec_audio_codec_param.create_context;
+        func bcodec_audio_codec_param.create_encoder export = ::encoder_s!.set_param( o );;
+        func bcodec_audio_codec_param.create_decoder export = ::decoder_s!;
+        func bcodec_audio_codec_param.create_context export = ::context_s!;
         func bcodec_audio_codec_param.set_rate     o.rate     = rate;
         func bcodec_audio_codec_param.set_channels o.channels = channels;
         func bcodec_audio_codec_param.get_rate     = o.rate;
@@ -240,27 +227,6 @@ group :param
     {
         if( !x_inst_exists( o.tp_page ) ) ERR_fa( "'tp_page' does not hold a valid type." );
         = x_inst_create( o.tp_page );
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
-
-    func (:s) bcodec_audio_codec_param.create_encoder
-    {
-        = ::encoder_s!.set_param( o );
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
-
-    func (:s) bcodec_audio_codec_param.create_decoder
-    {
-        = ::decoder_s!;
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
-
-    func (:s) bcodec_audio_codec_param.create_context
-    {
-        = ::context_s!;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -298,7 +264,7 @@ group :param
         if( o.is_setup ) = o;
         o.is_setup = true;
 
-        o.window_function_vec =< o.create_window_function()^.gen( o.frames, bmath_vf2_s! );
+        o.window_function_vec =< o.create_window_function()^.gen_f2( o.frames, bmath_vf2_s! );
         o.window_function_vec.mul_scl_fx( f2_srt( 2.0 ), o.window_function_vec ); // factor srt(2) needed for correct scale reconstruction
 
         if( o.bands.size == 0 ) o.setup_default_param_band();
@@ -1232,6 +1198,10 @@ stamp :encoder_thread_queue_s x_deque trans(TE :encoder_thread_s) { x_deque_inst
 stamp :encoder_s bcodec_audio_codec_encoder
 {
     :param_s => param;
+
+    sz_t preferred_threads; //0: no set
+    func bcodec_audio_codec_encoder.set_preferred_threads o.preferred_threads = threads;
+
     bl_t is_setup;
 
                 :sequence_s => sequence;
@@ -1317,7 +1287,7 @@ func (:encoder_s) sz_t frames_left( @* o ) = o.buffer_frames - o.buffer_digested
 func (:encoder_s) bl_t pages_left ( @* o, bl_t finish ) = o.frames_left() >= ( finish ? 1 : o.param.frames_per_page() + o.param.frames_per_slice() );
 func (:encoder_s) o encode( m@* o, bl_t finish )
 {
-    sz_t max_threads = sz_max( o.param.encoder_threads, 1 );
+    sz_t max_threads = o.preferred_threads > 0 ? o.preferred_threads : sz_max( o.param.encoder_threads, 1 );
     if( o.pages_left( finish ) )
     {
         while( o.pages_left( finish ) )
@@ -1411,6 +1381,9 @@ stamp :decoder_s bcodec_audio_codec_decoder
 {
     :param_s => param;
 
+    sz_t preferred_threads; //0: no set
+    func bcodec_audio_codec_decoder.set_preferred_threads o.preferred_threads = threads;
+
                 :sequence_s => sequence;
     bcodec_audio_sequence_s => sequence_buf;
 
@@ -1473,7 +1446,7 @@ func (:decoder_s) o setup( m@* o )
 
 func (:decoder_s) o decode( m@* o )
 {
-    sz_t max_threads = sz_max( o.param.decoder_threads, 1 );
+    sz_t max_threads = o.preferred_threads > 0 ? o.preferred_threads : sz_max( o.param.decoder_threads, 1 );
     if( o.buffer_decoded_index > sz_max( 1, o.param.slices_per_page >> 1 ) ) = o;
 
     if( o.sequence_index < o.sequence.size && o.thread_queue.size() < max_threads )
