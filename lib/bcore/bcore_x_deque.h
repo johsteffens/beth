@@ -57,12 +57,12 @@ XOILA_DEFINE_GROUP( x_deque, x_inst )
 signature o              set_space( m@* o, sz_t space );
 signature o              clear(   m@* o );
 signature sz_t           size(    c@* o );
-signature m (TE) x_inst* m_get(   m@* o, sz_t index );
-signature c (TE) x_inst* c_get(   c@* o, sz_t index );
-signature m (TE) x_inst* m_get_first( m@* o );
-signature c (TE) x_inst* c_get_first( c@* o );
-signature m (TE) x_inst* m_get_last(  m@* o );
-signature c (TE) x_inst* c_get_last(  c@* o );
+signature m (TE) x_inst* m_get(   m@* o, sz_t index ); // returns NULL if index is out of range
+signature c (TE) x_inst* c_get(   c@* o, sz_t index ); // returns NULL if index is out of range
+signature m (TE) x_inst* m_get_first( m@* o ); // returns NULL if size is 0
+signature c (TE) x_inst* c_get_first( c@* o ); // returns NULL if size is 0
+signature m (TE) x_inst* m_get_last(  m@* o ); // returns NULL if size is 0
+signature c (TE) x_inst* c_get_last(  c@* o ); // returns NULL if size is 0
 signature m (TE) x_inst* push_last_d ( m@* o, d (TE) x_inst* inst ); // push to end of queue
 signature m (TE) x_inst* push_first_d( m@* o, d (TE) x_inst* inst ); // push to front of queue
 signature d (TE) x_inst* d_pop_last (  m@* o );                      // pop from end of queue
