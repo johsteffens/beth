@@ -72,17 +72,53 @@ func (:bgra_s) pnm_from_source
     }
 
     sz_t rows = 0; sz_t cols = 0;
-    bcore_source_string_s_create_from_string( first_three_lines )^.parse_fa( "P6 #<sz_t*> #<sz_t*> 255\n", cols.1, rows.1 );
-    o.set_size( rows, cols );
 
-    for( sz_t i = 0; i < o.rows; i++ )
+    st_s^ format_name;
+    bcore_source_string_s_create_from_string( first_three_lines )^.parse_fa( "#name #<sz_t*> #<sz_t*> 255\n", format_name.1, cols.1, rows.1 );
+
+    if( format_name.equal_sc( "P6" ) ) // color map
     {
-        for( sz_t j = 0; j < o.cols; j++ )
+        o.set_size( rows, cols );
+
+        for( sz_t i = 0; i < o.rows; i++ )
         {
-            u0_t rgb[ 3 ];
-            source.get_data( rgb, 3 );
-            o.set_argb( i, j, 0, rgb[ 0 ], rgb[ 1 ], rgb[ 2 ] );
+            for( sz_t j = 0; j < o.cols; j++ )
+            {
+                u0_t rgb[ 3 ];
+                source.get_data( rgb, 3 );
+                o.set_argb( i, j, 0, rgb[ 0 ], rgb[ 1 ], rgb[ 2 ] );
+            }
         }
+    }
+    else if( format_name.equal_sc( "P5" ) ) // grey map
+    {
+        o.set_size( rows, cols );
+        for( sz_t i = 0; i < o.rows; i++ )
+        {
+            for( sz_t j = 0; j < o.cols; j++ )
+            {
+                u0_t v;
+                source.get_data( v.1, 1 );
+                o.set_argb( i, j, 0, v, v, v );
+            }
+        }
+    }
+    else
+    {
+        ERR_fa( "Unhandled PNM format '#<sc_t>'", format_name.sc );
+    }
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bgra_s) copy_typed
+{
+    switch( type )
+    {
+        case     :yuyv_s~: o.from_yuyv( src.cast( :yuyv_s* ) );
+        case bmath_mf2_s~: o.from_mf2( src.cast( bmath_mf2_s* ) );
+        default: ERR_fa( "Cannot convert from '#<sc_t>'\n", bnameof( type ) );
     }
 }
 
@@ -162,6 +198,89 @@ func (:bgra_s) from_mf2
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:bgra_s) to_bgr_mf2
+{
+    mat.set_size( o.rows, o.cols * 3 );
+    for( sz_t i = 0; i < o.rows; i++ )
+    {
+        m f2_t* m_row = mat.[ i * mat.stride ];
+        c u0_t* o_row = o .[ i * o.bytes_per_row ];
+        for( sz_t j = 0; j < o.cols; j++ )
+        {
+            m_row[ j * 3 + 0 ] = o_row[ j * 4 + 0 ];
+            m_row[ j * 3 + 1 ] = o_row[ j * 4 + 1 ];
+            m_row[ j * 3 + 2 ] = o_row[ j * 4 + 2 ];
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bgra_s) from_bgr_mf2
+{
+    ASSERT( mat.cols % 3 == 0 );
+    o.set_size( mat.rows, mat.cols / 3 );
+    for( sz_t i = 0; i < o.rows; i++ )
+    {
+        c f2_t* m_row = mat.[ i * mat.stride ];
+        m u0_t* o_row = o  .[ i * o.bytes_per_row ];
+        for( sz_t j = 0; j < o.cols; j++ )
+        {
+            o_row[ j * 4 + 0 ] = f2_rs2( f2_max( 0, f2_min( 255, m_row[ j * 3 + 0 ] ) ) );
+            o_row[ j * 4 + 1 ] = f2_rs2( f2_max( 0, f2_min( 255, m_row[ j * 3 + 1 ] ) ) );
+            o_row[ j * 4 + 2 ] = f2_rs2( f2_max( 0, f2_min( 255, m_row[ j * 3 + 2 ] ) ) );
+            o_row[ j * 4 + 3 ] = 0;
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bgra_s) to_yuv_mf2
+{
+    mat.set_size( o.rows, o.cols * 3 );
+    for( sz_t i = 0; i < o.rows; i++ )
+    {
+        m f2_t* m_row = mat.[ i * mat.stride ];
+        c u0_t* o_row = o .[ i * o.bytes_per_row ];
+        for( sz_t j = 0; j < o.cols; j++ )
+        {
+            f3_t b = o_row[ j * 4 + 0 ];
+            f3_t g = o_row[ j * 4 + 1 ];
+            f3_t r = o_row[ j * 4 + 2 ];
+            m_row[ j * 3 + 0 ] = :y_from_rgb( r, g, b );
+            m_row[ j * 3 + 1 ] = :u_from_rgb( r, g, b );
+            m_row[ j * 3 + 2 ] = :v_from_rgb( r, g, b );
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bgra_s) from_yuv_mf2
+{
+    ASSERT( mat.cols % 3 == 0 );
+    o.set_size( mat.rows, mat.cols / 3 );
+    for( sz_t i = 0; i < o.rows; i++ )
+    {
+        c f2_t* m_row = mat.[ i * mat.stride ];
+        m u0_t* o_row = o  .[ i * o.bytes_per_row ];
+        for( sz_t j = 0; j < o.cols; j++ )
+        {
+            f3_t y = m_row[ j * 3 + 0 ];
+            f3_t u = m_row[ j * 3 + 1 ];
+            f3_t v = m_row[ j * 3 + 2 ];
+
+            o_row[ j * 4 + 0 ] = f3_rs2( f3_max( 0, f3_min( 255, :b_from_yuv( y, u, v ) ) ) );
+            o_row[ j * 4 + 1 ] = f3_rs2( f3_max( 0, f3_min( 255, :g_from_yuv( y, u, v ) ) ) );
+            o_row[ j * 4 + 2 ] = f3_rs2( f3_max( 0, f3_min( 255, :r_from_yuv( y, u, v ) ) ) );
+            o_row[ j * 4 + 3 ] = 0;
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:bgra_s) offs_to_mf2
 {
     ASSERT( offs >= 0 && offs < 4 );
@@ -192,7 +311,85 @@ func (:bgra_s) offs_from_mf2
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:bgra_s) fdev_equ
+func (:bgra_s) y_to_mf2
+{
+    mat.set_size( o.rows, o.cols );
+    for( sz_t i = 0; i < o.rows; i++ )
+    {
+        m f2_t* m_row = mat.[ i * mat.stride ];
+        c u0_t* o_row = o .[ i * o.bytes_per_row ];
+        for( sz_t j = 0; j < o.cols; j++ )
+        {
+            m_row[ j ] = :y_from_rgb( o_row[ j * 4 + 0 ], o_row[ j * 4 + 1 ], o_row[ j * 4 + 2 ] );
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bgra_s) y_from_mf2
+{
+    o.set_size( mat.rows, mat.cols );
+    for( sz_t i = 0; i < o.rows; i++ )
+    {
+        for( sz_t j = 0; j < o.cols; j++ )
+        {
+            s2_t v = f2_rs2( f2_max( 0, f2_min( 255, mat.[ i * mat.stride + j ] ) ) );
+            o.[ i * o.bytes_per_row + j * 4 + 0 ] = v;
+            o.[ i * o.bytes_per_row + j * 4 + 1 ] = v;
+            o.[ i * o.bytes_per_row + j * 4 + 2 ] = v;
+            o.[ i * o.bytes_per_row + j * 4 + 3 ] = 0;
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// If patch is outside the image region, the image is extended by duplicating border pixels.
+func (:bgra_s) patch_to_f2_bgr
+{
+    if( o.rows * o.cols == 0 ) = o;
+    for( sz_t i = row; i < rows; i++ )
+    {
+        for( sz_t j = col; j < cols; j++ )
+        {
+            u0_t* src = o.c_get_pixel( i, j );
+            bgr[ 0 ] = src ? src[ 0 ] : 0;
+            bgr[ 1 ] = src ? src[ 1 ] : 0;
+            bgr[ 2 ] = src ? src[ 2 ] : 0;
+            bgr += 3;
+        }
+    }
+    = o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Pixels outside the image area are ignored.
+func (:bgra_s) patch_from_f2_bgr
+{
+    for( sz_t i = row; i < rows; i++ )
+    {
+        if( i >= 0 && i < o.rows )
+        {
+            for( sz_t j = col; j < cols; j++ )
+            {
+                if( j >= 0 && j < o.cols )
+                {
+                    m u0_t* dst = o.m_get_pixel( i, j );
+                    dst[ 0 ] = bgr[ 0 ];
+                    dst[ 1 ] = bgr[ 1 ];
+                    dst[ 2 ] = bgr[ 2 ];
+                    bgr += 3;
+                }
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bgra_s) sdev_equ
 {
     ASSERT( o.rows == b.rows );
     ASSERT( o.cols == b.cols );
@@ -210,12 +407,12 @@ func (:bgra_s) fdev_equ
                 +  s2_sqr( ( s2_t )po[ 3 ] - ( s2_t )pb[ 3 ] );
         }
     }
-    = f3_srt( sum );
+    = sum;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:bgra_s) fdev_zro
+func (:bgra_s) sdev_zro
 {
     f3_t sum = 0;
     for( sz_t i = 0; i < o.rows; i++ )
@@ -229,7 +426,47 @@ func (:bgra_s) fdev_zro
                 +  s2_sqr( ( s2_t )po[ 3 ] );
         }
     }
-    = f3_srt( sum );
+    = sum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bgra_s) sdev_equ_bgr
+{
+    ASSERT( o.rows == b.rows );
+    ASSERT( o.cols == b.cols );
+    f3_t sum = 0;
+    for( sz_t i = 0; i < o.rows; i++ )
+    {
+        for( sz_t j = 0; j < o.cols; j++ )
+        {
+            u0_t* po = o.c_get_pixel( i, j );
+            u0_t* pb = b.c_get_pixel( i, j );
+
+            sum += s2_sqr( ( s2_t )po[ 0 ] - ( s2_t )pb[ 0 ] )
+                +  s2_sqr( ( s2_t )po[ 1 ] - ( s2_t )pb[ 1 ] )
+                +  s2_sqr( ( s2_t )po[ 2 ] - ( s2_t )pb[ 2 ] );
+        }
+    }
+    = sum;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bgra_s) sdev_zro_bgr
+{
+    f3_t sum = 0;
+    for( sz_t i = 0; i < o.rows; i++ )
+    {
+        for( sz_t j = 0; j < o.cols; j++ )
+        {
+            u0_t* po = o.c_get_pixel( i, j );
+            sum += s2_sqr( ( s2_t )po[ 0 ] )
+                +  s2_sqr( ( s2_t )po[ 1 ] )
+                +  s2_sqr( ( s2_t )po[ 2 ] );
+        }
+    }
+    = sum;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -390,6 +627,18 @@ func (:yuyv_s) to_argb
             u2_row[ i     ] = bcore_img_u2_pixel_from_rgb( img.format, :rclamp16( y1 + rp ), :rclamp16( y1 + gp ), :rclamp16( y1 + bp ) );
             u2_row[ i + 1 ] = bcore_img_u2_pixel_from_rgb( img.format, :rclamp16( y2 + rp ), :rclamp16( y2 + gp ), :rclamp16( y2 + bp ) );
         }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:yuyv_s) copy_typed
+{
+    switch( type )
+    {
+        case :bgra_s~: o.from_bgra( src.cast( :bgra_s* ) );
+        case bcore_img_u2_s~: o.from_argb( src.cast( bcore_img_u2_s* ) );
+        default: ERR_fa( "Cannot convert from '#<sc_t>'\n", bnameof( type ) );
     }
 }
 

@@ -55,9 +55,21 @@
 /// General codec parameters
 group :param
 {
+    /** Quality setting:
+     *  Value indicates closeness of reconstruction to original.
+     *  Value rage 0 ... 1
+     */
+    feature o    set_quality( m@* o, f3_t quality ) = o;
+    feature f3_t get_quality( c@* o )               = 0.5;
+
     feature d (Tencoder) ::encoder* create_encoder( @* o ); // creates encoder and sets parameters
     feature d (Tdecoder) ::decoder* create_decoder( @* o ); // creates decoder
     feature d (Tframe)   ::frame*   create_frame  ( @* o ); // creates frame (container for encoded image)
+
+    func d ::frame* encode( @* o, c bcodec_image* image )
+    {
+        = o.create_encoder()^.encode( image, o.create_frame() );
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -66,6 +78,11 @@ group :param
 group :frame
 {
     feature c (Tparam) ::param* param( @* o );
+
+    func image decode( @* o, m bcodec_image* image )
+    {
+        = o.param().create_decoder()^.decode( o, image );
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
