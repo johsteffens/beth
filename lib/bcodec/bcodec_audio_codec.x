@@ -80,10 +80,17 @@ group :param
     feature sz_t frames_per_slice( @* o );
 
     /// retrieves / overwrites rate and channels settings
-    feature o set_rate    ( m@* o, s2_t rate     );
-    feature o set_channels( m@* o, s2_t channels );
-    feature s2_t get_rate    ( @* o     );
-    feature s2_t get_channels( @* o );
+    feature o set_rate       ( m@* o, s2_t rate     );
+    feature o set_channels   ( m@* o, s2_t channels );
+    feature s2_t get_rate    ( c@* o );
+    feature s2_t get_channels( c@* o );
+
+    /** Quality setting:
+     *  Value indicates closeness of reconstruction to original.
+     *  Value rage 0 ... 1
+     */
+    feature o    set_quality( m@* o, f3_t quality ) = o;
+    feature f3_t get_quality( c@* o )               = 0.5;
 
     feature o setup( m@* o ); // setup for general processing
 }
@@ -134,6 +141,7 @@ group :sequence
 group :encoder
 {
     feature o set_param( m@* o, (Tparam) ::param* param );
+    feature o set_preferred_threads( m@* o, sz_t threads ) {};
     feature o push_d   ( m@* o, d bcodec_audio_buffer_s* buffer );
     feature o push_c   ( m@* o, c bcodec_audio_buffer_s* buffer ) = o.push_d( buffer.clone() );
     feature d (Tsequence) ::sequence* d_get_sequence( m@* o );
@@ -144,6 +152,7 @@ group :encoder
 
 group :decoder
 {
+    feature o set_preferred_threads( m@* o, sz_t threads ) {};
     feature o set_sequence_d( m@* o, d (Tsequence) ::sequence* sequence );
     feature bl_t eos( @* o );
     feature d bcodec_audio_buffer_s* d_get_buffer( m@* o );
