@@ -639,6 +639,27 @@ f3_t BCATU(bmath_mfx_s,min)( const bmath_mfx_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+const bmath_mfx_s* BCATU(bmath_mfx_s,get_min_max)( const bmath_mfx_s* o, f3_t* p_min, f3_t* p_max )
+{
+    f3_t min = ( o->rows * o->cols > 0 ) ? o->data[ 0 ] : 0;
+    f3_t max = min;
+
+    for( uz_t i = 0; i < o->rows; i++ )
+    {
+        const fx_t* oi = o->data + i * o->stride;
+        for( uz_t j = 0; j < o->cols; j++ )
+        {
+            min = f3_min( min, oi[ j ] );
+            max = f3_min( max, oi[ j ] );
+        }
+    }
+    if( p_min ) *p_min = min;
+    if( p_max ) *p_max = max;
+    return o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 f3_t BCATU(bmath_mfx_s,sum)( const bmath_mfx_s* o )
 {
     f3_t sum = 0;
@@ -729,7 +750,7 @@ void BCATU(bmath_mfx_s,sub)( const bmath_mfx_s* o, const bmath_mfx_s* b, bmath_m
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_mfx_s,zro)( bmath_mfx_s* o )
+bmath_mfx_s* BCATU(bmath_mfx_s,zro)( bmath_mfx_s* o )
 {
     if( BCATU(bmath_mfx_s,is_folded)( o ) )
     {
@@ -745,11 +766,12 @@ void BCATU(bmath_mfx_s,zro)( bmath_mfx_s* o )
             for( uz_t j = 0; j < o->cols; j++ ) v1[ j ] = 0;
         }
     }
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_mfx_s,one)( bmath_mfx_s* o )
+bmath_mfx_s* BCATU(bmath_mfx_s,one)( bmath_mfx_s* o )
 {
     if( BCATU(bmath_mfx_s,is_folded)( o ) )
     {
@@ -765,11 +787,12 @@ void BCATU(bmath_mfx_s,one)( bmath_mfx_s* o )
             for( uz_t j = 0; j < o->cols; j++ ) v1[ j ] = ( j == i ) ? 1 : 0;
         }
     }
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_mfx_s,neg)( const bmath_mfx_s* o, bmath_mfx_s* r )
+bmath_mfx_s* BCATU(bmath_mfx_s,neg)( const bmath_mfx_s* o, bmath_mfx_s* r )
 {
     ASSERT( BCATU(bmath_mfx_s,is_equ_size)( o, r ) );
 
@@ -788,13 +811,14 @@ void BCATU(bmath_mfx_s,neg)( const bmath_mfx_s* o, bmath_mfx_s* r )
             for( uz_t j = 0; j < o->cols; j++ ) vr[ j ] = -vo[ j ];
         }
     }
+    return r;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_mfx_s,cpy)( const bmath_mfx_s* o, bmath_mfx_s* r )
+bmath_mfx_s* BCATU(bmath_mfx_s,cpy)( const bmath_mfx_s* o, bmath_mfx_s* r )
 {
-    if( r == o ) return;
+    if( r == o ) return r;
     ASSERT( BCATU(bmath_mfx_s,is_equ_size)( o, r ) );
     if( BCATU(bmath_mfx_s,is_folded)( r ) )
     {
@@ -811,6 +835,7 @@ void BCATU(bmath_mfx_s,cpy)( const bmath_mfx_s* o, bmath_mfx_s* r )
             for( uz_t j = 0; j < o->cols; j++ ) vr[ j ] = vo[ j ];
         }
     }
+    return r;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1393,7 +1418,7 @@ void BCATU(bmath_mfx_s,eop_map_mul)( const bmath_mfx_s* o, BCATU(bmath_fp,fx,ar1
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_mfx_s,htp)( const bmath_mfx_s* o, bmath_mfx_s* res )
+bmath_mfx_s* BCATU(bmath_mfx_s,htp)( const bmath_mfx_s* o, bmath_mfx_s* res )
 {
     if( o->rows == o->cols )
     {
@@ -1417,7 +1442,7 @@ void BCATU(bmath_mfx_s,htp)( const bmath_mfx_s* o, bmath_mfx_s* res )
 
         // copy diag
         if( o != res ) for( uz_t i = 0; i < n; i++ ) res->data[ i * res->stride + i ] = o->data[ i * o->stride + i ];
-        return;
+        return res;
     }
 
     if( o == res )
@@ -1427,7 +1452,7 @@ void BCATU(bmath_mfx_s,htp)( const bmath_mfx_s* o, bmath_mfx_s* res )
         BCATU(bmath_mfx_s,htp)( o, buf );
         BCATU(bmath_mfx_s,cpy)( buf, res );
         BCATU(bmath_mfx_s,discard)( buf );
-        return;
+        return res;
     }
 
     ASSERT( o->rows == res->cols );
@@ -1439,11 +1464,12 @@ void BCATU(bmath_mfx_s,htp)( const bmath_mfx_s* o, bmath_mfx_s* res )
         const fx_t* v1 = o ->data  + i;
         for( uz_t j = 0; j < res->cols; j++ ) vr[ j ] = v1[ j * o->stride ];
     }
+    return res;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_mfx_s,pmt_mul)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res )
+bmath_mfx_s* BCATU(bmath_mfx_s,pmt_mul)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res )
 {
     if( o == res )
     {
@@ -1452,7 +1478,7 @@ void BCATU(bmath_mfx_s,pmt_mul)( const bmath_mfx_s* o, const bmath_pmt_s* p, bma
         BCATU(bmath_mfx_s,pmt_mul)( o, p, buf );
         BCATU(bmath_mfx_s,cpy)( buf, res );
         BCATU(bmath_mfx_s,discard)( buf );
-        return;
+        return res;
     }
 
     ASSERT( o->rows == p->size );
@@ -1465,11 +1491,12 @@ void BCATU(bmath_mfx_s,pmt_mul)( const bmath_mfx_s* o, const bmath_pmt_s* p, bma
         ASSERT( idx < o->rows );
         bcore_u_memcpy( sizeof( fx_t ), res->data + idx * res->stride, o->data + i * o->stride, o->cols );
     }
+    return res;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_mfx_s,pmt_htp_mul)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res )
+bmath_mfx_s* BCATU(bmath_mfx_s,pmt_htp_mul)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res )
 {
     if( o == res )
     {
@@ -1478,7 +1505,7 @@ void BCATU(bmath_mfx_s,pmt_htp_mul)( const bmath_mfx_s* o, const bmath_pmt_s* p,
         BCATU(bmath_mfx_s,pmt_htp_mul)( o, p, buf );
         BCATU(bmath_mfx_s,cpy)( buf, res );
         BCATU(bmath_mfx_s,discard)( buf );
-        return;
+        return res;
     }
 
     ASSERT( o->rows == p->size );
@@ -1491,11 +1518,12 @@ void BCATU(bmath_mfx_s,pmt_htp_mul)( const bmath_mfx_s* o, const bmath_pmt_s* p,
         ASSERT( idx < o->rows );
         bcore_u_memcpy( sizeof( fx_t ), res->data + i * res->stride, o->data + idx * o->stride, o->cols );
     }
+    return res;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_mfx_s,mul_pmt)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res )
+bmath_mfx_s* BCATU(bmath_mfx_s,mul_pmt)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res )
 {
     ASSERT( o->cols == p->size );
     ASSERT( o->rows == res->rows );
@@ -1524,11 +1552,12 @@ void BCATU(bmath_mfx_s,mul_pmt)( const bmath_mfx_s* o, const bmath_pmt_s* p, bma
             for( uz_t j = 0; j < o->cols; j++ ) ri[ j ] = oi[ p->data[ j ] ];
         }
     }
+    return res;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_mfx_s,mul_pmt_htp)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res )
+bmath_mfx_s* BCATU(bmath_mfx_s,mul_pmt_htp)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res )
 {
     ASSERT( o->cols == p->size );
     ASSERT( o->rows == res->rows );
@@ -1557,6 +1586,7 @@ void BCATU(bmath_mfx_s,mul_pmt_htp)( const bmath_mfx_s* o, const bmath_pmt_s* p,
             for( uz_t j = 0; j < o->cols; j++ ) ri[ p->data[ j ] ] = oi[ j ];
         }
     }
+    return res;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

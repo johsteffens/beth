@@ -284,22 +284,24 @@ f3_t BCATU(bmath_mfx_s,sum)( const bmath_mfx_s* o ); // sum of all elements
 f3_t BCATU(bmath_mfx_s,trc)( const bmath_mfx_s* o ); // trace
 f3_t BCATU(bmath_mfx_s,sub_sqr)( const bmath_mfx_s* o, const bmath_mfx_s* op ); // ( o - op )^2
 
+const bmath_mfx_s* BCATU(bmath_mfx_s,get_min_max)( const bmath_mfx_s* o, f3_t* p_min, f3_t* p_max ); // min, max simultaneously (p_xxx can be NULL)
+
 // functions below support folded target
-void BCATU(bmath_mfx_s,zro)(       bmath_mfx_s* o ); // set zero;                             supports folded matrix
-void BCATU(bmath_mfx_s,one)(       bmath_mfx_s* o ); // set diagonal elements one, rest zero; supports folded matrix
-void BCATU(bmath_mfx_s,neg)( const bmath_mfx_s* o, bmath_mfx_s* r );  // negate
-void BCATU(bmath_mfx_s,cpy)( const bmath_mfx_s* o, bmath_mfx_s* r );  // copies content o -> r  (does not change allocation of res)
+bmath_mfx_s* BCATU(bmath_mfx_s,zro)(       bmath_mfx_s* o ); // set zero;                             supports folded matrix; returns o
+bmath_mfx_s* BCATU(bmath_mfx_s,one)(       bmath_mfx_s* o ); // set diagonal elements one, rest zero; supports folded matrix; returns o
+bmath_mfx_s* BCATU(bmath_mfx_s,neg)( const bmath_mfx_s* o, bmath_mfx_s* r );  // negate; returns r
+bmath_mfx_s* BCATU(bmath_mfx_s,cpy)( const bmath_mfx_s* o, bmath_mfx_s* r );  // copies content o -> r  (does not change allocation of res); returns r
 
 //----------------------------------------------------------------------------------------------------------------------
-// transposition / permutation
+// transposition / permutation (functions return res)
 
-void BCATU(bmath_mfx_s,htp)        ( const bmath_mfx_s* o, bmath_mfx_s* res );
-void BCATU(bmath_mfx_s,pmt_mul)    ( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = P * A   ; row_p[k]( B ) = row_k( A )
-void BCATU(bmath_mfx_s,pmt_htp_mul)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = P^T * A ; row_k( B ) = row_p[k]( A )
-void BCATU(bmath_mfx_s,mul_pmt)    ( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = A * P   ; col_k( B ) = col_p[k]( A )
-void BCATU(bmath_mfx_s,mul_pmt_htp)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = A * P^T ; col_p[k]( B ) = col_k( A )
+bmath_mfx_s* BCATU(bmath_mfx_s,htp)        ( const bmath_mfx_s* o, bmath_mfx_s* res );
+bmath_mfx_s* BCATU(bmath_mfx_s,pmt_mul)    ( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = P * A   ; row_p[k]( B ) = row_k( A )
+bmath_mfx_s* BCATU(bmath_mfx_s,pmt_htp_mul)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = P^T * A ; row_k( B ) = row_p[k]( A )
+bmath_mfx_s* BCATU(bmath_mfx_s,mul_pmt)    ( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = A * P   ; col_k( B ) = col_p[k]( A )
+bmath_mfx_s* BCATU(bmath_mfx_s,mul_pmt_htp)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = A * P^T ; col_p[k]( B ) = col_k( A )
 
-static inline void BCATU(bmath_mfx_s,htp_set)( const bmath_mfx_s* o, bmath_mfx_s* res ) { BCATU(bmath_mfx_s,set_size)( res, o->cols, o->rows ); BCATU(bmath_mfx_s,htp)( o, res ); }
+static inline bmath_mfx_s* BCATU(bmath_mfx_s,htp_set)( const bmath_mfx_s* o, bmath_mfx_s* res ) { BCATU(bmath_mfx_s,set_size)( res, o->cols, o->rows ); return BCATU(bmath_mfx_s,htp)( o, res ); }
 
 //----------------------------------------------------------------------------------------------------------------------
 // addition, subtraction
