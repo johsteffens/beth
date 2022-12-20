@@ -99,9 +99,9 @@ group :tp
         func :.m_get     { m vd_t* e = o.map.get( key ); = e ? e.0.cast( m x_inst* ) : NULL; }
         func :.set_c     = o.map.set_c( key, val ).cast( m x_inst* );
         func :.set_d     = o.map.set_d( key, val ).cast( m x_inst* );
-        func :.remove    o.map.remove( key );
+        func :.remove      o.map.remove( key );
         func :.exists    = o.map.exists( key );
-        func :.clear     o.map.clear();
+        func :.clear       o.map.clear();
         func :.keys      = o.map.keys();
         func :.size      = o.map.size();
         func :.idx_key   = o.map.idx_key( idx );
