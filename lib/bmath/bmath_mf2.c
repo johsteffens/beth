@@ -124,7 +124,7 @@ vd_t bmath_mf2_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bmath_fp_div,            bmath_mf2_s_div );
             BCORE_REGISTER_FFUNC( bmath_fp_matrix_mul_vec, bmath_mf2_s_mul_vec );
             BCORE_REGISTER_FFUNC( bmath_fp_matrix_mul_scl, bmath_mf2_s_mul_scl );
-
+            BCORE_REGISTER_FFUNC( bcore_fp_copy_typed,     bmath_mf2_s_copy_typed );
             BCORE_REGISTER_OBJECT( bmath_mf2_s );
             BCORE_REGISTER_OBJECT( bmath_arr_mf2_s );
         }
