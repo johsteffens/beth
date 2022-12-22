@@ -265,7 +265,6 @@ group :param
         o.is_setup = true;
 
         o.window_function_vec =< o.create_window_function()^.gen_f2( o.frames, bmath_vf2_s! );
-        o.window_function_vec.mul_scl_fx( f2_srt( 2.0 ), o.window_function_vec ); // factor srt(2) needed for correct scale reconstruction
 
         if( o.bands.size == 0 ) o.setup_default_param_band();
         if( !o.loudness_mask ) o.setup_default_loudness_mask();

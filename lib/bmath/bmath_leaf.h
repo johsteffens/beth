@@ -30,6 +30,7 @@
 static inline f3_t f3_pi(   void ) { return 3.1415926535897932384626434; } // PI
 static inline f3_t f3_pi_2( void ) { return 1.5707963267948966192313217; } // PI / 2
 static inline f3_t f3_tau(  void ) { return 6.2831853071795864769252868; } // 2 * PI
+static inline f3_t f3_srt2( void ) { return 1.4142135623730950488016887; } // squareroot( 2 )
 
 static inline bl_t f3_is_nan( f3_t v ) { return v != v; } // nan compares unequal to itself
 
@@ -65,6 +66,7 @@ typedef f3_t (*bmath_fp_f3_op_ar2 )( vc_t op, f3_t a, f3_t b ); // arity 2 opera
 static inline f2_t f2_pi(   void ) { return 3.1415926535897932384626434; } // PI
 static inline f2_t f2_pi_2( void ) { return 1.5707963267948966192313217; } // PI / 2
 static inline f2_t f2_tau(  void ) { return 6.2831853071795864769252868; } // 2 * PI
+static inline f2_t f2_srt2( void ) { return 1.4142135623730950488016887; } // squareroot( 2 )
 
 static inline bl_t f2_is_nan( f2_t v ) { return v != v; } // nan compares unequal to itself
 

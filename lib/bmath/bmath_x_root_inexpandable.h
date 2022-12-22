@@ -45,7 +45,8 @@ identifier frexp;
 
 identifier f3_pi;
 identifier f3_pi_2; // PI / 2
-identifier f3_tau; // 2 * PI
+identifier f3_tau;  // 2 * PI
+identifier f3_srt2; // squareroot( 2 )
 identifier f3_is_nan; // nan compares unequal to itself
 identifier f3_exp;
 identifier f3_log;
@@ -58,6 +59,7 @@ identifier f3_cos;
 identifier f2_pi;
 identifier f2_pi_2; // PI / 2
 identifier f2_tau; // 2 * PI
+identifier f2_srt2; // squareroot( 2 )
 identifier f2_is_nan; // nan compares unequal to itself
 identifier f2_exp;
 identifier f2_log;

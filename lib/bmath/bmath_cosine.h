@@ -148,28 +148,23 @@ group :mdct
 
     //------------------------------------------------------------------------------------------------------------------
 
-    // Window functions usable used with mdct
+    // Window functions usable with mdct
     group :window_function =
     {
-        feature o reset( m@* o, sz_t size );
+        feature o reset( m@* o, sz_t size ) {}
         feature f3_t get( m@* o );
 
         func vec gen_f2( m@* o, sz_t size, m bmath_vf2_s* vec ) { o.reset( size ); vec.set_size( size ); for( sz_t i = 0; i < size; i++ ) vec.[ i ] = o.get(); }
         func vec gen_f3( m@* o, sz_t size, m bmath_vf3_s* vec ) { o.reset( size ); vec.set_size( size ); for( sz_t i = 0; i < size; i++ ) vec.[ i ] = o.get(); }
 
-        stamp :const_s
-        {
-            f3_t v;
-            func :.reset { o.v = f3_srt( 0.5 ); }
-            func :.get { = o.v; }
-        }
+        stamp :const_s func :.get = 1.0;
 
         stamp :cosine_s
         {
             bmath_cf3_s c;
             bmath_cf3_s w;
             func :.reset { o.c.urt( 1, size * 4 ); o.w.urt( 1, size * 2 ); }
-            func :.get { f3_t v = o.c.i; o.c.mul( o.w, o.c ); = v; }
+            func :.get { f3_t v = o.c.i; o.c.mul( o.w, o.c ); = v * f3_srt2(); }
         }
 
         stamp :sine_cosine_s
@@ -177,7 +172,7 @@ group :mdct
             bmath_cf3_s c;
             bmath_cf3_s w;
             func :.reset { o.c.urt( 1, size * 4 ); o.w.urt( 1, size * 2 ); }
-            func :.get { f3_t v = sin( 0.5 * f3_pi() * o.c.i * o.c.i ); o.c.mul( o.w, o.c ); = v; }
+            func :.get { f3_t v = sin( 0.5 * f3_pi() * o.c.i * o.c.i ); o.c.mul( o.w, o.c ); = v * f3_srt2(); }
         }
     }
 }
