@@ -3212,7 +3212,7 @@ vd_t* bcore_hmap_tpaw_s_set_d( bcore_hmap_tpaw_s* o, tp_t key, vd_t val )
     uz_t idx = tpaw_find( o, key );
     if( idx < o->size )
     {
-        if( o->nodes[ idx ].val ) bcore_inst_a_discard( val );
+        if( o->nodes[ idx ].val ) bcore_inst_a_discard( o->nodes[ idx ].val );
         o->nodes[ idx ].val = val;
         return &o->nodes[ idx ].val;
     }

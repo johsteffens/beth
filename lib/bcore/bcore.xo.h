@@ -1,4 +1,4 @@
-//  Last update: 2022-11-28T14:43:36Z
+//  Last update: 2022-12-25T13:42:18Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -2583,8 +2583,8 @@
   x_array* x_hmap_tp_s_c_get_val_arr( const x_hmap_tp_s* o, x_array* val_arr ); \
   static inline const x_inst* x_hmap_tp_s_c_get( const x_hmap_tp_s* o, tp_t key ){ const vd_t* e = bcore_hmap_tpaw_s_get(&(o->map),key ); return  e ? ((const x_inst*)((*(e)))) : NULL;} \
   static inline x_inst* x_hmap_tp_s_m_get( x_hmap_tp_s* o, tp_t key ){ vd_t* e = bcore_hmap_tpaw_s_get(&(o->map),key ); return  e ? ((x_inst*)((*(e)))) : NULL;} \
-  static inline x_inst* x_hmap_tp_s_set_c( x_hmap_tp_s* o, tp_t key, const x_inst* val ){return  ((x_inst*)(bcore_hmap_tpaw_s_set_c(&(o->map),key, val )));} \
-  static inline x_inst* x_hmap_tp_s_set_d( x_hmap_tp_s* o, tp_t key, x_inst* val ){return  ((x_inst*)(bcore_hmap_tpaw_s_set_d(&(o->map),key, val )));} \
+  static inline x_inst* x_hmap_tp_s_set_c( x_hmap_tp_s* o, tp_t key, const x_inst* val ){ vd_t* e = bcore_hmap_tpaw_s_set_c(&(o->map),key, val ); return  e ? ((x_inst*)((*(e)))) : NULL;} \
+  static inline x_inst* x_hmap_tp_s_set_d( x_hmap_tp_s* o, tp_t key, x_inst* val ){ vd_t* e = bcore_hmap_tpaw_s_set_d(&(o->map),key, val ); return  e ? ((x_inst*)((*(e)))) : NULL;} \
   static inline x_hmap_tp_s* x_hmap_tp_s_remove( x_hmap_tp_s* o, tp_t key ){bcore_hmap_tpaw_s_remove(&(o->map),key );return o;} \
   static inline bl_t x_hmap_tp_s_exists( const x_hmap_tp_s* o, tp_t key ){return  bcore_hmap_tpaw_s_exists(&(o->map),key );} \
   static inline x_hmap_tp_s* x_hmap_tp_s_clear( x_hmap_tp_s* o ){bcore_hmap_tpaw_s_clear(&(o->map));return o;} \
@@ -2813,5 +2813,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x38E84B7230EA15C3
-// XOICO_FILE_SIGNATURE 0x41F9CA7F6CFAB8FA
+// XOICO_BODY_SIGNATURE 0x53BECBBDFF8F1FEB
+// XOICO_FILE_SIGNATURE 0x0951B1C6E5C9D846

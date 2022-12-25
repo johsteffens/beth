@@ -97,8 +97,8 @@ group :tp
         bcore_hmap_tpaw_s map;
         func :.c_get     { c vd_t* e = o.map.get( key ); = e ? e.0.cast( c x_inst* ) : NULL; }
         func :.m_get     { m vd_t* e = o.map.get( key ); = e ? e.0.cast( m x_inst* ) : NULL; }
-        func :.set_c     = o.map.set_c( key, val ).cast( m x_inst* );
-        func :.set_d     = o.map.set_d( key, val ).cast( m x_inst* );
+        func :.set_c     { m vd_t* e = o.map.set_c( key, val ); = e ? e.0.cast( m x_inst* ) : NULL; }
+        func :.set_d     { m vd_t* e = o.map.set_d( key, val ); = e ? e.0.cast( m x_inst* ) : NULL; }
         func :.remove      o.map.remove( key );
         func :.exists    = o.map.exists( key );
         func :.clear       o.map.clear();
