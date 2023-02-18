@@ -378,6 +378,7 @@ func (:player_s) m_thread_func
     o.mutex.lock();
     while( !o.thread_exit_ )
     {
+        if( o.sequence.size() < o.min_size ) o.condition_below_min_size.wake_one();
         if( o.sequence.size() > 0 )
         {
             bcodec_audio_buffer_s* buffer = o.sequence.pop_first_buffer()^;
@@ -392,8 +393,6 @@ func (:player_s) m_thread_func
         }
         else
         {
-            o.condition_buffer_empty.wake_one();
-
             if( o.idle_zero_frames > 0 )
             {
                 o.mutex.unlock();
@@ -407,7 +406,8 @@ func (:player_s) m_thread_func
         }
     };
 
-    o.condition_buffer_empty.wake_one();
+    if( o.min_size > 0 ) o.condition_below_min_size.wake_one();
+
     o.audio.stream_stop();
     o.mutex.unlock();
     = NULL;
@@ -471,30 +471,11 @@ func (:player_s) play_sequence
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:player_s) buffer_frames
+func (:player_s) wait_until_below
 {
     o.mutex.lock();
-    sz_t frames = o.sequence.sum_buffer_size() / o.audio.channels;
-    o.mutex.unlock();
-    = frames;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:player_s) is_empty
-{
-    o.mutex.lock();
-    bl_t is_empty = ( o.sequence.size() == 0 );
-    o.mutex.unlock();
-    = is_empty;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:player_s) wait_until_empty
-{
-    o.mutex.lock();
-    while( o.sequence.size() > 0 ) o.condition_buffer_empty.sleep( o.mutex );
+    o.min_size = size;
+    while( o.sequence.size() >= o.min_size ) o.condition_below_min_size.sleep( o.mutex );
     er_t thread_error = o.thread_error_;
     o.mutex.unlock();
     = thread_error;

@@ -205,8 +205,9 @@ stamp :player_s
     hidden x_thread_s    thread;
     hidden x_mutex_s     mutex;
     hidden x_condition_s condition_play;
-    hidden x_condition_s condition_buffer_empty;
+    hidden x_condition_s condition_below_min_size;
 
+    hidden sz_t min_size = 0;
     hidden bl_t thread_exit_;
     hidden bl_t is_setup_;
     hidden er_t thread_error_;
@@ -238,14 +239,20 @@ stamp :player_s
      */
     func er_t play_sequence( m@* o, bcodec_audio_sequence_s* sequence );
 
+    /// Returns current (unplayed) buffers
+    func sz_t buffers( m@* o ) = x_lock_s!^( o.mutex ).attn( o ).sequence.size();
+
     /// Returns current (unplayed) buffer frames
-    func bl_t buffer_frames( m@* o );
+    func sz_t buffer_frames( m@* o ) = x_lock_s!^( o.mutex ).attn( o ).sequence.sum_buffer_size() / o.audio.channels;
 
     /// Checks if play-buffer is empty
-    func bl_t is_empty( m@* o );
+    func bl_t is_empty( m@* o ) = x_lock_s!^( o.mutex ).attn( o ).sequence.size() == 0;
 
-    /// Suspends calling thread until play-buffer is empty
-    func er_t wait_until_empty( m@* o );
+    /// Suspends calling thread until play-buffer drops below size
+    func er_t wait_until_below( m@* o, sz_t size );
+
+   /// Suspends calling thread until play-buffer is empty
+    func er_t wait_until_empty( m@* o ) = o.wait_until_below( 1 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
