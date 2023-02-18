@@ -41,6 +41,8 @@ stamp :lock_s
 {
     private :mutex_s * mutex;
 
+    func o _( m@* o, m :mutex_s* mutex ) = o.set( mutex );
+
     func o set( m@* o, m :mutex_s* mutex )
     {
         o.release();
@@ -63,6 +65,8 @@ stamp :lock_s
 stamp :unlock_s
 {
     private :mutex_s * mutex;
+
+    func o _( m@* o, m :mutex_s* mutex ) = o.set( mutex );
 
     func o set( m@* o, m :mutex_s* mutex )
     {
