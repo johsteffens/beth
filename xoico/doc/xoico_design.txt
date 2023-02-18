@@ -640,3 +640,10 @@ group stamp stump hidden private func name signature body obliv aware feature ex
 mutable discardable retrievable forward include embed cast foreach in verbatim_C fork
 strict try scope t_scope scope_local scope_func extern wrap restrict type identifier trans TE TO
 
+Leaf types (for syntax highlight)
+
+s3_t s2_t s1_t s0_t u3_t u2_t u1_t u0_t f3_t f2_t sz_t uz_t bl_t tp_t er_t aware_t offset_t
+smax_t umax_t sd_t sc_t vd_t vc_t nd_t fp_t atomic_tp_t atomic_vc_t atomic_fp_t
+
+
+
