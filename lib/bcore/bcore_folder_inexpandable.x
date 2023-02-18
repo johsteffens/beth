@@ -33,8 +33,8 @@ group bcore_folder
     // renames folder if existing; returns success
     func bl_t rename( sc_t src_name, sc_t dst_name ); // renames folder if existing; returns success
 
-    // obtains current folder;
-    func name bcore_folder_get_current( st_s* name );
+    // obtains current folder string and stores it in o
+    func o get_current( m st_s* o );
 
     //------------------------------------------------------------------------------------------------------------------
 
