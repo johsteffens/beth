@@ -60,8 +60,12 @@ stamp :frame_s bcore_inst
     /// The following criteria are processed in given order until one matches or all fail
     bl_t  first_argument_is_path_to_object = true; // path to object's config file is expected as first argument
     bl_t second_argument_is_path_to_script = true; // path to scipt file file is expected as first argument (only when feature 'main_parse' is implemented)
-    sc_t local_file = "beth.config";  // config file in current folder
-    sc_t global_file;                 // global path to config file
+
+
+    st_s local_path = "beth.config"; // path to local config file
+    bl_t local_path_descend = false; // descents tree from current folder to locate current file
+
+    st_s global_path;                 // global path to config file
 
     /// ==== Internal data ====
 

@@ -107,27 +107,39 @@ static void signal_callback( int signal_received )
 
 er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args )
 {
+    BLM_INIT();
     if( bcore_main_frame_g ) ERR_fa( "bcore_main_frame_s_exec can only be executed once at a time." );
     bcore_main_frame_g = o;
 
     bcore_arr_st_s_copy( &o->args, args );
     er_t error = 0;
+
+    st_s* file_st = BLM_CREATE( st_s );
     sc_t file = NULL;
+
     if( o->first_argument_is_path_to_object && o->args.size > 1 )
     {
         file = o->args.data[ 1 ]->sc;
         if( !bcore_file_exists( file ) ) file = NULL;
     }
 
-    if( !file && o->local_file )
+    if( !file && o->local_path.size > 0 )
     {
-        file = o->local_file;
+        if( o->local_path_descend )
+        {
+            st_s* folder = bcore_folder_get_current( BLM_CREATE( st_s ) );
+            if( bcore_file_find_descend( folder->sc, o->local_path.sc, file_st ) ) file = file_st->sc;
+        }
+        else
+        {
+            file = o->local_path.sc;
+        }
         if( !bcore_file_exists( file ) ) file = NULL;
     }
 
-    if( !file && o->global_file )
+    if( !file && o->global_path.size > 0 )
     {
-        file = o->global_file;
+        file = o->global_path.sc;
         if( !bcore_file_exists( file ) ) file = NULL;
     }
 
@@ -153,7 +165,7 @@ er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args 
         if( !object )
         {
             bcore_source_a_detach( &source );
-            return bcore_error_push_fa( TYPEOF_general_error, "bcore_main_frame_s: File '#<sc_t>' contains no valid content.", file );
+            BLM_RETURNV( er_t, bcore_error_push_fa( TYPEOF_general_error, "bcore_main_frame_s: File '#<sc_t>' contains no valid content.", file ) );
         }
 
         o->object_sr = sr_asd( object );
@@ -197,7 +209,7 @@ er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args 
     }
 
     bcore_main_frame_g = NULL;
-    return error;
+    BLM_RETURNV( er_t, error );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
