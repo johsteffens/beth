@@ -1,4 +1,4 @@
-//  Last update: 2022-11-28T14:43:36Z
+//  Last update: 2023-02-18T11:53:42Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -35,8 +35,10 @@
  *  bcore_x_hmap.h
  *  bcore_x_deque.h
  *  bcore_arr_inexpandable.x
+ *  bcore_const_manager_inexpandable.x
  *  bcore_flect_inexpandable.x
  *  bcore_folder_inexpandable.x
+ *  bcore_global_manager_inexpandable.x
  *  bcore_hmap_inexpandable.x
  *  bcore_huffman.x
  *  bcore_img_inexpandable.x
@@ -56,7 +58,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0xDFEB3BCAEBCA812Bull
+// HKEYOF_bcore 0x9344C0C6B5AC3AF5ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -239,7 +241,7 @@ XOILA_DEFINE_SPECT( x_inst, x_array )
 
 x_inst* x_array_t_push_d( x_array* o, tp_t t, x_inst* v )
 {
-    // bcore_x_array.h:153:1
+    // bcore_x_array.h:155:1
     
     
         const bcore_array_s* p = bcore_array_s_get_typed( t );
@@ -271,7 +273,7 @@ x_inst* x_array_t_push_d( x_array* o, tp_t t, x_inst* v )
 
 x_inst* x_array_t_push_c( x_array* o, tp_t t, const x_inst* v )
 {
-    // bcore_x_array.h:187:1
+    // bcore_x_array.h:189:1
     
     
         const bcore_array_s* p = bcore_array_s_get_typed( t );
@@ -305,7 +307,7 @@ x_inst* x_array_t_push_c( x_array* o, tp_t t, const x_inst* v )
 
 x_inst* x_array_t_push_t( x_array* o, tp_t t, tp_t val_type )
 {
-    // bcore_x_array.h:223:1
+    // bcore_x_array.h:225:1
     
     
         const bcore_array_s* p = bcore_array_s_get_typed( t );
@@ -331,7 +333,7 @@ x_inst* x_array_t_push_t( x_array* o, tp_t t, tp_t val_type )
 
 x_inst* x_array_t_push( x_array* o, tp_t t )
 {
-    // bcore_x_array.h:251:1
+    // bcore_x_array.h:253:1
     
     
         const bcore_array_s* p = bcore_array_s_get_typed( t );
@@ -373,7 +375,7 @@ x_inst* x_array_t_push( x_array* o, tp_t t )
 
 x_inst* x_array_t_set_d( x_array* o, tp_t t, sz_t index, x_inst* v )
 {
-    // bcore_x_array.h:295:1
+    // bcore_x_array.h:297:1
     
     
         const bcore_array_s* p = bcore_array_s_get_typed( t );
@@ -404,7 +406,7 @@ x_inst* x_array_t_set_d( x_array* o, tp_t t, sz_t index, x_inst* v )
 
 x_inst* x_array_t_set_c( x_array* o, tp_t t, sz_t index, const x_inst* v )
 {
-    // bcore_x_array.h:328:1
+    // bcore_x_array.h:330:1
     
     
         const bcore_array_s* p = bcore_array_s_get_typed( t );
@@ -436,7 +438,7 @@ x_inst* x_array_t_set_c( x_array* o, tp_t t, sz_t index, const x_inst* v )
 
 x_inst* x_array_t_set_t( x_array* o, tp_t t, sz_t index, tp_t val_type )
 {
-    // bcore_x_array.h:362:1
+    // bcore_x_array.h:364:1
     
     
         const bcore_array_s* p = bcore_array_s_get_typed( t );
@@ -460,7 +462,7 @@ x_inst* x_array_t_set_t( x_array* o, tp_t t, sz_t index, tp_t val_type )
 
 sr_s x_array_t_c_get_sr( const x_array* o, tp_t t, sz_t index )
 {
-    // bcore_x_array.h:388:1
+    // bcore_x_array.h:390:1
     
     sr_s sr = bcore_array_t_get( t, ((const bcore_array*)(o)), index );
     if( sr_s_is_weak(&(sr)) ) sr_s_set_const(&(sr),true );
@@ -815,7 +817,7 @@ BCORE_DEFINE_OBJECT_INST_P( x_lock_s )
 
 x_lock_s* x_lock_s_set( x_lock_s* o, x_mutex_s* mutex )
 {
-    // bcore_x_threads.h:45:5
+    // bcore_x_threads.h:47:5
     
     x_lock_s_release(o);
     o->mutex = mutex;
@@ -825,7 +827,7 @@ x_lock_s* x_lock_s_set( x_lock_s* o, x_mutex_s* mutex )
 
 x_lock_s* x_lock_s_release( x_lock_s* o )
 {
-    // bcore_x_threads.h:52:5
+    // bcore_x_threads.h:54:5
     
     if( o->mutex ) x_mutex_s_unlock(o->mutex);
     o->mutex = NULL;
@@ -841,7 +843,7 @@ BCORE_DEFINE_OBJECT_INST_P( x_unlock_s )
 
 x_unlock_s* x_unlock_s_set( x_unlock_s* o, x_mutex_s* mutex )
 {
-    // bcore_x_threads.h:68:5
+    // bcore_x_threads.h:72:5
     
     x_unlock_s_release(o);
     o->mutex = mutex;
@@ -851,7 +853,7 @@ x_unlock_s* x_unlock_s_set( x_unlock_s* o, x_mutex_s* mutex )
 
 x_unlock_s* x_unlock_s_release( x_unlock_s* o )
 {
-    // bcore_x_threads.h:75:5
+    // bcore_x_threads.h:79:5
     
     if( o->mutex ) x_mutex_s_lock(o->mutex);
     o->mutex = NULL;
@@ -997,8 +999,9 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_main_frame_s )
 "{"
     "bl_t first_argument_is_path_to_object = true;"
     "bl_t second_argument_is_path_to_script = true;"
-    "sc_t local_file = \"beth.config\";"
-    "sc_t global_file;"
+    "st_s local_path = \"beth.config\";"
+    "bl_t local_path_descend = false;"
+    "st_s global_path;"
     "bcore_arr_st_s args;"
     "hidden bcore_mutex_s mutex;"
     "hidden aware bcore_source -> source;"
@@ -1026,7 +1029,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_main_set_s )
 
 er_t bcore_main_set_s_main( bcore_main_set_s* o, bcore_main_frame_s* frame )
 {
-    // bcore_main.h:117:5
+    // bcore_main.h:121:5
     
     {const bcore_main_arr_s* __a=&(o->arr );if(__a)for(sz_t __i=0;__i<__a->size;__i++){bcore_main* e=__a->data[__i];
     {
@@ -1042,7 +1045,7 @@ er_t bcore_main_set_s_main( bcore_main_set_s* o, bcore_main_frame_s* frame )
 
 bl_t bcore_main_set_s_on_termination( bcore_main_set_s* o, const bcore_main_frame_s* frame )
 {
-    // bcore_main.h:131:5
+    // bcore_main.h:135:5
     BLM_INIT_LEVEL(0);
     bcore_lock_s lock;BLM_T_INIT_SPUSH(bcore_lock_s, &lock);bcore_lock_s_set(&(lock),&(o->mutex_current_object ));
     BLM_RETURNV(bl_t, o->current_object ? bcore_main_a_on_termination(o->current_object,frame ) : false)
@@ -1050,7 +1053,7 @@ bl_t bcore_main_set_s_on_termination( bcore_main_set_s* o, const bcore_main_fram
 
 bl_t bcore_main_set_s_on_interrupt( bcore_main_set_s* o, const bcore_main_frame_s* frame )
 {
-    // bcore_main.h:137:5
+    // bcore_main.h:141:5
     BLM_INIT_LEVEL(0);
     bcore_lock_s lock;BLM_T_INIT_SPUSH(bcore_lock_s, &lock);bcore_lock_s_set(&(lock),&(o->mutex_current_object ));
     BLM_RETURNV(bl_t, o->current_object ? bcore_main_a_on_interrupt(o->current_object,frame ) : false)
@@ -1058,7 +1061,7 @@ bl_t bcore_main_set_s_on_interrupt( bcore_main_set_s* o, const bcore_main_frame_
 
 bl_t bcore_main_set_s_on_suspend( bcore_main_set_s* o, const bcore_main_frame_s* frame )
 {
-    // bcore_main.h:143:5
+    // bcore_main.h:147:5
     BLM_INIT_LEVEL(0);
     bcore_lock_s lock;BLM_T_INIT_SPUSH(bcore_lock_s, &lock);bcore_lock_s_set(&(lock),&(o->mutex_current_object ));
     BLM_RETURNV(bl_t, o->current_object ? bcore_main_a_on_suspend(o->current_object,frame ) : false)
@@ -5308,5 +5311,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x2EED7903EB1F22A9
-// XOICO_FILE_SIGNATURE 0x12D1D430D2DB25A4
+// XOICO_BODY_SIGNATURE 0xFB8483586AC8AA36
+// XOICO_FILE_SIGNATURE 0xF31D03D1790E35E4

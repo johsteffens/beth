@@ -56,6 +56,7 @@
 #include "bcore_leaf.h"
 #include "bcore_leaf_obj.h"
 #include "bcore_const_manager.h"
+#include "bcore_global_manager.h"
 #include "bcore_xoila.h"
 #include "bcore_xoila.h"
 #include "bcore_main.h"

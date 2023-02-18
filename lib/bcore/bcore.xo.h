@@ -1,4 +1,4 @@
-//  Last update: 2022-12-25T13:42:18Z
+//  Last update: 2023-02-18T10:41:22Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -401,6 +401,7 @@
   static inline sr_s x_array_t_m_get_sr( x_array* o, tp_t t, sz_t index ); \
   static inline sr_s x_array_m_get_sr( x_array* o, sz_t index ); \
   static inline sr_s x_array_c_get_sr( const x_array* o, sz_t index ); \
+  static inline f3_t x_array_c_get_f3( const x_array* o, sz_t index ); \
   x_inst* x_array_t_push_d( x_array* o, tp_t t, x_inst* v ); \
   x_inst* x_array_t_push_c( x_array* o, tp_t t, const x_inst* v ); \
   x_inst* x_array_t_push_t( x_array* o, tp_t t, tp_t val_type ); \
@@ -465,7 +466,8 @@
   static inline void x_array_set_sr( x_array* o, sz_t index, sr_s sr ){x_array_t_set_sr(o,o->_, index, sr );} \
   static inline sr_s x_array_t_m_get_sr( x_array* o, tp_t t, sz_t index ){return  bcore_array_t_get( t, ((bcore_array*)(o)), index );} \
   static inline sr_s x_array_m_get_sr( x_array* o, sz_t index ){return  x_array_t_m_get_sr(o,o->_, index );} \
-  static inline sr_s x_array_c_get_sr( const x_array* o, sz_t index ){return  x_array_t_c_get_sr(o,o->_, index );}
+  static inline sr_s x_array_c_get_sr( const x_array* o, sz_t index ){return  x_array_t_c_get_sr(o,o->_, index );} \
+  static inline f3_t x_array_c_get_f3( const x_array* o, sz_t index ){return  sr_to_f3(x_array_t_c_get_sr(o,o->_, index ));}
 
 /**********************************************************************************************************************/
 // source: bcore_x_group.h
@@ -673,9 +675,11 @@
       aware_t _; \
       x_mutex_s* mutex; \
   }; \
+  static inline x_lock_s* x_lock_s__( x_lock_s* o, x_mutex_s* mutex ); \
   x_lock_s* x_lock_s_set( x_lock_s* o, x_mutex_s* mutex ); \
   x_lock_s* x_lock_s_release( x_lock_s* o ); \
   static inline void x_lock_s_down_e( x_lock_s* o ); \
+  static inline x_lock_s* x_lock_s__( x_lock_s* o, x_mutex_s* mutex ){return  x_lock_s_set(o,mutex );} \
   static inline void x_lock_s_down_e( x_lock_s* o ){x_lock_s_release(o);}
 #define TYPEOF_x_unlock_s 0x6DA985CDBF521AB6ull
 #define BETH_EXPAND_ITEM_x_unlock_s \
@@ -684,9 +688,11 @@
       aware_t _; \
       x_mutex_s* mutex; \
   }; \
+  static inline x_unlock_s* x_unlock_s__( x_unlock_s* o, x_mutex_s* mutex ); \
   x_unlock_s* x_unlock_s_set( x_unlock_s* o, x_mutex_s* mutex ); \
   x_unlock_s* x_unlock_s_release( x_unlock_s* o ); \
   static inline void x_unlock_s_down_e( x_unlock_s* o ); \
+  static inline x_unlock_s* x_unlock_s__( x_unlock_s* o, x_mutex_s* mutex ){return  x_unlock_s_set(o,mutex );} \
   static inline void x_unlock_s_down_e( x_unlock_s* o ){x_unlock_s_release(o);}
 #define TYPEOF_x_mutex_s 0x339FC5615E44B9CDull
 #define BETH_EXPAND_ITEM_x_mutex_s \
@@ -825,7 +831,7 @@
   bl_t bcore_file_delete( sc_t name ); \
   bl_t bcore_file_rename( sc_t src_name, sc_t dst_name ); \
   u3_t bcore_file_last_modification_time_us( sc_t name ); \
-  bl_t bcore_file_find_descend( sc_t folder, sc_t name, st_s* result ); \
+  bl_t bcore_file_find_descend( sc_t folder, sc_t path, st_s* result ); \
   bcore_source* bcore_file_open_source( sc_t name ); \
   bcore_source* bcore_file_open_source_path( const bcore_file_path_s* path ); \
   bcore_sink* bcore_file_open_sink( sc_t name ); \
@@ -939,8 +945,9 @@
       aware_t _; \
       bl_t first_argument_is_path_to_object; \
       bl_t second_argument_is_path_to_script; \
-      sc_t local_file; \
-      sc_t global_file; \
+      st_s local_path; \
+      bl_t local_path_descend; \
+      st_s global_path; \
       bcore_arr_st_s args; \
       bcore_mutex_s mutex; \
       bcore_source* source; \
@@ -2813,5 +2820,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x53BECBBDFF8F1FEB
-// XOICO_FILE_SIGNATURE 0x0951B1C6E5C9D846
+// XOICO_BODY_SIGNATURE 0x0B091F24417DBC7D
+// XOICO_FILE_SIGNATURE 0x904CE5F9400007DF

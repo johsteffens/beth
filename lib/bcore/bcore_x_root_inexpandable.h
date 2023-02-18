@@ -391,6 +391,8 @@ group bcore_thread = bcore_inst
 
 //----------------------------------------------------------------------------------------------------------------------
 
+embed "bcore_const_manager_inexpandable.x";
+embed "bcore_global_manager_inexpandable.x";
 embed "bcore_source_inexpandable.x";
 embed "bcore_sink_inexpandable.x";
 embed "bcore_st_inexpandable.x";

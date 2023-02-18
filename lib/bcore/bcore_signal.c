@@ -19,6 +19,7 @@
 #include "bcore_bin_ml.h"
 #include "bcore_btree.h"
 #include "bcore_const_manager.h"
+#include "bcore_global_manager.h"
 #include "bcore_control.h"
 #include "bcore_file.h"
 #include "bcore_flect.h"
@@ -112,6 +113,7 @@ vd_t bcore_general_signal_handler( const bcore_signal_s* o )
         bcore_st_signal_handler,
         bcore_spect_source_signal_handler,
         bcore_const_manager_signal_handler,
+        bcore_global_manager_signal_handler,
 
         /// other items
         bcore_control_signal_handler,
