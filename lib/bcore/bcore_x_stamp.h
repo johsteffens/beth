@@ -71,7 +71,7 @@ func bl_t t_is_static_i( tp_t t, sz_t index )     = bcore_via_t_iis_static( t, N
 func bl_t   is_link_i( aware @* o, sz_t index ) = bcore_via_a_iis_link( o.cast( c bcore_via* ), index );
 func bl_t t_is_link_i( tp_t t, sz_t index )     = bcore_via_t_iis_link( t, NULL, index );
 
-/// returns type of element (not that the type might be defined at runtime, hence the object o is always required)
+/// returns type of element (note that the type might be defined at runtime, hence the object o is always required)
 func tp_t   type  ( aware @* o,         tp_t name  ) = bcore_via_a_nget_type(    o.cast( c bcore_via* ), name );
 func tp_t t_type  ( obliv @* o, tp_t t, tp_t name  ) = bcore_via_t_nget_type( t, o.cast( c bcore_via* ), name );
 func tp_t   type_i( aware @* o,         sz_t index ) = bcore_via_a_iget_type(    o.cast( c bcore_via* ), index );
