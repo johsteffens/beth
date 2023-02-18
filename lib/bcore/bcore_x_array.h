@@ -147,6 +147,8 @@ func sr_s   m_get_sr( m aware @* o,         sz_t index ) = o.t_m_get_sr( o._, in
 func sr_s t_c_get_sr( c obliv @* o, tp_t t, sz_t index );
 func sr_s   c_get_sr( c aware @* o,         sz_t index ) = o.t_c_get_sr( o._, index );
 
+func f3_t c_get_f3( c aware @* o, sz_t index ) = o.t_c_get_sr( o._, index ).sr_to_f3();
+
 //----------------------------------------------------------------------------------------------------------------------
 
 func t_push_d
