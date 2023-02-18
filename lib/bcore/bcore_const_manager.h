@@ -68,7 +68,7 @@ bl_t bcore_const_exists( tp_t key );
  *  String registration/access is concurrent (lock-secured) an can be used anywhere;
  *  Strings are tested for collisions.
  */
-tp_t        bcore_const_string_set_sc(          sc_t string ); // returns key; string collision tested and copied.
+tp_t        bcore_const_string_set_sc(         sc_t  string ); // returns key; string collision tested and copied.
 tp_t        bcore_const_string_set_st_c( const st_s* string ); // returns key; string collision tested and copied.
 tp_t        bcore_const_string_set_st_d(       st_s* string ); // returns key; string collision tested; assumes ownership
 sc_t        bcore_const_string_get_sc( tp_t key ); // retuns NULL if not existing
