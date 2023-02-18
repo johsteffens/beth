@@ -109,16 +109,18 @@ void BCATU(bmath_vcfx_s,clear)( bmath_vcfx_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_vcfx_s,set_size)( bmath_vcfx_s* o, uz_t size )
+bmath_vcfx_s* BCATU(bmath_vcfx_s,set_size)( bmath_vcfx_s* o, uz_t size )
 {
     bcore_array_a_set_size( (bcore_array*)o, size );
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_vcfx_s,set_space)( bmath_vcfx_s* o, uz_t space )
+bmath_vcfx_s* BCATU(bmath_vcfx_s,set_space)( bmath_vcfx_s* o, uz_t space )
 {
     bcore_array_a_set_space( (bcore_array*)o, space );
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

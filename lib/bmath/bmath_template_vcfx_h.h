@@ -66,7 +66,8 @@ fx_t BCATU(bmath_vcfx_s,fdev)( const bmath_vcfx_s* o, const bmath_vcfx_s* op );
 void BCATU(bmath_vcfx_s,move)( bmath_vcfx_s* o, bmath_vcfx_s* src );
 void BCATU(bmath_vcfx_s,clear)( bmath_vcfx_s* o );
 
-void BCATU(bmath_vcfx_s,set_size)( bmath_vcfx_s* o, uz_t size );
+bmath_vcfx_s* BCATU(bmath_vcfx_s,set_size )( bmath_vcfx_s* o, uz_t size );
+bmath_vcfx_s* BCATU(bmath_vcfx_s,set_space)( bmath_vcfx_s* o, uz_t space );
 void BCATU(bmath_vcfx_s,push)(     bmath_vcfx_s* o, bmath_cfx_s cfx );
 void BCATU(bmath_vcfx_s,push_ri)(  bmath_vcfx_s* o, fx_t r, fx_t i );
 

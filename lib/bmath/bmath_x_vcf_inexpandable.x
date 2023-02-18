@@ -67,7 +67,8 @@ stamp bmath_vcf2_s =
     func void move( m@* o, m@* src );
     func void clear( m@* o );
 
-    func void set_size( m@* o, uz_t size );
+    func o set_size( m@* o, uz_t size );
+    func o set_space( m@* o, uz_t space );
     func void push(     m@* o, bmath_cf2_s cfx );
     func void push_ri(  m@* o, f2_t r, f2_t i );
 
@@ -167,7 +168,8 @@ stamp bmath_vcf3_s =
     func void move( m@* o, m@* src );
     func void clear( m@* o );
 
-    func void set_size( m@* o, uz_t size );
+    func o set_size( m@* o, uz_t size );
+    func o set_space( m@* o, uz_t space );
     func void push(     m@* o, bmath_cf3_s cfx );
     func void push_ri(  m@* o, f3_t r, f3_t i );
 
