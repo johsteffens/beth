@@ -119,7 +119,7 @@ func d st_s* folder_name( sc_t path );
 
 /**********************************************************************************************************************/
 
-func bl_t exists( sc_t name ); // checks if file exists
+func bl_t exists( sc_t name ); // checks if file or folder exists
 func bl_t touch(  sc_t name ); // creates empty file if not existing; returns success (no effect if existing)
 func bl_t delete( sc_t name ); // deletes file if existing; returns success
 func bl_t rename( sc_t src_name, sc_t dst_name ); // renames file if existing; returns success
@@ -131,7 +131,7 @@ func bl_t rename( sc_t src_name, sc_t dst_name ); // renames file if existing; r
  */
 func u3_t last_modification_time_us( sc_t name );
 
-/** Searches for a file <folder>/<name>, descending the tree through parent folders of <folder>.
+/** Searches for a file <folder>/<path>, descending the tree through parent folders of <folder>.
  *  Returns false if not found.
  *  If found, the detected path is stored in <result>.
  *
@@ -147,7 +147,7 @@ func u3_t last_modification_time_us( sc_t name );
  *    If any matches, result holds the first matching path (e.g. "/home/module.cfg")
  *    and 'true' is returned. Otherwise 'false' is returned.
  */
-func bl_t find_descend( sc_t folder, sc_t name, m st_s* result );
+func bl_t find_descend( sc_t folder, sc_t path, m st_s* result );
 
 /// opens file-source (close it with bcore_source_a_discard)
 func d bcore_source* open_source( sc_t name );

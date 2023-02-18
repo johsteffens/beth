@@ -15,6 +15,7 @@
 
 #include <stdio.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 
 #include "bcore_file.h"
 #include "bcore_sources.h"
@@ -193,7 +194,14 @@ u3_t bcore_file_last_modification_time_us( sc_t name )
 {
     struct stat file_stat;
     if( stat( name, &file_stat ) != 0 ) return 0;
+
+    // seconds-granularity seems reasonably platform-inedependent
     u3_t us = ( u3_t )file_stat.st_mtime * 1000000;
+
+    // ns-granularity according to some standards but not globally supported
+    //u3_t us = ( u3_t )file_stat.st_mtime.tv_nsec / 1000;
+    //u3_t us = ( u3_t )file_stat.st_mtimensec / 1000;
+
     return us;
 }
 
@@ -224,7 +232,7 @@ bl_t bcore_file_rename( sc_t src_name, sc_t dst_name )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t bcore_file_find_descend( sc_t folder, sc_t name, st_s* result )
+bl_t bcore_file_find_descend( sc_t folder, sc_t path, st_s* result )
 {
     BLM_INIT();
     st_s* st_folder = BLM_A_PUSH( st_s_create_sc( folder ) );
@@ -232,7 +240,7 @@ bl_t bcore_file_find_descend( sc_t folder, sc_t name, st_s* result )
 
     for(;;)
     {
-        st_s_copy_fa( st_result, "#<sc_t>/#<sc_t>", st_folder->sc, name );
+        st_s_copy_fa( st_result, "#<sc_t>/#<sc_t>", st_folder->sc, path );
         if( bcore_file_exists( st_result->sc ) )
         {
             if( result ) st_s_copy( result, st_result );
