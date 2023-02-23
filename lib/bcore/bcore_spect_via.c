@@ -136,15 +136,22 @@ void bcore_via_default_iset( const bcore_via_s* p, bcore_via* o, uz_t index, sr_
         {
             bcore_link_static_s* dst = ( vd_t )( ( u0_t* )o + vitem->offs );
             const bcore_inst_s* inst_p = vitem->via_p->inst_p;
-            if( dst->link ) bcore_inst_p_discard( inst_p, dst->link );
-            if( sr_s_type( &src ) == vitem->type )
+            if( dst->link )
             {
-                dst->link = sr_s_is_strong( &src ) ? src.o : bcore_inst_p_clone( inst_p, src.o );
-                src = sr_cw( src );
+                bcore_inst_p_discard( inst_p, dst->link );
+                dst->link = NULL;
             }
-            else
+            if( src.o )
             {
-                dst->link = bcore_inst_p_create_typed( inst_p, sr_s_type( &src ), src.o );
+                if( sr_s_type( &src ) == vitem->type )
+                {
+                    dst->link = sr_s_is_strong( &src ) ? src.o : bcore_inst_p_clone( inst_p, src.o );
+                    src = sr_cw( src );
+                }
+                else
+                {
+                    dst->link = bcore_inst_p_create_typed( inst_p, sr_s_type( &src ), src.o );
+                }
             }
         }
         break;
@@ -160,7 +167,10 @@ void bcore_via_default_iset( const bcore_via_s* p, bcore_via* o, uz_t index, sr_
             if( sr_s_type( &src ) )
             {
                 dst->type = sr_s_type( &src );
-                dst->link = sr_s_is_strong( &src ) ? src.o : bcore_inst_t_clone( sr_s_type( &src ), src.o );
+                if( src.o )
+                {
+                    dst->link = sr_s_is_strong( &src ) ? src.o : bcore_inst_t_clone( sr_s_type( &src ), src.o );
+                }
                 src = sr_cw( src );
             }
         }
