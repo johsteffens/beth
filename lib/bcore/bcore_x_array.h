@@ -148,6 +148,10 @@ func sr_s t_c_get_sr( c obliv @* o, tp_t t, sz_t index );
 func sr_s   c_get_sr( c aware @* o,         sz_t index ) = o.t_c_get_sr( o._, index );
 
 func f3_t c_get_f3( c aware @* o, sz_t index ) = o.t_c_get_sr( o._, index ).sr_to_f3();
+func u3_t c_get_u3( c aware @* o, sz_t index ) = o.t_c_get_sr( o._, index ).sr_to_u3();
+func s3_t c_get_s3( c aware @* o, sz_t index ) = o.t_c_get_sr( o._, index ).sr_to_s3();
+func bl_t c_get_bl( c aware @* o, sz_t index ) = o.t_c_get_sr( o._, index ).sr_to_bl();
+func tp_t c_get_tp( c aware @* o, sz_t index ) = o.t_c_get_sr( o._, index ).sr_to_tp();
 
 //----------------------------------------------------------------------------------------------------------------------
 
