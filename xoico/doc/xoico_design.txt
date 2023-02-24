@@ -610,6 +610,8 @@ FEATURES, BUGS ...
     .! expands to .clone()
     .# expands to .fork()
 
+- (done) Bug fix: overload feature transient type definition as if it occurs in traitline
+
 TODO:
 
 - stamp: allow function-style readonly request of a member variable even if the function was not defined

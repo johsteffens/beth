@@ -1,4 +1,4 @@
-//  Last update: 2022-12-17T14:18:36Z
+//  Last update: 2023-02-24T21:01:47Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -1009,6 +1009,7 @@
   er_t xoico_stamp_s_parse_wrap( xoico_stamp_s* o, x_source* source ); \
   er_t xoico_stamp_s_parse_extend( xoico_stamp_s* o, x_source* source ); \
   er_t xoico_stamp_s_push_default_func_from_sc( xoico_stamp_s* o, sc_t sc ); \
+  er_t xoico_stamp_s_push_internal_func_from_sc( xoico_stamp_s* o, sc_t sc ); \
   er_t xoico_stamp_s_push_default_funcs( xoico_stamp_s* o ); \
   er_t xoico_stamp_s_push_compact_initializer_func( xoico_stamp_s* o ); \
   er_t xoico_stamp_s_parse( xoico_stamp_s* o, const xoico_host* host, x_source* source ); \
@@ -2019,5 +2020,5 @@ BETH_EXPAND_GROUP_xoico_builder
 BETH_EXPAND_GROUP_xoico_main
 
 #endif // __xoico_xo_H
-// XOICO_BODY_SIGNATURE 0x89E9C7898F2CBA79
-// XOICO_FILE_SIGNATURE 0xE33726C332561E72
+// XOICO_BODY_SIGNATURE 0x8840DE072A9BB5A1
+// XOICO_FILE_SIGNATURE 0x676B250762A1743B

@@ -1,4 +1,4 @@
-//  Last update: 2022-12-17T14:18:36Z
+//  Last update: 2023-02-24T21:01:47Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -48,7 +48,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_xoico 0x522104492FAC9051ull
+// HKEYOF_xoico 0x6500E76D23EAF6A0ull
 
 /**********************************************************************************************************************/
 // source: xoico.x
@@ -3840,9 +3840,34 @@ er_t xoico_stamp_s_push_default_func_from_sc( xoico_stamp_s* o, sc_t sc )
     BLM_RETURNV(er_t, 0)
 }
 
-er_t xoico_stamp_s_push_default_funcs( xoico_stamp_s* o )
+er_t xoico_stamp_s_push_internal_func_from_sc( xoico_stamp_s* o, sc_t sc )
 {
     // xoico_stamp.x:503:1
+    BLM_INIT_LEVEL(0);
+    xoico_compiler_s* compiler = o->group->compiler;
+    xoico_func_s* func = ((xoico_func_s*)BLM_LEVEL_T_PUSH(0,xoico_func_s,xoico_func_s_create()));
+    func->overloadable = false;
+    func->expandable = true;
+    
+    BLM_TRY(xoico_parse_sc(((xoico*)(func)),((const xoico_host*)(o)), sc ))
+    
+    sz_t idx = xoico_funcs_s_get_index_from_signature_global_name(&(o->funcs),func->signature_global_name );
+    
+    if( idx >= 0 )
+    {
+        BLM_RETURNV(er_t, x_source_point_s_parse_error_fa(&(o->source_point),"Function '#<sc_t>' conflicts with an internal function for this stamp of the same name.", xoico_compiler_s_nameof(compiler,func->name ) ))
+    }
+    else
+    {
+        x_array_push_d(((x_array*)(&(o->funcs))),((x_inst*)(((xoico_func_s*)bcore_fork(func)) )));
+    }
+    
+    BLM_RETURNV(er_t, 0)
+}
+
+er_t xoico_stamp_s_push_default_funcs( xoico_stamp_s* o )
+{
+    // xoico_stamp.x:528:1
     
     BLM_TRY(xoico_stamp_s_push_default_func_from_sc(o,"bcore_stamp_funcs.init;" ))
     BLM_TRY(xoico_stamp_s_push_default_func_from_sc(o,"bcore_stamp_funcs.down;" ))
@@ -3855,7 +3880,7 @@ er_t xoico_stamp_s_push_default_funcs( xoico_stamp_s* o )
 
 er_t xoico_stamp_s_push_compact_initializer_func( xoico_stamp_s* o )
 {
-    // xoico_stamp.x:516:1
+    // xoico_stamp.x:541:1
     BLM_INIT_LEVEL(0);
     xoico_compiler_s* compiler = o->group->compiler;
     
@@ -3945,7 +3970,7 @@ er_t xoico_stamp_s_push_compact_initializer_func( xoico_stamp_s* o )
 
 er_t xoico_stamp_s_parse( xoico_stamp_s* o, const xoico_host* host, x_source* source )
 {
-    // xoico_stamp.x:610:1
+    // xoico_stamp.x:635:1
     BLM_INIT_LEVEL(0);
     xoico_compiler_s* compiler = o->group->compiler;
     bl_t verbatim = x_source_parse_bl(source," #?w'verbatim'" );
@@ -4035,7 +4060,7 @@ er_t xoico_stamp_s_parse( xoico_stamp_s* o, const xoico_host* host, x_source* so
 
 er_t xoico_stamp_s_finalize( xoico_stamp_s* o, const xoico_host* host )
 {
-    // xoico_stamp.x:700:1
+    // xoico_stamp.x:725:1
     BLM_INIT_LEVEL(0);
     //if( o.has_compact_initializer ) o.push_compact_initializer_func();
     
@@ -4109,13 +4134,13 @@ er_t xoico_stamp_s_finalize( xoico_stamp_s* o, const xoico_host* host )
     
             tp_t type = xoico_transient_map_s_get(&(o->transient_map),key );
     
-            st_s func_code;BLM_T_INIT_SPUSH(st_s, &func_code);st_s_push_fa(&(func_code),"#<sc_t>.#<sc_t> { = TYPEOF_#<sc_t> }",
+            st_s func_code;BLM_T_INIT_SPUSH(st_s, &func_code);st_s_push_fa(&(func_code),"#<sc_t>.#<sc_t> { = TYPEOF_#<sc_t>; }",
                 xoico_compiler_s_nameof(compiler,feature->group->tp_name ),
                 xoico_compiler_s_nameof(compiler,feature->signature.name ),
                 xoico_compiler_s_nameof(compiler,type )
             );
     
-            BLM_TRY(xoico_stamp_s_push_default_func_from_sc(o,func_code.sc ))
+            BLM_TRY(xoico_stamp_s_push_internal_func_from_sc(o,func_code.sc ))
         BLM_DOWN();}
     }
     
@@ -4178,7 +4203,7 @@ er_t xoico_stamp_s_finalize( xoico_stamp_s* o, const xoico_host* host )
 
 er_t xoico_stamp_s_expand_declaration( const xoico_stamp_s* o, const xoico_host* host, sz_t indent, x_sink* sink )
 {
-    // xoico_stamp.x:847:1
+    // xoico_stamp.x:872:1
     
     sc_t sc_name = o->st_name.sc;
     
@@ -4200,7 +4225,7 @@ er_t xoico_stamp_s_expand_declaration( const xoico_stamp_s* o, const xoico_host*
 
 er_t xoico_stamp_s_expand_definition( const xoico_stamp_s* o, const xoico_host* host, sz_t indent, x_sink* sink )
 {
-    // xoico_stamp.x:869:1
+    // xoico_stamp.x:894:1
     BLM_INIT_LEVEL(0);
     st_s* embedded_string = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,xoico_stamp_create_embedded_string(o->self_source )));
     
@@ -4233,7 +4258,7 @@ er_t xoico_stamp_s_expand_definition( const xoico_stamp_s* o, const xoico_host* 
 
 er_t xoico_stamp_s_expand_init1( const xoico_stamp_s* o, const xoico_host* host, sz_t indent, x_sink* sink )
 {
-    // xoico_stamp.x:904:1
+    // xoico_stamp.x:929:1
     
     xoico_compiler_s* compiler = o->group->compiler;
     
@@ -11050,5 +11075,5 @@ int main( int argc, char** argv )
     BETH_CLOSEV( 0 );
     return retv;
 }
-// XOICO_BODY_SIGNATURE 0x734A53F15E82D9F9
-// XOICO_FILE_SIGNATURE 0xF07819A2504D8087
+// XOICO_BODY_SIGNATURE 0x52AB41775396F990
+// XOICO_FILE_SIGNATURE 0xE68783F51DD815DB

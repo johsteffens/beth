@@ -499,6 +499,31 @@ func (:s) er_t push_default_func_from_sc( m @* o, sc_t sc )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:s) er_t push_internal_func_from_sc( m @* o, sc_t sc )
+{
+    m $* compiler = o.group.compiler;
+    m $* func = xoico_func_s!^;
+    func.overloadable = false;
+    func.expandable = true;
+
+    func.parse_sc( o, sc );
+
+    sz_t idx = o.funcs.get_index_from_signature_global_name( func.signature_global_name );
+
+    if( idx >= 0 )
+    {
+        return o.source_point.parse_error_fa( "Function '#<sc_t>' conflicts with an internal function for this stamp of the same name.", compiler.nameof( func.name ) );
+    }
+    else
+    {
+        o.funcs.push_d( func.fork() );
+    }
+
+    return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:s) :.push_default_funcs
 {
     o.push_default_func_from_sc( "bcore_stamp_funcs.init;" );
@@ -774,13 +799,13 @@ func (:s) xoico.finalize
 
             st_s^ func_code.push_fa
             (
-                "#<sc_t>.#<sc_t> { = TYPEOF_#<sc_t> }",
+                "#<sc_t>.#<sc_t> { = TYPEOF_#<sc_t>; }",
                 compiler.nameof( feature.group.tp_name ),
                 compiler.nameof( feature.signature.name ),
                 compiler.nameof( type )
             );
 
-            o.push_default_func_from_sc( func_code.sc );
+            o.push_internal_func_from_sc( func_code.sc );
         }
     }
 
