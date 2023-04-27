@@ -185,7 +185,7 @@ group :tp
     func m_getf
     {
         m x_inst* inst = o.m_map_().m_get( key );
-        if( !inst ) inst = x_inst_create( o.TE() );
+        if( !inst ) inst = o.m_map_().set_d( key, x_inst_create( o.TE() ) );
         if( !inst ) ERR_fa( "'#<sc_t>.m_getf:' stamp must define transient type 'TE'.", bnameof( o._ ) );
         = inst;
     }
