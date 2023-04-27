@@ -175,6 +175,7 @@ static bcore_self_s* sr_s_create_self( void )
 f3_t sr_s_to_f3( const sr_s* o )
 {
     f3_t v = 0;
+    if( !o->o ) return v;
     switch( sr_s_type( o ) )
     {
         case TYPEOF_u0_t: v = *( u0_t* )o->o; break;
@@ -202,6 +203,7 @@ f3_t sr_s_to_f3( const sr_s* o )
 u3_t sr_s_to_u3( const sr_s* o )
 {
     u3_t v = 0;
+    if( !o->o ) return v;
     switch( sr_s_type( o ) )
     {
         case TYPEOF_u0_t: v = *( u0_t* )o->o; break;
@@ -228,6 +230,7 @@ u3_t sr_s_to_u3( const sr_s* o )
 s3_t sr_s_to_s3( const sr_s* o )
 {
     s3_t v = 0;
+    if( !o->o ) return v;
     switch( sr_s_type( o ) )
     {
         case TYPEOF_u0_t: v = *( u0_t* )o->o; break;
@@ -253,6 +256,7 @@ s3_t sr_s_to_s3( const sr_s* o )
 bl_t sr_s_to_bl( const sr_s* o )
 {
     bl_t v = 0;
+    if( !o->o ) return v;
     switch( sr_s_type( o ) )
     {
         case TYPEOF_u0_t: v = *( u0_t* )o->o; break;
@@ -278,6 +282,7 @@ bl_t sr_s_to_bl( const sr_s* o )
 tp_t sr_s_to_tp( const sr_s* o )
 {
     tp_t v = 0;
+    if( !o->o ) return v;
     switch( sr_s_type( o ) )
     {
         case TYPEOF_u0_t: v = *( u0_t* )o->o; break;
