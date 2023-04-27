@@ -60,18 +60,20 @@ void  st_s_init_sc(      st_s* o, sc_t sc );                    // creates strin
 void  st_s_init_weak_st( st_s* o, const st_s* st );             // creates a weak string referencing st
 void  st_s_init_weak_sc( st_s* o, sc_t sc );                    // creates a weak string referencing sc
 void  st_s_down(         st_s* o );
-void  st_s_set_size(     st_s* o, u0_t fill_char, uz_t size ); // allocates and fills with fill_char
-void  st_s_copy(         st_s* o, const st_s* src );
-void  st_s_copyvf(       st_s* o, sc_t format, va_list args  );
-void  st_s_copyf(        st_s* o, sc_t format, ...  );
-void  st_s_copy_fv(      st_s* o, sc_t format, va_list args  );
-void  st_s_copy_fa(      st_s* o, sc_t format, ...  );
-void  st_s_copy_sc_n(    st_s* o, sc_t sc, uz_t n );
-void  st_s_copy_sc(      st_s* o, sc_t sc );
-void  st_s_assign_sc(    st_s* o, sc_t sc ); // assignment producing a weak string
-void  st_s_copy_typed(   st_s* o, tp_t type, vc_t src ); // copy with type conversion
-void  st_s_copy_aware(   st_s* o,            vc_t src ); // copy with type conversion
-void  st_s_move(         st_s* o, st_s* src );
+st_s* st_s_set_size(     st_s* o, u0_t fill_char, uz_t size ); // allocates and fills with fill_char
+
+st_s* st_s_copy(         st_s* o, const st_s* src );
+st_s* st_s_copyvf(       st_s* o, sc_t format, va_list args  );
+st_s* st_s_copyf(        st_s* o, sc_t format, ...  );
+st_s* st_s_copy_fv(      st_s* o, sc_t format, va_list args  );
+st_s* st_s_copy_fa(      st_s* o, sc_t format, ...  );
+st_s* st_s_copy_sc_n(    st_s* o, sc_t sc, uz_t n );
+st_s* st_s_copy_sc(      st_s* o, sc_t sc );
+st_s* st_s_assign_sc(    st_s* o, sc_t sc ); // assignment producing a weak string
+st_s* st_s_copy_typed(   st_s* o, tp_t type, vc_t src ); // copy with type conversion
+st_s* st_s_copy_aware(   st_s* o,            vc_t src ); // copy with type conversion
+st_s* st_s_move(         st_s* o, st_s* src );
+
 st_s* st_s_create();
 st_s* st_s_createvf(     sc_t format, va_list args ); // c-style formatting
 st_s* st_s_createf(      sc_t format, ... );          // c-style formatting
@@ -222,8 +224,14 @@ void st_s_print_fa( sc_t format, ... );
  *
  *  "#string"
  *      Argument: st_s*
- *      Consumes a string in o enclosed in quotes '"'.
- *      Quotes inside the string are to be escaped '\"'.
+ *      Consumes a string in o enclosed in double quotes "".
+ *      Double quotes inside the string are to be escaped '\"'.
+ *      Backslashes are to be escaped '\\'.
+ *
+ *  "#label"
+ *      Argument: st_s*
+ *      Consumes a string in o enclosed in single quotes ''.
+ *      Single quotes inside the string are to be escaped '\''.
  *      Backslashes are to be escaped '\\'.
  *
  *  "#skip'...'"  (Example: "#skip' ')

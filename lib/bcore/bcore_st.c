@@ -159,7 +159,7 @@ void st_s_down( st_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void  st_s_set_size( st_s* o, u0_t fill_char, uz_t size )
+st_s* st_s_set_size( st_s* o, u0_t fill_char, uz_t size )
 {
     if( o->space <= size )
     {
@@ -170,13 +170,14 @@ void  st_s_set_size( st_s* o, u0_t fill_char, uz_t size )
     for( sz_t i = 0; i < size; i++ ) o->data[ i ] = fill_char;
     o->size = size;
     o->data[ o->size ] = 0;
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void st_s_copy( st_s* o, const st_s* src )
+st_s* st_s_copy( st_s* o, const st_s* src )
 {
-    if( !src || o == src ) return;
+    if( !src || o == src ) return o;
     if( o->space <= src->size )
     {
         if( o->space > 0 ) bcore_bn_alloc( o->data, o->space, 0, &o->space );
@@ -186,11 +187,12 @@ void st_s_copy( st_s* o, const st_s* src )
     bcore_memcpy( o->data, src->data, src->size );
     o->size = src->size;
     o->data[ o->size ] = 0;
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void st_s_copy_sc_n( st_s* o, sc_t sc, uz_t sc_size )
+st_s* st_s_copy_sc_n( st_s* o, sc_t sc, uz_t sc_size )
 {
     if( o->space <= sc_size )
     {
@@ -201,64 +203,70 @@ void st_s_copy_sc_n( st_s* o, sc_t sc, uz_t sc_size )
     bcore_memcpy( o->data, sc, sc_size );
     o->size = sc_size;
     o->data[ o->size ] = 0;
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void st_s_copy_sc( st_s* o, sc_t sc )
+st_s* st_s_copy_sc( st_s* o, sc_t sc )
 {
-    st_s_copy_sc_n( o, sc, bcore_strlen( sc ) );
+    return st_s_copy_sc_n( o, sc, bcore_strlen( sc ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void st_s_assign_sc( st_s* o, sc_t sc )
+st_s* st_s_assign_sc( st_s* o, sc_t sc )
 {
     uz_t src_size = bcore_strlen( sc );
     if( o->space > 0 ) bcore_bn_alloc( o->data, o->space, 0, &o->space );
     o->sc   = sc;
     o->size = src_size;
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void st_s_copyvf( st_s* o, sc_t format, va_list args  )
+st_s* st_s_copyvf( st_s* o, sc_t format, va_list args  )
 {
     st_s_down( o );
     st_s_initvf( o, format, args );
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void st_s_copyf( st_s* o, sc_t format, ...  )
+st_s* st_s_copyf( st_s* o, sc_t format, ...  )
 {
     va_list args;
     va_start( args, format );
     st_s_copyvf( o, format, args );
     va_end( args );
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void st_s_copy_fv( st_s* o, sc_t format, va_list args  )
+st_s* st_s_copy_fv( st_s* o, sc_t format, va_list args  )
 {
     st_s_down( o );
     st_s_init_fv( o, format, args );
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void st_s_copy_fa( st_s* o, sc_t format, ...  )
+st_s* st_s_copy_fa( st_s* o, sc_t format, ...  )
 {
     va_list args;
     va_start( args, format );
     st_s_copy_fv( o, format, args );
     va_end( args );
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void st_s_copy_typed( st_s* o, tp_t type, vc_t src )
+st_s* st_s_copy_typed( st_s* o, tp_t type, vc_t src )
 {
     switch( type )
     {
@@ -300,22 +308,25 @@ void st_s_copy_typed( st_s* o, tp_t type, vc_t src )
         }
         break;
     }
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void st_s_copy_aware( st_s* o, vc_t src )
+st_s* st_s_copy_aware( st_s* o, vc_t src )
 {
     st_s_copy_typed( o, *( aware_t* )src, src );
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void st_s_move( st_s* o, st_s* src )
+st_s* st_s_move( st_s* o, st_s* src )
 {
     st_s_init( o );
     st_s_copy( o, src );
     st_s_down( src );
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1960,6 +1971,40 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                     if( o->sc[ idx ] == '\\' && o->sc[ idx + 1 ] == '\"' )
                     {
                         if( string ) st_s_push_char( string, '\"' );
+                        idx += 2;
+                    }
+                    else if( o->sc[ idx ] == '\\' && o->sc[ idx + 1 ] == '\\' )
+                    {
+                        if( string ) st_s_push_char( string, '\\' );
+                        idx += 2;
+                    }
+                    else
+                    {
+                        if( string ) st_s_push_char( string, o->sc[ idx ] );
+                        idx++;
+                    }
+                }
+                idx++;
+            }
+            else if( ( bcore_strcmp( "label", fp ) >> 1 ) == 0 )
+            {
+                fp += strlen( "label" );
+                st_s* string = NULL;
+                if( set_arg )
+                {
+                    string = va_arg( args, st_s* );
+                    if( string && !cat_arg ) st_s_clear( string );
+                }
+                if( o->sc[ idx ] != '\'' )
+                {
+                    return st_s_parse_errorf( o, errfp, arg, idx, "' expected." );
+                }
+                idx++;
+                while ( o->sc[ idx ] != '\'' )
+                {
+                    if( o->sc[ idx ] == '\\' && o->sc[ idx + 1 ] == '\'' )
+                    {
+                        if( string ) st_s_push_char( string, '\'' );
                         idx += 2;
                     }
                     else if( o->sc[ idx ] == '\\' && o->sc[ idx + 1 ] == '\\' )
