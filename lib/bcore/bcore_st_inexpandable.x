@@ -26,15 +26,15 @@ group bcore_st = x_inst
         uz_t size;
         uz_t space;
 
-        func void  set_size( m @* o, u0_t fill_char, uz_t size ); // allocates and fills with fill_char
-        func void  copyvf(   m @* o, sc_t format, va_list args );
-        func void  copyf(    m @* o, sc_t format, ...  );
-        func void  copy_fv(  m @* o, sc_t format, va_list args );
-        func void  copy_fa(  m @* o, sc_t format, ...  );
-        func void  copy_sc_n( m @* o, sc_t sc, uz_t n );
-        func void  copy_sc(   m @* o, sc_t sc );
-        func void  copy_typed( m @* o, tp_t type, vc_t src ); // copy with type conversion
-        func void  copy_aware( m @* o,            vc_t src ); // copy with type conversion
+        func o set_size( m @* o, u0_t fill_char, uz_t size ); // allocates and fills with fill_char
+        func o copyvf(   m @* o, sc_t format, va_list args );
+        func o copyf(    m @* o, sc_t format, ...  );
+        func o copy_fv(  m @* o, sc_t format, va_list args );
+        func o copy_fa(  m @* o, sc_t format, ...  );
+        func o copy_sc_n( m @* o, sc_t sc, uz_t n );
+        func o copy_sc(   m @* o, sc_t sc );
+        func o copy_typed( m @* o, tp_t type, vc_t src ); // copy with type conversion
+        func o copy_aware( m @* o,            vc_t src ); // copy with type conversion
 
         func d @* createvf(     sc_t format, va_list args ); // c-style formatting
         func d @* createf(      sc_t format, ... );          // c-style formatting
@@ -56,19 +56,19 @@ group bcore_st = x_inst
 
         func m @* clear( m @* o ); // empties string
 
-        func m st_s* push_char(   m @* o, char c );
-        func m st_s* push_char_n( m @* o, char c, uz_t n ); // pushes c n times
+        func o push_char(   m @* o, char c );
+        func o push_char_n( m @* o, char c, uz_t n ); // pushes c n times
         func char  pop_char(    m @* o );                 // removes last character and returns it
         func void  pop_n(       m @* o,         uz_t n ); // removes n last characters
-        func m st_s* push_st(     m @* o, c st_s* src );
-        func m st_s* push_st_d(   m @* o, d st_s* src ); // discards src
-        func m st_s* push_sc_n(   m @* o, sc_t sc, uz_t n );
-        func m st_s* push_sc(     m @* o, sc_t sc );
-        func m st_s* push_typed(  m @* o, tp_t type, vc_t src ); // push with type conversion
-        func m st_s* pushvf(      m @* o, sc_t format, va_list args );
-        func m st_s* pushf(       m @* o, sc_t format, ... );
-        func m st_s* push_fv(     m @* o, sc_t format, va_list args );
-        func m st_s* push_fa(     m @* o, sc_t format, ... );
+        func o push_st(     m @* o, c st_s* src );
+        func o push_st_d(   m @* o, d st_s* src ); // discards src
+        func o push_sc_n(   m @* o, sc_t sc, uz_t n );
+        func o push_sc(     m @* o, sc_t sc );
+        func o push_typed(  m @* o, tp_t type, vc_t src ); // push with type conversion
+        func o pushvf(      m @* o, sc_t format, va_list args );
+        func o pushf(       m @* o, sc_t format, ... );
+        func o push_fv(     m @* o, sc_t format, va_list args );
+        func o push_fa(     m @* o, sc_t format, ... );
 
         /// comparison and equality (for return of comparison 'cmp' see bcore_strcmp)
         func s2_t cmp_sc(     c @* o, sc_t sc         );
@@ -102,32 +102,32 @@ group bcore_st = x_inst
         func uz_t count_st(   c @* o, uz_t start, uz_t end, c st_s* st );
 
         /// Inserts at position <start>
-        func m @* insert_char( m @* o, uz_t start, char c );
-        func m @* insert_sc(   m @* o, uz_t start, sc_t sc );
-        func m @* insert_st(   m @* o, uz_t start, c st_s* st );
-        func m @* insert_st_d( m @* o, uz_t start, m st_s* st ); // discards string
-        func m @* insert_fv(   m @* o, uz_t start, sc_t format, va_list args );
-        func m @* insert_fa(   m @* o, uz_t start, sc_t format, ... );
+        func o insert_char( m @* o, uz_t start, char c );
+        func o insert_sc(   m @* o, uz_t start, sc_t sc );
+        func o insert_st(   m @* o, uz_t start, c st_s* st );
+        func o insert_st_d( m @* o, uz_t start, m st_s* st ); // discards string
+        func o insert_fv(   m @* o, uz_t start, sc_t format, va_list args );
+        func o insert_fa(   m @* o, uz_t start, sc_t format, ... );
 
         /// Replaces existing characters at position <start> (string length does not change)
-        func m @* replace_char( m @* o, uz_t start, char c );
-        func m @* replace_sc(   m @* o, uz_t start, sc_t sc );
-        func m @* replace_st(   m @* o, uz_t start, c st_s* st );
-        func m @* replace_st_d( m @* o, uz_t start, m st_s* st ); // discards string
+        func o replace_char( m @* o, uz_t start, char c );
+        func o replace_sc(   m @* o, uz_t start, sc_t sc );
+        func o replace_st(   m @* o, uz_t start, c st_s* st );
+        func o replace_st_d( m @* o, uz_t start, m st_s* st ); // discards string
 
         /// Removes from position start: <size> characters. If not enough characters left, the entire tail is removed. Returns o.
-        func m @* remove( m @* o, uz_t start, uz_t size );
+        func o remove( m @* o, uz_t start, uz_t size );
 
         /// Replaces all occurrences of <c> with string <replace>
-        func m @* replace_char_char( m @* o, char c,   char  replace );
-        func m @* replace_char_sc(   m @* o, char c,   sc_t  replace );
-        func m @* replace_char_st(   m @* o, char c, c st_s* replace );
-        func m @* replace_char_st_d( m @* o, char c, m st_s* replace );
+        func o replace_char_char( m @* o, char c,   char  replace );
+        func o replace_char_sc(   m @* o, char c,   sc_t  replace );
+        func o replace_char_st(   m @* o, char c, c st_s* replace );
+        func o replace_char_st_d( m @* o, char c, m st_s* replace );
 
         /// Replaces all occurrences of <match> with <replace>
-        func m @* replace_sc_sc(     m @* o,    sc_t match,   sc_t replace );
-        func m @* replace_st_st(     m @* o, c st_s* match, c st_s* replace );
-        func m @* replace_st_d_st_d( m @* o, m st_s* match, m st_s* replace ); // discards input strings
+        func o replace_sc_sc(     m @* o,    sc_t match,   sc_t replace );
+        func o replace_st_st(     m @* o, c st_s* match, c st_s* replace );
+        func o replace_st_d_st_d( m @* o, m st_s* match, m st_s* replace ); // discards input strings
 
         /// Replaces all characters within 'A' ... 'Z' or 'a' ... 'z' with corresponding lower/upper case characters
         func void set_lowercase( m @* o );
