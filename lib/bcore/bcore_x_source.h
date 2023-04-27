@@ -172,7 +172,7 @@ stamp :point_s = x_inst
     aware : -> source;
     s3_t index;
 
-    func void setup_from_source( m@* o, m x_source* source ) { o.source =< source.fork(); o.index = source.get_index(); };
+    func o setup_from_source( m@* o, m x_source* source ) { o.source =< source.fork(); o.index = source.get_index(); };
 
     /// creates a cloned source pointing to the index position of source point
     func d x_source* clone_source( c@* o );

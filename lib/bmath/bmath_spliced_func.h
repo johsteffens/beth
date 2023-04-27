@@ -20,10 +20,10 @@
  *  - Meets each sample point.
  *  - c0: Continuous for 0th derivative.         (Linear interpolation)
  *  -     If x is within x-boundaries, y stays in the y-boundary given by parameters.
- *  - c1: Continuous for 0th and 1st derivative. (Qubic interpolation)
+ *  - c1: Continuous for 0th and 1st derivative. (Cubic interpolation)
  *  -     If x is within x-boundaries, y can still exceed y-boundary given by parameters.
  *  - Extrapolates (quadratic/)linear/const using the nearest available sample points.
- *  - Save with any amount of samples (in case of zero samples: y = 0).
+ *  - Safe to use with any amount of samples (in case of zero samples: y = 0).
  *  - Recall speed O(nlog(n)).
  *
  *  Setup:

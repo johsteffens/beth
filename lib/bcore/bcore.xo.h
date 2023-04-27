@@ -1,4 +1,4 @@
-//  Last update: 2023-02-18T10:41:22Z
+//  Last update: 2023-03-30T14:58:21Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -35,8 +35,10 @@
  *  bcore_x_hmap.h
  *  bcore_x_deque.h
  *  bcore_arr_inexpandable.x
+ *  bcore_const_manager_inexpandable.x
  *  bcore_flect_inexpandable.x
  *  bcore_folder_inexpandable.x
+ *  bcore_global_manager_inexpandable.x
  *  bcore_hmap_inexpandable.x
  *  bcore_huffman.x
  *  bcore_img_inexpandable.x
@@ -140,7 +142,7 @@
       x_source* source; \
       s3_t index; \
   }; \
-  static inline void x_source_point_s_setup_from_source( x_source_point_s* o, x_source* source ); \
+  static inline x_source_point_s* x_source_point_s_setup_from_source( x_source_point_s* o, x_source* source ); \
   static inline void x_source_point_s_parse_msg_to_sink_fa( const x_source_point_s* o, x_sink* sink, sc_t format, ... ); \
   static inline void x_source_point_s_parse_msg_fa( const x_source_point_s* o, sc_t format, ... ); \
   static inline er_t x_source_point_s_parse_error_fa( const x_source_point_s* o, sc_t format, ... ); \
@@ -149,7 +151,7 @@
   void x_source_point_s_parse_msg_to_sink_fv( const x_source_point_s* o, x_sink* sink, sc_t format, va_list args ); \
   er_t x_source_point_s_parse_error_fv( const x_source_point_s* o, sc_t format, va_list args ); \
   void x_source_point_s_source_reference_to_sink( const x_source_point_s* o, bl_t file_name_only, x_sink* sink ); \
-  static inline void x_source_point_s_setup_from_source( x_source_point_s* o, x_source* source ){ x_source_a_attach( &(o->source ), (x_source*)( ((x_source*)bcore_fork(source)))); o->index = x_source_get_index(source);} \
+  static inline x_source_point_s* x_source_point_s_setup_from_source( x_source_point_s* o, x_source* source ){ x_source_a_attach( &(o->source ), (x_source*)( ((x_source*)bcore_fork(source)))); o->index = x_source_get_index(source); return o;} \
   static inline void x_source_point_s_parse_msg_to_sink_fa( const x_source_point_s* o, x_sink* sink, sc_t format, ... ){ va_list a; va_start( a, format ); x_source_point_s_parse_msg_to_sink_fv(o,sink, format, a ); va_end( a );} \
   static inline void x_source_point_s_parse_msg_fa( const x_source_point_s* o, sc_t format, ... ){ va_list a; va_start( a, format );               x_source_point_s_parse_msg_fv(o,format, a ); va_end( a );} \
   static inline er_t x_source_point_s_parse_error_fa( const x_source_point_s* o, sc_t format, ... ){ va_list a; va_start( a, format ); er_t err =  x_source_point_s_parse_error_fv(o,format, a ); va_end( a ); return  err;}
@@ -402,6 +404,10 @@
   static inline sr_s x_array_m_get_sr( x_array* o, sz_t index ); \
   static inline sr_s x_array_c_get_sr( const x_array* o, sz_t index ); \
   static inline f3_t x_array_c_get_f3( const x_array* o, sz_t index ); \
+  static inline u3_t x_array_c_get_u3( const x_array* o, sz_t index ); \
+  static inline s3_t x_array_c_get_s3( const x_array* o, sz_t index ); \
+  static inline bl_t x_array_c_get_bl( const x_array* o, sz_t index ); \
+  static inline tp_t x_array_c_get_tp( const x_array* o, sz_t index ); \
   x_inst* x_array_t_push_d( x_array* o, tp_t t, x_inst* v ); \
   x_inst* x_array_t_push_c( x_array* o, tp_t t, const x_inst* v ); \
   x_inst* x_array_t_push_t( x_array* o, tp_t t, tp_t val_type ); \
@@ -467,7 +473,11 @@
   static inline sr_s x_array_t_m_get_sr( x_array* o, tp_t t, sz_t index ){return  bcore_array_t_get( t, ((bcore_array*)(o)), index );} \
   static inline sr_s x_array_m_get_sr( x_array* o, sz_t index ){return  x_array_t_m_get_sr(o,o->_, index );} \
   static inline sr_s x_array_c_get_sr( const x_array* o, sz_t index ){return  x_array_t_c_get_sr(o,o->_, index );} \
-  static inline f3_t x_array_c_get_f3( const x_array* o, sz_t index ){return  sr_to_f3(x_array_t_c_get_sr(o,o->_, index ));}
+  static inline f3_t x_array_c_get_f3( const x_array* o, sz_t index ){return  sr_to_f3(x_array_t_c_get_sr(o,o->_, index ));} \
+  static inline u3_t x_array_c_get_u3( const x_array* o, sz_t index ){return  sr_to_u3(x_array_t_c_get_sr(o,o->_, index ));} \
+  static inline s3_t x_array_c_get_s3( const x_array* o, sz_t index ){return  sr_to_s3(x_array_t_c_get_sr(o,o->_, index ));} \
+  static inline bl_t x_array_c_get_bl( const x_array* o, sz_t index ){return  sr_to_bl(x_array_t_c_get_sr(o,o->_, index ));} \
+  static inline tp_t x_array_c_get_tp( const x_array* o, sz_t index ){return  sr_to_tp(x_array_t_c_get_sr(o,o->_, index ));}
 
 /**********************************************************************************************************************/
 // source: bcore_x_group.h
@@ -584,12 +594,25 @@
   static inline x_inst* x_stamp_m_get( x_stamp* o, tp_t name ); \
   static inline const x_inst* x_stamp_c_get_i( const x_stamp* o, sz_t index ); \
   static inline x_inst* x_stamp_m_get_i( x_stamp* o, sz_t index ); \
+  static inline f3_t x_stamp_get_f3( const x_stamp* o, tp_t name ); \
+  static inline s3_t x_stamp_get_s3( const x_stamp* o, tp_t name ); \
+  static inline u3_t x_stamp_get_u3( const x_stamp* o, tp_t name ); \
+  static inline tp_t x_stamp_get_tp( const x_stamp* o, tp_t name ); \
+  static inline bl_t x_stamp_get_bl( const x_stamp* o, tp_t name ); \
   static inline void x_stamp_set_sr( x_stamp* o, tp_t name, sr_s sr_src ); \
   static inline void x_stamp_set_sr_i( x_stamp* o, sz_t index, sr_s sr_src ); \
   static inline sr_s x_stamp_set_sr_ret( x_stamp* o, tp_t name, sr_s sr_src ); \
   static inline sr_s x_stamp_set_sr_ret_i( x_stamp* o, sz_t index, sr_s sr_src ); \
   static inline x_inst* x_stamp_set_c( x_stamp* o, tp_t name, const x_inst* src ); \
   static inline x_inst* x_stamp_set_d( x_stamp* o, tp_t name, x_inst* src ); \
+  static inline x_inst* x_stamp_set_t_c( x_stamp* o, tp_t name, tp_t src_type, const x_inst* src ); \
+  static inline x_inst* x_stamp_set_t_d( x_stamp* o, tp_t name, tp_t src_type, x_inst* src ); \
+  static inline void x_stamp_set_f3( x_stamp* o, tp_t name, f3_t val ); \
+  static inline void x_stamp_set_s3( x_stamp* o, tp_t name, s3_t val ); \
+  static inline void x_stamp_set_u3( x_stamp* o, tp_t name, u3_t val ); \
+  static inline void x_stamp_set_tp( x_stamp* o, tp_t name, tp_t val ); \
+  static inline void x_stamp_set_bl( x_stamp* o, tp_t name, bl_t val ); \
+  static inline void x_stamp_set_st( x_stamp* o, tp_t name, const st_s* val ); \
   static inline void x_stamp_t_mutated( x_stamp* o, tp_t t ); \
   static inline void x_stamp_mutated( x_stamp* o ); \
   static inline void x_stamp_t_shelve( x_stamp* o, tp_t t ); \
@@ -646,12 +669,25 @@
   static inline x_inst* x_stamp_m_get( x_stamp* o, tp_t name ){ sr_s sr = x_stamp_m_get_sr(o,name ); if( sr_s_is_strong(&(sr)) ) sr_s_clear(&(sr)); return  sr.o;} \
   static inline const x_inst* x_stamp_c_get_i( const x_stamp* o, sz_t index ){ sr_s sr = x_stamp_c_get_sr_i(o,index ); if( sr_s_is_strong(&(sr)) ) sr_s_clear(&(sr)); return  sr.o;} \
   static inline x_inst* x_stamp_m_get_i( x_stamp* o, sz_t index ){ sr_s sr = x_stamp_m_get_sr_i(o,index ); if( sr_s_is_strong(&(sr)) ) sr_s_clear(&(sr)); return  sr.o;} \
+  static inline f3_t x_stamp_get_f3( const x_stamp* o, tp_t name ){ sr_s sr = x_stamp_c_get_sr(o,name ); f3_t v = sr_s_to_f3(&(sr)); if( sr_s_is_strong(&(sr)) ) sr_s_clear(&(sr)); return  v;} \
+  static inline s3_t x_stamp_get_s3( const x_stamp* o, tp_t name ){ sr_s sr = x_stamp_c_get_sr(o,name ); s3_t v = sr_s_to_f3(&(sr)); if( sr_s_is_strong(&(sr)) ) sr_s_clear(&(sr)); return  v;} \
+  static inline u3_t x_stamp_get_u3( const x_stamp* o, tp_t name ){ sr_s sr = x_stamp_c_get_sr(o,name ); u3_t v = sr_s_to_f3(&(sr)); if( sr_s_is_strong(&(sr)) ) sr_s_clear(&(sr)); return  v;} \
+  static inline tp_t x_stamp_get_tp( const x_stamp* o, tp_t name ){ sr_s sr = x_stamp_c_get_sr(o,name ); tp_t v = sr_s_to_f3(&(sr)); if( sr_s_is_strong(&(sr)) ) sr_s_clear(&(sr)); return  v;} \
+  static inline bl_t x_stamp_get_bl( const x_stamp* o, tp_t name ){ sr_s sr = x_stamp_c_get_sr(o,name ); bl_t v = sr_s_to_f3(&(sr)); if( sr_s_is_strong(&(sr)) ) sr_s_clear(&(sr)); return  v;} \
   static inline void x_stamp_set_sr( x_stamp* o, tp_t name, sr_s sr_src ){x_stamp_t_set_sr(o,o->_, name, sr_src );} \
   static inline void x_stamp_set_sr_i( x_stamp* o, sz_t index, sr_s sr_src ){x_stamp_t_set_sr_i(o,o->_, index, sr_src );} \
   static inline sr_s x_stamp_set_sr_ret( x_stamp* o, tp_t name, sr_s sr_src ){return  x_stamp_t_set_sr_ret(o,o->_, name, sr_src );} \
   static inline sr_s x_stamp_set_sr_ret_i( x_stamp* o, sz_t index, sr_s sr_src ){return  x_stamp_t_set_sr_ret_i(o,o->_, index, sr_src );} \
   static inline x_inst* x_stamp_set_c( x_stamp* o, tp_t name, const x_inst* src ){return  x_stamp_set_sr_ret(o,name, sr_awc( src ) ).o;} \
   static inline x_inst* x_stamp_set_d( x_stamp* o, tp_t name, x_inst* src ){return  x_stamp_set_sr_ret(o,name, sr_asd( src ) ).o;} \
+  static inline x_inst* x_stamp_set_t_c( x_stamp* o, tp_t name, tp_t src_type, const x_inst* src ){return  x_stamp_set_sr_ret(o,name, sr_twc(src_type, src ) ).o;} \
+  static inline x_inst* x_stamp_set_t_d( x_stamp* o, tp_t name, tp_t src_type, x_inst* src ){return  x_stamp_set_sr_ret(o,name, sr_tsd(src_type, src ) ).o;} \
+  static inline void x_stamp_set_f3( x_stamp* o, tp_t name, f3_t val ){x_stamp_set_sr(o,name, sr_twc(((tp_t)(TYPEOF_f3_t)),((const x_inst*)( (&(val)) ))) );} \
+  static inline void x_stamp_set_s3( x_stamp* o, tp_t name, s3_t val ){x_stamp_set_sr(o,name, sr_twc(((tp_t)(TYPEOF_s3_t)),((const x_inst*)( (&(val)) ))) );} \
+  static inline void x_stamp_set_u3( x_stamp* o, tp_t name, u3_t val ){x_stamp_set_sr(o,name, sr_twc(((tp_t)(TYPEOF_u3_t)),((const x_inst*)( (&(val)) ))) );} \
+  static inline void x_stamp_set_tp( x_stamp* o, tp_t name, tp_t val ){x_stamp_set_sr(o,name, sr_twc(((tp_t)(TYPEOF_tp_t)),((const x_inst*)( (&(val)) ))) );} \
+  static inline void x_stamp_set_bl( x_stamp* o, tp_t name, bl_t val ){x_stamp_set_sr(o,name, sr_twc(((tp_t)(TYPEOF_bl_t)),((const x_inst*)( (&(val)) ))) );} \
+  static inline void x_stamp_set_st( x_stamp* o, tp_t name, const st_s* val ){x_stamp_set_sr(o,name, sr_twc(((tp_t)(TYPEOF_st_s)),((const x_inst*)( (val) ))) );} \
   static inline void x_stamp_t_mutated( x_stamp* o, tp_t t ){if( bcore_via_call_t_defines_mutated(t ) ) bcore_via_call_t_mutated(((bcore_via_call*)(o)),t );} \
   static inline void x_stamp_mutated( x_stamp* o ){bcore_via_call_a_mutated(((bcore_via_call*)(o)));} \
   static inline void x_stamp_t_shelve( x_stamp* o, tp_t t ){if( bcore_via_call_t_defines_shelve(t ) ) bcore_via_call_t_shelve(((bcore_via_call*)(o)),t );} \
@@ -2608,7 +2644,9 @@
       aware_t _; \
       x_hmap_tp_s map; \
   }; \
-  st_s* x_hmap_tp_st_s_create_st_status( const x_hmap_tp_st_s* o );
+  st_s* x_hmap_tp_st_s_create_st_status( const x_hmap_tp_st_s* o ); \
+  static inline tp_t x_hmap_tp_st_s_TE( const x_hmap_tp_st_s* o ); \
+  static inline tp_t x_hmap_tp_st_s_TE( const x_hmap_tp_st_s* o ){ return  TYPEOF_st_s;}
 #define BETH_EXPAND_GROUP_x_hmap_tp \
   BCORE_FORWARD_OBJECT( x_hmap_tp ); \
   BCORE_FORWARD_OBJECT( x_hmap_tp_s ); \
@@ -2694,7 +2732,9 @@
       aware_t _; \
       x_hmap_tp_s map; \
   }; \
-  st_s* x_hmap_tp_test_map_s_create_st_status( const x_hmap_tp_test_map_s* o );
+  st_s* x_hmap_tp_test_map_s_create_st_status( const x_hmap_tp_test_map_s* o ); \
+  static inline tp_t x_hmap_tp_test_map_s_TE( const x_hmap_tp_test_map_s* o ); \
+  static inline tp_t x_hmap_tp_test_map_s_TE( const x_hmap_tp_test_map_s* o ){ return  TYPEOF_x_hmap_tp_test_val_s;}
 #define BETH_EXPAND_GROUP_x_hmap_tp_test \
   BCORE_FORWARD_OBJECT( x_hmap_tp_test ); \
   BCORE_FORWARD_OBJECT( x_hmap_tp_test_kv_s ); \
@@ -2820,5 +2860,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x0B091F24417DBC7D
-// XOICO_FILE_SIGNATURE 0x904CE5F9400007DF
+// XOICO_BODY_SIGNATURE 0x5D58CEA2BA08C8DA
+// XOICO_FILE_SIGNATURE 0xB8E4E78BD7078EDE

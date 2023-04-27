@@ -323,6 +323,7 @@ uz_t bcore_references( vc_t ptr )
 
 vd_t bcore_fork( vd_t ptr )
 {
+
     return bcore_tbman_fork( ptr );
 }
 
