@@ -29,6 +29,7 @@
  *    * Can manage data and function pointers
  *    * Can hold (==own) referenced data objects
  *    * Storage efficiency around 50% with 2 hash functions and around 90% with 3 hash functions.
+ *      (Found by our experiments)
  *
  *  Advantages:
  *     Complexity   : O(1) for insert, remove, retrieve.
