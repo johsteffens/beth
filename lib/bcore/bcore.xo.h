@@ -1,4 +1,4 @@
-//  Last update: 2023-03-30T14:58:21Z
+//  Last update: 2023-05-08T09:10:12Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -848,7 +848,7 @@
   }; \
   void bcore_file_path_s_source( bcore_file_path_s* o, bcore_source* source ); \
   static inline sc_t bcore_file_path_s_get_sc( const bcore_file_path_s* o ); \
-  void bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name ); \
+  bcore_file_path_s* bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name ); \
   void bcore_file_path_s_copy_typed( bcore_file_path_s* o, tp_t type, vc_t src ); \
   bcore_file_path_s* bcore_file_path_s_create_sc( sc_t sc ); \
   bcore_file_path_s* bcore_file_path_s_create_st( const st_s* st ); \
@@ -2860,5 +2860,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x5D58CEA2BA08C8DA
-// XOICO_FILE_SIGNATURE 0xB8E4E78BD7078EDE
+// XOICO_BODY_SIGNATURE 0xE59702DCC711460A
+// XOICO_FILE_SIGNATURE 0x1589E7A733E0E92D

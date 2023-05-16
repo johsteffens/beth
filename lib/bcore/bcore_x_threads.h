@@ -111,6 +111,7 @@ stamp :condition_s
      *  The mutex is unlocked during sleep and re-locked when woken up.
      *  Beware of spurious wakeups: A wakeup may happen spuriously without
      *  actual cause from wake-trigger send to this condition.
+     *  Synchronizes memory (employs a memory barrier).
      */
     func void sleep( m@* o, m x_mutex_s* mutex );
 
@@ -158,6 +159,7 @@ group :thread
         /** Waits for obj.m_thread_func or obj.m_thread_func to finish and returns its result (reentrant).
          *  In case the thread has already been joined (or is not joinable), the function
          *  returns NULL immediately.
+         *  Synchronizes memory (employs a memory barrier).
          */
         func c (TResult) :result* join( m@* o );
     }

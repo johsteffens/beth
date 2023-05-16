@@ -36,7 +36,7 @@ XOILA_DEFINE_GROUP( bcore_file, bcore_inst )
 #ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 signature sc_t get_sc( c @* o );
-signature void set_sc( m @* o, sc_t name );
+signature    o set_sc( m @* o, sc_t name );
 
 /** File path that is automatically extended if relative.
  *  Use function get_sc to obtain the full path.
@@ -58,6 +58,7 @@ stamp :path_s = aware bcore_inst
         {
             o->full = st_s_create_fa( "#<sc_t>/#<sc_t>", o->root->sc, o->name.sc );
         }
+        = o;
     };
 
     func bcore_fp.copy_typed

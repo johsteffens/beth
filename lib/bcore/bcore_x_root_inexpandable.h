@@ -185,6 +185,8 @@ identifier bcore_msgv;
 identifier bcore_msg;
 identifier bcore_msg_fv;
 identifier bcore_msg_fa;
+identifier bcore_err_fa;
+identifier bcore_wrn_fa;
 
 identifier bcore_memset;
 identifier bcore_memcpy;

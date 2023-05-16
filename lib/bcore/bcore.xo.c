@@ -1,4 +1,4 @@
-//  Last update: 2023-03-09T11:36:24Z
+//  Last update: 2023-05-08T09:10:12Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -58,7 +58,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0x404C9F62A4249A1Eull
+// HKEYOF_bcore 0xFA35C2FF9A41A1FFull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -924,7 +924,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_file_path_s )
     "func bcore_fp:copy_typed;"
 "}";
 
-void bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name )
+bcore_file_path_s* bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name )
 {
     // bcore_file.h:54:5
     
@@ -934,11 +934,12 @@ void bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name )
     {
         o->full = st_s_create_fa("#<sc_t>/#<sc_t>", o->root->sc, o->name.sc );
     }
+    return  o;
 }
 
 void bcore_file_path_s_copy_typed( bcore_file_path_s* o, tp_t type, vc_t src )
 {
-    // bcore_file.h:64:5
+    // bcore_file.h:65:5
     
     if( type == TYPEOF_st_s )
     {
@@ -5315,5 +5316,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0xFADA370077CF3CB5
-// XOICO_FILE_SIGNATURE 0xFAB88B2201285079
+// XOICO_BODY_SIGNATURE 0xDA0DB8B2CFEE0D38
+// XOICO_FILE_SIGNATURE 0x798B32AAA531E966
