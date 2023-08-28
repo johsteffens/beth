@@ -2,10 +2,10 @@
 # Author: Johannes B. Steffens
 #
 # Application Structure:
-# Applications have a root folder that deremines the name of the application
+# Applications have a root folder that determines the name of the application
 # The apps makefile is located at that root folder.
 #
-# A xoico config file is optional but if the app has one, 
+# A xoico config file is optional but if the app has one,
 # it must be stored as <root>/<apppname>_xoico.cfg.
 # Dependencies of this file may have different names but should end in *.cfg.
 #
@@ -22,8 +22,8 @@
 #
 # The root folder and application name are automatically determined by the location of the makefile.
 #
-# Usage: 
-# In the apps root folder, create a makefile as follows ((O) means Optional): 
+# Usage:
+# In the apps root folder, create a makefile as follows ((O) means Optional):
 #
 # BETH_DIR     = <beth root folder>
 # DEPENDENCIES = <dependencies>   example: DEPENDENCIES =  $(BETH_DIR)/lib/bmath $(BETH_DIR)/lib/bcore ...
@@ -68,7 +68,7 @@ CC           = gcc
 AR           = ar
 MAKE         = make
 XOICO        = $(XOICO_DIR)/bin/xoico
-CFLAGS      += -Wall -O3 -std=c11 
+CFLAGS      += -Wall -O3 -std=c11
 
 C_FILES = $(wildcard $(SRC_DIR)/*.c)
 O_FILES = $(C_FILES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
@@ -87,7 +87,7 @@ $(TARGET): $(XOICO) $(XO_STATE) $(ALL_C_FILES) $(ALL_H_FILES) $(ALL_X_FILES) $(A
 	# second pass to capture changes by xoico
 	$(MAKE) -j12 -C . pass2
 	$(POSTBUILD)
-	
+
 pass2: $(O_FILES)
 	@mkdir -p $(dir $(TARGET) )
 	$(CC) -o $(TARGET) $(CFLAGS) $(INCLUDES) $(O_FILES) $(LDFLAGS)
@@ -104,7 +104,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(ALL_H_FILES)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(XOICO):
-	$(MAKE) -C $(XOICO_DIR)	
+	$(MAKE) -C $(XOICO_DIR)
 
 run:
 	$(MAKE)
