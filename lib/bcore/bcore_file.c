@@ -34,7 +34,7 @@ void bcore_file_path_s_source( bcore_file_path_s* o, bcore_source* source )
     st_s_detach( &o->root );
     if( file )
     {
-        o->root = bcore_file_folder_name( file );
+        o->root = bcore_file_folder_path( file );
         if( o->root && o->name.size > 0 && o->name.sc[ 0 ] != '/' )
         {
             o->full = st_s_create_fa( "#<sc_t>/#<sc_t>", o->root->sc, o->name.sc );
@@ -244,6 +244,8 @@ bl_t bcore_file_find_descend( sc_t folder, sc_t path, st_s* result )
         if( bcore_file_exists( st_result->sc ) )
         {
             if( result ) st_s_copy( result, st_result );
+            //bcore_msg_fa( "#<sc_t>\n", result->sc );
+
             BLM_RETURNV( bl_t, true );
         }
 
