@@ -67,6 +67,7 @@ type bcore_self_item_s;
 
 type va_list;
 
+identifier system;
 identifier NULL;
 identifier __DATE__;
 identifier __TIME__;
@@ -210,6 +211,10 @@ identifier bcore_bin_ml_a_copy;
 
 identifier bcore_cday_utc_s_from_system;
 identifier bcore_cday_utc_s_to_sink;
+identifier bcore_cday_ymd_s_to_cday;
+identifier bcore_cday_from_source;
+identifier bcore_cday_from_string;
+identifier bcore_cday_from_sc;
 
 identifier bcore_life_s_push_aware;
 

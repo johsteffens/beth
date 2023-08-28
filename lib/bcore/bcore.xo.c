@@ -1,4 +1,4 @@
-//  Last update: 2023-05-08T09:10:12Z
+//  Last update: 2023-08-28T14:06:55Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -58,7 +58,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0xFA35C2FF9A41A1FFull
+// HKEYOF_bcore 0xD7356BC0F11DF8B3ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -926,7 +926,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_file_path_s )
 
 bcore_file_path_s* bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name )
 {
-    // bcore_file.h:54:5
+    // bcore_file.h:55:5
     
     st_s_attach( &(o->full ),  NULL);
     st_s_copy_sc(&(o->name),name );
@@ -939,7 +939,7 @@ bcore_file_path_s* bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name )
 
 void bcore_file_path_s_copy_typed( bcore_file_path_s* o, tp_t type, vc_t src )
 {
-    // bcore_file.h:65:5
+    // bcore_file.h:66:5
     
     if( type == TYPEOF_st_s )
     {
@@ -3065,10 +3065,10 @@ XOILA_DEFINE_SPECT( x_inst, x_btml )
 
 er_t x_btml_t_from_source( x_btml* o, tp_t t, x_source* source )
 {
-    // bcore_x_btml.h:168:1
+    // bcore_x_btml.h:199:1
     
     sr_s sr = sr_null();
-    BLM_TRY(x_btml_parse_create_object(source, (&(sr)) ))
+    BLM_TRY(x_btml_parse_create_object(source, NULL, (&(sr)) ))
     x_inst_t_copy_typed(((x_inst*)( o)),t, sr_s_o_type( (&(sr)) ), sr.o );
     sr_s_down(&( sr ));
     return  bcore_error_last();
@@ -3076,7 +3076,7 @@ er_t x_btml_t_from_source( x_btml* o, tp_t t, x_source* source )
 
 x_btml* x_btml_create_from_source_t( x_source* source, tp_t* type )
 {
-    // bcore_x_btml.h:179:1
+    // bcore_x_btml.h:210:1
     
     if( !source )
     {
@@ -3084,14 +3084,14 @@ x_btml* x_btml_create_from_source_t( x_source* source, tp_t* type )
         return  NULL;
     }
     sr_s sr = sr_null();
-    BLM_TRY_EXIT(x_btml_parse_create_object(source, (&(sr)) ))
+    BLM_TRY_EXIT(x_btml_parse_create_object(source, NULL, (&(sr)) ))
     if( sr.o && type ) (*(type)) = sr_s_o_type(&( sr ));
     return  ((x_btml*)(sr.o)); // sr.o is NULL in case of error
 }
 
 x_btml* x_btml_create_from_source( x_source* source )
 {
-    // bcore_x_btml.h:194:1
+    // bcore_x_btml.h:225:1
     
     tp_t t = 0;
     x_btml* o = x_btml_create_from_source_t(source, (&(t)) );
@@ -3104,7 +3104,7 @@ x_btml* x_btml_create_from_source( x_source* source )
 
 x_sink* x_btml_t_to_sink( const x_btml* o, tp_t t, x_sink* sink )
 {
-    // bcore_x_btml.h:207:1
+    // bcore_x_btml.h:238:1
     
     x_btml_t_translate_recursive(o,t, 0, true, sink, 0 );
     return sink;
@@ -3112,7 +3112,7 @@ x_sink* x_btml_t_to_sink( const x_btml* o, tp_t t, x_sink* sink )
 
 sc_t x_btml_name_of( tp_t type, st_s* buf )
 {
-    // bcore_x_btml.h:219:1
+    // bcore_x_btml.h:250:1
     
     sc_t n = bcore_name_try_name( type );
     if( n ) return  n;
@@ -3122,7 +3122,7 @@ sc_t x_btml_name_of( tp_t type, st_s* buf )
 
 tp_t x_btml_type_of( const st_s* name )
 {
-    // bcore_x_btml.h:229:1
+    // bcore_x_btml.h:260:1
     
     tp_t tp = 0;
     if( name->size == 0 )
@@ -3142,7 +3142,7 @@ tp_t x_btml_type_of( const st_s* name )
 
 bl_t x_btml_appears_valid( x_source* source )
 {
-    // bcore_x_btml.h:249:1
+    // bcore_x_btml.h:280:1
     BLM_INIT_LEVEL(0);
     bl_t valid = false;
     sz_t index = x_source_get_index(source);
@@ -3168,7 +3168,7 @@ bl_t x_btml_appears_valid( x_source* source )
 
 bl_t x_btml_t_appears_valid( tp_t type, x_source* source )
 {
-    // bcore_x_btml.h:275:1
+    // bcore_x_btml.h:306:1
     BLM_INIT_LEVEL(0);
     bl_t valid = false;
     sz_t index = x_source_get_index(source);
@@ -3189,9 +3189,9 @@ bl_t x_btml_t_appears_valid( tp_t type, x_source* source )
     BLM_RETURNV(bl_t, valid)
 }
 
-er_t x_btml_parse_create_object( x_source* source, sr_s* obj )
+er_t x_btml_parse_create_object( x_source* source, const sr_s* default_obj, sr_s* obj )
 {
-    // bcore_x_btml.h:301:1
+    // bcore_x_btml.h:333:1
     BLM_INIT_LEVEL(0);
     er_t er = 0;
     st_s* type_string = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
@@ -3213,6 +3213,7 @@ er_t x_btml_parse_create_object( x_source* source, sr_s* obj )
                 else
                 {
                     x_inst* inst = ((x_inst*)BLM_LEVEL_TV_PUSH(0,type ,x_inst_t_create(type )));
+                    if( sr_s_type(default_obj) == type ) x_inst_t_copy( inst,type, default_obj->o );
                     BLM_TRY(x_btml_t_parse_body(((x_btml*)( inst)),type, source ))
                     BLM_TRY(x_source_parse_fa(source," </>" ))
                     (*(obj)) = sr_tsd(type, ((x_inst*)bcore_fork(inst)) );
@@ -3245,7 +3246,7 @@ er_t x_btml_parse_create_object( x_source* source, sr_s* obj )
                     {
                         if( bcore_file_exists(path->sc ) )
                         {BLM_INIT_LEVEL(6);
-                            BLM_TRY(x_btml_parse_create_object(((x_source*)(((bcore_source*)BLM_LEVEL_A_PUSH(6,bcore_file_open_source(path->sc ))))), obj ))
+                            BLM_TRY(x_btml_parse_create_object(((x_source*)(((bcore_source*)BLM_LEVEL_A_PUSH(6,bcore_file_open_source(path->sc ))))), NULL, obj ))
                         BLM_DOWN();}
                         else
                         {
@@ -3306,7 +3307,16 @@ er_t x_btml_parse_create_object( x_source* source, sr_s* obj )
 
 er_t x_btml_t_parse_body( x_btml* o, tp_t t, x_source* source )
 {
-    // bcore_x_btml.h:416:1
+    // bcore_x_btml.h:449:1
+    
+    sr_s default_element = sr_null();
+    const sr_s* default_sr = NULL;
+    
+    if( x_source_parse_bl(source,"#?w'#default:'" ) )
+    {
+        BLM_TRY(x_btml_parse_create_object(source, NULL, (&(default_element)) ))
+        default_sr = (&(default_element));
+    }
     
     x_stamp* stamp =((x_stamp*)( o));
     if( x_btml_t_defines_btml_body_from_source(t ) )
@@ -3347,7 +3357,7 @@ er_t x_btml_t_parse_body( x_btml* o, tp_t t, x_source* source )
             if( x_source_parse_bl(source,"#?'type:'" ) )
             {
                 sr_s sr = sr_null();
-                BLM_TRY(x_btml_parse_create_object(source, (&(sr)) ))
+                BLM_TRY(x_btml_parse_create_object(source, default_sr, (&(sr)) ))
                 type = sr_to_tp( sr );
             }
             x_array_t_set_gtype(arr,t, type );
@@ -3360,7 +3370,7 @@ er_t x_btml_t_parse_body( x_btml* o, tp_t t, x_source* source )
             while( !x_source_parse_bl(source," #=?'</>'" ) )
             {
                 sr_s sr = sr_null();
-                BLM_TRY(x_btml_parse_create_object(source, (&(sr)) ))
+                BLM_TRY(x_btml_parse_create_object(source, default_sr, (&(sr)) ))
                 if( arr_count < arr_size )
                 {
                     x_array_t_set_sr(arr,t, arr_count, sr );
@@ -3378,7 +3388,7 @@ er_t x_btml_t_parse_body( x_btml* o, tp_t t, x_source* source )
             while( !x_source_parse_bl(source," #=?'</>'" ) )
             {
                 sr_s sr = sr_null();
-                BLM_TRY(x_btml_parse_create_object(source, (&(sr)) ))
+                BLM_TRY(x_btml_parse_create_object(source, default_sr, (&(sr)) ))
                 x_array_t_push_sr(arr,t, sr );
             }
         }
@@ -3391,7 +3401,7 @@ er_t x_btml_t_parse_body( x_btml* o, tp_t t, x_source* source )
             BLM_TRY(x_source_parse_fa(source," #name :", name ))
             tp_t tp_name = btypeof( name->sc );
             sr_s sr = sr_null();
-            BLM_TRY(x_btml_parse_create_object(source, (&(sr)) ))
+            BLM_TRY(x_btml_parse_create_object(source, default_sr, (&(sr)) ))
             // non existing member variables are parsed but not assigned
             if( x_stamp_t_exists(t, tp_name ) )
             {
@@ -3407,12 +3417,14 @@ er_t x_btml_t_parse_body( x_btml* o, tp_t t, x_source* source )
     x_stamp_t_source(stamp,t, source );
     x_stamp_t_mutated(stamp,t );
     
+    sr_down( default_element );
+    
     return  0;
 }
 
 er_t x_btml_skip_body( x_source* source )
 {
-    // bcore_x_btml.h:522:1
+    // bcore_x_btml.h:566:1
     
     while( !x_source_eos(source) )
     {
@@ -3437,7 +3449,7 @@ er_t x_btml_skip_body( x_source* source )
 
 void x_btml_t_translate_recursive( const x_btml* o, tp_t t, tp_t name, bl_t shelve, x_sink* sink, sz_t depth )
 {
-    // bcore_x_btml.h:547:1
+    // bcore_x_btml.h:591:1
     BLM_INIT_LEVEL(0);
     sz_t indent = 4 * depth;
     st_s* buf = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
@@ -3527,7 +3539,7 @@ void x_btml_t_translate_recursive( const x_btml* o, tp_t t, tp_t name, bl_t shel
 
 sz_t x_btml_t_test_transfer( const x_btml* o, tp_t t )
 {
-    // bcore_x_btml.h:636:1
+    // bcore_x_btml.h:680:1
     BLM_INIT_LEVEL(0);
     st_s* string = st_s_create();
     x_btml_t_to_sink(o,t,((x_sink*)( string )));
@@ -3561,7 +3573,7 @@ sz_t x_btml_t_test_transfer( const x_btml* o, tp_t t )
 
 void x_btml_selftest( void )
 {
-    // bcore_x_btml.h:670:1
+    // bcore_x_btml.h:714:1
     BLM_INIT_LEVEL(0);
     sr_s zoo;BLM_T_INIT_SPUSH(sr_s, &zoo);; zoo = bcore_spect_via_create_zoo( 1000 );
     
@@ -5316,5 +5328,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0xDA0DB8B2CFEE0D38
-// XOICO_FILE_SIGNATURE 0x798B32AAA531E966
+// XOICO_BODY_SIGNATURE 0xC7319851F6F0DFE4
+// XOICO_FILE_SIGNATURE 0x33D718FB404B36E4

@@ -1,4 +1,4 @@
-//  Last update: 2023-05-08T09:10:12Z
+//  Last update: 2023-08-28T10:20:27Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -2356,7 +2356,7 @@
   tp_t x_btml_type_of( const st_s* name ); \
   bl_t x_btml_appears_valid( x_source* source ); \
   bl_t x_btml_t_appears_valid( tp_t type, x_source* source ); \
-  er_t x_btml_parse_create_object( x_source* source, sr_s* obj ); \
+  er_t x_btml_parse_create_object( x_source* source, const sr_s* default_obj, sr_s* obj ); \
   er_t x_btml_t_parse_body( x_btml* o, tp_t t, x_source* source ); \
   er_t x_btml_skip_body( x_source* source ); \
   void x_btml_t_translate_recursive( const x_btml* o, tp_t t, tp_t name, bl_t shelve, x_sink* sink, sz_t depth ); \
@@ -2860,5 +2860,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xE59702DCC711460A
-// XOICO_FILE_SIGNATURE 0x1589E7A733E0E92D
+// XOICO_BODY_SIGNATURE 0xEE3DB83B4C7C15D9
+// XOICO_FILE_SIGNATURE 0x9E54CCAB4ABEB6B4

@@ -63,20 +63,51 @@ Version tolerance:
     Retired types:
     An unrecognized object type is skipped by the parser and treated as if 'NULL' was parsed.
 
-  Supports 'brief' <#file> and <#path> syntax:
-     Syntax <#file>|<#path> <string in quotes> </>
-     (Closing '</>' is optional)
-     The string is taken as a file-path. If it is relative, the root folder is the file folder (if any) from which the stream comes.
-     <#file> represents the object to be constructed from the file's location (error if file does not exist)
-     <#path> represents a st_s containing the path.
-
-     Example: <#file> "data/my_file.txt" </>
-     The file contains the entire object: <type> <body> </>
-     The inclusion can be used at any place where an object is expected
-
 Overloaded I/O: Overload following features:
-    btml_body_to_sink
-    btml_body_from_source
+    btml_body_to_sink          // to define own I/O syntax
+    btml_body_from_source      // to define own I/O syntax
+
+    // see bcore_via_call
+    bcore_via_call.source
+    bcore_via_call.mutated
+    bcore_via_call.shelve
+
+Special Syntax Features:
+  - Brief <#file> and <#path> syntax:
+    Syntax <#file>|<#path> <string in quotes> </>
+    (Closing '</>' is optional)
+    The string is taken as a file-path. If it is relative, the root folder is the file folder (if any) from which the stream comes.
+
+    <#file> Represents the object to be constructed from the file's location (error if file does not exist)
+
+    <#path> Represents a st_s containing the path.
+            This is like defining <st_s> in the first,
+            except that a relative path is resolved relative to the streams location.
+
+    Example: <#file> "data/my_file.txt" </>
+    The file contains the entire object: <type> <body> </>
+    The inclusion can be used at any place where an object is expected
+
+  - Default Object Definition:
+    Syntax: (placed at the beginning of the body)
+        #default: <object definition>
+
+    Usage:
+        Inside an object-body an optional default object can be defined.
+        This default object acts as template for all object creations of the same type inside the body.
+        It is typically useful in arrays in order to specify a set of parameters in array-elements so that
+        they need not be explicitly stated each time.
+
+    Example:
+    <my_array_s>
+        // default definition
+        #default: <my_element_s> v1: 10 v2: 20 </>
+
+        // elements definition (v1, v2 assume default values as specified above)
+        <my_element_s> v3: 1  </>
+        <my_element_s> v3: 2  </>
+        <my_element_s> v3: 3  </>
+    </>
 */
 
 #ifndef BCORE_X_BTML_H
@@ -167,7 +198,7 @@ feature 'at' void btml_body_to_sink(     c@* o, m x_sink* sink );
 func t_from_source
 {
     sr_s sr = sr_null();
-    :parse_create_object( source, sr.1 );
+    :parse_create_object( source, NULL, sr.1 );
     x_inst_t_copy_typed( o, t, sr_s_o_type( sr.1 ), sr.o );
     sr_s_down( sr );
     = bcore_error_last();
@@ -183,7 +214,7 @@ func create_from_source_t
         = NULL;
     }
     sr_s sr = sr_null();
-    :parse_create_object( source, sr.1 );
+    :parse_create_object( source, NULL, sr.1 );
     if( sr.o && type ) type.0 = sr_s_o_type( sr );
     = sr.o.cast( d @* ); // sr.o is NULL in case of error
 }
@@ -296,8 +327,9 @@ func t_appears_valid
 
 /** On entering, obj should be sr_null
  *  In case of error obj need not be discarded
+ *  if default_obj is defined, obj copies from default_obj before parsing the body
  */
-func er_t parse_create_object( m x_source* source, m sr_s* obj )
+func er_t parse_create_object( m x_source* source, sr_s* default_obj, m sr_s* obj )
 {
     er_t er = 0;
     m st_s* type_string = st_s!^;
@@ -319,6 +351,7 @@ func er_t parse_create_object( m x_source* source, m sr_s* obj )
                 else
                 {
                     m x_inst* inst = x_inst_t_create( type ).t_scope( type );
+                    if( default_obj.type() == type ) x_inst_t_copy( inst, type, default_obj.o );
                     :t_parse_body( inst, type, source );
                     source.parse_fa( " </>" );
                     obj.0 = sr_tsd( type, inst.fork() );
@@ -351,7 +384,7 @@ func er_t parse_create_object( m x_source* source, m sr_s* obj )
                     {
                         if( bcore_file_exists( path.sc ) )
                         {
-                            :parse_create_object( bcore_file_open_source( path.sc )^, obj );
+                            :parse_create_object( bcore_file_open_source( path.sc )^, NULL, obj );
                         }
                         else
                         {
@@ -414,6 +447,15 @@ func er_t parse_create_object( m x_source* source, m sr_s* obj )
 
 func er_t t_parse_body( m @* o, tp_t t, m x_source* source )
 {
+    sr_s default_element = sr_null();
+    sr_s* default_sr = NULL;
+
+    if( source.parse_bl( "#?w'#default:'" ) )
+    {
+        :parse_create_object( source, NULL, default_element.1 );
+        default_sr = default_element.1;
+    }
+
     m x_stamp* stamp = o;
     if( o.t_defines_btml_body_from_source( t ) )
     {
@@ -453,7 +495,7 @@ func er_t t_parse_body( m @* o, tp_t t, m x_source* source )
             if( source.parse_bl( "#?'type:'" ) )
             {
                 sr_s sr = sr_null();
-                :parse_create_object( source, sr.1 );
+                :parse_create_object( source, default_sr, sr.1 );
                 type = sr_to_tp( sr );
             }
             arr.t_set_gtype( t, type );
@@ -466,7 +508,7 @@ func er_t t_parse_body( m @* o, tp_t t, m x_source* source )
             while( !source.parse_bl( " #=?'</>'" ) )
             {
                 sr_s sr = sr_null();
-                :parse_create_object( source, sr.1 );
+                :parse_create_object( source, default_sr, sr.1 );
                 if( arr_count < arr_size )
                 {
                     arr.t_set_sr( t, arr_count, sr );
@@ -484,7 +526,7 @@ func er_t t_parse_body( m @* o, tp_t t, m x_source* source )
             while( !source.parse_bl( " #=?'</>'" ) )
             {
                 sr_s sr = sr_null();
-                :parse_create_object( source, sr.1 );
+                :parse_create_object( source, default_sr, sr.1 );
                 arr.t_push_sr( t, sr );
             }
         }
@@ -497,7 +539,7 @@ func er_t t_parse_body( m @* o, tp_t t, m x_source* source )
             source.parse_fa( " #name :", name );
             tp_t tp_name = btypeof( name.sc );
             sr_s sr = sr_null();
-            :parse_create_object( source, sr.1 );
+            :parse_create_object( source, default_sr, sr.1 );
             // non existing member variables are parsed but not assigned
             if( stamp.t_exists( t, tp_name ) )
             {
@@ -512,6 +554,8 @@ func er_t t_parse_body( m @* o, tp_t t, m x_source* source )
 
     stamp.t_source( t, source );
     stamp.t_mutated( t );
+
+    sr_down( default_element );
 
     = 0;
 }

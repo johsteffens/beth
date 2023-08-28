@@ -264,7 +264,7 @@ void st_s_print_fa( sc_t format, ... );
  *      Consumes no characters.
  *      Valid relations: ==,!=,>=,<=,>,<
  *      Valid operators: &&,||,!
- *      Expression may not contain whitespaces.
+ *      Expression must not contain whitespaces.
  *      Expressions can be arbitrarily nested inside extra brackets (...).
  *      Examples:
  *          "#?([0]=='H'&&[1]=='A'&&[2]=='L')" behaves as "#=?'HAL'"
