@@ -55,35 +55,37 @@
  *
  *  rho is invariant to mirroring across both rotation axes.
  */
-static inline fx_t BCATU(bmath_grt_fx_s,rho)( const bmath_grt_fx_s* o )
+static inline f3_t BCATU(bmath_grt_fx_s,rho)( const bmath_grt_fx_s* o )
 {
-    fx_t abs_c = BCATU(fx,abs)( o->c );
-    return BCATU(fx,abs)( o->s ) < abs_c ?
-                0.5 * BCATU(fx,sig)( o->c ) * o->s :
-                   abs_c > BCATU(fx,lim_min) ?
-                       2.0 * BCATU(fx,sig)( o->s ) / o->c :
-                           BCATU(fx,sig)( o->s );
+    f3_t abs_c = f3_abs( o->c );
+    return f3_abs( o->s ) < abs_c ?
+                0.5 * f3_sig( o->c ) * o->s :
+                   abs_c > f3_lim_min ?
+                       2.0 * f3_sig( o->s ) / o->c :
+                           f3_sig( o->s );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Reconstructs rotation from rho obtained by bmath_grt_fx_s_rho
-static inline void BCATU(bmath_grt_fx_s,init_from_rho)( bmath_grt_fx_s* o, fx_t r )
+static inline void BCATU(bmath_grt_fx_s,init_from_rho)( bmath_grt_fx_s* o, f3_t r )
 {
-    fx_t abs_r = BCATU(fx,abs)( r );
+    f3_t abs_r = f3_abs( r );
     if( abs_r < 0.5 )
     {
-        o->s = 2.0 * r;
-        o->c = BCATU(fx,srt)( 1.0 - BCATU(fx,sqr)( o->s ) );
+        f3_t s = 2.0 * r;
+        o->c = f3_srt( 1.0 - s * s );
+        o->s = s;
     }
     else if( abs_r > 2.0 )
     {
-        o->c = 2.0 / abs_r;
-        o->s = BCATU(fx,sig)( r ) * BCATU(fx,srt)( 1.0 - BCATU(fx,sqr)( o->c ) );
+        f3_t c = 2.0 / abs_r;
+        o->s = f3_sig( r ) * f3_srt( 1.0 - c * c );
+        o->c = c;
     }
     else
     {
-        o->s = BCATU(fx,sig)( r );
+        o->s = f3_sig( r );
         o->c = 0;
     }
 }
@@ -91,25 +93,25 @@ static inline void BCATU(bmath_grt_fx_s,init_from_rho)( bmath_grt_fx_s* o, fx_t 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Sets up rotation in order to annihilate a in vector (a,b).
-static inline void BCATU(bmath_grt_fx_s,init_to_annihilate_a)( bmath_grt_fx_s* o, fx_t a, fx_t b )
+static inline void BCATU(bmath_grt_fx_s,init_to_annihilate_a)( bmath_grt_fx_s* o, f3_t a, f3_t b )
 {
     a = ( b < 0 ) ? -a : a;
     b = ( b < 0 ) ? -b : b;
-    fx_t r = hypot( a, b );
-    o->c = ( r > BCATU(fx,lim_min) ) ?  b / r : 1;
-    o->s = ( r > BCATU(fx,lim_min) ) ? -a / r : 0;
+    f3_t r = hypot( a, b );
+    o->c = ( r > f3_lim_min ) ?  b / r : 1;
+    o->s = ( r > f3_lim_min ) ? -a / r : 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Sets up rotation in order to annihilate b in vector (a,b). (cos >= 0)
-static inline void BCATU(bmath_grt_fx_s,init_to_annihilate_b)( bmath_grt_fx_s* o, fx_t a, fx_t b )
+static inline void BCATU(bmath_grt_fx_s,init_to_annihilate_b)( bmath_grt_fx_s* o, f3_t a, f3_t b )
 {
     b = ( a < 0 ) ? -b : b;
     a = ( a < 0 ) ? -a : a;
-    fx_t r = hypot( b, a );
-    o->c = ( r > BCATU(fx,lim_min) ) ? a / r : 1;
-    o->s = ( r > BCATU(fx,lim_min) ) ? b / r : 0;
+    f3_t r = hypot( b, a );
+    o->c = ( r > f3_lim_min ) ? a / r : 1;
+    o->s = ( r > f3_lim_min ) ? b / r : 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

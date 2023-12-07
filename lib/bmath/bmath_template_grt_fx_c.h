@@ -64,7 +64,7 @@ void BCATU(bmath_simd,fx,row_rotate_default)( fx_t* v1, fx_t* v2, sz_t size, con
 {
     for( sz_t i = 0; i < size; i++ )
     {
-        fx_t b = v2[ i ];
+        f3_t b = v2[ i ];
         v2[ i ] = b * grt->c - v1[ i ] * grt->s;
         v1[ i ] = b * grt->s + v1[ i ] * grt->c;
     }
@@ -88,7 +88,7 @@ void BCATU(bmath_simd,fx,row_rotate_avx)( fx_t* v1, fx_t* v2, sz_t size, const b
 
     for( ; i < size; i++ )
     {
-        fx_t b = v2[ i ];
+        f3_t b = v2[ i ];
         v2[ i ] = b * grt->c - v1[ i ] * grt->s;
         v1[ i ] = b * grt->s + v1[ i ] * grt->c;
     }
@@ -111,7 +111,7 @@ void BCATU(bmath_simd,fx,col_rotate_default)( fx_t* v1, fx_t* v2, sz_t stride, s
 {
     for( sz_t i = 0; i < size; i++ )
     {
-        fx_t b = v2[ i * stride ];
+        f3_t b = v2[ i * stride ];
         v2[ i * stride ] = b * grt->c - v1[ i * stride ] * grt->s;
         v1[ i * stride ] = b * grt->s + v1[ i * stride ] * grt->c;
     }
@@ -146,7 +146,7 @@ void BCATU(bmath_simd,fx,col_rotate_avx)( fx_t* v1, fx_t* v2, sz_t stride, sz_t 
 
     for( ; i < size; i++ )
     {
-        fx_t b = v2[ i * stride ];
+        f3_t b = v2[ i * stride ];
         v2[ i * stride ] = b * grt->c - v1[ i * stride ] * grt->s;
         v1[ i * stride ] = b * grt->s + v1[ i * stride ] * grt->c;
     }

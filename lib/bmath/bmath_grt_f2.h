@@ -22,12 +22,13 @@
 
 /**********************************************************************************************************************/
 
-BCORE_DECLARE_OBJECT( bmath_grt_f2_s ) { f2_t c; f2_t s; };
+/** Note: The internal precision of grt is kept to f3 even when matrix data is f2
+ *  This improves accuracy on f2 matrix operations significantly
+ */
+BCORE_DECLARE_OBJECT( bmath_grt_f2_s ) { f3_t c; f3_t s; };
 
 #define BMATH_TEMPLATE_FX_PREC 2
 #include "bmath_template_grt_fx_h.h"
-
-//----------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------
 
