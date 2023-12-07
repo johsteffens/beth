@@ -91,7 +91,7 @@ stamp :path_s = aware bcore_inst
  */
 func d st_s* path_minimized( sc_t path );
 
-/** Returns extension of path excluding '.'
+/** Returns (last) extension of path excluding '.'
  *  If path has no extension, returns ""
  */
 func sc_t extension( sc_t path );
@@ -101,7 +101,7 @@ func sc_t extension( sc_t path );
  */
 func sc_t name( sc_t path );
 
-/** Returns string 'path' with extension removed.
+/** Returns string 'path' with (last) extension removed.
  *  If path has no extension, returns path as is.
  *  Example: "mydir/myfile.cpp" -> "mydir/myfile"
  */
