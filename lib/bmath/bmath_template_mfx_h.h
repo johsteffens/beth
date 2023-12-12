@@ -128,6 +128,7 @@ typedef bl_t (*BCATU(bmath_fp,mfx,s,inv)    )( const bmath_mfx_s* o, bmath_mfx_s
 typedef bl_t (*BCATU(bmath_fp,mfx,s,pdf_inv))( const bmath_mfx_s* o, bmath_mfx_s* res );
 typedef bl_t (*BCATU(bmath_fp,mfx,s,piv)    )( const bmath_mfx_s* o, fx_t eps, bmath_mfx_s* res );
 typedef bl_t (*BCATU(bmath_fp,mfx,s,hsm_piv))( const bmath_mfx_s* o, fx_t eps, bmath_mfx_s* res );
+typedef bl_t (*BCATU(bmath_fp,mfx,s,htp    ))( const bmath_mfx_s* o, bmath_mfx_s* res );
 
 /**********************************************************************************************************************/
 /// Matrix object of fx_t (bmath_mfx_s)
@@ -295,7 +296,8 @@ bmath_mfx_s* BCATU(bmath_mfx_s,cpy)( const bmath_mfx_s* o, bmath_mfx_s* r );  //
 //----------------------------------------------------------------------------------------------------------------------
 // transposition / permutation (functions return res)
 
-bmath_mfx_s* BCATU(bmath_mfx_s,htp)        ( const bmath_mfx_s* o, bmath_mfx_s* res );
+bmath_mfx_s* BCATU(bmath_mfx_s,htp_eval)   ( const bmath_mfx_s* o, bmath_mfx_s* res ); // older (slow & simple) transposition for evaluation purposes
+bmath_mfx_s* BCATU(bmath_mfx_s,htp)        ( const bmath_mfx_s* o, bmath_mfx_s* res ); // speed optimized transposition
 bmath_mfx_s* BCATU(bmath_mfx_s,pmt_mul)    ( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = P * A   ; row_p[k]( B ) = row_k( A )
 bmath_mfx_s* BCATU(bmath_mfx_s,pmt_htp_mul)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = P^T * A ; row_k( B ) = row_p[k]( A )
 bmath_mfx_s* BCATU(bmath_mfx_s,mul_pmt)    ( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res ); // B = A * P   ; col_k( B ) = col_p[k]( A )

@@ -111,6 +111,7 @@ vd_t bmath_mf3_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_pdf_inv );
             BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_piv );
             BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_hsm_piv );
+            BCORE_REGISTER_FEATURE( bmath_fp_mf3_s_htp );
 
             BCORE_REGISTER_FFUNC( bmath_fp_is_equ,         bmath_mf3_s_is_equ );
             BCORE_REGISTER_FFUNC( bmath_fp_is_zro,         bmath_mf3_s_is_zro );
@@ -166,6 +167,7 @@ vd_t bmath_mf3_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_pdf_inv );
             BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_piv );
             BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_hsm_piv );
+            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf3_s_htp );
         }
         break;
 

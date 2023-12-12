@@ -22,6 +22,7 @@
 #define TYPEOF_bmath_fp_mf2_s_cld         0xF47502AB34E13D3Eull
 #define TYPEOF_bmath_fp_mf2_s_evd_htp     0x896CCFF28AF25B7Dull
 #define TYPEOF_bmath_fp_mf2_s_hsm_piv     0x2E790DEC03AACA27ull
+#define TYPEOF_bmath_fp_mf2_s_htp         0x31BA33AB57C34A77ull
 #define TYPEOF_bmath_fp_mf2_s_htp_mul     0x08623516051E54E6ull
 #define TYPEOF_bmath_fp_mf2_s_htp_mul_htp 0x15A25EC01909F0B5ull
 #define TYPEOF_bmath_fp_mf2_s_inv         0x2A0BF6AB53B08C4Cull
@@ -47,6 +48,7 @@
 #define TYPEOF_bmath_fp_mf3_s_cld         0xDCB52DFD956B7161ull
 #define TYPEOF_bmath_fp_mf3_s_evd_htp     0x3918E584C018A46Eull
 #define TYPEOF_bmath_fp_mf3_s_hsm_piv     0xD9A65527CC52F478ull
+#define TYPEOF_bmath_fp_mf3_s_htp         0x0856D8FDAE39E86Cull
 #define TYPEOF_bmath_fp_mf3_s_htp_mul     0x598A0238EF9429B5ull
 #define TYPEOF_bmath_fp_mf3_s_htp_mul_htp 0xF02DE9437C34CD36ull
 #define TYPEOF_bmath_fp_mf3_s_inv         0x133411FDB500865Bull
@@ -90,3 +92,4 @@
 #define TYPEOF_bmath_vector_s             0x548F29B311F5CEC9ull
 #define TYPEOF_bmath_vf2_s                0x0FC2A93CCE88DAD4ull
 #define TYPEOF_bmath_vf3_s                0x17EAC23CD302B80Full
+

@@ -1418,7 +1418,7 @@ void BCATU(bmath_mfx_s,eop_map_mul)( const bmath_mfx_s* o, BCATU(bmath_fp,fx,ar1
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bmath_mfx_s* BCATU(bmath_mfx_s,htp)( const bmath_mfx_s* o, bmath_mfx_s* res )
+bmath_mfx_s* BCATU(bmath_mfx_s,htp_eval)( const bmath_mfx_s* o, bmath_mfx_s* res )
 {
     if( o->rows == o->cols )
     {
@@ -1468,6 +1468,131 @@ bmath_mfx_s* BCATU(bmath_mfx_s,htp)( const bmath_mfx_s* o, bmath_mfx_s* res )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+/// transpose a block of rows == cols == n in place
+static void BCATU(mfx,block_htp)( fx_t* data, sz_t stride, sz_t n )
+{
+    for( sz_t i = 0; i < n; i++ )
+    {
+        fx_t* vi = data + i * stride;
+        for( sz_t j = 0; j < i; j++ ) BCATU(fx_t,swap)( vi + j, data + j * stride + i );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// swaps two blocks of rows == cols == n
+static void BCATU(mfx,block_swap_htp)( fx_t* data1, fx_t* data2, sz_t stride, sz_t n )
+{
+    for( sz_t i = 0; i < n; i++ )
+    {
+        for( sz_t j = 0; j < n; j++ ) BCATU(fx_t,swap)( data1 + i * stride + j, data2 + j * stride + i );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// copies a block of rows == cols == n
+static void BCATU(mfx,block_copy_htp)( const fx_t* src, sz_t src_stride, fx_t* dst, sz_t dst_stride, sz_t n )
+{
+    for( sz_t i = 0; i < n; i++ )
+    {
+        for( sz_t j = 0; j < n; j++ ) ( dst + j * dst_stride )[ i ] = ( src + i * src_stride )[ j ];
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+#undef BMATH_HTP_BLOCK_SIZE
+#if BMATH_TEMPLATE_FX_PREC == 2
+    #define BMATH_HTP_BLOCK_SIZE 32
+#elif BMATH_TEMPLATE_FX_PREC == 3
+    #define BMATH_HTP_BLOCK_SIZE 32
+#endif // BMATH_TEMPLATE_FX_PREC
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// block optimized transposition; o == r (in-place transposition) is allowed when matrix is square
+bmath_mfx_s* BCATU(bmath,mfx,s,htp)( const bmath_mfx_s* o, bmath_mfx_s* r )
+{
+    ASSERT( o->rows == r->cols );
+    ASSERT( o->cols == r->rows );
+
+    /// swap the upper left square matrix
+    sz_t n = sz_min( o->rows, o->cols );
+    {
+        // copy square section to r
+        if( o != r )
+        {
+            for( sz_t i = 0; i < n; i++ )
+            {
+                const fx_t* vo = o->data + i * o->stride;
+                      fx_t* vr = r->data + i * r->stride;
+                for( sz_t j = 0; j < n; j++ ) vr[ j ] = vo[ j ];
+            }
+        }
+
+        // htp square section in place
+        sz_t i = 0;
+        for( ; i <= n - BMATH_HTP_BLOCK_SIZE; i += BMATH_HTP_BLOCK_SIZE )
+        {
+            for( sz_t j = 0; j < i; j += BMATH_HTP_BLOCK_SIZE )
+            {
+                BCATU(mfx,block_swap_htp)( r->data + i * r->stride + j, r->data + j * r->stride + i, r->stride, BMATH_HTP_BLOCK_SIZE );
+            }
+            BCATU(mfx,block_htp)( r->data + i * r->stride + i, r->stride, BMATH_HTP_BLOCK_SIZE );
+        }
+
+        for( ; i < n; i++ )
+        {
+            for( sz_t j = 0; j < i; j++ ) BCATU(fx_t,swap)( r->data + i * r->stride + j, r->data + j * r-> stride + i );
+        }
+    }
+
+    /// copy and transpose the non-square section (this implies o != r)
+    if( o->rows > o->cols )
+    {
+        sz_t i = n;
+        for( ; i <= o->rows - BMATH_HTP_BLOCK_SIZE; i += BMATH_HTP_BLOCK_SIZE )
+        {
+            sz_t j = 0;
+            for( ; j <= o->cols - BMATH_HTP_BLOCK_SIZE; j += BMATH_HTP_BLOCK_SIZE )
+            {
+                BCATU(mfx,block_copy_htp)( o->data + i * o->stride + j, o->stride, r->data + j * r->stride + i, r->stride, BMATH_HTP_BLOCK_SIZE );
+            }
+            for( ; j < o->cols; j++ ) for( sz_t k = i; k < i + BMATH_HTP_BLOCK_SIZE; k++ ) ( r->data + j * r->stride )[ k ] = ( o->data + k * o->stride )[ j ];
+        }
+
+        for( ; i < o->rows; i++ )
+        {
+            for( sz_t j = 0; j < o->cols; j++ ) ( r->data + j * r->stride )[ i ] = ( o->data + i * o->stride )[ j ];
+        }
+    }
+    else if( r->rows > r->cols )
+    {
+        sz_t i = n;
+        for( ; i <= r->rows - BMATH_HTP_BLOCK_SIZE; i += BMATH_HTP_BLOCK_SIZE )
+        {
+            sz_t j = 0;
+            for( ; j <= r->cols - BMATH_HTP_BLOCK_SIZE; j += BMATH_HTP_BLOCK_SIZE )
+            {
+                BCATU(mfx,block_copy_htp)( o->data + j * o->stride + i, o->stride, r->data + i * r->stride + j, r->stride, BMATH_HTP_BLOCK_SIZE );
+            }
+            for( ; j < r->cols; j++ ) for( sz_t k = i; k < i + BMATH_HTP_BLOCK_SIZE; k++ ) ( r->data + k * r->stride )[ j ] = ( o->data + j * o->stride )[ k ];
+        }
+
+        for( ; i < r->rows; i++ )
+        {
+            for( sz_t j = 0; j < r->cols; j++ ) ( r->data + i * r->stride )[ j ] = ( o->data + j * o->stride )[ i ];
+        }
+    }
+
+
+    return r;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 
 bmath_mfx_s* BCATU(bmath_mfx_s,pmt_mul)( const bmath_mfx_s* o, const bmath_pmt_s* p, bmath_mfx_s* res )
 {
