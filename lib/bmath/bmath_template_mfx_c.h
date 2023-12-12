@@ -1513,7 +1513,7 @@ static void BCATU(mfx,block_copy_htp)( const fx_t* src, sz_t src_stride, fx_t* d
 //----------------------------------------------------------------------------------------------------------------------
 
 /// block optimized transposition; o == r (in-place transposition) is allowed when matrix is square
-bmath_mfx_s* BCATU(bmath,mfx,s,htp)( const bmath_mfx_s* o, bmath_mfx_s* r )
+bmath_mfx_s* BCATU(bmath_mfx_s,htp)( const bmath_mfx_s* o, bmath_mfx_s* r )
 {
     ASSERT( o->rows == r->cols );
     ASSERT( o->cols == r->rows );
@@ -1552,38 +1552,42 @@ bmath_mfx_s* BCATU(bmath,mfx,s,htp)( const bmath_mfx_s* o, bmath_mfx_s* r )
     /// copy and transpose the non-square section (this implies o != r)
     if( o->rows > o->cols )
     {
+        sz_t o_rows = o->rows; // conversion to sz_t
+        sz_t o_cols = o->cols; // conversion to sz_t
         sz_t i = n;
-        for( ; i <= o->rows - BMATH_HTP_BLOCK_SIZE; i += BMATH_HTP_BLOCK_SIZE )
+        for( ; i <= o_rows - BMATH_HTP_BLOCK_SIZE; i += BMATH_HTP_BLOCK_SIZE )
         {
             sz_t j = 0;
-            for( ; j <= o->cols - BMATH_HTP_BLOCK_SIZE; j += BMATH_HTP_BLOCK_SIZE )
+            for( ; j <= o_cols - BMATH_HTP_BLOCK_SIZE; j += BMATH_HTP_BLOCK_SIZE )
             {
                 BCATU(mfx,block_copy_htp)( o->data + i * o->stride + j, o->stride, r->data + j * r->stride + i, r->stride, BMATH_HTP_BLOCK_SIZE );
             }
-            for( ; j < o->cols; j++ ) for( sz_t k = i; k < i + BMATH_HTP_BLOCK_SIZE; k++ ) ( r->data + j * r->stride )[ k ] = ( o->data + k * o->stride )[ j ];
+            for( ; j < o_cols; j++ ) for( sz_t k = i; k < i + BMATH_HTP_BLOCK_SIZE; k++ ) ( r->data + j * r->stride )[ k ] = ( o->data + k * o->stride )[ j ];
         }
 
-        for( ; i < o->rows; i++ )
+        for( ; i < o_rows; i++ )
         {
-            for( sz_t j = 0; j < o->cols; j++ ) ( r->data + j * r->stride )[ i ] = ( o->data + i * o->stride )[ j ];
+            for( sz_t j = 0; j < ( sz_t )o->cols; j++ ) ( r->data + j * r->stride )[ i ] = ( o->data + i * o->stride )[ j ];
         }
     }
     else if( r->rows > r->cols )
     {
+        sz_t r_rows = r->rows; // conversion to sz_t
+        sz_t r_cols = r->cols; // conversion to sz_t
         sz_t i = n;
-        for( ; i <= r->rows - BMATH_HTP_BLOCK_SIZE; i += BMATH_HTP_BLOCK_SIZE )
+        for( ; i <= r_rows - BMATH_HTP_BLOCK_SIZE; i += BMATH_HTP_BLOCK_SIZE )
         {
             sz_t j = 0;
-            for( ; j <= r->cols - BMATH_HTP_BLOCK_SIZE; j += BMATH_HTP_BLOCK_SIZE )
+            for( ; j <= r_cols - BMATH_HTP_BLOCK_SIZE; j += BMATH_HTP_BLOCK_SIZE )
             {
                 BCATU(mfx,block_copy_htp)( o->data + j * o->stride + i, o->stride, r->data + i * r->stride + j, r->stride, BMATH_HTP_BLOCK_SIZE );
             }
-            for( ; j < r->cols; j++ ) for( sz_t k = i; k < i + BMATH_HTP_BLOCK_SIZE; k++ ) ( r->data + k * r->stride )[ j ] = ( o->data + j * o->stride )[ k ];
+            for( ; j < r_cols; j++ ) for( sz_t k = i; k < i + BMATH_HTP_BLOCK_SIZE; k++ ) ( r->data + k * r->stride )[ j ] = ( o->data + j * o->stride )[ k ];
         }
 
-        for( ; i < r->rows; i++ )
+        for( ; i < r_rows; i++ )
         {
-            for( sz_t j = 0; j < r->cols; j++ ) ( r->data + i * r->stride )[ j ] = ( o->data + j * o->stride )[ i ];
+            for( sz_t j = 0; j < r_cols; j++ ) ( r->data + i * r->stride )[ j ] = ( o->data + j * o->stride )[ i ];
         }
     }
 
