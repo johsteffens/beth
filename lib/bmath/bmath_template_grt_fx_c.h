@@ -36,7 +36,7 @@ void BCATU(bmath_grt_fx_s,to_stdout)( const bmath_grt_fx_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bmath_arr_grt_fx_s* BCATU(bmath_arr_grt_fx_s,create_size)( uz_t size )
+bmath_arr_grt_fx_s* BCATU(bmath_arr_grt_fx_s,create_size)( sz_t size )
 {
     bmath_arr_grt_fx_s* o = BCATU(bmath_arr_grt_fx_s,create)();
     BCATU(bmath_arr_grt_fx_s,set_size)( o, size );
@@ -46,7 +46,7 @@ bmath_arr_grt_fx_s* BCATU(bmath_arr_grt_fx_s,create_size)( uz_t size )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bmath_arr_grt_fx_s BCATU(bmath_arr_grt,fx,of_size)( uz_t size )
+bmath_arr_grt_fx_s BCATU(bmath_arr_grt,fx,of_size)( sz_t size )
 {
     bmath_arr_grt_fx_s o;
     BCATU(bmath_arr_grt_fx_s,init)( &o );

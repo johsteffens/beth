@@ -173,35 +173,35 @@ static inline void BCATU(bmath_grt_fx_s,rotate)( const bmath_grt_fx_s* o, fx_t* 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Rotates two matrix rows (section)
-static inline void BCATU(bmath_grt_fx_s,row_rotate)( const bmath_grt_fx_s* o, fx_t* a, fx_t* b, uz_t start, uz_t end )
+static inline void BCATU(bmath_grt_fx_s,row_rotate)( const bmath_grt_fx_s* o, fx_t* a, fx_t* b, sz_t start, sz_t end )
 {
     if( o->s == 0 ) return;
-    for( uz_t i = start; i < end; i++ ) BCATU(bmath_grt_fx_s,rotate)( o, a + i, b + i );
+    for( sz_t i = start; i < end; i++ ) BCATU(bmath_grt_fx_s,rotate)( o, a + i, b + i );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Rotates two matrix columns (section).
-static inline void BCATU(bmath_grt_fx_s,col_rotate)( const bmath_grt_fx_s* o, fx_t* a, fx_t* b, uz_t stride, uz_t start, uz_t end )
+static inline void BCATU(bmath_grt_fx_s,col_rotate)( const bmath_grt_fx_s* o, fx_t* a, fx_t* b, sz_t stride, sz_t start, sz_t end )
 {
     if( o->s == 0 ) return;
-    for( uz_t i = start; i < end; i++ ) BCATU(bmath_grt_fx_s,rotate)( o, a + stride * i, b + stride * i );
+    for( sz_t i = start; i < end; i++ ) BCATU(bmath_grt_fx_s,rotate)( o, a + stride * i, b + stride * i );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Swipes matrix row
-static inline void BCATU(bmath_grt_fx_s,row_swipe)( const bmath_grt_fx_s* arr, fx_t* row, uz_t start, uz_t end )
+static inline void BCATU(bmath_grt_fx_s,row_swipe)( const bmath_grt_fx_s* arr, fx_t* row, sz_t start, sz_t end )
 {
-    for( uz_t i = start; i < end; i++ ) BCATU(bmath_grt_fx_s,rotate)( arr + i, row + i, row + i + 1 );
+    for( sz_t i = start; i < end; i++ ) BCATU(bmath_grt_fx_s,rotate)( arr + i, row + i, row + i + 1 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Swipes matrix row in reverse
-static inline void BCATU(bmath_grt_fx_s,row_swipe_reverse)( const bmath_grt_fx_s* arr, fx_t* row, uz_t start, uz_t end )
+static inline void BCATU(bmath_grt_fx_s,row_swipe_reverse)( const bmath_grt_fx_s* arr, fx_t* row, sz_t start, sz_t end )
 {
-    for( uz_t i = end; i > start; i-- ) BCATU(bmath_grt_fx_s,rotate)( arr + i, row + i - 1, row + i );
+    for( sz_t i = end; i > start; i-- ) BCATU(bmath_grt_fx_s,rotate)( arr + i, row + i - 1, row + i );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -214,26 +214,26 @@ void BCATU(bmath_grt_fx_s,to_stdout)( const bmath_grt_fx_s* o );
 
 BCORE_DECLARE_OBJECT( bmath_arr_grt_fx_s ) { aware_t _; BCORE_ARRAY_DYN_SOLID_STATIC_S( bmath_grt_fx_s, ); };
 
-static inline void BCATU(bmath_arr_grt,fx,s,set_size)( bmath_arr_grt_fx_s* o, uz_t size ) { bcore_array_a_set_size( ( bcore_array* )o, size ); }
+static inline void BCATU(bmath_arr_grt,fx,s,set_size)( bmath_arr_grt_fx_s* o, sz_t size ) { bcore_array_a_set_size( ( bcore_array* )o, size ); }
 static inline void BCATU(bmath_arr_grt,fx,s,zro)( bmath_arr_grt_fx_s* o ) { bcore_u_memzero( sizeof( bmath_grt_fx_s ), o->data, o->size ); }
 
 /// creates array of given size; explicitly zeros all elements
-bmath_arr_grt_fx_s* BCATU(bmath_arr_grt,fx,s,create_size)( uz_t size );
-bmath_arr_grt_fx_s  BCATU(bmath_arr_grt,fx,of_size)( uz_t size );
+bmath_arr_grt_fx_s* BCATU(bmath_arr_grt,fx,s,create_size)( sz_t size );
+bmath_arr_grt_fx_s  BCATU(bmath_arr_grt,fx,of_size)( sz_t size );
 
 /// returns number of identity rotations (sine == 0)
-static inline uz_t BCATU(bmath_arr_grt,fx,s,count_identity)( const bmath_arr_grt_fx_s* o, uz_t start, uz_t end )
+static inline sz_t BCATU(bmath_arr_grt,fx,s,count_identity)( const bmath_arr_grt_fx_s* o, sz_t start, sz_t end )
 {
-    uz_t count = 0;
-    for( uz_t i = start; i < end; i++ ) count += ( o->data[ i ].s == 0 );
+    sz_t count = 0;
+    for( sz_t i = start; i < end; i++ ) count += ( o->data[ i ].s == 0 );
     return count;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static inline fx_t BCATU(bmath_arr_grt,fx,s,density)( const bmath_arr_grt_fx_s* o, uz_t start, uz_t end )
+static inline fx_t BCATU(bmath_arr_grt,fx,s,density)( const bmath_arr_grt_fx_s* o, sz_t start, sz_t end )
 {
-    uz_t count = BCATU(bmath_arr_grt,fx,s,count_identity)( o, start, end );
+    sz_t count = BCATU(bmath_arr_grt,fx,s,count_identity)( o, start, end );
     return ( end > start ) ? ( fx_t )( end - start - count ) / ( end - start ) : 0;
 }
 
