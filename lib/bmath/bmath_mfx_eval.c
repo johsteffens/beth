@@ -1130,12 +1130,14 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         {
             bmath_mf3_s_cpy( m0, a );
             CPU_TIME_OF( ( ( bmath_fp_mf3_s_uav )fp )( NULL, a, NULL ), r->time0 );
+            r->assert_a = true;
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
             CPU_TIME_OF( ( ( bmath_fp_mf3_s_uav )fp )( u, a, v ), r->time1 );
+            r->assert_a = r->assert_a && true;
         }
     }
     else if( fp_type == TYPEOF_bmath_fp_mf2_s_svd )
@@ -1275,7 +1277,17 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         r->assert_v = bmath_mf3_s_is_near_otn( v, near_limit );
 
         bmath_mf3_s_set_size( m2, u->rows, v->rows );
-        bmath_mf3_s_mul_utv_htp_esp( u, a, v, m2 );
+
+
+        if( fp_type == TYPEOF_bmath_fp_mf3_s_uav || fp_type == TYPEOF_bmath_fp_mf2_s_uav )
+        {
+            bmath_mf3_s_mul_esp( u, a, m2 );
+            bmath_mf3_s_mul_htp_esp( m2, v, m2 );
+        }
+        else
+        {
+            bmath_mf3_s_mul_utv_htp_esp( u, a, v, m2 );
+        }
 
         r->assert_m = bmath_mf3_s_is_near_equ( m0, m2, near_limit );
         r->fdev_m   = bmath_mf3_s_fdev_equ( m0, m2 );
