@@ -28,7 +28,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 /** Stable QR decomposition for a general mxn-matrix a -> a'. Based on givens rotations.
- *  It is a = u * a', with u being unitary.
+ *  It is a = u * a', with a' = upper triangular and u = unitary.
  *      * Supports any n,m configuration
  *      * Supports full and thin decomposition.
  *      * Highly efficient on dense and sparse matrices. (Automatically detects and exploits sparsity)
@@ -38,7 +38,7 @@
  *  safely reference external data.
  *  Whether full or thin decomposition is computed depends on how matrices have been preset:
  *
- *     a:  mxn input matrix to be diagonalized
+ *     a:  mxn input matrix to be triangonalized
  *
  *     u:
  *         NULL         -  u is not computed
@@ -64,7 +64,7 @@ void BCATU(bmath_mfx_s,qrd)( bmath_mfx_s* u, bmath_mfx_s* a );
  *  safely reference external data.
  *  Whether full or thin decomposition is computed depends on how matrices have been preset:
  *
- *     a:  mxn input matrix to be diagonalized
+ *     a:  mxn input matrix to be triangonalized
  *
  *     u:
  *         NULL         -  u is not computed
@@ -83,7 +83,7 @@ void BCATU(bmath_mfx_s,qrd_pmt)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_pmt_s* p 
 //----------------------------------------------------------------------------------------------------------------------
 
 /** Stable LQ decomposition for a general mxn-matrix a -> a'. Based on givens rotations.
- *  It is a = a' * v^T, with v being unitary.
+ *  It is a = a' * v^T, with a' = lower triangular and v = unitary.
  *      * Supports any n,m configuration
  *      * Supports full and thin decomposition.
  *      * Highly efficient on dense and sparse matrices. (Automatically detects and exploits sparsity)
@@ -93,7 +93,7 @@ void BCATU(bmath_mfx_s,qrd_pmt)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_pmt_s* p 
  *  safely reference external data.
  *  Whether full or thin decomposition is computed depends on how matrices have been preset:
  *
- *     a:  mxn input matrix to be diagonalized
+ *     a:  mxn input matrix to be triangonalized
  *
  *     v:
  *         NULL         -  v is not computed
@@ -119,7 +119,7 @@ void BCATU(bmath_mfx_s,lqd)( bmath_mfx_s* a, bmath_mfx_s* v );
  *  safely reference external data.
  *  Whether full or thin decomposition is computed depends on how matrices have been preset:
  *
- *     a:  mxn input matrix to be diagonalized
+ *     a:  mxn input matrix to be triangonalized
  *
  *     v:
  *         NULL         -  v is not computed
