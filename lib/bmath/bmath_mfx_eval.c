@@ -1281,8 +1281,10 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
 
         if( fp_type == TYPEOF_bmath_fp_mf3_s_uav || fp_type == TYPEOF_bmath_fp_mf2_s_uav )
         {
-            bmath_mf3_s_mul_esp( u, a, m2 );
-            bmath_mf3_s_mul_htp_esp( m2, v, m2 );
+            bmath_mf3_s* m3 = BLM_CREATE( bmath_mf3_s );
+            bmath_mf3_s_set_size( m3, u->rows, a->cols );
+            bmath_mf3_s_mul_esp( u, a, m3 );
+            bmath_mf3_s_mul_htp_esp( m3, v, m2 );
         }
         else
         {
