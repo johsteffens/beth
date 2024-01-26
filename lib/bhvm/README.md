@@ -65,7 +65,6 @@ of **n-holors** as specified in axiom 'B'.
 
 ### Vacant Holor
 We extend the definition of holor to include a objects with shape but no associated value.
-For this new type of holor the vale-size is zero.
 
 **D:** We define a holor with shape but no value and call it **vacant**.
 
