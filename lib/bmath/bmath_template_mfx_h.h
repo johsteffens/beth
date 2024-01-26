@@ -59,8 +59,8 @@
  *
  *  Factorizations:
  *    cld: cholesky-decomposition
- *    lqd: LQ-decomposition  (A -> A',Vt | A = A'* Vt, A' lower trianglular and V unitary )
- *    qrd: QR-decomposition  (A -> U, A' | A = U * A', A' upper trianglular and U unitary )
+ *    lqd: LQ-decomposition  (A -> A',Vt | A = A'* Vt, A' lower trianglular and V othronormal  )
+ *    qrd: QR-decomposition  (A -> U, A' | A = U * A', A' upper trianglular and U othronormal )
  *    trd: tri diagonal decomposition     or symmetric tri-diagonal matrix
  *    ubd: upper bidiagonal decomposition or upper-bidiagonal matrix
  *    lbd: lower bidiagonal decomposition or lower-bidiagonal matrix

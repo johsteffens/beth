@@ -1265,7 +1265,7 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
     eval_s_create_image_file( o, a, &o->a_img_file );
 
-    if( o->test1 )
+    if( o->assert_all && o->test1 )
     {
         r->fdev_u = bmath_mf3_s_fdev_otn( u );
         r->fdev_v = bmath_mf3_s_fdev_otn( v );
@@ -1493,7 +1493,7 @@ static void run_ua( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
     }
 
-    if( o->test1 )
+    if( o->assert_all && o->test1 )
     {
         r->fdev_u = bmath_mf3_s_fdev_otn( u );
         if( o->create_u_log ) bmath_mf3_s_to_string( u, &r->u_log );
@@ -1706,7 +1706,7 @@ static void run_av( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
     }
 
-    if( o->test1 )
+    if( o->assert_all && o->test1 )
     {
         r->fdev_v = bmath_mf3_s_fdev_otn( v );
         if( o->create_v_log ) bmath_mf3_s_to_string( v, &r->v_log );
@@ -1947,7 +1947,7 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         ERR_fa( "Invalid fp_type `#<sc_t>`\n", ifnameof( fp_type ) );
     }
 
-    if( o->test1 )
+    if( o->assert_all && o->test1 )
     {
         r->fdev_v = bmath_mf3_s_fdev_otn( v );
         if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );

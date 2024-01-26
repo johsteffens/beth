@@ -67,7 +67,7 @@ static inline f3_t bmath_grho_from_grt( f3_t c, f3_t s )
 //----------------------------------------------------------------------------------------------------------------------
 
 /// rho to givens rotation
-static inline void bmath_grho_to_cs_f3( f3_t r, f3_t* c, f3_t* s )
+static inline void bmath_grho_to_grt( f3_t r, f3_t* c, f3_t* s )
 {
     f3_t abs_r = f3_abs( r );
     if( abs_r < 0.5 )
@@ -126,7 +126,7 @@ static inline f3_t bmath_grho_init_to_annihilate_b( f3_t a, f3_t b )
 static inline f3_t bmath_grho_annihilate_a( f3_t rho, f3_t a, f3_t b )
 {
     f3_t c, s;
-    bmath_grho_to_cs_f3( rho, &c, &s );
+    bmath_grho_to_grt( rho, &c, &s );
     return c * b - s * a;
 }
 
@@ -137,7 +137,7 @@ static inline f3_t bmath_grho_annihilate_a( f3_t rho, f3_t a, f3_t b )
 static inline f3_t bmath_grho_annihilate_b( f3_t rho, f3_t a, f3_t b )
 {
     f3_t c, s;
-    bmath_grho_to_cs_f3( rho, &c, &s );
+    bmath_grho_to_grt( rho, &c, &s );
     return c * a + s * b;
 }
 
@@ -167,7 +167,7 @@ static inline void bmath_grho_cs_rotate_f2( f3_t c, f3_t s, f2_t* a, f2_t* b )
 static inline void bmath_grho_rotate_f3( f3_t rho, f3_t* a, f3_t* b )
 {
     f3_t c, s;
-    bmath_grho_to_cs_f3( rho, &c, &s );
+    bmath_grho_to_grt( rho, &c, &s );
     bmath_grho_cs_rotate_f3( c, s, a, b );
 }
 
@@ -177,7 +177,7 @@ static inline void bmath_grho_rotate_f3( f3_t rho, f3_t* a, f3_t* b )
 static inline void bmath_grho_rotate_f2( f3_t rho, f2_t* a, f2_t* b )
 {
     f3_t c, s;
-    bmath_grho_to_cs_f3( rho, &c, &s );
+    bmath_grho_to_grt( rho, &c, &s );
     bmath_grho_cs_rotate_f2( c, s, a, b );
 }
 
@@ -188,7 +188,7 @@ static inline void bmath_grho_row_rotate_f3( f3_t rho, f3_t* a, f3_t* b, uz_t st
 {
     if( rho == 0 ) return;
     f3_t c, s;
-    bmath_grho_to_cs_f3( rho, &c, &s );
+    bmath_grho_to_grt( rho, &c, &s );
     for( uz_t i = start; i < end; i++ ) bmath_grho_cs_rotate_f3( c, s, a + i, b + i );
 }
 
@@ -199,7 +199,7 @@ static inline void bmath_grho_row_rotate_f2( f3_t rho, f2_t* a, f2_t* b, uz_t st
 {
     if( rho == 0 ) return;
     f3_t c, s;
-    bmath_grho_to_cs_f3( rho, &c, &s );
+    bmath_grho_to_grt( rho, &c, &s );
     for( uz_t i = start; i < end; i++ ) bmath_grho_cs_rotate_f2( c, s, a + i, b + i );
 }
 
@@ -210,7 +210,7 @@ static inline void bmath_grho_col_rotate_f3( f3_t rho, f3_t* a, f3_t* b, uz_t st
 {
     if( rho == 0 ) return;
     f3_t c, s;
-    bmath_grho_to_cs_f3( rho, &c, &s );
+    bmath_grho_to_grt( rho, &c, &s );
     for( uz_t i = start; i < end; i++ ) bmath_grho_cs_rotate_f3( c, s, a + stride * i, b + stride * i );
 }
 
@@ -221,7 +221,7 @@ static inline void bmath_grho_col_rotate_f2( f3_t rho, f2_t* a, f2_t* b, uz_t st
 {
     if( rho == 0 ) return;
     f3_t c, s;
-    bmath_grho_to_cs_f3( rho, &c, &s );
+    bmath_grho_to_grt( rho, &c, &s );
     for( uz_t i = start; i < end; i++ ) bmath_grho_cs_rotate_f2( c, s, a + stride * i, b + stride * i );
 }
 

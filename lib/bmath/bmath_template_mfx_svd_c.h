@@ -61,6 +61,7 @@ bl_t BCATU(bmath_mfx_s,svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
     if( n <= 1 ) return true; // nothing else to do
 
     // transposed ur, vr
+    // transposed ur, vr
     bmath_mfx_s* ut = u;
     bmath_mfx_s* vt = v;
 
