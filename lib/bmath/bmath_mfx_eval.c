@@ -201,7 +201,7 @@ static void run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
 
         if( o->test1 )
         {
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_mul )fp )( _m0, _m1, _m2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_mul )fp )( _m0, _m1, _m2 ), r->time1 );
             bmath_mf3_s_copy_a( m2, _m2 );
 
             bmath_mf3_s_mul_esp( m0, m1, m3 );
@@ -216,7 +216,7 @@ static void run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     {
         if( o->test1 )
         {
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_mul )fp )( m0, m1, m2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_mul )fp )( m0, m1, m2 ), r->time1 );
             bmath_mf3_s_mul_esp( m0, m1, m3 );
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
             if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
@@ -237,7 +237,7 @@ static void run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         bmath_asmf2_s_cpy_dfl_from_mf3( sm1, m1 );
         if( o->test1 )
         {
-            CPU_TIME_OF( ( ( bmath_fp_asmf2_s_mul )fp )( sm0, sm1, sm2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_asmf2_s_mul )fp )( sm0, sm1, sm2 ), r->time1 );
             bmath_asmf2_s_cpy_ifl_to_mf3( sm2, m2 );
             bmath_mf3_s_mul_esp( m0, m1, m3 );
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
@@ -259,7 +259,7 @@ static void run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         bmath_asmf3_s_cpy_dfl_from_mf3( sm1, m1 );
         if( o->test1 )
         {
-            CPU_TIME_OF( ( ( bmath_fp_asmf3_s_mul )fp )( sm0, sm1, sm2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_asmf3_s_mul )fp )( sm0, sm1, sm2 ), r->time1 );
             bmath_asmf3_s_cpy_ifl_to_mf3( sm2, m2 );
             bmath_mf3_s_mul_esp( m0, m1, m3 );
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
@@ -281,7 +281,7 @@ static void run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         bmath_xsmf2_s_cpy_dfl_from_mf3( sm1, m1 );
         if( o->test1 )
         {
-            CPU_TIME_OF( ( ( bmath_fp_xsmf2_s_mul )fp )( sm0, sm1, sm2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_xsmf2_s_mul )fp )( sm0, sm1, sm2 ), r->time1 );
             bmath_xsmf2_s_cpy_ifl_to_mf3( sm2, m2 );
             bmath_mf3_s_mul_esp( m0, m1, m3 );
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
@@ -303,7 +303,7 @@ static void run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         bmath_xsmf3_s_cpy_dfl_from_mf3( sm1, m1 );
         if( o->test1 )
         {
-            CPU_TIME_OF( ( ( bmath_fp_xsmf3_s_mul )fp )( sm0, sm1, sm2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_xsmf3_s_mul )fp )( sm0, sm1, sm2 ), r->time1 );
             bmath_xsmf3_s_cpy_ifl_to_mf3( sm2, m2 );
             bmath_mf3_s_mul_esp( m0, m1, m3 );
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
@@ -361,7 +361,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
 
             bmath_mf2_s_copy_a( _m0, m0 );
             bmath_mf2_s_copy_a( _m2, m2 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_mul_htp )fp )( _m0, _m0, _m2 ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_mul_htp )fp )( _m0, _m0, _m2 ), r->time0 );
             bmath_mf3_s_copy_a( m2, _m2 );
 
             bmath_mf3_s_mul_htp_esp( m0, m0, m3 );
@@ -389,7 +389,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
             bmath_mf2_s_copy_a( _m0, m0 );
             bmath_mf2_s_copy_a( _m1, m1 );
             bmath_mf2_s_copy_a( _m2, m2 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_mul_htp )fp )( _m0, _m1, _m2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_mul_htp )fp )( _m0, _m1, _m2 ), r->time1 );
             bmath_mf3_s_copy_a( m2, _m2 );
 
             bmath_mf3_s_mul_htp_esp( m0, m1, m3 );
@@ -413,7 +413,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
 
             bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, prsg );
 
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_mul_htp )fp )( m0, m0, m2 ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_mul_htp )fp )( m0, m0, m2 ), r->time0 );
             bmath_mf3_s_mul_htp_esp( m0, m0, m3 );
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
             if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
@@ -436,7 +436,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
             bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, prsg );
             bmath_mf3_s_set_random( m1, false, false, 0, o->density, -1.0, 1.0, prsg );
 
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_mul_htp )fp )( m0, m1, m2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_mul_htp )fp )( m0, m1, m2 ), r->time1 );
             bmath_mf3_s_mul_htp_esp( m0, m1, m3 );
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
             if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
@@ -469,7 +469,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
         bmath_asmf2_s_cpy_dfl_from_mf3( sm1, m1 );
         if( o->test1 )
         {
-            CPU_TIME_OF( ( ( bmath_fp_asmf2_s_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_asmf2_s_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
             bmath_asmf2_s_cpy_ifl_to_mf3( sm2, m2 );
             bmath_mf3_s_mul_htp_esp( m0, m1, m3 );
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
@@ -503,7 +503,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
         bmath_asmf3_s_cpy_dfl_from_mf3( sm1, m1 );
         if( o->test1 )
         {
-            CPU_TIME_OF( ( ( bmath_fp_asmf3_s_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_asmf3_s_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
             bmath_asmf3_s_cpy_ifl_to_mf3( sm2, m2 );
             bmath_mf3_s_mul_htp_esp( m0, m1, m3 );
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
@@ -537,7 +537,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
         bmath_xsmf2_s_cpy_dfl_from_mf3( sm1, m1 );
         if( o->test1 )
         {
-            CPU_TIME_OF( ( ( bmath_fp_xsmf2_s_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_xsmf2_s_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
             bmath_xsmf2_s_cpy_ifl_to_mf3( sm2, m2 );
             bmath_mf3_s_mul_htp_esp( m0, m1, m3 );
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
@@ -571,7 +571,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
         bmath_xsmf3_s_cpy_dfl_from_mf3( sm1, m1 );
         if( o->test1 )
         {
-            CPU_TIME_OF( ( ( bmath_fp_xsmf3_s_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_xsmf3_s_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
             bmath_xsmf3_s_cpy_ifl_to_mf3( sm2, m2 );
             bmath_mf3_s_mul_htp_esp( m0, m1, m3 );
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
@@ -633,7 +633,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
 
             bmath_mf2_s_copy_a( _m0, m0 );
             bmath_mf2_s_copy_a( _m2, m2 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_htp_mul )fp )( _m0, _m0, _m2 ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_htp_mul )fp )( _m0, _m0, _m2 ), r->time0 );
             bmath_mf3_s_copy_a( m2, _m2 );
 
             // bmath_mf3_s_htp_mul_esp is very slow --> we use explicit transposition instead
@@ -665,7 +665,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
             bmath_mf2_s_copy_a( _m0, m0 );
             bmath_mf2_s_copy_a( _m1, m1 );
             bmath_mf2_s_copy_a( _m2, m2 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_htp_mul )fp )( _m0, _m1, _m2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_htp_mul )fp )( _m0, _m1, _m2 ), r->time1 );
             bmath_mf3_s_copy_a( m2, _m2 );
 
             // bmath_mf3_s_htp_mul_esp is very slow --> we use explicit transposition instead
@@ -694,7 +694,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
             bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, prsg );
             bmath_mf3_s_set_random( m1, false, false, 0, o->density, -1.0, 1.0, prsg );
 
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_htp_mul )fp )( m0, m0, m2 ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_htp_mul )fp )( m0, m0, m2 ), r->time0 );
 
             // bmath_mf3_s_htp_mul_esp is very slow --> we use explicit transposition instead
             bmath_mf3_s_htp( m0, m0t );
@@ -722,7 +722,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
             bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, prsg );
             bmath_mf3_s_set_random( m1, false, false, 0, o->density, -1.0, 1.0, prsg );
 
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_htp_mul )fp )( m0, m1, m2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_htp_mul )fp )( m0, m1, m2 ), r->time1 );
 
             // bmath_mf3_s_htp_mul_esp is much slower than bmath_mf3_s_mul_esp
             bmath_mf3_s_htp( m0, m0t );
@@ -760,7 +760,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
         bmath_asmf2_s_cpy_dfl_from_mf3( sm1, m1 );
         if( o->test1 )
         {
-            CPU_TIME_OF( ( ( bmath_fp_asmf2_s_htp_mul )fp )( sm0, sm1, sm2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_asmf2_s_htp_mul )fp )( sm0, sm1, sm2 ), r->time1 );
             bmath_asmf2_s_cpy_ifl_to_mf3( sm2, m2 );
             bmath_mf3_s_htp( m0, m0t );
             bmath_mf3_s_mul_esp( m0t, m1, m3 );
@@ -796,7 +796,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
         bmath_asmf3_s_cpy_dfl_from_mf3( sm1, m1 );
         if( o->test1 )
         {
-            CPU_TIME_OF( ( ( bmath_fp_asmf3_s_htp_mul )fp )( sm0, sm1, sm2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_asmf3_s_htp_mul )fp )( sm0, sm1, sm2 ), r->time1 );
             bmath_asmf3_s_cpy_ifl_to_mf3( sm2, m2 );
             bmath_mf3_s_htp( m0, m0t );
             bmath_mf3_s_mul_esp( m0t, m1, m3 );
@@ -832,7 +832,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
         bmath_xsmf2_s_cpy_dfl_from_mf3( sm1, m1 );
         if( o->test1 )
         {
-            CPU_TIME_OF( ( ( bmath_fp_xsmf2_s_htp_mul )fp )( sm0, sm1, sm2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_xsmf2_s_htp_mul )fp )( sm0, sm1, sm2 ), r->time1 );
             bmath_xsmf2_s_cpy_ifl_to_mf3( sm2, m2 );
             bmath_mf3_s_htp( m0, m0t );
             bmath_mf3_s_mul_esp( m0t, m1, m3 );
@@ -868,7 +868,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
         bmath_xsmf3_s_cpy_dfl_from_mf3( sm1, m1 );
         if( o->test1 )
         {
-            CPU_TIME_OF( ( ( bmath_fp_xsmf3_s_htp_mul )fp )( sm0, sm1, sm2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_xsmf3_s_htp_mul )fp )( sm0, sm1, sm2 ), r->time1 );
             bmath_xsmf3_s_cpy_ifl_to_mf3( sm2, m2 );
             bmath_mf3_s_htp( m0, m0t );
             bmath_mf3_s_mul_esp( m0t, m1, m3 );
@@ -937,7 +937,7 @@ static void run_htp_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
             bmath_mf2_s_copy_a( _m0, m0 );
             bmath_mf2_s_copy_a( _m1, m1 );
             bmath_mf2_s_copy_a( _m2, m2 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_htp_mul_htp )fp )( _m0, _m1, _m2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_htp_mul_htp )fp )( _m0, _m1, _m2 ), r->time1 );
             bmath_mf3_s_copy_a( m2, _m2 );
 
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
@@ -955,7 +955,7 @@ static void run_htp_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
             bmath_mf3_s_mul_esp( m1, m0, m4 );
             bmath_mf3_s_htp( m4, m3 );
 
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_htp_mul_htp )fp )( m0, m1, m2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_htp_mul_htp )fp )( m0, m1, m2 ), r->time1 );
             if( o->create_a_log ) bmath_mf3_s_to_string( m2, &r->a_log );
             if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
             eval_s_create_image_file( o, m3, &o->a_img_file );
@@ -975,7 +975,7 @@ static void run_htp_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         bmath_asmf2_s_cpy_dfl_from_mf3( sm1, m1 );
         if( o->test1 )
         {
-            CPU_TIME_OF( ( ( bmath_fp_asmf2_s_htp_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_asmf2_s_htp_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
             bmath_asmf2_s_cpy_ifl_to_mf3( sm2, m2 );
             bmath_mf3_s_mul_esp( m1, m0, m4 );
             bmath_mf3_s_htp( m4, m3 );
@@ -998,7 +998,7 @@ static void run_htp_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         bmath_asmf3_s_cpy_dfl_from_mf3( sm1, m1 );
         if( o->test1 )
         {
-            CPU_TIME_OF( ( ( bmath_fp_asmf3_s_htp_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_asmf3_s_htp_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
             bmath_asmf3_s_cpy_ifl_to_mf3( sm2, m2 );
             bmath_mf3_s_mul_esp( m1, m0, m4 );
             bmath_mf3_s_htp( m4, m3 );
@@ -1021,7 +1021,7 @@ static void run_htp_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         bmath_xsmf2_s_cpy_dfl_from_mf3( sm1, m1 );
         if( o->test1 )
         {
-            CPU_TIME_OF( ( ( bmath_fp_xsmf2_s_htp_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_xsmf2_s_htp_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
             bmath_xsmf2_s_cpy_ifl_to_mf3( sm2, m2 );
             bmath_mf3_s_mul_esp( m1, m0, m4 );
             bmath_mf3_s_htp( m4, m3 );
@@ -1044,7 +1044,7 @@ static void run_htp_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         bmath_xsmf3_s_cpy_dfl_from_mf3( sm1, m1 );
         if( o->test1 )
         {
-            CPU_TIME_OF( ( ( bmath_fp_xsmf3_s_htp_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_xsmf3_s_htp_mul_htp )fp )( sm0, sm1, sm2 ), r->time1 );
             bmath_xsmf3_s_cpy_ifl_to_mf3( sm2, m2 );
             bmath_mf3_s_mul_esp( m1, m0, m4 );
             bmath_mf3_s_htp( m4, m3 );
@@ -1109,7 +1109,7 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         if( o->test0 )
         {
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_uav )fp )( NULL, _a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_uav )fp )( NULL, _a, NULL ), r->time0 );
             bmath_mf3_s_copy_a( a, _a );
         }
 
@@ -1118,7 +1118,7 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
             bmath_mf2_s_copy_a( _u, u );
             bmath_mf2_s_copy_a( _a, m0 );
             bmath_mf2_s_copy_a( _v, v );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_uav )fp )( _u, _a, _v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_uav )fp )( _u, _a, _v ), r->time1 );
             bmath_mf3_s_copy_a( u, _u );
             bmath_mf3_s_copy_a( a, _a );
             bmath_mf3_s_copy_a( v, _v );
@@ -1129,14 +1129,14 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_uav )fp )( NULL, a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_uav )fp )( NULL, a, NULL ), r->time0 );
             r->assert_a = true;
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_uav )fp )( u, a, v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_uav )fp )( u, a, v ), r->time1 );
             r->assert_a = r->assert_a && true;
         }
     }
@@ -1146,7 +1146,7 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         if( o->test0 )
         {
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( r->success0 = ( ( bmath_fp_mf2_s_svd )fp )( NULL, _a, NULL ), r->time0 );
+            ABS_TIME_OF( r->success0 = ( ( bmath_fp_mf2_s_svd )fp )( NULL, _a, NULL ), r->time0 );
             bmath_mf3_s_copy_a( a, _a );
             r->assert_a = bmath_mf3_s_is_dag( a );
         }
@@ -1156,7 +1156,7 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
             bmath_mf2_s_copy_a( _u, u );
             bmath_mf2_s_copy_a( _a, m0 );
             bmath_mf2_s_copy_a( _v, v );
-            CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_svd )fp )( _u, _a, _v ), r->time1 );
+            ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_svd )fp )( _u, _a, _v ), r->time1 );
             bmath_mf3_s_copy_a( u, _u );
             bmath_mf3_s_copy_a( a, _a );
             bmath_mf3_s_copy_a( v, _v );
@@ -1168,14 +1168,14 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( r->success0 = ( ( bmath_fp_mf3_s_svd )fp )( NULL, a, NULL ), r->time0 );
+            ABS_TIME_OF( r->success0 = ( ( bmath_fp_mf3_s_svd )fp )( NULL, a, NULL ), r->time0 );
             r->assert_a = bmath_mf3_s_is_dag( a );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_svd )fp )( u, a, v ), r->time1 );
+            ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_svd )fp )( u, a, v ), r->time1 );
             r->assert_a = r->assert_a && bmath_mf3_s_is_dag( a );
         }
     }
@@ -1185,7 +1185,7 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         if( o->test0 )
         {
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_ubd )fp )( NULL, _a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_ubd )fp )( NULL, _a, NULL ), r->time0 );
             bmath_mf3_s_copy_a( a, _a );
             r->assert_a = bmath_mf3_s_is_ubd( a );
         }
@@ -1195,7 +1195,7 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
             bmath_mf2_s_copy_a( _u, u );
             bmath_mf2_s_copy_a( _a, m0 );
             bmath_mf2_s_copy_a( _v, v );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_ubd )fp )( _u, _a, _v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_ubd )fp )( _u, _a, _v ), r->time1 );
             bmath_mf3_s_copy_a( a, _a );
             bmath_mf3_s_copy_a( u, _u );
             bmath_mf3_s_copy_a( v, _v );
@@ -1207,14 +1207,14 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_ubd )fp )( NULL, a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_ubd )fp )( NULL, a, NULL ), r->time0 );
             r->assert_a = bmath_mf3_s_is_ubd( a );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_ubd )fp )( u, a, v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_ubd )fp )( u, a, v ), r->time1 );
             r->assert_a = r->assert_a && bmath_mf3_s_is_ubd( a );
         }
     }
@@ -1224,7 +1224,7 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         if( o->test0 )
         {
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_lbd )fp )( NULL, _a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_lbd )fp )( NULL, _a, NULL ), r->time0 );
             bmath_mf3_s_copy_a( a, _a );
             r->assert_a = bmath_mf3_s_is_lbd( a );
         }
@@ -1234,7 +1234,7 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
             bmath_mf2_s_copy_a( _u, u );
             bmath_mf2_s_copy_a( _a, m0 );
             bmath_mf2_s_copy_a( _v, v );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_lbd )fp )( _u, _a, _v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_lbd )fp )( _u, _a, _v ), r->time1 );
             bmath_mf3_s_copy_a( u, _u );
             bmath_mf3_s_copy_a( a, _a );
             bmath_mf3_s_copy_a( v, _v );
@@ -1246,14 +1246,14 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_lbd )fp )( NULL, a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_lbd )fp )( NULL, a, NULL ), r->time0 );
             r->assert_a = bmath_mf3_s_is_lbd( a );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_lbd )fp )( u, a, v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_lbd )fp )( u, a, v ), r->time1 );
             r->assert_a = r->assert_a && bmath_mf3_s_is_lbd( a );
         }
     }
@@ -1340,7 +1340,7 @@ static void run_ua( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         if( o->test0 )
         {
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_ua )fp )( NULL, _a ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_ua )fp )( NULL, _a ), r->time0 );
             bmath_mf3_s_copy_a( a, _a );
         }
 
@@ -1348,7 +1348,7 @@ static void run_ua( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         {
             bmath_mf2_s_copy_a( _u,  u );
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_ua )fp )( _u, _a ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_ua )fp )( _u, _a ), r->time1 );
             bmath_mf3_s_copy_a( a, _a );
             bmath_mf3_s_copy_a( u, _u );
         }
@@ -1360,13 +1360,13 @@ static void run_ua( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_ua )fp )( NULL, a ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_ua )fp )( NULL, a ), r->time0 );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_ua )fp )( u, a ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_ua )fp )( u, a ), r->time1 );
         }
 
         if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
@@ -1377,7 +1377,7 @@ static void run_ua( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         if( o->test0 )
         {
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_qrd )fp )( NULL, _a ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_qrd )fp )( NULL, _a ), r->time0 );
             bmath_mf3_s_copy_a( a, _a );
             r->assert_a = bmath_mf3_s_is_utr( a );
         }
@@ -1386,7 +1386,7 @@ static void run_ua( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         {
             bmath_mf2_s_copy_a( _u,  u );
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_qrd )fp )( _u, _a ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_qrd )fp )( _u, _a ), r->time1 );
             bmath_mf3_s_copy_a( a, _a );
             bmath_mf3_s_copy_a( u, _u );
             r->assert_a = r->assert_a && bmath_mf3_s_is_utr( a );
@@ -1399,14 +1399,14 @@ static void run_ua( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_qrd )fp )( NULL, a ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_qrd )fp )( NULL, a ), r->time0 );
             r->assert_a = bmath_mf3_s_is_utr( a );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_qrd )fp )( u, a ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_qrd )fp )( u, a ), r->time1 );
             r->assert_a = r->assert_a && bmath_mf3_s_is_utr( a );
         }
 
@@ -1422,7 +1422,7 @@ static void run_ua( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         if( o->test0 )
         {
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_qrd_pmt )fp )( NULL, _a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_qrd_pmt )fp )( NULL, _a, NULL ), r->time0 );
             bmath_mf3_s_copy_a( a, _a );
             r->assert_a = bmath_mf3_s_is_utr( a );
         }
@@ -1431,7 +1431,7 @@ static void run_ua( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         {
             bmath_mf2_s_copy_a( _u,  u );
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_qrd_pmt )fp )( _u, _a, p ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_qrd_pmt )fp )( _u, _a, p ), r->time1 );
             bmath_mf3_s_copy_a( a, _a );
             bmath_mf3_s_copy_a( u, _u );
             r->assert_a = r->assert_a && bmath_mf3_s_is_utr( a );
@@ -1461,7 +1461,7 @@ static void run_ua( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_qrd_pmt )fp )( NULL, a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_qrd_pmt )fp )( NULL, a, NULL ), r->time0 );
             r->assert_a = bmath_mf3_s_is_utr( a );
         }
 
@@ -1469,7 +1469,7 @@ static void run_ua( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         {
 
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_qrd_pmt )fp )( u, a, p ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_qrd_pmt )fp )( u, a, p ), r->time1 );
             r->assert_a = r->assert_a && bmath_mf3_s_is_utr( a );
         }
 
@@ -1554,7 +1554,7 @@ static void run_av( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         if( o->test0 )
         {
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_av )fp )( _a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_av )fp )( _a, NULL ), r->time0 );
             bmath_mf3_s_copy_a( a, _a );
         }
 
@@ -1562,7 +1562,7 @@ static void run_av( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         {
             bmath_mf2_s_copy_a( _a, m0 );
             bmath_mf2_s_copy_a( _v,  v );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_av )fp )( _a, _v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_av )fp )( _a, _v ), r->time1 );
             bmath_mf3_s_copy_a( a, _a );
             bmath_mf3_s_copy_a( v, _v );
         }
@@ -1574,13 +1574,13 @@ static void run_av( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_av )fp )( a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_av )fp )( a, NULL ), r->time0 );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_av )fp )( a, v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_av )fp )( a, v ), r->time1 );
         }
 
         if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
@@ -1591,7 +1591,7 @@ static void run_av( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         if( o->test0 )
         {
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_lqd )fp )( _a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_lqd )fp )( _a, NULL ), r->time0 );
             bmath_mf3_s_copy_a( a, _a );
             r->assert_a = bmath_mf3_s_is_ltr( a );
         }
@@ -1600,7 +1600,7 @@ static void run_av( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         {
             bmath_mf2_s_copy_a( _a, m0 );
             bmath_mf2_s_copy_a( _v,  v );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_lqd )fp )( _a, _v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_lqd )fp )( _a, _v ), r->time1 );
             bmath_mf3_s_copy_a( a, _a );
             bmath_mf3_s_copy_a( v, _v );
             r->assert_a = r->assert_a && bmath_mf3_s_is_ltr( a );
@@ -1613,14 +1613,14 @@ static void run_av( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_lqd )fp )( a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_lqd )fp )( a, NULL ), r->time0 );
             r->assert_a = bmath_mf3_s_is_ltr( a );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_lqd )fp )( a, v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_lqd )fp )( a, v ), r->time1 );
             r->assert_a = r->assert_a && bmath_mf3_s_is_ltr( a );
         }
 
@@ -1636,7 +1636,7 @@ static void run_av( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         if( o->test0 )
         {
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_pmt_lqd )fp )( NULL, _a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_pmt_lqd )fp )( NULL, _a, NULL ), r->time0 );
             bmath_mf3_s_copy_a( a, _a );
             r->assert_a = bmath_mf3_s_is_ltr( a );
         }
@@ -1645,7 +1645,7 @@ static void run_av( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         {
             bmath_mf2_s_copy_a( _a, m0 );
             bmath_mf2_s_copy_a( _v,  v );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_pmt_lqd )fp )( p, _a, _v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_pmt_lqd )fp )( p, _a, _v ), r->time1 );
             bmath_mf3_s_copy_a( a, _a );
             bmath_mf3_s_copy_a( v, _v );
             r->assert_a = r->assert_a && bmath_mf3_s_is_ltr( a );
@@ -1675,14 +1675,14 @@ static void run_av( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_pmt_lqd )fp )( NULL, a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_pmt_lqd )fp )( NULL, a, NULL ), r->time0 );
             r->assert_a = bmath_mf3_s_is_ltr( a );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_pmt_lqd )fp )( p, a, v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_pmt_lqd )fp )( p, a, v ), r->time1 );
             r->assert_a = r->assert_a && bmath_mf3_s_is_ltr( a );
         }
 
@@ -1764,7 +1764,7 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         if( o->test0 )
         {
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_uau )fp )( NULL, _a ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_uau )fp )( NULL, _a ), r->time0 );
             bmath_mf3_s_copy_a( a, _a );
         }
 
@@ -1772,7 +1772,7 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         {
             bmath_mf2_s_copy_a( _v,  v );
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_uau )fp )( _v, _a ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_uau )fp )( _v, _a ), r->time1 );
             bmath_mf3_s_copy_a( v, _v );
             bmath_mf3_s_copy_a( a, _a );
             bmath_mf3_s_htp( v, v );
@@ -1783,13 +1783,13 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_uau )fp )( NULL, a ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_uau )fp )( NULL, a ), r->time0 );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_uau )fp )( v, a ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_uau )fp )( v, a ), r->time1 );
             bmath_mf3_s_htp( v, v );
         }
     }
@@ -1799,7 +1799,7 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         if( o->test0 )
         {
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_vav )fp )( _a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_vav )fp )( _a, NULL ), r->time0 );
             bmath_mf3_s_copy_a( v, _v );
         }
 
@@ -1807,7 +1807,7 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         {
             bmath_mf2_s_copy_a( _v,  v );
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_vav )fp )( _a, _v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_vav )fp )( _a, _v ), r->time1 );
             bmath_mf3_s_copy_a( v, _v );
             bmath_mf3_s_copy_a( a, _a );
         }
@@ -1817,13 +1817,13 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_vav )fp )( a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_vav )fp )( a, NULL ), r->time0 );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_vav )fp )( a, v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_vav )fp )( a, v ), r->time1 );
         }
     }
     else if( fp_type == TYPEOF_bmath_fp_mf2_s_trd_htp )
@@ -1832,7 +1832,7 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         if( o->test0 )
         {
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_trd_htp )fp )( _a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_trd_htp )fp )( _a, NULL ), r->time0 );
             bmath_mf3_s_copy_a( a, _a );
             r->assert_a = bmath_mf3_s_is_trd( a );
         }
@@ -1841,7 +1841,7 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         {
             bmath_mf2_s_copy_a( _v,  v );
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_trd_htp )fp )( _a, _v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_trd_htp )fp )( _a, _v ), r->time1 );
             bmath_mf3_s_copy_a( v, _v );
             bmath_mf3_s_copy_a( a, _a );
             r->assert_a = r->assert_a && bmath_mf3_s_is_trd( a );
@@ -1853,14 +1853,14 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_trd_htp )fp )( a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_trd_htp )fp )( a, NULL ), r->time0 );
             r->assert_a = bmath_mf3_s_is_trd( a );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_trd_htp )fp )( a, v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_trd_htp )fp )( a, v ), r->time1 );
             r->assert_a = r->assert_a && bmath_mf3_s_is_trd( a );
             bmath_mf3_s_htp( v, v );
         }
@@ -1871,7 +1871,7 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         if( o->test0 )
         {
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_trd )fp )( _a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_trd )fp )( _a, NULL ), r->time0 );
             bmath_mf3_s_copy_a( a, _a );
             r->assert_a = bmath_mf3_s_is_trd( a );
         }
@@ -1880,7 +1880,7 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         {
             bmath_mf2_s_copy_a( _v,  v );
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_trd )fp )( _a, _v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_trd )fp )( _a, _v ), r->time1 );
             bmath_mf3_s_copy_a( v, _v );
             bmath_mf3_s_copy_a( a, _a );
             r->assert_a = r->assert_a && bmath_mf3_s_is_trd( a );
@@ -1891,14 +1891,14 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_trd )fp )( a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_trd )fp )( a, NULL ), r->time0 );
             r->assert_a = bmath_mf3_s_is_trd( a );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_trd )fp )( a, v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_trd )fp )( a, v ), r->time1 );
             r->assert_a = r->assert_a && bmath_mf3_s_is_trd( a );
         }
     }
@@ -1909,7 +1909,7 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         {
             bmath_mf3_s_cpy( m0, a );
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_evd_htp )fp )( _a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_evd_htp )fp )( _a, NULL ), r->time0 );
             bmath_mf3_s_copy_a( a, _a );
             r->assert_a = bmath_mf3_s_is_dag( a );
         }
@@ -1918,7 +1918,7 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         {
             bmath_mf2_s_copy_a( _v,  v );
             bmath_mf2_s_copy_a( _a, m0 );
-            CPU_TIME_OF( ( ( bmath_fp_mf2_s_evd_htp )fp )( _a, _v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf2_s_evd_htp )fp )( _a, _v ), r->time1 );
             bmath_mf3_s_copy_a( v, _v );
             bmath_mf3_s_copy_a( a, _a );
             r->assert_a = r->assert_a && bmath_mf3_s_is_dag( a );
@@ -1930,14 +1930,14 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         if( o->test0 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_evd_htp )fp )( a, NULL ), r->time0 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_evd_htp )fp )( a, NULL ), r->time0 );
             r->assert_a = bmath_mf3_s_is_dag( a );
         }
 
         if( o->test1 )
         {
             bmath_mf3_s_cpy( m0, a );
-            CPU_TIME_OF( ( ( bmath_fp_mf3_s_evd_htp )fp )( a, v ), r->time1 );
+            ABS_TIME_OF( ( ( bmath_fp_mf3_s_evd_htp )fp )( a, v ), r->time1 );
             r->assert_a = r->assert_a && bmath_mf3_s_is_dag( a );
             bmath_mf3_s_htp( v, v );
         }
@@ -2005,14 +2005,14 @@ static void run_cld( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         near_limit = o->near_limit_f2;
         bmath_mf2_s_copy_a( _m0, m0 );
         bmath_mf2_s_copy_a( _a,   a );
-        CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_cld )fp )( _m0, _a ), r->time1 );
+        ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_cld )fp )( _m0, _a ), r->time1 );
         bmath_mf3_s_copy_a( m0, _m0 );
         bmath_mf3_s_copy_a(  a, _a );
         r->assert_a = bmath_mf3_s_is_ltr( a );
     }
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_cld )
     {
-        CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_cld )fp )( m0, a ), r->time1 );
+        ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_cld )fp )( m0, a ), r->time1 );
         r->assert_a = bmath_mf3_s_is_ltr( a );
     }
     else
@@ -2072,13 +2072,13 @@ static void run_lud( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         near_limit = o->near_limit_f2;
         bmath_mf2_s_copy_a( _m0, m0 );
         bmath_mf2_s_copy_a( _a,   a );
-        CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_lud )fp )( _m0, _a ), r->time1 );
+        ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_lud )fp )( _m0, _a ), r->time1 );
         bmath_mf3_s_copy_a( m0, _m0 );
         bmath_mf3_s_copy_a(  a, _a );
     }
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_lud )
     {
-        CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_lud )fp )( m0, a ), r->time1 );
+        ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_lud )fp )( m0, a ), r->time1 );
     }
     else
     {
@@ -2141,12 +2141,12 @@ static void run_inv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         near_limit = o->near_limit_f2;
         bmath_mf2_s_copy_a( _m0, m0 );
         bmath_mf2_s_copy_a( _a,   a );
-        CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_inv )fp )( _m0, _a ), r->time1 );
+        ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_inv )fp )( _m0, _a ), r->time1 );
         bmath_mf3_s_copy_a(  a, _a );
     }
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_inv )
     {
-        CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_inv )fp )( m0, a ), r->time1 );
+        ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_inv )fp )( m0, a ), r->time1 );
     }
     else
     {
@@ -2203,12 +2203,12 @@ static void run_pdf_inv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
         near_limit = o->near_limit_f2;
         bmath_mf2_s_copy_a( _m0, m0 );
         bmath_mf2_s_copy_a( _a,   a );
-        CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_pdf_inv )fp )( _m0, _a ), r->time1 );
+        ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_pdf_inv )fp )( _m0, _a ), r->time1 );
         bmath_mf3_s_copy_a(  a, _a );
     }
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_pdf_inv )
     {
-        CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_pdf_inv )fp )( m0, a ), r->time1 );
+        ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_pdf_inv )fp )( m0, a ), r->time1 );
     }
     else
     {
@@ -2268,12 +2268,12 @@ static void run_piv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
             near_limit = o->near_limit_f2;
             bmath_mf2_s_copy_a( _m0, m0 );
             bmath_mf2_s_copy_a( _a,   a );
-            CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_piv )fp )( _m0, o->eps, _a ), r->time1 );
+            ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_piv )fp )( _m0, o->eps, _a ), r->time1 );
             bmath_mf3_s_copy_a(  a, _a );
         }
         else if( fp_type == TYPEOF_bmath_fp_mf3_s_piv )
         {
-            CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_piv )fp )( m0, o->eps, a ), r->time1 );
+            ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_piv )fp )( m0, o->eps, a ), r->time1 );
         }
         else
         {
@@ -2311,12 +2311,12 @@ static void run_piv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
             near_limit = o->near_limit_f2;
             bmath_mf2_s_copy_a( _m0, m0 );
             bmath_mf2_s_copy_a( _a,   a );
-            CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_piv )fp )( _m0, o->eps, _a ), r->time1 );
+            ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_piv )fp )( _m0, o->eps, _a ), r->time1 );
             bmath_mf3_s_copy_a(  a, _a );
         }
         else if( fp_type == TYPEOF_bmath_fp_mf3_s_piv )
         {
-            CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_piv )fp )( m0, o->eps, a ), r->time1 );
+            ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_piv )fp )( m0, o->eps, a ), r->time1 );
         }
         else
         {
@@ -2387,12 +2387,12 @@ static void run_hsm_piv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
         near_limit = o->near_limit_f2;
         bmath_mf2_s_copy_a( _m0, m0 );
         bmath_mf2_s_copy_a( _a,   a );
-        CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_hsm_piv )fp )( _m0, o->eps, _a ), r->time1 );
+        ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf2_s_hsm_piv )fp )( _m0, o->eps, _a ), r->time1 );
         bmath_mf3_s_copy_a(  a, _a );
     }
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_hsm_piv )
     {
-        CPU_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_hsm_piv )fp )( m0, o->eps, a ), r->time1 );
+        ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_hsm_piv )fp )( m0, o->eps, a ), r->time1 );
     }
     else
     {
@@ -2448,13 +2448,13 @@ static void run_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         near_limit = o->near_limit_f2;
         bmath_mf2_s_copy_a( _m0, m0 );
         bmath_mf2_s_copy_a( _a,   a );
-        CPU_TIME_OF( ( ( bmath_fp_mf2_s_htp )fp )( _m0, _a ), r->time1 );
+        ABS_TIME_OF( ( ( bmath_fp_mf2_s_htp )fp )( _m0, _a ), r->time1 );
         bmath_mf3_s_copy_a(  a, _a );
         r->success1 = true;
     }
     else if( fp_type == TYPEOF_bmath_fp_mf3_s_htp )
     {
-        CPU_TIME_OF( ( ( bmath_fp_mf3_s_htp )fp )( m0, a ), r->time1 );
+        ABS_TIME_OF( ( ( bmath_fp_mf3_s_htp )fp )( m0, a ), r->time1 );
         r->success1 = true;
     }
     else
