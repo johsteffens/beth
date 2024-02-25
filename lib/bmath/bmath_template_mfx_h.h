@@ -237,6 +237,10 @@ bl_t BCATU(bmath_mfx_s,is_near_hsm)( const bmath_mfx_s* o, fx_t max_dev ); // sy
 bl_t BCATU(bmath_mfx_s,is_near_ubd)( const bmath_mfx_s* o, fx_t max_dev ); // upper bi-diagonal
 bl_t BCATU(bmath_mfx_s,is_near_lbd)( const bmath_mfx_s* o, fx_t max_dev ); // lower bi-diagonal
 
+bl_t BCATU(bmath_mfx_s,is_near_evd_dag)( const bmath_mfx_s* o, fx_t max_dev ); // after evd: diagonal eigen values, sorted in descending order
+bl_t BCATU(bmath_mfx_s,is_near_svd_dag)( const bmath_mfx_s* o, fx_t max_dev ); // after svd: diagonal singular values, sorted in descending order, all non-negative
+
+
 static inline bl_t BCATU(bmath_mfx_s,is_equ)( const bmath_mfx_s* o, const bmath_mfx_s* op ) { return BCATU(bmath_mfx_s,is_near_equ)( o, op, 0 ); }
 static inline bl_t BCATU(bmath_mfx_s,is_one)( const bmath_mfx_s* o ) { return BCATU(bmath_mfx_s,is_near_one)( o, 0 ); }
 static inline bl_t BCATU(bmath_mfx_s,is_zro)( const bmath_mfx_s* o ) { return BCATU(bmath_mfx_s,is_near_zro)( o, 0 ); }
@@ -249,6 +253,9 @@ static inline bl_t BCATU(bmath_mfx_s,is_ltr)( const bmath_mfx_s* o ) { return BC
 static inline bl_t BCATU(bmath_mfx_s,is_hsm)( const bmath_mfx_s* o ) { return BCATU(bmath_mfx_s,is_near_hsm)( o, 0 ); }
 static inline bl_t BCATU(bmath_mfx_s,is_ubd)( const bmath_mfx_s* o ) { return BCATU(bmath_mfx_s,is_near_ubd)( o, 0 ); }
 static inline bl_t BCATU(bmath_mfx_s,is_lbd)( const bmath_mfx_s* o ) { return BCATU(bmath_mfx_s,is_near_lbd)( o, 0 ); }
+
+static inline bl_t BCATU(bmath_mfx_s,is_evd_dag)( const bmath_mfx_s* o ) { return BCATU(bmath_mfx_s,is_near_evd_dag)( o, 0 ); }
+static inline bl_t BCATU(bmath_mfx_s,is_svd_dag)( const bmath_mfx_s* o ) { return BCATU(bmath_mfx_s,is_near_svd_dag)( o, 0 ); }
 
 /// Matrix is nan if at least one element is nan
 bl_t BCATU(bmath_mfx_s,is_nan)( const bmath_mfx_s* o );

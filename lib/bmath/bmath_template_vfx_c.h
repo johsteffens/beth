@@ -51,7 +51,7 @@ fx_t BCATU(bmath,fx,t_vec,sum)( const fx_t* v1, sz_t size )
 
 fx_t BCATU(bmath,fx,t_vec,sum_esp)( const fx_t* v1, sz_t size )
 {
-    if( size <= 32 ) return BCATU(bmath,fx,t_vec,sum)( v1, size );
+    if( size <= 64 ) return BCATU(bmath,fx,t_vec,sum)( v1, size );
     sz_t mid = size >> 1;
     return BCATU(bmath,fx,t_vec,sum_esp)( v1, mid ) + BCATU(bmath,fx,t_vec,sum_esp)( v1 + mid, size - mid );
 }
@@ -100,7 +100,7 @@ fx_t BCATU(bmath,fx,t_vec,mul_vec_stride)( const fx_t* v1, sz_t stride1, const f
 
 fx_t BCATU(bmath,fx,t_vec,mul_vec_esp)( const fx_t* v1, const fx_t* v2, sz_t size )
 {
-    if( size <= 32 ) return BCATU(bmath,fx,t_vec,mul_vec)( v1, v2, size );
+    if( size <= 64 ) return BCATU(bmath,fx,t_vec,mul_vec)( v1, v2, size );
     sz_t mid = size >> 1;
     return BCATU(bmath,fx,t_vec,mul_vec_esp)( v1, v2, mid ) + BCATU(bmath,fx,t_vec,mul_vec_esp)( v1 + mid, v2 + mid, size - mid );
 }
@@ -109,7 +109,7 @@ fx_t BCATU(bmath,fx,t_vec,mul_vec_esp)( const fx_t* v1, const fx_t* v2, sz_t siz
 
 fx_t BCATU(bmath,fx,t_vec,mul_vec_esp_stride)( const fx_t* v1, sz_t stride1, const fx_t* v2, sz_t stride2, sz_t size )
 {
-    if( size <= 32 ) return BCATU(bmath,fx,t_vec,mul_vec_stride)( v1, stride1, v2, stride2, size );
+    if( size <= 64 ) return BCATU(bmath,fx,t_vec,mul_vec_stride)( v1, stride1, v2, stride2, size );
     sz_t mid = size >> 1;
     return BCATU(bmath,fx,t_vec,mul_vec_esp_stride)( v1, stride1, v2, stride2, mid ) + BCATU(bmath,fx,t_vec,mul_vec_esp_stride)( v1 + mid * stride1, stride1, v2 + mid * stride2, stride2, size - mid );
 }
@@ -141,7 +141,7 @@ fx_t BCATU(bmath,fx,t_vec,mul3_vec)( const fx_t* v1, const fx_t* v2, const fx_t*
 
 fx_t BCATU(bmath,fx,t_vec,mul3_vec_esp)( const fx_t* v1, const fx_t* v2, const fx_t* v3, sz_t size )
 {
-    if( size <= 32 ) return BCATU(bmath,fx,t_vec,mul3_vec)( v1, v2, v3, size );
+    if( size <= 64 ) return BCATU(bmath,fx,t_vec,mul3_vec)( v1, v2, v3, size );
     sz_t mid = size >> 1;
     return BCATU(bmath,fx,t_vec,mul3_vec_esp)( v1, v2, v3, mid ) + BCATU(bmath,fx,t_vec,mul3_vec_esp)( v1 + mid, v2 + mid, v3 + mid, size - mid );
 }

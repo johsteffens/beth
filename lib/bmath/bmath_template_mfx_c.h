@@ -281,6 +281,30 @@ bl_t BCATU(bmath_mfx_s,is_near_dag)( const bmath_mfx_s* o, fx_t max_dev )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bl_t BCATU(bmath_mfx_s,is_near_evd_dag)( const bmath_mfx_s* o, fx_t max_dev )
+{
+    if( !BCATU(bmath_mfx_s,is_near_dag)( o, max_dev ) ) return false;
+    sz_t n = sz_min( o->cols, o->rows );
+    sz_t sp1 = o->stride + 1;
+    for( sz_t i = 1; i < n; i++ )
+    {
+        if( ( o->data[ i * sp1 ] - o->data[ ( i - 1 ) * sp1 ] ) > max_dev ) return false;
+    }
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t BCATU(bmath_mfx_s,is_near_svd_dag)( const bmath_mfx_s* o, fx_t max_dev )
+{
+    if( !BCATU(bmath_mfx_s,is_near_evd_dag)( o, max_dev ) ) return false;
+    sz_t n = sz_min( o->cols, o->rows );
+    for( sz_t i = 0; i < n; i++ ) if( o->data[ i * ( o->stride + 1 ) ] < -max_dev ) return false;
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 bl_t BCATU(bmath_mfx_s,is_near_trd)( const bmath_mfx_s* o, fx_t max_dev )
 {
     if( o->rows != o->cols ) return false;
@@ -334,14 +358,13 @@ bl_t BCATU(bmath_mfx_s,is_near_otn)( const bmath_mfx_s* o, fx_t max_dev )
 {
     if( o->rows <= o->cols )
     {
-        for( uz_t i = 0; i < o->rows; i++ )
+        for( sz_t i = 0; i < o->rows; i++ )
         {
             const fx_t* v1 = o ->data + i * o ->stride;
-            for( uz_t j = i; j < o->rows; j++ )
+            for( sz_t j = i; j < o->rows; j++ )
             {
                 const fx_t* v2 = o ->data + j * o ->stride;
-                fx_t dot_prd = 0;
-                for( uz_t k = 0; k < o->cols; k++ ) dot_prd += v1[ k ] * v2[ k ];
+                fx_t dot_prd = BCATU(bmath,fx,t_vec,mul_vec_esp)( v1, v2, o->cols );
                 if( BCATU(fx,abs)( dot_prd - ( ( j == i ) ? 1.0 : 0.0 ) ) > max_dev ) return false;
             }
         }
@@ -511,8 +534,7 @@ fx_t BCATU(bmath_mfx_s,fdev_otn)( const bmath_mfx_s* o )
             for( uz_t j = i; j < o->rows; j++ )
             {
                 const fx_t* v2 = o ->data + j * o ->stride;
-                fx_t dot_prd = 0;
-                for( uz_t k = 0; k < o->cols; k++ ) dot_prd += v1[ k ] * v2[ k ];
+                fx_t dot_prd = BCATU(bmath,fx,t_vec,mul_vec_esp)( v1, v2, o->cols );
                 sum += BCATU(fx,sqr)( dot_prd - ( ( j == i ) ? 1.0 : 0.0 ) );
             }
         }

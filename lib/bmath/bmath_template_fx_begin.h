@@ -81,6 +81,12 @@
 #define TYPEOF_bmath_asmfx_s     BCATU(TYPEOF,bmath,asmfx,s)
 #define TYPEOF_bmath_asmfy_s     BCATU(TYPEOF,bmath,asmfy,s)
 
+
+/**********************************************************************************************************************/
+// automated vectoring
+
+#define BMATH_VCB_SIZE ( 8 )
+
 /**********************************************************************************************************************/
 // AVX related macros
 
