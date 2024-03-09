@@ -38,7 +38,7 @@ BCORE_DECLARE_OBJECT( bmath_mfx_eval_s )
     bcore_prsg* prsg;  // random generator
 
     f3_t density;    // random matrix density
-    bl_t full;       // full vs thin decomposition (where applicable)
+    bl_t thin_decomposition; // thin (default) vs. full decomposition (in decomposition tests where applicable)
     f3_t near_limit_f2; // limit for near-assertions (f2_t)
     f3_t near_limit_f3; // limit for near-assertions (f3_t)
     f3_t eps;        // for functions requiring an epsilon

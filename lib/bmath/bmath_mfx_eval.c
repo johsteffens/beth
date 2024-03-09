@@ -36,7 +36,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mfx_eval_s )
     "aware bcore_prsg => prsg = bcore_prsg_lcg_u3_00_s;"
 
     "f3_t density    = 1.0;"
-    "bl_t full       = false;"
+    "bl_t thin_decomposition = true;" // thin (default) vs. full decomposition (in decomposition tests where applicable)
     "f3_t near_limit_f2 = 1E-3;" // limit for near-assertions (f2_t)
     "f3_t near_limit_f3 = 1E-6;" // limit for near-assertions (f3_t)
     "f3_t eps        = 1E-6;"  // for function requiring an epsilon
@@ -1094,8 +1094,8 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     bmath_mf3_s_set_size( m0, m, n );
     bmath_mf3_s_set_size( a,  m, n );
     bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, prsg );
-    bmath_mf3_s_set_size( u, m, o->full ? m : uz_min( m, n ) );
-    bmath_mf3_s_set_size( v, n, o->full ? n : uz_min( m, n ) );
+    bmath_mf3_s_set_size( u, m, o->thin_decomposition ? uz_min( m, n ) : m );
+    bmath_mf3_s_set_size( v, n, o->thin_decomposition ? uz_min( m, n ) : n );
 
     bmath_mf3_s_zro( a );
     bmath_mf3_s_zro( u );
@@ -1327,7 +1327,7 @@ static void run_ua( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
     bmath_mf3_s_set_size( a,  m, n );
     bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, prsg );
 
-    bmath_mf3_s_set_size( u, m, o->full ? m : uz_min( m, n ) );
+    bmath_mf3_s_set_size( u, m, o->thin_decomposition ? uz_min( m, n ) : m );
     bmath_mf3_s_zro( a );
     bmath_mf3_s_zro( u );
 
@@ -1540,7 +1540,7 @@ static void run_av( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
     bmath_mf3_s_set_size( a,  m, n );
     bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, prsg );
 
-    bmath_mf3_s_set_size( v, n, o->full ? n : uz_min( m, n ) );
+    bmath_mf3_s_set_size( v, n, o->thin_decomposition ? uz_min( m, n ) : n );
 
     bmath_mf3_s_zro( a );
     bmath_mf3_s_zro( v );

@@ -21,7 +21,6 @@
 #include "bmath_leaf.h"
 
 /** Givens rotation (G) using a compact storage format (single float per rotation)
- *  (Variant of Steward 1976: The Economical Storage of Plane Rotations)
  *
  *  The givens rotation is specified by sine (s) and cosine (c).
  *
@@ -38,6 +37,7 @@
  *  The compact storage format uses a single floating point value 'rho' to represent the entire rotation.
  *  This allows storing rotations temporarily in-place on matrix operations.
  *
+ *  Variant of Stewart 1976: The Economical Storage of Plane Rotations
  *  rho is defined as follows:
  *        (0.5 * sign( cos ) * sin)  for abs( sin ) <  abs( cos )
  *        (2.0 * sign( sin ) / cos)  for abs( sin ) >= abs( cos )
@@ -53,15 +53,25 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
+
+// Use variant of Stewart 1976: The Economical Storage of Plane Rotations
+// Else simply store 's' and reconstruct c = sqrt( 1.0 - s*s )
+#define BMATH_GRHO_STEWARD_METHOD
+
 /// rho from givens rotation
 static inline f3_t bmath_grho_from_grt( f3_t c, f3_t s )
 {
+#ifdef BMATH_GRHO_STEWARD_METHOD
     f3_t abs_c = f3_abs( c );
     return f3_abs( s ) < abs_c ?
                 0.5 * f3_sig( c ) * s :
                    abs_c > f3_lim_min ?
                        2.0 * f3_sig( s ) / c :
                            f3_sig( s );
+
+#else
+    return s;
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -69,6 +79,7 @@ static inline f3_t bmath_grho_from_grt( f3_t c, f3_t s )
 /// rho to givens rotation
 static inline void bmath_grho_to_grt( f3_t r, f3_t* c, f3_t* s )
 {
+#ifdef BMATH_GRHO_STEWARD_METHOD
     f3_t abs_r = f3_abs( r );
     if( abs_r < 0.5 )
     {
@@ -85,60 +96,10 @@ static inline void bmath_grho_to_grt( f3_t r, f3_t* c, f3_t* s )
         *s = f3_sig( r );
         *c = 0;
     }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/// Sets up rotation in order to annihilate a in vector (a,b).
-static inline f3_t bmath_grho_init_to_annihilate_a( f3_t a, f3_t b )
-{
-    a = ( b < 0 ) ? -a : a;
-    b = ( b < 0 ) ? -b : b; // b >= 0
-    f3_t r = hypot( a, b );
-
-    return f3_abs( a ) < b ?
-                0.5 * ( ( r > f3_lim_min ) ? -a / r : 0 ) :
-                   b > f3_lim_min ?
-                       2.0 * f3_sig( -a ) * r / b :
-                           f3_sig( -a );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/// Sets up rotation in order to annihilate b in vector (a,b). (cos >= 0)
-static inline f3_t bmath_grho_init_to_annihilate_b( f3_t a, f3_t b )
-{
-    b = ( a < 0 ) ? -b : b;
-    a = ( a < 0 ) ? -a : a; // a >= 0
-    f3_t r = hypot( b, a );
-
-    return f3_abs( b ) < a ?
-                0.5 * ( ( r > f3_lim_min ) ? b / r : 0 ) :
-                   a > f3_lim_min ?
-                       2.0 * f3_sig( b ) * r / a :
-                           f3_sig( b );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-// Applies specific rotation to vector (a,b) assuming it annihilates a.
-// Returns rotated b (rotated a is zero)
-static inline f3_t bmath_grho_annihilate_a( f3_t rho, f3_t a, f3_t b )
-{
-    f3_t c, s;
-    bmath_grho_to_grt( rho, &c, &s );
-    return c * b - s * a;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-// Applies specific rotation to vector (a,b) assuming it annihilates b.
-// Returns rotated a (rotated b is zero)
-static inline f3_t bmath_grho_annihilate_b( f3_t rho, f3_t a, f3_t b )
-{
-    f3_t c, s;
-    bmath_grho_to_grt( rho, &c, &s );
-    return c * a + s * b;
+#else
+    *s = r;
+    *c = f3_srt( 1.0 - *s * *s );
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------

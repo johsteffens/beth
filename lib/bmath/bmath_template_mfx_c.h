@@ -3500,10 +3500,10 @@ static void eval_test( void )
     bmath_arr_mfx_eval_s_run( arr_eval, BCATU(TYPEOF_bmath_fp,mfx,s,pdf_inv), ( fp_t )BCATU(bmath_mfx_s,pdf_inv) );
     bmath_arr_mfx_eval_s_run( arr_eval, BCATU(TYPEOF_bmath_fp,mfx,s,hsm_piv), ( fp_t )BCATU(bmath_mfx_s,hsm_piv) );
 
-    eval->full = false;
+    eval->thin_decomposition = true;
     eval->rows = 10; eval->cols = 30; bmath_arr_mfx_eval_s_push( arr_eval, eval );
     eval->rows = 30; eval->cols = 10; bmath_arr_mfx_eval_s_push( arr_eval, eval );
-    eval->full = true;
+    eval->thin_decomposition = false;
     eval->rows = 10; eval->cols = 30; bmath_arr_mfx_eval_s_push( arr_eval, eval );
     eval->rows = 30; eval->cols = 10; bmath_arr_mfx_eval_s_push( arr_eval, eval );
 
