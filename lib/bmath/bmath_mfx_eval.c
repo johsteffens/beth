@@ -50,7 +50,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mfx_eval_s )
     "st_s v_img_file;" // create image file of matrix v after conversion
 
     "bl_t assert_all   = true; " // asserts correct matrix and computation result
-
+    "bl_t prefer_eps_eval = true; " // prefers more precise but slower eps algorithms for evaluation
     "bl_t test0 = true;"  // runs minimal parameter test
     "bl_t test1 = true;"  // runs default parameter test
 "}";
@@ -1267,8 +1267,18 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
 
     if( o->assert_all && o->test1 )
     {
-        r->fdev_u = bmath_mf3_s_fdev_otn( u );
-        r->fdev_v = bmath_mf3_s_fdev_otn( v );
+        if( o->prefer_eps_eval )
+        {
+            r->fdev_u = bmath_mf3_s_fdev_otn( u );
+            r->fdev_v = bmath_mf3_s_fdev_otn( v );
+        }
+        else
+        {
+            bmath_mf3_s* m3 = BLM_CREATE( bmath_mf3_s );
+            bmath_mf3_s_set_size( m3, u->rows, u->cols ); bmath_mf3_s_mul_htp( u, u, m3 ); r->fdev_u = bmath_mf3_s_fdev_one( m3 );
+            bmath_mf3_s_set_size( m3, v->rows, v->cols ); bmath_mf3_s_mul_htp( v, v, m3 ); r->fdev_v = bmath_mf3_s_fdev_one( m3 );
+        }
+
         r->assert_u = r->fdev_u < near_limit;
         r->assert_v = r->fdev_v < near_limit;
         if( o->create_u_log ) bmath_mf3_s_to_string( u, &r->u_log );
@@ -1278,16 +1288,26 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
 
         bmath_mf3_s_set_size( m2, u->rows, v->rows );
 
-        if( fp_type == TYPEOF_bmath_fp_mf3_s_uav || fp_type == TYPEOF_bmath_fp_mf2_s_uav )
+        if( o->prefer_eps_eval )
         {
-            bmath_mf3_s* m3 = BLM_CREATE( bmath_mf3_s );
-            bmath_mf3_s_set_size( m3, u->rows, a->cols );
-            bmath_mf3_s_mul_esp( u, a, m3 );
-            bmath_mf3_s_mul_htp_esp( m3, v, m2 );
+            if( fp_type == TYPEOF_bmath_fp_mf3_s_uav || fp_type == TYPEOF_bmath_fp_mf2_s_uav )
+            {
+                bmath_mf3_s* m3 = BLM_CREATE( bmath_mf3_s );
+                bmath_mf3_s_set_size( m3, u->rows, a->cols );
+                bmath_mf3_s_mul_esp( u, a, m3 );
+                bmath_mf3_s_mul_htp_esp( m3, v, m2 );
+            }
+            else
+            {
+                bmath_mf3_s_mul_utv_htp_esp( u, a, v, m2 );
+            }
         }
         else
         {
-            bmath_mf3_s_mul_utv_htp_esp( u, a, v, m2 );
+            bmath_mf3_s* m3 = BLM_CREATE( bmath_mf3_s );
+            bmath_mf3_s_set_size( m3, u->rows, a->cols );
+            bmath_mf3_s_mul( u, a, m3 );
+            bmath_mf3_s_mul_htp( m3, v, m2 );
         }
 
         r->assert_m = bmath_mf3_s_is_near_equ( m0, m2, near_limit );

@@ -95,11 +95,10 @@ static inline void BCATU(bmath_grt_fx_s,init_from_rho)( bmath_grt_fx_s* o, f3_t 
 /// Sets up rotation in order to annihilate a in vector (a,b).
 static inline void BCATU(bmath_grt_fx_s,init_to_annihilate_a)( bmath_grt_fx_s* o, f3_t a, f3_t b )
 {
-    a = ( b < 0 ) ? -a : a;
-    b = ( b < 0 ) ? -b : b;
+    f3_t sig_b = f3_sig( b );
     f3_t r = hypot( a, b );
-    o->c = ( r > f3_lim_min ) ?  b / r : 1;
-    o->s = ( r > f3_lim_min ) ? -a / r : 0;
+    o->c = ( r > f3_lim_min ) ?  sig_b * b / r : 1;
+    o->s = ( r > f3_lim_min ) ? -sig_b * a / r : 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -107,20 +106,17 @@ static inline void BCATU(bmath_grt_fx_s,init_to_annihilate_a)( bmath_grt_fx_s* o
 /// Sets up rotation in order to annihilate b in vector (a,b). (cos >= 0)
 static inline void BCATU(bmath_grt_fx_s,init_to_annihilate_b)( bmath_grt_fx_s* o, f3_t a, f3_t b )
 {
-    b = ( a < 0 ) ? -b : b;
-    a = ( a < 0 ) ? -a : a;
+    f3_t sig_a = f3_sig( a );
     f3_t r = hypot( b, a );
-    o->c = ( r > f3_lim_min ) ? a / r : 1;
-    o->s = ( r > f3_lim_min ) ? b / r : 0;
+    o->c = ( r > f3_lim_min ) ? sig_a * a / r : 1;
+    o->s = ( r > f3_lim_min ) ? sig_a * b / r : 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Applies specific rotation to vector (a,b) assuming it annihilates a.
-static inline void BCATU(bmath_grt_fx_s,annihilate_a)( bmath_grt_fx_s* o, fx_t* a, fx_t* b )
+static inline void BCATU(bmath_grt_fx_s,annihilate_a)( fx_t* a, fx_t* b )
 {
-    //*b = o->c * *b - o->s * *a;
-
     *b = BCATU( fx, sig )( *b ) * hypot( *b, *a );
     *a = 0;
 }
@@ -128,9 +124,8 @@ static inline void BCATU(bmath_grt_fx_s,annihilate_a)( bmath_grt_fx_s* o, fx_t* 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Applies specific rotation to vector (a,b) assuming it annihilates b.
-static inline void BCATU(bmath_grt_fx_s,annihilate_b)( bmath_grt_fx_s* o, fx_t* a, fx_t* b )
+static inline void BCATU(bmath_grt_fx_s,annihilate_b)( fx_t* a, fx_t* b )
 {
-    //*a = o->c * *a + o->s * *b;
     *a = BCATU( fx, sig )( *a ) * hypot( *a, *b );
     *b = 0;
 }
@@ -141,7 +136,7 @@ static inline void BCATU(bmath_grt_fx_s,annihilate_b)( bmath_grt_fx_s* o, fx_t* 
 static inline void BCATU(bmath_grt_fx_s,init_and_annihilate_a)( bmath_grt_fx_s* o, fx_t* a, fx_t* b )
 {
     BCATU(bmath_grt_fx_s,init_to_annihilate_a)( o, *a, *b );
-    BCATU(bmath_grt_fx_s,annihilate_a)( o, a, b );
+    BCATU(bmath_grt_fx_s,annihilate_a)( a, b );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -150,7 +145,7 @@ static inline void BCATU(bmath_grt_fx_s,init_and_annihilate_a)( bmath_grt_fx_s* 
 static inline void BCATU(bmath_grt_fx_s,init_and_annihilate_b)( bmath_grt_fx_s* o, fx_t* a, fx_t* b )
 {
     BCATU(bmath_grt_fx_s,init_to_annihilate_b)( o, *a, *b );
-    BCATU(bmath_grt_fx_s,annihilate_b)( o, a, b );
+    BCATU(bmath_grt_fx_s,annihilate_b)( a, b );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -52,8 +52,9 @@ BCORE_DECLARE_OBJECT( bmath_mfx_eval_s )
     st_s v_img_file; // create image file of matrix v after conversion
 
     bl_t assert_all; // asserts correct matrix and computation result
+    bl_t prefer_eps_eval; // prefers more precise but slower eps algorithms for evaluation
 
-    bl_t test0;      // runs minimal parameter test (ifapplicable)
+    bl_t test0;      // runs minimal parameter test (if applicable)
     bl_t test1;      // runs default parameter test
 };
 
