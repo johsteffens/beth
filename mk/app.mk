@@ -56,6 +56,7 @@ A_DIRS    = $(sort $(foreach dep,$(DEPENDENCIES), $(dir $(patsubst %/,%,$(dir $(
 LIBS     += $(foreach dep,$(DEPENDENCIES),$(notdir $(dep)))
 LIBS     += m pthread atomic
 
+LDFLAGS  += -fopenmp
 LDFLAGS  += $(foreach val,$(A_DIRS),-L $(val))
 LDFLAGS  += $(addprefix -l, $(LIBS))
 
@@ -68,7 +69,7 @@ CC           = gcc
 AR           = ar
 MAKE         = make
 XOICO        = $(XOICO_DIR)/bin/xoico
-CFLAGS      += -Wall -O3 -std=c11
+CFLAGS      += -Wall -fopenmp -O3 -std=c11
 
 C_FILES = $(wildcard $(SRC_DIR)/*.c)
 O_FILES = $(C_FILES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)

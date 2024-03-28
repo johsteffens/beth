@@ -55,7 +55,7 @@ CC           = gcc
 AR           = ar
 MAKE         = make
 XOICO        = $(XOICO_DIR)/bin/xoico
-CFLAGS      += -Wall -O3 -std=c11 
+CFLAGS      += -Wall -O3 -fopenmp -std=c11 
 AFLAGS      += -r -s
 
 C_FILES = $(wildcard *.c)
