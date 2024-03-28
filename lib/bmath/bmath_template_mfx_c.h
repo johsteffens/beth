@@ -3487,6 +3487,7 @@ static vd_t selftest( void )
 
     /// mul_add_cps
     BCATU(bmath_mfx_s,mul_add_cps_selftest)();
+    BCATU(bmath_mfx_s,omp_mul_add_cps_selftest)();
 
     BLM_DOWN();
     return NULL;

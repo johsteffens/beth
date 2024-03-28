@@ -30,6 +30,9 @@
 #include "bmath_template_mfx_mul_c.h"
 
 #define BMATH_TEMPLATE_FX_PREC 3
+#include "bmath_template_mfx_omp_mul_c.h"
+
+#define BMATH_TEMPLATE_FX_PREC 3
 #include "bmath_template_mfx_qrd_c.h"
 
 #define BMATH_TEMPLATE_FX_PREC 3
