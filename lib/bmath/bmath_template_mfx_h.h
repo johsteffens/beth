@@ -261,7 +261,7 @@ static inline bl_t BCATU(bmath_mfx_s,is_svd_dag)( const bmath_mfx_s* o ) { retur
 bl_t BCATU(bmath_mfx_s,is_nan)( const bmath_mfx_s* o );
 
 /// total sum of squares
-fx_t BCATU(bmath_mfx_s,tss)( const bmath_mfx_s* o );
+f3_t BCATU(bmath_mfx_s,tss)( const bmath_mfx_s* o );
 
 //----------------------------------------------------------------------------------------------------------------------
 // Frobenius norm
@@ -272,10 +272,10 @@ fx_t BCATU(bmath_mfx_s,tss)( const bmath_mfx_s* o );
  *  Matrix x is a specified (or implied) state.
  *  Note: By this definition fdev_zro is the Frobenius norm of o.
  */
-fx_t BCATU(bmath_mfx_s,fdev_equ)( const bmath_mfx_s* o, const bmath_mfx_s* op );
-fx_t BCATU(bmath_mfx_s,fdev_zro)( const bmath_mfx_s* o );
-fx_t BCATU(bmath_mfx_s,fdev_one)( const bmath_mfx_s* o );
-fx_t BCATU(bmath_mfx_s,fdev_otn)( const bmath_mfx_s* o ); // f = o * oT or oT * o (whichever smaller); x = I
+f3_t BCATU(bmath_mfx_s,fdev_equ)( const bmath_mfx_s* o, const bmath_mfx_s* op );
+f3_t BCATU(bmath_mfx_s,fdev_zro)( const bmath_mfx_s* o );
+f3_t BCATU(bmath_mfx_s,fdev_one)( const bmath_mfx_s* o );
+f3_t BCATU(bmath_mfx_s,fdev_otn)( const bmath_mfx_s* o ); // f = o * oT or oT * o (whichever smaller); x = I
 
 /**********************************************************************************************************************/
 /// initializations; copying; basic matrix operations
