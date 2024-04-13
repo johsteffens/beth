@@ -1,5 +1,5 @@
 # Dependency make framework
-# Author: Johannes B. Steffens
+# Author & Copyright: Johannes B. Steffens
 #
 # Usage: 
 # In folder with source files, create a makefile as follows:
