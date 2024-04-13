@@ -568,6 +568,32 @@ f3_t BCATU(bmath_mfx_s,fdev_otn)( const bmath_mfx_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+f3_t BCATU(bmath_mfx_s,dev_equ)( const bmath_mfx_s* o, const bmath_mfx_s* b )
+{
+    f3_t fdev_o = BCATU(bmath_mfx_s,fdev_zro)( o );
+    f3_t fdev_b = BCATU(bmath_mfx_s,fdev_zro)( b );
+    f3_t fdev_o_b = BCATU(bmath_mfx_s,fdev_equ)( o, b );
+    return f3_max( fdev_o, fdev_b ) > 0 ? fdev_o_b / f3_max( fdev_o, fdev_b ) : 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+f3_t BCATU(bmath_mfx_s,dev_one)( const bmath_mfx_s* o )
+{
+    f3_t fdev_o = BCATU(bmath_mfx_s,fdev_one)( o );
+    return fdev_o > 0 ? fdev_o / f3_srt( f3_min( o->rows, o->cols ) ) : 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+f3_t BCATU(bmath_mfx_s,dev_otn)( const bmath_mfx_s* o )
+{
+    f3_t fdev_o = BCATU(bmath_mfx_s,fdev_otn)( o );
+    return fdev_o > 0 ? fdev_o / f3_srt( f3_min( o->rows, o->cols ) ) : 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 /// initializations; copying; basic matrix operations
 

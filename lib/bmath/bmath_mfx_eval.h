@@ -79,10 +79,10 @@ BCORE_DECLARE_OBJECT( bmath_mfx_eval_result_s )
     bl_t assert_v; // assertion of shape v where applicable
     bl_t assert_m; // assertion of m equals u * a * vT
 
-    f3_t fdev_a;   // fdev of a from desired shape
-    f3_t fdev_u;   // fdev of u from desired shape
-    f3_t fdev_v;   // fdev of v from desired shape
-    f3_t fdev_m;   // fdev of m from equality
+    f3_t dev_a;   // dev of a from desired shape
+    f3_t dev_u;   // dev of u from desired shape
+    f3_t dev_v;   // dev of v from desired shape
+    f3_t dev_m;   // dev of m from equality
 
     bl_t success0; // success with minimal arguments
     bl_t success1; // success with all arguments

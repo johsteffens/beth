@@ -76,10 +76,10 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mfx_eval_result_s )
     "bl_t assert_u = true;" // assertion of shape u where applicable
     "bl_t assert_v = true;" // assertion of shape v where applicable
     "bl_t assert_m = true;" // assertion of m equals u * a * vT
-    "f3_t fdev_a = 0;"      // fdev of a from desired shape
-    "f3_t fdev_u = 0;"      // fdev of u from desired shape
-    "f3_t fdev_v = 0;"      // fdev of v from desired shape
-    "f3_t fdev_m = 0;"      // fdev of m from equality
+    "f3_t dev_a = 0;"      // fdev of a from desired shape
+    "f3_t dev_u = 0;"      // fdev of u from desired shape
+    "f3_t dev_v = 0;"      // fdev of v from desired shape
+    "f3_t dev_m = 0;"      // fdev of m from equality
     "bl_t success0 = true;" // success with minimal arguments
     "bl_t success1 = true;" // success with all arguments
     "f3_t time0  = 0;"      // operation time with minimal arguments
@@ -128,10 +128,10 @@ void bmath_mfx_eval_result_s_to_string( const bmath_mfx_eval_result_s* o, st_s* 
     }
 
     st_s_push_fa( string, "#<sc_t> (#<uz_t> x #<uz_t>) density = #<f3_t>\n", ifnameof( o->fp_type ), o->rows, o->cols, o->density );
-    if( o->fdev_a > 0 ) st_s_push_fa( string, "fdev_a ..... #<f3_t>\n", o->fdev_a );
-    if( o->fdev_u > 0 ) st_s_push_fa( string, "fdev_u ..... #<f3_t>\n", o->fdev_u );
-    if( o->fdev_v > 0 ) st_s_push_fa( string, "fdev_v ..... #<f3_t>\n", o->fdev_v );
-    if( o->fdev_m > 0 ) st_s_push_fa( string, "fdev_m ..... #<f3_t>\n", o->fdev_m );
+    if( o->dev_a > 0 ) st_s_push_fa( string, "dev_a ..... #<f3_t>\n", o->dev_a );
+    if( o->dev_u > 0 ) st_s_push_fa( string, "dev_u ..... #<f3_t>\n", o->dev_u );
+    if( o->dev_v > 0 ) st_s_push_fa( string, "dev_v ..... #<f3_t>\n", o->dev_v );
+    if( o->dev_m > 0 ) st_s_push_fa( string, "dev_m ..... #<f3_t>\n", o->dev_m );
     if( o->time0  > 0 ) st_s_push_fa( string, "time0 ...... #<f3_t>s\n", o->time0 );
     if( o->time1  > 0 ) st_s_push_fa( string, "time1 ...... #<f3_t>s\n", o->time1 );
 
@@ -164,12 +164,12 @@ sz_t xons_from_cols( sz_t cols ) { return ( cols > 0 ) ? ( cols / slos_from_cols
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static f3_t fdev_otn( const bmath_mfx_eval_s* o, const bmath_mf3_s* u )
+static f3_t dev_otn( const bmath_mfx_eval_s* o, const bmath_mf3_s* u )
 {
     BLM_INIT();
     if( o->prefer_eps_eval )
     {
-        BLM_RETURNV( f3_t, bmath_mf3_s_fdev_otn( u ) );
+        BLM_RETURNV( f3_t, bmath_mf3_s_dev_otn( u ) );
     }
     else
     {
@@ -184,7 +184,7 @@ static f3_t fdev_otn( const bmath_mfx_eval_s* o, const bmath_mf3_s* u )
             bmath_mf3_s_set_size( m, u->cols, u->cols );
             bmath_mf3_s_omp_htp_mul( u, u, m );
         }
-        BLM_RETURNV( f3_t, bmath_mf3_s_fdev_one( m ) );
+        BLM_RETURNV( f3_t, bmath_mf3_s_dev_one( m ) );
     }
     BLM_DOWN();
 }
@@ -237,7 +237,7 @@ static void run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -253,7 +253,7 @@ static void run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -278,7 +278,7 @@ static void run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -303,7 +303,7 @@ static void run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -328,7 +328,7 @@ static void run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -353,7 +353,7 @@ static void run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -415,7 +415,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
 
@@ -446,7 +446,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -471,7 +471,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
 
@@ -497,7 +497,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -534,7 +534,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -571,7 +571,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -608,7 +608,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -645,7 +645,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -721,7 +721,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
 
@@ -763,7 +763,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -801,7 +801,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
 
@@ -840,7 +840,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -888,7 +888,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -936,7 +936,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -984,7 +984,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -1032,7 +1032,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -1110,7 +1110,7 @@ static void run_htp_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -1136,7 +1136,7 @@ static void run_htp_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -1172,7 +1172,7 @@ static void run_htp_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -1207,7 +1207,7 @@ static void run_htp_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -1242,7 +1242,7 @@ static void run_htp_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f2 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -1277,7 +1277,7 @@ static void run_htp_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
                 if( o->create_a_log ) bmath_mf3_s_to_string( m3, &r->a_log );
                 eval_s_create_image_file( o, m3, &o->a_img_file );
                 r->assert_m = r->assert_m && bmath_mf3_s_is_near_equ( m2, m3, o->near_limit_f3 );
-                r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+                r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
             }
         }
     }
@@ -1493,10 +1493,10 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
 
     if( o->assert_all && o->test1 )
     {
-        r->fdev_u = fdev_otn( o, u );
-        r->fdev_v = fdev_otn( o, v );
-        r->assert_u = r->fdev_u < near_limit;
-        r->assert_v = r->fdev_v < near_limit;
+        r->dev_u = dev_otn( o, u );
+        r->dev_v = dev_otn( o, v );
+        r->assert_u = r->dev_u < near_limit;
+        r->assert_v = r->dev_v < near_limit;
         if( o->create_u_log ) bmath_mf3_s_to_string( u, &r->u_log );
         if( o->create_v_log ) bmath_mf3_s_to_string( v, &r->v_log );
         eval_s_create_image_file( o, u, &o->u_img_file );
@@ -1527,7 +1527,7 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         }
 
         r->assert_m = bmath_mf3_s_is_near_equ( m0, m2, near_limit );
-        r->fdev_m   = bmath_mf3_s_fdev_equ( m0, m2 );
+        r->dev_m   = bmath_mf3_s_dev_equ( m0, m2 );
     }
 
     if( res ) bmath_mfx_eval_result_s_copy( res, r );
@@ -1745,11 +1745,11 @@ static void run_ua( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
             bmath_mf3_s_omp_mul( u, a, m2 );
         }
 
-        r->fdev_u = fdev_otn( o, u );
-        r->assert_u = r->fdev_u < near_limit;
+        r->dev_u = dev_otn( o, u );
+        r->assert_u = r->dev_u < near_limit;
 
         r->assert_m = bmath_mf3_s_is_near_equ( m0, m2, near_limit );
-        r->fdev_m   = bmath_mf3_s_fdev_equ( m0, m2 );
+        r->dev_m   = bmath_mf3_s_dev_equ( m0, m2 );
     }
 
     if( res ) bmath_mfx_eval_result_s_copy( res, r );
@@ -1952,8 +1952,8 @@ static void run_av( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
 
     if( o->assert_all && o->test1 )
     {
-        r->fdev_v = fdev_otn( o, v );
-        r->assert_v = r->fdev_v < near_limit;
+        r->dev_v = dev_otn( o, v );
+        r->assert_v = r->dev_v < near_limit;
         if( o->create_v_log ) bmath_mf3_s_to_string( v, &r->v_log );
         eval_s_create_image_file( o, a, &o->a_img_file );
         eval_s_create_image_file( o, v, &o->v_img_file );
@@ -1970,7 +1970,7 @@ static void run_av( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         }
 
         r->assert_m = bmath_mf3_s_is_near_equ( m0, m2, near_limit );
-        r->fdev_m   = bmath_mf3_s_fdev_equ( m0, m2 );
+        r->dev_m   = bmath_mf3_s_dev_equ( m0, m2 );
     }
     if( res ) bmath_mfx_eval_result_s_copy( res, r );
 
@@ -2201,8 +2201,8 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
 
     if( o->assert_all && o->test1 )
     {
-        r->fdev_v = fdev_otn( o, v );
-        r->assert_v = r->fdev_v < near_limit;
+        r->dev_v = dev_otn( o, v );
+        r->assert_v = r->dev_v < near_limit;
         if( o->create_a_log ) bmath_mf3_s_to_string( a, &r->a_log );
         if( o->create_v_log ) bmath_mf3_s_to_string( v, &r->v_log );
         eval_s_create_image_file( o, a, &o->a_img_file );
@@ -2212,7 +2212,7 @@ static void run_sym_uau_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
         bmath_mf3_s_mul_utv_htp_esp( v, a, v, m2 );
 
         r->assert_m = bmath_mf3_s_is_near_equ( m0, m2, near_limit );
-        r->fdev_m   = bmath_mf3_s_fdev_equ( m0, m2 );
+        r->dev_m   = bmath_mf3_s_dev_equ( m0, m2 );
     }
     if( res ) bmath_mfx_eval_result_s_copy( res, r );
 
@@ -2278,7 +2278,7 @@ static void run_cld( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     bmath_mf3_s_mul_htp_esp( a, a, m2 );
 
     r->assert_m = bmath_mf3_s_is_near_equ( m0, m2, near_limit );
-    r->fdev_m   = bmath_mf3_s_fdev_equ( m0, m2 );
+    r->dev_m   = bmath_mf3_s_dev_equ( m0, m2 );
     if( res ) bmath_mfx_eval_result_s_copy( res, r );
 
     BLM_DOWN();
@@ -2350,7 +2350,7 @@ static void run_lud( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     bmath_mf3_s_htp( m3, m3 );
 
     r->assert_m = bmath_mf3_s_is_near_equ( m2, m3, near_limit );
-    r->fdev_m   = bmath_mf3_s_fdev_equ( m2, m3 );
+    r->dev_m   = bmath_mf3_s_dev_equ( m2, m3 );
     if( res ) bmath_mfx_eval_result_s_copy( res, r );
 
     BLM_DOWN();
@@ -2411,7 +2411,7 @@ static void run_inv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     bmath_mf3_s_mul_esp( m0, a, m2 );
 
     r->assert_m = bmath_mf3_s_is_near_one( m2, near_limit );
-    r->fdev_m   = bmath_mf3_s_fdev_one( m2 );
+    r->dev_m   = bmath_mf3_s_dev_one( m2 );
     if( res ) bmath_mfx_eval_result_s_copy( res, r );
 
     BLM_DOWN();
@@ -2473,7 +2473,7 @@ static void run_pdf_inv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
     bmath_mf3_s_mul_esp( m0, a, m2 );
 
     r->assert_m = bmath_mf3_s_is_near_one( m2, near_limit );
-    r->fdev_m   = bmath_mf3_s_fdev_one( m2 );
+    r->dev_m   = bmath_mf3_s_dev_one( m2 );
     if( res ) bmath_mfx_eval_result_s_copy( res, r );
 
     BLM_DOWN();
@@ -2546,7 +2546,7 @@ static void run_piv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
         }
 
         r->assert_m = bmath_mf3_s_is_near_one( m2, near_limit );
-        r->fdev_m   = bmath_mf3_s_fdev_one( m2 );
+        r->dev_m   = bmath_mf3_s_dev_one( m2 );
     }
 
     // rank deficit --> verify Moore-Penrose-Conditions
@@ -2584,7 +2584,7 @@ static void run_piv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
 
         bmath_mf3_s_mul_esp( m1, m0, m2 );
         r->assert_u = r->assert_u && bmath_mf3_s_is_near_equ( m0, m2, near_limit ); // assert A * A_piv * A = A
-        r->fdev_u   = bmath_mf3_s_fdev_equ( m0, m2 );
+        r->dev_u   = bmath_mf3_s_dev_equ( m0, m2 );
 
         bmath_mf3_s_set_size( m1, n, n );
         bmath_mf3_s_set_size( m2, n, m );
@@ -2593,7 +2593,7 @@ static void run_piv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
 
         bmath_mf3_s_mul_esp( m1, a, m2 );
         r->assert_v = r->assert_v && bmath_mf3_s_is_near_equ( a, m2, near_limit ); // assert  A_piv * A * A_piv = A_piv
-        r->fdev_v   = bmath_mf3_s_fdev_equ( a, m2 );
+        r->dev_v   = bmath_mf3_s_dev_equ( a, m2 );
     }
 
     if( res ) bmath_mfx_eval_result_s_copy( res, r );
@@ -2657,7 +2657,7 @@ static void run_hsm_piv( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
     bmath_mf3_s_mul_esp( m0, a, m2 );
 
     r->assert_m = bmath_mf3_s_is_near_one( m2, near_limit );
-    r->fdev_m   = bmath_mf3_s_fdev_one( m2 );
+    r->dev_m   = bmath_mf3_s_dev_one( m2 );
     if( res ) bmath_mfx_eval_result_s_copy( res, r );
 
     BLM_DOWN();
@@ -2719,8 +2719,8 @@ static void run_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     bmath_mf3_s_set_size( m2, m0->rows, m0->cols );
     bmath_mf3_s_htp_eval( a, m2 );
 
-    r->fdev_m   = bmath_mf3_s_fdev_equ( m0, m2 );
-    r->assert_m = r->fdev_m < near_limit;
+    r->dev_m   = bmath_mf3_s_dev_equ( m0, m2 );
+    r->assert_m = r->dev_m < near_limit;
     if( res ) bmath_mfx_eval_result_s_copy( res, r );
 
     BLM_DOWN();
