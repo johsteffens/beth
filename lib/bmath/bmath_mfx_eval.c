@@ -26,66 +26,6 @@
 
 /**********************************************************************************************************************/
 
-BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mfx_eval_s )
-"{"
-    "aware_t _;"
-    "sz_t rows       = 1000;"
-    "sz_t cols       = 1000;"
-    "sz_t dim3       =   -1;"   // third dimension (e.g. in multiplication tests); -1: use default
-
-    "aware bcore_prsg => prsg = bcore_prsg_lcg_u3_00_s;"
-
-    "f3_t density    = 1.0;"
-    "bl_t thin_decomposition = true;" // thin (default) vs. full decomposition (in decomposition tests where applicable)
-    "f3_t near_limit_f2 = 1E-3;" // limit for near-assertions (f2_t)
-    "f3_t near_limit_f3 = 1E-6;" // limit for near-assertions (f3_t)
-    "f3_t eps        = 1E-6;"  // for function requiring an epsilon
-
-    "bl_t create_a_log = false;" // log matrix a after conversion
-    "bl_t create_u_log = false;" // log matrix u after conversion
-    "bl_t create_v_log = false;" // log matrix v after conversion
-
-    "st_s a_img_file;" // create image file of matrix a after conversion
-    "st_s u_img_file;" // create image file of matrix u after conversion
-    "st_s v_img_file;" // create image file of matrix v after conversion
-
-    "bl_t assert_all   = true; " // asserts correct matrix and computation result
-    "bl_t prefer_eps_eval = true; " // prefers more precise but slower eps algorithms for evaluation
-    "bl_t test0 = true;"  // runs minimal parameter test
-    "bl_t test1 = true;"  // runs default parameter test
-"}";
-
-//----------------------------------------------------------------------------------------------------------------------
-
-BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_mfx_eval_result_s )
-"{"
-    "aware_t _;"
-    "st_s label;"    // test label
-    "tp_t fp_type;"
-    "sz_t rows;"
-    "sz_t cols;"
-    "sz_t dim3;"
-
-    "f3_t density;"
-
-    "st_s a_log;"           // log of matrix a
-    "st_s u_log;"           // log of matrix u
-    "st_s v_log;"           // log of matrix v
-
-    "bl_t assert_a = true;" // assertion of shape a where applicable
-    "bl_t assert_u = true;" // assertion of shape u where applicable
-    "bl_t assert_v = true;" // assertion of shape v where applicable
-    "bl_t assert_m = true;" // assertion of m equals u * a * vT
-    "f3_t dev_a = 0;"      // fdev of a from desired shape
-    "f3_t dev_u = 0;"      // fdev of u from desired shape
-    "f3_t dev_v = 0;"      // fdev of v from desired shape
-    "f3_t dev_m = 0;"      // fdev of m from equality
-    "bl_t success0 = true;" // success with minimal arguments
-    "bl_t success1 = true;" // success with all arguments
-    "f3_t time0  = 0;"      // operation time with minimal arguments
-    "f3_t time1  = 0;"      // operation time with all arguments
-"}";
-
 //----------------------------------------------------------------------------------------------------------------------
 
 static void result_s_set_defaults_from_eval( bmath_mfx_eval_result_s* o, const bmath_mfx_eval_s* v )
@@ -2872,13 +2812,6 @@ void bmath_mfx_eval_s_label_run( const bmath_mfx_eval_s* o, sc_t label, tp_t fp_
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mfx_eval_s_run( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_eval_result_s* res )
-{
-    bmath_mfx_eval_s_label_run( o, NULL, fp_type, fp, res );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 void bmath_mfx_eval_s_label_run_to_log( const bmath_mfx_eval_s* o, sc_t label, tp_t fp_type, fp_t fp, st_s* log )
 {
     ASSERT( fp != NULL );
@@ -2896,26 +2829,12 @@ void bmath_mfx_eval_s_label_run_to_log( const bmath_mfx_eval_s* o, sc_t label, t
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mfx_eval_s_run_to_log( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, st_s* log )
-{
-    bmath_mfx_eval_s_label_run_to_log( o, NULL, fp_type, fp, log );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 void bmath_mfx_eval_s_label_run_to_stdout( const bmath_mfx_eval_s* o, sc_t label, tp_t fp_type, fp_t fp )
 {
     st_s* s = st_s_create();
     bmath_mfx_eval_s_label_run_to_log( o, label, fp_type, fp, s );
     bcore_msg_fa( "#<sc_t>\n", s->sc );
     st_s_discard( s );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void bmath_mfx_eval_s_run_to_stdout( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp )
-{
-    bmath_mfx_eval_s_label_run_to_stdout( o, NULL, fp_type, fp );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2934,51 +2853,12 @@ static void bmath_mfx_eval_s_selftest( void )
 
 /**********************************************************************************************************************/
 
-BCORE_DEFINE_OBJECT_INST( bcore_inst, bmath_arr_mfx_eval_s ) "{ aware_t _; bmath_mfx_eval_s [] arr; }";
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void bmath_arr_mfx_eval_s_label_run( const bmath_arr_mfx_eval_s* o, sc_t label, tp_t fp_type, fp_t fp )
-{
-    for( uz_t i = 0; i < o->size; i++ ) bmath_mfx_eval_s_label_run( &o->data[ i ], label, fp_type, fp, NULL );
-}
-
-void bmath_arr_mfx_eval_s_label_run_to_log( const bmath_arr_mfx_eval_s* o, sc_t label, tp_t fp_type, fp_t fp, st_s* log )
-{
-    for( uz_t i = 0; i < o->size; i++ ) bmath_mfx_eval_s_label_run_to_log( &o->data[ i ], label, fp_type, fp, log );
-}
-
-void bmath_arr_mfx_eval_s_label_run_to_stdout( const bmath_arr_mfx_eval_s* o, sc_t label, tp_t fp_type, fp_t fp )
-{
-    for( uz_t i = 0; i < o->size; i++ ) bmath_mfx_eval_s_label_run_to_stdout( &o->data[ i ], label, fp_type, fp );
-}
-
-void bmath_arr_mfx_eval_s_run( const bmath_arr_mfx_eval_s* o, tp_t fp_type, fp_t fp )
-{
-    bmath_arr_mfx_eval_s_label_run( o, NULL, fp_type, fp );
-}
-
-void bmath_arr_mfx_eval_s_run_to_log( const bmath_arr_mfx_eval_s* o, tp_t fp_type, fp_t fp, st_s* log )
-{
-    bmath_arr_mfx_eval_s_label_run_to_log( o, NULL, fp_type, fp, log );
-}
-
-void bmath_arr_mfx_eval_s_run_to_stdout( const bmath_arr_mfx_eval_s* o, tp_t fp_type, fp_t fp )
-{
-    bmath_arr_mfx_eval_s_label_run_to_stdout( o, NULL, fp_type, fp );
-}
-
-/**********************************************************************************************************************/
-
 vd_t bmath_mfx_eval_signal_handler( const bcore_signal_s* o )
 {
     switch( bcore_signal_s_handle_type( o, typeof( "bmath_mfx_eval" ) ) )
     {
         case TYPEOF_init1:
         {
-            BCORE_REGISTER_OBJECT( bmath_mfx_eval_s );
-            BCORE_REGISTER_OBJECT( bmath_mfx_eval_result_s );
-            BCORE_REGISTER_OBJECT( bmath_arr_mfx_eval_s );
         }
         break;
 
