@@ -92,14 +92,24 @@
 
 #if BMATH_TEMPLATE_FX_PREC == 2
     #define MM_PX      ps
+
     #define M5_T       __m256
     #define P5_ZERO    { 0, 0, 0, 0, 0, 0, 0, 0 } // do not use with M5_T: might be platform dependent
     #define P5_HSUM(v) ( v[0] + v[1] + v[2] + v[3] + v[4] + v[5] + v[6] + v[7] )
+
+    #define M6_T       __m512
+    #define P6_ZERO    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } // do not use with M6_T: might be platform dependent
+    #define P6_HSUM(v) ( v[0] + v[1] + v[2] + v[3] + v[4] + v[5] + v[6] + v[7] + v[8] + v[9] + v[10] + v[11] + v[12] + v[13] + v[14] + v[15] )
 #elif BMATH_TEMPLATE_FX_PREC == 3
     #define MM_PX      pd
+
     #define M5_T       __m256d
     #define P5_ZERO    { 0, 0, 0, 0 } // do not use with M5_T: might be platform dependent
     #define P5_HSUM(v) ( v[0] + v[1] + v[2] + v[3] )
+
+    #define M6_T       __m512d
+    #define P6_ZERO    { 0, 0, 0, 0, 0, 0, 0, 0 } // do not use with M5_T: might be platform dependent
+    #define P6_HSUM(v) ( v[0] + v[1] + v[2] + v[3] + v[4] + v[5] + v[6] + v[7] )
 #endif // BMATH_TEMPLATE_FX_PREC
 
 // P5_SIZE: number of values per M5_T; P5_SIZE = 2 ^ P5_SIZE_B2E
@@ -115,6 +125,19 @@
 #define M5_SUB BCATU(_mm256_sub, MM_PX) // c = add( a, b ): c = a - b
 #define M5_MUL BCATU(_mm256_mul, MM_PX) // c = mul( a, b ): c = a * b
 
+// P6_SIZE: number of values per M6_T; P6_SIZE = 2 ^ P6_SIZE_B2E
+#define P6_SIZE_B2E ( 6 - BMATH_TEMPLATE_FX_PREC )
+#define P6_SIZE     ( 1 << P6_SIZE_B2E )
+
+#define M6_LOAD     BCATU(_mm512_loadu,   MM_PX) // a = loadu( ptr512 ): a = *ptr512
+#define M6_STOR     BCATU(_mm512_storeu,  MM_PX) // storeu( ptr512, a ): *ptr512 = a
+#define M6_SET_ALL  BCATU(_mm512_set1,    MM_PX) // a = set1( f_val ):  duplicates f_val to all elements of a
+#define M6_SET_ZERO BCATU(_mm512_setzero, MM_PX) // returns zero M6_T
+
+#define M6_ADD BCATU(_mm512_add, MM_PX) // c = add( a, b ): c = a + b
+#define M6_SUB BCATU(_mm512_sub, MM_PX) // c = add( a, b ): c = a - b
+#define M6_MUL BCATU(_mm512_mul, MM_PX) // c = mul( a, b ): c = a * b
+
 // d = fmadd( a, b, c ): d = a * b + c
 #ifdef BMATH_AVX2_FMA
     #define M5_MUL_ADD( a, b, c ) BCATU(_mm256_fmadd, MM_PX)( a, b, c )
@@ -122,6 +145,14 @@
 #else
     #define M5_MUL_ADD( a, b, c ) M5_ADD( M5_MUL( a, b ), c )
     #define M5_MUL_SUB( a, b, c ) M5_SUB( M5_MUL( a, b ), c )
+#endif
+
+#ifdef BMATH_AVX512_FMA
+    #define M6_MUL_ADD( a, b, c ) BCATU(_mm512_fmadd, MM_PX)( a, b, c )
+    #define M6_MUL_SUB( a, b, c ) BCATU(_mm512_fmsub, MM_PX)( a, b, c )
+#else
+    #define M6_MUL_ADD( a, b, c ) M6_ADD( M6_MUL( a, b ), c )
+    #define M6_MUL_SUB( a, b, c ) M6_SUB( M6_MUL( a, b ), c )
 #endif
 
 #define M5_GATHER  BCATU(_mm256_i32gather, MM_PX)

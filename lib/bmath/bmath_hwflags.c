@@ -42,6 +42,14 @@ void bmath_hwflags_to_string( st_s* string )
     st_s_push_fa( string, "AVX2_FMA " );
 #endif // BMATH_AVX2_FMA
 
+#ifdef BMATH_AVX512
+    st_s_push_fa( string, "AVX512 " );
+#endif // BMATH_AVX512
+
+#ifdef BMATH_AVX512_FMA
+    st_s_push_fa( string, "AVX512_FMA " );
+#endif // BMATH_AVX512_FMA
+
     st_s_push_fa( string, "\n" );
 }
 

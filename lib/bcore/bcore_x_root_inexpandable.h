@@ -56,6 +56,7 @@ type sd_t;
 type bl_t;
 type vd_t;
 type vc_t;
+type fp_t;
 type char;
 type void;
 type int;

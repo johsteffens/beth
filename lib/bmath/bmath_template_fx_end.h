@@ -75,20 +75,38 @@
 #undef P5_ZERO
 #undef P5_HSUM
 
+#undef P6_SIZE
+#undef P6_SIZE_B2E
+#undef P6_ZERO
+#undef P6_HSUM
+
 #undef M5_LOAD
 #undef M5_STOR
 #undef M5_SET_ALL
 #undef M5_SET_ZERO
 
+#undef M6_LOAD
+#undef M6_STOR
+#undef M6_SET_ALL
+#undef M6_SET_ZERO
+
 #undef M5_ADD
 #undef M5_SUB
 #undef M5_MUL
 
+#undef M6_ADD
+#undef M6_SUB
+#undef M6_MUL
+
 #undef M5_MUL_ADD
 #undef M5_MUL_SUB
 
+#undef M6_MUL_ADD
+#undef M6_MUL_SUB
+
 #undef MM_PX
 #undef M5_T
+#undef M6_T
 
 /**********************************************************************************************************************/
 

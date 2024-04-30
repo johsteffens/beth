@@ -61,8 +61,16 @@
         #define BMATH_AVX2
     #endif // __AVX2__
 
+    #ifdef __AVX512F__
+        #define BMATH_AVX512
+    #endif // __AVX512F__
+
     #if defined BMATH_AVX2 && !defined BMATH_DISABLE_FMA && !defined BMATH_STRICT_FALLBACK
         #define BMATH_AVX2_FMA
+    #endif
+
+    #if defined BMATH_AVX512 && !defined BMATH_DISABLE_FMA && !defined BMATH_STRICT_FALLBACK
+        #define BMATH_AVX512_FMA
     #endif
 #endif // BMATH_DISABLE_SIMD
 
