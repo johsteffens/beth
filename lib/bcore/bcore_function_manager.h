@@ -36,7 +36,7 @@ bl_t bcore_function_exists( tp_t t );
 void bcore_function_remove( tp_t t );
 
 // number of registered functions
-sz_t bcore_function_size();
+sz_t bcore_function_size( void );
 
 /**********************************************************************************************************************/
 

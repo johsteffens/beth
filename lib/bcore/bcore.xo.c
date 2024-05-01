@@ -1,4 +1,4 @@
-//  Last update: 2023-08-28T14:06:55Z
+//  Last update: 2024-05-01T10:38:14Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -38,6 +38,7 @@
  *  bcore_const_manager_inexpandable.x
  *  bcore_flect_inexpandable.x
  *  bcore_folder_inexpandable.x
+ *  bcore_function_manager_inexpandable.x
  *  bcore_global_manager_inexpandable.x
  *  bcore_hmap_inexpandable.x
  *  bcore_huffman.x
@@ -58,7 +59,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0xD7356BC0F11DF8B3ull
+// HKEYOF_bcore 0x9614B36F30788558ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -4804,6 +4805,20 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             // source: bcore_x_inst.h
 
             // group: x_inst
+            BCORE_REGISTER_FUNC( x_inst_exists );
+            BCORE_REGISTER_FUNC( x_inst_t_copy );
+            BCORE_REGISTER_FUNC( x_inst_copy );
+            BCORE_REGISTER_FUNC( x_inst_t_copy_typed );
+            BCORE_REGISTER_FUNC( x_inst_copy_typed );
+            BCORE_REGISTER_FUNC( x_inst_t_clone );
+            BCORE_REGISTER_FUNC( x_inst_clone );
+            BCORE_REGISTER_FUNC( x_inst_t_discard );
+            BCORE_REGISTER_FUNC( x_inst_discard );
+            BCORE_REGISTER_FUNC( x_inst_ifd );
+            BCORE_REGISTER_FUNC( x_inst_ifc );
+            BCORE_REGISTER_FUNC( x_inst_create );
+            BCORE_REGISTER_FUNC( x_inst_attend );
+            BCORE_REGISTER_FUNC( x_inst_attn );
             XOILA_REGISTER_SPECT( x_inst );
 
             // --------------------------------------------------------------------
@@ -4811,12 +4826,91 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
 
             // group: x_source
             BCORE_REGISTER_OBJECT( x_source_point_s );
+            BCORE_REGISTER_FUNC( x_source_create_from_file );
+            BCORE_REGISTER_FUNC( x_source_create_from_st );
+            BCORE_REGISTER_FUNC( x_source_create_from_st_d );
+            BCORE_REGISTER_FUNC( x_source_create_from_sc );
+            BCORE_REGISTER_FUNC( x_source_create_from_fv );
+            BCORE_REGISTER_FUNC( x_source_create_from_fa );
+            BCORE_REGISTER_FUNC( x_source_check_create_from_file );
+            BCORE_REGISTER_FUNC( x_source_eos );
+            BCORE_REGISTER_FUNC( x_source_get_data );
+            BCORE_REGISTER_FUNC( x_source_inspect_data );
+            BCORE_REGISTER_FUNC( x_source_get_char );
+            BCORE_REGISTER_FUNC( x_source_inspect_char );
+            BCORE_REGISTER_FUNC( x_source_get_s3 );
+            BCORE_REGISTER_FUNC( x_source_get_s2 );
+            BCORE_REGISTER_FUNC( x_source_get_s1 );
+            BCORE_REGISTER_FUNC( x_source_get_s0 );
+            BCORE_REGISTER_FUNC( x_source_get_u3 );
+            BCORE_REGISTER_FUNC( x_source_get_u2 );
+            BCORE_REGISTER_FUNC( x_source_get_u1 );
+            BCORE_REGISTER_FUNC( x_source_get_u0 );
+            BCORE_REGISTER_FUNC( x_source_get_f3 );
+            BCORE_REGISTER_FUNC( x_source_get_f2 );
+            BCORE_REGISTER_FUNC( x_source_get_bl );
+            BCORE_REGISTER_FUNC( x_source_get_tp );
+            BCORE_REGISTER_FUNC( x_source_get_sz );
+            BCORE_REGISTER_FUNC( x_source_get_uz );
+            BCORE_REGISTER_FUNC( x_source_inspect_s3 );
+            BCORE_REGISTER_FUNC( x_source_inspect_s2 );
+            BCORE_REGISTER_FUNC( x_source_inspect_s1 );
+            BCORE_REGISTER_FUNC( x_source_inspect_s0 );
+            BCORE_REGISTER_FUNC( x_source_inspect_u3 );
+            BCORE_REGISTER_FUNC( x_source_inspect_u2 );
+            BCORE_REGISTER_FUNC( x_source_inspect_u1 );
+            BCORE_REGISTER_FUNC( x_source_inspect_u0 );
+            BCORE_REGISTER_FUNC( x_source_inspect_f3 );
+            BCORE_REGISTER_FUNC( x_source_inspect_f2 );
+            BCORE_REGISTER_FUNC( x_source_inspect_bl );
+            BCORE_REGISTER_FUNC( x_source_inspect_tp );
+            BCORE_REGISTER_FUNC( x_source_inspect_sz );
+            BCORE_REGISTER_FUNC( x_source_inspect_uz );
+            BCORE_REGISTER_FUNC( x_source_get_index );
+            BCORE_REGISTER_FUNC( x_source_set_index );
+            BCORE_REGISTER_FUNC( x_source_parse_bl );
+            BCORE_REGISTER_FUNC( x_source_parse_fv );
+            BCORE_REGISTER_FUNC( x_source_parse_fa );
+            BCORE_REGISTER_FUNC( x_source_parse_error_fv );
+            BCORE_REGISTER_FUNC( x_source_parse_error_fa );
+            BCORE_REGISTER_FUNC( x_source_parse_msg_to_sink_fv );
+            BCORE_REGISTER_FUNC( x_source_parse_msg_to_sink_fa );
+            BCORE_REGISTER_FUNC( x_source_parse_msg_fv );
+            BCORE_REGISTER_FUNC( x_source_parse_msg_fa );
+            BCORE_REGISTER_FUNC( x_source_get_file );
+            BCORE_REGISTER_FUNC( x_source_stdin );
             XOILA_REGISTER_SPECT( x_source );
 
             // --------------------------------------------------------------------
             // source: bcore_x_sink.h
 
             // group: x_sink
+            BCORE_REGISTER_FUNC( x_sink_create_from_file );
+            BCORE_REGISTER_FUNC( x_sink_check_create_from_file );
+            BCORE_REGISTER_FUNC( x_sink_push_data );
+            BCORE_REGISTER_FUNC( x_sink_push_char );
+            BCORE_REGISTER_FUNC( x_sink_push_sc );
+            BCORE_REGISTER_FUNC( x_sink_push_st );
+            BCORE_REGISTER_FUNC( x_sink_push_st_d );
+            BCORE_REGISTER_FUNC( x_sink_push_fv );
+            BCORE_REGISTER_FUNC( x_sink_push_fa );
+            BCORE_REGISTER_FUNC( x_sink_flush );
+            BCORE_REGISTER_FUNC( x_sink_push_s3 );
+            BCORE_REGISTER_FUNC( x_sink_push_s2 );
+            BCORE_REGISTER_FUNC( x_sink_push_s1 );
+            BCORE_REGISTER_FUNC( x_sink_push_s0 );
+            BCORE_REGISTER_FUNC( x_sink_push_u3 );
+            BCORE_REGISTER_FUNC( x_sink_push_u2 );
+            BCORE_REGISTER_FUNC( x_sink_push_u1 );
+            BCORE_REGISTER_FUNC( x_sink_push_u0 );
+            BCORE_REGISTER_FUNC( x_sink_push_f3 );
+            BCORE_REGISTER_FUNC( x_sink_push_f2 );
+            BCORE_REGISTER_FUNC( x_sink_push_bl );
+            BCORE_REGISTER_FUNC( x_sink_push_tp );
+            BCORE_REGISTER_FUNC( x_sink_push_sz );
+            BCORE_REGISTER_FUNC( x_sink_push_uz );
+            BCORE_REGISTER_FUNC( x_sink_stdout );
+            BCORE_REGISTER_FUNC( x_sink_stderr );
             XOILA_REGISTER_SPECT( x_sink );
 
             // --------------------------------------------------------------------
@@ -4826,12 +4920,78 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_NAME( size );
             BCORE_REGISTER_NAME( space );
             BCORE_REGISTER_NAME( data );
+            BCORE_REGISTER_FUNC( x_array_t_size );
+            BCORE_REGISTER_FUNC( x_array_size );
+            BCORE_REGISTER_FUNC( x_array_t_set_size );
+            BCORE_REGISTER_FUNC( x_array_set_size );
+            BCORE_REGISTER_FUNC( x_array_t_set_space );
+            BCORE_REGISTER_FUNC( x_array_set_space );
+            BCORE_REGISTER_FUNC( x_array_t_clear );
+            BCORE_REGISTER_FUNC( x_array_clear );
+            BCORE_REGISTER_FUNC( x_array_t_sort );
+            BCORE_REGISTER_FUNC( x_array_sort );
+            BCORE_REGISTER_FUNC( x_array_t_is_fixed );
+            BCORE_REGISTER_FUNC( x_array_t_is_static );
+            BCORE_REGISTER_FUNC( x_array_t_is_of_aware );
+            BCORE_REGISTER_FUNC( x_array_t_is_of_links );
+            BCORE_REGISTER_FUNC( x_array_t_is_mono_typed );
+            BCORE_REGISTER_FUNC( x_array_is_fixed );
+            BCORE_REGISTER_FUNC( x_array_is_static );
+            BCORE_REGISTER_FUNC( x_array_is_of_aware );
+            BCORE_REGISTER_FUNC( x_array_is_of_links );
+            BCORE_REGISTER_FUNC( x_array_is_mono_typed );
+            BCORE_REGISTER_FUNC( x_array_t_is_mutable_mono_typed );
+            BCORE_REGISTER_FUNC( x_array_is_mutable_mono_typed );
+            BCORE_REGISTER_FUNC( x_array_t_is_is_multi_typed );
+            BCORE_REGISTER_FUNC( x_array_is_is_multi_typed );
+            BCORE_REGISTER_FUNC( x_array_t_get_static_type );
+            BCORE_REGISTER_FUNC( x_array_get_static_type );
+            BCORE_REGISTER_FUNC( x_array_t_get_mono_type );
+            BCORE_REGISTER_FUNC( x_array_get_mono_type );
+            BCORE_REGISTER_FUNC( x_array_t_get_type );
+            BCORE_REGISTER_FUNC( x_array_get_type );
+            BCORE_REGISTER_FUNC( x_array_t_get_data_c );
+            BCORE_REGISTER_FUNC( x_array_get_data_c );
+            BCORE_REGISTER_FUNC( x_array_t_get_data_m );
+            BCORE_REGISTER_FUNC( x_array_get_data_m );
+            BCORE_REGISTER_FUNC( x_array_t_get_unit_size );
+            BCORE_REGISTER_FUNC( x_array_get_unit_size );
+            BCORE_REGISTER_FUNC( x_array_t_set_gtype );
+            BCORE_REGISTER_FUNC( x_array_set_gtype );
+            BCORE_REGISTER_FUNC( x_array_t_push_sr );
+            BCORE_REGISTER_FUNC( x_array_push_d );
+            BCORE_REGISTER_FUNC( x_array_push_c );
+            BCORE_REGISTER_FUNC( x_array_push_t );
+            BCORE_REGISTER_FUNC( x_array_push );
+            BCORE_REGISTER_FUNC( x_array_push_sr );
+            BCORE_REGISTER_FUNC( x_array_t_set_sr );
+            BCORE_REGISTER_FUNC( x_array_set_d );
+            BCORE_REGISTER_FUNC( x_array_set_c );
+            BCORE_REGISTER_FUNC( x_array_set_t );
+            BCORE_REGISTER_FUNC( x_array_set_sr );
+            BCORE_REGISTER_FUNC( x_array_t_m_get_sr );
+            BCORE_REGISTER_FUNC( x_array_m_get_sr );
+            BCORE_REGISTER_FUNC( x_array_c_get_sr );
+            BCORE_REGISTER_FUNC( x_array_c_get_f3 );
+            BCORE_REGISTER_FUNC( x_array_c_get_u3 );
+            BCORE_REGISTER_FUNC( x_array_c_get_s3 );
+            BCORE_REGISTER_FUNC( x_array_c_get_bl );
+            BCORE_REGISTER_FUNC( x_array_c_get_tp );
+            BCORE_REGISTER_FUNC( x_array_t_push_d );
+            BCORE_REGISTER_FUNC( x_array_t_push_c );
+            BCORE_REGISTER_FUNC( x_array_t_push_t );
+            BCORE_REGISTER_FUNC( x_array_t_push );
+            BCORE_REGISTER_FUNC( x_array_t_set_d );
+            BCORE_REGISTER_FUNC( x_array_t_set_c );
+            BCORE_REGISTER_FUNC( x_array_t_set_t );
+            BCORE_REGISTER_FUNC( x_array_t_c_get_sr );
             XOILA_REGISTER_SPECT( x_array );
 
             // --------------------------------------------------------------------
             // source: bcore_x_group.h
 
             // group: x_group
+            BCORE_REGISTER_FUNC( x_group_get_arr_traitline_stamps );
             XOILA_REGISTER_SPECT( x_group );
 
             // --------------------------------------------------------------------
@@ -4842,6 +5002,74 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_NAME( sr_s );
             BCORE_REGISTER_OBJECT( x_stamp_path_s );
             BCORE_REGISTER_OBJECT( x_stamp_path_adl_s );
+            BCORE_REGISTER_FUNC( x_stamp_size );
+            BCORE_REGISTER_FUNC( x_stamp_t_size );
+            BCORE_REGISTER_FUNC( x_stamp_is_leaf );
+            BCORE_REGISTER_FUNC( x_stamp_t_is_leaf );
+            BCORE_REGISTER_FUNC( x_stamp_is_aware );
+            BCORE_REGISTER_FUNC( x_stamp_t_is_aware );
+            BCORE_REGISTER_FUNC( x_stamp_is_pure_array );
+            BCORE_REGISTER_FUNC( x_stamp_t_is_pure_array );
+            BCORE_REGISTER_FUNC( x_stamp_name );
+            BCORE_REGISTER_FUNC( x_stamp_t_name );
+            BCORE_REGISTER_FUNC( x_stamp_index );
+            BCORE_REGISTER_FUNC( x_stamp_t_index );
+            BCORE_REGISTER_FUNC( x_stamp_exists );
+            BCORE_REGISTER_FUNC( x_stamp_t_exists );
+            BCORE_REGISTER_FUNC( x_stamp_is_static_i );
+            BCORE_REGISTER_FUNC( x_stamp_t_is_static_i );
+            BCORE_REGISTER_FUNC( x_stamp_is_link_i );
+            BCORE_REGISTER_FUNC( x_stamp_t_is_link_i );
+            BCORE_REGISTER_FUNC( x_stamp_type );
+            BCORE_REGISTER_FUNC( x_stamp_t_type );
+            BCORE_REGISTER_FUNC( x_stamp_type_i );
+            BCORE_REGISTER_FUNC( x_stamp_t_type_i );
+            BCORE_REGISTER_FUNC( x_stamp_m_get_sr );
+            BCORE_REGISTER_FUNC( x_stamp_m_get_sr_i );
+            BCORE_REGISTER_FUNC( x_stamp_c_get_sr );
+            BCORE_REGISTER_FUNC( x_stamp_c_get_sr_i );
+            BCORE_REGISTER_FUNC( x_stamp_t_c_get );
+            BCORE_REGISTER_FUNC( x_stamp_t_m_get );
+            BCORE_REGISTER_FUNC( x_stamp_t_c_get_i );
+            BCORE_REGISTER_FUNC( x_stamp_t_m_get_i );
+            BCORE_REGISTER_FUNC( x_stamp_c_get );
+            BCORE_REGISTER_FUNC( x_stamp_m_get );
+            BCORE_REGISTER_FUNC( x_stamp_c_get_i );
+            BCORE_REGISTER_FUNC( x_stamp_m_get_i );
+            BCORE_REGISTER_FUNC( x_stamp_get_f3 );
+            BCORE_REGISTER_FUNC( x_stamp_get_s3 );
+            BCORE_REGISTER_FUNC( x_stamp_get_u3 );
+            BCORE_REGISTER_FUNC( x_stamp_get_tp );
+            BCORE_REGISTER_FUNC( x_stamp_get_bl );
+            BCORE_REGISTER_FUNC( x_stamp_set_sr );
+            BCORE_REGISTER_FUNC( x_stamp_set_sr_i );
+            BCORE_REGISTER_FUNC( x_stamp_set_sr_ret );
+            BCORE_REGISTER_FUNC( x_stamp_set_sr_ret_i );
+            BCORE_REGISTER_FUNC( x_stamp_set_c );
+            BCORE_REGISTER_FUNC( x_stamp_set_d );
+            BCORE_REGISTER_FUNC( x_stamp_set_t_c );
+            BCORE_REGISTER_FUNC( x_stamp_set_t_d );
+            BCORE_REGISTER_FUNC( x_stamp_set_f3 );
+            BCORE_REGISTER_FUNC( x_stamp_set_s3 );
+            BCORE_REGISTER_FUNC( x_stamp_set_u3 );
+            BCORE_REGISTER_FUNC( x_stamp_set_tp );
+            BCORE_REGISTER_FUNC( x_stamp_set_bl );
+            BCORE_REGISTER_FUNC( x_stamp_set_st );
+            BCORE_REGISTER_FUNC( x_stamp_t_mutated );
+            BCORE_REGISTER_FUNC( x_stamp_mutated );
+            BCORE_REGISTER_FUNC( x_stamp_t_shelve );
+            BCORE_REGISTER_FUNC( x_stamp_shelve );
+            BCORE_REGISTER_FUNC( x_stamp_t_source );
+            BCORE_REGISTER_FUNC( x_stamp_source );
+            BCORE_REGISTER_FUNC( x_stamp_t_m_get_sr );
+            BCORE_REGISTER_FUNC( x_stamp_t_m_get_sr_i );
+            BCORE_REGISTER_FUNC( x_stamp_t_set_sr );
+            BCORE_REGISTER_FUNC( x_stamp_t_set_sr_ret );
+            BCORE_REGISTER_FUNC( x_stamp_t_set_sr_i );
+            BCORE_REGISTER_FUNC( x_stamp_t_set_sr_ret_i );
+            BCORE_REGISTER_FUNC( x_stamp_t_c_get_sr );
+            BCORE_REGISTER_FUNC( x_stamp_t_c_get_sr_i );
+            BCORE_REGISTER_FUNC( x_stamp_selftest );
             XOILA_REGISTER_SPECT( x_stamp );
 
             // --------------------------------------------------------------------
@@ -4858,6 +5086,9 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bcore_inst_call_init_x, x_condition_s_init_x );
             BCORE_REGISTER_FFUNC( bcore_inst_call_down_e, x_condition_s_down_e );
             BCORE_REGISTER_OBJECT( x_condition_s );
+            BCORE_REGISTER_FUNC( x_threads_sleep_ns );
+            BCORE_REGISTER_FUNC( x_threads_sleep_us );
+            BCORE_REGISTER_FUNC( x_threads_sleep_ms );
             XOILA_REGISTER_SPECT( x );
 
             // group: x_thread
@@ -4877,6 +5108,22 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bcore_via_call_source, bcore_file_path_s_source );
             BCORE_REGISTER_FFUNC( bcore_fp_copy_typed, bcore_file_path_s_copy_typed );
             BCORE_REGISTER_OBJECT( bcore_file_path_s );
+            BCORE_REGISTER_FUNC( bcore_file_path_minimized );
+            BCORE_REGISTER_FUNC( bcore_file_extension );
+            BCORE_REGISTER_FUNC( bcore_file_name );
+            BCORE_REGISTER_FUNC( bcore_file_strip_extension );
+            BCORE_REGISTER_FUNC( bcore_file_folder_path );
+            BCORE_REGISTER_FUNC( bcore_file_folder_name );
+            BCORE_REGISTER_FUNC( bcore_file_exists );
+            BCORE_REGISTER_FUNC( bcore_file_touch );
+            BCORE_REGISTER_FUNC( bcore_file_delete );
+            BCORE_REGISTER_FUNC( bcore_file_rename );
+            BCORE_REGISTER_FUNC( bcore_file_last_modification_time_us );
+            BCORE_REGISTER_FUNC( bcore_file_find_descend );
+            BCORE_REGISTER_FUNC( bcore_file_open_source );
+            BCORE_REGISTER_FUNC( bcore_file_open_source_path );
+            BCORE_REGISTER_FUNC( bcore_file_open_sink );
+            BCORE_REGISTER_FUNC( bcore_file_try_open_sink );
             XOILA_REGISTER_SPECT( bcore_file );
 
             // --------------------------------------------------------------------
@@ -4936,6 +5183,7 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
 
             // group: bcore_hmap_tp_st
             BCORE_REGISTER_OBJECT( bcore_hmap_tp_st_s );
+            BCORE_REGISTER_FUNC( bcore_hmap_tp_st_selftest );
             XOILA_REGISTER_SPECT( bcore_hmap_tp_st );
 
             // --------------------------------------------------------------------
@@ -4954,6 +5202,19 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_NAME( parse_error );
             BCORE_REGISTER_NAME( plant_error );
             BCORE_REGISTER_NAME( error_stack );
+            BCORE_REGISTER_FUNC( bcore_error_stack_size );
+            BCORE_REGISTER_FUNC( bcore_error_clear_stack );
+            BCORE_REGISTER_FUNC( bcore_error_remove_last );
+            BCORE_REGISTER_FUNC( bcore_error_push_sc );
+            BCORE_REGISTER_FUNC( bcore_error_push_fv );
+            BCORE_REGISTER_FUNC( bcore_error_push_fa );
+            BCORE_REGISTER_FUNC( bcore_error_last );
+            BCORE_REGISTER_FUNC( bcore_error_pop_st );
+            BCORE_REGISTER_FUNC( bcore_error_pop_to_sink );
+            BCORE_REGISTER_FUNC( bcore_error_pop_to_stderr );
+            BCORE_REGISTER_FUNC( bcore_error_pop_all_to_sink );
+            BCORE_REGISTER_FUNC( bcore_error_pop_all_to_stderr );
+            BCORE_REGISTER_FUNC( bcore_error_pop_all );
             XOILA_REGISTER_SPECT( bcore_error );
 
             // group: bcore_error_manager
@@ -5171,6 +5432,10 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bcore_shell_op_group, bcore_shell_op_group_default );
             BCORE_REGISTER_FEATURE( bcore_shell_push_op_groups );
             BCORE_REGISTER_FFUNC( bcore_shell_push_op_groups, bcore_shell_push_op_groups_default );
+            BCORE_REGISTER_FUNC( bcore_shell_get_op_stamps );
+            BCORE_REGISTER_FUNC( bcore_shell_help_to_sink );
+            BCORE_REGISTER_FUNC( bcore_shell_run_expression );
+            BCORE_REGISTER_FUNC( bcore_shell_loop );
             XOILA_REGISTER_SPECT( bcore_shell );
 
             // group: bcore_shell_op
@@ -5181,6 +5446,10 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FEATURE( bcore_shell_op_get_info );
             BCORE_REGISTER_FFUNC( bcore_shell_op_get_info, bcore_shell_op_get_info_default );
             BCORE_REGISTER_FEATURE( bcore_shell_op_run );
+            BCORE_REGISTER_FUNC( bcore_shell_op_key_match );
+            BCORE_REGISTER_FUNC( bcore_shell_op_parse_match );
+            BCORE_REGISTER_FUNC( bcore_shell_op_parse_param );
+            BCORE_REGISTER_FUNC( bcore_shell_op_arg_signature_to_sink );
             XOILA_REGISTER_SPECT( bcore_shell_op );
 
             // group: bcore_shell_control
@@ -5256,6 +5525,12 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bcore_huffman_count_node_s );
             BCORE_REGISTER_OBJECT( bcore_huffman_count_map_s );
             BCORE_REGISTER_OBJECT( bcore_huffman_tree_s );
+            BCORE_REGISTER_FUNC( bcore_huffman_min_bits );
+            BCORE_REGISTER_FUNC( bcore_huffman_u2_from_s2 );
+            BCORE_REGISTER_FUNC( bcore_huffman_u3_from_s3 );
+            BCORE_REGISTER_FUNC( bcore_huffman_s2_from_u2 );
+            BCORE_REGISTER_FUNC( bcore_huffman_s3_from_u3 );
+            BCORE_REGISTER_FUNC( bcore_huffman_selftest );
             XOILA_REGISTER_SPECT( bcore_huffman );
 
             // --------------------------------------------------------------------
@@ -5267,6 +5542,7 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( bcore_indexer_cs_s );
             BCORE_REGISTER_OBJECT( bcore_indexer_cs_arr_s );
             BCORE_REGISTER_OBJECT( bcore_indexer_s );
+            BCORE_REGISTER_FUNC( bcore_indexer_selftest );
             XOILA_REGISTER_SPECT( bcore_indexer );
 
             // --------------------------------------------------------------------
@@ -5275,6 +5551,46 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             // group: x_btml
             BCORE_REGISTER_FEATURE( x_btml_btml_body_from_source );
             BCORE_REGISTER_FEATURE( x_btml_btml_body_to_sink );
+            BCORE_REGISTER_FUNC( x_btml_from_source );
+            BCORE_REGISTER_FUNC( x_btml_t_from_file );
+            BCORE_REGISTER_FUNC( x_btml_from_file );
+            BCORE_REGISTER_FUNC( x_btml_t_from_st );
+            BCORE_REGISTER_FUNC( x_btml_from_st );
+            BCORE_REGISTER_FUNC( x_btml_t_from_sc );
+            BCORE_REGISTER_FUNC( x_btml_from_sc );
+            BCORE_REGISTER_FUNC( x_btml_t_body_from_source );
+            BCORE_REGISTER_FUNC( x_btml_body_from_source );
+            BCORE_REGISTER_FUNC( x_btml_t_body_from_file );
+            BCORE_REGISTER_FUNC( x_btml_body_from_file );
+            BCORE_REGISTER_FUNC( x_btml_t_body_from_st );
+            BCORE_REGISTER_FUNC( x_btml_body_from_st );
+            BCORE_REGISTER_FUNC( x_btml_t_body_from_sc );
+            BCORE_REGISTER_FUNC( x_btml_body_from_sc );
+            BCORE_REGISTER_FUNC( x_btml_create_from_st_t );
+            BCORE_REGISTER_FUNC( x_btml_create_from_sc_t );
+            BCORE_REGISTER_FUNC( x_btml_create_from_st );
+            BCORE_REGISTER_FUNC( x_btml_create_from_sc );
+            BCORE_REGISTER_FUNC( x_btml_create_from_file );
+            BCORE_REGISTER_FUNC( x_btml_to_sink );
+            BCORE_REGISTER_FUNC( x_btml_t_to_file );
+            BCORE_REGISTER_FUNC( x_btml_to_file );
+            BCORE_REGISTER_FUNC( x_btml_t_to_stdout );
+            BCORE_REGISTER_FUNC( x_btml_to_stdout );
+            BCORE_REGISTER_FUNC( x_btml_test_transfer );
+            BCORE_REGISTER_FUNC( x_btml_t_from_source );
+            BCORE_REGISTER_FUNC( x_btml_create_from_source_t );
+            BCORE_REGISTER_FUNC( x_btml_create_from_source );
+            BCORE_REGISTER_FUNC( x_btml_t_to_sink );
+            BCORE_REGISTER_FUNC( x_btml_name_of );
+            BCORE_REGISTER_FUNC( x_btml_type_of );
+            BCORE_REGISTER_FUNC( x_btml_appears_valid );
+            BCORE_REGISTER_FUNC( x_btml_t_appears_valid );
+            BCORE_REGISTER_FUNC( x_btml_parse_create_object );
+            BCORE_REGISTER_FUNC( x_btml_t_parse_body );
+            BCORE_REGISTER_FUNC( x_btml_skip_body );
+            BCORE_REGISTER_FUNC( x_btml_t_translate_recursive );
+            BCORE_REGISTER_FUNC( x_btml_t_test_transfer );
+            BCORE_REGISTER_FUNC( x_btml_selftest );
             XOILA_REGISTER_SPECT( x_btml );
 
             // --------------------------------------------------------------------
@@ -5283,6 +5599,40 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             // group: x_bbml
             BCORE_REGISTER_FEATURE( x_bbml_bbml_body_from_source );
             BCORE_REGISTER_FEATURE( x_bbml_bbml_body_to_sink );
+            BCORE_REGISTER_FUNC( x_bbml_from_source );
+            BCORE_REGISTER_FUNC( x_bbml_t_from_file );
+            BCORE_REGISTER_FUNC( x_bbml_from_file );
+            BCORE_REGISTER_FUNC( x_bbml_t_from_st );
+            BCORE_REGISTER_FUNC( x_bbml_from_st );
+            BCORE_REGISTER_FUNC( x_bbml_t_from_sc );
+            BCORE_REGISTER_FUNC( x_bbml_from_sc );
+            BCORE_REGISTER_FUNC( x_bbml_create_from_st_t );
+            BCORE_REGISTER_FUNC( x_bbml_create_from_sc_t );
+            BCORE_REGISTER_FUNC( x_bbml_create_from_st );
+            BCORE_REGISTER_FUNC( x_bbml_create_from_sc );
+            BCORE_REGISTER_FUNC( x_bbml_create_from_file );
+            BCORE_REGISTER_FUNC( x_bbml_to_sink );
+            BCORE_REGISTER_FUNC( x_bbml_t_to_file );
+            BCORE_REGISTER_FUNC( x_bbml_to_file );
+            BCORE_REGISTER_FUNC( x_bbml_test_transfer );
+            BCORE_REGISTER_FUNC( x_bbml_t_from_source );
+            BCORE_REGISTER_FUNC( x_bbml_create_from_source_t );
+            BCORE_REGISTER_FUNC( x_bbml_create_from_source );
+            BCORE_REGISTER_FUNC( x_bbml_t_to_sink );
+            BCORE_REGISTER_FUNC( x_bbml_parse_type );
+            BCORE_REGISTER_FUNC( x_bbml_parse_flag );
+            BCORE_REGISTER_FUNC( x_bbml_parse_size );
+            BCORE_REGISTER_FUNC( x_bbml_appears_valid );
+            BCORE_REGISTER_FUNC( x_bbml_parse_create_object );
+            BCORE_REGISTER_FUNC( x_bbml_t_parse_leaf_body );
+            BCORE_REGISTER_FUNC( x_bbml_t_parse_body );
+            BCORE_REGISTER_FUNC( x_bbml_push_type );
+            BCORE_REGISTER_FUNC( x_bbml_push_flag );
+            BCORE_REGISTER_FUNC( x_bbml_push_size );
+            BCORE_REGISTER_FUNC( x_bbml_push_leaf );
+            BCORE_REGISTER_FUNC( x_bbml_t_translate_recursive );
+            BCORE_REGISTER_FUNC( x_bbml_t_test_transfer );
+            BCORE_REGISTER_FUNC( x_bbml_selftest );
             XOILA_REGISTER_SPECT( x_bbml );
 
             // --------------------------------------------------------------------
@@ -5291,6 +5641,42 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             // group: x_bcml
             BCORE_REGISTER_FEATURE( x_bcml_bcml_body_from_source );
             BCORE_REGISTER_FEATURE( x_bcml_bcml_body_to_sink );
+            BCORE_REGISTER_FUNC( x_bcml_from_source );
+            BCORE_REGISTER_FUNC( x_bcml_t_from_file );
+            BCORE_REGISTER_FUNC( x_bcml_from_file );
+            BCORE_REGISTER_FUNC( x_bcml_t_from_st );
+            BCORE_REGISTER_FUNC( x_bcml_from_st );
+            BCORE_REGISTER_FUNC( x_bcml_t_from_sc );
+            BCORE_REGISTER_FUNC( x_bcml_from_sc );
+            BCORE_REGISTER_FUNC( x_bcml_create_from_st_t );
+            BCORE_REGISTER_FUNC( x_bcml_create_from_sc_t );
+            BCORE_REGISTER_FUNC( x_bcml_create_from_st );
+            BCORE_REGISTER_FUNC( x_bcml_create_from_sc );
+            BCORE_REGISTER_FUNC( x_bcml_create_from_file );
+            BCORE_REGISTER_FUNC( x_bcml_to_sink );
+            BCORE_REGISTER_FUNC( x_bcml_t_to_file );
+            BCORE_REGISTER_FUNC( x_bcml_to_file );
+            BCORE_REGISTER_FUNC( x_bcml_test_transfer );
+            BCORE_REGISTER_FUNC( x_bcml_t_from_source );
+            BCORE_REGISTER_FUNC( x_bcml_create_from_source_t );
+            BCORE_REGISTER_FUNC( x_bcml_create_from_source );
+            BCORE_REGISTER_FUNC( x_bcml_t_to_sink );
+            BCORE_REGISTER_FUNC( x_bcml_parse_type );
+            BCORE_REGISTER_FUNC( x_bcml_parse_flag );
+            BCORE_REGISTER_FUNC( x_bcml_parse_size );
+            BCORE_REGISTER_FUNC( x_bcml_appears_valid );
+            BCORE_REGISTER_FUNC( x_bcml_parse_create_object );
+            BCORE_REGISTER_FUNC( x_bcml_t_parse_leaf_body );
+            BCORE_REGISTER_FUNC( x_bcml_t_parse_leaf_arr_body );
+            BCORE_REGISTER_FUNC( x_bcml_t_parse_body );
+            BCORE_REGISTER_FUNC( x_bcml_push_type );
+            BCORE_REGISTER_FUNC( x_bcml_push_flag );
+            BCORE_REGISTER_FUNC( x_bcml_push_size );
+            BCORE_REGISTER_FUNC( x_bcml_push_leaf );
+            BCORE_REGISTER_FUNC( x_bcml_push_leaf_arr );
+            BCORE_REGISTER_FUNC( x_bcml_t_translate_recursive );
+            BCORE_REGISTER_FUNC( x_bcml_t_test_transfer );
+            BCORE_REGISTER_FUNC( x_bcml_selftest );
             XOILA_REGISTER_SPECT( x_bcml );
 
             // --------------------------------------------------------------------
@@ -5305,6 +5691,25 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( x_hmap_tp_s );
             BCORE_REGISTER_FFUNC( x_hmap_tp_TE, x_hmap_tp_st_s_TE );
             BCORE_REGISTER_OBJECT( x_hmap_tp_st_s );
+            BCORE_REGISTER_FUNC( x_hmap_tp_m_map_ );
+            BCORE_REGISTER_FUNC( x_hmap_tp_c_map_ );
+            BCORE_REGISTER_FUNC( x_hmap_tp_c_get );
+            BCORE_REGISTER_FUNC( x_hmap_tp_m_get );
+            BCORE_REGISTER_FUNC( x_hmap_tp_set_c );
+            BCORE_REGISTER_FUNC( x_hmap_tp_set_d );
+            BCORE_REGISTER_FUNC( x_hmap_tp_remove );
+            BCORE_REGISTER_FUNC( x_hmap_tp_exists );
+            BCORE_REGISTER_FUNC( x_hmap_tp_clear );
+            BCORE_REGISTER_FUNC( x_hmap_tp_keys );
+            BCORE_REGISTER_FUNC( x_hmap_tp_size );
+            BCORE_REGISTER_FUNC( x_hmap_tp_idx_key );
+            BCORE_REGISTER_FUNC( x_hmap_tp_c_idx_val );
+            BCORE_REGISTER_FUNC( x_hmap_tp_m_idx_val );
+            BCORE_REGISTER_FUNC( x_hmap_tp_get_key_arr );
+            BCORE_REGISTER_FUNC( x_hmap_tp_m_get_val_arr );
+            BCORE_REGISTER_FUNC( x_hmap_tp_c_get_val_arr );
+            BCORE_REGISTER_FUNC( x_hmap_tp_all_keys );
+            BCORE_REGISTER_FUNC( x_hmap_tp_m_getf );
             XOILA_REGISTER_SPECT( x_hmap_tp );
 
             // group: x_hmap_tp_test
@@ -5313,6 +5718,7 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( x_hmap_tp_test_val_s );
             BCORE_REGISTER_FFUNC( x_hmap_tp_TE, x_hmap_tp_test_map_s_TE );
             BCORE_REGISTER_OBJECT( x_hmap_tp_test_map_s );
+            BCORE_REGISTER_FUNC( x_hmap_tp_test_selftest );
             XOILA_REGISTER_SPECT( x_hmap_tp_test );
 
             // --------------------------------------------------------------------
@@ -5321,6 +5727,25 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             // group: x_deque
             BCORE_REGISTER_OBJECT( x_deque_inst_adl_s );
             BCORE_REGISTER_OBJECT( x_deque_inst_s );
+            BCORE_REGISTER_FUNC( x_deque_m_inst_ );
+            BCORE_REGISTER_FUNC( x_deque_c_inst_ );
+            BCORE_REGISTER_FUNC( x_deque_set_space );
+            BCORE_REGISTER_FUNC( x_deque_clear );
+            BCORE_REGISTER_FUNC( x_deque_size );
+            BCORE_REGISTER_FUNC( x_deque_m_get );
+            BCORE_REGISTER_FUNC( x_deque_c_get );
+            BCORE_REGISTER_FUNC( x_deque_m_get_first );
+            BCORE_REGISTER_FUNC( x_deque_c_get_first );
+            BCORE_REGISTER_FUNC( x_deque_m_get_last );
+            BCORE_REGISTER_FUNC( x_deque_c_get_last );
+            BCORE_REGISTER_FUNC( x_deque_push_last_d );
+            BCORE_REGISTER_FUNC( x_deque_push_first_d );
+            BCORE_REGISTER_FUNC( x_deque_d_pop_last );
+            BCORE_REGISTER_FUNC( x_deque_d_pop_first );
+            BCORE_REGISTER_FUNC( x_deque_remove_last );
+            BCORE_REGISTER_FUNC( x_deque_remove_first );
+            BCORE_REGISTER_FUNC( x_deque_remove_last_n );
+            BCORE_REGISTER_FUNC( x_deque_remove_first_n );
             XOILA_REGISTER_SPECT( x_deque );
         }
         break;
@@ -5328,5 +5753,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0xC7319851F6F0DFE4
-// XOICO_FILE_SIGNATURE 0x33D718FB404B36E4
+// XOICO_BODY_SIGNATURE 0x5A203D39E9EF8A46
+// XOICO_FILE_SIGNATURE 0x5CE0DA1E97963350
