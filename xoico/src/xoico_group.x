@@ -355,10 +355,11 @@ func (:s) er_t push_default_func_from_sc( m @* o, sc_t sc )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) er_t parse_func( m @* o, m x_source* source )
+func (:s) er_t parse_func( m @* o, m x_source* source, bl_t register_in_function_manager )
 {
     m $* func = xoico_func_s!^;
     func.parse( o, source );
+    func.register_in_function_manager = register_in_function_manager;
     o.push_func_d( func.fork() );
     if( func.signature_global_name == x_inst_main~ || func.signature_global_name == x_inst_main_c~ )
     {
@@ -554,7 +555,7 @@ func (:s) :.parse
 
             if( is_group_function )
             {
-                o.parse_func( source );
+                o.parse_func( source, true ); // group functions are registered
             }
         }
         else if( source.parse_bl( " #?w'name' " ) )
@@ -942,6 +943,7 @@ func (:s) :.expand_init1
     sink.push_fa( "\n" );
     sink.push_fa( "#rn{ }// group: #<sc_t>\n", indent, o->st_name.sc );
     foreach( m $* e in o ) e.expand_init1( o, indent, sink );
+    foreach( m $* func in o->funcs ) func.expand_init1( o, indent, sink );
 
     if( o.short_spect_name )
     {

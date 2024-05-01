@@ -31,7 +31,12 @@ stamp :s = aware :
 
     bl_t expandable = true;
     bl_t overloadable = false;
+
+    // create a forward declaration
     bl_t declare_in_expand_forward = true;
+
+    // register function in function manager
+    bl_t register_in_function_manager = false;
 
     tp_t pre_hash = 0;
 
@@ -54,6 +59,7 @@ stamp :s = aware :
     func xoico.expand_forward;
     func xoico.expand_declaration;
     func xoico.expand_definition;
+    func xoico.expand_init1;
     func xoico.get_source_point { return o.source_point; };
 
     func xoico_signature.as_member { return o.signature ? o.signature.as_member() : false; };
@@ -75,7 +81,8 @@ func (:s) :.get_hash
     hash = bcore_tp_fold_tp( hash, o.signature_global_name );
     hash = bcore_tp_fold_bl( hash, o.expandable );
     hash = bcore_tp_fold_bl( hash, o.overloadable );
-    hash = bcore_tp_fold_bl( hash, o.declare_in_expand_forward );
+    hash = bcore_tp_fold_bl( hash, o.register_in_function_manager );
+
     if( o.body      ) hash = bcore_tp_fold_tp( hash, o.body.get_hash() );
     if( o.signature ) hash = bcore_tp_fold_tp( hash, o.signature.get_hash() );
     return hash;
@@ -310,6 +317,25 @@ func (:s) xoico.expand_definition
         o.body.expand( host, signature, indent, sink );
         sink.push_fa( "\n" );
     }
+
+    return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) xoico.expand_init1
+{
+    if( !o.expandable ) return 0;
+    if( !o.register_in_function_manager ) return 0;
+
+    sc_t sc_global_name = host.compiler().nameof( o.global_name );
+
+    sink.push_fa
+    (
+        "#rn{ }BCORE_REGISTER_FUNC( #<sc_t> );\n",
+        indent,
+        sc_global_name
+    );
 
     return 0;
 };

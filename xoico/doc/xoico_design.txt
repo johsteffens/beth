@@ -1,4 +1,4 @@
-Author and Copyright 2020...2022 Johannes Bernhard Steffens
+Author and Copyright 2020...2024 Johannes Bernhard Steffens
 
 XOICO Framework Design
 
@@ -177,6 +177,7 @@ Functions:
   The body is normally enclosed in '{ ... }' Braces can be omitted if the body contains only a single statement.
   Symbol ':' immediately followed by a name serves as namespace expander
   Keywords: 'inline', 'export' preceding the body forces inline or not-inline expansion.
+  Registration: group functions (functions which are not member of a stamp) are registered in the function manager (macro REGISTER_FUNC)
 
 Functor-style stamp declaration:
   A functor in this context is a stamp that is created to represent one specific function.

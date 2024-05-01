@@ -1,4 +1,4 @@
-//  Last update: 2023-02-24T21:01:47Z
+//  Last update: 2024-05-01T10:31:25Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -662,6 +662,7 @@
       bl_t expandable; \
       bl_t overloadable; \
       bl_t declare_in_expand_forward; \
+      bl_t register_in_function_manager; \
       tp_t pre_hash; \
       xoico_body_s* body; \
       xoico_signature_s* signature; \
@@ -678,6 +679,7 @@
   er_t xoico_func_s_expand_forward( const xoico_func_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   er_t xoico_func_s_expand_declaration( const xoico_func_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   er_t xoico_func_s_expand_definition( const xoico_func_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
+  er_t xoico_func_s_expand_init1( const xoico_func_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   static inline const x_source_point_s* xoico_func_s_get_source_point( const xoico_func_s* o ){ return &( o->source_point);} \
   static inline bl_t xoico_func_s_as_member( const xoico_func_s* o ){ return  o->signature ? xoico_signature_s_as_member(o->signature) : false;}
 #define BETH_EXPAND_GROUP_xoico_func \
@@ -875,7 +877,7 @@
   er_t xoico_group_s_parse_name_tp( const xoico_group_s* o, x_source* source, tp_t* name ); \
   er_t xoico_group_s_push_default_feature_from_sc( xoico_group_s* o, sc_t sc ); \
   er_t xoico_group_s_push_default_func_from_sc( xoico_group_s* o, sc_t sc ); \
-  er_t xoico_group_s_parse_func( xoico_group_s* o, x_source* source ); \
+  er_t xoico_group_s_parse_func( xoico_group_s* o, x_source* source, bl_t register_in_function_manager ); \
   er_t xoico_group_s_push_func_d( xoico_group_s* o, xoico_func_s* func ); \
   er_t xoico_group_s_parse( xoico_group_s* o, const xoico_host* host, bl_t parse_block, x_source* source ); \
   er_t xoico_group_s_finalize( xoico_group_s* o, const xoico_host* host ); \
@@ -2020,5 +2022,5 @@ BETH_EXPAND_GROUP_xoico_builder
 BETH_EXPAND_GROUP_xoico_main
 
 #endif // __xoico_xo_H
-// XOICO_BODY_SIGNATURE 0x8840DE072A9BB5A1
-// XOICO_FILE_SIGNATURE 0x676B250762A1743B
+// XOICO_BODY_SIGNATURE 0x0244A65086A2B19A
+// XOICO_FILE_SIGNATURE 0xF11FD81A7F0DFFE5
