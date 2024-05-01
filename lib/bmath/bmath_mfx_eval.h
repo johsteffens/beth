@@ -61,7 +61,6 @@ stamp :result_s = aware bcore_inst
     f3_t time0  = 0;      // operation time with minimal arguments
     f3_t time1  = 0;      // operation time with all arguments
 
-
     func void to_string( c@* o, m st_s* string );
     func void to_stdout( c@* o );
 };
@@ -74,6 +73,7 @@ stamp :s = aware bcore_inst
     sz_t cols       = 1000;
     sz_t dim3       =   -1;   // third dimension (e.g. in multiplication tests); -1: use default
 
+    // random generator
     aware bcore_prsg => prsg = bcore_prsg_lcg_u3_00_s;
 
     f3_t density    = 1.0;
@@ -90,10 +90,10 @@ stamp :s = aware bcore_inst
     st_s u_img_file; // create image file of matrix u after conversion
     st_s v_img_file; // create image file of matrix v after conversion
 
-    bl_t assert_all   = true; // asserts correct matrix and computation result
+    bl_t assert_all      = true; // asserts correct matrix and computation result
     bl_t prefer_eps_eval = true; // prefers more precise but slower eps algorithms for evaluation
-    bl_t test0 = true;  // runs minimal parameter test
-    bl_t test1 = true;  // runs default parameter test
+    bl_t test0           = true; // runs minimal parameter test
+    bl_t test1           = true; // runs default parameter test
 
     /// runs evaluation and logs results if desired (log can be NULL)
     func void label_run(           c@* o, sc_t label, tp_t fp_type, fp_t fp, m :result_s* res ); // res can be NULL
@@ -103,7 +103,6 @@ stamp :s = aware bcore_inst
     func void run(           c@* o, tp_t fp_type, fp_t fp, m :result_s* res ) { o.label_run          ( NULL, fp_type, fp, res ); }
     func void run_to_log(    c@* o, tp_t fp_type, fp_t fp, m st_s* log      ) { o.label_run_to_log   ( NULL, fp_type, fp, log ); }
     func void run_to_stdout( c@* o, tp_t fp_type, fp_t fp                   ) { o.label_run_to_stdout( NULL, fp_type, fp ); }
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -124,6 +123,80 @@ stamp bmath_arr_mfx_eval_s = aware x_array
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+// function pointer names
+name bmath_fp_mf2_s_mul;
+name bmath_fp_mf2_s_mul_htp;
+name bmath_fp_mf2_s_htp_mul;
+name bmath_fp_mf2_s_htp_mul_htp;
+name bmath_fp_mf2_s_uav;
+name bmath_fp_mf2_s_ua;
+name bmath_fp_mf2_s_av;
+name bmath_fp_mf2_s_uau;
+name bmath_fp_mf2_s_vav;
+name bmath_fp_mf2_s_trd_htp;
+name bmath_fp_mf2_s_trd;
+name bmath_fp_mf2_s_evd_htp;
+name bmath_fp_mf2_s_svd;
+name bmath_fp_mf2_s_ubd;
+name bmath_fp_mf2_s_lbd;
+name bmath_fp_mf2_s_qrd;
+name bmath_fp_mf2_s_qrd_pmt;
+name bmath_fp_mf2_s_lqd;
+name bmath_fp_mf2_s_pmt_lqd;
+name bmath_fp_mf2_s_cld;
+name bmath_fp_mf2_s_lud;
+name bmath_fp_mf2_s_inv;
+name bmath_fp_mf2_s_pdf_inv;
+name bmath_fp_mf2_s_piv;
+name bmath_fp_mf2_s_hsm_piv;
+name bmath_fp_mf2_s_htp;
+
+name bmath_fp_mf3_s_mul;
+name bmath_fp_mf3_s_mul_htp;
+name bmath_fp_mf3_s_htp_mul;
+name bmath_fp_mf3_s_htp_mul_htp;
+
+name bmath_fp_mf3_s_uav;
+name bmath_fp_mf3_s_ua;
+name bmath_fp_mf3_s_av;
+name bmath_fp_mf3_s_uau;
+name bmath_fp_mf3_s_vav;
+
+name bmath_fp_mf3_s_trd_htp;
+name bmath_fp_mf3_s_trd;
+name bmath_fp_mf3_s_evd_htp;
+name bmath_fp_mf3_s_svd;
+name bmath_fp_mf3_s_ubd;
+name bmath_fp_mf3_s_lbd;
+name bmath_fp_mf3_s_qrd;
+name bmath_fp_mf3_s_qrd_pmt;
+name bmath_fp_mf3_s_lqd;
+name bmath_fp_mf3_s_pmt_lqd;
+name bmath_fp_mf3_s_cld;
+name bmath_fp_mf3_s_lud;
+name bmath_fp_mf3_s_inv;
+name bmath_fp_mf3_s_pdf_inv;
+name bmath_fp_mf3_s_piv;
+name bmath_fp_mf3_s_hsm_piv;
+name bmath_fp_mf3_s_htp;
+
+name bmath_fp_asmf3_s_mul;
+name bmath_fp_asmf3_s_mul_htp;
+name bmath_fp_asmf3_s_htp_mul;
+name bmath_fp_asmf3_s_htp_mul_htp;
+name bmath_fp_asmf2_s_mul;
+name bmath_fp_asmf2_s_mul_htp;
+name bmath_fp_asmf2_s_htp_mul;
+name bmath_fp_asmf2_s_htp_mul_htp;
+name bmath_fp_xsmf2_s_mul;
+name bmath_fp_xsmf2_s_mul_htp;
+name bmath_fp_xsmf2_s_htp_mul;
+name bmath_fp_xsmf2_s_htp_mul_htp;
+name bmath_fp_xsmf3_s_mul;
+name bmath_fp_xsmf3_s_mul_htp;
+name bmath_fp_xsmf3_s_htp_mul;
+name bmath_fp_xsmf3_s_htp_mul_htp;
 
 #endif // XOILA_SECTION
 

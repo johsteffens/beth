@@ -39,12 +39,6 @@ XOILA_DEFINE_GROUP( bmath_asmf3, bcore_inst )
         func bcore_fp . copy_typed;
     };
 
-    // function pointer names
-    name bmath_fp_asmf3_s_mul;
-    name bmath_fp_asmf3_s_mul_htp;
-    name bmath_fp_asmf3_s_htp_mul;
-    name bmath_fp_asmf3_s_htp_mul_htp;
-
 #endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #define BMATH_TEMPLATE_FX_PREC 3

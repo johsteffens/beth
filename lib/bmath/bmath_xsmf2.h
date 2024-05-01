@@ -26,27 +26,26 @@
 /**********************************************************************************************************************/
 
 XOILA_DEFINE_GROUP( bmath_xsmf2, bcore_inst )
-#ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    stamp bmath_xsmf2_s = aware bcore_inst
-    {
-        sz_t slos;   // values per xon
-        sz_t xons;   // xons  per row
-        sz_t rows;   // number of rows
-        sz_t i_stride; // stride of splicing
+#ifdef XOILA_SECTION
 
-        sz_t [] i; // index data
-        f2_t [] v; // value data
+//----------------------------------------------------------------------------------------------------------------------
 
-        func bcore_fp . copy_typed;
-    };
+stamp bmath_xsmf2_s = aware bcore_inst
+{
+    sz_t slos;   // values per xon
+    sz_t xons;   // xons  per row
+    sz_t rows;   // number of rows
+    sz_t i_stride; // stride of splicing
 
-    // function pointer names
-    name bmath_fp_xsmf2_s_mul;
-    name bmath_fp_xsmf2_s_mul_htp;
-    name bmath_fp_xsmf2_s_htp_mul;
-    name bmath_fp_xsmf2_s_htp_mul_htp;
+    sz_t [] i; // index data
+    f2_t [] v; // value data
 
-#endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    func bcore_fp . copy_typed;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+#endif // XOILA_SECTION
 
 #define BMATH_TEMPLATE_FX_PREC 2
 #include "bmath_template_xsmfx_h.h"

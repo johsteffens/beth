@@ -138,36 +138,6 @@ vd_t bmath_mf2_signal_handler( const bcore_signal_s* o )
         {
             BCORE_REGISTER_QUICKTYPE( bmath_mf2_s );
             BCORE_REGISTER_QUICKTYPE( bmath_arr_mf2_s );
-
-            // features
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_mul );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_mul_htp );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_htp_mul );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_htp_mul_htp );
-
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_uav );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_ua );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_av );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_uau );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_vav );
-
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_trd_htp );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_trd );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_evd_htp );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_svd );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_ubd );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_lbd );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_qrd );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_qrd_pmt );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_lqd );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_pmt_lqd );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_cld );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_lud );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_inv );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_pdf_inv );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_piv );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_hsm_piv );
-            BCORE_REGISTER_QUICKTYPE( bmath_fp_mf2_s_htp );
         }
         break;
 
