@@ -26,7 +26,7 @@
 /**********************************************************************************************************************/
 
 XOILA_DEFINE_GROUP( bmath_asmf2, bcore_inst )
-#ifdef XOILA_SECTION // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#ifdef XOILA_SECTION
     stamp bmath_asmf2_s = aware bcore_inst
     {
         sz_t cols;     // values per row
@@ -39,7 +39,7 @@ XOILA_DEFINE_GROUP( bmath_asmf2, bcore_inst )
         func bcore_fp . copy_typed;
     };
 
-#endif // XOILA_SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#endif // XOILA_SECTION
 
 #define BMATH_TEMPLATE_FX_PREC 2
 #include "bmath_template_asmfx_h.h"

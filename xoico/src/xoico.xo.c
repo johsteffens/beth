@@ -1,4 +1,4 @@
-//  Last update: 2024-05-01T10:38:56Z
+//  Last update: 2024-05-03T13:09:30Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -48,7 +48,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_xoico 0x899FB2DE15BAF3FAull
+// HKEYOF_xoico 0x91FB8D7BA6904E89ull
 
 /**********************************************************************************************************************/
 // source: xoico.x
@@ -11117,4 +11117,4 @@ int main( int argc, char** argv )
     return retv;
 }
 // XOICO_BODY_SIGNATURE 0x2B035699CEF2C36A
-// XOICO_FILE_SIGNATURE 0x1E38CECA329590EA
+// XOICO_FILE_SIGNATURE 0x249E4E256FF6BBBE
