@@ -1,4 +1,4 @@
-//  Last update: 2023-08-28T10:20:27Z
+//  Last update: 2024-05-05T20:12:05Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -38,6 +38,7 @@
  *  bcore_const_manager_inexpandable.x
  *  bcore_flect_inexpandable.x
  *  bcore_folder_inexpandable.x
+ *  bcore_function_manager_inexpandable.x
  *  bcore_global_manager_inexpandable.x
  *  bcore_hmap_inexpandable.x
  *  bcore_huffman.x
@@ -980,15 +981,21 @@
   { \
       aware_t _; \
       bl_t first_argument_is_path_to_object; \
-      bl_t second_argument_is_path_to_script; \
+      bl_t next_argument_is_path_to_script; \
+      bl_t create_log_file; \
+      st_s log_file_extension; \
       st_s local_path; \
       bl_t local_path_descend; \
       st_s global_path; \
+      tp_t object_default_type; \
       bcore_arr_st_s args; \
       bcore_mutex_s mutex; \
       bcore_source* source; \
       bcore_sink* sink; \
+      bcore_sink* log; \
       sr_s object_sr; \
+      st_s object_path; \
+      st_s script_path; \
   }; \
   er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args ); \
   er_t bcore_main_frame_s_main( bcore_main_frame_s* o, sz_t argc, char** argv );
@@ -2860,5 +2867,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xEE3DB83B4C7C15D9
-// XOICO_FILE_SIGNATURE 0x9E54CCAB4ABEB6B4
+// XOICO_BODY_SIGNATURE 0xAC38E08D3CE7278B
+// XOICO_FILE_SIGNATURE 0xDD2D6B36AD50CF24
