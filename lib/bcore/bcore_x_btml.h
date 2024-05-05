@@ -108,23 +108,6 @@ Special Syntax Features:
         <my_element_s> v3: 2  </>
         <my_element_s> v3: 3  </>
     </>
-
-    Default alterations:
-        The default definition can be changed (locally) arbitrarily often.
-        The default object only acts on subsequent object creations.
-
-    Example:
-    <my_array_s>
-        // default definition
-        #default: <my_element_s> v1: 10 v2: 20 </>
-        <my_element_s> v3: 1  </> // v1 = 10, v2 = 20, v3 = 1
-        <my_element_s> v3: 2  </> // v1 = 10, v2 = 20, v3 = 2
-
-        #default: <my_element_s> v2: 30 </>
-        <my_element_s> v3: 1  </> // v1 = 10, v2 = 30, v3 = 1
-        <my_element_s> v3: 2  </> // v1 = 10, v2 = 30, v3 = 2
-    </>
-
 */
 
 #ifndef BCORE_X_BTML_H
