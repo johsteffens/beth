@@ -115,42 +115,60 @@ er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args 
     er_t error = 0;
 
     st_s* file_st = BLM_CREATE( st_s );
-    sc_t file = NULL;
+    sc_t object_path = NULL;
+    sc_t script_path = NULL;
 
-    if( o->first_argument_is_path_to_object && o->args.size > 1 )
+    sz_t arg_idx = 1;
+
+    if( o->args.size > arg_idx && o->first_argument_is_path_to_object && bcore_file_exists( o->args.data[ arg_idx ]->sc ) )
     {
-        file = o->args.data[ 1 ]->sc;
-        if( !bcore_file_exists( file ) ) file = NULL;
+        object_path = o->args.data[ arg_idx ]->sc;
+        arg_idx++;
     }
 
-    if( !file && o->local_path.size > 0 )
+    if( o->args.size > arg_idx && o->next_argument_is_path_to_script && bcore_file_exists( o->args.data[ arg_idx ]->sc ) )
+    {
+        script_path = o->args.data[ arg_idx ]->sc;
+        arg_idx++;
+    }
+
+    if( !object_path && o->local_path.size > 0 )
     {
         if( o->local_path_descend )
         {
             st_s* folder = bcore_folder_get_current( BLM_CREATE( st_s ) );
-            if( bcore_file_find_descend( folder->sc, o->local_path.sc, file_st ) ) file = file_st->sc;
+            if( bcore_file_find_descend( folder->sc, o->local_path.sc, file_st ) ) object_path = file_st->sc;
         }
         else
         {
-            file = o->local_path.sc;
+            object_path = o->local_path.sc;
         }
-        if( !bcore_file_exists( file ) ) file = NULL;
+        if( !bcore_file_exists( object_path ) ) object_path = NULL;
     }
 
-    if( !file && o->global_path.size > 0 )
+    if( !object_path && o->global_path.size > 0 )
     {
-        file = o->global_path.sc;
-        if( !bcore_file_exists( file ) ) file = NULL;
+        object_path = o->global_path.sc;
+        if( !bcore_file_exists( object_path ) ) object_path = NULL;
     }
 
-    if( file )
+    if( script_path )
     {
-        /// redirect signals
-        bcore_default_sigint  = signal( SIGINT , signal_callback );
-        bcore_default_sigterm = signal( SIGTERM, signal_callback );
-        bcore_default_sigtstp = signal( SIGTSTP, signal_callback );
+        st_s_copy_sc( &o->script_path, script_path );
+        bcore_source_a_attach( &o->source, bcore_file_open_source( script_path ) );
+    }
+    else
+    {
+        bcore_source_a_attach( &o->source, bcore_fork( BCORE_STDIN ) );
+    }
 
-        bcore_source* source = bcore_file_open_source( file );
+    bcore_sink_a_attach( &o->sink, bcore_fork( BCORE_STDOUT ) );
+
+    if( object_path )
+    {
+        st_s_copy_sc( &o->object_path, object_path );
+
+        bcore_source* source = bcore_file_open_source( object_path );
 
         x_inst* object = NULL;
         if( x_btml_appears_valid( ( x_source* )source ) )
@@ -165,22 +183,39 @@ er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args 
         if( !object )
         {
             bcore_source_a_detach( &source );
-            BLM_RETURNV( er_t, bcore_error_push_fa( TYPEOF_general_error, "bcore_main_frame_s: File '#<sc_t>' contains no valid content.", file ) );
+            BLM_RETURNV( er_t, bcore_error_push_fa( TYPEOF_general_error, "bcore_main_frame_s: File '#<sc_t>' contains no valid object.", object_path ) );
         }
 
         o->object_sr = sr_asd( object );
         bcore_source_a_detach( &source );
+    }
+    else if( o->object_default_type )
+    {
+        o->object_sr = sr_create( o->object_default_type );
+    }
 
-        if( o->args.size > 2 && o->second_argument_is_path_to_script && bcore_file_exists( o->args.data[ 2 ]->sc ) )
+    if( o->create_log_file && ( object_path || script_path ) )
+    {
+        if( o->log_file_extension.size == 0 )
         {
-            bcore_source_a_attach( &o->source, bcore_file_open_source( o->args.data[ 2 ]->sc ) );
+            bcore_error_push_fa( TYPEOF_general_error, "bcore_main_frame_s: Log file extension is missing." );
+            error = TYPEOF_general_error;
         }
         else
         {
-            bcore_source_a_attach( &o->source, bcore_fork( BCORE_STDIN ) );
+            st_s* log_file = BLM_CREATE( st_s );
+            st_s_push_fa( log_file, "#<sc_t>.#<sc_t>", script_path ? script_path : object_path, o->log_file_extension.sc );
+            bcore_sink_a_attach( &o->log, bcore_file_open_sink( log_file->sc ) );
+            bcore_msg_fa( "log file: #<sc_t> #<bl_t>\n", log_file->sc, o->log != NULL );
         }
+    }
 
-        bcore_sink_a_attach( &o->sink, bcore_fork( BCORE_STDOUT ) );
+    if( o->object_sr.o )
+    {
+        /// redirect signals
+        bcore_default_sigint  = signal( SIGINT , signal_callback );
+        bcore_default_sigterm = signal( SIGTERM, signal_callback );
+        bcore_default_sigtstp = signal( SIGTSTP, signal_callback );
 
         if( bcore_main_r_defines_main( &o->object_sr ) )
         {
@@ -193,10 +228,8 @@ er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args 
                 TYPEOF_general_error, "bcore_main_frame_s: Object '#<sc_t>' does not define callback feature bcore_main.main.",
                 bnameof( sr_s_o_type( &o->object_sr ) )
             );
+            error = TYPEOF_general_error;
         }
-
-        sr_down( o->object_sr );
-        o->object_sr = sr_null();
 
         signal( SIGINT , bcore_default_sigint );
         signal( SIGTERM, bcore_default_sigterm );
@@ -204,9 +237,12 @@ er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args 
     }
     else
     {
-        bcore_error_push_fa( TYPEOF_general_error, "bcore_main_frame_s: Could not associate a file from arguments or frame configuration." );
+        bcore_error_push_fa( TYPEOF_general_error, "bcore_main_frame_s: Could not associate an object from arguments or frame configuration." );
         error = TYPEOF_general_error;
     }
+
+    sr_down( o->object_sr );
+    o->object_sr = sr_null();
 
     bcore_main_frame_g = NULL;
     BLM_RETURNV( er_t, error );

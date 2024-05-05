@@ -57,15 +57,18 @@ stamp :frame_s bcore_inst
 {
     /// ==== Parameters ====
 
-    /// The following criteria are processed in given order until one matches or all fail
-    bl_t  first_argument_is_path_to_object = true; // path to object's config file is expected as first argument
-    bl_t second_argument_is_path_to_script = true; // path to scipt file file is expected as first argument (only when feature 'main_parse' is implemented)
+    bl_t first_argument_is_path_to_object = true; // if a first argument is path to a file, it is assumed to be the object's config file
+    bl_t next_argument_is_path_to_script  = true; // if next argument is path to a file, it is assumed to be a script file (first or second argument)
 
+    bl_t create_log_file = false;    // creates/overwrites a log file defined as <script_path ? script_path : object_path>.<log_extension>
+    st_s log_file_extension = "log"; // extension appended to <object_path> to create a log file
 
-    st_s local_path = "beth.config"; // path to local config file
+    st_s local_path = "beth.config"; // path to local object file (only if object was not yet determined)
     bl_t local_path_descend = false; // descents tree from current folder to locate current file
 
-    st_s global_path;                 // global path to config file
+    st_s global_path;                // global path to object file (only if object was not yet determined)
+
+    tp_t object_default_type = 0;    // (fallback) type of object (only if object was not yet determined)
 
     /// ==== Internal data ====
 
@@ -73,14 +76,23 @@ stamp :frame_s bcore_inst
     bcore_arr_st_s args;
     hidden bcore_mutex_s mutex;
 
-    /// source for parsing or interactivity
+    /// source for script or interactivity
     hidden aware bcore_source -> source;
 
-    /// sink for general runtime output or interactivity
+    /// sink for general runtime output or interactivity (default is stdout)
     hidden aware bcore_sink -> sink;
+
+    /// sink for dedicated logging file (only when create_log_file == true)
+    hidden aware bcore_sink -> log;
 
     /// object wrapped by this frame
     sr_s object_sr;
+
+    /// file path of object
+    st_s object_path;
+
+    /// file path of script
+    st_s script_path;
 
     func er_t exec( m @* o, bcore_arr_st_s* args );
 
