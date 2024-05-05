@@ -16,6 +16,25 @@
 #ifndef BCORE_SHELL_H
 #define BCORE_SHELL_H
 
+/** Interactive-shell or script-shell for an object (frame).
+ *
+ *  Usage (minimal setup):
+ *  - Create a frame-object (e.g. fo_s)
+ *
+ *  - Define main function:
+ *     func (fo_s) bcore_main.main = o.cast( m bcore_shell* ).loop( frame, NULL );
+ *
+ *  - Setup custom functionality as needed:
+ *      - Create retrievable operator group:
+ *        group fop = retrievable { ... }
+ *
+ *      - Inside fop define operator-stamps (see group :op_default below for examples).
+ *        Each such operator represents a custom function acting on fo_s through feature bcore_shell_op.run
+ *
+ *      - Define fo_s-member function:
+ *        func (fo_s) bcore_shell.op_group { = fop~; };
+ */
+
 #include "bcore_spect_source.h"
 #include "bcore_sources.h"
 #include "bcore_file.h"
@@ -280,7 +299,7 @@ group :control =
 
 /// Overload one of features below to register groups with operators.
 
-// Overload this to always include default operators
+// Client operator group (overload in client scope)
 feature tp_t op_group( @* o ) = :op_default~;
 
 // Overload this to handle multiple groups (if default group is wanted, it must be explicitly added to list)
