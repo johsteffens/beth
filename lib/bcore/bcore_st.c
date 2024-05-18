@@ -1718,7 +1718,6 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                             if( target ) *target = v;
                         }
                         break;
-                        break;
                     }
 
                     case TYPEOF_tp_t:
