@@ -1644,6 +1644,13 @@ void bhvm_holor_adl_s_copy_typed( bhvm_holor_adl_s* o, tp_t type, vc_t src )
 {
     switch( type )
     {
+        case TYPEOF_bhvm_holor_adl_s:
+        {
+            assert( *(aware_t*)src == TYPEOF_bhvm_holor_adl_s );
+            bhvm_holor_adl_s_copy( o, src );
+        }
+        break;
+
         case TYPEOF_bhvm_holor_s:
         {
             assert( *(aware_t*)src == TYPEOF_bhvm_holor_s );
