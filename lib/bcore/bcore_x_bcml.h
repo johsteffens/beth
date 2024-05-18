@@ -18,8 +18,8 @@
 BTML: Beth compact binary markup language.
 Stores only necessary information to reconstruct an object.
 Names are never stored. Types are only stored in dynamically typed cases. Existence is only stored in case of links.
-Always expects all non-hidden elements to be present in the file in the correct order.
-No version changes allowed.
+Always expects all public (non-hidden) elements to be present in the file in the correct order.
+No version control: Writes and reads must com from the the same (unaltered public) object structure.
 
 Overloaded I/O: Overload following features:
     bcml_body_from_source
@@ -31,6 +31,13 @@ Platform dependent variable sizes:
 Overhead:
     Overhead is minimized in this ML.
 
+Advantages to bbml:
+    - Reduced amount of data interchanged.
+    - Faster I/O.
+
+Disadvantages to bbml:
+    - No version control.
+    - Limited cross platform compatibility.
 */
 
 #ifndef BCORE_X_BCML_H
