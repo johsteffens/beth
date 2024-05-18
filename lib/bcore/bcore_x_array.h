@@ -42,6 +42,7 @@ name data;
 
 //----------------------------------------------------------------------------------------------------------------------
 
+
 func sz_t t_size ( c obliv (TO) @* o, tp_t t ) = bcore_array_t_get_size ( t, o.cast( m bcore_array* ) );
 func sz_t   size ( c aware (TO) @* o         ) = o.t_size( o._ );
 
@@ -59,12 +60,14 @@ func o sort(   m aware (TO) @* o,         s2_t direction ) = o.t_sort( o._, dire
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func bl_t t_is_array     ( tp_t t ) = bcore_spect_trait_supported( TYPEOF_bcore_array, t );
 func bl_t t_is_fixed     ( tp_t t ) = bcore_array_s_get_typed( t )->size_fix > 0;
 func bl_t t_is_static    ( tp_t t ) = bcore_array_s_get_typed( t )->is_static;
 func bl_t t_is_of_aware  ( tp_t t ) = bcore_array_s_get_typed( t )->is_of_aware;
 func bl_t t_is_of_links  ( tp_t t ) = bcore_array_s_get_typed( t )->is_of_links;
 func bl_t t_is_mono_typed( tp_t t ) = bcore_array_s_get_typed( t )->is_mono_typed;
 
+func bl_t is_array     ( aware @* o ) = o.t_is_array( o._ );
 func bl_t is_fixed     ( aware @* o ) = o.t_is_fixed( o._ );
 func bl_t is_static    ( aware @* o ) = o.t_is_static( o._ );
 func bl_t is_of_aware  ( aware @* o ) = o.t_is_of_aware( o._ );

@@ -47,6 +47,10 @@ func bl_t t_is_leaf( tp_t t ) = bcore_via_t_is_leaf( t, NULL );
 func bl_t   is_aware( c aware @* o ) = bcore_via_a_is_aware( o.cast( c bcore_via* ) );
 func bl_t t_is_aware( tp_t t ) = bcore_via_t_is_aware( t, NULL );
 
+/// checks if object is an array
+func bl_t   is_array( c aware @* o ) = bcore_spect_trait_supported( TYPEOF_bcore_array, o._ );
+func bl_t t_is_array( tp_t t )       = bcore_spect_trait_supported( TYPEOF_bcore_array, t );
+
 /// checks if object is an array without additional elements (pure arrays are not leafs)
 func bl_t   is_pure_array( c aware @* o ) = bcore_via_a_is_pure_array( o.cast( c bcore_via* ) );
 func bl_t t_is_pure_array( tp_t t ) = bcore_via_t_is_pure_array( t, NULL );
