@@ -133,6 +133,19 @@ sr_s* sr_s_create(                );
 sr_s* sr_s_clone(   const sr_s* o );                  // deep clone: (clones the object if present; returns a strong reference; perspective is retained)
 void  sr_s_discard(       sr_s* o );
 
+static inline sr_s* sr_s_twc( sr_s* o, tp_t t, vc_t b ) { sr_s_down( o ); *o = sr_twc( t, b ); return o; }
+static inline sr_s* sr_s_twd( sr_s* o, tp_t t, vd_t b ) { sr_s_down( o ); *o = sr_twd( t, b ); return o; }
+static inline sr_s* sr_s_tsd( sr_s* o, tp_t t, vd_t b ) { sr_s_down( o ); *o = sr_tsd( t, b ); return o; }
+static inline sr_s* sr_s_awc( sr_s* o,         vc_t b ) { sr_s_down( o ); *o = sr_awc(    b ); return o; }
+static inline sr_s* sr_s_awd( sr_s* o,         vd_t b ) { sr_s_down( o ); *o = sr_awd(    b ); return o; }
+static inline sr_s* sr_s_asd( sr_s* o,         vd_t b ) { sr_s_down( o ); *o = sr_asd(    b ); return o; }
+static inline sr_s* sr_s_qwc( sr_s* o,         vc_t b ) { sr_s_down( o ); *o = sr_qwc(    b ); return o; }
+static inline sr_s* sr_s_qwd( sr_s* o,         vd_t b ) { sr_s_down( o ); *o = sr_qwd(    b ); return o; }
+static inline sr_s* sr_s_qsd( sr_s* o,         vd_t b ) { sr_s_down( o ); *o = sr_qsd(    b ); return o; }
+static inline sr_s* sr_s_pwc( sr_s* o, vc_t p, vc_t b ) { sr_s_down( o ); *o = sr_pwc( p, b ); return o; }
+static inline sr_s* sr_s_pwd( sr_s* o, vc_t p, vd_t b ) { sr_s_down( o ); *o = sr_pwd( p, b ); return o; }
+static inline sr_s* sr_s_psd( sr_s* o, vc_t p, vd_t b ) { sr_s_down( o ); *o = sr_psd( p, b ); return o; }
+
 static inline tp_t sr_s_p_type( const sr_s* o ) { return o ? ( o->p ? ( (tp_t*)o->p )[0] : 0 ) : 0; }
 static inline tp_t sr_s_o_type( const sr_s* o ) { return o ? ( o->p ? ( (tp_t*)o->p )[1] : 0 ) : 0; }
 static inline tp_t sr_s_type(   const sr_s* o ) { return sr_s_o_type( o ); }
@@ -140,6 +153,11 @@ static inline tp_t sr_s_type(   const sr_s* o ) { return sr_s_o_type( o ); }
 static inline bl_t sr_s_is_weak(   const sr_s* o ) { return ( o->f & STRONG_f ) ? false : true;  }
 static inline bl_t sr_s_is_strong( const sr_s* o ) { return ( o->f & STRONG_f ) ? true  : false; }
 static inline bl_t sr_s_is_const(  const sr_s* o ) { return ( o->f & CONST_f  ) ? true  : false; }
+
+/// o references a numeric object
+bl_t sr_s_is_numeric( const sr_s* o );
+bl_t sr_s_is_float  ( const sr_s* o );
+bl_t sr_s_is_integer( const sr_s* o );
 
 static inline void sr_s_set_strong( sr_s* o, bl_t flag ) { o->f = flag ? ( o->f | STRONG_f ) : ( o->f & ~STRONG_f ); }
 static inline void sr_s_set_const(  sr_s* o, bl_t flag ) { o->f = flag ? ( o->f | CONST_f  ) : ( o->f & ~CONST_f  ); }
@@ -173,7 +191,21 @@ static inline uz_t sr_s_references( const sr_s* o ) { return o->o ? bcore_refere
  */
 static inline sr_s sr_s_fork( sr_s* o ) { return ( sr_s ) { .o = bcore_fork( o->o ), .p = o->p, .f = o->f | STRONG_f }; }
 
-/// converts a reference to a leaf type
+/// converts from a leaf type
+sr_s* sr_s_from_f3( sr_s* o, f3_t v );
+sr_s* sr_s_from_u3( sr_s* o, u3_t v );
+sr_s* sr_s_from_s3( sr_s* o, s3_t v );
+sr_s* sr_s_from_bl( sr_s* o, bl_t v );
+sr_s* sr_s_from_tp( sr_s* o, tp_t v );
+
+/// converts from a leaf type and sets o const
+sr_s* sr_s_const_from_f3( sr_s* o, f3_t v );
+sr_s* sr_s_const_from_u3( sr_s* o, u3_t v );
+sr_s* sr_s_const_from_s3( sr_s* o, s3_t v );
+sr_s* sr_s_const_from_bl( sr_s* o, bl_t v );
+sr_s* sr_s_const_from_tp( sr_s* o, tp_t v );
+
+/// converts a reference to a numeric leaf type (0 in case o is not numeric)
 f3_t sr_s_to_f3( const sr_s* o );
 u3_t sr_s_to_u3( const sr_s* o );
 s3_t sr_s_to_s3( const sr_s* o );

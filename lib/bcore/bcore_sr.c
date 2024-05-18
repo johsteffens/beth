@@ -128,6 +128,12 @@ static void sr_s_copy_typed( sr_s* o, tp_t type, vc_t src )
     sr_s_copy( o, &sr );
 }
 
+static void sr_s_const_copy_typed( sr_s* o, tp_t type, vc_t src )
+{
+    sr_s_copy_typed( o, type, src );
+    sr_s_set_const( o, true );
+}
+
 sr_s* sr_s_create()
 {
     sr_s* o = bcore_u_alloc( sizeof( sr_s ), NULL, 1, NULL );
@@ -171,6 +177,25 @@ static bcore_self_s* sr_s_create_self( void )
     bcore_self_s_push_ns_func( self, ( fp_t )sr_s_copy_typed, "bcore_fp_copy_typed", "copy_typed"  );
     return self;
 }
+
+/// true iff o references a numeric object
+bl_t sr_s_is_numeric( const sr_s* o ) { return bcore_tp_is_numeric( sr_s_o_type( o ) ); }
+bl_t sr_s_is_float  ( const sr_s* o ) { return bcore_tp_is_float  ( sr_s_o_type( o ) ); }
+bl_t sr_s_is_integer( const sr_s* o ) { return bcore_tp_is_integer( sr_s_o_type( o ) ); }
+
+/// converts from a leaf type
+sr_s* sr_s_from_f3( sr_s* o, f3_t v ) { sr_s_copy_typed( o, TYPEOF_f3_t, &v ); return o; }
+sr_s* sr_s_from_u3( sr_s* o, u3_t v ) { sr_s_copy_typed( o, TYPEOF_u3_t, &v ); return o; }
+sr_s* sr_s_from_s3( sr_s* o, s3_t v ) { sr_s_copy_typed( o, TYPEOF_s3_t, &v ); return o; }
+sr_s* sr_s_from_bl( sr_s* o, bl_t v ) { sr_s_copy_typed( o, TYPEOF_bl_t, &v ); return o; }
+sr_s* sr_s_from_tp( sr_s* o, tp_t v ) { sr_s_copy_typed( o, TYPEOF_tp_t, &v ); return o; }
+
+/// converts from a leaf type and sets o const
+sr_s* sr_s_const_from_f3( sr_s* o, f3_t v ) { sr_s_const_copy_typed( o, TYPEOF_f3_t, &v ); return o; }
+sr_s* sr_s_const_from_u3( sr_s* o, u3_t v ) { sr_s_const_copy_typed( o, TYPEOF_u3_t, &v ); return o; }
+sr_s* sr_s_const_from_s3( sr_s* o, s3_t v ) { sr_s_const_copy_typed( o, TYPEOF_s3_t, &v ); return o; }
+sr_s* sr_s_const_from_bl( sr_s* o, bl_t v ) { sr_s_const_copy_typed( o, TYPEOF_bl_t, &v ); return o; }
+sr_s* sr_s_const_from_tp( sr_s* o, tp_t v ) { sr_s_const_copy_typed( o, TYPEOF_tp_t, &v ); return o; }
 
 f3_t sr_s_to_f3( const sr_s* o )
 {

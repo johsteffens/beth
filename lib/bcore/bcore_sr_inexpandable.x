@@ -26,11 +26,45 @@ group sr = x_inst
         private tp_t f;          // flags
         shell typed => obj;
 
+        /// re-initializes o
+        func o twc( m@* o, tp_t t, vc_t b );
+        func o twd( m@* o, tp_t t, vd_t b );
+        func o tsd( m@* o, tp_t t, vd_t b );
+        func o awc( m@* o,         vc_t b );
+        func o awd( m@* o,         vd_t b );
+        func o asd( m@* o,         vd_t b );
+        func o qwc( m@* o,         vc_t b );
+        func o qwd( m@* o,         vd_t b );
+        func o qsd( m@* o,         vd_t b );
+        func o pwc( m@* o, vc_t p, vc_t b );
+        func o pwd( m@* o, vc_t p, vd_t b );
+        func o psd( m@* o, vc_t p, vd_t b );
+
+        /// o references a numeric object
+        func bl_t is_numeric( c@* o );
+        func bl_t is_float  ( c@* o );
+        func bl_t is_integer( c@* o );
+
+        /// converts to a leaf type
         func f3_t to_f3( c@* o );
         func u3_t to_u3( c@* o );
         func s3_t to_s3( c@* o );
         func bl_t to_bl( c@* o );
         func tp_t to_tp( c@* o );
+
+        /// converts from a leaf type
+        func o from_f3( m@* o, f3_t v );
+        func o from_u3( m@* o, u3_t v );
+        func o from_s3( m@* o, s3_t v );
+        func o from_bl( m@* o, bl_t v );
+        func o from_tp( m@* o, tp_t v );
+
+        /// converts from a leaf type and sets o const
+        func o const_from_f3( m@* o, f3_t v );
+        func o const_from_u3( m@* o, u3_t v );
+        func o const_from_s3( m@* o, s3_t v );
+        func o const_from_bl( m@* o, bl_t v );
+        func o const_from_tp( m@* o, tp_t v );
 
         func tp_t p_type( c@* o ); // type of perspective
         func tp_t o_type( c@* o ); // type of object
@@ -115,11 +149,14 @@ group sr = x_inst
 
     func sr_s string_sc( sc_t v ); // converts to st_s
 
+    /// converts to a leaf type
     func f3_t to_f3( sr_s o );
     func u3_t to_u3( sr_s o );
     func s3_t to_s3( sr_s o );
     func bl_t to_bl( sr_s o );
     func tp_t to_tp( sr_s o );
+
+
 };
 
 /**********************************************************************************************************************/
