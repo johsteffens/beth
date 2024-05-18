@@ -1,4 +1,4 @@
-//  Last update: 2024-05-05T20:12:05Z
+//  Last update: 2024-05-18T14:30:40Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -32,6 +32,7 @@
  *  bcore_x_btml.h
  *  bcore_x_bbml.h
  *  bcore_x_bcml.h
+ *  bcore_x_btcl.h
  *  bcore_x_hmap.h
  *  bcore_x_deque.h
  *  bcore_arr_inexpandable.x
@@ -41,6 +42,7 @@
  *  bcore_function_manager_inexpandable.x
  *  bcore_global_manager_inexpandable.x
  *  bcore_hmap_inexpandable.x
+ *  bcore_hmap_tp_sr_inexpandable.x
  *  bcore_huffman.x
  *  bcore_img_inexpandable.x
  *  bcore_sink_inexpandable.x
@@ -48,6 +50,7 @@
  *  bcore_sr_inexpandable.x
  *  bcore_st_inexpandable.x
  *  bcore_via_inexpandable.x
+ *  bcore_x_btcl.x
  *  bcore_x_hmap.x
  *
  */
@@ -362,11 +365,13 @@
   static inline x_array* x_array_clear( x_array* o ); \
   static inline x_array* x_array_t_sort( x_array* o, tp_t t, s2_t direction ); \
   static inline x_array* x_array_sort( x_array* o, s2_t direction ); \
+  static inline bl_t x_array_t_is_array( tp_t t ); \
   static inline bl_t x_array_t_is_fixed( tp_t t ); \
   static inline bl_t x_array_t_is_static( tp_t t ); \
   static inline bl_t x_array_t_is_of_aware( tp_t t ); \
   static inline bl_t x_array_t_is_of_links( tp_t t ); \
   static inline bl_t x_array_t_is_mono_typed( tp_t t ); \
+  static inline bl_t x_array_is_array( const x_array* o ); \
   static inline bl_t x_array_is_fixed( const x_array* o ); \
   static inline bl_t x_array_is_static( const x_array* o ); \
   static inline bl_t x_array_is_of_aware( const x_array* o ); \
@@ -432,11 +437,13 @@
   static inline x_array* x_array_clear( x_array* o ){return  x_array_t_clear(o,o->_ );} \
   static inline x_array* x_array_t_sort( x_array* o, tp_t t, s2_t direction ){bcore_array_t_sort( t, ((bcore_array*)(o)), 0, -1, direction );return o;} \
   static inline x_array* x_array_sort( x_array* o, s2_t direction ){return  x_array_t_sort(o,o->_, direction );} \
+  static inline bl_t x_array_t_is_array( tp_t t ){return  bcore_spect_trait_supported( TYPEOF_bcore_array, t );} \
   static inline bl_t x_array_t_is_fixed( tp_t t ){return  bcore_array_s_get_typed( t )->size_fix > 0;} \
   static inline bl_t x_array_t_is_static( tp_t t ){return  bcore_array_s_get_typed( t )->is_static;} \
   static inline bl_t x_array_t_is_of_aware( tp_t t ){return  bcore_array_s_get_typed( t )->is_of_aware;} \
   static inline bl_t x_array_t_is_of_links( tp_t t ){return  bcore_array_s_get_typed( t )->is_of_links;} \
   static inline bl_t x_array_t_is_mono_typed( tp_t t ){return  bcore_array_s_get_typed( t )->is_mono_typed;} \
+  static inline bl_t x_array_is_array( const x_array* o ){return  x_array_t_is_array(o->_ );} \
   static inline bl_t x_array_is_fixed( const x_array* o ){return  x_array_t_is_fixed(o->_ );} \
   static inline bl_t x_array_is_static( const x_array* o ){return  x_array_t_is_static(o->_ );} \
   static inline bl_t x_array_is_of_aware( const x_array* o ){return  x_array_t_is_of_aware(o->_ );} \
@@ -567,6 +574,8 @@
   static inline bl_t x_stamp_t_is_leaf( tp_t t ); \
   static inline bl_t x_stamp_is_aware( const x_stamp* o ); \
   static inline bl_t x_stamp_t_is_aware( tp_t t ); \
+  static inline bl_t x_stamp_is_array( const x_stamp* o ); \
+  static inline bl_t x_stamp_t_is_array( tp_t t ); \
   static inline bl_t x_stamp_is_pure_array( const x_stamp* o ); \
   static inline bl_t x_stamp_t_is_pure_array( tp_t t ); \
   static inline tp_t x_stamp_name( const x_stamp* o, sz_t index ); \
@@ -642,6 +651,8 @@
   static inline bl_t x_stamp_t_is_leaf( tp_t t ){return  bcore_via_t_is_leaf( t, NULL );} \
   static inline bl_t x_stamp_is_aware( const x_stamp* o ){return  bcore_via_a_is_aware( ((const bcore_via*)(o)) );} \
   static inline bl_t x_stamp_t_is_aware( tp_t t ){return  bcore_via_t_is_aware( t, NULL );} \
+  static inline bl_t x_stamp_is_array( const x_stamp* o ){return  bcore_spect_trait_supported( TYPEOF_bcore_array, o->_ );} \
+  static inline bl_t x_stamp_t_is_array( tp_t t ){return  bcore_spect_trait_supported( TYPEOF_bcore_array, t );} \
   static inline bl_t x_stamp_is_pure_array( const x_stamp* o ){return  bcore_via_a_is_pure_array( ((const bcore_via*)(o)) );} \
   static inline bl_t x_stamp_t_is_pure_array( tp_t t ){return  bcore_via_t_is_pure_array( t, NULL );} \
   static inline tp_t x_stamp_name( const x_stamp* o, sz_t index ){return  bcore_via_a_iget_name( ((const bcore_via*)(o)),index );} \
@@ -2584,6 +2595,107 @@
   static inline void x_bcml_push_size( x_sink* sink, s3_t size ){x_sink_push_data(sink,((const x_inst*)((&(size)))), sizeof( size ) );}
 
 /**********************************************************************************************************************/
+// source: bcore_x_btcl.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_btcl; embeds: bcore_x_btcl.x
+
+#define TYPEOF_x_btcl 0xEDA9A5C25324F131ull
+#define TYPEOF_x_btcl_spect_s 0x235E6DC4678C61EDull
+#define TYPEOF_x_btcl_frame_s 0xF70F07C4792D4F4Dull
+#define BETH_EXPAND_ITEM_x_btcl_frame_s \
+  BCORE_DECLARE_OBJECT( x_btcl_frame_s ) \
+  { \
+      aware_t _; \
+      x_btcl_frame_s* parent; \
+      bcore_arr_sr_s obj_pool; \
+      bcore_hmap_name_s hmap_name; \
+      bcore_hmap_tp_sr_s var_map; \
+  }; \
+  x_btcl_frame_s* x_btcl_frame_s_preserve_and_set_weak( x_btcl_frame_s* o, sr_s* sr ); \
+  static inline tp_t x_btcl_frame_s_entypeof( x_btcl_frame_s* o, sc_t name ); \
+  sc_t x_btcl_frame_s_nameof( const x_btcl_frame_s* o, tp_t type ); \
+  bl_t x_btcl_frame_s_var_exists( const x_btcl_frame_s* o, tp_t name ); \
+  sr_s* x_btcl_frame_s_var_get( const x_btcl_frame_s* o, tp_t name ); \
+  sr_s* x_btcl_frame_s_var_set( x_btcl_frame_s* o, tp_t name, sr_s sr ); \
+  er_t x_btcl_frame_s_error_if_undefined( const x_btcl_frame_s* o, x_source* source, const sr_s* sr ); \
+  tp_t x_btcl_frame_s_get_identifier( x_btcl_frame_s* o, x_source* source, bl_t take_from_source ); \
+  er_t x_btcl_frame_s_eval_number_literal( x_btcl_frame_s* o, x_source* source, sr_s* sr ); \
+  er_t x_btcl_frame_s_negate( x_btcl_frame_s* o, x_source* source, sr_s* sr ); \
+  er_t x_btcl_frame_s_eval_member( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
+  er_t x_btcl_frame_s_eval_div( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
+  er_t x_btcl_frame_s_eval_mul( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
+  er_t x_btcl_frame_s_eval_sub( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
+  er_t x_btcl_frame_s_eval_add( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
+  er_t x_btcl_frame_s_eval_join( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
+  er_t x_btcl_frame_s_eval_assign( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
+  er_t x_btcl_frame_s_eval_continuation( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
+  er_t x_btcl_frame_s_eval( x_btcl_frame_s* o, s2_t priority, x_source* source, sr_s* obj ); \
+  static inline tp_t x_btcl_frame_s_entypeof( x_btcl_frame_s* o, sc_t name ){return  bcore_hmap_name_s_set_sc(&(o->hmap_name),name );}
+#define TYPEOF_x_btcl_label_s 0xEC45C2B929D1B70Aull
+#define BETH_EXPAND_ITEM_x_btcl_label_s \
+  BCORE_DECLARE_OBJECT( x_btcl_label_s ) \
+  { \
+      aware_t _; \
+      tp_t tp_name; \
+      st_s st_name; \
+  }; \
+  x_btcl_label_s* x_btcl_label_s_setup( x_btcl_label_s* o, sc_t sc_name );
+#define TYPEOF_x_btcl_null_member_s 0x388AF54280329140ull
+#define BETH_EXPAND_ITEM_x_btcl_null_member_s \
+  BCORE_DECLARE_OBJECT( x_btcl_null_member_s ) \
+  { \
+      aware_t _; \
+      sr_s base; \
+      tp_t tp_name; \
+  }; \
+  x_btcl_null_member_s* x_btcl_null_member_s_setup( x_btcl_null_member_s* o, sr_s* base, tp_t tp_name ); \
+  sr_s x_btcl_null_member_s_set_sr( x_btcl_null_member_s* o, sr_s* src );
+#define TYPEOF_x_btcl_null_arr_element_s 0x528F7BF4C984AE7Aull
+#define BETH_EXPAND_ITEM_x_btcl_null_arr_element_s \
+  BCORE_DECLARE_OBJECT( x_btcl_null_arr_element_s ) \
+  { \
+      aware_t _; \
+      sr_s base; \
+      s3_t index; \
+  }; \
+  x_btcl_null_arr_element_s* x_btcl_null_arr_element_s_setup( x_btcl_null_arr_element_s* o, sr_s* base, tp_t index ); \
+  sr_s x_btcl_null_arr_element_s_set_sr( x_btcl_null_arr_element_s* o, sr_s* src );
+#define TYPEOF_x_btcl_list_s 0xDBF13B14DA3E0C18ull
+#define BETH_EXPAND_ITEM_x_btcl_list_s \
+  BCORE_DECLARE_OBJECT( x_btcl_list_s ) \
+  { \
+      aware_t _; \
+      bcore_arr_sr_s arr; \
+  }; \
+  static inline x_btcl_list_s* x_btcl_list_s_push_clone( x_btcl_list_s* o, const sr_s* a ); \
+  static inline x_btcl_list_s* x_btcl_list_s_push_fork( x_btcl_list_s* o, sr_s* a ); \
+  static inline x_btcl_list_s* x_btcl_list_s_push_list_clone( x_btcl_list_s* o, const x_btcl_list_s* a ); \
+  static inline x_btcl_list_s* x_btcl_list_s_push_list_fork( x_btcl_list_s* o, x_btcl_list_s* a ); \
+  static inline x_btcl_list_s* x_btcl_list_s_push_clone( x_btcl_list_s* o, const sr_s* a ){bcore_arr_sr_s_push_sr(&(o->arr),sr_clone( sr_cw(*( a )) ) );return o;} \
+  static inline x_btcl_list_s* x_btcl_list_s_push_fork( x_btcl_list_s* o, sr_s* a ){bcore_arr_sr_s_push_sr(&(o->arr),sr_fork( sr_cw(*( a )) ) );return o;} \
+  static inline x_btcl_list_s* x_btcl_list_s_push_list_clone( x_btcl_list_s* o, const x_btcl_list_s* a ){{const bcore_arr_sr_s* __a=&(a->arr );if(__a)for(sz_t __i=0;__i<__a->size;__i++){const sr_s* e=&(__a->data[__i]); x_btcl_list_s_push_clone(o,e );}}return o;} \
+  static inline x_btcl_list_s* x_btcl_list_s_push_list_fork( x_btcl_list_s* o, x_btcl_list_s* a ){{const bcore_arr_sr_s* __a=&(a->arr );if(__a)for(sz_t __i=0;__i<__a->size;__i++){sr_s* e=&(__a->data[__i]); x_btcl_list_s_push_fork(o,e );}}return o;}
+#define BETH_EXPAND_GROUP_x_btcl \
+  BCORE_FORWARD_OBJECT( x_btcl ); \
+  BCORE_FORWARD_OBJECT( x_btcl_frame_s ); \
+  BCORE_FORWARD_OBJECT( x_btcl_label_s ); \
+  BCORE_FORWARD_OBJECT( x_btcl_null_member_s ); \
+  BCORE_FORWARD_OBJECT( x_btcl_null_arr_element_s ); \
+  BCORE_FORWARD_OBJECT( x_btcl_list_s ); \
+  void x_btcl_selftest( void ); \
+  XOILA_DECLARE_SPECT( x_btcl ) \
+  { \
+      bcore_spect_header_s header; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_btcl ) \
+  BETH_EXPAND_ITEM_x_btcl_frame_s \
+  BETH_EXPAND_ITEM_x_btcl_label_s \
+  BETH_EXPAND_ITEM_x_btcl_null_member_s \
+  BETH_EXPAND_ITEM_x_btcl_null_arr_element_s \
+  BETH_EXPAND_ITEM_x_btcl_list_s
+
+/**********************************************************************************************************************/
 // source: bcore_x_hmap.h
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2867,5 +2979,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xAC38E08D3CE7278B
-// XOICO_FILE_SIGNATURE 0xDD2D6B36AD50CF24
+// XOICO_BODY_SIGNATURE 0xC03173A6B575D9BF
+// XOICO_FILE_SIGNATURE 0xFC5C8DD546AADD94

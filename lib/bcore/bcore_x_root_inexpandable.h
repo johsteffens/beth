@@ -202,6 +202,8 @@ identifier bcore_tp_fold_u0;
 identifier bcore_tp_fold_u1;
 identifier bcore_tp_fold_u2;
 identifier bcore_tp_fold_u3;
+identifier bcore_tp_is_numeric;
+identifier bcore_tp_is_float;
 
 identifier bcore_lcg00_u3;
 
@@ -407,6 +409,7 @@ embed "bcore_sink_inexpandable.x";
 embed "bcore_st_inexpandable.x";
 embed "bcore_arr_inexpandable.x";
 embed "bcore_hmap_inexpandable.x";
+embed "bcore_hmap_tp_sr_inexpandable.x";
 embed "bcore_flect_inexpandable.x";
 embed "bcore_via_inexpandable.x";
 embed "bcore_sr_inexpandable.x";
