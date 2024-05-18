@@ -16,6 +16,7 @@
 /** Beth Audio Codec Waw.
  *
  *  'Waw' denotes the 'sixth iteration' of an audio codec development project in Beth.
+ *  (Note: This codec was first developed in bmedia, codecs in bmedia are deprecated or experimental)
  *
  *  Approach:
  *  Basis are techniques that were already well published at or before the year 2000. (I purposely did not
@@ -52,7 +53,7 @@
  *  Typical (usable) compression rates range between 56 ... 240 kbps (average on 2-channels at 44.1 kHz).
  *  At 240kbps the difference to the original is practically imperceptible.
  *
- *  Terminology:
+ *  Terminology:  ------------------------------------------
  *
  *  Slice:
  *    The smallest set of consecutive audio data.
@@ -76,6 +77,14 @@
  *  Bank:
  *    Container for encoded data.
  *
+ *
+ *  Configurations:  ----------------------------------------
+ *
+ *  Configurations for different compression and quality levels are located in beth/data/bcodec/audio_codec:
+ *    audio_codec_waw_240kbps.param.cfg - highest quality
+ *    audio_codec_waw_120kbps.param.cfg - balanced quality and compression
+ *    audio_codec_waw_056kbps.param.cfg - high compression rate (useful for speech; quality loss noticeable)
+ *    audio_codec_waw_016kbps.param.cfg - extreme compression - very low quality (use case dependent)
  */
 
 /**********************************************************************************************************************/
