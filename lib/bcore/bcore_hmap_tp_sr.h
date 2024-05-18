@@ -22,7 +22,7 @@
 #include "bcore_spect_inst.h"
 
 /** Hashmap using tp_t as key and sr_s as value.
- *  (See bcore_hmap.h for algorithmic details)
+ *  (cuckoo hashing: See bcore_hmap.h for algorithmic details)
  *  This version uses fixed internal hash functions and supports generic perspectives.
  *
  *  Data persistence during rehashing:
