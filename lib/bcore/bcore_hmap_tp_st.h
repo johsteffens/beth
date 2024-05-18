@@ -13,7 +13,7 @@
  *  limitations under the License.
  */
 
-/** bcore_hmap_tp_st is a tp-hashmap with key = typeof( <string> );
+/** bcore_hmap_tp_st is a bcore_hmap_tpaw_s-hashmap with key = typeof( <string> );
  *  Collision checks.
  */
 
