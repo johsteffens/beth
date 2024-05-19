@@ -1785,7 +1785,8 @@ func (:s) er_t trans_statement_expression( m @* o, m x_source* source, m :result
         o.trans_expression( source, result_statement.expression, NULL );
     }
 
-    o.trans_whitespace( source, result_statement.expression );
+    // do not translate whitespaces here because it causes unwanted newline on single statement inline functions
+    // o.trans_whitespace( source, result_statement.expression );
 
     result.push_result_d( result_statement.reduce().fork() );
 
