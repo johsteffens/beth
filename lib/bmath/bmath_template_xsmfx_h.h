@@ -183,7 +183,7 @@ static inline void BCATU(bmath_xsmfx_s,to_stdout)( const bmath_xsmfx_s* o       
 /**********************************************************************************************************************/
 // type conversion
 
-void BCATU(bmath_xsmfx_s,copy_typed)( bmath_xsmfx_s* o, tp_t type, vc_t src );
+er_t BCATU(bmath_xsmfx_s,copy_typed)( bmath_xsmfx_s* o, tp_t type, vc_t src );
 
 static inline void BCATU(bmath_xsmfx_s,copy_t)( bmath_xsmfx_s* o, tp_t type, vc_t src )
 {

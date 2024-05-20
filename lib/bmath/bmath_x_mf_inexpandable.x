@@ -770,7 +770,7 @@ group bmath_mf =
     /******************************************************************************************************************/
     /// Type conversion
 
-    signature void copy_typed( m@* o, tp_t type, vc_t src );
+    signature er_t copy_typed( m@* o, tp_t type, vc_t src );
     signature void copy_t(     m@* o, tp_t type, vc_t src );
     signature void copy_a(     m@* o,            vc_t src );
     signature d@* clone_t(            tp_t type, vc_t src );

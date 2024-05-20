@@ -134,7 +134,7 @@ void BCATU(bmath_vcfx_s,to_stdout)( const bmath_vcfx_s* o );
 /**********************************************************************************************************************/
 // type conversion
 
-void BCATU(bmath_vcfx_s,copy_typed)( bmath_vcfx_s* o, tp_t type, vc_t src );
+er_t BCATU(bmath_vcfx_s,copy_typed)( bmath_vcfx_s* o, tp_t type, vc_t src );
 
 static inline void BCATU(bmath_vcfx_s,copy_t)( bmath_vcfx_s* o, tp_t type, vc_t src )
 {

@@ -79,7 +79,7 @@ stamp bmath_cf2_s = obliv
     func void to_stdout( @* o );
 
     /// Type conversion ...
-    func void copy_typed( m@* o, tp_t type, vc_t src );
+    func er_t copy_typed( m@* o, tp_t type, vc_t src );
     func void copy_t( m@* o, tp_t type, vc_t src );
     func m@* clone_t( tp_t type, vc_t src );
 };
@@ -150,7 +150,7 @@ stamp bmath_cf3_s = obliv
     func void to_stdout( @* o );
 
     /// Type conversion ...
-    func void copy_typed( m@* o, tp_t type, vc_t src );
+    func er_t copy_typed( m@* o, tp_t type, vc_t src );
     func void copy_t( m@* o, tp_t type, vc_t src );
     func m@* clone_t( tp_t type, vc_t src );
 };

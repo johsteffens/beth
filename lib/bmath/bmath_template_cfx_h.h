@@ -335,7 +335,7 @@ void BCATU(bmath_cfx_s,to_stdout)( const bmath_cfx_s* o );
 /**********************************************************************************************************************/
 // type conversion
 
-void BCATU(bmath_cfx_s,copy_typed)( bmath_cfx_s* o, tp_t type, vc_t src );
+er_t BCATU(bmath_cfx_s,copy_typed)( bmath_cfx_s* o, tp_t type, vc_t src );
 
 static inline void BCATU(bmath_cfx_s,copy_t)( bmath_cfx_s* o, tp_t type, vc_t src )
 {

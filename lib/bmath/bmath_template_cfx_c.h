@@ -44,12 +44,12 @@ void BCATU(bmath_cfx_s,to_stdout)( const bmath_cfx_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_cfx_s,copy_typed)( bmath_cfx_s* o, tp_t type, vc_t src )
+er_t BCATU(bmath_cfx_s,copy_typed)( bmath_cfx_s* o, tp_t type, vc_t src )
 {
     if( !src )
     {
         BCATU(bmath_cfx_s,zro)( o );
-        return;
+        return 0;
     }
 
     switch( type )
@@ -70,10 +70,11 @@ void BCATU(bmath_cfx_s,copy_typed)( bmath_cfx_s* o, tp_t type, vc_t src )
 
         default:
         {
-            bcore_err_fa( "Cannot copy from #<sc_t>.", ifnameof( type ) );
+            return bcore_error_push_fa( TYPEOF_conversion_error, "copy_typed to 'bmath_cfx_s': no conversion from '#<sc_t>'.", ifnameof( type ) );
         }
         break;
     }
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

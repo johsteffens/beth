@@ -720,7 +720,7 @@ static inline void BCATU(bmath_mfx_s,to_stdout)( const bmath_mfx_s* o ) { BCATU(
 /**********************************************************************************************************************/
 // type conversion
 
-void BCATU(bmath_mfx_s,copy_typed)( bmath_mfx_s* o, tp_t type, vc_t src );
+er_t BCATU(bmath_mfx_s,copy_typed)( bmath_mfx_s* o, tp_t type, vc_t src );
 
 static inline void BCATU(bmath_mfx_s,copy_t)( bmath_mfx_s* o, tp_t type, vc_t src )
 {

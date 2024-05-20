@@ -158,7 +158,7 @@ stamp bmath_vf2_s =
     func void stat_to_stdout( @* o                 );
 
     // type conversion
-    func void copy_typed( m@* o, tp_t type, obliv x_inst* src );
+    func er_t copy_typed( m@* o, tp_t type, obliv x_inst* src );
     func void copy_t(     m@* o, tp_t type, obliv x_inst* src );
     func void copy_a(     m@* o,            aware x_inst* src );
 };
@@ -292,7 +292,7 @@ stamp bmath_vf3_s =
     func void stat_to_stdout( @* o                 );
 
     // type conversion
-    func void copy_typed( m@* o, tp_t type, obliv x_inst* src );
+    func er_t copy_typed( m@* o, tp_t type, obliv x_inst* src );
     func void copy_t(     m@* o, tp_t type, obliv x_inst* src );
     func void copy_a(     m@* o,            aware x_inst* src );
 };

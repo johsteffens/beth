@@ -68,7 +68,7 @@ static inline void BCATU(bmath_arr_vfx_s,on_section_get_avg)( const bmath_arr_vf
 /**********************************************************************************************************************/
 // type conversion
 
-void BCATU(bmath_arr_vfx_s,copy_typed)( bmath_arr_vfx_s* o, tp_t type, vc_t src );
+er_t BCATU(bmath_arr_vfx_s,copy_typed)( bmath_arr_vfx_s* o, tp_t type, vc_t src );
 
 static inline void BCATU(bmath_arr_vfx_s,copy_t)( bmath_arr_vfx_s* o, tp_t type, vc_t src )
 {

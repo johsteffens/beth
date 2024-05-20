@@ -865,12 +865,12 @@ void BCATU(bmath_vfx_s,eop_map_mul)( const bmath_vfx_s* o, BCATU(bmath_fp,fx,ar1
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_vfx_s,copy_typed)( bmath_vfx_s* o, tp_t type, vc_t src )
+er_t BCATU(bmath_vfx_s,copy_typed)( bmath_vfx_s* o, tp_t type, vc_t src )
 {
     if( !src )
     {
         BCATU(bmath_vfx_s,clear)( o );
-        return;
+        return 0;
     }
 
     switch( type )
@@ -891,10 +891,11 @@ void BCATU(bmath_vfx_s,copy_typed)( bmath_vfx_s* o, tp_t type, vc_t src )
 
         default:
         {
-            bcore_err_fa( "Cannot copy from #<sc_t>.", ifnameof( type ) );
+            return bcore_error_push_fa( TYPEOF_conversion_error, "copy_typed to '#<sc_t>': no conversion from '#<sc_t>'.", ifnameof( o->_ ), ifnameof( type ) );
         }
         break;
     }
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
