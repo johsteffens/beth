@@ -56,14 +56,14 @@ Block syntax:
 
 Function definition syntax
 
-func my_func( a, b )
+my_func = func( a, b )
 {
     <body>
     = <expression>;
 }
 
 Function brief syntax
-func my_func( a, b ) = <expression>;
+my_func = func( a, b ) = <expression>;
 
 The function body contains a list of statements. The last statement is a return-assignment.
 
@@ -73,16 +73,16 @@ Binary operators <bop> are used in binary operations of the form <lexpr> <bop> <
 Example: x.loudness_mask --> (x is stamp bcodec_audio_codec_waw_param_s) bcodec_audio_codec_waw_param_s.loudness_mask
 Example: x.[2]  --> (x s an array) element 2 of x
 Example: x.2    --> same as x.[2]
-Example: x.y    --> y is deemed variable of number or string
+(Example: x.y    --> y is deemed variable of number or string)
 
 ^   : numeric exponentiation (power function)
 /   : numeric division
 *   : numeric multiplication
 -   : numeric subtraction
 +   : numeric addition;
+Example: 1 + 2 --> 3
 
 +   : string catenation: one operand must be a string and the other convertible to a string
-Example: 1 + 2 --> 3
 Example: "ab" + "x" --> "abx"
 Example: "ab" + 3   --> "ab3"
 Example: "ab" + x   --> (if x = 5) "ab5"
@@ -93,8 +93,9 @@ Example: 1:<L(2:3)> --> L(1:2:3)
 
 =   : assignment: modifies object of <lexpr> by copying the object of <rexpr>; if lxepr is an unknown label, a variable is created
 
-|   : continuation: result is <rexpr>
-Example: x=5|x+3  --> 7
+;   : continuation: result is <rexpr>
+Example: x=5; x+3  --> 7
+Note: A continuation at the end of file or block is no error.
 
 */
 

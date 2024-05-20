@@ -539,8 +539,11 @@ func (:frame_s) er_t eval_assign( m@* o, s2_t bop_priority, m x_source* source, 
         case :label_s~:
         {
             tp_t tp_var_name = sr.o.cast( :label_s* ).tp_name;
-            if( o.var_exists( tp_var_name ) ) = source.parse_error_fa( "Variable '#<sc_t>' has already been defined.\n", o.nameof( tp_var_name ) );
-            m sr_s* sr_var = o.var_set( tp_var_name, sr_fork( sr_cw( sb.0 ) ) );
+            //if( o.var_exists( tp_var_name ) ) = source.parse_error_fa( "Variable '#<sc_t>' has already been defined.\n", o.nameof( tp_var_name ) );
+
+            sr_s var_sr = sr_clone( sr_cw( sb.0 ) );
+            var_sr.set_const( false );
+            m sr_s* sr_var = o.var_set( tp_var_name, var_sr );
             sr.down();
             sr.0 = sr_cw( sr_var );
         }
@@ -588,7 +591,7 @@ func (:frame_s) er_t eval( m@* o, s2_t priority, m x_source* source, m sr_s* obj
         if( o.var_exists( name ) )
         {
             m sr_s* sr = o.var_get( name );
-            obj.twc( sr.o_type(), sr.o );
+            obj.twd( sr.o_type(), sr.o );
         }
         else
         {
@@ -608,6 +611,10 @@ func (:frame_s) er_t eval( m@* o, s2_t priority, m x_source* source, m sr_s* obj
     {
         o.eval( 0, source, obj );
         source.parse_fa( " )" );
+    }
+    else if( source.eos() ) // end of stream; valid condition for ending an expression
+    {
+        = 0;
     }
     else
     {
@@ -656,7 +663,7 @@ func (:frame_s) er_t eval( m@* o, s2_t priority, m x_source* source, m sr_s* obj
     bop_priority--;
 
     if( priority >= bop_priority ) = 0;
-    while( source.parse_bl( " #?'|'" ) ) o.eval_continuation( bop_priority, source, obj );
+    while( source.parse_bl( " #?';'" ) ) o.eval_continuation( bop_priority, source, obj );
     bop_priority--;
 
     = 0;
@@ -668,12 +675,19 @@ func void selftest()
 {
 //    st_s^ txt.push_sc( "  6.0 + ( 2 - 3 ) * 2;" );
 //    st_s^ txt.push_sc( "<bcodec_audio_codec_waw_param_s></>.loudness_mask = <bcodec_audio_codec_waw_param_loudness_mask_s></>" );
-    st_s^ txt.push_sc( "x = 3 | <bcodec_audio_codec_waw_param_s></>.signal_exponent = x | x = 5" );
+//    st_s^ txt.push_sc( "x = 3 | <bcodec_audio_codec_waw_param_s></>.signal_exponent = x | x = 5" );
 //    st_s^ txt.push_sc( "<#file>  \"/home/johannes/dev/beth/data/bcodec/audio_codec/audio_codec_waw_120kbps.param.cfg\" </>.loudness_mask.[2]" );
 
 //    st_s^ txt.push_sc( "1 : 2 : 3 : 4" );
 
-    m x_source* source = x_source_create_from_st( txt )^;
+    sc_t txt = " \
+x = <bcodec_audio_codec_waw_param_s></>; \n\
+x.signal_exponent = 3; \n\
+x                      \n\
+    ";
+
+
+    m x_source* source = x_source_create_from_sc( txt )^;
 
     :frame_s^ frame;
 
