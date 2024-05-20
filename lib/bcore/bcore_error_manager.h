@@ -69,6 +69,7 @@ group :manager =
 
 /// frequently used error states
 name general_error; // general purpose error
+name conversion_error; // error in type conversion (created by 'copy_typed' and related functions)
 name parse_error; // errors from text/string parsing
 name plant_error; // errors from beth plant management
 name error_stack; // error stack is not zero (usually a subsequent error for functions that require an empty error stack)

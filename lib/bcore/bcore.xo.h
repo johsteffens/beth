@@ -1,4 +1,4 @@
-//  Last update: 2024-05-18T14:30:40Z
+//  Last update: 2024-05-19T16:47:33Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -98,8 +98,8 @@
   static inline bl_t x_inst_exists( tp_t type ); \
   static inline x_inst* x_inst_t_copy( x_inst* o, tp_t t, const x_inst* src ); \
   static inline x_inst* x_inst_copy( x_inst* o, const x_inst* src ); \
-  static inline x_inst* x_inst_t_copy_typed( x_inst* o, tp_t t, tp_t type, const x_inst* src ); \
-  static inline x_inst* x_inst_copy_typed( x_inst* o, tp_t type, const x_inst* src ); \
+  static inline er_t x_inst_t_copy_typed( x_inst* o, tp_t t, tp_t type, const x_inst* src ); \
+  static inline er_t x_inst_copy_typed( x_inst* o, tp_t type, const x_inst* src ); \
   static inline x_inst* x_inst_t_clone( const x_inst* o, tp_t t ); \
   static inline x_inst* x_inst_clone( const x_inst* o ); \
   static inline void x_inst_t_discard( x_inst* o, tp_t t ); \
@@ -117,8 +117,8 @@
   static inline bl_t x_inst_exists( tp_t type ){return  bcore_flect_exists( type );} \
   static inline x_inst* x_inst_t_copy( x_inst* o, tp_t t, const x_inst* src ){bcore_inst_t_copy( t, ((bcore_inst*)(o)), src );return o;} \
   static inline x_inst* x_inst_copy( x_inst* o, const x_inst* src ){bcore_inst_a_copy(    ((bcore_inst*)(o)),((const bcore_inst*)(src )));return o;} \
-  static inline x_inst* x_inst_t_copy_typed( x_inst* o, tp_t t, tp_t type, const x_inst* src ){bcore_inst_t_copy_typed( t, ((bcore_inst*)(o)), type, src );return o;} \
-  static inline x_inst* x_inst_copy_typed( x_inst* o, tp_t type, const x_inst* src ){bcore_inst_a_copy_typed(    ((bcore_inst*)(o)), type, src );return o;} \
+  static inline er_t x_inst_t_copy_typed( x_inst* o, tp_t t, tp_t type, const x_inst* src ){return  bcore_inst_t_copy_typed( t,   ((bcore_inst*)(o)), type, src );} \
+  static inline er_t x_inst_copy_typed( x_inst* o, tp_t type, const x_inst* src ){return  bcore_inst_t_copy_typed( o->_, ((bcore_inst*)(o)), type, src );} \
   static inline x_inst* x_inst_t_clone( const x_inst* o, tp_t t ){return  bcore_inst_t_clone( t, ((const bcore_inst*)(o)) );} \
   static inline x_inst* x_inst_clone( const x_inst* o ){return ((x_inst*)( bcore_inst_a_clone(    ((const bcore_inst*)(o)) )));} \
   static inline void x_inst_t_discard( x_inst* o, tp_t t ){bcore_inst_t_discard( t, ((bcore_inst*)(o)) );} \
@@ -861,7 +861,7 @@
   void bcore_file_path_s_source( bcore_file_path_s* o, bcore_source* source ); \
   static inline sc_t bcore_file_path_s_get_sc( const bcore_file_path_s* o ); \
   bcore_file_path_s* bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name ); \
-  void bcore_file_path_s_copy_typed( bcore_file_path_s* o, tp_t type, vc_t src ); \
+  er_t bcore_file_path_s_copy_typed( bcore_file_path_s* o, tp_t type, vc_t src ); \
   bcore_file_path_s* bcore_file_path_s_create_sc( sc_t sc ); \
   bcore_file_path_s* bcore_file_path_s_create_st( const st_s* st ); \
   static inline sc_t bcore_file_path_s_get_sc( const bcore_file_path_s* o ){ return  o->full ? o->full->sc : o->name.sc;}
@@ -1198,6 +1198,7 @@
 #define TYPEOF_bcore_error 0x5DEDBC961043059Bull
 #define TYPEOF_bcore_error_spect_s 0xFDA5542D4756953Bull
 #define TYPEOF_general_error 0x4D9E984C5B21FAEAull
+#define TYPEOF_conversion_error 0xB1970E197C3EC6D8ull
 #define TYPEOF_parse_error 0x690AF8765815EC4Dull
 #define TYPEOF_plant_error 0x6C62A00462378607ull
 #define TYPEOF_error_stack 0xF5EEC6731159BABAull
@@ -2979,5 +2980,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xC03173A6B575D9BF
-// XOICO_FILE_SIGNATURE 0xFC5C8DD546AADD94
+// XOICO_BODY_SIGNATURE 0x25F89391A4A422EE
+// XOICO_FILE_SIGNATURE 0xCC48350F4316E07F

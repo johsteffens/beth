@@ -33,7 +33,7 @@ group bcore_st = x_inst
         func o copy_fa(  m @* o, sc_t format, ...  );
         func o copy_sc_n( m @* o, sc_t sc, uz_t n );
         func o copy_sc(   m @* o, sc_t sc );
-        func o copy_typed( m @* o, tp_t type, vc_t src ); // copy with type conversion
+        func er_t copy_typed( m @* o, tp_t type, vc_t src ); // copy with type conversion
         func o copy_aware( m @* o,            vc_t src ); // copy with type conversion
 
         func d @* createvf(     sc_t format, va_list args ); // c-style formatting

@@ -70,7 +70,7 @@ st_s* st_s_copy_fa(      st_s* o, sc_t format, ...  );
 st_s* st_s_copy_sc_n(    st_s* o, sc_t sc, uz_t n );
 st_s* st_s_copy_sc(      st_s* o, sc_t sc );
 st_s* st_s_assign_sc(    st_s* o, sc_t sc ); // assignment producing a weak string
-st_s* st_s_copy_typed(   st_s* o, tp_t type, vc_t src ); // copy with type conversion
+er_t  st_s_copy_typed(   st_s* o, tp_t type, vc_t src ); // copy with type conversion
 st_s* st_s_copy_aware(   st_s* o,            vc_t src ); // copy with type conversion
 st_s* st_s_move(         st_s* o, st_s* src );
 

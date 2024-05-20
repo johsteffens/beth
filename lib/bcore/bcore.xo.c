@@ -1,4 +1,4 @@
-//  Last update: 2024-05-18T14:31:22Z
+//  Last update: 2024-05-19T16:51:14Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -62,7 +62,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0x26026FCDB4A3031Aull
+// HKEYOF_bcore 0x7B2DAEE4330C37C0ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -941,7 +941,7 @@ bcore_file_path_s* bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name )
     return  o;
 }
 
-void bcore_file_path_s_copy_typed( bcore_file_path_s* o, tp_t type, vc_t src )
+er_t bcore_file_path_s_copy_typed( bcore_file_path_s* o, tp_t type, vc_t src )
 {
     // bcore_file.h:66:5
     
@@ -951,8 +951,9 @@ void bcore_file_path_s_copy_typed( bcore_file_path_s* o, tp_t type, vc_t src )
     }
     else
     {
-        ERR_fa( "Cannot copy from '#<sc_t>'\n", bnameof( type ) );
+        return  bcore_error_push_fa(TYPEOF_conversion_error, "Cannot copy from '#<sc_t>'\n", bnameof( type ) );
     }
+    return  0;
 }
 
 XOILA_DEFINE_SPECT( bcore_inst, bcore_file )
@@ -2256,7 +2257,7 @@ void bcore_shell_op_default_set_s_run( bcore_shell_op_default_set_s* o, bcore_sh
         x_btml* val = ((x_btml*)BLM_LEVEL_TV_PUSH(0,type ,x_btml_create_from_st_t(&(o->source), (&(type)) )));
         if( type )
         {
-            x_inst_t_copy_typed(sr.o,sr_s_type(&( sr )), type,((const x_inst*)( val )));
+            BLM_TRY_EXIT(x_inst_t_copy_typed(sr.o,sr_s_type(&( sr )), type,((const x_inst*)( val ))))
         }
         else
         {
@@ -3079,7 +3080,7 @@ er_t x_btml_t_from_source( x_btml* o, tp_t t, x_source* source )
     
     sr_s sr = sr_null();
     BLM_TRY(x_btml_parse_create_object(source, NULL, (&(sr)) ))
-    x_inst_t_copy_typed(((x_inst*)( o)),t, sr_s_o_type( (&(sr)) ), sr.o );
+    BLM_TRY(x_inst_t_copy_typed(((x_inst*)( o)),t, sr_s_o_type( (&(sr)) ), sr.o ))
     sr_s_down(&( sr ));
     return  bcore_error_last();
 }
@@ -3126,7 +3127,7 @@ sc_t x_btml_name_of( tp_t type, st_s* buf )
     
     sc_t n = bcore_name_try_name( type );
     if( n ) return  n;
-    st_s_copy_typed(buf,((tp_t)(TYPEOF_tp_t)), (&(type)) );
+    BLM_TRY_EXIT(st_s_copy_typed(buf,((tp_t)(TYPEOF_tp_t)), (&(type)) ))
     return  buf->sc;
 }
 
@@ -3615,7 +3616,7 @@ er_t x_bbml_t_from_source( x_bbml* o, tp_t t, x_source* source )
     
     sr_s sr = sr_null();
     BLM_TRY(x_bbml_parse_create_object(source, (&(sr)) ))
-    x_inst_t_copy_typed(((x_inst*)( o)),t, sr_s_o_type( (&(sr)) ), sr.o );
+    BLM_TRY(x_inst_t_copy_typed(((x_inst*)( o)),t, sr_s_o_type( (&(sr)) ), sr.o ))
     sr_s_down(&( sr ));
     return  bcore_error_last();
 }
@@ -3973,7 +3974,7 @@ er_t x_bcml_t_from_source( x_bcml* o, tp_t t, x_source* source )
     
     sr_s sr = sr_null();
     BLM_TRY(x_bcml_parse_create_object(true, 0, source, (&(sr)) ))
-    x_inst_t_copy_typed(((x_inst*)( o)),t, sr_s_o_type( (&(sr)) ), sr.o );
+    BLM_TRY(x_inst_t_copy_typed(((x_inst*)( o)),t, sr_s_o_type( (&(sr)) ), sr.o ))
     sr_s_down(&( sr ));
     return  bcore_error_last();
 }
@@ -4815,8 +4816,11 @@ er_t x_btcl_frame_s_eval_assign( x_btcl_frame_s* o, s2_t bop_priority, x_source*
         case ((tp_t)(TYPEOF_x_btcl_label_s)):
         {
             tp_t tp_var_name = ((const x_btcl_label_s*)(sr->o))->tp_name;
-            if( x_btcl_frame_s_var_exists(o,tp_var_name ) ) BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Variable '#<sc_t>' has already been defined.\n", x_btcl_frame_s_nameof(o,tp_var_name ) ))
-            sr_s* sr_var = x_btcl_frame_s_var_set(o,tp_var_name, sr_fork( sr_cw( (sb) ) ) );
+            //if( o.var_exists( tp_var_name ) ) = source.parse_error_fa( "Variable '#<sc_t>' has already been defined.\n", o.nameof( tp_var_name ) );
+    
+            sr_s var_sr = sr_clone( sr_cw( (sb) ) );
+            sr_s_set_const(&(var_sr),false );
+            sr_s* sr_var = x_btcl_frame_s_var_set(o,tp_var_name, var_sr );
             sr_s_down(sr);
             (*(sr)) = sr_cw(*( sr_var ));
         }
@@ -4824,7 +4828,7 @@ er_t x_btcl_frame_s_eval_assign( x_btcl_frame_s* o, s2_t bop_priority, x_source*
     
         default:
         {
-            x_inst_t_copy_typed( sr->o,sr_s_o_type(sr), sr_s_o_type(&(sb)), sb.o );
+            BLM_TRY(x_inst_t_copy_typed( sr->o,sr_s_o_type(sr), sr_s_o_type(&(sb)), sb.o ))
         }
         break;
     }
@@ -4834,7 +4838,7 @@ er_t x_btcl_frame_s_eval_assign( x_btcl_frame_s* o, s2_t bop_priority, x_source*
 
 er_t x_btcl_frame_s_eval_continuation( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr )
 {
-    // bcore_x_btcl.x:562:1
+    // bcore_x_btcl.x:565:1
     
     sr_s_clear(sr);
     BLM_TRY(x_btcl_frame_s_eval(o,bop_priority, source, sr ))
@@ -4843,7 +4847,7 @@ er_t x_btcl_frame_s_eval_continuation( x_btcl_frame_s* o, s2_t bop_priority, x_s
 
 er_t x_btcl_frame_s_eval( x_btcl_frame_s* o, s2_t priority, x_source* source, sr_s* obj )
 {
-    // bcore_x_btcl.x:571:1
+    // bcore_x_btcl.x:574:1
     
     ASSERT( obj->o == NULL );
     // sign
@@ -4864,7 +4868,7 @@ er_t x_btcl_frame_s_eval( x_btcl_frame_s* o, s2_t priority, x_source* source, sr
         if( x_btcl_frame_s_var_exists(o,name ) )
         {
             sr_s* sr = x_btcl_frame_s_var_get(o,name );
-            sr_s_twc(obj,sr_s_o_type(sr), sr->o );
+            sr_s_twd(obj,sr_s_o_type(sr), sr->o );
         }
         else
         {
@@ -4884,6 +4888,10 @@ er_t x_btcl_frame_s_eval( x_btcl_frame_s* o, s2_t priority, x_source* source, sr
     {
         BLM_TRY(x_btcl_frame_s_eval(o,0, source, obj ))
         BLM_TRY(x_source_parse_fa(source," )" ))
+    }
+    else if( x_source_eos(source) ) // end of stream; valid condition for ending an expression
+    {
+        return  0;
     }
     else
     {
@@ -4932,7 +4940,7 @@ er_t x_btcl_frame_s_eval( x_btcl_frame_s* o, s2_t priority, x_source* source, sr
     bop_priority--;
     
     if( priority >= bop_priority ) return  0;
-    while( x_source_parse_bl(source," #?'|'" ) ) BLM_TRY(x_btcl_frame_s_eval_continuation(o,bop_priority, source, obj ))
+    while( x_source_parse_bl(source," #?';'" ) ) BLM_TRY(x_btcl_frame_s_eval_continuation(o,bop_priority, source, obj ))
     bop_priority--;
     
     return  0;
@@ -5015,16 +5023,23 @@ XOILA_DEFINE_SPECT( x_inst, x_btcl )
 
 void x_btcl_selftest( void )
 {
-    // bcore_x_btcl.x:668:1
+    // bcore_x_btcl.x:675:1
     BLM_INIT_LEVEL(0);
     //    st_s^ txt.push_sc( "  6.0 + ( 2 - 3 ) * 2;" );
     //    st_s^ txt.push_sc( "<bcodec_audio_codec_waw_param_s></>.loudness_mask = <bcodec_audio_codec_waw_param_loudness_mask_s></>" );
-        st_s txt;BLM_T_INIT_SPUSH(st_s, &txt);st_s_push_sc(&(txt),"x = 3 | <bcodec_audio_codec_waw_param_s></>.signal_exponent = x | x = 5" );
+    //    st_s^ txt.push_sc( "x = 3 | <bcodec_audio_codec_waw_param_s></>.signal_exponent = x | x = 5" );
     //    st_s^ txt.push_sc( "<#file>  \"/home/johannes/dev/beth/data/bcodec/audio_codec/audio_codec_waw_120kbps.param.cfg\" </>.loudness_mask.[2]" );
     
     //    st_s^ txt.push_sc( "1 : 2 : 3 : 4" );
     
-        x_source* source = ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(&(txt ))));
+        sc_t txt = " \
+    x = <bcodec_audio_codec_waw_param_s></>; \n\
+    x.signal_exponent = 3; \n\
+    x                      \n\
+        ";
+    
+    
+        x_source* source = ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(txt )));
     
         x_btcl_frame_s frame;BLM_T_INIT_SPUSH(x_btcl_frame_s, &frame);;
     
@@ -5901,6 +5916,7 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
 
             // group: bcore_error
             BCORE_REGISTER_NAME( general_error );
+            BCORE_REGISTER_NAME( conversion_error );
             BCORE_REGISTER_NAME( parse_error );
             BCORE_REGISTER_NAME( plant_error );
             BCORE_REGISTER_NAME( error_stack );
@@ -6467,5 +6483,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x46DBF4D3BBBDCFC0
-// XOICO_FILE_SIGNATURE 0x3C86C6811DFE480B
+// XOICO_BODY_SIGNATURE 0x5634E69DC083EC8F
+// XOICO_FILE_SIGNATURE 0xF4FBA4CFE6D1045F

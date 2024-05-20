@@ -70,8 +70,9 @@ stamp :path_s = aware bcore_inst
         }
         else
         {
-            ERR_fa( "Cannot copy from '#<sc_t>'\n", bnameof( type ) );
+            return bcore_error_push_fa( TYPEOF_conversion_error, "Cannot copy from '#<sc_t>'\n", bnameof( type ) );
         }
+        return 0;
     }
 
     func d @* create_sc(   sc_t  sc );

@@ -66,8 +66,8 @@ func bl_t exists( tp_t type ) = bcore_flect_exists( type );
 func o t_copy( m obliv @* o, tp_t t, c@* src ) bcore_inst_t_copy( t, o.cast( m bcore_inst* ), src );
 func o   copy( m aware @* o,         c@* src ) bcore_inst_a_copy(    o.cast( m bcore_inst* ), src );
 
-func o t_copy_typed( m obliv @* o, tp_t t, tp_t type, c obliv @* src ) bcore_inst_t_copy_typed( t, o.cast( m bcore_inst* ), type, src );
-func o   copy_typed( m aware @* o,         tp_t type, c obliv @* src ) bcore_inst_a_copy_typed(    o.cast( m bcore_inst* ), type, src );
+func er_t t_copy_typed( m obliv @* o, tp_t t, tp_t type, c obliv @* src ) = bcore_inst_t_copy_typed( t,   o.cast( m bcore_inst* ), type, src );
+func er_t   copy_typed( m aware @* o,         tp_t type, c obliv @* src ) = bcore_inst_t_copy_typed( o._, o.cast( m bcore_inst* ), type, src );
 
 func d (TO) @* t_clone( c obliv (TO) @* o, tp_t t ) = bcore_inst_t_clone( t, o.cast( bcore_inst* ) );
 func d (TO) @*   clone( c aware (TO) @* o         ) = bcore_inst_a_clone(    o.cast( bcore_inst* ) );

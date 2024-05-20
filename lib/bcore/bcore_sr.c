@@ -122,16 +122,18 @@ void sr_s_copy( sr_s* o, const sr_s* src )
     }
 }
 
-static void sr_s_copy_typed( sr_s* o, tp_t type, vc_t src )
+static er_t sr_s_copy_typed( sr_s* o, tp_t type, vc_t src )
 {
     sr_s sr = sr_twc( type, src );
     sr_s_copy( o, &sr );
+    return 0;
 }
 
-static void sr_s_const_copy_typed( sr_s* o, tp_t type, vc_t src )
+static er_t sr_s_const_copy_typed( sr_s* o, tp_t type, vc_t src )
 {
-    sr_s_copy_typed( o, type, src );
+    if( sr_s_copy_typed( o, type, src ) ) return 0;
     sr_s_set_const( o, true );
+    return 0;
 }
 
 sr_s* sr_s_create()

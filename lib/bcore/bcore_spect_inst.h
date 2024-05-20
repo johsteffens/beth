@@ -104,7 +104,7 @@ BCORE_DECLARE_SPECT( bcore_inst )
     void ( *init         )( const bcore_inst_s* p, vd_t o );
     void ( *down         )( const bcore_inst_s* p, vd_t o );
     void ( *copy         )( const bcore_inst_s* p, vd_t o,         vc_t src );
-    void ( *copy_typed   )( const bcore_inst_s* p, vd_t o, tp_t t, vc_t src );
+    er_t ( *copy_typed   )( const bcore_inst_s* p, vd_t o, tp_t t, vc_t src );
     void ( *move         )( const bcore_inst_s* p, vd_t o,         vd_t src );
     vd_t ( *create       )( const bcore_inst_s* p );
     vd_t ( *create_typed )( const bcore_inst_s* p, tp_t t, vc_t src );
@@ -124,19 +124,21 @@ static inline void bcore_inst_default_copy(  const bcore_inst_s* p, bcore_inst* 
 static inline void bcore_inst_default_move(  const bcore_inst_s* p, bcore_inst* dst, vd_t src ) { if( dst != src ) p->move( p, dst, src ); }
 static inline vd_t bcore_inst_default_clone( const bcore_inst_s* p, const bcore_inst* obj ) { return obj ? p->clone( p, obj ) : NULL; }
 
-static inline void bcore_inst_default_copy_typed( const bcore_inst_s* p, bcore_inst* dst, tp_t src_type, vc_t src )
+static inline er_t bcore_inst_default_copy_typed( const bcore_inst_s* p, bcore_inst* dst, tp_t src_type, vc_t src )
 {
     if( dst != src )
     {
         if( p->header.o_type == src_type )
         {
             p->copy( p, dst, src );
+            return 0;
         }
         else
         {
-            p->copy_typed( p, dst, src_type, src );
+            return p->copy_typed( p, dst, src_type, src );
         }
     }
+    return 0;
 }
 
 // functions below are exempted from generic framework for inst-specific reasons
@@ -151,7 +153,7 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP0( bcore_inst, init )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP0( bcore_inst, down )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_inst, copy, vc_t, src )
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_inst, move, vd_t, src )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_inst, copy_typed, tp_t, src_type, vc_t, src )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_inst, copy_typed, er_t, tp_t, src_type, vc_t, src )
 
 static inline vd_t bcore_inst_p_clone( const bcore_inst_s* p, const bcore_inst* o ) { return bcore_inst_default_clone( p, o ); }
 static inline vd_t bcore_inst_t_clone( tp_t t,                const bcore_inst* o ) { return bcore_inst_p_clone( bcore_inst_s_get_typed( t ), o ); }

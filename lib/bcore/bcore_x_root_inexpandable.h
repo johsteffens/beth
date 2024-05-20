@@ -305,7 +305,7 @@ group bcore_stamp_funcs = bcore_inst
 
 group bcore_fp = bcore_inst
 {
-    feature '' void copy_typed( m @* o, tp_t type, vc_t src );
+    feature '' er_t copy_typed( m @* o, tp_t type, vc_t src );
 };
 
 //----------------------------------------------------------------------------------------------------------------------

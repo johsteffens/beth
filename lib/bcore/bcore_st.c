@@ -266,7 +266,7 @@ st_s* st_s_copy_fa( st_s* o, sc_t format, ...  )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-st_s* st_s_copy_typed( st_s* o, tp_t type, vc_t src )
+er_t st_s_copy_typed( st_s* o, tp_t type, vc_t src )
 {
     switch( type )
     {
@@ -304,11 +304,11 @@ st_s* st_s_copy_typed( st_s* o, tp_t type, vc_t src )
 
         default:
         {
-            ERR( "Converting type '%s' into 'st_s' is not supported.", ifnameof( type ) );
+            return bcore_error_push_fa( TYPEOF_conversion_error, "Converting type '%s' into 'st_s' is not supported.", ifnameof( type ) );
         }
         break;
     }
-    return o;
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

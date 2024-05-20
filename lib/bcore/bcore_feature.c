@@ -35,7 +35,7 @@ vd_t bcore_feature_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FEATURE( bcore_fp_clone );
             BCORE_REGISTER_FEATURE( bcore_fp_replicate );
             BCORE_REGISTER_FEATURE( bcore_fp_copy_typed );
-            BCORE_REGISTER_FEATURE( bcore_fp_create_typed );
+//            BCORE_REGISTER_FEATURE( bcore_fp_create_typed );
             BCORE_REGISTER_FEATURE( bcore_fp_translate );
             BCORE_REGISTER_FEATURE( bcore_fp_interpret );
             BCORE_REGISTER_FEATURE( bcore_fp_flow_snk );

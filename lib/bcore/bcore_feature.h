@@ -37,8 +37,13 @@ typedef void (*bcore_fp_detach    )( vd_t* o );           // if( o ) { discard( 
 typedef void (*bcore_fp_attach    )( vd_t* o, vd_t src ); // if( o ) { if( *o != src ) { discard( *o ); *o = src; } }
 typedef void (*bcore_fp_replicate )( vd_t* o, vc_t src ); // if( o ) { if( *o != src ) { discard( *o ); *o = clone( src ); } }
 
-/// copy, create from another object with type conversion
-typedef void (*bcore_fp_copy_typed   )( vd_t o, tp_t type, vc_t src ); // deep conversion & copy
+/** Copy from another object with type conversion.
+ *  Returns 0 in case of success.
+ *  Returns TYPEOF_conversion_error with message in error stack when source type cannot be converted to destination type.
+ */
+typedef er_t (*bcore_fp_copy_typed )( vd_t o, tp_t type, vc_t src ); // deep conversion & copy;
+
+// create from another object with type conversion
 typedef vd_t (*bcore_fp_create_typed )(         tp_t type, vc_t src ); // deep conversion & create
 
 /// Sanity check of an object
