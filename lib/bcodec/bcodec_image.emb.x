@@ -118,8 +118,9 @@ func (:bgra_s) copy_typed
     {
         case     :yuyv_s~: o.from_yuyv( src.cast( :yuyv_s* ) );
         case bmath_mf2_s~: o.from_mf2( src.cast( bmath_mf2_s* ) );
-        default: ERR_fa( "Cannot convert from '#<sc_t>'\n", bnameof( type ) );
+        default: return bcore_error_push_fa( TYPEOF_conversion_error, "Cannot convert from '#<sc_t>'\n", bnameof( type ) );
     }
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -638,8 +639,9 @@ func (:yuyv_s) copy_typed
     {
         case :bgra_s~: o.from_bgra( src.cast( :bgra_s* ) );
         case bcore_img_u2_s~: o.from_argb( src.cast( bcore_img_u2_s* ) );
-        default: ERR_fa( "Cannot convert from '#<sc_t>'\n", bnameof( type ) );
+        default: return bcore_error_push_fa( TYPEOF_conversion_error, "Cannot convert from '#<sc_t>'\n", bnameof( type ) );
     }
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

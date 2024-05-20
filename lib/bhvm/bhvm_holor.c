@@ -898,7 +898,7 @@ const bhvm_holor_s* bhvm_holor_s_check_integrity( const bhvm_holor_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_holor_s_copy_typed( bhvm_holor_s* o, tp_t type, vc_t src )
+er_t bhvm_holor_s_copy_typed( bhvm_holor_s* o, tp_t type, vc_t src )
 {
     switch( type )
     {
@@ -976,10 +976,11 @@ void bhvm_holor_s_copy_typed( bhvm_holor_s* o, tp_t type, vc_t src )
 
         default:
         {
-            ERR_fa( "Cannot convert '#<sc_t>' to 'bhvm_holor_s'", ifnameof( type ) );
+            return bcore_error_push_fa( TYPEOF_conversion_error, "copy_typed to '#<sc_t>': no conversion from '#<sc_t>'.", ifnameof( o->_ ), ifnameof( type ) );
         }
         break;
     }
+    return 0;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1640,7 +1641,7 @@ bhvm_holor_adl_s* bhvm_holor_adl_s_parse( bhvm_holor_adl_s* o, bcore_source* sou
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bhvm_holor_adl_s_copy_typed( bhvm_holor_adl_s* o, tp_t type, vc_t src )
+er_t bhvm_holor_adl_s_copy_typed( bhvm_holor_adl_s* o, tp_t type, vc_t src )
 {
     switch( type )
     {
@@ -1692,10 +1693,11 @@ void bhvm_holor_adl_s_copy_typed( bhvm_holor_adl_s* o, tp_t type, vc_t src )
 
         default:
         {
-            ERR_fa( "Cannot convert '#<sc_t>' to 'bhvm_holor_adl_s'", ifnameof( type ) );
+            return bcore_error_push_fa( TYPEOF_conversion_error, "Cannot convert '#<sc_t>' to 'bhvm_holor_adl_s'", ifnameof( type ) );
         }
         break;
     }
+    return 0;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
