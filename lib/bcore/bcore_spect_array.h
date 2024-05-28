@@ -297,13 +297,13 @@ uz_t bcore_array_r_get_unit_size        ( const sr_s* o );
 #define BCORE_DEFINE_ARRAY_DYN_LINK_STATIC( element_type, arr_name ) \
     BCORE_DEFINE_ARRAY_DYN_LINK_STATIC_COMMON( element_type, arr_name ) \
     void arr_name##_push(   arr_name* o, const element_type* v ) { bcore_array_a_push( ( bcore_array* )o, sr_twc( TYPEOF_##element_type, v ) ); } \
-    void arr_name##_push_d( arr_name* o,       element_type* v ) { bcore_array_a_push( ( bcore_array* )o, sr_tsd( TYPEOF_##element_type, v ) ); } \
+    void arr_name##_push_d( arr_name* o,       element_type* v ) { bcore_array_a_push( ( bcore_array* )o, sr_tsm( TYPEOF_##element_type, v ) ); } \
     BCORE_DEFINE_OBJECT_INST( bcore_array, arr_name ) "{ aware_t _; " #element_type " => [] arr; }"
 
 #define BCORE_DEFINE_ARRAY_DYN_LINK_STATIC_AUT( element_type, arr_name ) \
     BCORE_DEFINE_ARRAY_DYN_LINK_STATIC_COMMON( element_type, arr_name ) \
     void arr_name##_push(   arr_name* o, const element_type* v ) { bcore_array_a_push(( bcore_array* )o, sr_twc( typeof( #element_type ), v ) ); } \
-    void arr_name##_push_d( arr_name* o,       element_type* v ) { bcore_array_a_push(( bcore_array* )o, sr_tsd( typeof( #element_type ), v ) ); } \
+    void arr_name##_push_d( arr_name* o,       element_type* v ) { bcore_array_a_push(( bcore_array* )o, sr_tsm( typeof( #element_type ), v ) ); } \
     BCORE_DEFINE_OBJECT_INST_AUT( bcore_array, arr_name ) "{ aware_t _; " #element_type " => [] arr; }"
 
 // ---------------------------------------------------------------------------------------------------------------------

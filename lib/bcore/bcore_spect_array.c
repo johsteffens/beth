@@ -530,7 +530,7 @@ void bcore_array_default_set_size( const bcore_array_s* p, bcore_array* o, uz_t 
 static sr_s get_dyn_solid_static( const bcore_array_s* p, vc_t o, uz_t index )
 {
     const bcore_array_dyn_solid_static_s* arr = obj_vc( p, o );
-    return ( index < arr->size ) ? sr_pwd( p->item_p, ( u0_t* )arr->data + p->item_p->size * index ) : sr_null();
+    return ( index < arr->size ) ? sr_pwm( p->item_p, ( u0_t* )arr->data + p->item_p->size * index ) : sr_null();
 }
 
 static sr_s get_dyn_solid_typed( const bcore_array_s* p, vc_t o, uz_t index )
@@ -538,7 +538,7 @@ static sr_s get_dyn_solid_typed( const bcore_array_s* p, vc_t o, uz_t index )
     const bcore_array_dyn_solid_typed_s* arr = obj_vc( p, o );
     if( index < arr->size )
     {
-        return sr_twd( arr->type, ( u0_t* )arr->data + bcore_inst_s_get_typed( arr->type )->size * index );
+        return sr_twm( arr->type, ( u0_t* )arr->data + bcore_inst_s_get_typed( arr->type )->size * index );
     }
     else
     {
@@ -549,7 +549,7 @@ static sr_s get_dyn_solid_typed( const bcore_array_s* p, vc_t o, uz_t index )
 static sr_s get_dyn_link_static( const bcore_array_s* p, vc_t o, uz_t index )
 {
     const bcore_array_dyn_link_static_s* arr = obj_vc( p, o );
-    return ( index < arr->size ) ? sr_pwd( p->item_p, arr->data[ index ] ) : sr_null();
+    return ( index < arr->size ) ? sr_pwm( p->item_p, arr->data[ index ] ) : sr_null();
 }
 
 static sr_s get_dyn_link_typed( const bcore_array_s* p, vc_t o, uz_t index )
@@ -557,7 +557,7 @@ static sr_s get_dyn_link_typed( const bcore_array_s* p, vc_t o, uz_t index )
     const bcore_array_dyn_link_typed_s* arr = obj_vc( p, o );
     if( index < arr->size && arr->data[ index ] )
     {
-        return  sr_twd( arr->type, arr->data[ index ] );
+        return  sr_twm( arr->type, arr->data[ index ] );
     }
     else
     {
@@ -571,20 +571,20 @@ static sr_s get_dyn_link_aware( const bcore_array_s* p, vc_t o, uz_t index )
     if( index < arr->size )
     {
         vd_t item = arr->data[ index ];
-        return item ? sr_twd( *( aware_t* )item, item ) : sr_null();
+        return item ? sr_twm( *( aware_t* )item, item ) : sr_null();
     }
     return sr_null();
 }
 
 static sr_s get_fix_solid_static( const bcore_array_s* p, vc_t o, uz_t index )
 {
-    return ( index < p->size_fix ) ? sr_pwd( p->item_p, ( u0_t* )obj_vc( p, o ) + p->item_p->size * index ) : sr_null();
+    return ( index < p->size_fix ) ? sr_pwm( p->item_p, ( u0_t* )obj_vc( p, o ) + p->item_p->size * index ) : sr_null();
 }
 
 static sr_s get_fix_link_static( const bcore_array_s* p, vc_t o, uz_t index )
 {
     const vd_t* arr = obj_vc( p, o );
-    return ( index < p->size_fix ) ? sr_pwd( p->item_p, arr[ index ] ) : sr_null();
+    return ( index < p->size_fix ) ? sr_pwm( p->item_p, arr[ index ] ) : sr_null();
 }
 
 static sr_s get_fix_link_aware( const bcore_array_s* p, vc_t o, uz_t index )
@@ -593,7 +593,7 @@ static sr_s get_fix_link_aware( const bcore_array_s* p, vc_t o, uz_t index )
     if( index < p->size_fix )
     {
         vd_t item = arr[ index ];
-        return item ? sr_twd( *( aware_t* )item, item ) : sr_null();
+        return item ? sr_twm( *( aware_t* )item, item ) : sr_null();
     }
     return sr_null();
 }
@@ -1862,17 +1862,17 @@ static void test_string_array( sc_t type_sc )
 
     if( is_dynamic ) bcore_array_p_set_gtype( arr_p, arr, typeof( "st_s" ) );
     if( is_dynamic ) bcore_array_p_set_size( arr_p, arr, 5 );
-    bcore_array_p_set( arr_p, arr, 0, sr_asd( st_s_createf( "test line a" ) ) );
-    bcore_array_p_set( arr_p, arr, 1, sr_asd( st_s_createf( "some nonsense: sakjd" ) ) );
-    bcore_array_p_set( arr_p, arr, 2, sr_asd( st_s_createf( "some nonsense: dspaud" ) ) );
-    bcore_array_p_set( arr_p, arr, 7, sr_asd( st_s_createf( "test line x" ) ) );
+    bcore_array_p_set( arr_p, arr, 0, sr_asm( st_s_createf( "test line a" ) ) );
+    bcore_array_p_set( arr_p, arr, 1, sr_asm( st_s_createf( "some nonsense: sakjd" ) ) );
+    bcore_array_p_set( arr_p, arr, 2, sr_asm( st_s_createf( "some nonsense: dspaud" ) ) );
+    bcore_array_p_set( arr_p, arr, 7, sr_asm( st_s_createf( "test line x" ) ) );
     if( is_dynamic )
     {
-        bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "test line p" ) ) );
+        bcore_array_p_push( arr_p, arr, sr_asm( st_s_createf( "test line p" ) ) );
     }
     else
     {
-        bcore_array_p_set( arr_p, arr, 8, sr_asd( st_s_createf( "test line p" ) ) );
+        bcore_array_p_set( arr_p, arr, 8, sr_asm( st_s_createf( "test line p" ) ) );
     }
 
     if( is_dynamic ) bcore_array_p_set_space( arr_p, arr, 20 );
@@ -1927,14 +1927,14 @@ static st_s* spect_array_selftest( void )
     vd_t arr = bcore_inst_t_create( typeof( "string_array" ) );
     const bcore_array_s* arr_p = bcore_array_s_get_aware( arr );
 
-    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_static_dyn_array      = { aware_t _; st_s     []   arr; }" ) ) );
-    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_static_link_dyn_array = { aware_t _; st_s =>  []   arr; }" ) ) );
-    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_typed_dyn_array       = { aware_t _; typed    []   arr; }" ) ) );
-    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_typed_link_dyn_array  = { aware_t _; typed => []   arr; }" ) ) );
-    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_aware_link_dyn_array  = { aware_t _; aware => []   arr; }" ) ) );
-    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_static_fix_array      = { aware_t _; st_s     [10] arr; }" ) ) );
-    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_static_link_fix_array = { aware_t _; st_s =>  [10] arr; }" ) ) );
-    bcore_array_p_push( arr_p, arr, sr_asd( st_s_createf( "string_aware_link_fix_array  = { aware_t _; aware => [10] arr; }" ) ) );
+    bcore_array_p_push( arr_p, arr, sr_asm( st_s_createf( "string_static_dyn_array      = { aware_t _; st_s     []   arr; }" ) ) );
+    bcore_array_p_push( arr_p, arr, sr_asm( st_s_createf( "string_static_link_dyn_array = { aware_t _; st_s =>  []   arr; }" ) ) );
+    bcore_array_p_push( arr_p, arr, sr_asm( st_s_createf( "string_typed_dyn_array       = { aware_t _; typed    []   arr; }" ) ) );
+    bcore_array_p_push( arr_p, arr, sr_asm( st_s_createf( "string_typed_link_dyn_array  = { aware_t _; typed => []   arr; }" ) ) );
+    bcore_array_p_push( arr_p, arr, sr_asm( st_s_createf( "string_aware_link_dyn_array  = { aware_t _; aware => []   arr; }" ) ) );
+    bcore_array_p_push( arr_p, arr, sr_asm( st_s_createf( "string_static_fix_array      = { aware_t _; st_s     [10] arr; }" ) ) );
+    bcore_array_p_push( arr_p, arr, sr_asm( st_s_createf( "string_static_link_fix_array = { aware_t _; st_s =>  [10] arr; }" ) ) );
+    bcore_array_p_push( arr_p, arr, sr_asm( st_s_createf( "string_aware_link_fix_array  = { aware_t _; aware => [10] arr; }" ) ) );
 
     for( uz_t i = 0; i < get_size( arr_p, arr ); i++ )
     {
