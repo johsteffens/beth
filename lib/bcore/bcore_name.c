@@ -77,7 +77,7 @@ BCORE_DEFINE_FUNCTION_DISCARD( bcore_name_s )
 
 static sr_s name_s_get_name_st( bcore_name_s* o )
 {
-    return sr_asd( st_s_create_sc( o->name ) );
+    return sr_asm( st_s_create_sc( o->name ) );
 }
 
 static void name_s_set_name_st( bcore_name_s* o, sr_s sr )
