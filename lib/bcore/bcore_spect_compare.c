@@ -374,9 +374,9 @@ st_s* bcore_diff_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
         {
             st_s* s = st_s_createf( "!%s: objects overloading comparison differ:", ifnameof( p->o_type ) );
             st_s_pushf( s, "\n\tobj1: " );
-            bcore_translate_x( bcore_inst_t_create_sr( typeof( "bcore_txt_ml_translator_s" ) ), sr_twc( p->o_type, obj1 ), sr_awd( s ) );
+            bcore_translate_x( bcore_inst_t_create_sr( typeof( "bcore_txt_ml_translator_s" ) ), sr_twc( p->o_type, obj1 ), sr_awm( s ) );
             st_s_pushf( s, "\tobj2: " );
-            bcore_translate_x( bcore_inst_t_create_sr( typeof( "bcore_txt_ml_translator_s" ) ), sr_twc( p->o_type, obj2 ), sr_awd( s ) );
+            bcore_translate_x( bcore_inst_t_create_sr( typeof( "bcore_txt_ml_translator_s" ) ), sr_twc( p->o_type, obj2 ), sr_awm( s ) );
             return s;
         }
     }
