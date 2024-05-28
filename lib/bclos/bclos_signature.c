@@ -102,7 +102,7 @@ bclos_signature_s* bclos_signature_s_parse_from_source( sr_s source )
 
 bclos_signature_s* bclos_signature_s_parse_from_sc( sc_t sc )
 {
-    return bclos_signature_s_parse_from_source( sr_asd( st_s_create_weak_sc( sc ) ) );
+    return bclos_signature_s_parse_from_source( sr_asm( st_s_create_weak_sc( sc ) ) );
 }
 
 static bcore_self_s* sig_s_create_self( void )

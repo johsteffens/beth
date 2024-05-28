@@ -37,7 +37,7 @@ void bclos_procedure_s_push_sc( bclos_procedure_s* o, sc_t statement )
     bclos_procedure_s_push
     (
         o,
-        sr_tsd
+        sr_tsm
         (
             TYPEOF_bclos_statement_s,
             bclos_statement_s_create_sc( statement )

@@ -111,7 +111,7 @@ sr_s bclos_statement_s_run( const bclos_statement_s* o, bclos_frame_s* frm )
 bclos_statement_s* bclos_statement_s_create_sc( sc_t sc )
 {
     bclos_statement_s* s = bclos_statement_s_create();
-    bclos_statement_s_parse_from_source( s, sr_asd( st_s_create_weak_sc( sc ) ) );
+    bclos_statement_s_parse_from_source( s, sr_asm( st_s_create_weak_sc( sc ) ) );
     return s;
 }
 
