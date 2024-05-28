@@ -198,7 +198,7 @@ static bcore_self_s* translator_s_create_self( void )
 
 void bcore_txt_ml_x_to_sink( sr_s obj, bcore_sink* sink )
 {
-    bcore_translate_x( sr_asd( bcore_txt_ml_translator_s_create() ), obj, sr_awd( sink ) );
+    bcore_translate_x( sr_asm( bcore_txt_ml_translator_s_create() ), obj, sr_awm( sink ) );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -206,7 +206,7 @@ void bcore_txt_ml_x_to_sink( sr_s obj, bcore_sink* sink )
 void bcore_txt_ml_x_to_stdout( sr_s obj )
 {
     st_s* out = st_s_create();
-    bcore_translate_x( sr_asd( bcore_txt_ml_translator_s_create() ), obj, sr_awd( out ) );
+    bcore_translate_x( sr_asm( bcore_txt_ml_translator_s_create() ), obj, sr_awm( out ) );
     st_s_print_d( out );
 }
 
@@ -218,7 +218,7 @@ void bcore_txt_ml_x_to_file( sr_s obj, sc_t file )
     bcore_sink_chain_s* chain = bcore_life_s_push_aware( l, bcore_sink_chain_s_create() );
     bcore_sink_chain_s_push_d( chain, bcore_sink_file_s_create_name( file ) );
     bcore_sink_chain_s_push_d( chain, bcore_inst_t_create( typeof( "bcore_sink_buffer_s" ) ) );
-    bcore_translate_x( sr_asd( bcore_txt_ml_translator_s_create() ), obj, sr_awd( chain ) );
+    bcore_translate_x( sr_asm( bcore_txt_ml_translator_s_create() ), obj, sr_awm( chain ) );
     bcore_life_s_discard( l );
 }
 
@@ -226,7 +226,7 @@ void bcore_txt_ml_x_to_file( sr_s obj, sc_t file )
 
 void bcore_txt_ml_x_to_string( sr_s obj, st_s* string )
 {
-    bcore_translate_x( sr_asd( bcore_txt_ml_translator_s_create() ), obj, sr_awd( string ) );
+    bcore_translate_x( sr_asm( bcore_txt_ml_translator_s_create() ), obj, sr_awm( string ) );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -521,7 +521,7 @@ static sr_s interpret_embedded_file( const bcore_txt_ml_interpreter_s* o, sr_s s
         st_s_discard( cur_file );
     }
 
-    sr_s sub_source = sr_asd( bcore_source_chain_s_create() );
+    sr_s sub_source = sr_asm( bcore_source_chain_s_create() );
     bcore_source_chain_s_push_d( sub_source.o, bcore_source_file_s_create_name( st_file->sc ) );
     bcore_source_chain_s_push_d( sub_source.o, bcore_inst_t_create( typeof( "bcore_source_string_s" ) ) );
 
@@ -558,7 +558,7 @@ static bcore_self_s* interpreter_s_create_self( void )
 sr_s bcore_txt_ml_from_source( bcore_source* source )
 {
     bcore_txt_ml_interpreter_s* interpreter = bcore_txt_ml_interpreter_s_create();
-    sr_s ret = interpret( interpreter, sr_null(), sr_awd( source ) );
+    sr_s ret = interpret( interpreter, sr_null(), sr_awm( source ) );
     bcore_txt_ml_interpreter_s_discard( interpreter );
     return ret;
 }
@@ -585,7 +585,7 @@ void bcore_txt_ml_t_from_source( tp_t t, vd_t o, bcore_source* source )
 
 sr_s bcore_txt_ml_from_file( sc_t file )
 {
-    sr_s chain = sr_asd( bcore_source_chain_s_create() );
+    sr_s chain = sr_asm( bcore_source_chain_s_create() );
     bcore_source_chain_s_push_d( chain.o, bcore_source_file_s_create_name( file ) );
     bcore_source_chain_s_push_d( chain.o, bcore_inst_t_create( typeof( "bcore_source_string_s" ) ) );
     sr_s ret = bcore_interpret_x( bcore_inst_t_create_sr( TYPEOF_bcore_txt_ml_interpreter_s ), chain );
@@ -596,7 +596,7 @@ sr_s bcore_txt_ml_from_file( sc_t file )
 
 sr_s bcore_txt_ml_from_string( const st_s* string )
 {
-    sr_s chain = sr_asd( bcore_source_chain_s_create() );
+    sr_s chain = sr_asm( bcore_source_chain_s_create() );
     bcore_source_chain_s_push_d( chain.o, bcore_source_string_s_create_from_string( string ) );
     sr_s ret = bcore_interpret_x( bcore_inst_t_create_sr( TYPEOF_bcore_txt_ml_interpreter_s ), chain );
     return ret;
