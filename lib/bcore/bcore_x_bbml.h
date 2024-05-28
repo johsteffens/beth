@@ -195,7 +195,7 @@ func er_t parse_create_object( m x_source* source, m sr_s* obj )
             {
                 m x_inst* inst = x_inst_t_create( type ).t_scope( type );
                 :t_parse_body( inst, type, source );
-                obj.0 = sr_tsd( type, inst.fork() );
+                obj.0 = sr_tsm( type, inst.fork() );
             }
             else // no instance
             {

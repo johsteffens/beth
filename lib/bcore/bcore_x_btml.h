@@ -354,7 +354,7 @@ func er_t parse_create_object( m x_source* source, sr_s* default_obj, m sr_s* ob
                     if( default_obj.type() == type ) x_inst_t_copy( inst, type, default_obj.o );
                     :t_parse_body( inst, type, source );
                     source.parse_fa( " </>" );
-                    obj.0 = sr_tsd( type, inst.fork() );
+                    obj.0 = sr_tsm( type, inst.fork() );
                 }
             }
             else
@@ -393,7 +393,7 @@ func er_t parse_create_object( m x_source* source, sr_s* default_obj, m sr_s* ob
                     }
                     else
                     {
-                        obj.0 = sr_asd( path.fork() );
+                        obj.0 = sr_asm( path.fork() );
                     }
                 }
                 else
@@ -415,7 +415,7 @@ func er_t parse_create_object( m x_source* source, sr_s* default_obj, m sr_s* ob
     {
         m st_s* st = st_s!^;
         source.parse_fa( " #string", st );
-        obj.0 = sr_tsd( st_s~, st.fork() );
+        obj.0 = sr_tsm( st_s~, st.fork() );
     }
     // number
     else if( source.parse_bl( "#?(([0]>='0'&&[0]<='9')||[0]=='+'||[0]=='-')" ) )
