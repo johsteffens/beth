@@ -13,15 +13,97 @@
  *  limitations under the License.
  */
 
-/** Expression implementation */
+/** BTCL: Beth text constructive language (interpreter) */
 
 /**********************************************************************************************************************/
+/// supportive functions
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// creates a strong clone in case sr is weak; const flag is preserved
+func void clone_if_weak( m sr_s* sr )
+{
+    if( sr.is_weak() )
+    {
+        bl_t is_const = sr.is_const();
+        sr.0 = sr_clone( sr );
+        sr.set_const( is_const );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// reserved keywords
+name if;
+name else;
+name self;
+name func;
+name true;
+name false;
+
+// The context is created in the root frame and shared across all child frames
+stamp :context_s
+{
+    /// reserved keywors
+    bcore_hmap_name_s hmap_reserved;
+
+    func o setup( m@* o )
+    {
+        o.hmap_reserved.set_sc( "if" );
+        o.hmap_reserved.set_sc( "else" );
+        o.hmap_reserved.set_sc( "self" );
+        o.hmap_reserved.set_sc( "func" );
+        o.hmap_reserved.set_sc( "true" );
+        o.hmap_reserved.set_sc( "false" );
+    }
+
+    func bl_t is_reserved( @* o, tp_t name ) = o.hmap_reserved.exists( name );
+    func sc_t sc_reserved( @* o, tp_t name ) = o.hmap_reserved.get_sc( name );
+    func er_t check_reserved( @* o, tp_t name, m x_source* source )
+    {
+        if( o.is_reserved( name ) ) = source.parse_error_fa( "#<sc_t> is a reserved keyword.\n", o.sc_reserved( name ) );
+        = 0;
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
 stamp :frame_s
 {
     private :frame_s* parent;
+
+    :context_s -> context;
+    func bl_t is_reserved( @* o, tp_t name ) = o.context.is_reserved( name );
+    func sc_t sc_reserved( @* o, tp_t name ) = o.context.sc_reserved( name );
+    func er_t check_reserved( @* o, tp_t name, m x_source* source ) = o.context.check_reserved( name, source );
+
+
+    /// if parent is NULL, this frame is the root frame
+    func o setup_as_root( m@* o, m :context_s* context )
+    {
+        o.parent =< NULL;
+
+        if( context )
+        {
+            o.context =< context.fork();
+        }
+        else
+        {
+            o.context =< :context_s!.setup();
+        }
+    }
+
+    /// if parent is NULL, this frame is the root frame
+    func o setup( m@* o, @* parent )
+    {
+        if( !parent ) ERR_fa( "No parent: call setup_as_root\n" );
+        o.parent = parent.cast( m$* );
+        o.context =< o.parent.context.fork();
+    }
 
     // object pool (hooks)
     hidden bcore_arr_sr_s obj_pool; // pool of objects with preserved lifetime
@@ -31,7 +113,7 @@ stamp :frame_s
         sr.set_strong( false );
     }
 
-    hidden bcore_hmap_name_s hmap_name;
+    bcore_hmap_name_s hmap_name;
     func tp_t entypeof( m@* o, sc_t name ) = o.hmap_name.set_sc( name );
     func sc_t nameof( @* o, tp_t type )
     {
@@ -63,7 +145,6 @@ stamp :frame_s
 
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 
 /// label or identifier
@@ -81,6 +162,11 @@ stamp :label_s
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// A null variable is a variable that is to be created in the assignment operator
+stamp :null_variable_s { $ tp_t tp_name; }
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /** A null member is a stamp member defined as reference and being NULL at the point of query.
  *  Normally this represents an error except when the expression stand left of an assignment.
  *  The null member allows assignments being regular binary operators.
@@ -91,7 +177,7 @@ stamp :null_member_s
     tp_t tp_name;
     func o setup( m@* o, m sr_s* base, tp_t tp_name )
     {
-        o.base.twd( base.o_type(), base.o );
+        o.base.twm( base.o_type(), base.o );
         o.tp_name = tp_name;
     }
 
@@ -112,7 +198,7 @@ stamp :null_arr_element_s
     s3_t index;
     func o setup( m@* o, m sr_s* base, tp_t index )
     {
-        o.base.twd( base.o_type(), base.o );
+        o.base.twm( base.o_type(), base.o );
         o.index = index;
     }
 
@@ -135,6 +221,137 @@ stamp :list_s
 
     func o push_list_clone( m@* o, c @* a ) foreach( c$*e in a.arr ) o.push_clone( e );
     func o push_list_fork ( m@* o, m @* a ) foreach( m$*e in a.arr ) o.push_fork ( e );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/** block: code enclosed in { .... }
+ *  Note: A block should not own a lexical frame.
+ *        If it is part of a function, it cannot know any lexical environment except the argument list, because
+ *        a block can be constructed in an environment (e.g. function generating function)
+ *        that may no longer be valid once the block is executed.
+ *        If it is merely part of a branch and has a right to access the environment of the
+ *        branch, the block is actually executed in the frame where it was defined, thus the lexical frame can be
+ *        passed at the time of execution.
+ */
+stamp :block_s
+{
+    x_source_point_s source_point;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:block_s) er_t parse( m@* o, m :frame_s* frame, m x_source* source )
+{
+    source.parse_fa( " {" );
+
+    o.source_point.setup_from_source( source );
+
+    sz_t indent = 0;
+    while( !source.eos() )
+    {
+        if( source.parse_bl( " #=?'}'" ) )
+        {
+            if( indent > 0  )
+            {
+                source.get_char();
+                indent--;
+            }
+            else
+            {
+                break;
+            }
+        }
+        else if( source.parse_bl( " #?'{'" ) )
+        {
+            indent++;
+        }
+        else if( source.parse_bl( " #=?'\"'" ) )
+        {
+            source.parse_fa( "#-string" );
+        }
+        else
+        {
+            source.get_char();
+        }
+    }
+
+    source.parse_fa( " }" );
+
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/** Evaluates the block in its own frame */
+func (:block_s) er_t eval( @* o, c :frame_s* parent_frame, m sr_s* obj )
+{
+    m$* frame = :frame_s!^.setup( parent_frame );
+    m x_source* source = o.source_point.source;
+    s3_t index = source.get_index();
+    source.set_index( o.source_point.index );
+
+    er_t err = frame.eval( 0, source, obj );
+
+    source.set_index( index );
+
+    = err;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// signature of a function: syntax func ( a, b, ... )   (a,b arbitrary identifiers for function arguments)
+stamp :signature_s
+{
+    x_source_point_s source_point;
+
+    // argument list
+    bcore_arr_tp_s arg_list;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:signature_s) er_t parse( m@* o, m :frame_s* frame, m x_source* source )
+{
+    o.source_point.setup_from_source( source );
+
+    source.parse_fa( " (" );
+
+    while( !source.eos() && !source.parse_bl( " #=?')'" ) )
+    {
+        // identifier
+        if( source.parse_bl( " #?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z')||[0]=='_')" ) )
+        {
+            tp_t name = frame.get_identifier( source, true );
+            frame.check_reserved( name, source );
+            o.arg_list.push( name );
+        }
+        else
+        {
+            = source.parse_error_fa( "Identifier expected.\n" );
+        }
+
+        if( !source.parse_bl( " #?','" ) ) break;
+    }
+
+    source.parse_fa( " )" );
+
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// a function is a composition of signature and block
+stamp :function_s
+{
+    :signature_s -> signature;
+    :block_s -> block;
+
+    func o setup( m@* o, m :signature_s* signature, m :block_s* block )
+    {
+        o.signature =< signature.fork();
+        o.block =< block.fork();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -239,8 +456,25 @@ func(:frame_s) er_t eval_number_literal( m @* o, m x_source* source, m sr_s* sr 
         sr.const_from_s3( s3 );
     }
 
-    return 0;
+    = 0;
 };
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// parses number: (all integer, hex and float encodings); creates f3_t or s3_t depending on syntax; makes sr constant
+func(:frame_s) er_t eval_condition( m @* o, m x_source* source, m bl_t* condition )
+{
+    m sr_s* sb = sr_s!^;
+    o.eval( 0, source, sb );
+    if( !sb.is_numeric() )  = source.parse_error_fa( "Internal error: Expression does not evaluate to a condition.\n" );
+    if( condition ) condition.0 = ( sb.to_f3() != 0 );
+    = 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// unary operators
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -267,304 +501,34 @@ func (:frame_s) er_t negate( m@* o, m x_source* source, m sr_s* sr )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:frame_s) er_t eval_member( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
+func (:frame_s) er_t to_sink( @* o, bl_t detailed, sr_s* sr, m x_sink* sink )
 {
-    o.error_if_undefined( source, sr );
-
-    sr_s^ sb;
-    o.eval( bop_priority, source, sb );
-
-    :label_s* label = NULL;
-    m x_stamp* stmp = sr.o.cast( m x_stamp* );
-
-    tp_t stmp_t = sr.o_type();
-
-    if( sb.o_type() == :label_s~ )
+    if( detailed )
     {
-        label = sb.o.cast( :label_s* );
-    }
-    else if( sb.o_type() == st_s~ )
-    {
-        label = :label_s!^^.setup( sb.o.cast( st_s* ).sc );
-    }
-
-    if( label )
-    {
-        if( stmp.t_exists( stmp_t, label.tp_name ) )
-        {
-            if( sr.is_strong() ) o.preserve_and_set_weak( sr );
-            sr_s sc = stmp.t_m_get_sr( stmp_t, label.tp_name );
-
-            if( sc.o )
-            {
-                sr.0 = sc;
-            }
-            else
-            {
-                sr.asd( :null_member_s!.setup( sr, label.tp_name ) );
-            }
-        }
-        else
-        {
-            = source.parse_error_fa( "#<sc_t>.#<sc_t> does not exist.\n", bnameof( stmp_t ), label.st_name.sc );
-        }
+        x_btml_t_to_sink( sr.o.cast( x_btml* ), sr.o_type(), sink );
     }
     else
     {
-        if( x_stamp_t_is_array( stmp_t ) )
-        {
-            m x_array* arry = stmp;
-            if( sb.is_numeric() )
-            {
-                if( sr.is_strong() ) o.preserve_and_set_weak( sr );
-                s3_t index = sb.to_s3();
-                s3_t size = arry.t_size( stmp_t );
-                if( index <     0 ) = source.parse_error_fa( "Array index '<s3_t>' < 0.\n", index );
-                if( index >= size ) = source.parse_error_fa( "Array index '<s3_t>' >= array size '<s3_t>'.\n", index, size );
-                sr_s sc = arry.t_m_get_sr( stmp_t, index );
-                if( sc.o )
-                {
-                    sr.0 = sc;
-                }
-                else
-                {
-                    sr.asd( :null_arr_element_s!.setup( sr, index ) );
-                }
-            }
-            else
-            {
-                = source.parse_error_fa( "Identifier or array subscript expected.\n" );
-            }
-        }
-        else
-        {
-            = source.parse_error_fa( "Identifier expected.\n" );
-        }
+        if     ( !sr.o ) sink.push_fa( "NULL" );
+        else if( sr.is_integer() ) sink.push_fa( "#<s3_t>", sr.to_s3() );
+        else if( sr.is_float() )   sink.push_fa( "#<f3_t>", sr.to_f3() );
+        else if( sr.o_type() == st_s~ ) sink.push_fa( "#<sc_t>", sr.o.cast( st_s* ).sc );
+        else x_btml_t_to_sink( sr.o.cast( x_btml* ), sr.o_type(), sink );
     }
-
-
     = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:frame_s) er_t eval_div( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
-{
-    o.error_if_undefined( source, sr );
-    sr_s^ sb; o.eval( bop_priority, source, sb );
-    o.error_if_undefined( source, sb );
-
-    if( bcore_tp_is_numeric( sr.o_type() ) && bcore_tp_is_numeric( sb.o_type() ) )
-    {
-        if( sb.to_f3() == 0 ) = source.parse_error_fa( "Division by zero.\n" );
-
-        if( bcore_tp_is_integer( sr.o_type() ) && bcore_tp_is_integer( sb.o_type() ) )
-        {
-            sr.const_from_s3( sr.to_s3() / sb.to_s3() );
-        }
-        else
-        {
-            sr.const_from_f3( sr.to_f3() / sb.to_f3() );
-        }
-        = 0;
-    }
-
-    = source.parse_error_fa( "Operator #<sc_t> / #<sc_t> is not defined.\n", bnameof( sr.o_type() ), bnameof( sb.o_type() ) );
-}
+/**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:frame_s) er_t eval_mul( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
+func (:frame_s) er_t eval_in_frame( m@* o, s2_t priority, m x_source* source, m sr_s* obj )
 {
-    o.error_if_undefined( source, sr );
-    sr_s^ sb; o.eval( bop_priority, source, sb );
-    o.error_if_undefined( source, sb );
-
-    if( bcore_tp_is_numeric( sr.o_type() ) && bcore_tp_is_numeric( sb.o_type() ) )
-    {
-        if( bcore_tp_is_integer( sr.o_type() ) && bcore_tp_is_integer( sb.o_type() ) )
-        {
-            sr.const_from_s3( sr.to_s3() * sb.to_s3() );
-        }
-        else
-        {
-            sr.const_from_f3( sr.to_f3() * sb.to_f3() );
-        }
-        = 0;
-    }
-
-    = source.parse_error_fa( "Operator #<sc_t> * #<sc_t> is not defined.\n", bnameof( sr.o_type() ), bnameof( sb.o_type() ) );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:frame_s) er_t eval_sub( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
-{
-    o.error_if_undefined( source, sr );
-    sr_s^ sb; o.eval( bop_priority, source, sb );
-    o.error_if_undefined( source, sb );
-
-    if( bcore_tp_is_numeric( sr.o_type() ) && bcore_tp_is_numeric( sb.o_type() ) )
-    {
-        if( bcore_tp_is_integer( sr.o_type() ) && bcore_tp_is_integer( sb.o_type() ) )
-        {
-            sr.const_from_s3( sr.to_s3() - sb.to_s3() );
-        }
-        else
-        {
-            sr.const_from_f3( sr.to_f3() - sb.to_f3() );
-        }
-        = 0;
-    }
-
-    = source.parse_error_fa( "Operator #<sc_t> - #<sc_t> is not defined.\n", bnameof( sr.o_type() ), bnameof( sb.o_type() ) );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:frame_s) er_t eval_add( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
-{
-    o.error_if_undefined( source, sr );
-    sr_s^ sb; o.eval( bop_priority, source, sb );
-    o.error_if_undefined( source, sb );
-
-    if( bcore_tp_is_numeric( sr.o_type() ) && bcore_tp_is_numeric( sb.o_type() ) )
-    {
-        if( bcore_tp_is_integer( sr.o_type() ) && bcore_tp_is_integer( sb.o_type() ) )
-        {
-            sr.const_from_s3( sr.to_s3() + sb.to_s3() );
-        }
-        else
-        {
-            sr.const_from_f3( sr.to_f3() + sb.to_f3() );
-        }
-        = 0;
-    }
-
-    = source.parse_error_fa( "Operator #<sc_t> + #<sc_t> is not defined.\n", bnameof( sr.o_type() ), bnameof( sb.o_type() ) );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:frame_s) er_t eval_join( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
-{
-    o.error_if_undefined( source, sr );
-    sr_s^ sb; o.eval( bop_priority, source, sb );
-    o.error_if_undefined( source, sb );
-
-    d :list_s* list = :list_s!;
-
-    if( sr.is_strong() )
-    {
-        if( sr.type() == :list_s~ )
-        {
-            list.push_list_fork( sr.o.cast( m :list_s* ) );
-        }
-        else
-        {
-            list.push_fork( sr );
-        }
-    }
-    else
-    {
-        if( sr.type() == :list_s~ )
-        {
-            list.push_list_clone( sr.o.cast( :list_s* ) );
-        }
-        else
-        {
-            list.push_clone( sr );
-        }
-    }
-
-    if( sr.is_strong() )
-    {
-        if( sb.type() == :list_s~ )
-        {
-            list.push_list_fork( sb.o.cast( m :list_s* ) );
-        }
-        else
-        {
-            list.push_fork( sb );
-        }
-    }
-    else
-    {
-        if( sb.type() == :list_s~ )
-        {
-            list.push_list_clone( sb.o.cast( :list_s* ) );
-        }
-        else
-        {
-            list.push_clone( sb );
-        }
-    }
-
-    sr.asd( list );
-
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:frame_s) er_t eval_assign( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
-{
-    if( sr.is_const() ) = source.parse_error_fa( "Assignment to a const object.\n" );
-
-    sr_s^ sb; o.eval( bop_priority, source, sb );
-    o.error_if_undefined( source, sb );
-
-    sb.set_const( true );
-
-    switch( sr.o_type() )
-    {
-        case :null_member_s~:
-        {
-            m :null_member_s* null_member = sr.o.cast( m :null_member_s* );
-            sr_s sr1 = null_member.set_sr( sb );
-            sr.down();
-            sr.0 = sr1;
-        }
-        break;
-
-        case :null_arr_element_s~:
-        {
-            m :null_arr_element_s* null_arr_element = sr.o.cast( m :null_arr_element_s* );
-            sr_s sr1 = null_arr_element.set_sr( sb );
-            sr.down();
-            sr.0 = sr1;
-        }
-        break;
-
-        case :label_s~:
-        {
-            tp_t tp_var_name = sr.o.cast( :label_s* ).tp_name;
-            //if( o.var_exists( tp_var_name ) ) = source.parse_error_fa( "Variable '#<sc_t>' has already been defined.\n", o.nameof( tp_var_name ) );
-
-            sr_s var_sr = sr_clone( sr_cw( sb.0 ) );
-            var_sr.set_const( false );
-            m sr_s* sr_var = o.var_set( tp_var_name, var_sr );
-            sr.down();
-            sr.0 = sr_cw( sr_var );
-        }
-        break;
-
-        default:
-        {
-            x_inst_t_copy_typed( sr.o, sr.o_type(), sb.o_type(), sb.o );
-        }
-        break;
-    }
-
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:frame_s) er_t eval_continuation( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
-{
-    sr.clear();
-    o.eval( bop_priority, source, sr );
+    m$* frame = :frame_s!^.parent = o;
+    frame.eval( priority, source, obj );
+    :clone_if_weak( obj );
     = 0;
 }
 
@@ -573,101 +537,208 @@ func (:frame_s) er_t eval_continuation( m@* o, s2_t bop_priority, m x_source* so
 func (:frame_s) er_t eval( m@* o, s2_t priority, m x_source* source, m sr_s* obj )
 {
     ASSERT( obj.o == NULL );
-    // sign
-    s3_t sign = 1;
-    if     ( source.parse_bl( " #?'+'" ) ) sign =  1;
-    else if( source.parse_bl( " #?'-'" ) ) sign = -1;
 
-    // object
-    if( source.parse_bl( " #?([0]>='0'&&[0]<='9')" ) ) // constant number
+    /// prefix operatos
+    bl_t to_stdout = false;
+    bl_t to_stdout_detail = false;
+    bl_t negate = false;
+    if( source.parse_bl( " #?'?'" ) )
+    {
+        to_stdout = true;
+        if( source.parse_bl( " #?'?'" ) ) to_stdout_detail = true;
+    }
+    if     ( source.parse_bl( " #?'+'" ) ) negate = false;
+    else if( source.parse_bl( " #?'-'" ) ) negate = true;
+
+    /// Object ...
+
+    /// number literal
+    if( source.parse_bl( " #?([0]>='0'&&[0]<='9')" ) )
     {
         o.eval_number_literal( source, obj );
     }
-    // identifier
+
+    /// string literal
+    else if( source.parse_bl( " #=?'\"'" ) )
+    {
+        source.parse_fa( " #cstring", obj.asm( st_s! ).o.cast( m st_s* ) );
+    }
+
+    /// Block { .... } definition
+    else if( source.parse_bl( " #=?'{'" ) )
+    {
+        m :block_s* block = :block_s!^;
+        block.parse( o, source );
+        obj.asm( block.fork() );
+    }
+
+    /// Identifier
     else if( source.parse_bl( " #?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z')||[0]=='_')" ) )
     {
         tp_t name = o.get_identifier( source, true );
 
-        if( o.var_exists( name ) )
+        /// reserved keyword
+        if( o.is_reserved( name ) )
+        {
+            switch( name )
+            {
+                /// Signature or Function definition
+                case TYPEOF_else: = source.parse_error_fa( "Misplaced 'else'.\n" );
+
+                /// Signature or Function definition
+                case TYPEOF_if:
+                {
+                    bl_t condition = false;
+                    source.parse_fa( " (" );
+                    o.eval_condition( source, condition );
+                    source.parse_fa( " )" );
+                    {
+                        m :block_s* block = :block_s!^;
+                        block.parse( o, source );
+                        if( condition ) block.eval( o, obj );
+                    }
+                    if( source.parse_bl( " #?w'else'" ) )
+                    {
+                        m :block_s* block = :block_s!^;
+                        block.parse( o, source );
+                        if( !condition ) block.eval( o, obj );
+                    }
+                }
+                break;
+
+                /// Signature or Function definition
+                case TYPEOF_func:
+                {
+                    m :signature_s* signature = :signature_s!^;
+                    signature.parse( o, source );
+
+                    if( source.parse_bl( " #=?'{'" ) ) // block follows signature -> function
+                    {
+                        m :block_s* block = :block_s!^;
+                        block.parse( o, source );
+
+                        m :function_s* function = :function_s!^.setup( signature, block );
+
+                        obj.asm( function.fork() );
+                    }
+                    else
+                    {
+                        obj.asm( signature.fork() );
+                    }
+                }
+                break;
+
+                /// Recursion
+                case TYPEOF_self:
+                {
+                    if( o.var_exists( TYPEOF_self ) )
+                    {
+                        m sr_s* sr = o.var_get( name );
+                        if( sr.o_type() !=  :function_s~ ) = source.parse_error_fa( "Internal error: Keyword 'self': Not linked to a function.\n" );
+
+                        // we fork the object so it can survive beyond a local frame
+                        obj.tsc( sr.o_type(), bcore_fork( sr.o ) );
+                    }
+                    else
+                    {
+                        = source.parse_error_fa( "Keyword 'self': Used outside a function.\n" );
+                    }
+                }
+                break;
+
+                case TYPEOF_true:  obj.from_bl( true ); break;
+                case TYPEOF_false: obj.from_bl( false ); break;
+
+                default: = source.parse_error_fa( "Internal error: Keyword '#<sc_t>': missing implementation.\n", o.sc_reserved( name ) );
+            }
+        }
+        else if( source.parse_bl( " #?([0]=='='&&[1]!='=')" ) ) // identifier with assignment --> variable declaration
+        {
+            obj.asm( :null_variable_s!( name ) );
+        }
+        else if( o.var_exists( name ) )
         {
             m sr_s* sr = o.var_get( name );
-            obj.twd( sr.o_type(), sr.o );
+
+            // we fork the object so it can survive beyond a local frame
+            obj.tsc( sr.o_type(), bcore_fork( sr.o ) );
         }
         else
         {
-            obj.asd( :label_s!.setup( o.nameof( name ) ) );
+            = source.parse_error_fa( "Unknown identifier #<sc_t>.\n", o.nameof( name ) );
         }
     }
-    // btml object
+
+    /// BTML object
     else if( source.parse_bl( " #=?'<'" ) )
     {
         tp_t o_type = 0;
         d x_inst* o_inst = x_btml_create_from_source_t( source, o_type.1 );
         if( !o_inst ) = TYPEOF_parse_error; // if o_inst == 0 the error stack should hold a descriptive message from x_btml_create_from_source_t
-        obj.0 = sr_tsd( o_type, o_inst );
-        obj.set_const( true );
+        obj.0 = sr_tsc( o_type, o_inst );
     }
-    else if( source.parse_bl( " #?'('" ) ) // bracket
+
+    /// Bracket: content evaluated in dedicated frame
+    else if( source.parse_bl( " #?'('" ) )
     {
-        o.eval( 0, source, obj );
+        o.eval_in_frame( 0, source, obj );
         source.parse_fa( " )" );
-    }
-    else if( source.eos() ) // end of stream; valid condition for ending an expression
-    {
-        = 0;
     }
     else
     {
-        = source.parse_error_fa( "Expression does not evaluate to an object.\n" );
+        = source.parse_error_fa( "Expression does not yield an object.\n" );
     }
 
-    /// Unary (postfix) Operators
+    /// Unary (prefix) Operators
+    if( negate ) o.negate( source, obj );
+    if( to_stdout ) { o.to_sink( to_stdout_detail, obj, x_sink_stdout() ); x_sink_stdout().flush(); }
 
-    // sign
-    if( sign == -1 ) o.negate( source, obj );
-
-    /** Binary Operators
-     *  Binary operators span a binary tree.
-     *  bop_priority determines which operator takes the root position for each branch.
-     */
-    s2_t bop_priority = 1000; // > number of operators
-
-    // operators must be parsed in descending order of priority
-
-    if( priority >= bop_priority ) = 0;
-    while( source.parse_bl( " #?'.'" ) ) o.eval_member( bop_priority, source, obj );
-    bop_priority--;
-
-    if( priority >= bop_priority ) = 0;
-    while( source.parse_bl( " #?'/'" ) ) o.eval_div( bop_priority, source, obj );
-    bop_priority--;
-
-    if( priority >= bop_priority ) = 0;
-    while( source.parse_bl( " #?'*'" ) ) o.eval_mul( bop_priority, source, obj );
-    bop_priority--;
-
-    if( priority >= bop_priority ) = 0;
-    while( source.parse_bl( " #?'-'" ) ) o.eval_sub( bop_priority, source, obj );
-    bop_priority--;
-
-    if( priority >= bop_priority ) = 0;
-    while( source.parse_bl( " #?'+'" ) ) o.eval_add( bop_priority, source, obj );
-    bop_priority--;
-
-    if( priority >= bop_priority ) = 0;
-    while( source.parse_bl( " #?':'" ) ) o.eval_join( bop_priority, source, obj );
-    bop_priority--;
-
-    if( priority >= bop_priority ) = 0;
-    while( source.parse_bl( " #?'='" ) ) o.eval_assign( bop_priority, source, obj );
-    bop_priority--;
-
-    if( priority >= bop_priority ) = 0;
-    while( source.parse_bl( " #?';'" ) ) o.eval_continuation( bop_priority, source, obj );
-    bop_priority--;
+    // binary operators if any
+    o.eval_bop( priority, source, obj );
 
     = 0;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func parse_create_object
+{
+    m$* frame = :frame_s!^.setup_as_root( NULL );
+    m$* sr = sr_s!^;
+    frame.eval( 0, source, sr );
+
+    if( obj )
+    {
+        if( sr.o )
+        {
+            if( sr.is_strong() )
+            {
+                obj.tsm( sr.o_type(), bcore_fork( sr.o ) );
+            }
+            else
+            {
+                /** A weak reference might be an embedded member of an object.
+                 *  We clone it here to be sure we don't get runtime issues.
+                 *  If the object is not embedded, it could be forked ...
+                 */
+                obj.tsm( sr.o_type(), x_inst_t_clone( sr.o, sr.o_type() ) );
+            }
+        }
+        else
+        {
+            obj.clear();
+        }
+    }
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -680,28 +751,29 @@ func void selftest()
 
 //    st_s^ txt.push_sc( "1 : 2 : 3 : 4" );
 
+/*
     sc_t txt = " \
-x = <bcodec_audio_codec_waw_param_s></>; \n\
-x.signal_exponent = 3; \n\
-x                      \n\
+    x = <bcodec_audio_codec_waw_param_s></>; \
+    y = x( .signal_exponent = 3 ); \
+    y; \
     ";
 
+*/
+
+    sc_t txt = " \
+    x = { 3 }; \
+    (?x) \
+    ";
 
     m x_source* source = x_source_create_from_sc( txt )^;
 
-    :frame_s^ frame;
-
-    sr_s^ sr;
+    m$* frame = :frame_s!^;
+    m$* sr = sr_s!^;
 
     if( frame.eval( 0, source, sr ) )
     {
         bcore_error_pop_all_to_stderr();
         return;
-    }
-
-    if( sr.o )
-    {
-        x_btml_t_to_stdout( sr.o, sr.o_type() );
     }
 
     ASSERT( true );
@@ -710,3 +782,6 @@ x                      \n\
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+
+embed "bcore_x_btcl_bop.x";
+

@@ -16,86 +16,9 @@
 /**
 
 BTCL: Beth text constructive language (interpreter).
+Backward compatible to BTML.
 
-Constructive Language (Definition):
-Language for text based object construction with advanced syntax and semantics. It is easy to use with
-syntax-elements common to many programming languages. It is not intended for basic serialization of objects
-like a meth-markup language. Yet, a markup language can be a valid subset of a constructive language.
-
-A constructive language can be ranked in-between a markup language and a programming language.
-
-Syntax:
-
-Expression:
-    An expression constructs an object via literal (number or string); btml expression or algebraic expression.
-    Syntax: <expression>
-    Example: <bmath_cf3_s> 1.0 0 </>
-    Example: 2 * 7 + x.[0] // operators are evaluated with proper priority
-    Example: x.r = <expr>     // expression with assignment x or member r has been declared as variable; expression yields <expr>
-
-    Modified clone:
-    Syntax: <expr>( .<path> = <expr1>, .<path> = <expr2>, ... ) // clones <expr> and modifies the specified elements; the result is const;
-    Syntax: <expr>( <expr1>, <expr2>, ... ) // expects <expr> to be an array; clones it an sets elements according to list
-
-Statement:
-    A statement can be an assignment, variable declaration or function definition.
-    A statement is concluded by a semicolon.
-    Syntax: <statement>;
-    Example: var x = <bmath_cf3_s> r: 1.0 i: 0 </>;
-
-Variable:
-    Definition syntax: <identifier> = <expression>;
-    Example: x = <expression>; // variable with assignment
-
-Block syntax:
-    Variables and functions declared in a block are local to the block.
-{
-    <statement>;
-    <statement>;
-}
-
-Function definition syntax
-
-my_func = func( a, b )
-{
-    <body>
-    = <expression>;
-}
-
-Function brief syntax
-my_func = func( a, b ) = <expression>;
-
-The function body contains a list of statements. The last statement is a return-assignment.
-
-Binary operators <bop> are used in binary operations of the form <lexpr> <bop> <rexpr>:
-
-.   : member object: <rexpr> must evaluate to a string, identifier or index-number
-Example: x.loudness_mask --> (x is stamp bcodec_audio_codec_waw_param_s) bcodec_audio_codec_waw_param_s.loudness_mask
-Example: x.[2]  --> (x s an array) element 2 of x
-Example: x.2    --> same as x.[2]
-(Example: x.y    --> y is deemed variable of number or string)
-
-^   : numeric exponentiation (power function)
-/   : numeric division
-*   : numeric multiplication
--   : numeric subtraction
-+   : numeric addition;
-Example: 1 + 2 --> 3
-
-+   : string catenation: one operand must be a string and the other convertible to a string
-Example: "ab" + "x" --> "abx"
-Example: "ab" + 3   --> "ab3"
-Example: "ab" + x   --> (if x = 5) "ab5"
-
-:   : generic listing (pair generation, list extension, no tree), Result is :list_s; we denote the content of :list_s as L(..,..,..)
-Example: 1:2 --> L(1:2)
-Example: 1:<L(2:3)> --> L(1:2:3)
-
-=   : assignment: modifies object of <lexpr> by copying the object of <rexpr>; if lxepr is an unknown label, a variable is created
-
-;   : continuation: result is <rexpr>
-Example: x=5; x+3  --> 7
-Note: A continuation at the end of file or block is no error.
+BTCL Documentation: beth/doc/bcore/btcl.md
 
 */
 
@@ -115,9 +38,88 @@ XOILA_DEFINE_GROUP( x_btcl, x_inst )
 
 #ifdef XOILA_SECTION
 
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// Interface
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/** Reads full object from source.
+ *  If o implements copy_typed, automatic type conversion is used.
+ *  Allows recovering from parse errors and conversion errors.
+ *  Checks error-stack after copy_typed.
+ *  In case of a parse error o is not being changed.
+ */
+func er_t t_from_source( m@* o, tp_t t, m x_source* source );
+func er_t   from_source( m@* o,         m x_source* source ) = o.t_from_source( o._, source );
+func er_t t_from_file  ( m@* o, tp_t t,   sc_t file ) = o.t_from_source( t, x_source_check_create_from_file( file )^ );
+func er_t   from_file  ( m@* o,           sc_t file ) = o.t_from_file( o._, file );
+func er_t t_from_st    ( m@* o, tp_t t, c st_s* st  ) = o.t_from_source( t, x_source_create_from_st( st )^ );
+func er_t   from_st    ( m@* o,         c st_s* st  ) = o.t_from_st( o._, st );
+func er_t t_from_sc    ( m@* o, tp_t t,   sc_t  sc  ) = o.t_from_source( t, x_source_create_from_sc( sc )^ );
+func er_t   from_sc    ( m@* o,           sc_t  sc  ) = o.t_from_sc( o._, sc );
+
+/** Reads and creates object from source.
+ *  Returns NULL in case of parse error (check error-stack).
+ *  If type is != NULL Sets type.0 to object's type.
+ */
+func d obliv @* create_from_source_t( m x_source* source, m tp_t* type );
+func d obliv @* create_from_st_t( c st_s* st, m tp_t* type ) = :create_from_source_t( x_source_create_from_st( st )^, type );
+func d obliv @* create_from_sc_t(   sc_t  sc, m tp_t* type ) = :create_from_source_t( x_source_create_from_sc( sc )^, type );
+func d aware @* create_from_source( m x_source* source );
+func d aware @* create_from_st( c st_s* st )  = :create_from_source( x_source_create_from_st( st )^ );
+func d aware @* create_from_sc(   sc_t  sc )  = :create_from_source( x_source_create_from_sc( sc )^ );
+func d aware @* create_from_file( sc_t file ) = :create_from_source( x_source_create_from_file( file )^ );
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
+
+func t_from_source
+{
+    m$* sr = sr_s!^;
+    :parse_create_object( source, sr );
+    x_inst_t_copy_typed( o, t, sr_s_o_type( sr ), sr.o );
+    = bcore_error_last();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func create_from_source_t
+{
+    type.0 = 0;
+    if( !source ) = NULL;
+    m$* sr = sr_s!^;
+    :parse_create_object( source, sr );
+    if( sr.o && type ) type.0 = sr.o_type();
+    m x_inst* obj = sr.o;
+    = ( obj ) ? obj.fork() : NULL; // sr.o is NULL in case of error
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func create_from_source
+{
+    tp_t t = 0;
+    d @* o = :create_from_source_t( source, t.1 );
+    if( t )
+    {
+        ASSERT( x_stamp_t_is_aware( t ) );
+    }
+    = o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/** On entering, obj should be sr_null
+ *  In case of error obj need not be discarded
+ *  if default_obj is defined, obj copies from default_obj before parsing the body
+ */
+func er_t parse_create_object( m x_source* source, m sr_s* obj );
 
 /**********************************************************************************************************************/
 
