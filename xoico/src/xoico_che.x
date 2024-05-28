@@ -169,17 +169,18 @@ signature void typespec_to_sink( m @* o, c xoico_typespec_s* typespec, m x_sink*
 
 signature bl_t is_var( c @* o, tp_t name );
 
+/// keywords
 name static;
 name volatile;
 name cast;
 name verbatim_C;
-name keep;
+//name keep;
 name scope;
 name t_scope;
 name scope_local;
 name scope_func;
-name keep_func;
-name keep_block;
+//name keep_func;
+//name keep_block;
 name fork;
 name try;
 name if;

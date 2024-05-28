@@ -1,4 +1,4 @@
-//  Last update: 2024-05-01T10:31:25Z
+//  Last update: 2024-05-28T08:48:33Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -1328,13 +1328,10 @@
 #define TYPEOF_volatile 0x9575F08FB5A48F0Dull
 #define TYPEOF_cast 0xB55E7090E879494Eull
 #define TYPEOF_verbatim_C 0x7C0F5E2B3285120Dull
-#define TYPEOF_keep 0x585D7CD75CF6F848ull
 #define TYPEOF_scope 0xC1074FFBE7EFE44Bull
 #define TYPEOF_t_scope 0xC1CF98C848995930ull
 #define TYPEOF_scope_local 0xC7F69BF78D91B167ull
 #define TYPEOF_scope_func 0x5E9151F1091C19BAull
-#define TYPEOF_keep_func 0xA74182F52F6E64F7ull
-#define TYPEOF_keep_block 0xD904ABF6228783B2ull
 #define TYPEOF_fork 0xDD1D0D790C2F1881ull
 #define TYPEOF_try 0x570AC119447423EEull
 #define TYPEOF_if 0x08B73007B55C3E26ull
@@ -2022,5 +2019,5 @@ BETH_EXPAND_GROUP_xoico_builder
 BETH_EXPAND_GROUP_xoico_main
 
 #endif // __xoico_xo_H
-// XOICO_BODY_SIGNATURE 0x0244A65086A2B19A
-// XOICO_FILE_SIGNATURE 0xF11FD81A7F0DFFE5
+// XOICO_BODY_SIGNATURE 0xA75F3EDDA83B3D56
+// XOICO_FILE_SIGNATURE 0xFE7859AD237C0801
