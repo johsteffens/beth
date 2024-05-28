@@ -166,11 +166,11 @@ func t_push_d
 
         if( p->item_p )
         {
-            bcore_array_p_push( p, ( bcore_array* )o, sr_psd( p->item_p, v ) );
+            bcore_array_p_push( p, ( bcore_array* )o, sr_psm( p->item_p, v ) );
         }
         else
         {
-            bcore_array_p_push( p, ( bcore_array* )o, sr_asd( v ) );
+            bcore_array_p_push( p, ( bcore_array* )o, sr_asm( v ) );
         }
 
         if( p->is_of_links )
@@ -308,11 +308,11 @@ func t_set_d
 
         if( p->item_p )
         {
-            bcore_array_p_set( p, ( bcore_array* )o, index, sr_psd( p->item_p, v ) );
+            bcore_array_p_set( p, ( bcore_array* )o, index, sr_psm( p->item_p, v ) );
         }
         else
         {
-            bcore_array_p_set( p, ( bcore_array* )o, index, sr_asd( v ) );
+            bcore_array_p_set( p, ( bcore_array* )o, index, sr_asm( v ) );
         }
 
         if( p->is_of_links )
