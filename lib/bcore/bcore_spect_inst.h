@@ -146,7 +146,7 @@ static inline void bcore_inst_p_discard(      const bcore_inst_s* p, vd_t obj ) 
 static inline vd_t bcore_inst_p_create_typed( const bcore_inst_s* p, tp_t otp, vc_t obj ) { return p->create_typed( p, otp, obj ); }
 static inline vd_t bcore_inst_p_create( const bcore_inst_s* p )    { return p->create( p ); }
 static inline vd_t bcore_inst_t_create( tp_t type )                { return type != 0 ? bcore_inst_p_create( bcore_inst_s_get_typed( type ) ) : NULL; }
-static inline sr_s bcore_inst_p_create_sr( const bcore_inst_s* p ) { return sr_psd( p, p->create( p ) ); }
+static inline sr_s bcore_inst_p_create_sr( const bcore_inst_s* p ) { return sr_psm( p, p->create( p ) ); }
 static inline sr_s bcore_inst_t_create_sr( tp_t type )             { return bcore_inst_p_create_sr( bcore_inst_s_get_typed( type ) ); }
 
 BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP0( bcore_inst, init )

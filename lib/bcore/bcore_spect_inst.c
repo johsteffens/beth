@@ -1816,7 +1816,7 @@ vd_t bcore_inst_t_create_typed( tp_t type, tp_t otp, vc_t obj )
 sr_s bcore_inst_t_clone_sr( tp_t type, vc_t obj )
 {
     const bcore_inst_s* p = bcore_inst_s_get_typed( type );
-    return sr_psd( p, bcore_inst_p_clone( p, obj ) );
+    return sr_psm( p, bcore_inst_p_clone( p, obj ) );
 }
 
 void bcore_inst_p_check_sizeof( const bcore_inst_s* o, uz_t size )
@@ -1843,7 +1843,7 @@ void bcore_inst_x_discard( sr_s o )
 sr_s bcore_inst_x_clone_sr( sr_s o )
 {
     if( !o.o ) return sr_null();
-    sr_s ret = sr_psd( o.p, bcore_inst_p_clone( ch_spect_p( o.p, TYPEOF_bcore_inst_s ), o.o ) );
+    sr_s ret = sr_psm( o.p, bcore_inst_p_clone( ch_spect_p( o.p, TYPEOF_bcore_inst_s ), o.o ) );
     sr_down( o );
     return ret;
 }
@@ -1851,7 +1851,7 @@ sr_s bcore_inst_x_clone_sr( sr_s o )
 sr_s bcore_inst_r_clone_sr( const sr_s* o )
 {
     if( !o->o ) return sr_null();
-    return sr_psd( o->p, bcore_inst_p_clone( ch_spect_p( o->p, TYPEOF_bcore_inst_s ), o->o ) );
+    return sr_psm( o->p, bcore_inst_p_clone( ch_spect_p( o->p, TYPEOF_bcore_inst_s ), o->o ) );
 }
 
 
