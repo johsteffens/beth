@@ -124,9 +124,9 @@ func sr_s   set_sr_ret_i( m aware @* o,         sz_t index, sr_s sr_src ) = o.t_
 
 /// sets element in o and returns a reference to it; returns NULL for shells.
 func m x_inst* set_c( m aware @* o, tp_t name, c aware x_inst* src ) = o.set_sr_ret( name, sr_awc( src ) ).o;
-func m x_inst* set_d( m aware @* o, tp_t name, d aware x_inst* src ) = o.set_sr_ret( name, sr_asd( src ) ).o;
+func m x_inst* set_d( m aware @* o, tp_t name, d aware x_inst* src ) = o.set_sr_ret( name, sr_asm( src ) ).o;
 func m x_inst* set_t_c( m aware @* o, tp_t name, tp_t src_type, c obliv x_inst* src ) = o.set_sr_ret( name, sr_twc( src_type, src ) ).o;
-func m x_inst* set_t_d( m aware @* o, tp_t name, tp_t src_type, d obliv x_inst* src ) = o.set_sr_ret( name, sr_tsd( src_type, src ) ).o;
+func m x_inst* set_t_d( m aware @* o, tp_t name, tp_t src_type, d obliv x_inst* src ) = o.set_sr_ret( name, sr_tsm( src_type, src ) ).o;
 
 func void set_f3( m aware @* o, tp_t name, f3_t  val ) o.set_sr( name, sr_twc( f3_t~, val.1 ) );
 func void set_s3( m aware @* o, tp_t name, s3_t  val ) o.set_sr( name, sr_twc( s3_t~, val.1 ) );
@@ -203,7 +203,7 @@ stamp :path_s = aware x_inst
 
     /// sets element in o and returns a reference to it; returns NULL for shells.
     func m x_inst* set_c_in( c@* o, m aware x_inst* inst, c x_inst* src ) = o.set_sr_ret_in( inst, sr_awc( src ) ).o;
-    func m x_inst* set_d_in( c@* o, m aware x_inst* inst, d x_inst* src ) = o.set_sr_ret_in( inst, sr_asd( src ) ).o;
+    func m x_inst* set_d_in( c@* o, m aware x_inst* inst, d x_inst* src ) = o.set_sr_ret_in( inst, sr_asm( src ) ).o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
