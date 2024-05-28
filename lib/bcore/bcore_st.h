@@ -222,11 +222,12 @@ void st_s_print_fa( sc_t format, ... );
  *      A valid first character: letter  | '_'.
  *      A valid non-first character: <valid first character> | digit.
  *
- *  "#string"
+ *  "#string, #cstring"
  *      Argument: st_s*
  *      Consumes a string in o enclosed in double quotes "".
  *      Double quotes inside the string are to be escaped '\"'.
  *      Backslashes are to be escaped '\\'.
+ *      #cstring: additionally applies all remaining control characters of a c-string \n, \r, ...
  *
  *  "#label"
  *      Argument: st_s*

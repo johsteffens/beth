@@ -304,7 +304,7 @@ er_t st_s_copy_typed( st_s* o, tp_t type, vc_t src )
 
         default:
         {
-            return bcore_error_push_fa( TYPEOF_conversion_error, "Converting type '%s' into 'st_s' is not supported.", ifnameof( type ) );
+            return bcore_error_push_fa( TYPEOF_conversion_error, "Converting type '#<sc_t>' into 'st_s' is not supported.", ifnameof( type ) );
         }
         break;
     }
@@ -1967,15 +1967,14 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                 idx++;
                 while ( o->sc[ idx ] != '"' )
                 {
-                    if( o->sc[ idx ] == '\\' && o->sc[ idx + 1 ] == '\"' )
+                    if( o->sc[ idx ] == '\\' )
                     {
-                        if( string ) st_s_push_char( string, '\"' );
-                        idx += 2;
-                    }
-                    else if( o->sc[ idx ] == '\\' && o->sc[ idx + 1 ] == '\\' )
-                    {
-                        if( string ) st_s_push_char( string, '\\' );
-                        idx += 2;
+                        switch( o->sc[ idx + 1 ] )
+                        {
+                            case '\"': { idx += 2; if( string ) st_s_push_char( string, '\"' ); } break;
+                            case '\\': { idx += 2; if( string ) st_s_push_char( string, '\\' ); } break;
+                            default:   { idx += 1; if( string ) st_s_push_char( string, '\\' ); } break;
+                        }
                     }
                     else
                     {
@@ -1985,6 +1984,83 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                 }
                 idx++;
             }
+            else if( ( bcore_strcmp( "cstring", fp ) >> 1 ) == 0 )
+            {
+                fp += strlen( "cstring" );
+                st_s* string = NULL;
+                if( set_arg )
+                {
+                    string = va_arg( args, st_s* );
+                    if( string && !cat_arg ) st_s_clear( string );
+                }
+                if( o->sc[ idx ] != '"' )
+                {
+                    return st_s_parse_errorf( o, errfp, arg, idx, "'\"' expected." );
+                }
+                idx++;
+                while ( o->sc[ idx ] != '"' )
+                {
+                    if( o->sc[ idx ] == '\\' )
+                    {
+                        switch( o->sc[ idx + 1 ] )
+                        {
+                            case '\"': { idx += 2; if( string ) st_s_push_char( string, '\"' ); } break;
+                            case '\\': { idx += 2; if( string ) st_s_push_char( string, '\\' ); } break;
+                            case  'a': { idx += 2; if( string ) st_s_push_char( string, '\a' ); } break;
+                            case  'b': { idx += 2; if( string ) st_s_push_char( string, '\b' ); } break;
+                            case  'f': { idx += 2; if( string ) st_s_push_char( string, '\f' ); } break;
+                            case  'n': { idx += 2; if( string ) st_s_push_char( string, '\n' ); } break;
+                            case  'r': { idx += 2; if( string ) st_s_push_char( string, '\r' ); } break;
+                            case  't': { idx += 2; if( string ) st_s_push_char( string, '\t' ); } break;
+                            case  'v': { idx += 2; if( string ) st_s_push_char( string, '\v' ); } break;
+                            case '\'': { idx += 2; if( string ) st_s_push_char( string, '\'' ); } break;
+                            case '\?': { idx += 2; if( string ) st_s_push_char( string, '\?' ); } break;
+                            default:   { idx += 1; if( string ) st_s_push_char( string, '\\' ); } break;
+                        }
+                    }
+                    else
+                    {
+                        if( string ) st_s_push_char( string, o->sc[ idx ] );
+                        idx++;
+                    }
+                }
+                idx++;
+            }
+
+//            else if( ( bcore_strcmp( "string", fp ) >> 1 ) == 0 )
+//            {
+//                fp += strlen( "string" );
+//                st_s* string = NULL;
+//                if( set_arg )
+//                {
+//                    string = va_arg( args, st_s* );
+//                    if( string && !cat_arg ) st_s_clear( string );
+//                }
+//                if( o->sc[ idx ] != '"' )
+//                {
+//                    return st_s_parse_errorf( o, errfp, arg, idx, "'\"' expected." );
+//                }
+//                idx++;
+//                while ( o->sc[ idx ] != '"' )
+//                {
+//                    if( o->sc[ idx ] == '\\' && o->sc[ idx + 1 ] == '\"' )
+//                    {
+//                        if( string ) st_s_push_char( string, '\"' );
+//                        idx += 2;
+//                    }
+//                    else if( o->sc[ idx ] == '\\' && o->sc[ idx + 1 ] == '\\' )
+//                    {
+//                        if( string ) st_s_push_char( string, '\\' );
+//                        idx += 2;
+//                    }
+//                    else
+//                    {
+//                        if( string ) st_s_push_char( string, o->sc[ idx ] );
+//                        idx++;
+//                    }
+//                }
+//                idx++;
+//            }
             else if( ( bcore_strcmp( "label", fp ) >> 1 ) == 0 )
             {
                 fp += strlen( "label" );
