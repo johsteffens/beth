@@ -47,25 +47,25 @@ sr_s bcore_via_default_iget( const bcore_via_s* p, const bcore_via* o, uz_t inde
     {
         case BCORE_CAPS_SOLID_STATIC:
         {
-            return sr_twd( vitem->type, ( vd_t )( ( u0_t* )o + vitem->offs ) );
+            return sr_twm( vitem->type, ( vd_t )( ( u0_t* )o + vitem->offs ) );
         }
 
         case BCORE_CAPS_LINK_STATIC:
         {
             const bcore_link_static_s* dst = ( vc_t )( ( u0_t* )o + vitem->offs );
-            return sr_twd( vitem->type, dst->link );
+            return sr_twm( vitem->type, dst->link );
         }
 
         case BCORE_CAPS_LINK_TYPED:
         {
             const bcore_link_typed_s* dst = ( vc_t )( ( u0_t* )o + vitem->offs );
-            return dst->link ? sr_twd( dst->type, dst->link ) : sr_null();
+            return dst->link ? sr_twm( dst->type, dst->link ) : sr_null();
         }
 
         case BCORE_CAPS_LINK_AWARE:
         {
             const bcore_link_aware_s* dst = ( vc_t )( ( u0_t* )o + vitem->offs );
-            return sr_twd( dst->link ? *(aware_t*)dst->link : 0, dst->link );
+            return sr_twm( dst->link ? *(aware_t*)dst->link : 0, dst->link );
         }
 
         case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
@@ -77,7 +77,7 @@ sr_s bcore_via_default_iget( const bcore_via_s* p, const bcore_via* o, uz_t inde
         case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
         case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
         {
-            return sr_twd( vitem->type, ( vd_t )( ( u0_t* )o + vitem->offs ) );
+            return sr_twm( vitem->type, ( vd_t )( ( u0_t* )o + vitem->offs ) );
         }
 
         default: break;

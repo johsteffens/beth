@@ -28,22 +28,27 @@ group sr = x_inst
 
         /// re-initializes o
         func o twc( m@* o, tp_t t, vc_t b );
-        func o twd( m@* o, tp_t t, vd_t b );
-        func o tsd( m@* o, tp_t t, vd_t b );
+        func o twm( m@* o, tp_t t, vd_t b );
+        func o tsc( m@* o, tp_t t, vd_t b );
+        func o tsm( m@* o, tp_t t, vd_t b );
         func o awc( m@* o,         vc_t b );
-        func o awd( m@* o,         vd_t b );
-        func o asd( m@* o,         vd_t b );
+        func o awm( m@* o,         vd_t b );
+        func o asc( m@* o,         vd_t b );
+        func o asm( m@* o,         vd_t b );
         func o qwc( m@* o,         vc_t b );
-        func o qwd( m@* o,         vd_t b );
-        func o qsd( m@* o,         vd_t b );
+        func o qwm( m@* o,         vd_t b );
+        func o qsc( m@* o,         vd_t b );
+        func o qsm( m@* o,         vd_t b );
         func o pwc( m@* o, vc_t p, vc_t b );
-        func o pwd( m@* o, vc_t p, vd_t b );
-        func o psd( m@* o, vc_t p, vd_t b );
+        func o pwm( m@* o, vc_t p, vd_t b );
+        func o psc( m@* o, vc_t p, vd_t b );
+        func o psm( m@* o, vc_t p, vd_t b );
 
         /// o references a numeric object
-        func bl_t is_numeric( c@* o );
-        func bl_t is_float  ( c@* o );
-        func bl_t is_integer( c@* o );
+        func bl_t is_numeric ( c@* o );
+        func bl_t is_float   ( c@* o );
+        func bl_t is_integer ( c@* o );
+        func bl_t is_unsigned( c@* o );
 
         /// converts to a leaf type
         func f3_t to_f3( c@* o );
@@ -102,14 +107,17 @@ group sr = x_inst
     func sr_s pocs( vc_t p, m x_inst* o, bl_t const_f, bl_t strong_f );
 
     func sr_s twc( tp_t t, c obliv x_inst* o ); // typed weak const
-    func sr_s twd( tp_t t, d obliv x_inst* o ); // typed weak discardable
-    func sr_s tsd( tp_t t, d obliv x_inst* o ); // typed strong discardable
+    func sr_s twm( tp_t t, m obliv x_inst* o ); // typed weak mutable
+    func sr_s tsc( tp_t t, d obliv x_inst* o ); // typed strong const
+    func sr_s tsm( tp_t t, d obliv x_inst* o ); // typed strong mutable
     func sr_s awc( c x_inst* o );  // aware weak const
-    func sr_s awd( d x_inst* o );  // aware weak discardable
-    func sr_s asd( d x_inst* o );  // aware strong discardable
+    func sr_s awm( d x_inst* o );  // aware weak mutable
+    func sr_s asc( d x_inst* o );  // aware strong const
+    func sr_s asm( d x_inst* o );  // aware strong mutable
     func sr_s pwc( c bcore_spect* p, c obliv x_inst* o ); // spect weak const
-    func sr_s pwd( c bcore_spect* p, d obliv x_inst* o ); // spect weak discardable
-    func sr_s psd( c bcore_spect* p, d obliv x_inst* o ); // spect strong discardable
+    func sr_s pwm( c bcore_spect* p, m obliv x_inst* o ); // spect weak mutable
+    func sr_s psc( c bcore_spect* p, d obliv x_inst* o ); // spect strong const
+    func sr_s psm( c bcore_spect* p, d obliv x_inst* o ); // spect strong mutable
 
     func sr_s cw( sr_s o ); // turns a reference into a weak one;
     func sr_s cc( sr_s o ); // turns a reference into a const one;

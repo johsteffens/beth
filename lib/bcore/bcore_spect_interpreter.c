@@ -57,7 +57,7 @@ sr_s bcore_interpret_auto( sr_s source )
 
 sr_s bcore_interpret_auto_file( sc_t file )
 {
-    sr_s chain = sr_asd( bcore_source_chain_s_create() );
+    sr_s chain = sr_asm( bcore_source_chain_s_create() );
     bcore_source_chain_s_push_d( chain.o, bcore_source_file_s_create_name( file ) );
     // TODO: test if bcore_source_string_s works correctly on binary files
     bcore_source_chain_s_push_d( chain.o, bcore_inst_t_create( typeof( "bcore_source_string_s" ) ) );

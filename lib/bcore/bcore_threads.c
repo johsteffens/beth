@@ -425,7 +425,7 @@ uz_t bcore_thread_arr_s_push_call( bcore_thread_arr_s* o, bcore_fp_thread func, 
 {
     bcore_thread_s* thread = bcore_thread_s_create();
     bcore_thread_s_call( thread, func, arg );
-    bcore_array_a_push( (bcore_array*)o, sr_tsd( TYPEOF_bcore_thread_s, thread ) );
+    bcore_array_a_push( (bcore_array*)o, sr_tsm( TYPEOF_bcore_thread_s, thread ) );
     return o->size - 1;
 }
 
