@@ -1,5 +1,20 @@
 # Library make framework
+#
 # Author & Copyright: Johannes B. Steffens
+#
+# ------------------------------------------------------------------------------
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+# ------------------------------------------------------------------------------
 #
 # Library Structure:
 # Libraries have a root folder of arbitrary name <root>
@@ -16,7 +31,7 @@
 # Each dependency is specified as path to the library.
 # e.g. ../../beth/lib/bcore
 #
-# A xoico config file is optional but if the library has one, 
+# A xoico config file is optional but if the library has one,
 # it must be stored as <root>/lib/<libname>/<libname>_xoico.cfg.
 # Dependencies of this file may have different names but should end in *.cfg.
 #
@@ -24,7 +39,7 @@
 #
 # The root folder and library name are automatically determined by the location of the makefile.
 #
-# Usage: 
+# Usage:
 # In folder with source files, create a makefile as follows ((O) means optional):
 #
 # BETH_DIR  = <beth root folder>
@@ -55,7 +70,7 @@ CC           = gcc
 AR           = ar
 MAKE         = make
 XOICO        = $(XOICO_DIR)/bin/xoico
-CFLAGS      += -Wall -O3 -fopenmp -std=c11 
+CFLAGS      += -Wall -O3 -fopenmp -std=c11
 AFLAGS      += -r -s
 
 C_FILES = $(wildcard *.c)
@@ -74,7 +89,7 @@ $(TARGET): $(XOICO) $(XO_STATE) $(ALL_C_FILES) $(ALL_H_FILES) $(ALL_X_FILES) $(A
 	$(foreach dep,$(DEPENDENCIES),$(MAKE) -C $(dep);)
         # second pass to capture changes by xoico
 	$(MAKE) -j12 -C . pass2
-	
+
 pass2: $(O_FILES)
 	@mkdir -p $(dir $(TARGET) )
 	$(AR) $(AFLAGS) $(TARGET) $(O_FILES)
@@ -91,7 +106,7 @@ $(OBJ_DIR)/%.o: %.c $(ALL_H_FILES)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(XOICO):
-	$(MAKE) -C $(XOICO_DIR)	
+	$(MAKE) -C $(XOICO_DIR)
 
 clean:
 	rm -f  $(TARGET)
