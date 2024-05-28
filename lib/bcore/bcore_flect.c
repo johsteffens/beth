@@ -1840,7 +1840,7 @@ bcore_self_s* bcore_self_s_parse_src( sr_s src, uz_t size_of, uz_t align_of, sc_
 
 bcore_self_s* bcore_self_s_parse_source( bcore_source* source, uz_t size_of, uz_t align_of, sc_t namespace, bl_t advanced_checks )
 {
-    return bcore_self_s_parse_src( sr_awd( source ), size_of, align_of, namespace, advanced_checks );
+    return bcore_self_s_parse_src( sr_awm( source ), size_of, align_of, namespace, advanced_checks );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1854,14 +1854,14 @@ bcore_self_s* bcore_self_s_build_parse_src( sr_s src, uz_t size_of, uz_t align_o
 
 bcore_self_s* bcore_self_s_build_parse_source( bcore_source* source, uz_t size_of, uz_t align_of )
 {
-    return bcore_self_s_build_parse_src( sr_awd( source ), size_of, align_of );
+    return bcore_self_s_build_parse_src( sr_awm( source ), size_of, align_of );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 bcore_self_s* bcore_self_s_build_parse_sc( sc_t text, uz_t size_of, uz_t align_of )
 {
-    return bcore_self_s_build_parse_src( sr_asd( st_s_create_weak_sc( text ) ), size_of, align_of );
+    return bcore_self_s_build_parse_src( sr_asm( st_s_create_weak_sc( text ) ), size_of, align_of );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2390,7 +2390,7 @@ tp_t bcore_flect_define_parse_src( sr_s src )
 
 tp_t bcore_flect_define_parse_sc( sc_t sc )
 {
-    return bcore_flect_define_parse_src( sr_asd( st_s_create_weak_sc( sc ) ) );
+    return bcore_flect_define_parse_src( sr_asm( st_s_create_weak_sc( sc ) ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2448,7 +2448,7 @@ tp_t bcore_flect_type_parse_src( sr_s src )
 
 tp_t bcore_flect_type_parse_sc( sc_t sc )
 {
-    return bcore_flect_type_parse_src( sr_asd( st_s_create_weak_sc( sc ) ) );
+    return bcore_flect_type_parse_src( sr_asm( st_s_create_weak_sc( sc ) ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
