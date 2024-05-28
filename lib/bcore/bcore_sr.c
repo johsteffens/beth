@@ -55,7 +55,7 @@ sr_s sr_clone( sr_s o )
 
 sr_s sr_p_create( vc_t p )
 {
-    return sr_psd
+    return sr_psm
     (
         p,
         ( ( (tp_t*)p )[ 0 ] == TYPEOF_bcore_inst_s ) ? bcore_inst_p_create( p ) : bcore_inst_t_create( ( (tp_t*)p )[ 1 ] )
@@ -118,7 +118,7 @@ void sr_s_copy( sr_s* o, const sr_s* src )
     sr_s_clear( o );
     if( src->o )
     {
-        *o = sr_psd( src->p, bcore_inst_t_clone( spect_tp_o( src->p ), src->o ) );
+        *o = sr_psm( src->p, bcore_inst_t_clone( spect_tp_o( src->p ), src->o ) );
     }
 }
 
@@ -181,9 +181,10 @@ static bcore_self_s* sr_s_create_self( void )
 }
 
 /// true iff o references a numeric object
-bl_t sr_s_is_numeric( const sr_s* o ) { return bcore_tp_is_numeric( sr_s_o_type( o ) ); }
-bl_t sr_s_is_float  ( const sr_s* o ) { return bcore_tp_is_float  ( sr_s_o_type( o ) ); }
-bl_t sr_s_is_integer( const sr_s* o ) { return bcore_tp_is_integer( sr_s_o_type( o ) ); }
+bl_t sr_s_is_numeric ( const sr_s* o ) { return bcore_tp_is_numeric ( sr_s_o_type( o ) ); }
+bl_t sr_s_is_float   ( const sr_s* o ) { return bcore_tp_is_float   ( sr_s_o_type( o ) ); }
+bl_t sr_s_is_integer ( const sr_s* o ) { return bcore_tp_is_integer ( sr_s_o_type( o ) ); }
+bl_t sr_s_is_unsigned( const sr_s* o ) { return bcore_tp_is_unsigned( sr_s_o_type( o ) ); }
 
 /// converts from a leaf type
 sr_s* sr_s_from_f3( sr_s* o, f3_t v ) { sr_s_copy_typed( o, TYPEOF_f3_t, &v ); return o; }

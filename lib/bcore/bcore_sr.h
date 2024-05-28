@@ -65,18 +65,46 @@ vd_t bcore_fork( vd_t ptr );
 static inline sr_s sr_null(                                             ) { return ( sr_s ){ .o = NULL, .p = NULL, .f = 0 }; }
 static inline sr_s sr_pocs( vc_t p, vd_t o, bl_t const_f, bl_t strong_f ) { return ( sr_s ){ .o = o, .p = p, .f = ( const_f * CONST_f ) | ( strong_f * STRONG_f ) }; }
 
-static inline sr_s sr_twc( tp_t t, vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed_wrap( t )         : NULL, .f = CONST_f  }; }
+/** Initializers - 3 letter nomenclature:
+ *
+ *  1st letter: {t|a|q|p}: perspective retrieval:
+ *     t : via type
+ *     a : via RTTI of object (RTTI: runtime-type-information <=> aware object)
+ *     p : explicit (fastest)
+ *     q : via RTPI of object (RTPI: runtime-perspective-information <=> first element of object is perspective)
+ *
+ *  2nd letter: {w|s}: weak | strong
+ *
+ *  3rd letter: {c|m}: const | mutable
+ *
+ */
+static inline sr_s sr_twc( tp_t t, vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed_wrap( t )         : NULL, .f = CONST_f            }; }
+static inline sr_s sr_twm( tp_t t, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed_wrap( t )         : NULL, .f = 0                  }; }
+static inline sr_s sr_tsc( tp_t t, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed_wrap( t )         : NULL, .f = STRONG_f | CONST_f }; }
+static inline sr_s sr_tsm( tp_t t, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed_wrap( t )         : NULL, .f = STRONG_f           }; }
+static inline sr_s sr_awc(         vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed_wrap( *(tp_t*)o ) : NULL, .f = CONST_f            }; }
+static inline sr_s sr_awm(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed_wrap( *(tp_t*)o ) : NULL, .f = 0                  }; }
+static inline sr_s sr_asc(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed_wrap( *(tp_t*)o ) : NULL, .f = STRONG_f | CONST_f }; }
+static inline sr_s sr_asm(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed_wrap( *(tp_t*)o ) : NULL, .f = STRONG_f           }; }
+static inline sr_s sr_qwc(         vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = *(vc_t*)o , .f = CONST_f            }; }
+static inline sr_s sr_qwm(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = *(vc_t*)o , .f = 0                  }; }
+static inline sr_s sr_qsc(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = *(vc_t*)o , .f = STRONG_f | CONST_f }; }
+static inline sr_s sr_qsm(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = *(vc_t*)o , .f = STRONG_f           }; }
+static inline sr_s sr_pwc( vc_t p, vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p         , .f = CONST_f            }; }
+static inline sr_s sr_pwm( vc_t p, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p         , .f = 0                  }; }
+static inline sr_s sr_psc( vc_t p, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p         , .f = STRONG_f | CONST_f }; }
+static inline sr_s sr_psm( vc_t p, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p         , .f = STRONG_f           }; }
+
+/// deprecated: use {t|a|q|p}{w|s}m above instead ----------------------------------------------------------------------
 static inline sr_s sr_twd( tp_t t, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed_wrap( t )         : NULL, .f = 0        }; }
 static inline sr_s sr_tsd( tp_t t, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = t ? bcore_inst_s_get_typed_wrap( t )         : NULL, .f = STRONG_f }; }
-static inline sr_s sr_awc(         vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed_wrap( *(tp_t*)o ) : NULL, .f = CONST_f  }; }
 static inline sr_s sr_awd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed_wrap( *(tp_t*)o ) : NULL, .f = 0        }; }
 static inline sr_s sr_asd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = o ? bcore_inst_s_get_typed_wrap( *(tp_t*)o ) : NULL, .f = STRONG_f }; }
-static inline sr_s sr_qwc(         vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = *(vc_t*)o , .f = CONST_f  }; }
 static inline sr_s sr_qwd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = *(vc_t*)o , .f = 0        }; }
 static inline sr_s sr_qsd(         vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = *(vc_t*)o , .f = STRONG_f }; }
-static inline sr_s sr_pwc( vc_t p, vc_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p         , .f = CONST_f  }; }
 static inline sr_s sr_pwd( vc_t p, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p         , .f = 0        }; }
 static inline sr_s sr_psd( vc_t p, vd_t o ) { return ( sr_s ){ .o = ( vd_t )o, .p = p         , .f = STRONG_f }; }
+/// --------------------------------------------------------------------------------------------------------------------
 
 static inline sr_s sr_cw( sr_s o ) { o.f &= ~STRONG_f; return o; } // turns a reference into a weak one;
 static inline sr_s sr_cc( sr_s o ) { o.f |=  CONST_f; return o; } // turns a reference into a const one;
@@ -92,14 +120,14 @@ sr_s sr_clone( sr_s o );
 static inline void sr_down( sr_s o ) { if( o.f & STRONG_f ) bcore_inst_x_discard_wrap( o ); }  // explicit termination
 
 /// creates a new instance
-static inline sr_s sr_create( tp_t t ) { return sr_tsd( t, bcore_inst_t_create_wrap( t ) ); } // sames as sr_t_create
+static inline sr_s sr_create( tp_t t ) { return sr_tsm( t, bcore_inst_t_create_wrap( t ) ); } // sames as sr_t_create
 
 static inline
-sr_s sr_t_create( tp_t t ) { return sr_tsd( t, bcore_inst_t_create_wrap( t ) ); }
+sr_s sr_t_create( tp_t t ) { return sr_tsm( t, bcore_inst_t_create_wrap( t ) ); }
 sr_s sr_p_create( vc_t p );
 
 /** XOILA-versions of t_create and p_create */
-static inline sr_s sr_create_from_type( tp_t type ) { return sr_tsd( type, bcore_inst_t_create_wrap( type ) ); }
+static inline sr_s sr_create_from_type( tp_t type ) { return sr_tsm( type, bcore_inst_t_create_wrap( type ) ); }
 static inline sr_s sr_create_from_spect( vc_t spect ) { return sr_p_create( spect ); }
 
 /// creates a strong reference of a typed object (by cloning the object)
@@ -134,17 +162,31 @@ sr_s* sr_s_clone(   const sr_s* o );                  // deep clone: (clones the
 void  sr_s_discard(       sr_s* o );
 
 static inline sr_s* sr_s_twc( sr_s* o, tp_t t, vc_t b ) { sr_s_down( o ); *o = sr_twc( t, b ); return o; }
-static inline sr_s* sr_s_twd( sr_s* o, tp_t t, vd_t b ) { sr_s_down( o ); *o = sr_twd( t, b ); return o; }
-static inline sr_s* sr_s_tsd( sr_s* o, tp_t t, vd_t b ) { sr_s_down( o ); *o = sr_tsd( t, b ); return o; }
+static inline sr_s* sr_s_twm( sr_s* o, tp_t t, vd_t b ) { sr_s_down( o ); *o = sr_twm( t, b ); return o; }
+static inline sr_s* sr_s_tsc( sr_s* o, tp_t t, vd_t b ) { sr_s_down( o ); *o = sr_tsc( t, b ); return o; }
+static inline sr_s* sr_s_tsm( sr_s* o, tp_t t, vd_t b ) { sr_s_down( o ); *o = sr_tsm( t, b ); return o; }
 static inline sr_s* sr_s_awc( sr_s* o,         vc_t b ) { sr_s_down( o ); *o = sr_awc(    b ); return o; }
-static inline sr_s* sr_s_awd( sr_s* o,         vd_t b ) { sr_s_down( o ); *o = sr_awd(    b ); return o; }
-static inline sr_s* sr_s_asd( sr_s* o,         vd_t b ) { sr_s_down( o ); *o = sr_asd(    b ); return o; }
+static inline sr_s* sr_s_awm( sr_s* o,         vd_t b ) { sr_s_down( o ); *o = sr_awm(    b ); return o; }
+static inline sr_s* sr_s_asc( sr_s* o,         vd_t b ) { sr_s_down( o ); *o = sr_asc(    b ); return o; }
+static inline sr_s* sr_s_asm( sr_s* o,         vd_t b ) { sr_s_down( o ); *o = sr_asm(    b ); return o; }
 static inline sr_s* sr_s_qwc( sr_s* o,         vc_t b ) { sr_s_down( o ); *o = sr_qwc(    b ); return o; }
-static inline sr_s* sr_s_qwd( sr_s* o,         vd_t b ) { sr_s_down( o ); *o = sr_qwd(    b ); return o; }
-static inline sr_s* sr_s_qsd( sr_s* o,         vd_t b ) { sr_s_down( o ); *o = sr_qsd(    b ); return o; }
+static inline sr_s* sr_s_qwm( sr_s* o,         vd_t b ) { sr_s_down( o ); *o = sr_qwm(    b ); return o; }
+static inline sr_s* sr_s_qsc( sr_s* o,         vd_t b ) { sr_s_down( o ); *o = sr_qsc(    b ); return o; }
+static inline sr_s* sr_s_qsm( sr_s* o,         vd_t b ) { sr_s_down( o ); *o = sr_qsm(    b ); return o; }
 static inline sr_s* sr_s_pwc( sr_s* o, vc_t p, vc_t b ) { sr_s_down( o ); *o = sr_pwc( p, b ); return o; }
-static inline sr_s* sr_s_pwd( sr_s* o, vc_t p, vd_t b ) { sr_s_down( o ); *o = sr_pwd( p, b ); return o; }
-static inline sr_s* sr_s_psd( sr_s* o, vc_t p, vd_t b ) { sr_s_down( o ); *o = sr_psd( p, b ); return o; }
+static inline sr_s* sr_s_pwm( sr_s* o, vc_t p, vd_t b ) { sr_s_down( o ); *o = sr_pwm( p, b ); return o; }
+static inline sr_s* sr_s_psc( sr_s* o, vc_t p, vd_t b ) { sr_s_down( o ); *o = sr_psc( p, b ); return o; }
+static inline sr_s* sr_s_psm( sr_s* o, vc_t p, vd_t b ) { sr_s_down( o ); *o = sr_psm( p, b ); return o; }
+
+/// deprecated ( d --> m )
+static inline sr_s* sr_s_twd( sr_s* o, tp_t t, vd_t b ) { sr_s_down( o ); *o = sr_twm( t, b ); return o; }
+static inline sr_s* sr_s_tsd( sr_s* o, tp_t t, vd_t b ) { sr_s_down( o ); *o = sr_tsm( t, b ); return o; }
+static inline sr_s* sr_s_awd( sr_s* o,         vd_t b ) { sr_s_down( o ); *o = sr_awm(    b ); return o; }
+static inline sr_s* sr_s_asd( sr_s* o,         vd_t b ) { sr_s_down( o ); *o = sr_asm(    b ); return o; }
+static inline sr_s* sr_s_qwd( sr_s* o,         vd_t b ) { sr_s_down( o ); *o = sr_qwm(    b ); return o; }
+static inline sr_s* sr_s_qsd( sr_s* o,         vd_t b ) { sr_s_down( o ); *o = sr_qsm(    b ); return o; }
+static inline sr_s* sr_s_pwd( sr_s* o, vc_t p, vd_t b ) { sr_s_down( o ); *o = sr_pwm( p, b ); return o; }
+static inline sr_s* sr_s_psd( sr_s* o, vc_t p, vd_t b ) { sr_s_down( o ); *o = sr_psm( p, b ); return o; }
 
 static inline tp_t sr_s_p_type( const sr_s* o ) { return o ? ( o->p ? ( (tp_t*)o->p )[0] : 0 ) : 0; }
 static inline tp_t sr_s_o_type( const sr_s* o ) { return o ? ( o->p ? ( (tp_t*)o->p )[1] : 0 ) : 0; }
@@ -155,9 +197,10 @@ static inline bl_t sr_s_is_strong( const sr_s* o ) { return ( o->f & STRONG_f ) 
 static inline bl_t sr_s_is_const(  const sr_s* o ) { return ( o->f & CONST_f  ) ? true  : false; }
 
 /// o references a numeric object
-bl_t sr_s_is_numeric( const sr_s* o );
-bl_t sr_s_is_float  ( const sr_s* o );
-bl_t sr_s_is_integer( const sr_s* o );
+bl_t sr_s_is_numeric ( const sr_s* o );
+bl_t sr_s_is_float   ( const sr_s* o );
+bl_t sr_s_is_integer ( const sr_s* o );
+bl_t sr_s_is_unsigned( const sr_s* o );
 
 static inline void sr_s_set_strong( sr_s* o, bl_t flag ) { o->f = flag ? ( o->f | STRONG_f ) : ( o->f & ~STRONG_f ); }
 static inline void sr_s_set_const(  sr_s* o, bl_t flag ) { o->f = flag ? ( o->f | CONST_f  ) : ( o->f & ~CONST_f  ); }
