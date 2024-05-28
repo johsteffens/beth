@@ -238,7 +238,7 @@ void bmath_vector_default_mul_vec( const bmath_vector_s* p, const bmath_vector* 
     uz_t dim2 = bmath_vector_default_get_dim( p, vec2 );
     uz_t dim = dim1 < dim2 ? dim1 : dim2;
     sr_s sr_mul = sr_p_create( spect_ring_inst );
-    sr_s sr_sum = sr_pwd( spect_ring_inst, res );
+    sr_s sr_sum = sr_pwm( spect_ring_inst, res );
 
     bmath_ring_p_zro( p->spect_ring_scalar, sr_sum.o );
 
@@ -269,7 +269,7 @@ void bmath_vector_default_sub_sqr( const bmath_vector_s* p, const bmath_vector* 
     uz_t dim2 = bmath_vector_default_get_dim( p, vec2 );
     uz_t dim = dim1 < dim2 ? dim1 : dim2;
     sr_s sr_mul = sr_p_create( spect_ring_inst );
-    sr_s sr_sum = sr_pwd( spect_ring_inst, res );
+    sr_s sr_sum = sr_pwm( spect_ring_inst, res );
 
     bmath_ring_p_zro( p->spect_ring_scalar, sr_sum.o );
 
