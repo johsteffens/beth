@@ -29,7 +29,7 @@ void bcore_const_t_set_d( tp_t key, tp_t t, vd_t v )
 {
     assert( hmap_sr_g );
     if( bcore_const_exists( key ) ) ERR_fa( "Key '#<sc_t>' (#<tp_t>) already exists.", ifnameof( key ), key );
-    bcore_hmap_tp_sr_s_set( hmap_sr_g, key, sr_tsd( t, v ) );
+    bcore_hmap_tp_sr_s_set( hmap_sr_g, key, sr_tsm( t, v ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -161,7 +161,7 @@ tp_t bcore_const_string_set_st_d( st_s* string )
     }
     else
     {
-        bcore_hmap_tp_sr_s_set( hmap_st_g, key, sr_asd( string ) );
+        bcore_hmap_tp_sr_s_set( hmap_st_g, key, sr_asm( string ) );
     }
     bcore_mutex_s_unlock( mutex_st_g );
     return key;
