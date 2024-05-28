@@ -136,7 +136,7 @@ bl_t bcore_folder_s_parse( bcore_folder_s* o, sc_t path, bl_t recurse )
                     bcore_folder_s* sub_folder = bcore_folder_s_create();
                     if( bcore_folder_s_parse( sub_folder, full_path->sc, recurse ) )
                     {
-                        bcore_array_a_push( ( bcore_array* )o, sr_asd( sub_folder ) );
+                        bcore_array_a_push( ( bcore_array* )o, sr_asm( sub_folder ) );
                     }
                     else
                     {
