@@ -71,6 +71,15 @@ stamp :context_s
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+// priority groups
+
+func s2_t priority_a() = 5000; // element access, function/modifier call
+func s2_t priority_b() = 4000; // unary prefix operators
+func s2_t priority_c() = 3000; // most remaining binary operators
+func s2_t priority_d() = 2000; // reserved
+func s2_t priority_e() = 1000; // continuation
+
+//----------------------------------------------------------------------------------------------------------------------
 
 stamp :frame_s
 {
@@ -485,18 +494,34 @@ func (:frame_s) er_t negate( m@* o, m x_source* source, m sr_s* sr )
     if( sr.is_integer() )
     {
         sr.const_from_s3( -sr.to_s3() );
-        = 0;
     }
-
-    if( sr.is_float() )
+    else if( sr.is_float() )
     {
         sr.const_from_f3( -sr.to_f3() );
-        = 0;
+    }
+    else
+    {
+        = source.parse_error_fa( "Negation of #<sc_t> is not defined.\n", bnameof( sr.o_type() ) );
     }
 
-    if( sr.o_type() == :label_s~ ) = source.parse_error_fa( "'#<sc_t>' is not defined.\n", sr.o.cast( :label_s* ).st_name.sc );
+    = 0;
+}
 
-    = source.parse_error_fa( "Negation of #<sc_t> is not defined.\n", bnameof( sr.o_type() ) );
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:frame_s) er_t logic_not( m@* o, m x_source* source, m sr_s* sr )
+{
+    o.error_if_undefined( source, sr );
+
+    if( sr.is_numeric() )
+    {
+        sr.const_from_bl( !sr.to_bl() );
+    }
+    else
+    {
+        = source.parse_error_fa( "Negation of #<sc_t> is not defined.\n", bnameof( sr.o_type() ) );
+    }
+    = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -534,26 +559,35 @@ func (:frame_s) er_t eval_in_frame( m@* o, s2_t priority, m x_source* source, m 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:frame_s) er_t eval( m@* o, s2_t priority, m x_source* source, m sr_s* obj )
+func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s* obj )
 {
     ASSERT( obj.o == NULL );
 
-    /// prefix operatos
-    bl_t to_stdout = false;
-    bl_t to_stdout_detail = false;
-    bl_t negate = false;
-    if( source.parse_bl( " #?'?'" ) )
+    /// prefix operators
+    if( source.parse_bl( " #?'+'" ) )
     {
-        to_stdout = true;
-        if( source.parse_bl( " #?'?'" ) ) to_stdout_detail = true;
+        o.eval( :priority_c(), source, obj );
     }
-    if     ( source.parse_bl( " #?'+'" ) ) negate = false;
-    else if( source.parse_bl( " #?'-'" ) ) negate = true;
-
-    /// Object ...
+    else if( source.parse_bl( " #?'?'" ) )
+    {
+        bl_t detail = source.parse_bl( " #?'?'" );
+        o.eval( :priority_c(), source, obj );
+        o.to_sink( detail, obj, x_sink_stdout() );
+        x_sink_stdout().flush();
+    }
+    else if( source.parse_bl( " #?'-'" ) )
+    {
+        o.eval( :priority_c(), source, obj );
+        o.negate( source, obj );
+    }
+    else if( source.parse_bl( " #?'!'" ) )
+    {
+        o.eval( :priority_c(), source, obj );
+        o.logic_not( source, obj );
+    }
 
     /// number literal
-    if( source.parse_bl( " #?([0]>='0'&&[0]<='9')" ) )
+    else if( source.parse_bl( " #?([0]>='0'&&[0]<='9')" ) )
     {
         o.eval_number_literal( source, obj );
     }
@@ -684,17 +718,14 @@ func (:frame_s) er_t eval( m@* o, s2_t priority, m x_source* source, m sr_s* obj
         o.eval_in_frame( 0, source, obj );
         source.parse_fa( " )" );
     }
+
     else
     {
-        = source.parse_error_fa( "Expression does not yield an object.\n" );
+        = source.parse_error_fa( "Expression does not evaluate to an object.\n" );
     }
 
-    /// Unary (prefix) Operators
-    if( negate ) o.negate( source, obj );
-    if( to_stdout ) { o.to_sink( to_stdout_detail, obj, x_sink_stdout() ); x_sink_stdout().flush(); }
-
     // binary operators if any
-    o.eval_bop( priority, source, obj );
+    o.eval_bop( exit_priority, source, obj );
 
     = 0;
 }

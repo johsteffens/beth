@@ -1,6 +1,6 @@
-//  Last update: 2024-05-27T11:23:39Z
+//  Last update: 2024-05-28T20:06:52Z
 /** This file was generated from xoila source code.
- *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
+ *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
  *
  *  Copyright and License of this File:
@@ -2676,9 +2676,10 @@
   er_t x_btcl_frame_s_eval_number_literal( x_btcl_frame_s* o, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_condition( x_btcl_frame_s* o, x_source* source, bl_t* condition ); \
   er_t x_btcl_frame_s_negate( x_btcl_frame_s* o, x_source* source, sr_s* sr ); \
+  er_t x_btcl_frame_s_logic_not( x_btcl_frame_s* o, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_to_sink( const x_btcl_frame_s* o, bl_t detailed, const sr_s* sr, x_sink* sink ); \
   er_t x_btcl_frame_s_eval_in_frame( x_btcl_frame_s* o, s2_t priority, x_source* source, sr_s* obj ); \
-  er_t x_btcl_frame_s_eval( x_btcl_frame_s* o, s2_t priority, x_source* source, sr_s* obj ); \
+  er_t x_btcl_frame_s_eval( x_btcl_frame_s* o, s2_t exit_priority, x_source* source, sr_s* obj ); \
   er_t x_btcl_frame_s_eval_bop_member( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_functional( x_btcl_frame_s* o, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_modifier( x_btcl_frame_s* o, x_source* source, sr_s* sr ); \
@@ -2687,6 +2688,7 @@
   er_t x_btcl_frame_s_eval_bop_sub( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_add( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_equal( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
+  er_t x_btcl_frame_s_eval_bop_unequal( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_larger_equal( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_larger( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_smaller_equal( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
@@ -2696,7 +2698,7 @@
   er_t x_btcl_frame_s_eval_bop_join( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_assign( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_continuation( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
-  er_t x_btcl_frame_s_eval_bop( x_btcl_frame_s* o, s2_t priority, x_source* source, sr_s* obj ); \
+  er_t x_btcl_frame_s_eval_bop( x_btcl_frame_s* o, s2_t exit_priority, x_source* source, sr_s* obj ); \
   static inline bl_t x_btcl_frame_s_is_reserved( const x_btcl_frame_s* o, tp_t name ){return  x_btcl_context_s_is_reserved(o->context,name );} \
   static inline sc_t x_btcl_frame_s_sc_reserved( const x_btcl_frame_s* o, tp_t name ){return  x_btcl_context_s_sc_reserved(o->context,name );} \
   static inline er_t x_btcl_frame_s_check_reserved( const x_btcl_frame_s* o, tp_t name, x_source* source ){return  x_btcl_context_s_check_reserved(o->context,name, source );} \
@@ -2808,6 +2810,11 @@
   x_btcl* x_btcl_create_from_source_t( x_source* source, tp_t* type ); \
   x_btcl* x_btcl_create_from_source( x_source* source ); \
   void x_btcl_clone_if_weak( sr_s* sr ); \
+  static inline s2_t x_btcl_priority_a( void ); \
+  static inline s2_t x_btcl_priority_b( void ); \
+  static inline s2_t x_btcl_priority_c( void ); \
+  static inline s2_t x_btcl_priority_d( void ); \
+  static inline s2_t x_btcl_priority_e( void ); \
   er_t x_btcl_parse_create_object( x_source* source, sr_s* obj ); \
   void x_btcl_selftest( void ); \
   XOILA_DECLARE_SPECT( x_btcl ) \
@@ -2836,7 +2843,12 @@
   static inline x_btcl* x_btcl_create_from_sc_t( sc_t sc, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))), type ))} \
   static inline x_btcl* x_btcl_create_from_st( const st_s* st ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))) ))} \
   static inline x_btcl* x_btcl_create_from_sc( sc_t sc ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))} \
-  static inline x_btcl* x_btcl_create_from_file( sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))) ))}
+  static inline x_btcl* x_btcl_create_from_file( sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))) ))} \
+  static inline s2_t x_btcl_priority_a( void ){return  5000;} \
+  static inline s2_t x_btcl_priority_b( void ){return  4000;} \
+  static inline s2_t x_btcl_priority_c( void ){return  3000;} \
+  static inline s2_t x_btcl_priority_d( void ){return  2000;} \
+  static inline s2_t x_btcl_priority_e( void ){return  1000;}
 
 /**********************************************************************************************************************/
 // source: bcore_x_hmap.h
@@ -3122,5 +3134,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x3D05C0B3BB5A4028
-// XOICO_FILE_SIGNATURE 0x37091C392A54626A
+// XOICO_BODY_SIGNATURE 0xCE9703092C4AF987
+// XOICO_FILE_SIGNATURE 0x9A88B5D70A73D428

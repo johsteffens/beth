@@ -11,7 +11,9 @@ object construction. It can be placed somewhere between mere markup and general
 purpose programming. It offers variables, operators and functions but lacks
 interactivity. It represents a state rather than a process.
 
-BTCL is by nature a weakly typed functional language. Specifically:
+BTCL is by nature a weakly typed functional language. 
+
+Specifically:
 
   * Contiguous code represents one expression (built from expressions or literals). There are no statements.
   * An expression represents the state of an object.
@@ -20,37 +22,53 @@ BTCL is by nature a weakly typed functional language. Specifically:
 # Cheat Sheet
 
 ``` C
-// string
+// String
 "some text";
 
-// Variable definition and representation of its value '7'
+// Variable definition and representation of its value '7'.
 x = 7;
 
-// Number Literal, here '14'
+// Expression (Evaluates to 14).
 1 + 2 * 3 + x;
 
-// function definition (functions are first class citizens)
+// Function definition.
 f = func( a, b ) { a + b };
 
-// using above function (expression evaluates to '7')
+// Calling above function. (Evaluates to 7)
 n = f( 3, 4 ); 
 
 // bmath object representation via btml
 y = <bcore_arr_s3_s> 1 2 3 </>;
 
 // same result as above (using btcl array initialization)
-z = <bcore_arr_s3_s></>( 1 : 1+1 : x-4 );
+z = <bcore_arr_s3_s></>( [1,2,3] );
 
 // btcl element initialization
 <bcore_main_frame_s></>( .create_log_file = TRUE .log_file_extension = "log" );
 
 // prints object z to stdout (for messaging, inspection, debugging)
-? z;  // compact formatting where possible
+ ? z;  // compact formatting where possible
 ?? z; // always btml format
 
 // condition (else-part is optional)
 if( a >= b ) { a } else { b };
 
+// List with elements 1, 2, 3
+[1,2,3];
+
+// concatenation of objects or lists to form a list
+a : b; // if a or b is a list, the list is extended (not nested)
+
+// Initialized list with 5 constants; result is [0,0,0,0,0]
+5 :: 0;
+
+// Initialized list with 5 elements via initializer-function.
+// Index i runs from 0 to 4. The result is [0,2,4,6,8].
+5 :: func(i){2*i};
+
+// Mapped list through function; the function is applied to list elements
+// forming a new list. The result is [2,4,10].
+[1,2,5] :: func(a){2*a};
 ```
 
 # One Expression
@@ -81,29 +99,39 @@ can define a variable, which is used in ```b``` at multiple places.
 More generally: The semicolon operator divides consecutive expressions into
 **context creation** and **context usage**.
 
-# List of Operators
+# Operators
 
-## Unary (Prefix)
-Unary prefix operators have priority over binary operators.
+Each operator has a unique priority. On chained operations, higher priority 
+operators are evaluated before lower priority operators. Equal operators are
+evaluated in the chained order (e.g. ```3 - 1 - 1 == 2```). 
+Additionally operators are grouped into priority-groups. Each group is
+associated with a letter A ... E. A higher letter means lower priority.
 
-|Symbol|Description|
-|:---|:---|
-|+|Identity|
-|-|Negation|
-|?|Identity: Object is printed to stdout. Leaf objects are printed in compact form.|
-|??|Identity: Object is printed in detail to stdout.|
-|(|Prioritized Object: closed by ')': Enclosed expression represents object|
+The lists below are sorted in descending priority.
 
-## Binary
-Binary Operators are executed by priority. 
-They are executed in left to right order when of same priority.
-
-**List of operators by descending priority:**
+## Group A - Binary
 
 |Symbol|Description|
 |:---|:---|
 |.|Stamp member access|
-|(|Prioritized expression; closed by ')' Enclosed expression is prioritized|
+|(|Function call or stamp modifier; closed by ')'|
+
+## Group B - Unary
+
+|Symbol|Description|
+|:---|:---|
+|+|Identity|
+|-|Arithmetic Negation|
+|!|Logic Negation|
+|?|Identity: Object is printed to stdout. Leaf objects are printed in compact form.|
+|??|Identity: Object is printed in detail to stdout.|
+
+## Group C - Binary 
+
+|Symbol|Description|
+|:---|:---|
+|.|Stamp member access|
+|(|Function call or stamp modifier; closed by ')'|
 |/|**Arithmetic**: division|
 |*|**Arithmetic**: multiplication|
 |-|**Arithmetic**: subtraction|
@@ -118,6 +146,14 @@ They are executed in left to right order when of same priority.
 |\||**Logic**: OR|
 |:|**List**: Joining objects to form a list; Concatenation of lists|
 |=|Assignment|
+|;|Continuation|
+
+## Group D (Reserved)
+
+## Group E - Binary
+
+|Symbol|Description|
+|:---|:---|
 |;|Continuation|
 
 # Number

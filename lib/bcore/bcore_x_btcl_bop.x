@@ -265,6 +265,16 @@ func (:frame_s) er_t eval_bop_equal( m@* o, s2_t bop_priority, m x_source* sourc
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:frame_s) er_t eval_bop_unequal( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
+{
+    sr_s^ sb; o.eval( bop_priority, source, sb );
+    s2_t result = x_compare_t_num_dominant( sr.o_type(), sr.o, sb.o_type(), sb.o );
+    sr.from_bl( 0 != result );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:frame_s) er_t eval_bop_larger_equal( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
 {
     sr_s^ sb; o.eval( bop_priority, source, sb );
@@ -311,10 +321,7 @@ func (:frame_s) er_t eval_bop_logic_and( m@* o, s2_t bop_priority, m x_source* s
     sr_s^ sb; o.eval( bop_priority, source, sb );
     if( !sb.is_numeric() ) = source.parse_error_fa( "Logic AND: Right operant must be boolean or numeric.\n" );
 
-    f3_t a = sr.to_f3();
-    f3_t b = sb.to_f3();
-
-    sr.from_bl( ( a != 0 ) && ( b != 0 ) );
+    sr.from_bl( sr.to_bl() && sr.to_bl() );
     = 0;
 }
 
@@ -326,10 +333,7 @@ func (:frame_s) er_t eval_bop_logic_or( m@* o, s2_t bop_priority, m x_source* so
     sr_s^ sb; o.eval( bop_priority, source, sb );
     if( !sb.is_numeric() ) = source.parse_error_fa( "Logic AND: Right operant must be boolean or numeric.\n" );
 
-    f3_t a = sr.to_f3();
-    f3_t b = sb.to_f3();
-
-    sr.from_bl( ( a != 0 ) || ( b != 0 ) );
+    sr.from_bl( sr.to_bl() || sr.to_bl() );
     = 0;
 }
 
@@ -411,9 +415,6 @@ func (:frame_s) er_t eval_bop_assign( m@* o, s2_t bop_priority, m x_source* sour
                     = source.parse_error_fa( "operator '=': #<sc_t>\n", bcore_error_pop_all_to_st( st_s!^ ).sc );
                 }
             }
-            else
-            {
-            }
         }
         break;
     }
@@ -436,73 +437,87 @@ func (:frame_s) er_t eval_bop_continuation( m@* o, s2_t bop_priority, m x_source
  *  Binary operators span a binary tree.
  *  bop_priority determines which operator takes the root position for each branch.
  */
-func (:frame_s) er_t eval_bop( m@* o, s2_t priority, m x_source* source, m sr_s* obj )
+func (:frame_s) er_t eval_bop( m@* o, s2_t exit_priority, m x_source* source, m sr_s* obj )
 {
-    s2_t bop_priority = 1000; // > number of operators
+    // operators in descending order of priority
 
-    // operators must be parsed in descending order of priority
+    /// priority group a ---------------------
 
-    if( priority >= bop_priority ) = 0;
+    s2_t bop_priority = :priority_a();
+
+    if( bop_priority <= exit_priority ) = 0;
     while( source.parse_bl( " #?'.'" ) ) o.eval_bop_member( bop_priority, source, obj );
     bop_priority--;
 
-    if( priority >= bop_priority ) = 0;
+    if( bop_priority <= exit_priority ) = 0;
     while( source.parse_bl( " #?'('" ) ) { o.eval_bop_functional( source, obj ); source.parse_fa( " )" ); }
     bop_priority--;
 
-    if( priority >= bop_priority ) = 0;
+    /// priority group c ---------------------
+
+    bop_priority = :priority_c();
+
+    if( bop_priority <= exit_priority ) = 0;
     while( source.parse_bl( " #?'/'" ) ) o.eval_bop_div( bop_priority, source, obj );
     bop_priority--;
 
-    if( priority >= bop_priority ) = 0;
+    if( bop_priority <= exit_priority ) = 0;
     while( source.parse_bl( " #?'*'" ) ) o.eval_bop_mul( bop_priority, source, obj );
     bop_priority--;
 
-    if( priority >= bop_priority ) = 0;
+    if( bop_priority <= exit_priority ) = 0;
     while( source.parse_bl( " #?'-'" ) ) o.eval_bop_sub( bop_priority, source, obj );
     bop_priority--;
 
-    if( priority >= bop_priority ) = 0;
+    if( bop_priority <= exit_priority ) = 0;
     while( source.parse_bl( " #?'+'" ) ) o.eval_bop_add( bop_priority, source, obj );
     bop_priority--;
 
-    if( priority >= bop_priority ) = 0;
+    if( bop_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'!='" ) ) o.eval_bop_unequal( bop_priority, source, obj );
+    bop_priority--;
+
+    if( bop_priority <= exit_priority ) = 0;
     while( source.parse_bl( " #?'=='" ) ) o.eval_bop_equal( bop_priority, source, obj );
     bop_priority--;
 
-    if( priority >= bop_priority ) = 0;
+    if( bop_priority <= exit_priority ) = 0;
     while( source.parse_bl( " #?'>='" ) ) o.eval_bop_larger_equal( bop_priority, source, obj );
     bop_priority--;
 
-    if( priority >= bop_priority ) = 0;
+    if( bop_priority <= exit_priority ) = 0;
     while( source.parse_bl( " #?'>'" ) ) o.eval_bop_larger( bop_priority, source, obj );
     bop_priority--;
 
-    if( priority >= bop_priority ) = 0;
+    if( bop_priority <= exit_priority ) = 0;
     while( source.parse_bl( " #?'<='" ) ) o.eval_bop_smaller_equal( bop_priority, source, obj );
     bop_priority--;
 
-    if( priority >= bop_priority ) = 0;
+    if( bop_priority <= exit_priority ) = 0;
     while( source.parse_bl( " #?'<'" ) ) o.eval_bop_smaller( bop_priority, source, obj );
     bop_priority--;
 
-    if( priority >= bop_priority ) = 0;
+    if( bop_priority <= exit_priority ) = 0;
     while( source.parse_bl( " #?'&'" ) ) o.eval_bop_logic_and( bop_priority, source, obj );
     bop_priority--;
 
-    if( priority >= bop_priority ) = 0;
+    if( bop_priority <= exit_priority ) = 0;
     while( source.parse_bl( " #?'|'" ) ) o.eval_bop_logic_or( bop_priority, source, obj );
     bop_priority--;
 
-    if( priority >= bop_priority ) = 0;
+    if( bop_priority <= exit_priority ) = 0;
     while( source.parse_bl( " #?':'" ) ) o.eval_bop_join( bop_priority, source, obj );
     bop_priority--;
 
-    if( priority >= bop_priority ) = 0;
+    if( bop_priority <= exit_priority ) = 0;
     while( source.parse_bl( " #?'='" ) ) o.eval_bop_assign( bop_priority, source, obj );
     bop_priority--;
 
-    if( priority >= bop_priority ) = 0;
+    /// priority group e ---------------------
+
+    bop_priority = :priority_e();
+
+    if( bop_priority <= exit_priority ) = 0;
     while( source.parse_bl( " #?';'" ) ) o.eval_bop_continuation( bop_priority, source, obj );
     bop_priority--;
 
