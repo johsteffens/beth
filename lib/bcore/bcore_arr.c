@@ -2546,7 +2546,7 @@ st_s* bcore_arr_st_selftest( void )
         for( uz_t i = 0; i < size; i++ )
         {
             rval = bcore_xsg_u2( rval );
-            bcore_array_a_push( (bcore_array*)st_arr2, sr_asd( st_s_createf( "%u", rval ) ) );
+            bcore_array_a_push( (bcore_array*)st_arr2, sr_asm( st_s_createf( "%u", rval ) ) );
         }
         time = clock() - time;
         st_s_push_fa( log, "#p28.{bcore_array_a_push } #<uz_t>ns\n", ( uz_t ) ( ( 1E9 * ( f3_t )time/CLOCKS_PER_SEC ) / size ) );
