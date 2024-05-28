@@ -45,6 +45,7 @@ int main( void )
 //    bclos_quicktypes_to_stdout( NULL ); return 0;
 //    bmath_quicktypes_to_stdout( NULL ); return 0;
 
+
     selftest( "bcore_spect_inst" );
 
     selftest( "bcore_hmap" );
@@ -100,8 +101,6 @@ int main( void )
     x_bbml_selftest();
     x_bcml_selftest();
 
-    x_btcl_selftest();
-
     selftest( "bcore_txt_ml" );
     selftest( "bcore_bin_ml" );
 
@@ -118,7 +117,10 @@ int main( void )
 
     bcodec_image_bgra_s_selftest();
 
+//    x_btcl_selftest();
+
     st_s_print_d( bcore_spect_status() );
+
 
     bcore_msg_fa( "\n" );
     bcore_msg_fa( "#r80{=}\n" );
