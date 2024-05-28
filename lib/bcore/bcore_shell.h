@@ -214,7 +214,7 @@ group :op
                     = false;
                 }
 
-                stamp.set_sr_i( direct_index, sr_tsd( type, inst.fork() ) );
+                stamp.set_sr_i( direct_index, sr_tsm( type, inst.fork() ) );
                 direct_index++;
             }
             source.parse_fa( "#skip' \t'" );
