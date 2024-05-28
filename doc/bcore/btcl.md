@@ -2,7 +2,6 @@
 
 # What it is
 
-## BTCL
 BTCL is a simple and easy to use text based (functional) language
 to construct an object.
 
@@ -12,7 +11,11 @@ object construction. It can be placed somewhere between mere markup and general
 purpose programming. It offers variables, operators and functions but lacks
 interactivity. It represents a state rather than a process.
 
-BTCL is primarily a functional language.
+BTCL is by nature a weakly typed functional language. Specifically:
+
+  * Contiguous code represents one expression (built from expressions or literals). There are no statements.
+  * An expression represents the state of an object.
+  * Functions are first class objects.
 
 # Cheat Sheet
 
@@ -50,15 +53,17 @@ if( a >= b ) { a } else { b };
 
 ```
 
-# One Expression, No Statements, Semicolon Operator
+# One Expression
 BTCL has no distinct statements. Any contiguous code represents just one expression.
-This is typically a composite (or tree) of expressions joined via operators. 
-Expressions that can not be decomposed are called ***Literals***.
+This can be a composite (or tree) of expressions joined via functions, 
+operators or conditional branches.
+Non-composite expressions are called ***Literals***.
 
-
+## Continuation operator
 Although the semicolon ';' is traditionally understood as separator for
 consecutive statements, in BTCL it is a binary operator combining two 
-consecutive expressions.
+consecutive expressions. Hence the semicolon behaves as a [binary operator](#list-of-operators).
+I call this operator **Continuation**.
 
 ```a ; b``` means:
 
@@ -76,7 +81,7 @@ can define a variable, which is used in ```b``` at multiple places.
 More generally: The semicolon operator divides consecutive expressions into
 **context creation** and **context usage**.
 
-# Operator
+# List of Operators
 
 ## Unary (Prefix)
 Unary prefix operators have priority over binary operators.
@@ -116,41 +121,37 @@ They are executed in left to right order when of same priority.
 |;|Continuation|
 
 # Number
-Integers are sorted as ```s3_t```.
-Floats are stored as ```f3_t```.
+Numbers are represented as integer ```s3_t``` or floating point ```f3_t```.
 
-Integer literal in decimal:
+Integer literals can be expressed as decimal or, when using prefix ```0x``` 
+as hexadecimal.
 
-```1023578```
+Float literals are specified via decimal point 
+(even if the value is a whole number), or using exponential notation.
 
-... in hexadecimal via prefix ```0x```:
+## Examples
 
-```0x378FCD50```
-
-Flotaing point literals are specified by either using a decimal point 
-(even if the resulting number is integer)
-
-```123.0```
-
-Or by using exponential notation:
-
-```123E1```
-
+``` C
+1023578     // int (s3_t) in decimal form
+0x378FCD50  // int (s3_t) in hexadecimal form
+123.0       // float (f3_t)
+123E1       // float (f3_t)
+```
 ## Arithmetic
 Binary arithmetic operators return f3_t when one of the operands is f3_t,
 otherwise they return s3_t.
 
 # String
-Sting literals are specified using the C-Syntax:
+Sting literals are specified using the C-syntax:
 
 ``` C
 "This is a string"
 "\tThis is a string with tab and newline\n"
 ```
 
-## Operators
-Operator '+' concatenates string with strings and string with numbers by
-converting the number to a string
+## Operator
+Operator '+' concatenates string with string or string with number by
+first converting the number to a string
 
 |Operation|Result|
 |:---|:---|
@@ -167,6 +168,17 @@ Numbers are evaluated ```false``` when they are zero and ```true``` otherwise.
 
 Logic binary operators return ```bl_t``` as result.
 
+# Frame
+A frame represents the lexical context of a code segment. 
+Variables defined inside a frame are visible inside (including sub-frames) 
+but not outside the frame. A variable definition inside a frame masks any
+variable of the same name outside that frame.
+
+A sub frame is created by using a [bracket](#bracket) ```(...)``` or a
+[block](#block) ```{...}```
+
+Any btcl code is inside of the **global frame**. 
+
 # Conditional Expression
 
 ## Syntax:
@@ -176,28 +188,52 @@ if (<condition>) { <expression> }
 if (<condition>) { <expression1> } else { <expression2> }
 ```
 
-Depending on the condition the associated block is either evaluated or skipped.
+Depending on the condition, the associated block is either evaluated or skipped.
 
-# Function, Signature, Block
+# Signature
 
-Functions, signatures and blocks are all first class objects.
-A function is defined by joining a signature with a block.
+The signature represents the interface of a function. 
+A function is created by joining a signature with a body.
 
-## Signature syntax
-
+## Syntax
 ``` C
 func( <args, comma separated> )
 ```
 
-## Block syntax
+# Bracket
+
+A bracket prioritizes an expression or indicates a function call.
+A bracket defines a dedicated [subframe](#frame) in which it is evaluated.
+
+## Syntax
 
 ``` C
-{
-	<expression>
-}
+( <expression> )
 ```
 
-## Function syntax
+# Block
+
+A block is enclosed in braces ```{...}```. 
+
+A block reserves the evaluation of an expression.
+It is used as part of a function or conditional expression.
+A block defines a dedicated [subframe](#frame) in which it is evaluated.
+
+<sub>Note: A block is not suitable for immediate (framed) evaluation, 
+as might be in other programming languages. Use the simple 
+bracket ```( ... )``` for that purpose. </sub>
+
+## Syntax
+
+``` C
+{ <expression> }
+```
+
+# Function
+
+A function is defined by joining a signature with a block.
+
+## Syntax
 
 ``` C
 <signature> : <block>
@@ -207,13 +243,13 @@ or
 <literal-signature> <literal-block>
 ```
 
-### Example
+## Example
 ``` C
 f = func( a, b ) { a + b }; // function definition; ':' can be omitted
 f( 1, 2 )                   // function usage; result is 3
 ```
 
-### Example
+## Example
 ``` C
 s = func( a, b ); // signature definition
 b = { a + b };    // block definition
