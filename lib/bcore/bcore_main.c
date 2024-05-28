@@ -186,7 +186,7 @@ er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args 
             BLM_RETURNV( er_t, bcore_error_push_fa( TYPEOF_general_error, "bcore_main_frame_s: File '#<sc_t>' contains no valid object.", object_path ) );
         }
 
-        o->object_sr = sr_asd( object );
+        o->object_sr = sr_asm( object );
         bcore_source_a_detach( &source );
     }
     else if( o->object_default_type )

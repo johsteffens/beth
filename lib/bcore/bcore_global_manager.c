@@ -28,7 +28,7 @@ void bcore_global_t_set_d( tp_t key, tp_t t, vd_t v )
 {
     assert( hmap_g );
     bcore_mutex_s_lock( mutex_g );
-    bcore_hmap_tp_sr_s_set( hmap_g, key, sr_tsd( t, v ) );
+    bcore_hmap_tp_sr_s_set( hmap_g, key, sr_tsm( t, v ) );
     bcore_mutex_s_unlock( mutex_g );
 }
 

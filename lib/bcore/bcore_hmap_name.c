@@ -35,7 +35,7 @@ tp_t bcore_hmap_name_s_set_st_d( bcore_hmap_name_s* o, st_s* st )
     }
     else
     {
-        bcore_hmap_tp_sr_s_set( &o->map, key, sr_tsd( TYPEOF_st_s, st ) );
+        bcore_hmap_tp_sr_s_set( &o->map, key, sr_tsm( TYPEOF_st_s, st ) );
     }
     return key;
 }
