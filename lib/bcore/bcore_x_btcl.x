@@ -42,8 +42,6 @@ name if;
 name else;
 name self;
 name func;
-name true;
-name false;
 
 // The context is created in the root frame and shared across all child frames
 stamp :context_s
@@ -68,8 +66,6 @@ stamp :context_s
         o.hmap_reserved_key.set_sc( "else" );
         o.hmap_reserved_key.set_sc( "self" );
         o.hmap_reserved_key.set_sc( "func" );
-        o.hmap_reserved_key.set_sc( "true" );
-        o.hmap_reserved_key.set_sc( "false" );
     }
 
 
@@ -721,9 +717,6 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
                 }
                 break;
 
-                case TYPEOF_true:  obj.from_bl( true ); break;
-                case TYPEOF_false: obj.from_bl( false ); break;
-
                 default: = source.parse_error_fa( "Internal error: Keyword '#<sc_t>': missing implementation.\n", o.sc_reserved( name ) );
             }
         }
@@ -855,41 +848,13 @@ func parse_create_object
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func void selftest()
+func void selftest( sc_t file )
 {
-//    st_s^ txt.push_sc( "  6.0 + ( 2 - 3 ) * 2;" );
-//    st_s^ txt.push_sc( "<bcodec_audio_codec_waw_param_s></>.loudness_mask = <bcodec_audio_codec_waw_param_loudness_mask_s></>" );
-//    st_s^ txt.push_sc( "x = 3 | <bcodec_audio_codec_waw_param_s></>.signal_exponent = x | x = 5" );
-//    st_s^ txt.push_sc( "<#file>  \"/home/johannes/dev/beth/data/bcodec/audio_codec/audio_codec_waw_120kbps.param.cfg\" </>.loudness_mask.[2]" );
-
-//    st_s^ txt.push_sc( "1 : 2 : 3 : 4" );
-
-/*
-    sc_t txt = " \
-    x = <bcodec_audio_codec_waw_param_s></>; \
-    y = x( .signal_exponent = 3 ); \
-    y; \
-    ";
-
-*/
-
-    sc_t txt = " \
-    x = { 3 }; \
-    (?x) \
-    ";
-
-    m x_source* source = x_source_create_from_sc( txt )^;
-
-    m$* frame = :frame_s!^;
-    m$* sr = sr_s!^;
-
-    if( frame.eval( 0, source, sr ) )
-    {
-        bcore_error_pop_all_to_stderr();
-        return;
-    }
-
-    ASSERT( true );
+    m$* obj = sr_s!^;
+    :parse_create_object( x_source_check_create_from_file( file )^, obj );
+    ASSERT( obj.o );
+    ASSERT( obj.is_numeric() );
+    ASSERT( obj.to_s3() == 0 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

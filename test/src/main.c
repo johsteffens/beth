@@ -117,10 +117,9 @@ int main( void )
 
     bcodec_image_bgra_s_selftest();
 
-//    x_btcl_selftest();
+    x_btcl_selftest( "../data/bcore/btcl/selftest.cfg" );
 
     st_s_print_d( bcore_spect_status() );
-
 
     bcore_msg_fa( "\n" );
     bcore_msg_fa( "#r80{=}\n" );

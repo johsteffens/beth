@@ -194,6 +194,21 @@ func (:frame_s) er_t eval_bop_modifier( m@* o, m x_source* source, m sr_s* sr )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:frame_s) er_t eval_bop_pow( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
+{
+    sr_s^ sb; o.eval( bop_priority, source, sb );
+
+    if( bcore_tp_is_numeric( sr.o_type() ) && bcore_tp_is_numeric( sb.o_type() ) )
+    {
+        sr.const_from_f3( pow( sr.to_f3(), sb.to_f3() ) );
+        = 0;
+    }
+
+    = source.parse_error_fa( "Operator #<sc_t> / #<sc_t> is not defined.\n", bnameof( sr.o_type() ), bnameof( sb.o_type() ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:frame_s) er_t eval_bop_div( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
 {
     sr_s^ sb; o.eval( bop_priority, source, sb );
@@ -463,7 +478,7 @@ func (:frame_s) er_t eval_bop_logic_and( m@* o, s2_t bop_priority, m x_source* s
     sr_s^ sb; o.eval( bop_priority, source, sb );
     if( !sb.is_numeric() ) = source.parse_error_fa( "Logic AND: Right operant must be boolean or numeric.\n" );
 
-    sr.from_bl( sr.to_bl() && sr.to_bl() );
+    sr.from_bl( sr.to_bl() && sb.to_bl() );
     = 0;
 }
 
@@ -475,7 +490,7 @@ func (:frame_s) er_t eval_bop_logic_or( m@* o, s2_t bop_priority, m x_source* so
     sr_s^ sb; o.eval( bop_priority, source, sb );
     if( !sb.is_numeric() ) = source.parse_error_fa( "Logic AND: Right operant must be boolean or numeric.\n" );
 
-    sr.from_bl( sr.to_bl() || sr.to_bl() );
+    sr.from_bl( sr.to_bl() || sb.to_bl() );
     = 0;
 }
 
@@ -567,6 +582,10 @@ func (:frame_s) er_t eval_bop( m@* o, s2_t exit_priority, m x_source* source, m 
     /// priority group c ---------------------
 
     bop_priority = :priority_c();
+
+    if( bop_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'^'" ) ) o.eval_bop_pow( bop_priority, source, obj );
+    bop_priority--;
 
     if( bop_priority <= exit_priority ) = 0;
     while( source.parse_bl( " #?'/'" ) ) o.eval_bop_div( bop_priority, source, obj );

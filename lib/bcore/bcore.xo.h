@@ -1,4 +1,4 @@
-//  Last update: 2024-05-29T15:50:57Z
+//  Last update: 2024-05-29T21:42:03Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -2635,8 +2635,6 @@
 #define TYPEOF_else 0x7F2B6C605332DD30ull
 #define TYPEOF_self 0x2D19E518D40792B7ull
 #define TYPEOF_func 0x86628378DB071EA7ull
-#define TYPEOF_true 0x5B5C98EF514DBFA5ull
-#define TYPEOF_false 0xB5FAE2C14238B978ull
 #define TYPEOF_x_btcl_context_s 0x833EA022A3607597ull
 #define BETH_EXPAND_ITEM_x_btcl_context_s \
   BCORE_DECLARE_OBJECT( x_btcl_context_s ) \
@@ -2706,6 +2704,7 @@
   er_t x_btcl_frame_s_eval_bop_member( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_functional( x_btcl_frame_s* o, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_modifier( x_btcl_frame_s* o, x_source* source, sr_s* sr ); \
+  er_t x_btcl_frame_s_eval_bop_pow( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_div( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_mod( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_mul( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
@@ -2818,8 +2817,22 @@
   static inline sz_t x_btcl_function_s_args( const x_btcl_function_s* o ){return  x_btcl_signature_s_args(o->signature);} \
   static inline tp_t x_btcl_function_s_arg_name( const x_btcl_function_s* o, sz_t index ){return  x_btcl_signature_s_arg_name(o->signature,index );}
 #define TYPEOF_SIZE 0x62DC57244A2CB13Cull
+#define TYPEOF_EXP 0xD9874B198E84A5A8ull
+#define TYPEOF_LOG 0x2560B319B8E23FD1ull
+#define TYPEOF_LOG2 0x659037B528728EB9ull
+#define TYPEOF_LOG10 0x06931FD3BA9FBFB0ull
+#define TYPEOF_SIN 0x97E4E119FA49358Dull
+#define TYPEOF_COS 0x0BA0FC19AA5D7AFCull
+#define TYPEOF_TAN 0x6C73F219E1A521B8ull
+#define TYPEOF_TANH 0xEE2651FA6B98AAD0ull
+#define TYPEOF_SIGN 0x630140244A4BA664ull
+#define TYPEOF_SQRT 0xAA2CD0247323A3CFull
+#define TYPEOF_ABS 0xFA2FF219A0745E1Bull
+#define TYPEOF_true 0x5B5C98EF514DBFA5ull
+#define TYPEOF_false 0xB5FAE2C14238B978ull
 #define TYPEOF_TRUE 0x704E59FAB561C2A5ull
 #define TYPEOF_FALSE 0x09DCCB2F68F0A098ull
+#define TYPEOF_PI 0x09421F07B5D1F0B2ull
 #define BETH_EXPAND_GROUP_x_btcl \
   BCORE_FORWARD_OBJECT( x_btcl ); \
   BCORE_FORWARD_OBJECT( x_btcl_context_s ); \
@@ -2855,7 +2868,7 @@
   static inline s2_t x_btcl_priority_e( void ); \
   er_t x_btcl_to_sink( bl_t detailed, const sr_s* sr, x_sink* sink ); \
   er_t x_btcl_parse_create_object( x_source* source, sr_s* obj ); \
-  void x_btcl_selftest( void ); \
+  void x_btcl_selftest( sc_t file ); \
   XOILA_DECLARE_SPECT( x_btcl ) \
   { \
       bcore_spect_header_s header; \
@@ -3173,5 +3186,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x0795BE9F07520952
-// XOICO_FILE_SIGNATURE 0x1E48EE726993A085
+// XOICO_BODY_SIGNATURE 0xBDACECEFCE24312C
+// XOICO_FILE_SIGNATURE 0xF3DF1B602BD9A489

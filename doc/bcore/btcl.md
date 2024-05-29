@@ -132,6 +132,7 @@ The lists below are sorted in descending priority.
 |:---|:---|
 |.|Stamp member access|
 |(|Function call or stamp modifier; closed by ')'|
+|^|**Arithmetic**: exponentiation; result type is f3_t|
 |/|**Arithmetic**: division|
 |%|**Arithmetic**: modulo division|
 |*|**Arithmetic**: multiplication|
@@ -385,8 +386,29 @@ Operation ```a::b``` can construct and modify a list.
 |number|any other|List of a elements, each set to value b
 |list|unary function|List of a.SIZE() elements, each set to ```b(a.[index])```
 
+# Built-in Operators
+The following operators are hardwired in form of unary functions.
 
+  * EXP
+  * LOG
+  * LOG2
+  * LOG10
+  * SIN
+  * COS
+  * TAN
+  * TANH
+  * SIGN
+  * SQRT
+  * ABS
 
+# Built-in Constants
+The following operators are hardwired constants.
+
+  * TRUE
+  * FALSE
+  * true
+  * false
+  * PI
 
 ------
 <sub>&copy; 2024 Johannes B. Steffens</sub>
