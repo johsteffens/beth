@@ -2026,41 +2026,6 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                 }
                 idx++;
             }
-
-//            else if( ( bcore_strcmp( "string", fp ) >> 1 ) == 0 )
-//            {
-//                fp += strlen( "string" );
-//                st_s* string = NULL;
-//                if( set_arg )
-//                {
-//                    string = va_arg( args, st_s* );
-//                    if( string && !cat_arg ) st_s_clear( string );
-//                }
-//                if( o->sc[ idx ] != '"' )
-//                {
-//                    return st_s_parse_errorf( o, errfp, arg, idx, "'\"' expected." );
-//                }
-//                idx++;
-//                while ( o->sc[ idx ] != '"' )
-//                {
-//                    if( o->sc[ idx ] == '\\' && o->sc[ idx + 1 ] == '\"' )
-//                    {
-//                        if( string ) st_s_push_char( string, '\"' );
-//                        idx += 2;
-//                    }
-//                    else if( o->sc[ idx ] == '\\' && o->sc[ idx + 1 ] == '\\' )
-//                    {
-//                        if( string ) st_s_push_char( string, '\\' );
-//                        idx += 2;
-//                    }
-//                    else
-//                    {
-//                        if( string ) st_s_push_char( string, o->sc[ idx ] );
-//                        idx++;
-//                    }
-//                }
-//                idx++;
-//            }
             else if( ( bcore_strcmp( "label", fp ) >> 1 ) == 0 )
             {
                 fp += strlen( "label" );
@@ -2159,7 +2124,7 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
             }
             else
             {
-                return st_s_parse_errorf( o, errfp, arg, idx, "Matching format characters '%s' failed", fp0 );
+                return st_s_parse_errorf( o, errfp, arg, idx, "'%s' expected", fp0 );
             }
         }
     }
