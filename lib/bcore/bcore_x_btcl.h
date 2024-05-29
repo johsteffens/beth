@@ -20,6 +20,11 @@ Backward compatible to BTML.
 
 BTCL Documentation: beth/doc/bcore/btcl.md
 
+TODO:
+- detect too many (infinite) recursions
+- arrays [], [,,,,]
+- array initializers/operators ::
+
 */
 
 #ifndef BCORE_X_BTCL_H

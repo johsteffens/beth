@@ -73,6 +73,8 @@ Overloaded I/O: Overload following features:
     bcore_via_call.shelve
 
 Special Syntax Features:
+  - Instance without data: <mystamp_s/></> may also be expressed as <mystamp_s/>
+
   - Brief <#file> and <#path> syntax:
     Syntax <#file>|<#path> <string in quotes> </>
     (Closing '</>' is optional)
@@ -338,6 +340,13 @@ func er_t parse_create_object( m x_source* source, sr_s* default_obj, m sr_s* ob
     if( source.parse_bl( "#?'<'" ) ) // type specifier
     {
         source.parse_fa( "#until'>'>", type_string );
+        bl_t compact = false; // compact version of <mystamp_s></> is <mystamp_s/>
+        if( type_string.size > 0 && type_string.[ type_string.size - 1 ] =='/' )
+        {
+            type_string.pop_char();
+            compact = true;
+        }
+
         tp_t type = :type_of( type_string );
         if( type )
         {
@@ -345,15 +354,18 @@ func er_t parse_create_object( m x_source* source, sr_s* default_obj, m sr_s* ob
             {
                 if( source.parse_bl( " #?'NULL'" ) ) // no instance
                 {
-                    source.parse_fa( " </>" );
+                    if( !compact) source.parse_fa( " </>" );
                     obj.p = bcore_inst_s_get_typed( type );
                 }
                 else
                 {
                     m x_inst* inst = x_inst_t_create( type ).t_scope( type );
                     if( default_obj.type() == type ) x_inst_t_copy( inst, type, default_obj.o );
-                    :t_parse_body( inst, type, source );
-                    source.parse_fa( " </>" );
+                    if( !compact)
+                    {
+                        :t_parse_body( inst, type, source );
+                        source.parse_fa( " </>" );
+                    }
                     obj.0 = sr_tsm( type, inst.fork() );
                 }
             }

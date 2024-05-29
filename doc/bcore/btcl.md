@@ -133,9 +133,12 @@ The lists below are sorted in descending priority.
 |.|Stamp member access|
 |(|Function call or stamp modifier; closed by ')'|
 |/|**Arithmetic**: division|
+|%|**Arithmetic**: modulo division|
 |*|**Arithmetic**: multiplication|
 |-|**Arithmetic**: subtraction|
 |+|**Arithmetic**: addition; Concatenation of strings.|
+|::|**List**: [List construction](#list-construction)|
+|:|**List**: Joining objects to form a list; Concatenation of lists|
 |==|**Logic**: equal|
 |!=|**Logic**: unequal|
 |>=|**Logic**: larger or equal|
@@ -144,7 +147,6 @@ The lists below are sorted in descending priority.
 |< |**Logic**: smaller|
 |& |**Logic**: AND|
 |\||**Logic**: OR|
-|:|**List**: Joining objects to form a list; Concatenation of lists|
 |=|Assignment|
 |;|Continuation|
 
@@ -321,8 +323,69 @@ factorial( 3 ) // result is 6 (=1*2*3)
 
 ```
 
-Preferably use ```self``` with recursions. Avoid recursion by calling the
+Preferably initiate a recursion by calling ```self```. Avoid recursion by calling the
 function via a variable from its lexical frame.
+
+# Stamp
+A stamp can be instantiated via btml:
+
+``` C
+anystamp = <bcore_arr_st_s></>
+```
+Stamp members can be access via '.' operator.
+
+# List
+
+``` C
+// List literal
+mylist = [1,2,3];
+
+// Element access
+mylist.[ 2 ] // is 3 here
+
+// Creating a list by concatenating elements or lists
+mylist = a : b : c;
+
+// if any operand is already a list, it will be unfolded and extended
+[1,2]:3 == 1:2:3; // this is TRUE
+
+// to explicitly insert a list as element to another list, fold it twice:
+a = [1,2];
+b = a:[[4,5]];
+b == [1,2,[4,5]]; // this is TRUE
+
+```
+
+Stamps, which are arrays can be initialized with a list
+by using a modifier:
+
+``` C
+list = [1,2,3];
+arr = <bcore_arr_s3_s></>( list );
+
+```
+
+The SIZE operator can retrieve the number of elements of a list or array:
+
+``` C
+list = [1,2,3];
+SIZE(list); // this is 3
+list.SIZE(); // this is 3
+SIZE(<bcore_arr_s3_s>1 2 3</>); // this is 3
+
+```
+
+## List Construction
+
+Operation ```a::b``` can construct and modify a list.
+
+|a-type|b-type|Description|
+|:---|:---|:---|
+|number|unary function|List of a elements, each set to ```b(index)```
+|number|any other|List of a elements, each set to value b
+|list|unary function|List of a.SIZE() elements, each set to ```b(a.[index])```
+
+
 
 
 ------
