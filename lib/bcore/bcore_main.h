@@ -47,6 +47,7 @@
 #include "bcore_arr.h"
 #include "bcore_file.h"
 #include "bcore_x_inst.h"
+#include "bcore_x_array.h"
 
 /**********************************************************************************************************************/
 
@@ -125,6 +126,8 @@ stamp :arr_s = x_array { : => []; }
 stamp :set_s
 {
     :arr_s arr;
+    func x_array_feature.c_get_wrapped_array = o.arr;
+    func x_array_feature.m_get_wrapped_array = o.arr;
 
     private obliv :* current_object;
     bcore_mutex_s mutex_current_object;

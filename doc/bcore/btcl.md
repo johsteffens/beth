@@ -69,6 +69,11 @@ a : b; // if a or b is a list, the list is extended (not nested)
 // Mapped list through function; the function is applied to list elements
 // forming a new list. The result is [2,4,10].
 [1,2,5] :: func(a){2*a};
+
+// embed the content from another file
+// relative path is relative to current file location
+embed ( "../data/file.btcl" );
+
 ```
 
 # One Expression
@@ -409,6 +414,21 @@ The following operators are hardwired constants.
   * true
   * false
   * PI
+
+# Evaluating other source files.
+
+The keyword **embed** evaluates code from another file.
+
+## Syntax
+```
+embed ( "path_to_another_file.txt" )
+```
+If the file path is relative it is taken relative to the folder in which
+the current source is located.
+
+The file is embedded in the current frame (no dedicated frame).
+This allows defining variables (functions) in the embedded file to be used
+outside the embedding.
 
 ------
 <sub>&copy; 2024 Johannes B. Steffens</sub>

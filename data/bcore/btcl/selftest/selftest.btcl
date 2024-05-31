@@ -4,11 +4,7 @@
 
 (
 
-test = func( name, ok )
-{
-    if( !ok ) { ?(name+" failed \n") };
-    ok
-};
+embed( "../selftest/embed.btcl" );
 
 err = 0;
 

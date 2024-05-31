@@ -16,7 +16,6 @@
 /** BTCL: Beth text constructive language (interpreter) - Binary Operators */
 
 /**********************************************************************************************************************/
-/// supportive functions
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -176,11 +175,31 @@ func (:frame_s) er_t eval_bop_modifier( m@* o, m x_source* source, m sr_s* sr )
     {
         m$* sb = sr_s!^;
         o.eval( 0, source, sb );
-        if( sb.o_type() == :list_s~ && x_array_t_is_array( sr.o_type() ) )
+        if( sb.o_type() == :list_s~ )
         {
-            :list_s* list = sb.o.cast( :list_s* );
-            x_array_t_clear( sr.o, sr.o_type() );
-            for( sz_t i = 0; i < list.arr.size; i++ ) x_array_t_push_sr( sr.o, sr.o_type(), sr_cw( list.arr.[ i ] ) );
+            m x_array* array = NULL;
+            tp_t t_array = 0;
+            if( x_array_t_is_array( sr.type() ) )
+            {
+                array = sr.o;
+                t_array = sr.type();
+            }
+            else if( x_stamp_t_is_aware( sr.type() ) && ( array = sr.o.cast( m x_array_feature* ).m_get_wrapped_array() ) )
+            {
+                t_array = array._;
+            }
+
+            if( array )
+            {
+                :list_s* list = sb.o.cast( :list_s* );
+                x_array_t_clear( array, t_array );
+                for( sz_t i = 0; i < list.arr.size; i++ ) x_array_t_push_sr( array, t_array, sr_cw( list.arr.[ i ] ) );
+            }
+            else
+            {
+                er_t err = x_inst_t_copy_typed( sr.o, sr.o_type(), sb.o_type(), sb.o );
+                if( err ) { = source.parse_error_fa( "#<sc_t>\n", bcore_error_pop_all_to_st( st_s!^ ).sc ); }
+            }
         }
         else
         {

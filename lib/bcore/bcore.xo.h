@@ -1,4 +1,4 @@
-//  Last update: 2024-05-29T21:42:03Z
+//  Last update: 2024-05-31T10:13:26Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -381,6 +381,7 @@
 #define TYPEOF_data 0x855B556730A34A05ull
 #define BETH_EXPAND_GROUP_x_array \
   BCORE_FORWARD_OBJECT( x_array ); \
+  BCORE_FORWARD_OBJECT( x_array_feature ); \
   static inline sz_t x_array_t_size( const x_array* o, tp_t t ); \
   static inline sz_t x_array_size( const x_array* o ); \
   static inline x_array* x_array_t_set_size( x_array* o, tp_t t, sz_t size ); \
@@ -453,6 +454,7 @@
       bcore_spect_header_s header; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_array ) \
+  BETH_EXPAND_GROUP_x_array_feature \
   static inline sz_t x_array_t_size( const x_array* o, tp_t t ){return  bcore_array_t_get_size ( t, ((bcore_array*)(o)) );} \
   static inline sz_t x_array_size( const x_array* o ){return  x_array_t_size(o,o->_ );} \
   static inline x_array* x_array_t_set_size( x_array* o, tp_t t, sz_t size ){bcore_array_t_set_size ( t, ((bcore_array*)(o)), size  );return o;} \
@@ -512,6 +514,29 @@
   static inline s3_t x_array_c_get_s3( const x_array* o, sz_t index ){return  sr_to_s3(x_array_t_c_get_sr(o,o->_, index ));} \
   static inline bl_t x_array_c_get_bl( const x_array* o, sz_t index ){return  sr_to_bl(x_array_t_c_get_sr(o,o->_, index ));} \
   static inline tp_t x_array_c_get_tp( const x_array* o, sz_t index ){return  sr_to_tp(x_array_t_c_get_sr(o,o->_, index ));}
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_array_feature
+
+#define TYPEOF_x_array_feature 0xD145574098552F10ull
+#define TYPEOF_x_array_feature_spect_s 0xEFB9D754D091A938ull
+#define BETH_EXPAND_GROUP_x_array_feature \
+  BCORE_FORWARD_OBJECT( x_array_feature ); \
+  typedef const x_array* (*x_array_feature_c_get_wrapped_array)(const x_array_feature* o ); \
+  typedef x_array* (*x_array_feature_m_get_wrapped_array)(x_array_feature* o ); \
+  XOILA_DECLARE_SPECT( x_array_feature ) \
+  { \
+      bcore_spect_header_s header; \
+      x_array_feature_c_get_wrapped_array c_get_wrapped_array; \
+      x_array_feature_m_get_wrapped_array m_get_wrapped_array; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_array_feature ) \
+  static inline const x_array* x_array_feature_a_c_get_wrapped_array( const x_array_feature* o ){ const x_array_feature_spect_s* p = x_array_feature_spect_s_get_aware( o ); assert( p->c_get_wrapped_array ); return p->c_get_wrapped_array( o );} \
+  static inline bl_t x_array_feature_defines_c_get_wrapped_array( const x_array_feature* o ){ return  true;} \
+  static inline const x_array* x_array_feature_c_get_wrapped_array_default( const x_array_feature* o ){return  NULL;} \
+  static inline x_array* x_array_feature_a_m_get_wrapped_array( x_array_feature* o ){ const x_array_feature_spect_s* p = x_array_feature_spect_s_get_aware( o ); assert( p->m_get_wrapped_array ); return p->m_get_wrapped_array( o );} \
+  static inline bl_t x_array_feature_defines_m_get_wrapped_array( const x_array_feature* o ){ return  true;} \
+  static inline x_array* x_array_feature_m_get_wrapped_array_default( x_array_feature* o ){return  NULL;}
 
 /**********************************************************************************************************************/
 // source: bcore_x_group.h
@@ -1052,10 +1077,14 @@
       bcore_main* current_object; \
       bcore_mutex_s mutex_current_object; \
   }; \
+  static inline const x_array* bcore_main_set_s_c_get_wrapped_array( const bcore_main_set_s* o ); \
+  static inline x_array* bcore_main_set_s_m_get_wrapped_array( bcore_main_set_s* o ); \
   er_t bcore_main_set_s_main( bcore_main_set_s* o, bcore_main_frame_s* frame ); \
   bl_t bcore_main_set_s_on_termination( bcore_main_set_s* o, const bcore_main_frame_s* frame ); \
   bl_t bcore_main_set_s_on_interrupt( bcore_main_set_s* o, const bcore_main_frame_s* frame ); \
-  bl_t bcore_main_set_s_on_suspend( bcore_main_set_s* o, const bcore_main_frame_s* frame );
+  bl_t bcore_main_set_s_on_suspend( bcore_main_set_s* o, const bcore_main_frame_s* frame ); \
+  static inline const x_array* bcore_main_set_s_c_get_wrapped_array( const bcore_main_set_s* o ){return ((const x_array*)(&( o->arr)));} \
+  static inline x_array* bcore_main_set_s_m_get_wrapped_array( bcore_main_set_s* o ){return ((x_array*)(&( o->arr)));}
 #define BETH_EXPAND_GROUP_bcore_main \
   BCORE_FORWARD_OBJECT( bcore_main ); \
   BCORE_FORWARD_OBJECT( bcore_main_frame_s ); \
@@ -2635,6 +2664,7 @@
 #define TYPEOF_else 0x7F2B6C605332DD30ull
 #define TYPEOF_self 0x2D19E518D40792B7ull
 #define TYPEOF_func 0x86628378DB071EA7ull
+#define TYPEOF_embed 0x0B0E48B4160DCA6Eull
 #define TYPEOF_x_btcl_context_s 0x833EA022A3607597ull
 #define BETH_EXPAND_ITEM_x_btcl_context_s \
   BCORE_DECLARE_OBJECT( x_btcl_context_s ) \
@@ -2860,6 +2890,7 @@
   x_btcl* x_btcl_create_from_source_t( x_source* source, tp_t* type ); \
   x_btcl* x_btcl_create_from_source( x_source* source ); \
   void x_btcl_clone_if_weak( sr_s* sr ); \
+  er_t x_btcl_get_embedding_file_path( x_source* source, sc_t in_path, st_s* out_path ); \
   static inline sz_t x_btcl_max_frame_depth( void ); \
   static inline s2_t x_btcl_priority_a( void ); \
   static inline s2_t x_btcl_priority_b( void ); \
@@ -3186,5 +3217,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xBDACECEFCE24312C
-// XOICO_FILE_SIGNATURE 0xF3DF1B602BD9A489
+// XOICO_BODY_SIGNATURE 0xE4F93F6EE2FC5652
+// XOICO_FILE_SIGNATURE 0x0D863CA67564FD47

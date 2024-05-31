@@ -89,7 +89,7 @@ func t_from_source
     m$* sr = sr_s!^;
     :parse_create_object( source, sr );
     x_inst_t_copy_typed( o, t, sr_s_o_type( sr ), sr.o );
-    = bcore_error_last();
+    = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -99,7 +99,7 @@ func create_from_source_t
     type.0 = 0;
     if( !source ) = NULL;
     m$* sr = sr_s!^;
-    :parse_create_object( source, sr );
+    if( :parse_create_object( source, sr ) ) = NULL;
     if( sr.o && type ) type.0 = sr.o_type();
     m x_inst* obj = sr.o;
     = ( obj ) ? obj.fork() : NULL; // sr.o is NULL in case of error

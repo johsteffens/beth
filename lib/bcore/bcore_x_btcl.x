@@ -33,6 +33,30 @@ func void clone_if_weak( m sr_s* sr )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// crates a usable path from an embedded file path
+func er_t get_embedding_file_path( m x_source* source, sc_t in_path, m st_s* out_path )
+{
+    m st_s* folder = bcore_file_folder_path( source.get_file() )^^;
+    if( folder.size == 0 ) folder.push_char( '.' );
+
+    if( in_path[ 0 ] == '/' )
+    {
+        out_path.copy_sc( in_path );
+    }
+    else
+    {
+        out_path.copy_fa( "#<sc_t>/#<sc_t>", folder.sc, in_path );
+    }
+
+    if( !bcore_file_exists( out_path.sc ) )
+    {
+        = source.parse_error_fa( "embed: File '#<sc_t>' not found.", out_path->sc );
+    }
+
+    = 0;
+};
+
+
 /**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -42,6 +66,7 @@ name if;
 name else;
 name self;
 name func;
+name embed;
 
 // The context is created in the root frame and shared across all child frames
 stamp :context_s
@@ -66,6 +91,7 @@ stamp :context_s
         o.hmap_reserved_key.set_sc( "else" );
         o.hmap_reserved_key.set_sc( "self" );
         o.hmap_reserved_key.set_sc( "func" );
+        o.hmap_reserved_key.set_sc( "embed" );
     }
 
 
@@ -591,6 +617,7 @@ func er_t to_sink( bl_t detailed, sr_s* sr, m x_sink* sink )
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+/// main evaluation
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -714,6 +741,21 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
                     {
                         = source.parse_error_fa( "Keyword 'self': Used outside a function.\n" );
                     }
+                }
+                break;
+
+                /// Embedding
+                case TYPEOF_embed:
+                {
+                    m sr_s* sb = sr_s!^;
+                    source.parse_fa( " (" );
+                    o.eval( 0, source, sb );
+                    source.parse_fa( " )" );
+                    if( sb.type() != st_s~ )  = source.parse_error_fa( "Keyword 'embed': Expression must evaluate to a string.\n" );
+                    m st_s* path = st_s!^;
+                    :get_embedding_file_path( source, sb.o.cast( st_s* ).sc, path );
+                    m x_source* emb_source = bcore_file_open_source( path.sc )^;
+                    o.eval( 0, emb_source, obj );
                 }
                 break;
 

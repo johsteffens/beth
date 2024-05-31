@@ -203,7 +203,7 @@ func t_from_source
     :parse_create_object( source, NULL, sr.1 );
     x_inst_t_copy_typed( o, t, sr_s_o_type( sr.1 ), sr.o );
     sr_s_down( sr );
-    = bcore_error_last();
+    = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -216,7 +216,7 @@ func create_from_source_t
         = NULL;
     }
     sr_s sr = sr_null();
-    :parse_create_object( source, NULL, sr.1 );
+    if( :parse_create_object( source, NULL, sr.1 ) ) = NULL;
     if( sr.o && type ) type.0 = sr_s_o_type( sr );
     = sr.o.cast( d @* ); // sr.o is NULL in case of error
 }
@@ -291,6 +291,10 @@ func appears_valid
         }
         else
         {
+            if( type_string.size > 0 )
+            {
+                if( type_string.[ type_string.size - 1 ] == '/' ) type_string.pop_char();
+            }
             tp_t type = :type_of( type_string );
             if( bcore_flect_exists( type ) )      valid = true;
             else if( type == btypeof( "#file" ) ) valid = true;

@@ -42,6 +42,14 @@ name data;
 
 //----------------------------------------------------------------------------------------------------------------------
 
+group :feature
+{
+    /// Objects that are strictly no array but wrap an array and allow extended array access can overload these features
+    feature c aware x_array* c_get_wrapped_array( c aware @* o ) = NULL;
+    feature m aware x_array* m_get_wrapped_array( m aware @* o ) = NULL;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 func sz_t t_size ( c obliv (TO) @* o, tp_t t ) = bcore_array_t_get_size ( t, o.cast( m bcore_array* ) );
 func sz_t   size ( c aware (TO) @* o         ) = o.t_size( o._ );

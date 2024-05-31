@@ -97,12 +97,13 @@ int main( void )
     selftest( "bcore_spect_via" );
     selftest( "bcore_spect_compare" );
 
+    selftest( "bcore_txt_ml" );
+    selftest( "bcore_bin_ml" );
+
     x_btml_selftest();
     x_bbml_selftest();
     x_bcml_selftest();
-
-    selftest( "bcore_txt_ml" );
-    selftest( "bcore_bin_ml" );
+    x_btcl_selftest( "../data/bcore/btcl/selftest/selftest.btcl" );
 
     selftest( "bcore_btree" );
     selftest( "bcore_arr" );
@@ -117,15 +118,13 @@ int main( void )
 
     bcodec_image_bgra_s_selftest();
 
-    x_btcl_selftest( "../data/bcore/btcl/selftest.cfg" );
-
     st_s_print_d( bcore_spect_status() );
 
     bcore_msg_fa( "\n" );
     bcore_msg_fa( "#r80{=}\n" );
     bcore_msg_fa( "All tests completed without error.\n" );
 
-//    BETH_CLOSEV( 1 );
-    BETH_CLOSEV( 0 );
+    BETH_CLOSEV( 1 );
+//    BETH_CLOSEV( 0 );
     return 0;
 }
