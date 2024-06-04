@@ -131,6 +131,15 @@ vd_t bmath_mf2_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FFUNC( bcore_fp_copy_typed,     bmath_mf2_s_copy_typed );
             BCORE_REGISTER_OBJECT( bmath_mf2_s );
             BCORE_REGISTER_OBJECT( bmath_arr_mf2_s );
+
+            BCORE_REGISTER_FUNC( bmath_mf2_s_htp_mul );
+            BCORE_REGISTER_FUNC( bmath_mf2_s_mul_htp );
+            BCORE_REGISTER_FUNC( bmath_mf2_s_htp_mul_htp );
+
+            BCORE_REGISTER_FUNC( bmath_mf2_s_htp );
+            BCORE_REGISTER_FUNC( bmath_mf2_s_mul_esp );
+            BCORE_REGISTER_FUNC( bmath_mf2_s_htp_mul_esp );
+            BCORE_REGISTER_FUNC( bmath_mf2_s_mul_htp_esp );
         }
         break;
 

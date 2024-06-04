@@ -83,11 +83,23 @@ err = err + !test( "list element", list.[ 0 ] == 1 & list.[ 1 ] == 2 );
 arr = <bcore_arr_s3_s/>(list);
 err = err + !test( "arr element", arr.[ 0 ] == 1 & arr.[ 1 ] == 2 );
 
-err = err + !test( "list construction", 3::0 == [0,0,0] );
-err = err + !test( "list construction", 3::func(x){x+1} == [1,2,3] );
-err = err + !test( "list construction", [1,2,3]::func(x){-x} == [-1,-2,-3] );
+err = err + !test( "list spawn", 3::0 == [0,0,0] );
+err = err + !test( "list spawn", 3::func(x){x+1} == [1,2,3] );
+err = err + !test( "list spawn", [1,2,3]::func(x){-x} == [-1,-2,-3] );
 
 // ---------------------------------------------------------------------------------------------------------------------
+/// recursive spawn
+
+err = err + !test( "spawned recursion", ["a","b","c","d"] :: func(a,b) { a + b } == "abcd" );
+
+// ---------------------------------------------------------------------------------------------------------------------
+/// bug fixes
+
+f = func(){y=10}; // assignment result was not cloned when frame was closed (bug returned 0)
+err = err + !test( "bug: assignment lifetime", f() == 10 );
+
+
+
 
 err
 

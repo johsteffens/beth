@@ -381,15 +381,28 @@ SIZE(<bcore_arr_s3_s>1 2 3</>); // this is 3
 
 ```
 
-## List Construction
+## Spawning Operator
 
-Operation ```a::b``` can construct and modify a list.
+Operation ```a::b``` can construct or modify lists or run a recursion.
 
-|a-type|b-type|Description|
+|a-type|b-type|Result|
 |:---|:---|:---|
 |number|unary function|List of a elements, each set to ```b(index)```
 |number|any other|List of a elements, each set to value b
 |list|unary function|List of a.SIZE() elements, each set to ```b(a.[index])```
+|list|binary function|Spawned recursion (s. below for details)
+
+### Spawned Recursion
+The operation O(L<sub>n</sub>,F) with ...
+
+  * L<sub>n</sub> being a list with n > 0 elements: L[0], ..., L[n-1]
+  * L<sub>k</sub> (k<=n) being the leftbound sublist of L<sub>n</sub> with k elements.
+  * F being a binary function
+
+... is defined as ...
+
+  * O(L<sub>1</sub>,F) = L[0]
+  * O(L<sub>k</sub>,F) = F(O(L<sub>k-1</sub>,L[k-1]))
 
 # Built-in Operators
 The following operators are hardwired in form of unary functions.
