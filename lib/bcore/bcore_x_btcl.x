@@ -20,10 +20,29 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// creates a strong clone in case sr is weak; const flag is preserved
+/** Creates a strong clone in case sr is weak; const flag is preserved
+ *  This function should be used when the frame in which sr.o probably resides is
+ *  about to disappear.
+ */
 func void clone_if_weak( m sr_s* sr )
 {
     if( sr.is_weak() )
+    {
+        bl_t is_const = sr.is_const();
+        sr.0 = sr_clone( sr );
+        sr.set_const( is_const );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/** Creates a strong clone in case sr is weak or at least twice referenced
+ *  This function should be used when a copy of sr is intended but de facto not necessary
+ *  because sr represents the only existing strong reference.
+ */
+func void clone_if_weak_or_twice_referenced( m sr_s* sr )
+{
+    if( sr.is_weak() || sr.references() >= 2 )
     {
         bl_t is_const = sr.is_const();
         sr.0 = sr_clone( sr );
@@ -372,16 +391,12 @@ func (:block_s) er_t parse( m@* o, m :frame_s* frame, m x_source* source )
 /** Evaluates the block in its own frame */
 func (:block_s) er_t eval( @* o, c :frame_s* parent_frame, m sr_s* obj )
 {
-    m$* frame = :frame_s!^.setup( parent_frame );
     m x_source* source = o.source_point.source;
     s3_t index = source.get_index();
     source.set_index( o.source_point.index );
-
-    frame.eval( 0, source, obj );
+    parent_frame.eval_in_frame( 0, source, obj );
     source.parse_fa( " }" );
-
     source.set_index( index );
-
     = 0;
 }
 
@@ -621,9 +636,9 @@ func er_t to_sink( bl_t detailed, sr_s* sr, m x_sink* sink )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:frame_s) er_t eval_in_frame( m@* o, s2_t priority, m x_source* source, m sr_s* obj )
+func (:frame_s) er_t eval_in_frame( @* o, s2_t priority, m x_source* source, m sr_s* obj )
 {
-    m$* frame = :frame_s!^.parent = o;
+    m$* frame = :frame_s!^.setup( o );
     frame.eval( priority, source, obj );
     :clone_if_weak( obj );
     = 0;

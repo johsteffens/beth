@@ -140,6 +140,7 @@ stamp :set_s
                 bcore_lock_s^ lock.set( o.mutex_current_object );
                 o.current_object = e;
             }
+            if( !e.defines_main() ) = bcore_error_push_fa( TYPEOF_general_error, "#<sc_t>.main: Object '#<sc_t>' does not define callback feature bcore_main.main", ifnameof( :set_s~ ), ifnameof( e._ ) );
             try( e.main( frame ) );
         };
         o.current_object = NULL;

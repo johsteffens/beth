@@ -1,4 +1,4 @@
-//  Last update: 2024-05-31T10:13:26Z
+//  Last update: 2024-06-04T08:59:28Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -2727,7 +2727,7 @@
   er_t x_btcl_frame_s_eval_condition( x_btcl_frame_s* o, x_source* source, bl_t* condition ); \
   er_t x_btcl_frame_s_negate( x_btcl_frame_s* o, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_logic_not( x_btcl_frame_s* o, x_source* source, sr_s* sr ); \
-  er_t x_btcl_frame_s_eval_in_frame( x_btcl_frame_s* o, s2_t priority, x_source* source, sr_s* obj ); \
+  er_t x_btcl_frame_s_eval_in_frame( const x_btcl_frame_s* o, s2_t priority, x_source* source, sr_s* obj ); \
   er_t x_btcl_frame_s_eval( x_btcl_frame_s* o, s2_t exit_priority, x_source* source, sr_s* obj ); \
   er_t x_btcl_frame_s_eval_reserved_const( x_btcl_frame_s* o, tp_t name, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_reserved_func( x_btcl_frame_s* o, tp_t name, x_source* source, sr_s* sr ); \
@@ -2740,7 +2740,7 @@
   er_t x_btcl_frame_s_eval_bop_mul( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_sub( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_add( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
-  er_t x_btcl_frame_s_eval_bop_list_bop( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
+  er_t x_btcl_frame_s_eval_bop_spawn( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_join( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_equal( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_unequal( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
@@ -2890,6 +2890,7 @@
   x_btcl* x_btcl_create_from_source_t( x_source* source, tp_t* type ); \
   x_btcl* x_btcl_create_from_source( x_source* source ); \
   void x_btcl_clone_if_weak( sr_s* sr ); \
+  void x_btcl_clone_if_weak_or_twice_referenced( sr_s* sr ); \
   er_t x_btcl_get_embedding_file_path( x_source* source, sc_t in_path, st_s* out_path ); \
   static inline sz_t x_btcl_max_frame_depth( void ); \
   static inline s2_t x_btcl_priority_a( void ); \
@@ -3217,5 +3218,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xE4F93F6EE2FC5652
-// XOICO_FILE_SIGNATURE 0x0D863CA67564FD47
+// XOICO_BODY_SIGNATURE 0xD07B7083CDCF87C4
+// XOICO_FILE_SIGNATURE 0x39A1606815532A9C

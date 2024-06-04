@@ -253,8 +253,16 @@ func (:frame_s) er_t eval_reserved_func( m@* o, tp_t name, m x_source* source, m
         {
             if( sb.is_numeric() )
             {
-                f3_t x = sb.to_f3();
-                sr.const_from_f3( ( x >= 0 ) ? x : -x );
+                if( sb.is_integer() )
+                {
+                    s3_t x = sb.to_s3();
+                    sr.const_from_s3( ( x >= 0 ) ? x : -x );
+                }
+                else
+                {
+                    f3_t x = sb.to_f3();
+                    sr.const_from_f3( ( x >= 0 ) ? x : -x );
+                }
             }
             else
             {

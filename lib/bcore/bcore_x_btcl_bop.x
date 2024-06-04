@@ -349,14 +349,13 @@ func (:frame_s) er_t eval_bop_add( m@* o, s2_t bop_priority, m x_source* source,
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:frame_s) er_t eval_bop_list_bop( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
+func (:frame_s) er_t eval_bop_spawn( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
 {
     m sr_s* sb = sr_s!^; o.eval( bop_priority, source, sb );
 
-    m :list_s* list = :list_s!^;
-
     if( sr.is_numeric() )
     {
+        m :list_s* list = :list_s!^;
         list.arr.set_size( sr.to_s3() );
         if( sb.type() == :function_s~ )
         {
@@ -377,20 +376,51 @@ func (:frame_s) er_t eval_bop_list_bop( m@* o, s2_t bop_priority, m x_source* so
                 list.arr.[ i ].tsc( sb.type(), x_inst_t_clone( sb.o, sb.type() ) );
             }
         }
+
+        sr.asc( list.fork() );
     }
     else if( sr.type() == :list_s~ && sb.type() == :function_s~ )
     {
         :list_s* src_list = sr.o.cast( :list_s* );
-        list.set_size( src_list.size() );
 
         m :frame_s* frame = :frame_s!^.setup( o );
         :function_s* function = sb.o.cast( :function_s* );
-        if( function.args() != 1 ) = source.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Right operand must be unary (single argument).\n", bnameof( sr.type() ), bnameof( sb.type() ) );
-        tp_t arg_name = function.arg_name( 0 );
-        for( sz_t i = 0; i < list.arr.size; i++ )
+
+        if( function.args() == 1 )
         {
-            frame.var_set( arg_name, sr_cw( src_list.arr.[ i ] ) );
-            function.block.eval( frame, list.arr.[ i ] );
+            m :list_s* list = :list_s!^;
+            list.set_size( src_list.size() );
+            tp_t arg_name = function.arg_name( 0 );
+            for( sz_t i = 0; i < list.arr.size; i++ )
+            {
+                frame.var_set( arg_name, sr_cw( src_list.arr.[ i ] ) );
+                function.block.eval( frame, list.arr.[ i ] );
+            }
+            sr.asc( list.fork() );
+        }
+        else if( function.args() == 2 )
+        {
+            if( src_list.arr.size < 1 )
+            {
+                = source.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Left operand must be a list of size >= 1.\n", bnameof( sr.type() ), bnameof( sb.type() ) );
+            }
+
+            m sr_s* sa = sr_s!^;
+            sa.0 = sr_cw( src_list.arr.[ 0 ] );
+
+            for( sz_t i = 1; i < src_list.arr.size; i++ )
+            {
+                frame.var_set( function.arg_name( 0 ), sa );
+                sa.0 = sr_null();
+                frame.var_set( function.arg_name( 1 ), sr_cw( src_list.arr.[ i ] ) );
+                function.block.eval( frame, sa );
+            }
+
+            sr.tsm( sa.type(), bcore_fork( sa.o ) );
+        }
+        else
+        {
+            = source.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Right operand must be unary (one argument) or binary (two arguments).\n", bnameof( sr.type() ), bnameof( sb.type() ) );
         }
     }
     else
@@ -398,7 +428,6 @@ func (:frame_s) er_t eval_bop_list_bop( m@* o, s2_t bop_priority, m x_source* so
         = source.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Cannot construct a list from these operands.\n", bnameof( sr.type() ), bnameof( sb.type() ) );
     }
 
-    sr.asc( list.fork() );
     = 0;
 }
 
@@ -527,16 +556,15 @@ func (:frame_s) er_t eval_bop_assign( m@* o, s2_t bop_priority, m x_source* sour
     {
         case :null_variable_s~:
         {
-            // TODO: fork in case sb is strong and sb.o has only one reference.
-            m sr_s* sr1 = o.var_set( sr.o.cast( :null_variable_s* ).tp_name, sr_tsm( sb.o_type(), x_inst_t_clone( sb.o, sb.o_type() ) ) );
+            :clone_if_weak_or_twice_referenced( sb );
+            m sr_s* sr1 = o.var_set( sr.o.cast( :null_variable_s* ).tp_name, sr_tsm( sb.o_type(), bcore_fork( sb.o ) ) );
             sr.twc( sr1.o_type(), sr1.o );
         }
         break;
 
         case :null_member_s~:
         {
-            m :null_member_s* null_member = sr.o.cast( m :null_member_s* );
-            sr_s sr1 = null_member.set_sr( sb );
+            sr_s sr1 = sr.o.cast( m :null_member_s* ).set_sr( sb );
             sr.down();
             sr.0 = sr1;
         }
@@ -544,8 +572,7 @@ func (:frame_s) er_t eval_bop_assign( m@* o, s2_t bop_priority, m x_source* sour
 
         case :null_arr_element_s~:
         {
-            m :null_arr_element_s* null_arr_element = sr.o.cast( m :null_arr_element_s* );
-            sr_s sr1 = null_arr_element.set_sr( sb );
+            sr_s sr1 = sr.o.cast( m :null_arr_element_s* ).set_sr( sb );
             sr.down();
             sr.0 = sr1;
         }
@@ -627,7 +654,7 @@ func (:frame_s) er_t eval_bop( m@* o, s2_t exit_priority, m x_source* source, m 
     bop_priority--;
 
     if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'::'" ) ) o.eval_bop_list_bop( bop_priority, source, obj );
+    while( source.parse_bl( " #?'::'" ) ) o.eval_bop_spawn( bop_priority, source, obj );
     bop_priority--;
 
     if( bop_priority <= exit_priority ) = 0;
