@@ -34,6 +34,10 @@ vd_t bmath_asmf2_signal_handler( const bcore_signal_s* o )
     {
         case TYPEOF_init1:
         {
+            BCORE_REGISTER_FUNC( bmath_asmf2_s_mul );
+            BCORE_REGISTER_FUNC( bmath_asmf2_s_mul_htp );
+            BCORE_REGISTER_FUNC( bmath_asmf2_s_htp_mul );
+            BCORE_REGISTER_FUNC( bmath_asmf2_s_htp_mul_htp );
         }
         break;
 

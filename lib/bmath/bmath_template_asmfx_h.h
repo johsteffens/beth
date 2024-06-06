@@ -24,7 +24,7 @@
  *  | (VAL) (VAL) (VAL) ... |
  *  |        ...        ... |
  *
- * 'CAL' denotes a single scalar value.
+ * 'VAL' denotes a single scalar value.
  *  '()' indicates that the value block is referenced via index.
  *
  *  The reason for this specific matrix design is the efficient computation of of convolutions, transposed convolutions and

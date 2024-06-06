@@ -1930,7 +1930,7 @@ bmath_vfx_s BCATU(bmath_mfx_s,get_row_weak_vec)( const bmath_mfx_s* o, uz_t idx 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t BCATU(bmath_mfx_s,decompose_cholesky)( const bmath_mfx_s* o, bmath_mfx_s* res )
+bl_t BCATU(bmath_mfx_s,cld)( const bmath_mfx_s* o, bmath_mfx_s* res )
 {
     // Algorithm works in-place: No need to check for o == res;
     ASSERT( BCATU(bmath_mfx_s,is_square)( o ) );
@@ -2125,7 +2125,7 @@ bl_t BCATU(bmath_mfx_s,pdf_inv)( const bmath_mfx_s* o, bmath_mfx_s* res )
     // O^-1 = (R * R^T)^-1 = R^T^-1 * R^-1 = (R^-1)^T * (R^-1)
 
     ASSERT( BCATU(bmath_mfx_s,is_hsm)( o ) );
-    bl_t success = BCATU(bmath_mfx_s,decompose_cholesky)( o, res ); // res <- R
+    bl_t success = BCATU(bmath_mfx_s,cld)( o, res ); // res <- R
     success = success & BCATU(bmath_mfx_s,ltr_inv_htp)( res, res ); // res <- R^-1^T
     BCATU(bmath_mfx_s,utr_mul_htp)( res, res );                     // res <- o^-1 = R^-1^T * R^-1
 
@@ -3532,7 +3532,7 @@ static void eval_test( void )
     eval->rows = 20; eval->cols = 20; bmath_arr_mfx_eval_s_push( arr_eval, eval );
     bmath_arr_mfx_eval_s_run( arr_eval, BCATU(TYPEOF_bmath_fp,mfx,s,trd)    , ( fp_t )BCATU(bmath_mfx_s,trd));
     bmath_arr_mfx_eval_s_run( arr_eval, BCATU(TYPEOF_bmath_fp,mfx,s,evd_htp), ( fp_t )BCATU(bmath_mfx_s,evd_htp) );
-    bmath_arr_mfx_eval_s_run( arr_eval, BCATU(TYPEOF_bmath_fp,mfx,s,cld)    , ( fp_t )BCATU(bmath_mfx_s,decompose_cholesky) );
+    bmath_arr_mfx_eval_s_run( arr_eval, BCATU(TYPEOF_bmath_fp,mfx,s,cld)    , ( fp_t )BCATU(bmath_mfx_s,cld) );
     bmath_arr_mfx_eval_s_run( arr_eval, BCATU(TYPEOF_bmath_fp,mfx,s,lud)    , ( fp_t )BCATU(bmath_mfx_s,decompose_luc) );
     bmath_arr_mfx_eval_s_run( arr_eval, BCATU(TYPEOF_bmath_fp,mfx,s,inv)    , ( fp_t )BCATU(bmath_mfx_s,inv) );
     bmath_arr_mfx_eval_s_run( arr_eval, BCATU(TYPEOF_bmath_fp,mfx,s,pdf_inv), ( fp_t )BCATU(bmath_mfx_s,pdf_inv) );

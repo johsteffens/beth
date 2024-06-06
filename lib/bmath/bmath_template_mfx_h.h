@@ -452,7 +452,7 @@ fx_t BCATU(bmath_mfx_s,get_fx)( const bmath_mfx_s* o, uz_t row, uz_t col )
  *  res: represents the lower-triangular version (upper triangle is set to zero)
  *  It is o = res * resT.
  */
-bl_t BCATU(bmath_mfx_s,decompose_cholesky)( const bmath_mfx_s* o, bmath_mfx_s* res );
+bl_t BCATU(bmath_mfx_s,cld)( const bmath_mfx_s* o, bmath_mfx_s* res );
 
 /** LU decomposition. Returns succcess.
  *  TODO: The current implementation is unstable and not guaranteed to succeed

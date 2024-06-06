@@ -88,7 +88,7 @@ err = err + !test( "list spawn", 3::func(x){x+1} == [1,2,3] );
 err = err + !test( "list spawn", [1,2,3]::func(x){-x} == [-1,-2,-3] );
 
 // ---------------------------------------------------------------------------------------------------------------------
-/// recursive spawn
+/// spawned recursion
 
 err = err + !test( "spawned recursion", ["a","b","c","d"] :: func(a,b) { a + b } == "abcd" );
 
