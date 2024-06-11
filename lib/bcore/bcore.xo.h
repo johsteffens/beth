@@ -1,4 +1,4 @@
-//  Last update: 2024-06-08T13:16:37Z
+//  Last update: 2024-06-11T21:48:54Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -2661,6 +2661,17 @@
 
 #define TYPEOF_x_btcl 0xEDA9A5C25324F131ull
 #define TYPEOF_x_btcl_spect_s 0x235E6DC4678C61EDull
+#define TYPEOF_add_a_b 0xD859D6BBC345568Dull
+#define TYPEOF_add_a 0x22DCF9FDFCE6CD70ull
+#define TYPEOF_x_btcl_btcl_function_stamp_s 0xD6541420FA20E7A2ull
+#define BETH_EXPAND_ITEM_x_btcl_btcl_function_stamp_s \
+  BCORE_DECLARE_OBJECT( x_btcl_btcl_function_stamp_s ) \
+  { \
+      aware_t _; \
+      f3_t additive; \
+  }; \
+  s2_t x_btcl_btcl_function_stamp_s_btcl_function_arity( const x_btcl_btcl_function_stamp_s* o, tp_t name ); \
+  er_t x_btcl_btcl_function_stamp_s_btcl_function( const x_btcl_btcl_function_stamp_s* o, tp_t name, const bcore_arr_sr_s* args, sr_s* result );
 #define TYPEOF_if 0x08B73007B55C3E26ull
 #define TYPEOF_else 0x7F2B6C605332DD30ull
 #define TYPEOF_self 0x2D19E518D40792B7ull
@@ -2738,6 +2749,10 @@
   er_t x_btcl_frame_s_eval_bop_pow( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_div( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_mod( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
+  er_t x_btcl_frame_s_eval_bop_func_chain( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
+  er_t x_btcl_frame_s_eval_bop_func_list_unfold( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
+  er_t x_btcl_frame_s_eval_bop_func_list_transform( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
+  er_t x_btcl_frame_s_eval_bop_func_list_unfold_transform( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_mul( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_sub( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_add( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
@@ -2832,9 +2847,21 @@
   }; \
   static inline sz_t x_btcl_signature_s_args( const x_btcl_signature_s* o ); \
   static inline tp_t x_btcl_signature_s_arg_name( const x_btcl_signature_s* o, sz_t index ); \
+  static inline bl_t x_btcl_signature_s_is_unary( const x_btcl_signature_s* o ); \
   er_t x_btcl_signature_s_parse( x_btcl_signature_s* o, x_btcl_frame_s* frame, x_source* source ); \
   static inline sz_t x_btcl_signature_s_args( const x_btcl_signature_s* o ){return  o->arg_list.size;} \
-  static inline tp_t x_btcl_signature_s_arg_name( const x_btcl_signature_s* o, sz_t index ){return  o->arg_list.data[ index ];}
+  static inline tp_t x_btcl_signature_s_arg_name( const x_btcl_signature_s* o, sz_t index ){return  o->arg_list.data[ index ];} \
+  static inline bl_t x_btcl_signature_s_is_unary( const x_btcl_signature_s* o ){return  ( o->arg_list.size == 1 );}
+#define TYPEOF_x_btcl_external_function_s 0xADCFE4A8A00800B0ull
+#define BETH_EXPAND_ITEM_x_btcl_external_function_s \
+  BCORE_DECLARE_OBJECT( x_btcl_external_function_s ) \
+  { \
+      aware_t _; \
+      tp_t name; \
+      x_btcl* object; \
+  }; \
+  x_btcl_external_function_s* x_btcl_external_function_s_setup( x_btcl_external_function_s* o, tp_t name, const x_btcl* object ); \
+  er_t x_btcl_external_function_s_execute( x_btcl_external_function_s* o, x_source* source, const bcore_arr_sr_s* args, sr_s* sr );
 #define TYPEOF_x_btcl_function_s 0xE67CE4B7F4BF0460ull
 #define BETH_EXPAND_ITEM_x_btcl_function_s \
   BCORE_DECLARE_OBJECT( x_btcl_function_s ) \
@@ -2842,12 +2869,23 @@
       aware_t _; \
       x_btcl_signature_s* signature; \
       x_btcl_block_s* block; \
+      x_btcl_external_function_s* external_function; \
+      x_btcl_function_s* tail; \
   }; \
-  x_btcl_function_s* x_btcl_function_s_setup( x_btcl_function_s* o, x_btcl_signature_s* signature, x_btcl_block_s* block ); \
+  x_btcl_function_s* x_btcl_function_s_setup( x_btcl_function_s* o, x_btcl_signature_s* signature, x_btcl_block_s* block, const x_btcl_function_s* tail ); \
+  x_btcl_function_s* x_btcl_function_s_setup_external_function( x_btcl_function_s* o, tp_t name, s2_t arity, const x_btcl* object ); \
+  x_btcl_function_s* x_btcl_function_s_append_tail( x_btcl_function_s* o, const x_btcl_function_s* tail ); \
   static inline sz_t x_btcl_function_s_args( const x_btcl_function_s* o ); \
   static inline tp_t x_btcl_function_s_arg_name( const x_btcl_function_s* o, sz_t index ); \
+  static inline bl_t x_btcl_function_s_is_unary( const x_btcl_function_s* o ); \
+  er_t x_btcl_function_s_setup_frame( x_btcl_function_s* o, x_btcl_frame_s* lexical_frame, x_source* source, x_btcl_frame_s* frame ); \
+  er_t x_btcl_function_s_execute( x_btcl_function_s* o, x_btcl_frame_s* frame, sr_s* sr ); \
+  er_t x_btcl_function_s_execute_unary( x_btcl_function_s* o, x_btcl_frame_s* lexical_frame, x_source* source, sr_s* s_arg, sr_s* sr ); \
+  er_t x_btcl_function_s_execute_arg_list( x_btcl_function_s* o, x_btcl_frame_s* lexical_frame, x_source* source, x_btcl_list_s* arg_list, sr_s* sr ); \
+  er_t x_btcl_function_s_eval_execute( x_btcl_function_s* o, x_btcl_frame_s* lexical_frame, x_source* source, sr_s* sr ); \
   static inline sz_t x_btcl_function_s_args( const x_btcl_function_s* o ){return  x_btcl_signature_s_args(o->signature);} \
-  static inline tp_t x_btcl_function_s_arg_name( const x_btcl_function_s* o, sz_t index ){return  x_btcl_signature_s_arg_name(o->signature,index );}
+  static inline tp_t x_btcl_function_s_arg_name( const x_btcl_function_s* o, sz_t index ){return  x_btcl_signature_s_arg_name(o->signature,index );} \
+  static inline bl_t x_btcl_function_s_is_unary( const x_btcl_function_s* o ){return  x_btcl_signature_s_is_unary(o->signature);}
 #define TYPEOF_SIZE 0x62DC57244A2CB13Cull
 #define TYPEOF_EXP 0xD9874B198E84A5A8ull
 #define TYPEOF_LOG 0x2560B319B8E23FD1ull
@@ -2867,6 +2905,7 @@
 #define TYPEOF_PI 0x09421F07B5D1F0B2ull
 #define BETH_EXPAND_GROUP_x_btcl \
   BCORE_FORWARD_OBJECT( x_btcl ); \
+  BCORE_FORWARD_OBJECT( x_btcl_btcl_function_stamp_s ); \
   BCORE_FORWARD_OBJECT( x_btcl_context_s ); \
   BCORE_FORWARD_OBJECT( x_btcl_frame_s ); \
   BCORE_FORWARD_OBJECT( x_btcl_null_variable_s ); \
@@ -2875,6 +2914,7 @@
   BCORE_FORWARD_OBJECT( x_btcl_list_s ); \
   BCORE_FORWARD_OBJECT( x_btcl_block_s ); \
   BCORE_FORWARD_OBJECT( x_btcl_signature_s ); \
+  BCORE_FORWARD_OBJECT( x_btcl_external_function_s ); \
   BCORE_FORWARD_OBJECT( x_btcl_function_s ); \
   static inline er_t x_btcl_from_source( x_btcl* o, x_source* source ); \
   static inline er_t x_btcl_t_from_file( x_btcl* o, tp_t t, sc_t file ); \
@@ -2903,11 +2943,21 @@
   er_t x_btcl_to_sink( bl_t detailed, const sr_s* sr, x_sink* sink ); \
   er_t x_btcl_parse_create_object( x_source* source, sr_s* obj ); \
   void x_btcl_selftest( sc_t file ); \
+  typedef s2_t (*x_btcl_btcl_function_arity)(const x_btcl* o, tp_t name ); \
+  typedef er_t (*x_btcl_btcl_function)(const x_btcl* o, tp_t name, const bcore_arr_sr_s* args, sr_s* result ); \
   XOILA_DECLARE_SPECT( x_btcl ) \
   { \
       bcore_spect_header_s header; \
+      x_btcl_btcl_function_arity btcl_function_arity; \
+      x_btcl_btcl_function btcl_function; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_btcl ) \
+  static inline s2_t x_btcl_a_btcl_function_arity( const x_btcl* o, tp_t name ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_aware( o ); assert( p->btcl_function_arity ); return p->btcl_function_arity( o, name );} \
+  static inline bl_t x_btcl_defines_btcl_function_arity( const x_btcl* o ){ return  true;} \
+  static inline s2_t x_btcl_btcl_function_arity_default( const x_btcl* o, tp_t name ){return  -1;} \
+  static inline er_t x_btcl_a_btcl_function( const x_btcl* o, tp_t name, const bcore_arr_sr_s* args, sr_s* result ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_aware( o ); assert( p->btcl_function ); return p->btcl_function( o, name, args, result );} \
+  static inline bl_t x_btcl_defines_btcl_function( const x_btcl* o ){  return x_btcl_spect_s_get_aware( o )->btcl_function != NULL;} \
+  BETH_EXPAND_ITEM_x_btcl_btcl_function_stamp_s \
   BETH_EXPAND_ITEM_x_btcl_context_s \
   BETH_EXPAND_ITEM_x_btcl_frame_s \
   BETH_EXPAND_ITEM_x_btcl_null_variable_s \
@@ -2916,6 +2966,7 @@
   BETH_EXPAND_ITEM_x_btcl_list_s \
   BETH_EXPAND_ITEM_x_btcl_block_s \
   BETH_EXPAND_ITEM_x_btcl_signature_s \
+  BETH_EXPAND_ITEM_x_btcl_external_function_s \
   BETH_EXPAND_ITEM_x_btcl_function_s \
   static inline er_t x_btcl_from_source( x_btcl* o, x_source* source ){return  x_btcl_t_from_source(o,o->_, source );} \
   static inline er_t x_btcl_t_from_file( x_btcl* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_btcl_t_from_source(o,t, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_check_create_from_file(file ))) ))} \
@@ -3220,5 +3271,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x150EB38EF3811DED
-// XOICO_FILE_SIGNATURE 0xBBE997EA65B823FA
+// XOICO_BODY_SIGNATURE 0x7FD0108142A0C8C0
+// XOICO_FILE_SIGNATURE 0x86CDED0D7D9C2AE1

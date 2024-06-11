@@ -53,6 +53,18 @@ ackermann = func( n, m )
 err = err + !test( "ackermann", ackermann( 3, 1 ) == 13 );
 
 // ---------------------------------------------------------------------------------------------------------------------
+/// func chain
+f_head = func( a, b ) { a + b };
+f1 = func( a ) { a +   1 };
+f2 = func( a ) { a +  10 };
+f3 = func( a ) { a + 100 };
+f_chained = ( f3 ** f2 ) ** ( f1 ** f_head );
+err = err + !test( "func chain", f_chained( 1, 2 ) == 114 );
+
+/// args list
+err = err + !test( "func args list", f_head *. [1,2] == 3 );
+
+// ---------------------------------------------------------------------------------------------------------------------
 /// stamps, members, type conversion
 
 s = <bmath_mfx_eval_s> rows: 10 cols: 20 </>;
@@ -65,13 +77,20 @@ err = err + !test( "member query 2", s.rows == 30 & s.cols == 40 );
 // type conversion float -> bool
 err = err + !test( "member query 2", <bl_t/>( 0.5 ) == TRUE );
 
+// ---------------------------------------------------------------------------------------------------------------------
+/// external function
+
+ext_add_a   = <x_btcl_btcl_function_stamp_s/>( .additive = 10 ).add_a;
+ext_add_a_b = <x_btcl_btcl_function_stamp_s/>( .additive = 10 ).add_a_b;
+err = err + !test( "external function", ext_add_a  ( 2    ) == 12 );
+err = err + !test( "external function", ext_add_a_b( 2, 3 ) == 15 );
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// lists
 
-err = err + !test( "list init", [1,2,3] == 1:2:3 );
-err = err + !test( "list init", [1,2,3] == [1,2]:3 );
-err = err + !test( "list init", [1,2]:[3] == [1,2,3] );
+err = err + !test( "list init", [1,2,3]     == 1:2:3 );
+err = err + !test( "list init", [1,2,3]     == [1,2]:3 );
+err = err + !test( "list init", [1,2]:[3]   == [1,2,3] );
 err = err + !test( "list init", [1,2]:[[3]] == [1,2,[3]] );
 
 list = [1,2,3];
@@ -85,8 +104,13 @@ err = err + !test( "arr element", arr.[ 0 ] == 1 & arr.[ 1 ] == 2 );
 
 err = err + !test( "list spawn", 3::0 == [0,0,0] );
 err = err + !test( "list spawn", 3::func(x){x+1} == [1,2,3] );
-err = err + !test( "list spawn", [1,2,3]::func(x){-x} == [-1,-2,-3] );
-err = err + !test( "list spawn", ([0]::[1,2]::[4,5]) == ([[0,1,4],[0,1,5],[0,2,4],[0,2,5]]) );
+
+err = err + !test( "list transform", [1,2,3]::func(x){-x} == [-1,-2,-3] );
+err = err + !test( "list transform", func(x){-x}*:[1,2,3] == [-1,-2,-3] );
+
+err = err + !test( "list product", ([0]*[1,2]*[4,5]) == ([[0,1,4],[0,1,5],[0,2,4],[0,2,5]]));
+
+err = err + !test( "list unfold transform", func(a,b){a*b}*.:([1,2]*[4,5]) == [4,5,8,10] );
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// spawned recursion
@@ -96,7 +120,7 @@ err = err + !test( "spawned recursion", ["a","b","c","d"] :: func(a,b) { a + b }
 // ---------------------------------------------------------------------------------------------------------------------
 /// bug fixes
 
-f = func(){y=10}; // assignment result was not cloned when frame was closed (bug returned 0)
+f = func(){y=10}; // assignment result was not cloned when frame was closed (buggy code returned 0)
 err = err + !test( "bug: assignment lifetime", f() == 10 );
 
 ? if( err > 0 ) { "BTCL: Selftest failed.\n" } else { "BTCL: Selftest finished successfully.\n" };

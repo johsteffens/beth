@@ -80,6 +80,50 @@ func d aware @* create_from_file( sc_t file ) = :create_from_source( x_source_cr
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/** Implement both features below to define member functions of a stamp which shall be accessible by bctl code.
+ *  See :test_stamp_s for an example implementation
+ */
+feature s2_t btcl_function_arity( @* o, tp_t name ) = -1; // return -1 when function 'name' is not defined
+feature er_t btcl_function(       @* o, tp_t name, bcore_arr_sr_s* args, m sr_s* result ); // must handle all names as indicated by btcl_function_arity
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// demonstrating the use of btcl_function features above; see beth/data/bcore/btcl/selftest.btcl for usage
+
+//----------------------------------------------------------------------------------------------------------------------
+
+name add_a_b;
+name add_a;
+
+stamp :btcl_function_stamp_s
+{
+    f3_t additive;
+    func :.btcl_function_arity
+    {
+        switch( name )
+        {
+            case TYPEOF_add_a_b: = 2;
+            case TYPEOF_add_a  : = 1;
+            default: break;
+        }
+        = -1; // return -1 to indicate that a function of given name does not exist
+    }
+
+    func :.btcl_function
+    {
+        switch( name )
+        {
+            case TYPEOF_add_a_b: result.from_f3( o.additive + args.[0].to_f3() + args.[1].to_f3() ); = 0;
+            case TYPEOF_add_a  : result.from_f3( o.additive + args.[0].to_f3() ); = 0;
+            default: break;
+        }
+        = bcore_error_push_fa( TYPEOF_general_error, "Unhandled function." ); // should never occur
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------

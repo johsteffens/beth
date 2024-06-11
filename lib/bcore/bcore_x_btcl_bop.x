@@ -52,6 +52,11 @@ func (:frame_s) er_t eval_bop_member( m@* o, s2_t bop_priority, m x_source* sour
                 = source.parse_error_fa( "#<sc_t>.#<sc_t> is NULL (use '=' to assign a value).\n", bnameof( sr.o_type() ), o.nameof( name ) );
             }
         }
+        else if( sr.o.cast( :* ).btcl_function_arity( name ) >= 0 )
+        {
+            s2_t arity = sr.o.cast( :* ).btcl_function_arity( name );
+            sr.asm( :function_s!.setup_external_function( name, arity, sr.o.cast( :* ) ) );
+        }
         else
         {
             = source.parse_error_fa( "#<sc_t>.#<sc_t> does not exist.\n", bnameof( sr.o_type() ), o.nameof( name ) );
@@ -126,27 +131,7 @@ func (:frame_s) er_t eval_bop_functional( m@* o, m x_source* source, m sr_s* sr 
 {
     if( sr.o_type() == :function_s~ )
     {
-        :function_s* function = sr.o.cast( m :function_s* ).fork()^;
-        :signature_s* signature = function.signature;
-
-        if( o.depth >= :max_frame_depth() ) = source.parse_error_fa( "Maximum frame depth (#<sz_t>) exceeded. Check for unlimited recursions.\n", :max_frame_depth() );
-
-        m$* frame = :frame_s!^.setup( o );
-
-        frame.var_set( TYPEOF_self, sr_tsm( sr.o_type(), bcore_fork( sr.o ) ) );
-
-        for( sz_t i = 0; i < signature.arg_list.size; i++ )
-        {
-            if( i > 0 ) source.parse_fa( " ," );
-            if( source.parse_bl( " #=?')'" ) ) = source.parse_error_fa( "Function argument expected.\n" );
-            m$* sr_arg = sr_s!^;
-            o.eval( 0, source, sr_arg );
-            frame.var_set( signature.arg_list.[ i ], sr_tsm( sr_arg.o_type(), bcore_fork( sr_arg.o ) ) );
-        }
-
-        sr.clear();
-        function.block.eval( frame /* parent frame */, sr );
-        :clone_if_weak( sr );
+        sr.o.cast( m :function_s* ).fork()^.eval_execute( o, source, sr );
     }
     else if( sr.o_type() == :block_s~ )
     {
@@ -268,6 +253,98 @@ func (:frame_s) er_t eval_bop_mod( m@* o, s2_t bop_priority, m x_source* source,
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:frame_s) er_t eval_bop_func_chain( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
+{
+    sr_s^ sb; o.eval( bop_priority, source, sb );
+
+    if( sr.type() == :function_s~ && sb.type() == :function_s~ )
+    {
+        m :function_s* fa = sr.o.cast( m :function_s* ).fork()^;
+        m :function_s* fb = sb.o.cast( m :function_s* ).fork()^;
+
+        if( !fa.is_unary() ) source.parse_error_fa( "Operator *: Left argument is not a unary function.\n" );
+
+        m :function_s* fc = :function_s!^.setup( fb.signature, fb.block, fb.tail );
+        fc.append_tail( fa );
+
+        sr.asm( fc.fork() );
+        = 0;
+    }
+
+    = source.parse_error_fa( "Operator #<sc_t> * #<sc_t> is not defined.\n", bnameof( sr.o_type() ), bnameof( sb.o_type() ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:frame_s) er_t eval_bop_func_list_unfold( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
+{
+    sr_s^ sb; o.eval( bop_priority, source, sb );
+
+    if( sr.type() == :function_s~ && sb.type() == :list_s~ )
+    {
+        m :function_s* f = sr.o.cast( m :function_s* ).fork()^;
+        m :list_s* list = sb.o.cast( m :list_s* ).fork()^;
+        f.execute_arg_list( o, source, list, sr );
+        = 0;
+    }
+
+    = source.parse_error_fa( "Operator #<sc_t> * #<sc_t> is not defined.\n", bnameof( sr.o_type() ), bnameof( sb.o_type() ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:frame_s) er_t eval_bop_func_list_transform( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
+{
+    sr_s^ sb; o.eval( bop_priority, source, sb );
+
+    if( sr.type() == :function_s~ && sb.type() == :list_s~ )
+    {
+        m :function_s* f = sr.o.cast( m :function_s* ).fork()^;
+        if( !f.is_unary() ) = source.parse_error_fa( "Operator '*:' : Function is not unary.\n" );
+        m :list_s* list = sb.o.cast( m :list_s* ).fork()^;
+        m :list_s* list_r = :list_s!^;
+        list_r.set_size( list.size() );
+        for( sz_t i = 0; i < list.size(); i++ )
+        {
+            f.execute_unary( o, source, list.arr.[ i ], list_r.arr.[ i ] );
+        }
+
+        sr.asm( list_r.fork() );
+
+        = 0;
+    }
+
+    = source.parse_error_fa( "Operator #<sc_t> * #<sc_t> is not defined.\n", bnameof( sr.o_type() ), bnameof( sb.o_type() ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:frame_s) er_t eval_bop_func_list_unfold_transform( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
+{
+    sr_s^ sb; o.eval( bop_priority, source, sb );
+
+    if( sr.type() == :function_s~ && sb.type() == :list_s~ )
+    {
+        m :function_s* f = sr.o.cast( m :function_s* ).fork()^;
+        m :list_s* list = sb.o.cast( m :list_s* ).fork()^;
+        m :list_s* list_r = :list_s!^;
+        list_r.set_size( list.size() );
+        for( sz_t i = 0; i < list.size(); i++ )
+        {
+            if( list.arr.[ i ].type() != :list_s~ ) = source.parse_error_fa( "Operator '*.:' : List element '#<sz_t>' of type '#<sc_t>' is not a list.\n", i, bnameof( list.arr.[ i ].type() ) );
+            f.execute_arg_list( o, source, list.arr.[ i ].o.cast( m :list_s* ), list_r.arr.[ i ] );
+        }
+
+        sr.asm( list_r.fork() );
+
+        = 0;
+    }
+
+    = source.parse_error_fa( "Operator #<sc_t> * #<sc_t> is not defined.\n", bnameof( sr.o_type() ), bnameof( sb.o_type() ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:frame_s) er_t eval_bop_mul( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
 {
     sr_s^ sb; o.eval( bop_priority, source, sb );
@@ -283,6 +360,28 @@ func (:frame_s) er_t eval_bop_mul( m@* o, s2_t bop_priority, m x_source* source,
             sr.const_from_f3( sr.to_f3() * sb.to_f3() );
         }
         = 0;
+    }
+    else if( sr.type() == :list_s~ )
+    {
+        :list_s* list_a = sr.o.cast( :list_s* );
+        if( sb.type() == :list_s~ )
+        {
+            :list_s* list_b = sb.o.cast( :list_s* );
+            m :list_s* list_r = :list_s!^;
+            list_r.set_size( list_a.size() * list_b.size() );
+            for( sz_t i = 0; i < list_a.size(); i++ )
+            {
+                m sr_s* sa = list_a.arr.[ i ];
+
+                for( sz_t j = 0; j < list_b.size(); j++ )
+                {
+                    m sr_s* sb = list_b.arr.[ j ];
+                    o.eval_bop_join_ab( source, sa, sb, list_r.arr.[ i * list_b.size() + j ] );
+                }
+            }
+            sr.asc( list_r.fork() );
+            = 0;
+        }
     }
 
     = source.parse_error_fa( "Operator #<sc_t> * #<sc_t> is not defined.\n", bnameof( sr.o_type() ), bnameof( sb.o_type() ) );
@@ -425,23 +524,6 @@ func (:frame_s) er_t eval_bop_spawn( m@* o, s2_t bop_priority, m x_source* sourc
                 = source.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Right operand must be unary (one argument) or binary (two arguments).\n", bnameof( sr.type() ), bnameof( sb.type() ) );
             }
         }
-        else if( sb.type() == :list_s~ )
-        {
-            :list_s* list_b = sb.o.cast( :list_s* );
-            m :list_s* list_r = :list_s!^;
-            list_r.set_size( list_a.size() * list_b.size() );
-            for( sz_t i = 0; i < list_a.size(); i++ )
-            {
-                m sr_s* sa = list_a.arr.[ i ];
-
-                for( sz_t j = 0; j < list_b.size(); j++ )
-                {
-                    m sr_s* sb = list_b.arr.[ j ];
-                    o.eval_bop_join_ab( source, sa, sb, list_r.arr.[ i * list_b.size() + j ] );
-                }
-            }
-            sr.asc( list_r.fork() );
-        }
         else
         {
             = source.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Cannot spawn from these operands.\n", bnameof( sr.type() ), bnameof( sb.type() ) );
@@ -466,7 +548,7 @@ func (:frame_s) er_t eval_bop_join_ab( m@* o, m x_source* source, m sr_s* sa, m 
     {
         m :signature_s* signature = sa.o.cast( m :signature_s* );
         m :block_s*     block     = sb.o.cast( m :block_s* );
-        m :function_s*  function = :function_s!^.setup( signature, block );
+        m :function_s*  function = :function_s!^.setup( signature, block, NULL );
         sr.asc( function.fork() );
     }
     else
@@ -649,12 +731,20 @@ func (:frame_s) er_t eval_bop( m@* o, s2_t exit_priority, m x_source* source, m 
     s2_t bop_priority = :priority_a();
 
     if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'.'" ) ) o.eval_bop_member( bop_priority, source, obj );
+
+    while( source.parse_bl( "#?([0]=='.'||[0]=='(')" ) )
+    {
+        if( source.parse_bl( " #?'.'" ) ) o.eval_bop_member( bop_priority, source, obj );
+        if( source.parse_bl( " #?'('" ) ) { o.eval_bop_functional( source, obj ); source.parse_fa( " )" ); }
+    }
     bop_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'('" ) ) { o.eval_bop_functional( source, obj ); source.parse_fa( " )" ); }
-    bop_priority--;
+//    while( source.parse_bl( " #?'.'" ) ) o.eval_bop_member( bop_priority, source, obj );
+//    bop_priority--;
+//
+//    if( bop_priority <= exit_priority ) = 0;
+//    while( source.parse_bl( " #?'('" ) ) { o.eval_bop_functional( source, obj ); source.parse_fa( " )" ); }
+//    bop_priority--;
 
     /// priority group c ---------------------
 
@@ -670,6 +760,22 @@ func (:frame_s) er_t eval_bop( m@* o, s2_t exit_priority, m x_source* source, m 
 
     if( bop_priority <= exit_priority ) = 0;
     while( source.parse_bl( " #?'%'" ) ) o.eval_bop_mod( bop_priority, source, obj );
+    bop_priority--;
+
+    if( bop_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'**'" ) ) o.eval_bop_func_chain( bop_priority, source, obj );
+    bop_priority--;
+
+    if( bop_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'*.:'" ) ) o.eval_bop_func_list_unfold_transform( bop_priority, source, obj );
+    bop_priority--;
+
+    if( bop_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'*.'" ) ) o.eval_bop_func_list_unfold( bop_priority, source, obj );
+    bop_priority--;
+
+    if( bop_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'*:'" ) ) o.eval_bop_func_list_transform( bop_priority, source, obj );
     bop_priority--;
 
     if( bop_priority <= exit_priority ) = 0;
