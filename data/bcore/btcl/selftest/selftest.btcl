@@ -86,6 +86,7 @@ err = err + !test( "arr element", arr.[ 0 ] == 1 & arr.[ 1 ] == 2 );
 err = err + !test( "list spawn", 3::0 == [0,0,0] );
 err = err + !test( "list spawn", 3::func(x){x+1} == [1,2,3] );
 err = err + !test( "list spawn", [1,2,3]::func(x){-x} == [-1,-2,-3] );
+err = err + !test( "list spawn", ([0]::[1,2]::[4,5]) == ([[0,1,4],[0,1,5],[0,2,4],[0,2,5]]) );
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// spawned recursion
@@ -98,8 +99,7 @@ err = err + !test( "spawned recursion", ["a","b","c","d"] :: func(a,b) { a + b }
 f = func(){y=10}; // assignment result was not cloned when frame was closed (bug returned 0)
 err = err + !test( "bug: assignment lifetime", f() == 10 );
 
-
-
+? if( err > 0 ) { "BTCL: Selftest failed.\n" } else { "BTCL: Selftest finished successfully.\n" };
 
 err
 

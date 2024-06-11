@@ -11,7 +11,7 @@ object construction. It can be placed somewhere between mere markup and general
 purpose programming. It offers variables, operators and functions but lacks
 interactivity. It represents a state rather than a process.
 
-BTCL is by nature a weakly typed functional language. 
+BTCL is by nature a weakly typed functional language.
 
 Specifically:
 
@@ -35,7 +35,7 @@ x = 7;
 f = func( a, b ) { a + b };
 
 // Calling above function. (Evaluates to 7)
-n = f( 3, 4 ); 
+n = f( 3, 4 );
 
 // bmath object representation via btml
 y = <bcore_arr_s3_s> 1 2 3 </>;
@@ -78,20 +78,20 @@ embed ( "../data/file.btcl" );
 
 # One Expression
 BTCL has no distinct statements. Any contiguous code represents just one expression.
-This can be a composite (or tree) of expressions joined via functions, 
+This can be a composite (or tree) of expressions joined via functions,
 operators or conditional branches.
 Non-composite expressions are called ***Literals***.
 
 ## Continuation operator
 Although the semicolon ';' is traditionally understood as separator for
-consecutive statements, in BTCL it is a binary operator combining two 
+consecutive statements, in BTCL it is a binary operator combining two
 consecutive expressions. Hence the semicolon behaves as a [binary operator](#list-of-operators).
 I call this operator **Continuation**.
 
 ```a ; b``` means:
 
 Evaluate first ```a``` then ```b``` and represent the result of ```b```.
-Superficially, this seems to render ```a``` meaningless. However ```a``` 
+Superficially, this seems to render ```a``` meaningless. However ```a```
 can define a variable, which is used in ```b``` at multiple places.
 
 **Example:**
@@ -106,9 +106,9 @@ More generally: The semicolon operator divides consecutive expressions into
 
 # Operators
 
-Each operator has a unique priority. On chained operations, higher priority 
+Each operator has a unique priority. On chained operations, higher priority
 operators are evaluated before lower priority operators. Equal operators are
-evaluated in the chained order (e.g. ```3 - 1 - 1 == 2```). 
+evaluated in the chained order (e.g. ```3 - 1 - 1 == 2```).
 Additionally operators are grouped into priority-groups. Each group is
 associated with a letter A ... E. A higher letter means lower priority.
 
@@ -118,43 +118,44 @@ The lists below are sorted in descending priority.
 
 |Symbol|Description|
 |:---|:---|
-|.|Stamp member access|
-|(|Function call or stamp modifier; closed by ')'|
+|```.```|Stamp member access|
+|```(```|Function call or stamp modifier; closed by ')'|
 
 ## Group B - Unary
 
 |Symbol|Description|
 |:---|:---|
-|+|Identity|
-|-|Arithmetic Negation|
-|!|Logic Negation|
-|?|Identity: Object is printed to stdout. Leaf objects are printed in compact form.|
-|??|Identity: Object is printed in detail to stdout.|
+|```+```|Identity|
+|```-```|Arithmetic Negation|
+|```!```|Logic Negation|
+|```?```|Identity: Object is printed to stdout. Leaf objects are printed in compact form.|
+|```??```|Identity: Object is printed in detail to stdout.|
 
-## Group C - Binary 
+## Group C - Binary
 
 |Symbol|Description|
 |:---|:---|
-|.|Stamp member access|
-|(|Function call or stamp modifier; closed by ')'|
-|^|**Arithmetic**: exponentiation; result type is f3_t|
-|/|**Arithmetic**: division|
-|%|**Arithmetic**: modulo division|
-|*|**Arithmetic**: multiplication|
-|-|**Arithmetic**: subtraction|
-|+|**Arithmetic**: addition; Concatenation of strings.|
-|::|**List**: [List construction](#list-construction)|
-|:|**List**: Joining objects to form a list; Concatenation of lists|
-|==|**Logic**: equal|
-|!=|**Logic**: unequal|
-|>=|**Logic**: larger or equal|
-|> |**Logic**: larger|
-|<=|**Logic**: smaller or equal|
-|< |**Logic**: smaller|
-|& |**Logic**: AND|
-|\||**Logic**: OR|
-|=|Assignment|
-|;|Continuation|
+|```^```|**Arithmetic**: exponentiation; result type is f3_t|
+|```/```|**Arithmetic**: division|
+|```%```|**Arithmetic**: modulo division|
+|```**```|**[Function](#function-operators)**: Chains two functions|
+|```*.:```|**[Function](#function-operators)**: Applies function to unfolded list elements|
+|```*.```|**[Function](#function-operators)**: Applies function to unfolded list|
+|```*:```|**[Function](#function-operators)**: Applies function to list elements|
+|```*```|**Arithmetic,[List](#list-operators),[Function](#function-operators)**: multiplication; Unary function application|
+|```-```|**Arithmetic**: subtraction|
+|```+```|**Arithmetic**: addition; Concatenation of strings.|
+|```::```|**[List](#list-operators)**: [List construction](#list-construction)|
+|```:```|**[List](#list-operators)**: Joining objects to form a list; Concatenation of lists|
+|```==```|**Logic**: equal|
+|```!=```|**Logic**: unequal|
+|```>=```|**Logic**: larger or equal|
+|```>```|**Logic**: larger|
+|```<=```|**Logic**: smaller or equal|
+|```<```|**Logic**: smaller|
+|```&```|**Logic**: AND|
+|```|```|**Logic**: OR|
+|```=```|Assignment|
 
 ## Group D (Reserved)
 
@@ -162,15 +163,15 @@ The lists below are sorted in descending priority.
 
 |Symbol|Description|
 |:---|:---|
-|;|Continuation|
+|```;```|[Continuation](continuation-operator)|
 
 # Number
 Numbers are represented as integer ```s3_t``` or floating point ```f3_t```.
 
-Integer literals can be expressed as decimal or, when using prefix ```0x``` 
+Integer literals can be expressed as decimal or, when using prefix ```0x```
 as hexadecimal.
 
-Float literals are specified via decimal point 
+Float literals are specified via decimal point
 (even if the value is a whole number), or using exponential notation.
 
 ## Examples
@@ -213,15 +214,15 @@ Numbers are evaluated ```false``` when they are zero and ```true``` otherwise.
 Logic binary operators return ```bl_t``` as result.
 
 # Frame
-A frame represents the lexical context of a code segment. 
-Variables defined inside a frame are visible inside (including sub-frames) 
+A frame represents the lexical context of a code segment.
+Variables defined inside a frame are visible inside (including sub-frames)
 but not outside the frame. A variable definition inside a frame masks any
 variable of the same name outside that frame.
 
 A sub frame is created by using a [bracket](#bracket) ```(...)``` or a
 [block](#block) ```{...}```
 
-Any btcl code is inside of the **global frame**. 
+Any btcl code is inside of the **global frame**.
 
 # Conditional Expression
 
@@ -236,7 +237,7 @@ Depending on the condition, the associated block is either evaluated or skipped.
 
 # Signature
 
-The signature represents the interface of a function. 
+The signature represents the interface of a function.
 A function is created by joining a signature with a body.
 
 ## Syntax
@@ -257,14 +258,14 @@ A bracket defines a dedicated [subframe](#frame) in which it is evaluated.
 
 # Block
 
-A block is enclosed in braces ```{...}```. 
+A block is enclosed in braces ```{...}```.
 
 A block reserves the evaluation of an expression.
 It is used as part of a function or conditional expression.
 A block defines a dedicated [subframe](#frame) in which it is evaluated.
 
-<sub>Note: A block is not suitable for immediate (framed) evaluation, 
-as might be in other programming languages. Use the simple 
+<sub>Note: A block is not suitable for immediate (framed) evaluation,
+as might be in other programming languages. Use the simple
 bracket ```( ... )``` for that purpose. </sub>
 
 ## Syntax
@@ -302,7 +303,7 @@ f( 1, 2 ) 		  // function usage; result is 3
 ```
 
 ## Lexical Frame
-The lexical frame is the frame in which a function us used and not where 
+The lexical frame is the frame in which a function us used and not where
 it is defined.
 
 **Reason:** The lexical frame in which the function is defined might not
@@ -320,8 +321,8 @@ The keyword ```self``` represents the function in which it is used.
 ### Example
 ``` C
 // factorial function using recursion
-factorial = func( a ) 
-{ 
+factorial = func( a )
+{
 	if( a > 1 ) { a * self( a - 1 ) } else { a }
 };
 
@@ -329,16 +330,19 @@ factorial( 3 ) // result is 6 (=1*2*3)
 
 ```
 
-Preferably initiate a recursion by calling ```self```. Avoid recursion by calling the
-function via a variable from its lexical frame.
+Prefer using ```self``` for recursions.
 
-# Stamp
-A stamp can be instantiated via btml:
+## Function Operators
 
-``` C
-anystamp = <bcore_arr_st_s></>
-```
-Stamp members can be access via '.' operator.
+Binary operators where the left operand is a function.
+
+|Operator|Description|
+|:---|:---|
+|```*```|Applying a function: ```f*x == f(x)```|
+|```**```|Chaining two functions: ```(f1**f2)(x) == f2(f1(x))```|
+|```*:```|Transforming a list (f applied to list elements)|
+|```*.```|Applying a function using list elements as arguments: ```f*.l == f(l.[0], l.[1], ...)```|
+|```*.:```|Transforming a list of lists (Applying f *. l.[i] on list elements)|
 
 # List
 
@@ -381,7 +385,23 @@ SIZE(<bcore_arr_s3_s>1 2 3</>); // this is 3
 
 ```
 
-## Spawning Operator
+## List Operators
+
+### List Multiplication
+
+Operation ```a * b``` where both operands are lists generate a list product
+defined as follows
+
+``` C
+a*b == [ a.[0]:b.[0], a.[0]:b.[1], ..., a.[1]:b.[0], ... a.[n-1]:b.[m-1] ]
+```
+
+**Example**
+
+``` C
+[1,2] * [1,2,3] == [ [1,1], [1,2], [1,3], [2,1], [2,2], [2,3] ]
+```
+### Spawning Operator
 
 Operation ```a::b``` can construct or modify lists or run a recursion.
 
@@ -389,7 +409,6 @@ Operation ```a::b``` can construct or modify lists or run a recursion.
 |:---|:---|:---|
 |number|unary function|List of a elements, each set to ```b(index)```
 |number|any other|List of a elements, each set to value b
-|list|unary function|List of a.SIZE() elements, each set to ```b(a.[index])```
 |list|binary function|Spawned recursion (s. below for details)
 
 ### Spawned Recursion
@@ -403,6 +422,25 @@ The operation O(L<sub>n</sub>,F) with ...
 
   * O(L<sub>1</sub>,F) = L[0]
   * O(L<sub>k</sub>,F) = F(O(L<sub>k-1</sub>,L[k-1]))
+
+**Example**
+
+``` C
+4 :: b == [b,b,b,b];
+4 :: func(x){x} == [0,1,2,3];
+
+f = func(a,b){...};
+[1,2,3,4] :: f == f(f(f(1,2),3),4);
+
+```
+
+# Stamp
+A stamp can be instantiated via btml:
+
+``` C
+anystamp = <bcore_arr_st_s></>
+```
+Stamp members can be accessed via '.' operator.
 
 # Built-in Operators
 The following operators are hardwired in form of unary functions.

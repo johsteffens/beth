@@ -171,18 +171,12 @@ er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args 
         bcore_source* source = bcore_file_open_source( object_path );
 
         x_inst* object = NULL;
-        if( x_bbml_appears_valid( ( x_source* )source ) )
-        {
-            object = ( x_inst* )x_bbml_create_from_source( ( x_source* )source );
-        }
-        else if( x_btml_appears_valid( ( x_source* )source ) )
-        {
-            object = ( x_inst* )x_btml_create_from_source( ( x_source* )source );
-        }
-        else
-        {
-            object = ( x_inst* )x_btcl_create_from_source( ( x_source* )source );
-        }
+
+        if     ( sc_t_equal( o->object_interpreter, "x_btcl" ) ) object = ( x_inst* )x_btcl_create_from_source( ( x_source* )source );
+        else if( sc_t_equal( o->object_interpreter, "x_btml" ) ) object = ( x_inst* )x_btml_create_from_source( ( x_source* )source );
+        else if( sc_t_equal( o->object_interpreter, "x_bbml" ) ) object = ( x_inst* )x_bbml_create_from_source( ( x_source* )source );
+        else if( sc_t_equal( o->object_interpreter, "x_bcml" ) ) object = ( x_inst* )x_bcml_create_from_source( ( x_source* )source );
+        else BLM_RETURNV( er_t, bcore_error_push_fa( TYPEOF_general_error, "bcore_main_frame_s: Invalid object interpreter '#<sc_t>'.", o->object_interpreter ) );
 
         if( !object )
         {

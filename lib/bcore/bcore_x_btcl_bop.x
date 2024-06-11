@@ -379,53 +379,102 @@ func (:frame_s) er_t eval_bop_spawn( m@* o, s2_t bop_priority, m x_source* sourc
 
         sr.asc( list.fork() );
     }
-    else if( sr.type() == :list_s~ && sb.type() == :function_s~ )
+    else if( sr.type() == :list_s~ )
     {
-        :list_s* src_list = sr.o.cast( :list_s* );
+        :list_s* list_a = sr.o.cast( :list_s* );
 
-        m :frame_s* frame = :frame_s!^.setup( o );
-        :function_s* function = sb.o.cast( :function_s* );
-
-        if( function.args() == 1 )
+        if( sb.type() == :function_s~ )
         {
-            m :list_s* list = :list_s!^;
-            list.set_size( src_list.size() );
-            tp_t arg_name = function.arg_name( 0 );
-            for( sz_t i = 0; i < list.arr.size; i++ )
+            m :frame_s* frame = :frame_s!^.setup( o );
+            :function_s* function = sb.o.cast( :function_s* );
+
+            if( function.args() == 1 )
             {
-                frame.var_set( arg_name, sr_cw( src_list.arr.[ i ] ) );
-                function.block.eval( frame, list.arr.[ i ] );
+                m :list_s* list = :list_s!^;
+                list.set_size( list_a.size() );
+                tp_t arg_name = function.arg_name( 0 );
+                for( sz_t i = 0; i < list.arr.size; i++ )
+                {
+                    frame.var_set( arg_name, sr_cw( list_a.arr.[ i ] ) );
+                    function.block.eval( frame, list.arr.[ i ] );
+                }
+                sr.asc( list.fork() );
             }
-            sr.asc( list.fork() );
+            else if( function.args() == 2 )
+            {
+                if( list_a.arr.size < 1 )
+                {
+                    = source.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Left operand must be a list of size >= 1.\n", bnameof( sr.type() ), bnameof( sb.type() ) );
+                }
+
+                m sr_s* sa = sr_s!^;
+                sa.0 = sr_cw( list_a.arr.[ 0 ] );
+
+                for( sz_t i = 1; i < list_a.arr.size; i++ )
+                {
+                    frame.var_set( function.arg_name( 0 ), sa );
+                    sa.0 = sr_null();
+                    frame.var_set( function.arg_name( 1 ), sr_cw( list_a.arr.[ i ] ) );
+                    function.block.eval( frame, sa );
+                }
+
+                sr.tsm( sa.type(), bcore_fork( sa.o ) );
+            }
+            else
+            {
+                = source.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Right operand must be unary (one argument) or binary (two arguments).\n", bnameof( sr.type() ), bnameof( sb.type() ) );
+            }
         }
-        else if( function.args() == 2 )
+        else if( sb.type() == :list_s~ )
         {
-            if( src_list.arr.size < 1 )
+            :list_s* list_b = sb.o.cast( :list_s* );
+            m :list_s* list_r = :list_s!^;
+            list_r.set_size( list_a.size() * list_b.size() );
+            for( sz_t i = 0; i < list_a.size(); i++ )
             {
-                = source.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Left operand must be a list of size >= 1.\n", bnameof( sr.type() ), bnameof( sb.type() ) );
+                m sr_s* sa = list_a.arr.[ i ];
+
+                for( sz_t j = 0; j < list_b.size(); j++ )
+                {
+                    m sr_s* sb = list_b.arr.[ j ];
+                    o.eval_bop_join_ab( source, sa, sb, list_r.arr.[ i * list_b.size() + j ] );
+                }
             }
-
-            m sr_s* sa = sr_s!^;
-            sa.0 = sr_cw( src_list.arr.[ 0 ] );
-
-            for( sz_t i = 1; i < src_list.arr.size; i++ )
-            {
-                frame.var_set( function.arg_name( 0 ), sa );
-                sa.0 = sr_null();
-                frame.var_set( function.arg_name( 1 ), sr_cw( src_list.arr.[ i ] ) );
-                function.block.eval( frame, sa );
-            }
-
-            sr.tsm( sa.type(), bcore_fork( sa.o ) );
+            sr.asc( list_r.fork() );
         }
         else
         {
-            = source.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Right operand must be unary (one argument) or binary (two arguments).\n", bnameof( sr.type() ), bnameof( sb.type() ) );
+            = source.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Cannot spawn from these operands.\n", bnameof( sr.type() ), bnameof( sb.type() ) );
         }
     }
     else
     {
-        = source.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Cannot construct a list from these operands.\n", bnameof( sr.type() ), bnameof( sb.type() ) );
+        = source.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Cannot spawn from these operands.\n", bnameof( sr.type() ), bnameof( sb.type() ) );
+    }
+
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:frame_s) er_t eval_bop_join_ab( m@* o, m x_source* source, m sr_s* sa, m sr_s* sb, m sr_s* sr )
+{
+    :clone_if_weak( sa );
+    :clone_if_weak( sb );
+
+    if( sa.type() == :signature_s~ && sb.type() == :block_s~ )
+    {
+        m :signature_s* signature = sa.o.cast( m :signature_s* );
+        m :block_s*     block     = sb.o.cast( m :block_s* );
+        m :function_s*  function = :function_s!^.setup( signature, block );
+        sr.asc( function.fork() );
+    }
+    else
+    {
+        m :list_s* list = :list_s!^;
+        if( sa.type() == :list_s~ ) list.push_list_fork( sa.o.cast( m :list_s* ) ); else list.push_fork( sa );
+        if( sb.type() == :list_s~ ) list.push_list_fork( sb.o.cast( m :list_s* ) ); else list.push_fork( sb );
+        sr.asc( list.fork() );
     }
 
     = 0;
@@ -435,27 +484,9 @@ func (:frame_s) er_t eval_bop_spawn( m@* o, s2_t bop_priority, m x_source* sourc
 
 func (:frame_s) er_t eval_bop_join( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
 {
+    m sr_s* sa = sr_s!^; sa.0 = sr.0; sr.0 = sr_null();
     m sr_s* sb = sr_s!^; o.eval( bop_priority, source, sb );
-
-    :clone_if_weak( sr );
-    :clone_if_weak( sb );
-
-    if( sr.type() == :signature_s~ && sb.type() == :block_s~ )
-    {
-        m :signature_s* signature = sr.o.cast( m :signature_s* );
-        m :block_s*     block     = sb.o.cast( m :block_s* );
-        m :function_s*  function = :function_s!^.setup( signature, block );
-        sr.asc( function.fork() );
-    }
-    else
-    {
-        m :list_s* list = :list_s!^;
-        if( sr.type() == :list_s~ ) list.push_list_fork( sr.o.cast( m :list_s* ) ); else list.push_fork( sr );
-        if( sb.type() == :list_s~ ) list.push_list_fork( sb.o.cast( m :list_s* ) ); else list.push_fork( sb );
-        sr.asc( list.fork() );
-    }
-
-    = 0;
+    = o.eval_bop_join_ab( source, sa, sb, sr );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

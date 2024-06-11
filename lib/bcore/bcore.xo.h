@@ -1,4 +1,4 @@
-//  Last update: 2024-06-04T08:59:28Z
+//  Last update: 2024-06-08T13:16:37Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -1050,6 +1050,7 @@
       bl_t local_path_descend; \
       st_s global_path; \
       tp_t object_default_type; \
+      sc_t object_interpreter; \
       bcore_arr_st_s args; \
       bcore_mutex_s mutex; \
       bcore_source* source; \
@@ -2741,6 +2742,7 @@
   er_t x_btcl_frame_s_eval_bop_sub( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_add( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_spawn( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
+  er_t x_btcl_frame_s_eval_bop_join_ab( x_btcl_frame_s* o, x_source* source, sr_s* sa, sr_s* sb, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_join( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_equal( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_bop_unequal( x_btcl_frame_s* o, s2_t bop_priority, x_source* source, sr_s* sr ); \
@@ -3218,5 +3220,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xD07B7083CDCF87C4
-// XOICO_FILE_SIGNATURE 0x39A1606815532A9C
+// XOICO_BODY_SIGNATURE 0x150EB38EF3811DED
+// XOICO_FILE_SIGNATURE 0xBBE997EA65B823FA

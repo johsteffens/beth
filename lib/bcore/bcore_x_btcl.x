@@ -620,6 +620,7 @@ func er_t to_sink( bl_t detailed, sr_s* sr, m x_sink* sink )
     else
     {
         if     ( !sr.o ) sink.push_fa( "NULL" );
+        else if( sr.type() == bl_t~ ) sink.push_fa( "#<sc_t>", sr.to_bl() ? "true" : "false" );
         else if( sr.is_integer() ) sink.push_fa( "#<s3_t>", sr.to_s3() );
         else if( sr.is_float() )   sink.push_fa( "#<f3_t>", sr.to_f3() );
         else if( sr.o_type() == st_s~ ) sink.push_fa( "#<sc_t>", sr.o.cast( st_s* ).sc );

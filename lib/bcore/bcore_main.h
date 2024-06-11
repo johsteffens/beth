@@ -71,6 +71,11 @@ stamp :frame_s bcore_inst
 
     tp_t object_default_type = 0;    // (fallback) type of object (only if object was not yet determined)
 
+    /** Interpreter to be used to decode object file
+     *  Choose from [ "x_btcl", "x_btml", "x_bbml", "x_bcml" ]
+     */
+    sc_t object_interpreter = "x_btcl";
+
     /// ==== Internal data ====
 
     /// program arguments
