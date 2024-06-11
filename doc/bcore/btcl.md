@@ -1,4 +1,4 @@
-# BTCL - Beth Text Constructive Language
+# BTCL - Beth Text-based Constructive Language
 
 ## What it is
 
