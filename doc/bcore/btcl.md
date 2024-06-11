@@ -1,17 +1,15 @@
 # BTCL - Beth Text Constructive Language
 
-# What it is
+## What it is
 
-BTCL is a simple and easy to use text based (functional) language
+BTCL is a simple and easy to use text based weakly typed functional language
 to construct an object.
 
 ## Constructive Language
 I use the term ***constructive language*** to specify a language specialized for
 object construction. It can be placed somewhere between mere markup and general
-purpose programming. It offers variables, operators and functions but lacks
-interactivity. It represents a state rather than a process.
-
-BTCL is by nature a weakly typed functional language.
+purpose programming. It offers variables, operators and functions but offers limited
+interactivity. It it intended to represent a state rather than a process.
 
 Specifically:
 
