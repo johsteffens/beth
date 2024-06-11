@@ -17,7 +17,7 @@ Specifically:
   * An expression represents the state of an object.
   * Functions are first class objects.
 
-# Cheat Sheet
+## Cheat Sheet
 
 ``` C
 // String
