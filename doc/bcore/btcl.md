@@ -13,7 +13,7 @@ interactivity. It it intended to represent a state rather than a process.
 
 Specifically:
 
-  * Contiguous code represents one expression (built from expressions or literals). There are no statements.
+  * Contiguous code represents [one expression](one-expression) (built from expressions or literals). There are no statements.
   * An expression represents the state of an object.
   * Functions are first class objects.
 
@@ -77,14 +77,13 @@ embed ( "../data/file.btcl" );
 # One Expression
 BTCL has no distinct statements. Any contiguous code represents just one expression.
 This can be a composite (or tree) of expressions joined via functions,
-operators or conditional branches.
-Non-composite expressions are called ***Literals***.
+operators or conditional branches. Non-composite expressions are called ***Literals***.
 
 ## Continuation operator
 Although the semicolon ';' is traditionally understood as separator for
 consecutive statements, in BTCL it is a binary operator combining two
 consecutive expressions. Hence the semicolon behaves as a [binary operator](#list-of-operators).
-I call this operator **Continuation**.
+In BTCL this operator is called **Continuation**.
 
 ```a ; b``` means:
 
@@ -101,6 +100,12 @@ can define a variable, which is used in ```b``` at multiple places.
 
 More generally: The semicolon operator divides consecutive expressions into
 **context creation** and **context usage**.
+
+## Chain of Expressions
+
+Multiple consecutive expressions can be chained up much like a list of statements in a procedural language would be chained. 
+However, the last expression representing the sate of the chain must not be terminated by a semicolon.
+The advantage compared to a procedural language is that such a chain can be part of any sub-expression.
 
 # Operators
 
