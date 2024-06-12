@@ -82,7 +82,7 @@ operators or conditional branches. Non-composite expressions are called ***Liter
 ## Continuation operator
 Although the semicolon ';' is traditionally understood as separator for
 consecutive statements, in BTCL it is a binary operator combining two
-consecutive expressions. Hence the semicolon behaves as a [binary operator](#list-of-operators).
+consecutive expressions. Hence the semicolon behaves as a [binary operator](#operators).
 In BTCL this operator is called **Continuation**.
 
 ```a ; b``` means:
