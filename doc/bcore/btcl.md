@@ -109,13 +109,13 @@ The advantage compared to a procedural language is that such a chain can be part
 
 # Operators
 
-Each operator has a unique priority. On chained operations, higher priority
+Each operator has a numeric priority. On chained operations, higher priority
 operators are evaluated before lower priority operators. Equal operators are
 evaluated in the chained order (e.g. ```3 - 1 - 1 == 2```).
 Additionally operators are grouped into priority-groups. Each group is
-associated with a letter A ... E. A higher letter means lower priority.
-
-The lists below are sorted in descending priority.
+associated with a letter A ... E. Operators in group A have highest and also identical prority.
+All other operators have each a unique priority. A higher group letter means lower priority.
+A lower position within the group means lower priority.
 
 ## Group A - Binary
 
@@ -469,7 +469,7 @@ The following operators are hardwired constants.
   * false
   * PI
 
-# Evaluating other source files.
+# Including other source files.
 
 The keyword **embed** evaluates code from another file.
 
@@ -484,6 +484,43 @@ The file is embedded in the current frame (no dedicated frame).
 This allows defining variables (functions) in the embedded file to be used
 outside the embedding.
 
+# External Functions
+BTCL can access stamp member functions by implementing the features 
+
+``` C
+feature sz_t btcl_function_arity( @* o, tp_t name ) = -1; // return -1 when function 'name' is not defined
+feature er_t btcl_function(       @* o, tp_t name, bcore_arr_sr_s* args, m sr_s* result ); // must handle all names as indicated by btcl_function_arity
+```
+These define a set of functions. Each can be used in btcl like a member
+function of the stamp that implements the features.
+
+### Example: Definition (X)
+
+``` C
+name add_a;
+
+stamp my_stamp
+{
+    f3_t additive = 0;
+    func x_btcl.btcl_function_arity = ( name == add_a~ ) 1 : -1; // return -1 for all invalid names
+    func x_btcl.btcl_function
+    {
+         switch( name )
+         {
+             case add_a~: sr.from_f3( args.[0].to_f3() + o.addditive ); break;
+             default: = general_error~;
+         }
+         = 0;
+    }
+}
+```
+
+### Example: Usage (BTCL)
+
+``` C
+obj = <my_stamp/>( .additive = 10 );
+? obj.add_a( 1 ) // outputs '11'
+```
 ------
 <sub>&copy; 2024 Johannes B. Steffens</sub>
 
