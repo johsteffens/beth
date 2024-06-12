@@ -326,7 +326,7 @@ The keyword ```self``` represents the function in which it is used.
 // factorial function using recursion
 factorial = func( a )
 {
-	if( a > 1 ) { a * self( a - 1 ) } else { a }
+    if( a > 1 ) { a * self( a - 1 ) } else { a }
 };
 
 factorial( 3 ) // result is 6 (=1*2*3)
