@@ -14,7 +14,7 @@ interactivity. It it intended to represent a state rather than a process.
 Specifically:
 
   * Contiguous code represents [one expression](one-expression) (built from expressions or literals). There are no statements.
-  * An expression represents the state of an object.
+  * An expression represents an object.
   * Functions are first class objects.
 
 ## Cheat Sheet
