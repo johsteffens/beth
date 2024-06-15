@@ -330,10 +330,30 @@ factorial = func( a )
 };
 
 factorial( 3 ) // result is 6 (=1*2*3)
-
 ```
 
 Prefer using ```self``` for recursions.
+
+## Partial Calls
+
+A partial function call is a call that define only a subset of arguments.
+This creates a new function behaving like the old but with the first arguments
+replaced by constants and the remaining arguments as the new argument set.
+
+### Example
+``` C
+// f has arity 3
+f = func( a, b, c )
+{
+    a + b + c;
+};
+
+// We define g as f with first two arguments fixed (a=1, b=2).
+// g has arity 1
+g = f( 1, 2 );
+
+g( 3 ) // result is 6 ( = 1+2+3 )
+```
 
 ## Function Operators
 
@@ -508,7 +528,7 @@ stamp my_stamp
          switch( name )
          {
              case add_a~: sr.from_f3( args.[0].to_f3() + o.addditive ); break;
-             default: = general_error~;
+             default: = break; // never reached
          }
          = 0;
     }
@@ -522,6 +542,6 @@ obj = <my_stamp/>( .additive = 10 );
 ? obj.add_a( 1 ) // outputs '11'
 ```
 ------
-<sub>&copy; 2024 Johannes B. Steffens</sub>
+<sub>&copy; Johannes B. Steffens</sub>
 
 

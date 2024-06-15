@@ -88,6 +88,12 @@ group sr = x_inst
         /// sets o to a fork of src
         func void set( m@* o, sr_s src );
 
+        /// creates a strong reference by forking from src (without shutting src down); const flag is preserved
+        func o fork_from( m@* o, m sr_s* src );
+
+        /// creates a strong reference by cloning from src (without shutting src down); const flag is reset
+        func o clone_from( m@* o, c sr_s* src );
+
         /// retrieves a weak reference to o
         func sr_s get( m@* o );
 

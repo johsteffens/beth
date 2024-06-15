@@ -83,7 +83,7 @@ func d aware @* create_from_file( sc_t file ) = :create_from_source( x_source_cr
 /** Implement both features below to define member functions of a stamp which shall be accessible by bctl code.
  *  See :test_stamp_s for an example implementation
  */
-feature s2_t btcl_function_arity( @* o, tp_t name ) = -1; // return -1 when function 'name' is not defined
+feature sz_t btcl_function_arity( @* o, tp_t name ) = -1; // return -1 when function 'name' is not defined
 feature er_t btcl_function(       @* o, tp_t name, bcore_arr_sr_s* args, m sr_s* result ); // must handle all names as indicated by btcl_function_arity
 
 //----------------------------------------------------------------------------------------------------------------------

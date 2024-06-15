@@ -207,6 +207,13 @@ static inline void sr_s_set_const(  sr_s* o, bl_t flag ) { o->f = flag ? ( o->f 
 
 static inline void sr_s_clear( sr_s* o ) { if( o ) { sr_down( *o ); o->o = NULL; o->p = NULL; o->f = 0; } }
 static inline void sr_s_set(   sr_s* o, sr_s src ) { sr_s_clear( o ); *o = sr_fork( src ); }
+
+// creates a strong reference by forking from src (without shutting src down); const flag is preserved
+sr_s* sr_s_fork_from( sr_s* o, sr_s* src );
+
+// creates a strong reference by coling from src (without shutting src down); const flag is reset
+sr_s* sr_s_clone_from( sr_s* o, const sr_s* src );
+
 static inline sr_s sr_s_get(   sr_s* o )           { return sr_cw( *o ); }
 
 /// returns perspective: (p_type, sr_s_type( o ))

@@ -68,14 +68,14 @@ err = err + !test( "func args list", f_head *. [1,2] == 3 );
 /// stamps, members, type conversion
 
 s = <bmath_mfx_eval_s> rows: 10 cols: 20 </>;
-err = err + !test( "member query 1", s.rows == 10 & s.cols == 20 );
+err = err + !test( "member query", s.rows == 10 & s.cols == 20 );
 
 // modifier
 s = s( .rows = 30, .cols = 40 );
-err = err + !test( "member query 2", s.rows == 30 & s.cols == 40 );
+err = err + !test( "member query", s.rows == 30 & s.cols == 40 );
 
 // type conversion float -> bool
-err = err + !test( "member query 2", <bl_t/>( 0.5 ) == TRUE );
+err = err + !test( "conversion", <bl_t/>( 0.5 ) == TRUE );
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// external function
@@ -84,6 +84,14 @@ ext_add_a   = <x_btcl_btcl_function_stamp_s/>( .additive = 10 ).add_a;
 ext_add_a_b = <x_btcl_btcl_function_stamp_s/>( .additive = 10 ).add_a_b;
 err = err + !test( "external function", ext_add_a  ( 2    ) == 12 );
 err = err + !test( "external function", ext_add_a_b( 2, 3 ) == 15 );
+
+// ---------------------------------------------------------------------------------------------------------------------
+/// partial function call
+
+f = func( a, b, c, d ) { 1000 * a + 100 * b + 10 * c + d };
+err = err + !test( "partial function", f( 1, 2, 3 )( 4 )   == 1234 );
+err = err + !test( "partial function", f( 1, 2 )( 3 )( 4 ) == 1234 );
+err = err + !test( "partial function", f( 1 )( 2 )( 3, 4 ) == 1234 );
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// lists

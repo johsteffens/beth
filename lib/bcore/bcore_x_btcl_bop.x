@@ -131,7 +131,7 @@ func (:frame_s) er_t eval_bop_functional( m@* o, m x_source* source, m sr_s* sr 
 {
     if( sr.o_type() == :function_s~ )
     {
-        sr.o.cast( m :function_s* ).fork()^.eval_execute( o, source, sr );
+        sr.o.cast( m :function_s* ).fork()^.call_via_evaluation( source, o, sr );
     }
     else if( sr.o_type() == :block_s~ )
     {
@@ -284,7 +284,7 @@ func (:frame_s) er_t eval_bop_func_list_unfold( m@* o, s2_t bop_priority, m x_so
     {
         m :function_s* f = sr.o.cast( m :function_s* ).fork()^;
         m :list_s* list = sb.o.cast( m :list_s* ).fork()^;
-        f.execute_arg_list( o, source, list, sr );
+        f.call_via_arg_list( source, o, list, sr );
         = 0;
     }
 
@@ -306,7 +306,7 @@ func (:frame_s) er_t eval_bop_func_list_transform( m@* o, s2_t bop_priority, m x
         list_r.set_size( list.size() );
         for( sz_t i = 0; i < list.size(); i++ )
         {
-            f.execute_unary( o, source, list.arr.[ i ], list_r.arr.[ i ] );
+            f.call_unary( source, o, list.arr.[ i ], list_r.arr.[ i ] );
         }
 
         sr.asm( list_r.fork() );
@@ -332,7 +332,7 @@ func (:frame_s) er_t eval_bop_func_list_unfold_transform( m@* o, s2_t bop_priori
         for( sz_t i = 0; i < list.size(); i++ )
         {
             if( list.arr.[ i ].type() != :list_s~ ) = source.parse_error_fa( "Operator '*.:' : List element '#<sz_t>' of type '#<sc_t>' is not a list.\n", i, bnameof( list.arr.[ i ].type() ) );
-            f.execute_arg_list( o, source, list.arr.[ i ].o.cast( m :list_s* ), list_r.arr.[ i ] );
+            f.call_via_arg_list( source, o, list.arr.[ i ].o.cast( m :list_s* ), list_r.arr.[ i ] );
         }
 
         sr.asm( list_r.fork() );
@@ -517,7 +517,7 @@ func (:frame_s) er_t eval_bop_spawn( m@* o, s2_t bop_priority, m x_source* sourc
                     function.block.eval( frame, sa );
                 }
 
-                sr.tsm( sa.type(), bcore_fork( sa.o ) );
+                sr.fork_from( sa );
             }
             else
             {

@@ -471,8 +471,12 @@ stamp :external_function_s
 stamp :function_s
 {
     :signature_s         -> signature;
+
     :block_s             -> block;
     :external_function_s -> external_function;
+    :function_s          -> wrapped_function;  // wrapped function on partial call
+    bcore_arr_sr_s       -> wrapped_arg_list;  // wrapped arguments on partial call
+
     :function_s  => tail; // tail of a cain of function (the head is the function that defines the signature of the entire chain)
 
     func o setup( m@* o, m :signature_s* signature, m :block_s* block, c :function_s* tail )
@@ -487,10 +491,25 @@ stamp :function_s
     {
         o.signature =< :signature_s!;
         o.signature.arg_list.set_size( arity );
-        for( sz_t i = 0; i < arity; i++ ) o.signature.arg_list.[ i ] = i;
+        for( sz_t i = 0; i < arity; i++ ) o.signature.arg_list.[ i ] = i + 1;
         o.external_function =< :external_function_s!.setup( name, object );
         o.block =< NULL;
         o.tail  =< NULL;
+        = o;
+    }
+
+    func o setup_wrapped_function( m@* o, m :function_s* wrapped_function, m bcore_arr_sr_s* wrapped_arg_list )
+    {
+        o.wrapped_function =< wrapped_function.fork();
+        o.wrapped_arg_list =< wrapped_arg_list.fork();
+
+        m$* signature = :signature_s!^;
+        for( sz_t i = wrapped_arg_list.size; i < o.wrapped_function.signature.arg_list.size; i++ )
+        {
+            signature.arg_list.push( o.wrapped_function.signature.arg_list.[ i ] );
+        }
+
+        o.signature =< signature.fork();
         = o;
     }
 
@@ -515,7 +534,7 @@ stamp :function_s
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// executes function in frame (variables are set in frame)
+/// sets up frame for executing the function
 func (:function_s) er_t setup_frame( m@* o, m :frame_s* lexical_frame, m x_source* source, m :frame_s* frame )
 {
     if( lexical_frame.depth >= :max_frame_depth() ) = source.parse_error_fa( "Maximum frame depth (#<sz_t>) exceeded. Check for unlimited recursions.\n", :max_frame_depth() );
@@ -527,125 +546,82 @@ func (:function_s) er_t setup_frame( m@* o, m :frame_s* lexical_frame, m x_sourc
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// executes function in frame (variables are set in frame)
-func (:function_s) er_t execute( m@* o, m :frame_s* frame, m sr_s* sr )
-{
-    sr.clear();
-    o.block.eval( frame, sr );
-    :clone_if_weak( sr );
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/// executes function in frame (variables are set in frame)
-func (:function_s) er_t execute_unary( m@* o, m :frame_s* lexical_frame, m x_source* source, m sr_s* s_arg, m sr_s* sr )
-{
-    :signature_s* signature = o.signature;
-    ASSERT( signature.is_unary() );
-
-    if( o.block )
-    {
-        m$* frame = :frame_s!^; o.setup_frame( lexical_frame, source, frame );
-        frame.var_set( signature.arg_list.[ 0 ], sr_tsm( s_arg.type(), bcore_fork( s_arg.o ) ) );
-        o.execute( frame, sr );
-    }
-    else if( o.external_function )
-    {
-        m bcore_arr_sr_s* arr_sr = bcore_arr_sr_s!^;
-        arr_sr.push_sr( sr_tsm( s_arg.type(), bcore_fork( s_arg.o ) ) );
-        o.external_function.execute( source, arr_sr, sr );
-    }
-    else
-    {
-        source.parse_error_fa( "Function has no block.\n" );
-    }
-
-    // chain of functions ...
-    if( o.tail ) o.tail.execute_unary( lexical_frame, source, sr, sr );
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 /// executes function in frame (variables are set in frame) from a list of arguments
-func (:function_s) er_t execute_arg_list( m@* o, m :frame_s* lexical_frame, m x_source* source, m :list_s* arg_list, m sr_s* sr )
+func (:function_s) er_t call( m@* o, m x_source* source, m :frame_s* lexical_frame, m bcore_arr_sr_s* arg_list, m sr_s* sr )
 {
     :signature_s* signature = o.signature;
-
-    if( o.block )
+    if( arg_list.size < signature.arg_list.size )
     {
-        m$* frame = :frame_s!^; o.setup_frame( lexical_frame, source, frame );
-
-        for( sz_t i = 0; i < signature.arg_list.size; i++ )
-        {
-            if( i >= arg_list.size() ) source.parse_error_fa( "List needs at least #<sz_t> elements.\n", signature.arg_list.size );
-            frame.var_set( signature.arg_list.[ i ], sr_tsm( arg_list.arr.[ i ].type(), bcore_fork( arg_list.arr.[ i ].o ) ) );
-        }
-
-        o.execute( frame, sr );
-    }
-    else if( o.external_function )
-    {
-        m bcore_arr_sr_s* arr_sr = bcore_arr_sr_s!^.set_size( signature.arg_list.size );
-        for( sz_t i = 0; i < arr_sr.size; i++ )
-        {
-            if( i >= arg_list.size() ) source.parse_error_fa( "List needs at least #<sz_t> elements.\n", signature.arg_list.size );
-            arr_sr.[ i ] = sr_tsm( arg_list.arr.[ i ].type(), bcore_fork( arg_list.arr.[ i ].o ) );
-        }
-        o.external_function.execute( source, arr_sr, sr );
+        sr.asm( :function_s!.setup_wrapped_function( o, arg_list) );
+        = 0;
     }
     else
     {
-        source.parse_error_fa( "Function has no block.\n" );
-    }
+        if( o.block )
+        {
+            m$* frame = :frame_s!^;
+            o.setup_frame( lexical_frame, source, frame );
+            for( sz_t i = 0; i < signature.arg_list.size; i++ ) frame.var_set( signature.arg_list.[ i ], sr_null() ).fork_from( arg_list.[ i ] );
+            sr.clear();
+            o.block.eval( frame, sr );
+            :clone_if_weak( sr );
+        }
+        else if( o.external_function )
+        {
+            o.external_function.execute( source, arg_list, sr );
+        }
+        else if( o.wrapped_function )
+        {
+            m $* full_arg_list = bcore_arr_sr_s!^;
+            for( sz_t i = 0; i < o.wrapped_arg_list.size; i++ ) full_arg_list.push_sr( sr_null() ).fork_from( o.wrapped_arg_list.[ i ] );
+            for( sz_t i = 0; i < arg_list.size          ; i++ ) full_arg_list.push_sr( sr_null() ).fork_from(           arg_list.[ i ] );
+            o.wrapped_function.call( source, lexical_frame, full_arg_list, sr );
+        }
+        else
+        {
+            source.parse_error_fa( "Internal error: Function is incomplete.\n" );
+        }
 
-    // chain of functions ...
-    if( o.tail ) o.tail.execute_unary( lexical_frame, source, sr, sr );
-    = 0;
+        // chain of functions ...
+        if( o.tail )
+        {
+            o.tail.call_unary( source, lexical_frame, sr, sr );
+        }
+        = 0;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:function_s) er_t eval_execute( m@* o, m :frame_s* lexical_frame, m x_source* source, m sr_s* sr )
+func (:function_s) er_t call_unary( m@* o, m x_source* source, m :frame_s* lexical_frame, m sr_s* s_arg, m sr_s* sr )
 {
-    :signature_s* signature = o.signature;
+    m $* arg_list = bcore_arr_sr_s!^;
+    arg_list.push_sr( sr_null() ).fork_from( s_arg );
+    = o.call( source, lexical_frame, arg_list, sr );
+}
 
-    if( o.block )
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:function_s) er_t call_via_arg_list( m@* o, m x_source* source, m :frame_s* lexical_frame, m :list_s* arg_list1, m sr_s* sr )
+{
+    m $* arg_list = bcore_arr_sr_s!^.set_size( arg_list1.size() );
+    for( sz_t i = 0; i < arg_list.size; i++ ) arg_list.[ i ].fork_from( arg_list1.arr.[ i ] );
+    = o.call( source, lexical_frame, arg_list, sr );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:function_s) er_t call_via_evaluation( m@* o, m x_source* source, m :frame_s* lexical_frame, m sr_s* sr )
+{
+    m $* arg_list = bcore_arr_sr_s!^;
+    while( !source.eos() && !source.parse_bl( " #=?')'" ) )
     {
-        m$* frame = :frame_s!^; o.setup_frame( lexical_frame, source, frame );
-
-        for( sz_t i = 0; i < signature.arg_list.size; i++ )
-        {
-            if( i > 0 ) source.parse_fa( " ," );
-            if( source.parse_bl( " #=?')'" ) ) = source.parse_error_fa( "Function argument expected.\n" );
-            m$* sr_arg = sr_s!^;
-            lexical_frame.eval( 0, source, sr_arg );
-            frame.var_set( signature.arg_list.[ i ], sr_tsm( sr_arg.o_type(), bcore_fork( sr_arg.o ) ) );
-        }
-
-        o.execute( frame, sr );
+        m$* sr_arg = sr_s!^;
+        lexical_frame.eval( 0, source, sr_arg );
+        arg_list.push_sr( sr_null() ).fork_from( sr_arg );
+        if( !source.parse_bl( " #=?')'" ) ) source.parse_fa( " ," );
     }
-    else if( o.external_function )
-    {
-        m bcore_arr_sr_s* arr_sr = bcore_arr_sr_s!^.set_size( signature.arg_list.size );
-        for( sz_t i = 0; i < arr_sr.size; i++ )
-        {
-            if( i > 0 ) source.parse_fa( " ," );
-            if( source.parse_bl( " #=?')'" ) ) = source.parse_error_fa( "Function argument expected.\n" );
-            m$* sr_arg = arr_sr.[ i ];
-            lexical_frame.eval( 0, source, sr_arg );
-        }
-        o.external_function.execute( source, arr_sr, sr );
-    }
-    else
-    {
-        source.parse_error_fa( "Function has no block.\n" );
-    }
-
-    // chain of functions ...
-    if( o.tail ) o.tail.execute_unary( lexical_frame, source, sr, sr );
-    = 0;
+    = o.call( source, lexical_frame, arg_list, sr );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1067,7 +1043,7 @@ func parse_create_object
         {
             if( sr.is_strong() )
             {
-                obj.tsm( sr.o_type(), bcore_fork( sr.o ) );
+                obj.fork_from( sr );
             }
             else
             {
@@ -1075,7 +1051,7 @@ func parse_create_object
                  *  We clone it here to be sure we don't get runtime issues.
                  *  If the object is not embedded, it could be forked ...
                  */
-                obj.tsm( sr.o_type(), x_inst_t_clone( sr.o, sr.o_type() ) );
+                obj.clone_from( sr );
             }
         }
         else

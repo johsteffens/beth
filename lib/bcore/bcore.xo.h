@@ -1,4 +1,4 @@
-//  Last update: 2024-06-11T21:48:54Z
+//  Last update: 2024-06-14T19:46:30Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -2670,7 +2670,7 @@
       aware_t _; \
       f3_t additive; \
   }; \
-  s2_t x_btcl_btcl_function_stamp_s_btcl_function_arity( const x_btcl_btcl_function_stamp_s* o, tp_t name ); \
+  sz_t x_btcl_btcl_function_stamp_s_btcl_function_arity( const x_btcl_btcl_function_stamp_s* o, tp_t name ); \
   er_t x_btcl_btcl_function_stamp_s_btcl_function( const x_btcl_btcl_function_stamp_s* o, tp_t name, const bcore_arr_sr_s* args, sr_s* result );
 #define TYPEOF_if 0x08B73007B55C3E26ull
 #define TYPEOF_else 0x7F2B6C605332DD30ull
@@ -2870,19 +2870,22 @@
       x_btcl_signature_s* signature; \
       x_btcl_block_s* block; \
       x_btcl_external_function_s* external_function; \
+      x_btcl_function_s* wrapped_function; \
+      bcore_arr_sr_s* wrapped_arg_list; \
       x_btcl_function_s* tail; \
   }; \
   x_btcl_function_s* x_btcl_function_s_setup( x_btcl_function_s* o, x_btcl_signature_s* signature, x_btcl_block_s* block, const x_btcl_function_s* tail ); \
   x_btcl_function_s* x_btcl_function_s_setup_external_function( x_btcl_function_s* o, tp_t name, s2_t arity, const x_btcl* object ); \
+  x_btcl_function_s* x_btcl_function_s_setup_wrapped_function( x_btcl_function_s* o, x_btcl_function_s* wrapped_function, bcore_arr_sr_s* wrapped_arg_list ); \
   x_btcl_function_s* x_btcl_function_s_append_tail( x_btcl_function_s* o, const x_btcl_function_s* tail ); \
   static inline sz_t x_btcl_function_s_args( const x_btcl_function_s* o ); \
   static inline tp_t x_btcl_function_s_arg_name( const x_btcl_function_s* o, sz_t index ); \
   static inline bl_t x_btcl_function_s_is_unary( const x_btcl_function_s* o ); \
   er_t x_btcl_function_s_setup_frame( x_btcl_function_s* o, x_btcl_frame_s* lexical_frame, x_source* source, x_btcl_frame_s* frame ); \
-  er_t x_btcl_function_s_execute( x_btcl_function_s* o, x_btcl_frame_s* frame, sr_s* sr ); \
-  er_t x_btcl_function_s_execute_unary( x_btcl_function_s* o, x_btcl_frame_s* lexical_frame, x_source* source, sr_s* s_arg, sr_s* sr ); \
-  er_t x_btcl_function_s_execute_arg_list( x_btcl_function_s* o, x_btcl_frame_s* lexical_frame, x_source* source, x_btcl_list_s* arg_list, sr_s* sr ); \
-  er_t x_btcl_function_s_eval_execute( x_btcl_function_s* o, x_btcl_frame_s* lexical_frame, x_source* source, sr_s* sr ); \
+  er_t x_btcl_function_s_call( x_btcl_function_s* o, x_source* source, x_btcl_frame_s* lexical_frame, bcore_arr_sr_s* arg_list, sr_s* sr ); \
+  er_t x_btcl_function_s_call_unary( x_btcl_function_s* o, x_source* source, x_btcl_frame_s* lexical_frame, sr_s* s_arg, sr_s* sr ); \
+  er_t x_btcl_function_s_call_via_arg_list( x_btcl_function_s* o, x_source* source, x_btcl_frame_s* lexical_frame, x_btcl_list_s* arg_list1, sr_s* sr ); \
+  er_t x_btcl_function_s_call_via_evaluation( x_btcl_function_s* o, x_source* source, x_btcl_frame_s* lexical_frame, sr_s* sr ); \
   static inline sz_t x_btcl_function_s_args( const x_btcl_function_s* o ){return  x_btcl_signature_s_args(o->signature);} \
   static inline tp_t x_btcl_function_s_arg_name( const x_btcl_function_s* o, sz_t index ){return  x_btcl_signature_s_arg_name(o->signature,index );} \
   static inline bl_t x_btcl_function_s_is_unary( const x_btcl_function_s* o ){return  x_btcl_signature_s_is_unary(o->signature);}
@@ -2943,7 +2946,7 @@
   er_t x_btcl_to_sink( bl_t detailed, const sr_s* sr, x_sink* sink ); \
   er_t x_btcl_parse_create_object( x_source* source, sr_s* obj ); \
   void x_btcl_selftest( sc_t file ); \
-  typedef s2_t (*x_btcl_btcl_function_arity)(const x_btcl* o, tp_t name ); \
+  typedef sz_t (*x_btcl_btcl_function_arity)(const x_btcl* o, tp_t name ); \
   typedef er_t (*x_btcl_btcl_function)(const x_btcl* o, tp_t name, const bcore_arr_sr_s* args, sr_s* result ); \
   XOILA_DECLARE_SPECT( x_btcl ) \
   { \
@@ -2952,9 +2955,9 @@
       x_btcl_btcl_function btcl_function; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_btcl ) \
-  static inline s2_t x_btcl_a_btcl_function_arity( const x_btcl* o, tp_t name ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_aware( o ); assert( p->btcl_function_arity ); return p->btcl_function_arity( o, name );} \
+  static inline sz_t x_btcl_a_btcl_function_arity( const x_btcl* o, tp_t name ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_aware( o ); assert( p->btcl_function_arity ); return p->btcl_function_arity( o, name );} \
   static inline bl_t x_btcl_defines_btcl_function_arity( const x_btcl* o ){ return  true;} \
-  static inline s2_t x_btcl_btcl_function_arity_default( const x_btcl* o, tp_t name ){return  -1;} \
+  static inline sz_t x_btcl_btcl_function_arity_default( const x_btcl* o, tp_t name ){return  -1;} \
   static inline er_t x_btcl_a_btcl_function( const x_btcl* o, tp_t name, const bcore_arr_sr_s* args, sr_s* result ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_aware( o ); assert( p->btcl_function ); return p->btcl_function( o, name, args, result );} \
   static inline bl_t x_btcl_defines_btcl_function( const x_btcl* o ){  return x_btcl_spect_s_get_aware( o )->btcl_function != NULL;} \
   BETH_EXPAND_ITEM_x_btcl_btcl_function_stamp_s \
@@ -3271,5 +3274,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x7FD0108142A0C8C0
-// XOICO_FILE_SIGNATURE 0x86CDED0D7D9C2AE1
+// XOICO_BODY_SIGNATURE 0x527809083770D800
+// XOICO_FILE_SIGNATURE 0xF6C29661A9C90DF1

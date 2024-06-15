@@ -167,6 +167,22 @@ static void sr_s_set_obj( sr_s* o, sr_s obj )
     sr_s_set( o, obj );
 }
 
+// creates a strong reference by forking from src (without shutting src down); const flag is preserved
+sr_s* sr_s_fork_from( sr_s* o, sr_s* src )
+{
+    sr_s_tsm( o, sr_s_type( src ), bcore_fork( src->o ) );
+    sr_s_set_const( o, sr_s_is_const( src ) );
+    return o;
+}
+
+// creates a strong reference by cloning from src (without shutting src down); const flag is reset
+sr_s* sr_s_clone_from( sr_s* o, const sr_s* src )
+{
+    sr_s_tsm( o, sr_s_type( src ), bcore_inst_t_clone( sr_s_type( src ), src->o ) );
+    return o;
+}
+
+
 static bcore_self_s* sr_s_create_self( void )
 {
     bcore_self_s* self = bcore_self_s_build_parse_sc( " sr_s = bcore_inst { private vd_t o; private vc_t p; private tp_t f; shell typed => obj; }", sizeof( sr_s ), alignof( sr_s ) );
