@@ -61,7 +61,7 @@ stamp :result_s = aware bcore_inst
     f3_t time0  = 0;      // operation time with minimal arguments
     f3_t time1  = 0;      // operation time with all arguments
 
-    func void to_string( c@* o, m st_s* string );
+    func string to_string( c@* o, m st_s* string );
     func void to_stdout( c@* o ) { st_s^ txt; o.to_string( txt ); txt.to_stdout(); }
 };
 

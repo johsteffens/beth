@@ -112,10 +112,11 @@ bl_t BCATU(bmath_mfx_s,evd_htp_jacobi)( bmath_mfx_s* a, bmath_mfx_s* v )
 bl_t BCATU(bmath_mfx_s,evd_htp_qr_xshift)( bmath_mfx_s* a, bmath_mfx_s* v )
 {
     uz_t n = a->rows;
-    if( n <= 1 ) return true; // nothing to do
 
     // tridiagonalization
     BCATU(bmath_mfx_s,trd_htp)( a, v );
+
+    if( n <= 1 ) return true; // nothing to do
 
     bl_t success = true;
 
@@ -223,10 +224,11 @@ bl_t BCATU(bmath_mfx_s,evd_htp_qr_xshift)( bmath_mfx_s* a, bmath_mfx_s* v )
 bl_t BCATU(bmath_mfx_s,evd_htp_qr_ishift)( bmath_mfx_s* a, bmath_mfx_s* v )
 {
     uz_t n = a->rows;
-    if( n <= 1 ) return true; // nothing to do
 
-    /// tridiagonalization
+    // tridiagonalization
     BCATU(bmath_mfx_s,trd_htp)( a, v );
+
+    if( n <= 1 ) return true; // nothing to do
 
     // qr iteration until smallest non-diag element < offd_limit;
 

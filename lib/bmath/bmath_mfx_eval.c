@@ -58,9 +58,9 @@ static void eval_s_create_image_file( const bmath_mfx_eval_s* v, vc_t mat, const
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bmath_mfx_eval_result_s_to_string( const bmath_mfx_eval_result_s* o, st_s* string )
+st_s* bmath_mfx_eval_result_s_to_string( const bmath_mfx_eval_result_s* o, st_s* string )
 {
-    if( !string ) return;
+    if( !string ) return NULL;
 
     if( o->label.size > 0 )
     {
@@ -85,6 +85,8 @@ void bmath_mfx_eval_result_s_to_string( const bmath_mfx_eval_result_s* o, st_s* 
     if( o->a_log.size > 0 ) st_s_push_fa( string, "Matrix a #<sc_t>", o->a_log.sc );
     if( o->u_log.size > 0 ) st_s_push_fa( string, "Matrix u #<sc_t>", o->u_log.sc );
     if( o->v_log.size > 0 ) st_s_push_fa( string, "Matrix v #<sc_t>", o->v_log.sc );
+
+    return string;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
