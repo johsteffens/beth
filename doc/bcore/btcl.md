@@ -2,18 +2,16 @@
 
 ## What it is
 
-BTCL is a simple and easy to use text based weakly typed functional language
-to construct an object.
+BTCL is a simple and easy to use text based weakly typed functional language to construct an object.
+
+BTCL is backward compatible to [BTML](btml.md).
 
 ## Constructive Language
-I use the term ***constructive language*** to specify a language specialized for
-object construction. It can be placed somewhere between mere markup and general
-purpose programming. It offers variables, operators and functions but offers limited
-interactivity. It it intended to represent a state rather than a process.
+I use the term ***constructive language*** to specify a language specialized for object construction. It can be placed somewhere between mere markup and general purpose programming. It offers variables, operators and functions but offers limited interactivity. It it intended to represent a state rather than a process.
 
 Specifically:
 
-  * Contiguous code represents [one expression](one-expression) (built from expressions or literals). There are no statements.
+  * Contiguous code represents [one expression](#one-expression) (built from expressions or literals). There are no statements.
   * An expression represents an object.
   * Functions are first class objects.
 
@@ -74,22 +72,23 @@ embed ( "../data/file.btcl" );
 
 ```
 
+# Comments
+BTCL uses C/C++ style comments:
+
+*  ```//```: Comment until the end of line.
+
+*  ```/* ... */ ```: Comment block.
+
 # One Expression
-BTCL has no distinct statements. Any contiguous code represents just one expression.
-This can be a composite (or tree) of expressions joined via functions,
-operators or conditional branches. Non-composite expressions are called ***Literals***.
+BTCL has no distinct statements. Any contiguous code represents just one expression. This can be a composite (or tree) of expressions joined via functions, operators or conditional branches. Non-composite expressions are called ***Literals***.
 
 ## Continuation operator
-Although the semicolon ';' is traditionally understood as separator for
-consecutive statements, in BTCL it is a binary operator combining two
-consecutive expressions. Hence the semicolon behaves as a [binary operator](#operators).
+Although the semicolon ';' is traditionally understood as separator for consecutive statements, in BTCL it is a binary operator combining two consecutive expressions. Hence the semicolon behaves as a [binary operator](#operators).
 In BTCL this operator is called **Continuation**.
 
 ```a ; b``` means:
 
-Evaluate first ```a``` then ```b``` and represent the result of ```b```.
-Superficially, this seems to render ```a``` meaningless. However ```a```
-can define a variable, which is used in ```b``` at multiple places.
+Evaluate first ```a``` then ```b``` and represent the result of ```b```. Superficially, this seems to render ```a``` meaningless. However ```a``` can define a variable, which is used in ```b``` at multiple places.
 
 **Example:**
 
@@ -103,19 +102,13 @@ More generally: The semicolon operator divides consecutive expressions into
 
 ## Chain of Expressions
 
-Multiple consecutive expressions can be chained up much like a list of statements in a procedural language would be chained. 
-However, the last expression representing the sate of the chain must not be terminated by a semicolon.
-The advantage compared to a procedural language is that such a chain can be part of any sub-expression.
+Multiple consecutive expressions can be chained up much like a list of statements in a procedural language would be chained. However, the last expression representing the sate of the chain must not be terminated by a semicolon. The advantage compared to a procedural language is that such a chain can be part of any sub-expression.
 
 # Operators
 
-Each operator has a numeric priority. On chained operations, higher priority
-operators are evaluated before lower priority operators. Equal operators are
-evaluated in the chained order (e.g. ```3 - 1 - 1 == 2```).
-Additionally operators are grouped into priority-groups. Each group is
-associated with a letter A ... E. Operators in group A have highest and also identical prority.
-All other operators have each a unique priority. A higher group letter means lower priority.
-A lower position within the group means lower priority.
+Each operator has a numeric priority. On chained operations, higher priority operators are evaluated before lower priority operators. Equal operators are evaluated in the chained order (e.g. ```3 - 1 - 1 == 2```).
+Additionally operators are grouped into priority-groups. Each group is associated with a letter A ... E. Operators in group A have highest and also identical prority.
+All other operators have each a unique priority. A higher group letter means lower priority. A lower position within the group means lower priority.
 
 ## Group A - Binary
 
@@ -148,7 +141,7 @@ A lower position within the group means lower priority.
 |```*```|**Arithmetic,[List](#list-operators),[Function](#function-operators)**: multiplication; Unary function application|
 |```-```|**Arithmetic**: subtraction|
 |```+```|**Arithmetic**: addition; Concatenation of strings.|
-|```::```|**[List](#list-operators)**: [List construction](#list-construction)|
+|```::```|**[List](#list-operators)**: [Spawning Operator](#Spawning-Operator)|
 |```:```|**[List](#list-operators)**: Joining objects to form a list; Concatenation of lists|
 |```==```|**Logic**: equal|
 |```!=```|**Logic**: unequal|
@@ -171,11 +164,9 @@ A lower position within the group means lower priority.
 # Number
 Numbers are represented as integer ```s3_t``` or floating point ```f3_t```.
 
-Integer literals can be expressed as decimal or, when using prefix ```0x```
-as hexadecimal.
+Integer literals can be expressed as decimal or, when using prefix ```0x``` as hexadecimal.
 
-Float literals are specified via decimal point
-(even if the value is a whole number), or using exponential notation.
+Float literals are specified via decimal point (even if the value is a whole number), or using exponential notation.
 
 ## Examples
 
@@ -186,8 +177,7 @@ Float literals are specified via decimal point
 123E1       // float (f3_t)
 ```
 ## Arithmetic
-Binary arithmetic operators return f3_t when one of the operands is f3_t,
-otherwise they return s3_t.
+Binary arithmetic operators return f3_t when one of the operands is f3_t, otherwise they return s3_t.
 
 # String
 Sting literals are specified using the C-syntax:
@@ -198,8 +188,7 @@ Sting literals are specified using the C-syntax:
 ```
 
 ## Operator
-Operator '+' concatenates string with string or string with number by
-first converting the number to a string
+Operator '+' concatenates string with string or string with number by first converting the number to a string
 
 |Operation|Result|
 |:---|:---|
@@ -211,16 +200,12 @@ first converting the number to a string
 # Logic
 Logic literals are the keywords ```true``` and ```false```.
 
-A logic value can be drived from a numeric or boolean expression.
-Numbers are evaluated ```false``` when they are zero and ```true``` otherwise.
+A logic value can be drived from a numeric or boolean expression. Numbers are evaluated ```false``` when they are zero and ```true``` otherwise.
 
 Logic binary operators return ```bl_t``` as result.
 
 # Frame
-A frame represents the lexical context of a code segment.
-Variables defined inside a frame are visible inside (including sub-frames)
-but not outside the frame. A variable definition inside a frame masks any
-variable of the same name outside that frame.
+A frame represents the lexical context of a code segment. Variables defined inside a frame are visible inside (including sub-frames) but not outside the frame. A variable definition inside a frame masks any variable of the same name outside that frame.
 
 A sub frame is created by using a [bracket](#bracket) ```(...)``` or a
 [block](#block) ```{...}```
@@ -250,8 +235,7 @@ func( <args, comma separated> )
 
 # Bracket
 
-A bracket prioritizes an expression or indicates a function call.
-A bracket defines a dedicated [subframe](#frame) in which it is evaluated.
+A bracket prioritizes an expression or indicates a function call. A bracket defines a dedicated [subframe](#frame) in which it is evaluated.
 
 ## Syntax
 
@@ -263,9 +247,7 @@ A bracket defines a dedicated [subframe](#frame) in which it is evaluated.
 
 A block is enclosed in braces ```{...}```.
 
-A block reserves the evaluation of an expression.
-It is used as part of a function or conditional expression.
-A block defines a dedicated [subframe](#frame) in which it is evaluated.
+A block reserves the evaluation of an expression. It is used as part of a function or conditional expression. A block defines a dedicated [subframe](#frame) in which it is evaluated.
 
 <sub>Note: A block is not suitable for immediate (framed) evaluation,
 as might be in other programming languages. Use the simple
@@ -306,17 +288,19 @@ f( 1, 2 ) 		  // function usage; result is 3
 ```
 
 ## Lexical Frame
-The lexical frame is the frame in which a function us used and not where
-it is defined.
+The lexical frame is the frame in which a function is used and not where it is defined. 
 
-**Reason:** The lexical frame in which the function is defined might not
-exist at the point of usage. This happens when the function is defined
-and returned from another function.
+#### Reasoning: 
 
-**Good practice:** Sometimes it can be helpful to call other functions from
-the lexical frame. But generally, it is recommended to avoid assuming a
-specific lexical frame from inside a function at all. Prefer using the
-function's argument list for passing any and all external data.
+The lexical frame in which the function is defined might not exist at the point of usage. This happens, for example, when the function is defined and returned from another function. 
+
+Some languages allow the lexical frame to be the frame of definition, which is deemed more intuitive. Others (e.g. C,C++) circumvent the problem by disallowing function definitions in nested frames.
+
+#### Good practice:
+
+**Best:** Avoid making assumptions about frame properties outside the function. Prefer using the function's argument list for passing any and all external data. 
+
+**Second best**: At most assume a global context defined in the root frame.
 
 ## Recursion
 The keyword ```self``` represents the function in which it is used.
@@ -336,9 +320,7 @@ Prefer using ```self``` for recursions.
 
 ## Partial Calls
 
-A partial function call is a call that define only a subset of arguments.
-This creates a new function behaving like the old but with the first arguments
-replaced by constants and the remaining arguments as the new argument set.
+A partial function call is a call that define only a subset of arguments. This creates a new function behaving like the old but with the first arguments replaced by constants and the remaining arguments as the new argument set.
 
 ### Example
 ``` C
@@ -412,8 +394,7 @@ SIZE(<bcore_arr_s3_s>1 2 3</>); // this is 3
 
 ### List Multiplication
 
-Operation ```a * b``` where both operands are lists generate a list product
-defined as follows
+Operation ```a * b``` where both operands are lists generate a list product defined as follows
 
 ``` C
 a*b == [ a.[0]:b.[0], a.[0]:b.[1], ..., a.[1]:b.[0], ... a.[n-1]:b.[m-1] ]
@@ -426,7 +407,7 @@ a*b == [ a.[0]:b.[0], a.[0]:b.[1], ..., a.[1]:b.[0], ... a.[n-1]:b.[m-1] ]
 ```
 ### Spawning Operator
 
-Operation ```a::b``` can construct or modify lists or run a recursion.
+Binary Operator ```::``` is a multi-tool for constructing or modifying lists or run a recursion. It is used for list based operations using simple rules based on the argument's type.
 
 |a-type|b-type|Result|
 |:---|:---|:---|
@@ -497,12 +478,9 @@ The keyword **embed** evaluates code from another file.
 ```
 embed ( "path_to_another_file.txt" )
 ```
-If the file path is relative it is taken relative to the folder in which
-the current source is located.
+If the file path is relative it is taken relative to the folder in which the current source is located.
 
-The file is embedded in the current frame (no dedicated frame).
-This allows defining variables (functions) in the embedded file to be used
-outside the embedding.
+The file is embedded in the current frame (no dedicated frame). This allows defining variables (functions) in the embedded file to be used outside the embedding.
 
 # External Functions
 BTCL can access stamp member functions by implementing the features 
@@ -511,8 +489,7 @@ BTCL can access stamp member functions by implementing the features
 feature sz_t btcl_function_arity( @* o, tp_t name ) = -1; // return -1 when function 'name' is not defined
 feature er_t btcl_function(       @* o, tp_t name, bcore_arr_sr_s* args, m sr_s* result ); // must handle all names as indicated by btcl_function_arity
 ```
-These define a set of functions. Each can be used in btcl like a member
-function of the stamp that implements the features.
+These define a set of functions. Each can be used in btcl like a member function of the stamp that implements the features.
 
 ### Example: Definition (X)
 
@@ -541,7 +518,8 @@ stamp my_stamp
 obj = <my_stamp/>( .additive = 10 );
 ? obj.add_a( 1 ) // outputs '11'
 ```
+
+
 ------
 <sub>&copy; Johannes B. Steffens</sub>
-
 
