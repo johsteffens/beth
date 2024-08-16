@@ -140,6 +140,11 @@ vd_t bmath_mf3_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FUNC( bmath_mf3_s_mul_htp );
             BCORE_REGISTER_FUNC( bmath_mf3_s_htp_mul_htp );
 
+            BCORE_REGISTER_FUNC( bmath_mf3_s_omp_mul );
+            BCORE_REGISTER_FUNC( bmath_mf3_s_omp_htp_mul );
+            BCORE_REGISTER_FUNC( bmath_mf3_s_omp_mul_htp );
+            BCORE_REGISTER_FUNC( bmath_mf3_s_omp_htp_mul_htp );
+
             BCORE_REGISTER_FUNC( bmath_mf3_s_htp );
             BCORE_REGISTER_FUNC( bmath_mf3_s_mul_esp );
             BCORE_REGISTER_FUNC( bmath_mf3_s_htp_mul_esp );
