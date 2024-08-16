@@ -1,4 +1,4 @@
-# BTML - Beth Text-base Markup Language
+# BTML - Beth Text-based Markup Language
 
 ## What it is
 
