@@ -15,101 +15,10 @@
 
 /**
 
-BTML: Beth text markup language .
+BTML: Beth text markup language.
 
-BTML has a generic syntax for stamps.
-Syntax
-<type>
-   member1: object-data
-   member2: object-data
-   ...
-</>
+Usage: See beth/doc/bcore/btml.md
 
-Example:
-
-stamp myobject =
-{
-    st_s string;
-    tp_t id;
-};
-
-... translates to ...
-
-<myobject>
-    string:<st_s>"Some string text"</>
-    id:<tp_t>1234</>
-</>
-
-For various types simplified encoding is possible:
-    e.g. - numbers by just stating the value\
-         - strings by using quotes "..."
-
-Version tolerance:
-    Changes in the object do not (generally) produce a parser error.
-    This allows handling of different object version as follows:
-
-    New elements:
-    An incomplete set of members is allowed by setting unspecified elements to their respective default.
-
-    Retired elements:
-    An unrecognized element name is ignored by the parser.
-
-    Changed type:
-    A type change invokes type conversion
-
-    Changed indirection (static vs link):
-    Changed indirection is converted properly
-
-    Retired types:
-    An unrecognized object type is skipped by the parser and treated as if 'NULL' was parsed.
-
-Overloaded I/O: Overload following features:
-    btml_body_to_sink          // to define own I/O syntax
-    btml_body_from_source      // to define own I/O syntax
-
-    // see bcore_via_call
-    bcore_via_call.source
-    bcore_via_call.mutated
-    bcore_via_call.shelve
-
-Special Syntax Features:
-  - Instance without data: <mystamp_s/></> may also be expressed as <mystamp_s/>
-
-  - Brief <#file> and <#path> syntax:
-    Syntax <#file>|<#path> <string in quotes> </>
-    (Closing '</>' is optional)
-    The string is taken as a file-path. If it is relative, the root folder is the file folder (if any) from which the stream comes.
-
-    <#file> Represents the object to be constructed from the file's location (error if file does not exist)
-
-    <#path> Represents a st_s containing the path.
-            This is like defining <st_s> in the first,
-            except that a relative path is resolved relative to the streams location.
-
-    Example: <#file> "data/my_file.txt" </>
-    The file contains the entire object: <type> <body> </>
-    The inclusion can be used at any place where an object is expected
-
-  - Default Object Definition:
-    Syntax: (placed at the beginning of the body)
-        #default: <object definition>
-
-    Usage:
-        Inside an object-body an optional default object can be defined.
-        This default object acts as template for all object creations of the same type inside the body.
-        It is typically useful in arrays in order to specify a set of parameters in array-elements so that
-        they need not be explicitly stated each time.
-
-    Example:
-    <my_array_s>
-        // default definition
-        #default: <my_element_s> v1: 10 v2: 20 </>
-
-        // elements definition (v1, v2 assume default values as specified above)
-        <my_element_s> v3: 1  </>
-        <my_element_s> v3: 2  </>
-        <my_element_s> v3: 3  </>
-    </>
 */
 
 #ifndef BCORE_X_BTML_H

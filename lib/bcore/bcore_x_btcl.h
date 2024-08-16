@@ -18,12 +18,7 @@
 BTCL: Beth text constructive language (interpreter).
 Backward compatible to BTML.
 
-BTCL Documentation: beth/doc/bcore/btcl.md
-
-TODO:
-- detect too many (infinite) recursions
-- arrays [], [,,,,]
-- array initializers/operators ::
+Usage: See beth/doc/bcore/btcl.md
 
 */
 
