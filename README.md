@@ -41,13 +41,12 @@ Some objectives are...
        * Numerical Mathematics
        * Machine Learning (Neural Networks)
 
-All code inside beth is designed/developed from scratch (no mere adaptation of preexisting code) 
-with focus on platform independence and computational efficiency.
+All code inside beth is designed/developed from scratch (no mere rewrite of third party code) with focus on platform independence and computational efficiency.
 
 # License
-The source code in this repository is licensed under the [Apache 2.0 License](https://github.com/johsteffens/beth/blob/master/LICENSE). 
+The source code in this repository is licensed under the [Apache 2.0 License](LICENSE). 
 
-*Copyright (C) 2017, ..., 2024 Johannes B. Steffens johannes.b.steffens@gmail.com.*
+*Copyright (C) 2017, ..., 2024 Johannes B. Steffens.*
 
 # Core Concepts
 
@@ -56,10 +55,8 @@ Beth employs *Reflection* as basis for genericity. The reflection-framework allo
 
 The framework is used for object instantiation, initialization, lifetime management, serialization and more. Inside the beth codebase *reflection* is abbreviated `flect`.
 
-<a name = "perspective"></a>
-
 ### Perspective
-The *Perspective* is the answer to a common requirement: "I want to see (use) my object under a specific (abstract) aspect, e.g. as a mere container of data, as an array, as a set, as sortable, as streamable, etc". Thus, the perspective takes up the notion of an interface. In beth, this is achieved via dynamic binding. There is no need for inheritance or subtyping. *Interface* and *Object* need not be aware of each other at compile time.
+The *Perspective* is the answer to a specific requirement: "I want to see (use) my object under a specific (abstract) aspect, e.g. as a mere container of data, as an array, as a set, as sortable, as streamable, etc". Thus, the perspective takes up the notion of an interface. In beth, this is achieved via dynamic binding. There is no need for inheritance or subtyping. *Interface* and *Object* need not be aware of each other at compile time.
 
 The perspective can make active use of the object's reflection to analyze and manipulate it as wanted. For example: There might be infinite ways of designing a list or array, but the array-perspective can handle anyone providing typically needed methods for array manipulation (random access, appending, deleting, sorting, etc).
 
@@ -72,52 +69,37 @@ Concurrent dynamic associations between *types*, *reflections*, and *perspective
 Runtime type information is represented as hash value of the (text-based) identifier. A perspective stores this type-hash value about itself and another about the object it describes. Optionally, an object may also store its type-hash as first value (type `aware_t`). Such an object is considered *self-aware*. Advanced abstraction is available allowing type-oblivious coding and advanced runtime error checks. Most perspectives offer functions for self-aware objects (infix `_a_`), where the required perspective need not be known in advance but is retrieved automatically.
 
 ### Memory Management & Garbage Collection
-Beth has its own memory manager with integrated reference manager. 
-Both components work closely together providing efficient garbage collection based on reference-counting. 
-A special design-feature is the overhead-free (near) O(1) root-address-determination from any pointer
-adressing an embedded element of the object. 
-This allows garbage collection, even after all direct pointers to the object have been released while
-only pointers to its elements remain in use.
-Once the last such element-reference is released,
-the enveloping instance is automatically determined and destroyed.
+Beth has its own memory manager with integrated reference manager. Both components work closely together providing efficient garbage collection based on reference-counting. A special design-feature is the overhead-free (near) O(1) root-address-determination from any pointer
+adressing an embedded element of the object. This allows garbage collection, even after all direct pointers to the object have been released while
+only pointers to its elements remain in use. Once the last such element-reference is released, the enveloping instance is automatically determined and destroyed.
 
-A simplified version of the memory-manager (excluding reference management)
-was spun-off into a stand-alone solution in project [tbman](https://github.com/johsteffens/tbman).
+A simplified version of the memory-manager (excluding reference management) was spun-off into a stand-alone solution in project [tbman](https://github.com/johsteffens/tbman).
 
 ### Xoila
-Xoila (abbreviated 'X') is a highly structured object oriented programming language.
-It is conceived for software projects using beth. Its syntax bases on C, borrowing
-a few familiar syntax elements from higher level languages. 
-Beyond that, X has its own syntax, conceived for safe and compact coding and
+Xoila (abbreviated 'X') is a highly structured object oriented programming language. It is conceived for software projects using beth. Its syntax bases on C, borrowing a few familiar syntax elements from higher level languages. Beyond that, X has its own syntax, conceived for safe and compact coding and
 advanced structuring.
 
-By this time, X has grown into a viable alternative to C or C++. It allows designing highly compact,
-yet well readable source code yielding fast executing programs. Considerable portions in Beth 
-have been ported to 'X' because the new code is much better maintainable. 
+By this time, X has grown into a viable alternative to C or C++. It allows designing highly compact, yet well readable source code yielding fast executing programs. Considerable portions in Beth have been ported to 'X' because the new code is much better maintainable. 
 
-A program written in X also tends to build significantly faster than comparable C++ code.
-X provides many high level features such as polymorphism, reflection, object reference management, 
-object lifetime management, generic dynamic arrays, dynamic arrays of virtual objects, iteration,
-generic serialization (binary and editable text), namespaces, etc.
+The language is defined by the compiler [xoico](xoico/README.md), which is itself 100% coded in xoila. Xoico and Beth form an ecosystem. Xoico compiles X-code into C-code, which it then compiled into machine code using a standard C compiler.
 
-The language is defined by the compiler [xoico](https://github.com/johsteffens/beth/xoico), 
-which is itself 100% coded in xoila. Xoico and Beth form an ecosystem.
+Although building from X code is a 2-stage process, a program written in X still tends to build significantly faster than comparable C++ code. 
 
-Dedicated (pure) X code resides in files with extension *.x.
-X-code can also be embedded in C-header-code, 
-initiated by macro `XOILA_DEFINE_GROUP( <group-name>, <trait-name> )`.
+X provides many high level features such as polymorphism, reflection, object reference management, object lifetime management, generic dynamic arrays, dynamic arrays of virtual objects, iteration, generic serialization (binary and editable text), namespaces, etc.
+
+Dedicated (pure) X code resides in files with extension *.x. X-code can also be embedded in C-header-code, initiated by macro `XOILA_DEFINE_GROUP( <group-name>, <trait-name> )`.
 
 Key components of the xoila language are `stamp`, `group` and `feature`.
 
-`stamp` represents an object (or class). It can have member variables and functions.
-A stamp is defined inside a `group`.
-`group` represents a declarative context. Groups can be nested.
-`feature` represents a virtual function.
+* `stamp` represents an object (or class). It can have member variables and functions. A stamp is defined inside a `group`.
 
-Xoila uses a simple hierarchical namespace-scheme.
+* `group` represents a declarative context. Groups can be nested.
 
-The language is still in development. Once it
-reaches (sufficient) feature-completeness, it will be better documented.
+* `feature` represents a virtual function.
+
+Xoila provides a simple hierarchical namespace-scheme.
+
+The language has reached sufficient maturity that some newer libraries inside beth are nearly completely written in `X`. Examples: [bcodec](#bcodec), [bmedia](#bmedia), [bhpt](#bhpt).
 
 # Sub Libraries
 
@@ -157,17 +139,12 @@ All routines have been redesigned/redeveloped from scratch (no adaption of pre-e
 ### bclos
 **Purpose: Closures**
 
-Library bclos contains a closure framework useful for for functional programming and interpreter design.
-It is used by the Interpreter of the [Actinon Programming Language](https://github.com/johsteffens/actinon).
+Library bclos contains a closure framework useful for for functional programming and interpreter design. It is used by the Interpreter of the [Actinon Programming Language](https://github.com/johsteffens/actinon).
 
 ### badapt
 **Purpose: Adaptive Systems**
 
-This library represents a newly designed generic infrastructure for machine-learning.
-It utilizes the meta-language [xoila](#xoila).
-High computationial efficiency is achieved by using the [bmath](#bmath) linar subsystem.
-With this this concept, specific popular feed-forward
-and recurrent networks have (so far) been implemented:
+This library represents a newly designed generic infrastructure for machine-learning. It utilizes the meta-language [xoila](#xoila). High computationial efficiency is achieved by using the [bmath](#bmath) linar subsystem. With this this concept, specific popular feed-forward and recurrent networks have (so far) been implemented:
 
    * Multi Layer Perceptron (MLP)
    * 1 Dimensional Convolutional Neural Network. (1D-CNN)
@@ -177,13 +154,10 @@ and recurrent networks have (so far) been implemented:
 ### bhvm
 **Purpose: Holor Virtual Machine**
 
-A holor is a generic data type. It can be understood as generalization of a Tensor.
-This library implements a virtual machine where operands are holors.
-A virtual machine is a generalization of a von Neumann architecture.
-It can run virtual machine code. 
-Code for a HVM is compiled from a computational graph on holors.
+A holor is a generic data type. It can be understood as generalization of a Tensor. This library implements a virtual machine where operands are holors.
+A virtual machine is a generalization of a von Neumann architecture. It can run virtual machine code. Code for a HVM is compiled from a computational graph on holors.
 
-[More details ...](https://github.com/johsteffens/beth/blob/master/lib/bhvm/README.md)
+[More details ...](lib/bhvm/README.md)
 
 ### bhpt
 **Purpose: Holor Based Adaptive System**
@@ -198,18 +172,14 @@ This library provides interfaces for video capture, audio capture and audio play
 ### bcodec
 **Purpose: Audio and Video Codecs**
 
-This library contains a an interfaces for audio and videio codecs.
+This library contains a an interfaces for audio and video codecs.
 
 **audio_codec_waw**
 
 ```adio_codec_waw``` is a newly designed specific codec for audio compression/decompression, which is a *reinvention* based on state-of-the-art techniques around modified discrete cosine transform and several of my own ideas. It uses an equal loudness contour (based on Fletcher-Munron-Characteristic (ISO 226)). It mitigates pre-echo by analyzing time-loudness level and modulating the compression rate accordingly. Compression rates and compression quality is configurable. Useful rates are around 56 ... 240 kbps (average on 2-channels at 44.1 kHz). At 240kbps the difference to the original is practically imperceptible.
+
 # Motivation
-Object oriented programming is generally associated with a specific
-framework which can be seen in many programming Languages.
-I'd say that C++ offers one of the most efficient frameworks. 
-I've used, appreciated and valued it for decades. (Still do.)
-But that language has also issues, which caused some
-resentment over time.
+Object oriented programming is generally associated with a specific framework which can be seen in many programming Languages. I'd say that C++ offers one of the most efficient frameworks. I've used, appreciated and valued it for decades. (Still do.) But that language has also issues, which caused some resentment over time.
 
 For example: 
 
@@ -218,30 +188,15 @@ For example:
 * The large increase of built-in features over the years. Of which only a fraction appears to be truly needed in any given code base.
 * Consequently rather slow compilation.
 
-More modern languages (e.g. Java, Python, Go) provide advanced features as well as 
-alleviating some of above issues. Still, they may come at a loss of efficiency and/or
-loss of control over how code and data is mapped onto the hardware.
+More modern languages (e.g. Java, Python, Go) provide advanced features as well as alleviating some of above issues. Still, they may come at a loss of efficiency and/or loss of control over how code and data is mapped onto the hardware.
 
-Overcoming these deficiencies is a key motivation in project *beth*. 
-The language 'C' was preferred over 'C++' because most concepts that
-set 'C++' apart from 'C' have been solved differently in *beth*.
-This effort culminates in the language [Xoila](#xoila).
+Overcoming these deficiencies is a key motivation in project *beth*. The language 'C' was preferred over 'C++' because most concepts that set 'C++' apart from 'C' have been solved differently in *beth*. This effort culminates in the language [Xoila](#xoila).
 
-Another motivation is providing functionality as might be expected from a general purpose
-library with a scientific touch.
+Another motivation is providing functionality as might be expected from a general purpose library with a scientific touch.
 
-The codebase of *beth* is original work.
-Specific prior work, which has influenced its development is cited inside the code 
-or in related documents where feasible.
-However, a major part is accomplished by actually questioning well trodden paths.
-I've been trying to come up with new ideas or at least viable variations of prior solutions.
+The codebase of *beth* is original work. Specific prior work, which has influenced its development is cited inside the code or in related documents where feasible. However, a major part is accomplished by actually questioning well trodden paths. I've been trying to come up with new ideas or at least viable variations of prior solutions.
 
-For that matter, getting a grasp on *beth* is probably a bit of a challenge 
-even for a seasoned developer. I hope that who tries it, feels rewarded.
-For me it is like painting a new picture, which has not been painted before. 
-Watching it unfold and taking shape is beautiful.
-
-But for all the bliss, the ultimate goal is *usefulness*.
+For that matter, getting a grasp on *beth* is probably a bit of a challenge even for a seasoned developer. I hope that who tries it, feels rewarded. For me it is like painting a new picture, which has not been painted before. Watching it unfold and taking shape is beautiful. But for all the bliss, the ultimate goal is *usefulness*.
 
 # History
 
@@ -265,8 +220,7 @@ But for all the bliss, the ultimate goal is *usefulness*.
 * Developed a new machine learning library [badapt](#badapt).
 * Designed a more generic approach to machine learning. 
 * Initially privately in [badapt_dev](https://github.com/johsteffens/badapt_dev): 
-     Developed a new script language for defining mathematical graphs (networks)
-     with adaptive and cyclic components. This is gradually being ported into *beth*.
+     Developed a new script language for defining mathematical graphs (networks) with adaptive and cyclic components. This is gradually being ported into *beth*.
 * Conceived the [holor virtual machine](#bhvm).
 * Named the script language "Haptive" and developed an initial compiler for it.
      Further ongoing development of *haptive* is codenamed "lion".
@@ -292,11 +246,11 @@ But for all the bliss, the ultimate goal is *usefulness*.
 
 **2023**
 
-* Began work on improving SVD speed stability and accuray in repository ```bmath_dev```.
+* Began work on improving SVD speed, stability and accuracy in repository ```bmath_dev```.
 
 **2024**
 
-* Ongoing work on improving SVD.
+* Ongoing work: Improving SVD.
 
 
 ------
