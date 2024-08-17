@@ -41,7 +41,7 @@ Some objectives are...
        * Numerical Mathematics
        * Machine Learning (Neural Networks)
 
-All code inside beth is designed/developed from scratch (no mere rewrite of third party code) with focus on platform independence and computational efficiency.
+I designed/developed/invented code and methods inside beth from scratch with focus on platform independence and computational efficiency. I avoided any (e.g. third party) sources or other information that might compromise my rights (copyright, intellectual property) in this code base. I made a reasonable effort to be sure that technical knowledge, which I used in beth, either directly originated from me and I maintained my applicable rights to it, or is otherwise free to use. In the latter case I made an effort referencing the sources inside the code or in accompanying documentation.
 
 # License
 The source code in this repository is licensed under the [Apache 2.0 License](LICENSE). 
