@@ -159,6 +159,36 @@ uz_t            bcore_arr_s3_s_idx_min( const bcore_arr_s3_s* o );
 
 /**********************************************************************************************************************/
 
+typedef struct bcore_arr_f3_s
+{
+    aware_t _;
+    BCORE_ARRAY_DYN_SOLID_STATIC_S( f3_t, );
+} bcore_arr_f3_s;
+
+BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_f3_s )
+
+bcore_arr_f3_s* bcore_arr_f3_s_clear(     bcore_arr_f3_s* o ); // sets size to zero
+bcore_arr_f3_s* bcore_arr_f3_s_set_space( bcore_arr_f3_s* o, uz_t space );
+bcore_arr_f3_s* bcore_arr_f3_s_set_size(  bcore_arr_f3_s* o, uz_t size ); // resize
+bcore_arr_f3_s* bcore_arr_f3_s_fill(      bcore_arr_f3_s* o, uz_t size, f3_t v ); // creates filled array of size <size>
+bcore_arr_f3_s* bcore_arr_f3_s_step_fill( bcore_arr_f3_s* o, f3_t v_start, f3_t step, uz_t size ); // creates filled array according to stepping
+bcore_arr_f3_s* bcore_arr_f3_s_push(      bcore_arr_f3_s* o, f3_t v );
+bcore_arr_f3_s* bcore_arr_f3_s_push_left( bcore_arr_f3_s* o, f3_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+bcore_arr_f3_s* bcore_arr_f3_s_push_arr(  bcore_arr_f3_s* o, const bcore_arr_f3_s* arr ); // appends arr
+f3_t            bcore_arr_f3_s_pop(       bcore_arr_f3_s* o );
+s2_t            bcore_arr_f3_s_cmp( const bcore_arr_f3_s* o, const bcore_arr_f3_s* b ); // see comment cmp( o, b ) above
+bcore_arr_f3_s* bcore_arr_f3_s_sort(      bcore_arr_f3_s* o, s2_t order ); // stable
+bcore_arr_f3_s* bcore_arr_f3_s_reorder(   bcore_arr_f3_s* o, const bcore_arr_uz_s* order );
+uz_t            bcore_arr_f3_s_count_equal( const bcore_arr_f3_s* o, f3_t val ); // number of occurrence
+
+uz_t            bcore_arr_f3_s_find(    const bcore_arr_f3_s* o, uz_t start, uz_t end, f3_t v ); // behaves like st_s_find_*
+f3_t            bcore_arr_f3_s_max(     const bcore_arr_f3_s* o );
+f3_t            bcore_arr_f3_s_min(     const bcore_arr_f3_s* o );
+uz_t            bcore_arr_f3_s_idx_max( const bcore_arr_f3_s* o );
+uz_t            bcore_arr_f3_s_idx_min( const bcore_arr_f3_s* o );
+
+/**********************************************************************************************************************/
+
 typedef struct bcore_arr_tp_s
 {
     aware_t _;
@@ -308,6 +338,20 @@ sr_s* bcore_arr_sr_s_push_tp(   bcore_arr_sr_s* o, tp_t type );
 sr_s  bcore_arr_sr_s_pop(       bcore_arr_sr_s* o );
 bcore_arr_sr_s* bcore_arr_sr_s_reorder(   bcore_arr_sr_s* o, const bcore_arr_uz_s* order );
 bcore_arr_sr_s* bcore_arr_sr_s_set_spect( bcore_arr_sr_s* o, tp_t spect_type ); // switches perspective of all references to 'spect'
+
+// the check below returns true when all elements check true for the given sr_s property or when array-size is zero
+bl_t bcore_arr_sr_s_is_numeric ( const bcore_arr_sr_s* o );
+bl_t bcore_arr_sr_s_is_float   ( const bcore_arr_sr_s* o );
+bl_t bcore_arr_sr_s_is_integer ( const bcore_arr_sr_s* o );
+bl_t bcore_arr_sr_s_is_unsigned( const bcore_arr_sr_s* o );
+bl_t bcore_arr_sr_s_is_string  ( const bcore_arr_sr_s* o );
+
+// converts to corresponding array; inconvertible elements evaluate to '0'
+const bcore_arr_sr_s* bcore_arr_sr_s_to_arr_s3( const bcore_arr_sr_s* o, bcore_arr_s3_s* arr );
+const bcore_arr_sr_s* bcore_arr_sr_s_to_arr_u3( const bcore_arr_sr_s* o, bcore_arr_u3_s* arr );
+const bcore_arr_sr_s* bcore_arr_sr_s_to_arr_f3( const bcore_arr_sr_s* o, bcore_arr_f3_s* arr );
+const bcore_arr_sr_s* bcore_arr_sr_s_to_arr_sz( const bcore_arr_sr_s* o, bcore_arr_sz_s* arr );
+const bcore_arr_sr_s* bcore_arr_sr_s_to_arr_st( const bcore_arr_sr_s* o, bcore_arr_st_s* arr );
 
 /**********************************************************************************************************************/
 

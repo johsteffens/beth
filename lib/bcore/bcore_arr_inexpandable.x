@@ -180,6 +180,46 @@ group :s3 = :
 
 //----------------------------------------------------------------------------------------------------------------------
 
+group :f3 = :
+{
+    signature m @* fill       ( m @* o, uz_t size, f3_t v ); // creates filled array of size <size>
+    signature m @* step_fill  ( m @* o, f3_t v_start, f3_t step, uz_t size ); // creates filled array according to stepping
+    signature void push       ( m @* o, f3_t v );
+    signature m @* push_left  ( m @* o, f3_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+    signature f3_t pop        ( m @* o );
+    signature uz_t count_equal( c @* o, f3_t val ); // number of occurrence
+    signature uz_t find       ( c @* o,   uz_t start, uz_t end, f3_t v ); // behaves like st_s_find_*
+    signature f3_t max        ( c @* o );
+    signature f3_t min        ( c @* o );
+    signature uz_t idx_max    ( c @* o );
+    signature uz_t idx_min    ( c @* o );
+
+    stamp :s = aware x_inst
+    {
+        f3_t [];
+        func :: .clear;
+        func :: .set_space;
+        func :: .set_size;
+        func :: .sort;
+        func :: .reorder;
+        func  : .fill;
+        func  : .step_fill;
+        func  : .push;
+        func  : .push_left;
+        func :: .push_arr;
+        func  : .pop;
+        func :: .cmp;
+        func  : .count_equal;
+        func  : .find;
+        func  : .max;
+        func  : .min;
+        func  : .idx_max;
+        func  : .idx_min;
+    };
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 group :tp = :
 {
     signature m @* fill       ( m @* o, uz_t size, tp_t v ); // creates filled array of size <size>
@@ -346,6 +386,20 @@ group :sr = :
     signature sr_s pop      ( m @* o );
     signature m @* set_spect( m @* o, tp_t spect_type ); // switches perspective of all references to 'spect'
 
+    // the check below returns true when all elements check true for the given sr_s property or when array-size is zero
+    signature bl_t is_numeric ( c@* o );
+    signature bl_t is_float   ( c@* o );
+    signature bl_t is_integer ( c@* o );
+    signature bl_t is_unsigned( c@* o );
+    signature bl_t is_string  ( c@* o );
+
+    // converts to corresponding array; inconvertible elements evaluate to '0'
+    signature o to_arr_s3( c@* o, ::s3_s* arr );
+    signature o to_arr_u3( c@* o, ::u3_s* arr );
+    signature o to_arr_f3( c@* o, ::f3_s* arr );
+    signature o to_arr_sz( c@* o, ::sz_s* arr );
+    signature o to_arr_st( c@* o, ::st_s* arr );
+
     stamp :s = aware x_inst
     {
         sr_s [];
@@ -357,6 +411,17 @@ group :sr = :
         func  : .push_tp;
         func  : .pop;
         func  : .set_spect;
+
+        func :.is_numeric;
+        func :.is_float;
+        func :.is_integer;
+        func :.is_unsigned;
+        func :.is_string;
+
+        func :.to_arr_s3;
+        func :.to_arr_u3;
+        func :.to_arr_f3;
+        func :.to_arr_st;
     };
 };
 

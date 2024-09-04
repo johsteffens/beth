@@ -201,6 +201,7 @@ bl_t sr_s_is_numeric ( const sr_s* o ) { return bcore_tp_is_numeric ( sr_s_o_typ
 bl_t sr_s_is_float   ( const sr_s* o ) { return bcore_tp_is_float   ( sr_s_o_type( o ) ); }
 bl_t sr_s_is_integer ( const sr_s* o ) { return bcore_tp_is_integer ( sr_s_o_type( o ) ); }
 bl_t sr_s_is_unsigned( const sr_s* o ) { return bcore_tp_is_unsigned( sr_s_o_type( o ) ); }
+bl_t sr_s_is_string  ( const sr_s* o ) { return sr_s_o_type( o ) == TYPEOF_st_s; }
 
 /// converts from a leaf type
 sr_s* sr_s_from_f3( sr_s* o, f3_t v ) { sr_s_copy_typed( o, TYPEOF_f3_t, &v ); return o; }

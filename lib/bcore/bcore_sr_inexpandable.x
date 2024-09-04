@@ -26,7 +26,19 @@ group sr = x_inst
         private tp_t f;          // flags
         shell typed => obj;
 
-        /// re-initializes o
+        /** Initializers - 3 letter nomenclature:
+         *
+         *  1st letter: {t|a|q|p}: perspective retrieval:
+         *     t : via type
+         *     a : via RTTI of object (RTTI: runtime-type-information <=> aware object)
+         *     p : explicit (fastest)
+         *     q : via RTPI of object (RTPI: runtime-perspective-information <=> first element of object is perspective)
+         *
+         *  2nd letter: {w|s}: weak | strong
+         *
+         *  3rd letter: {c|m}: const | mutable
+         *
+         */
         func o twc( m@* o, tp_t t, vc_t b );
         func o twm( m@* o, tp_t t, vd_t b );
         func o tsc( m@* o, tp_t t, vd_t b );
@@ -75,9 +87,10 @@ group sr = x_inst
         func tp_t o_type( c@* o ); // type of object
         func tp_t type(   c@* o ); // type of object (same as o_type)
 
-        func bl_t is_weak(   c@* o );
-        func bl_t is_strong( c@* o );
-        func bl_t is_const(  c@* o );
+        func bl_t is_weak(    c@* o );
+        func bl_t is_strong(  c@* o );
+        func bl_t is_const(   c@* o );
+        func bl_t is_mutable( c@* o );
 
         func void set_strong( m@* o, bl_t flag );
         func void set_const(  m@* o, bl_t flag );

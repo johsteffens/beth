@@ -192,15 +192,18 @@ static inline tp_t sr_s_p_type( const sr_s* o ) { return o ? ( o->p ? ( (tp_t*)o
 static inline tp_t sr_s_o_type( const sr_s* o ) { return o ? ( o->p ? ( (tp_t*)o->p )[1] : 0 ) : 0; }
 static inline tp_t sr_s_type(   const sr_s* o ) { return sr_s_o_type( o ); }
 
-static inline bl_t sr_s_is_weak(   const sr_s* o ) { return ( o->f & STRONG_f ) ? false : true;  }
-static inline bl_t sr_s_is_strong( const sr_s* o ) { return ( o->f & STRONG_f ) ? true  : false; }
-static inline bl_t sr_s_is_const(  const sr_s* o ) { return ( o->f & CONST_f  ) ? true  : false; }
+static inline bl_t sr_s_is_weak(    const sr_s* o ) { return ( o->f & STRONG_f ) ? false : true;  }
+static inline bl_t sr_s_is_strong(  const sr_s* o ) { return ( o->f & STRONG_f ) ? true  : false; }
+static inline bl_t sr_s_is_const(   const sr_s* o ) { return ( o->f & CONST_f  ) ? true  : false; }
+static inline bl_t sr_s_is_mutable( const sr_s* o ) { return ( o->f & CONST_f  ) ? false : true;  }
 
 /// o references a numeric object
 bl_t sr_s_is_numeric ( const sr_s* o );
 bl_t sr_s_is_float   ( const sr_s* o );
 bl_t sr_s_is_integer ( const sr_s* o );
 bl_t sr_s_is_unsigned( const sr_s* o );
+/// o references a string
+bl_t sr_s_is_string  ( const sr_s* o );
 
 static inline void sr_s_set_strong( sr_s* o, bl_t flag ) { o->f = flag ? ( o->f | STRONG_f ) : ( o->f & ~STRONG_f ); }
 static inline void sr_s_set_const(  sr_s* o, bl_t flag ) { o->f = flag ? ( o->f | CONST_f  ) : ( o->f & ~CONST_f  ); }
