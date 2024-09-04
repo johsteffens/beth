@@ -176,6 +176,47 @@ er_t bcore_error_push_fa( er_t id, sc_t format, ... )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+er_t bcore_error_push_ffl_fv( er_t id, sc_t func, sc_t file, sz_t line, sc_t format, va_list args )
+{
+    st_s* msg = st_s_create_fa( "error:#<sc_t>:#<sz_t>:0 in function #<sc_t>:\n", file, line, func );
+    st_s_push_fv( msg, format, args );
+    bcore_error_push_fa( id, "#<sc_t>", msg->sc );
+    st_s_discard( msg );
+    return id;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+er_t bcore_error_push_ffl_fa( er_t id, sc_t func, sc_t file, sz_t line, sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    bcore_error_push_ffl_fv( id, func, file, line, format, args );
+    va_end( args );
+    return id;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+er_t bcore_error_push_gffl_fv( sc_t func, sc_t file, sz_t line, sc_t format, va_list args )
+{
+    bcore_error_push_ffl_fv( TYPEOF_general_error, func, file, line, format, args );
+    return TYPEOF_general_error;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+er_t bcore_error_push_gffl_fa( sc_t func, sc_t file, sz_t line, sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    bcore_error_push_gffl_fv( func, file, line, format, args );
+    va_end( args );
+    return TYPEOF_general_error;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 er_t bcore_error_last()
 {
     return context_s_last( get_context() );

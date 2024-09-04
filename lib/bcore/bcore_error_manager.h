@@ -74,6 +74,10 @@ name parse_error; // errors from text/string parsing
 name plant_error; // errors from beth plant management
 name error_stack; // error stack is not zero (usually a subsequent error for functions that require an empty error stack)
 
+identifier __func__;
+identifier __FILE__;
+identifier __LINE__;
+
 //----------------------------------------------------------------------------------------------------------------------
 /// interface functions
 
@@ -91,6 +95,18 @@ func er_t push_sc( er_t id, sc_t msg );
 func er_t push_fv( er_t id, sc_t format, va_list args );
 func er_t push_fa( er_t id, sc_t format, ... );
 
+/** (See also macro 'GERR_fa')
+ *  'push_fa' with location details in parseable format including function name, file and line.
+ *  Call with __func__, __FILE__, __LINE__
+ *  Example: bcore_error_push_ffl_fa( general_error~, __func__, __FILE__, __LINE__, "Something wrong here." );
+ */
+func er_t push_ffl_fv( er_t id, sc_t func, sc_t file, sz_t line, sc_t format, va_list args );
+func er_t push_ffl_fa( er_t id, sc_t func, sc_t file, sz_t line, sc_t format, ... );
+
+/// (See also macro 'GERR_fa') 'push_ffl_fa' using general_error~
+func er_t push_gffl_fv( sc_t func, sc_t file, sz_t line, sc_t format, va_list args );
+func er_t push_gffl_fa( sc_t func, sc_t file, sz_t line, sc_t format, ... );
+
 /// returns last error id on stack; returns 0 in case of no error; does not change error stack
 func er_t last();
 
@@ -99,7 +115,7 @@ func bl_t pop_st( m er_t* id, m st_s* msg );
 func bl_t pop_to_sink( m bcore_sink* sink );
 func bl_t pop_to_stderr();
 
-/// Takes all errors from stack; returns false in case stack was empty
+/// Takes all errors from stack; returns false if stack was empty
 func bl_t pop_all_to_sink( m bcore_sink* sink );
 func bl_t pop_all_to_stderr();
 func bl_t pop_all();
@@ -110,7 +126,21 @@ func st pop_all_to_st( m st_s* st ) { :pop_all_to_sink( st ); = st; }
 
 /**********************************************************************************************************************/
 
+group GERR
+{
+    set inexpandable;
+
+    /// GERR_fa is a makro definition below; like ERR_fa but via bcore_error manager using generic_error
+    func er_t fa( sc_t format, ... );
+};
+
 #endif // XOILA_SECTION
+
+/**********************************************************************************************************************/
+/// Macros
+
+/// generic managed detailed error (like ERR_fa but via bcore_error manager using general_error)
+#define GERR_fa( ... ) bcore_error_push_gffl_fa( __func__, __FILE__, __LINE__, __VA_ARGS__ )
 
 /**********************************************************************************************************************/
 
