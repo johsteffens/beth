@@ -8,14 +8,16 @@ include "bmath_std.h";
 /// PyObject interface
 
 /**********************************************************************************************************************/
-/// registering and forwarding python api functions and objects
+/** XOILA Registration and forwarding of Python/C API functions and objects.
+ *  Purpose: Make XOICO aware of the Python/C API interface and alleviate xoico syntax checks where appropriate.
+ */
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// object
 type       PyObject;   // python object
-identifier Py_DECREF; // decrements reference counter (discards object)
-identifier Py_INCREF; // increments reference counter
+identifier Py_DECREF;  // decrements reference counter (discards object)
+identifier Py_INCREF;  // increments reference counter
 identifier Py_XDECREF; // decrements reference counter (discards object)
 identifier Py_XINCREF; // increments reference counter
 identifier PyObject_Repr; // turns object into a string representation
