@@ -75,6 +75,10 @@ LDFLAGS  += -fopenmp
 LDFLAGS  += $(foreach val,$(A_DIRS),-L $(val))
 LDFLAGS  += $(addprefix -l, $(LIBS))
 
+# LDFLAGS exported by DEPENDENCIES in *.ldflags files
+LDFLAGS_FILES = $(foreach dep,$(DEPENDENCIES), $(subst /lib/,/bin/,$(dep).ldflags))
+LDFLAGS += $(shell cat $(LDFLAGS_FILES))
+
 ifneq ($(XOICO_CFG),)
 XO_STATE = $(NAME).xo.state
 endif

@@ -47,11 +47,13 @@
 # (O) DO_NOT_CLEAN_XO_FILES = 1 # This prevents *.xo.{h,c} from being deleted in clean operation
 # (O) CFLAGS    = ... # List of extra compiler flags before default flags
 # (O) AFLAGS    = ... # List of extra archiver flags before default flags
+# (O) LDFLAGS   = ... # List of extra linker   flags before default flags
 #
 # include $(BETH_DIR)/mk/lib.mk
 #
 # (O) CFLAGS   += ... # List of extra compiler flags after default flags
 # (O) AFLAGS   += ... # List of extra archiver flags after default flags
+# (O) LDFLAGS   = ... # List of extra linker   flags after default flags
 
 NAME      = $(notdir $(CURDIR))
 
@@ -59,6 +61,10 @@ ROOT_DIR  = $(patsubst %/,%,$(dir $(patsubst %/,%,$(dir $(CURDIR)))))
 BIN_DIR   = $(ROOT_DIR)/bin
 OBJ_DIR   = $(BIN_DIR)/obj/$(NAME)
 TARGET    = $(BIN_DIR)/lib$(NAME).a
+
+# makefile to be included for linking purposes (contains special linker directives)
+TARGET_LDFLAGS = $(BIN_DIR)/$(NAME).ldflags
+
 XOICO_CFG = $(wildcard $(NAME)_xoico.cfg)
 INCLUDES  = $(foreach dep,$(DEPENDENCIES),-I $(dep))
 ifneq ($(XOICO_CFG),)
@@ -72,6 +78,7 @@ MAKE         = make
 XOICO        = $(XOICO_DIR)/bin/xoico
 CFLAGS      += -Wall -O3 -fopenmp -std=c11
 AFLAGS      += -r -s
+LDFLAGS     +=
 
 C_FILES = $(wildcard *.c)
 O_FILES = $(C_FILES:%.c=$(OBJ_DIR)/%.o)
@@ -85,11 +92,19 @@ ALL_G_FILES = $(foreach folder,$(ALL_SRC_FOLDERS),$(wildcard $(folder)/*.cfg))
 
 .PHONY: clean cleanall pass2 rebuild rebuildall
 
-$(TARGET): $(XOICO) $(XO_STATE) $(ALL_C_FILES) $(ALL_H_FILES) $(ALL_X_FILES) $(ALL_G_FILES)
+$(TARGET): $(XOICO) $(XO_STATE) $(ALL_C_FILES) $(ALL_H_FILES) $(ALL_X_FILES) $(ALL_G_FILES) $(TARGET_LDFLAGS)
 	$(foreach dep,$(DEPENDENCIES),$(MAKE) -C $(dep);)
-        # second pass to capture changes by xoico
+    # second pass to capture changes by xoico
 	$(MAKE) -j12 -C . pass2
 
+$(TARGET_LDFLAGS): makefile
+	echo "$(LDFLAGS)" > $(TARGET_LDFLAGS)
+
+#ifneq ($(LDFLAGS),)
+#	echo "$(LDFLAGS)" > $(TARGET_LDFLAGS)
+#endif
+
+# second pass to capture changes by xoico
 pass2: $(O_FILES)
 	@mkdir -p $(dir $(TARGET) )
 	$(AR) $(AFLAGS) $(TARGET) $(O_FILES)
@@ -110,6 +125,7 @@ $(XOICO):
 
 clean:
 	rm -f  $(TARGET)
+	rm -f  $(TARGET_LDFLAGS)
 	rm -rf $(OBJ_DIR)
 ifndef DO_NOT_CLEAN_XO_FILES
 	rm -f *.xo.h
@@ -128,4 +144,5 @@ rebuild:
 rebuildall:
 	$(MAKE) cleanall
 	$(MAKE)
+
 
