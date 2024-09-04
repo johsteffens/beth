@@ -1,4 +1,4 @@
-//  Last update: 2024-09-04T07:01:48Z
+//  Last update: 2024-09-04T10:35:32Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -65,7 +65,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0xEC00E07B50CECF50ull
+// HKEYOF_bcore 0x88D6C866A258DE71ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -5005,7 +5005,7 @@ er_t x_btcl_frame_s_eval( x_btcl_frame_s* o, s2_t exit_priority, x_source* sourc
     {
         tp_t o_type = 0;
         x_inst* o_inst =((x_inst*)( x_btml_create_from_source_t(source, (&(o_type)) )));
-        if( !o_inst ) return  TYPEOF_parse_error; // if o_inst == 0 the error stack should hold a descriptive message from x_btml_create_from_source_t
+        if( !o_inst ) return  TYPEOF_parse_error; // if o_inst == 0 the error stack holds a descriptive message from x_btml_create_from_source_t
         (*(obj)) = sr_tsc(o_type, o_inst );
     }
     
@@ -5959,7 +5959,7 @@ er_t x_btcl_frame_s_eval_bop( x_btcl_frame_s* o, s2_t exit_priority, x_source* s
     
     if( bop_priority <= exit_priority ) return  0;
     
-    while( x_source_parse_bl(source,"#?([0]=='.'||[0]=='(')" ) )
+    while( x_source_parse_bl(source," #?([0]=='.'||[0]=='(')" ) )
     {
         if( x_source_parse_bl(source," #?'.'" ) ) BLM_TRY(x_btcl_frame_s_eval_bop_member(o,bop_priority, source, obj ))
         if( x_source_parse_bl(source," #?'('" ) ) { BLM_TRY(x_btcl_frame_s_eval_bop_functional(o,source, obj )) BLM_TRY(x_source_parse_fa(source," )" )) }
@@ -8105,5 +8105,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x2DB0F2D3ECDAB7EE
-// XOICO_FILE_SIGNATURE 0xD360D8841E1F4B6C
+// XOICO_BODY_SIGNATURE 0x303097859AC56D7E
+// XOICO_FILE_SIGNATURE 0x3A2EEEC250E3ED93

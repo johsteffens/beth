@@ -80,7 +80,7 @@ err = err + !test( "conversion", <bl_t/>( 0.5 ) == TRUE );
 // ---------------------------------------------------------------------------------------------------------------------
 /// external function
 
-ext_add_a   = <x_btcl_btcl_function_stamp_s/>( .additive = 10 ).add_a;
+ext_add_a   = <x_btcl_btcl_function_stamp_s></> ( .additive = 10 ).add_a;
 ext_add_a_b = <x_btcl_btcl_function_stamp_s/>( .additive = 10 ).add_a_b;
 err = err + !test( "external function", ext_add_a  ( 2    ) == 12 );
 err = err + !test( "external function", ext_add_a_b( 2, 3 ) == 15 );

@@ -995,7 +995,7 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
     {
         tp_t o_type = 0;
         d x_inst* o_inst = x_btml_create_from_source_t( source, o_type.1 );
-        if( !o_inst ) = TYPEOF_parse_error; // if o_inst == 0 the error stack should hold a descriptive message from x_btml_create_from_source_t
+        if( !o_inst ) = TYPEOF_parse_error; // if o_inst == 0 the error stack holds a descriptive message from x_btml_create_from_source_t
         obj.0 = sr_tsc( o_type, o_inst );
     }
 

@@ -732,7 +732,7 @@ func (:frame_s) er_t eval_bop( m@* o, s2_t exit_priority, m x_source* source, m 
 
     if( bop_priority <= exit_priority ) = 0;
 
-    while( source.parse_bl( "#?([0]=='.'||[0]=='(')" ) )
+    while( source.parse_bl( " #?([0]=='.'||[0]=='(')" ) )
     {
         if( source.parse_bl( " #?'.'" ) ) o.eval_bop_member( bop_priority, source, obj );
         if( source.parse_bl( " #?'('" ) ) { o.eval_bop_functional( source, obj ); source.parse_fa( " )" ); }

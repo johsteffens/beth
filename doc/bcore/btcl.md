@@ -40,7 +40,7 @@ y = <bcore_arr_s3_s> 1 2 3 </>;
 z = <bcore_arr_s3_s></>( [1,2,3] );
 
 // btcl element initialization
-<bcore_main_frame_s></>( .create_log_file = TRUE .log_file_extension = "log" );
+<bcore_main_frame_s></>( .create_log_file = TRUE, .log_file_extension = "log" );
 
 // prints object z to stdout (for messaging, inspection, debugging)
  ? z;  // compact formatting where possible
