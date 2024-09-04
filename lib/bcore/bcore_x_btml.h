@@ -17,7 +17,7 @@
 
 BTML: Beth text markup language.
 
-Usage: See beth/doc/bcore/btml.md
+Usage: See ../../doc/bcore/btml.md
 
 */
 

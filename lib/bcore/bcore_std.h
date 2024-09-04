@@ -77,5 +77,6 @@
 #include "bcore_x_threads.h"
 #include "bcore_x_hmap.h"
 #include "bcore_x_deque.h"
+#include "bcore_x_compare.h"
 
 #endif // BCORE_STD_H

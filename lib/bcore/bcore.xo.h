@@ -1,4 +1,4 @@
-//  Last update: 2024-06-14T19:46:30Z
+//  Last update: 2024-09-04T07:01:48Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -1267,6 +1267,10 @@
   er_t bcore_error_push_sc( er_t id, sc_t msg ); \
   er_t bcore_error_push_fv( er_t id, sc_t format, va_list args ); \
   er_t bcore_error_push_fa( er_t id, sc_t format, ... ); \
+  er_t bcore_error_push_ffl_fv( er_t id, sc_t func, sc_t file, sz_t line, sc_t format, va_list args ); \
+  er_t bcore_error_push_ffl_fa( er_t id, sc_t func, sc_t file, sz_t line, sc_t format, ... ); \
+  er_t bcore_error_push_gffl_fv( sc_t func, sc_t file, sz_t line, sc_t format, va_list args ); \
+  er_t bcore_error_push_gffl_fa( sc_t func, sc_t file, sz_t line, sc_t format, ... ); \
   er_t bcore_error_last( void ); \
   bl_t bcore_error_pop_st( er_t* id, st_s* msg ); \
   bl_t bcore_error_pop_to_sink( bcore_sink* sink ); \
@@ -3274,5 +3278,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x527809083770D800
-// XOICO_FILE_SIGNATURE 0xF6C29661A9C90DF1
+// XOICO_BODY_SIGNATURE 0xF2332B92B62F68FE
+// XOICO_FILE_SIGNATURE 0xBBCB6664BA90E404

@@ -52,6 +52,7 @@
 // other types
 #define TYPEOF_all                         0xE6F09B190519DAA4ull
 #define TYPEOF_bcore_arr_bl_s              0x48CB1D8B09988FBBull
+#define TYPEOF_bcore_arr_f3_s              0x032A0E6941335482ull
 #define TYPEOF_bcore_arr_fp_s              0xF2F7516816140E9Bull
 #define TYPEOF_bcore_arr_s3_s              0x2CABD5FD9AF9A7B7ull
 #define TYPEOF_bcore_arr_sr_s              0xF8715CFC5B0D7B5Cull
@@ -128,3 +129,4 @@
 #define TYPEOF_push_dependencies           0x2C61B4D51672DB73ull
 #define TYPEOF_selftest                    0x7EE758BBFCED33E3ull
 #define TYPEOF_st_s                        0xAFC24F191E3D18FCull
+
