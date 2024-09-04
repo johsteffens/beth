@@ -202,7 +202,7 @@ func (:target_s) :.load
 
     st_path = bcore_file_path_minimized( st_path.sc )^^;
 
-    o.cast( m x_btml* ).from_file( st_path.sc );
+    o.cast( m x_btcl* ).from_file( st_path.sc );
     o->full_path_.copy( st_path );
     if( readonly ) o.readonly = true;
 
