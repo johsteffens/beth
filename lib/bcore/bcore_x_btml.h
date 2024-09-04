@@ -279,6 +279,10 @@ func er_t parse_create_object( m x_source* source, sr_s* default_obj, m sr_s* ob
                         :t_parse_body( inst, type, source );
                         source.parse_fa( " </>" );
                     }
+                    else
+                    {
+                        inst.cast( m x_stamp* ).t_source( type, source );
+                    }
                     obj.0 = sr_tsm( type, inst.fork() );
                 }
             }
