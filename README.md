@@ -216,7 +216,7 @@ For that matter, getting a grasp on *beth* is probably a bit of a challenge even
 
 **2019**
 
-* Developed the meta-language [Beth-Plant](#xoila).
+* Developed the meta-language Beth-Plant, which later was renamed [Xoila](#xoila).
 * Developed a new machine learning library [badapt](#badapt).
 * Designed a more generic approach to machine learning. 
 * Initially privately in [badapt_dev](https://github.com/johsteffens/badapt_dev): 
@@ -230,7 +230,7 @@ For that matter, getting a grasp on *beth* is probably a bit of a challenge even
 * Made [badapt_dev](https://github.com/johsteffens/badapt_dev) public.
 * *Haptive/Lion*: Language and Compiler: Continued development.
 * *Haptive/Lion*: Continued development now codenamed *Opal*
-* Reimplemented and renamed meta-language beth-plant: [Xoila](#xoila).
+* Redesigned and renamed meta-language beth-plant: [Xoila](#xoila).
 * Implemented library bhvm.
 * Implemented library bhpt.
 
@@ -241,7 +241,7 @@ For that matter, getting a grasp on *beth* is probably a bit of a challenge even
 
 **2022**
 
-* Developed an audio compression codec
+* Developed an [audio compression codec](lib/bcodec/bcodec_audio_codec_waw.x)
 * Implemented library bcodec.
 
 **2023**
@@ -250,6 +250,7 @@ For that matter, getting a grasp on *beth* is probably a bit of a challenge even
 
 **2024**
 
+* Developed and implemented the constructive language [BTCL](doc/bcore/btcl.md)
 * Ongoing work: Improving SVD.
 
 
