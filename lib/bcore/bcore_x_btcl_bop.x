@@ -192,6 +192,9 @@ func (:frame_s) er_t eval_bop_modifier( m@* o, m x_source* source, m sr_s* sr )
             if( err ) { = source.parse_error_fa( "#<sc_t>\n", bcore_error_pop_all_to_st( st_s!^ ).sc ); }
         }
     }
+
+    sr.o.cast( m x_stamp* ).t_mutated( sr.type() );
+
     if( source.parse_bl( " #?','" ) ) = o.eval_bop_modifier( source, sr );
     = 0;
 }
@@ -695,8 +698,12 @@ func (:frame_s) er_t eval_bop_assign( m@* o, s2_t bop_priority, m x_source* sour
         {
             if( sr.o )
             {
-                if( x_inst_t_copy_typed( sr.o, sr.o_type(), sb.o_type(), sb.o ) )
+                er_t copy_typed_err = x_inst_t_copy_typed( sr.o, sr.o_type(), sb.o_type(), sb.o );
+                if( copy_typed_err )
                 {
+
+                    // generic conversions across arrays ....
+
                     = source.parse_error_fa( "operator '=': #<sc_t>\n", bcore_error_pop_all_to_st( st_s!^ ).sc );
                 }
             }
