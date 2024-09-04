@@ -206,12 +206,14 @@ stamp xoico_nested_group_s = aware :
 
     func xoico.expand_forward
     {
+        if( !o.group.expandable ) return 0;
         sink.push_fa( " \\\n#rn{ }BCORE_FORWARD_OBJECT( #<sc_t> );", indent, o.group.st_name.sc );
         return 0;
     };
 
     func xoico.expand_indef_declaration
     {
+        if( !o.group.expandable ) return 0;
         sink.push_fa( " \\\n#rn{ }  BETH_EXPAND_GROUP_#<sc_t>", indent, o.group.st_name.sc );
         return 0;
     };
