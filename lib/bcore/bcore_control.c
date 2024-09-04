@@ -151,7 +151,7 @@ void bcore_wrn( sc_t format, ... )
 
 void bcore_ext_wrn( sc_t func, sc_t file, int line, sc_t format, ... )
 {
-    fprintf( stderr, "Error in function %s (%s:%i):\n", func, file, line );
+    fprintf( stderr, "warning:%s:%i:0 in function %s:\n", file, line, func );
     va_list args;
     va_start( args, format );
     vfprintf( stderr, format, args );
@@ -180,7 +180,7 @@ void bcore_wrn_fa( sc_t format, ... )
 
 void bcore_ext_wrn_fa( sc_t func, sc_t file, int line, sc_t format, ... )
 {
-    fprintf( stderr, "Error in function %s (%s:%i):\n", func, file, line );
+    fprintf( stderr, "warning:%s:%i:0 in function %s:\n", file, line, func );
     va_list args;
     va_start( args, format );
     bcore_writeln_fv( stderr, format, args );
