@@ -110,6 +110,36 @@ group :sz = :
 
 //----------------------------------------------------------------------------------------------------------------------
 
+group :u0 = :
+{
+    signature m @* fill       ( m @* o, uz_t size, u0_t v ); // creates filled array of size <size>
+    signature m @* step_fill  ( m @* o, u0_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
+    signature void push       ( m @* o, u0_t v );
+    signature m @* push_left  ( m @* o, u0_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+    signature u0_t pop        ( m @* o );
+    signature uz_t count_equal( c @* o, u0_t val ); // number of occurrence
+
+    stamp :s = aware x_inst
+    {
+        u0_t [];
+        func :: .clear;
+        func :: .set_space;
+        func :: .set_size;
+        func :: .sort;
+        func :: .reorder;
+        func  : .fill;
+        func  : .step_fill;
+        func  : .push;
+        func  : .push_left;
+        func :: .push_arr;
+        func  : .pop;
+        func :: .cmp;
+        func  : .count_equal;
+    };
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 group :u3 = :
 {
     signature m @* fill       ( m @* o, uz_t size, u3_t v ); // creates filled array of size <size>
@@ -140,6 +170,46 @@ group :u3 = :
 
 //----------------------------------------------------------------------------------------------------------------------
 
+group :s0 = :
+{
+    signature m @* fill       ( m @* o, uz_t size, s0_t v ); // creates filled array of size <size>
+    signature m @* step_fill  ( m @* o, s0_t v_start, s0_t step, uz_t size ); // creates filled array according to stepping
+    signature void push       ( m @* o, s0_t v );
+    signature m @* push_left  ( m @* o, s0_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+    signature s0_t pop        ( m @* o );
+    signature uz_t count_equal( c @* o, s0_t val ); // number of occurrence
+    signature uz_t find       ( c @* o, uz_t start, uz_t end, s0_t v ); // behaves like st_s_find_*
+    signature s0_t max        ( c @* o );
+    signature s0_t min        ( c @* o );
+    signature uz_t idx_max    ( c @* o );
+    signature uz_t idx_min    ( c @* o );
+
+    stamp :s = aware x_inst
+    {
+        s0_t [];
+        func :: .clear;
+        func :: .set_space;
+        func :: .set_size;
+        func :: .sort;
+        func :: .reorder;
+        func  : .fill;
+        func  : .step_fill;
+        func  : .push;
+        func  : .push_left;
+        func :: .push_arr;
+        func  : .pop;
+        func :: .cmp;
+        func  : .count_equal;
+        func  : .find;
+        func  : .max;
+        func  : .min;
+        func  : .idx_max;
+        func  : .idx_min;
+    };
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 group :s3 = :
 {
     signature m @* fill       ( m @* o, uz_t size, s3_t v ); // creates filled array of size <size>
@@ -148,7 +218,7 @@ group :s3 = :
     signature m @* push_left  ( m @* o, s3_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature s3_t pop        ( m @* o );
     signature uz_t count_equal( c @* o, s3_t val ); // number of occurrence
-    signature uz_t find       ( c @* o,   uz_t start, uz_t end, s3_t v ); // behaves like st_s_find_*
+    signature uz_t find       ( c @* o, uz_t start, uz_t end, s3_t v ); // behaves like st_s_find_*
     signature s3_t max        ( c @* o );
     signature s3_t min        ( c @* o );
     signature uz_t idx_max    ( c @* o );

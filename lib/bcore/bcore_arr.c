@@ -691,6 +691,256 @@ uz_t bcore_arr_sz_s_count_equal( const bcore_arr_sz_s* o, sz_t val )
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+// bcore_arr_u0_s
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_arr_u0_s_init( bcore_arr_u0_s* o )
+{
+    bcore_memzero( o, sizeof( *o ) );
+    o->_ = TYPEOF_bcore_arr_u0_s;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_arr_u0_s_down( bcore_arr_u0_s* o )
+{
+    if( o->space > 0 ) bcore_un_alloc( sizeof( s3_t ), o->data, o->space, 0, NULL );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_arr_u0_s_copy( bcore_arr_u0_s* o, const bcore_arr_u0_s* src )
+{
+    if( o->space < src->size )
+    {
+        if( o->space > 0 ) o->data = bcore_un_alloc( sizeof( u0_t ), o->data, o->space, 0, &o->space );
+        o->data = bcore_un_alloc( sizeof( u0_t ), NULL, o->space, src->size, &o->space );
+    }
+    bcore_u_memcpy( sizeof( u0_t ), o->data, src->data, src->size );
+    o->size = src->size;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_arr_u0_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_arr_u0_s )
+BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_u0_s )
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+static bcore_self_s* arr_u0_s_create_self( void )
+{
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_arr_u0_s = bcore_array { aware_t _; u0_t [] arr; }", bcore_arr_u0_s );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_u0_s_init, "bcore_fp_init", "init" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_u0_s_down, "bcore_fp_down", "down" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_u0_s_copy, "bcore_fp_copy", "copy" );
+    return self;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_u0_s* bcore_arr_u0_s_clear( bcore_arr_u0_s* o )
+{
+    o->size = 0;
+    if( o->space == 0 ) o->data = NULL; // in case array is referencing external data
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_u0_s* bcore_arr_u0_s_set_space( bcore_arr_u0_s* o, uz_t space )
+{
+    if( o->space == 0 )
+    {
+        o->data = bcore_u_alloc( sizeof( u0_t ), NULL, space, &o->space );
+    }
+    else
+    {
+        o->data = bcore_un_alloc( sizeof( u0_t ), o->data, o->space, space, &o->space );
+    }
+    if( o->size > space ) o->size = space;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_u0_s* bcore_arr_u0_s_fill( bcore_arr_u0_s* o, uz_t size, u0_t v )
+{
+    bcore_arr_u0_s_set_space( o, size );
+    for( uz_t i = 0; i < size; i++ ) o->data[ i ] = v;
+    o->size = size;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_u0_s* bcore_arr_u0_s_set_size( bcore_arr_u0_s* o, uz_t size )
+{
+    bcore_arr_u0_s_set_space( o, size );
+    if( size > o->size )
+    {
+        for( sz_t i = o->size; i < size; i++ ) o->data[ i ] = 0;
+    }
+    o->size = size;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_u0_s* bcore_arr_u0_s_step_fill( bcore_arr_u0_s* o, u0_t v_start, s3_t step, uz_t size )
+{
+    bcore_arr_u0_s_set_space( o, size );
+    u0_t v = v_start;
+    for( uz_t i = 0; i < size; i++ )
+    {
+        o->data[ i ] = v;
+        v += step;
+    }
+    o->size = size;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_arr_u0_s_make_strong( bcore_arr_u0_s* o )
+{
+    if( o->size > o->space )
+    {
+        u0_t* data = o->data;
+        o->data = bcore_u_alloc( sizeof( u0_t ), NULL, o->size, &o->space );
+        bcore_u_memcpy( sizeof( u0_t ), o->data, data, o->size );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_u0_s* bcore_arr_u0_s_push( bcore_arr_u0_s* o, u0_t v )
+{
+    if( o->size >  o->space ) bcore_arr_u0_s_make_strong( o );
+    if( o->size == o->space )
+    {
+        o->data = bcore_un_alloc( sizeof( u0_t ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
+    }
+    o->data[ o->size++ ] = v;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_u0_s* bcore_arr_u0_s_push_left( bcore_arr_u0_s* o, u0_t v )
+{
+    bcore_arr_u0_s_push( o, 0 );
+    for( sz_t i = o->size - 1; i > 0; i-- ) o->data[ i ] = o->data[ i - 1 ];
+    o->data[ 0 ] = v;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_u0_s* bcore_arr_u0_s_push_arr( bcore_arr_u0_s* o, const bcore_arr_u0_s* arr )
+{
+    if( arr->size == 0 ) return o;
+    if( o->size > o->space ) bcore_arr_u0_s_make_strong( o );
+    if( o->size + arr->size >= o->space )
+    {
+        uz_t new_space = uz_max( o->space * 2, o->size + arr->size );
+        o->data = bcore_un_alloc( sizeof( tp_t ), o->data, o->space, new_space, &o->space );
+    }
+    for( sz_t i = 0; i < arr->size; i++ ) o->data[ o->size++ ] = arr->data[ i ];
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+u0_t bcore_arr_u0_s_pop( bcore_arr_u0_s* o )
+{
+    if( o->size == 0 ) return 0;
+    o->size--;
+    return o->data[ o->size ];
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+s2_t bcore_arr_u0_s_cmp( const bcore_arr_u0_s* o, const bcore_arr_u0_s* b )
+{
+    if( o->size == 0 ) return ( b->size == 0 ) ? 0 :  1;
+    if( b->size == 0 ) return -1;
+    uz_t min_size = uz_min( o->size, b->size );
+    for( sz_t i = 0; i < min_size; i++ )
+    {
+        if( o->data[ i ] != b->data[ i ] ) return ( o->data[ i ] < b->data[ i ] ) ? 2 : -2;
+    }
+    return ( o->size == b->size ) ? 0 : ( o->size < b->size ) ? +1 : -1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+static void u0_sort( u0_t* data, uz_t size, u0_t* buf, s2_t order )
+{
+    if( size < 2 ) return;
+    uz_t size1 = size >> 1;
+    u0_sort( data,         size1       , buf, order );
+    u0_sort( data + size1, size - size1, buf, order );
+    bcore_u_memcpy( sizeof( u0_t ), buf, data, size1 );
+    if( order > 0 )
+    {
+        for( uz_t i = 0, w = 0, r = size1; i < size1; )
+        {
+            data[ w++ ] = ( r == size || buf[ i ] <= data[ r ] ) ? buf[ i++ ] : data[ r++ ];
+        }
+    }
+    else
+    {
+        for( uz_t i = 0, w = 0, r = size1; i < size1; )
+        {
+            data[ w++ ] = ( r == size || buf[ i ] >= data[ r ] ) ? buf[ i++ ] : data[ r++ ];
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_u0_s* bcore_arr_u0_s_sort( bcore_arr_u0_s* o, s2_t order ) // stable mergesort
+{
+    if( o->space < o->size ) bcore_arr_u0_s_make_strong( o );
+    u0_t* buf = bcore_u_alloc( sizeof( u0_t ), NULL, o->size >> 1, NULL );
+    u0_sort( o->data, o->size, buf, order );
+    bcore_free( buf );
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_u0_s* bcore_arr_u0_s_reorder( bcore_arr_u0_s* o, const bcore_arr_uz_s* order )
+{
+    if( o->space < o->size ) bcore_arr_u0_s_make_strong( o );
+    uz_t buf_space = 0;
+    u0_t* buf = bcore_u_alloc( sizeof( u0_t ), NULL, order->size, &buf_space );
+    for( uz_t i = 0; i < order->size; i++ )
+    {
+        assert( order->data[ i ] < o->size );
+        buf[ i ] = o->data[ order->data[ i ] ];
+    }
+    bcore_un_alloc( sizeof( u0_t ), o->data, o->space, 0, &o->space );
+    o->data = buf;
+    o->space = buf_space;
+    o->size = order->size;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+uz_t bcore_arr_u0_s_count_equal( const bcore_arr_u0_s* o, u0_t val )
+{
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->size; i++ ) count += ( o->data[ i ] == val );
+    return count;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 // bcore_arr_u3_s
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -936,6 +1186,330 @@ uz_t bcore_arr_u3_s_count_equal( const bcore_arr_u3_s* o, u3_t val )
     uz_t count = 0;
     for( uz_t i = 0; i < o->size; i++ ) count += ( o->data[ i ] == val );
     return count;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+// bcore_arr_s0_s
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_arr_s0_s_init( bcore_arr_s0_s* o )
+{
+    bcore_memzero( o, sizeof( *o ) );
+    o->_ = TYPEOF_bcore_arr_s0_s;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_arr_s0_s_down( bcore_arr_s0_s* o )
+{
+    if( o->space > 0 ) bcore_un_alloc( sizeof( s0_t ), o->data, o->space, 0, NULL );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_arr_s0_s_copy( bcore_arr_s0_s* o, const bcore_arr_s0_s* src )
+{
+    if( o->space < src->size )
+    {
+        if( o->space > 0 ) o->data = bcore_un_alloc( sizeof( s0_t ), o->data, o->space, 0, &o->space );
+        o->data = bcore_un_alloc( sizeof( s0_t ), NULL, o->space, src->size, &o->space );
+    }
+    bcore_u_memcpy( sizeof( s0_t ), o->data, src->data, src->size );
+    o->size = src->size;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+BCORE_DEFINE_FUNCTION_CREATE(  bcore_arr_s0_s )
+BCORE_DEFINE_FUNCTION_DISCARD( bcore_arr_s0_s )
+BCORE_DEFINE_FUNCTION_CLONE(   bcore_arr_s0_s )
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+static bcore_self_s* arr_s0_s_create_self( void )
+{
+    bcore_self_s* self = BCORE_SELF_S_BUILD_PARSE_SC( "bcore_arr_s0_s = bcore_array { aware_t _; s0_t [] arr; }", bcore_arr_s0_s );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_s0_s_init, "bcore_fp_init", "init" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_s0_s_down, "bcore_fp_down", "down" );
+    bcore_self_s_push_ns_func( self, ( fp_t )bcore_arr_s0_s_copy, "bcore_fp_copy", "copy" );
+    return self;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_s0_s* bcore_arr_s0_s_clear( bcore_arr_s0_s* o )
+{
+    o->size = 0;
+    if( o->space == 0 ) o->data = NULL; // in case array is referencing external data
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_s0_s* bcore_arr_s0_s_set_space( bcore_arr_s0_s* o, uz_t space )
+{
+    if( o->space == 0 )
+    {
+        o->data = bcore_u_alloc( sizeof( s0_t ), NULL, space, &o->space );
+    }
+    else
+    {
+        o->data = bcore_un_alloc( sizeof( s0_t ), o->data, o->space, space, &o->space );
+    }
+    if( o->size > space ) o->size = space;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_s0_s* bcore_arr_s0_s_fill( bcore_arr_s0_s* o, uz_t size, s0_t v )
+{
+    bcore_arr_s0_s_set_space( o, size );
+    for( uz_t i = 0; i < size; i++ ) o->data[ i ] = v;
+    o->size = size;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_s0_s* bcore_arr_s0_s_set_size( bcore_arr_s0_s* o, uz_t size )
+{
+    bcore_arr_s0_s_set_space( o, size );
+    if( size > o->size )
+    {
+        for( sz_t i = o->size; i < size; i++ ) o->data[ i ] = 0;
+    }
+    o->size = size;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_s0_s* bcore_arr_s0_s_step_fill( bcore_arr_s0_s* o, s0_t v_start, s0_t step, uz_t size )
+{
+    bcore_arr_s0_s_set_space( o, size );
+    s0_t v = v_start;
+    for( uz_t i = 0; i < size; i++ )
+    {
+        o->data[ i ] = v;
+        v += step;
+    }
+    o->size = size;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_arr_s0_s_make_strong( bcore_arr_s0_s* o )
+{
+    if( o->size > o->space )
+    {
+        s0_t* data = o->data;
+        o->data = bcore_u_alloc( sizeof( s0_t ), NULL, o->size, &o->space );
+        bcore_u_memcpy( sizeof( s0_t ), o->data, data, o->size );
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_s0_s* bcore_arr_s0_s_push( bcore_arr_s0_s* o, s0_t v )
+{
+    if( o->size >  o->space ) bcore_arr_s0_s_make_strong( o );
+    if( o->size == o->space )
+    {
+        o->data = bcore_un_alloc( sizeof( s0_t ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
+    }
+    o->data[ o->size++ ] = v;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_s0_s* bcore_arr_s0_s_push_left( bcore_arr_s0_s* o, s0_t v )
+{
+    bcore_arr_s0_s_push( o, 0 );
+    for( sz_t i = o->size - 1; i > 0; i-- ) o->data[ i ] = o->data[ i - 1 ];
+    o->data[ 0 ] = v;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_s0_s* bcore_arr_s0_s_push_arr( bcore_arr_s0_s* o, const bcore_arr_s0_s* arr )
+{
+    if( arr->size == 0 ) return o;
+    if( o->size > o->space ) bcore_arr_s0_s_make_strong( o );
+    if( o->size + arr->size >= o->space )
+    {
+        uz_t new_space = uz_max( o->space * 2, o->size + arr->size );
+        o->data = bcore_un_alloc( sizeof( tp_t ), o->data, o->space, new_space, &o->space );
+    }
+    for( sz_t i = 0; i < arr->size; i++ ) o->data[ o->size++ ] = arr->data[ i ];
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+s0_t bcore_arr_s0_s_pop( bcore_arr_s0_s* o )
+{
+    if( o->size == 0 ) return 0;
+    o->size--;
+    return o->data[ o->size ];
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+s2_t bcore_arr_s0_s_cmp( const bcore_arr_s0_s* o, const bcore_arr_s0_s* b )
+{
+    if( o->size == 0 ) return ( b->size == 0 ) ? 0 :  1;
+    if( b->size == 0 ) return -1;
+    uz_t min_size = uz_min( o->size, b->size );
+    for( sz_t i = 0; i < min_size; i++ )
+    {
+        if( o->data[ i ] != b->data[ i ] ) return ( o->data[ i ] < b->data[ i ] ) ? 2 : -2;
+    }
+    return ( o->size == b->size ) ? 0 : ( o->size < b->size ) ? +1 : -1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+static void s0_sort( s0_t* data, uz_t size, s0_t* buf, s2_t order )
+{
+    if( size < 2 ) return;
+    uz_t size1 = size >> 1;
+    s0_sort( data,         size1       , buf, order );
+    s0_sort( data + size1, size - size1, buf, order );
+    bcore_u_memcpy( sizeof( s0_t ), buf, data, size1 );
+    if( order > 0 )
+    {
+        for( uz_t i = 0, w = 0, r = size1; i < size1; )
+        {
+            data[ w++ ] = ( r == size || buf[ i ] <= data[ r ] ) ? buf[ i++ ] : data[ r++ ];
+        }
+    }
+    else
+    {
+        for( uz_t i = 0, w = 0, r = size1; i < size1; )
+        {
+            data[ w++ ] = ( r == size || buf[ i ] >= data[ r ] ) ? buf[ i++ ] : data[ r++ ];
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_s0_s* bcore_arr_s0_s_sort( bcore_arr_s0_s* o, s2_t order ) // stable mergesort
+{
+    if( o->space < o->size ) bcore_arr_s0_s_make_strong( o );
+    s0_t* buf = bcore_u_alloc( sizeof( s0_t ), NULL, o->size >> 1, NULL );
+    s0_sort( o->data, o->size, buf, order );
+    bcore_free( buf );
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bcore_arr_s0_s* bcore_arr_s0_s_reorder( bcore_arr_s0_s* o, const bcore_arr_uz_s* order )
+{
+    if( o->space < o->size ) bcore_arr_s0_s_make_strong( o );
+    uz_t buf_space = 0;
+    s0_t* buf = bcore_u_alloc( sizeof( s0_t ), NULL, order->size, &buf_space );
+    for( uz_t i = 0; i < order->size; i++ )
+    {
+        assert( order->data[ i ] < o->size );
+        buf[ i ] = o->data[ order->data[ i ] ];
+    }
+    bcore_un_alloc( sizeof( s0_t ), o->data, o->space, 0, &o->space );
+    o->data = buf;
+    o->space = buf_space;
+    o->size = order->size;
+    return o;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+uz_t bcore_arr_s0_s_count_equal( const bcore_arr_s0_s* o, s0_t val )
+{
+    uz_t count = 0;
+    for( uz_t i = 0; i < o->size; i++ ) count += ( o->data[ i ] == val );
+    return count;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+uz_t bcore_arr_s0_s_find( const bcore_arr_s0_s* o, uz_t start, uz_t end, s0_t v )
+{
+    if( end >= start )
+    {
+        uz_t end_l = end < o->size ? end : o->size;
+        for( uz_t j = start; j < end_l; j++ ) if( o->data[ j ] == v ) return j;
+        return end_l;
+    }
+    else
+    {
+        uz_t start_l = start < o->size ? start : o->size;
+        for( uz_t j = start_l - 1;  j < start_l && j >= end; j-- ) if( o->data[ j ] == v ) return j;
+        return start_l;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+s0_t bcore_arr_s0_s_max( const bcore_arr_s0_s* o )
+{
+    if( o->size == 0 ) return 0;
+    s0_t max = o->data[ 0 ];
+    for( uz_t i = 1; i < o->size; i++ ) max = o->data[ i ] > max ? o->data[ i ] : max;
+    return max;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+s0_t bcore_arr_s0_s_min( const bcore_arr_s0_s* o )
+{
+    if( o->size == 0 ) return 0;
+    s0_t min = o->data[ 0 ];
+    for( uz_t i = 1; i < o->size; i++ ) min = o->data[ i ] < min ? o->data[ i ] : min;
+    return min;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+uz_t bcore_arr_s0_s_idx_max( const bcore_arr_s0_s* o )
+{
+    if( o->size == 0 ) return 0;
+    s0_t max = o->data[ 0 ];
+    uz_t idx = 0;
+    for( uz_t i = 1; i < o->size; i++ )
+    {
+        if( o->data[ i ] > max )
+        {
+            max = o->data[ i ];
+            idx = i;
+        }
+    }
+    return idx;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+uz_t bcore_arr_s0_s_idx_min( const bcore_arr_s0_s* o )
+{
+    if( o->size == 0 ) return 0;
+    s0_t min = o->data[ 0 ];
+    uz_t idx = 0;
+    for( uz_t i = 1; i < o->size; i++ )
+    {
+        if( o->data[ i ] < min )
+        {
+            min = o->data[ i ];
+            idx = i;
+        }
+    }
+    return idx;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -3023,7 +3597,9 @@ vd_t bcore_arr_signal_handler( const bcore_signal_s* o )
         {
             bcore_flect_define_creator( typeof( "bcore_arr_uz_s" ), arr_uz_s_create_self );
             bcore_flect_define_creator( typeof( "bcore_arr_sz_s" ), arr_sz_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_arr_u0_s" ), arr_u0_s_create_self );
             bcore_flect_define_creator( typeof( "bcore_arr_u3_s" ), arr_u3_s_create_self );
+            bcore_flect_define_creator( typeof( "bcore_arr_s0_s" ), arr_s0_s_create_self );
             bcore_flect_define_creator( typeof( "bcore_arr_s3_s" ), arr_s3_s_create_self );
             bcore_flect_define_creator( typeof( "bcore_arr_f3_s" ), arr_f3_s_create_self );
             bcore_flect_define_creator( typeof( "bcore_arr_tp_s" ), arr_tp_s_create_self );

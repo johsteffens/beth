@@ -105,6 +105,30 @@ uz_t bcore_arr_sz_s_count_equal( const bcore_arr_sz_s* o, sz_t val ); // number 
 
 /**********************************************************************************************************************/
 
+typedef struct bcore_arr_u0_s
+{
+    aware_t _;
+    BCORE_ARRAY_DYN_SOLID_STATIC_S( u0_t, );
+} bcore_arr_u0_s;
+
+BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_u0_s )
+
+bcore_arr_u0_s* bcore_arr_u0_s_clear(     bcore_arr_u0_s* o ); // sets size to zero
+bcore_arr_u0_s* bcore_arr_u0_s_set_space( bcore_arr_u0_s* o, uz_t space );
+bcore_arr_u0_s* bcore_arr_u0_s_set_size(  bcore_arr_u0_s* o, uz_t size ); // resize
+bcore_arr_u0_s* bcore_arr_u0_s_fill(      bcore_arr_u0_s* o, uz_t size, u0_t v ); // creates filled array of size <size>
+bcore_arr_u0_s* bcore_arr_u0_s_step_fill( bcore_arr_u0_s* o, u0_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
+bcore_arr_u0_s* bcore_arr_u0_s_push(      bcore_arr_u0_s* o, u0_t v );
+bcore_arr_u0_s* bcore_arr_u0_s_push_left( bcore_arr_u0_s* o, u0_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+bcore_arr_u0_s* bcore_arr_u0_s_push_arr(  bcore_arr_u0_s* o, const bcore_arr_u0_s* arr ); // appends arr
+u0_t bcore_arr_u0_s_pop(       bcore_arr_u0_s* o );
+s2_t            bcore_arr_u0_s_cmp( const bcore_arr_u0_s* o, const bcore_arr_u0_s* b ); // see comment cmp( o, b ) above
+bcore_arr_u0_s* bcore_arr_u0_s_sort(      bcore_arr_u0_s* o, s2_t order ); // stable
+bcore_arr_u0_s* bcore_arr_u0_s_reorder(   bcore_arr_u0_s* o, const bcore_arr_uz_s* order );
+uz_t            bcore_arr_u0_s_count_equal( const bcore_arr_u0_s* o, u0_t val ); // number of occurrence
+
+/**********************************************************************************************************************/
+
 typedef struct bcore_arr_u3_s
 {
     aware_t _;
@@ -126,6 +150,36 @@ s2_t            bcore_arr_u3_s_cmp( const bcore_arr_u3_s* o, const bcore_arr_u3_
 bcore_arr_u3_s* bcore_arr_u3_s_sort(      bcore_arr_u3_s* o, s2_t order ); // stable
 bcore_arr_u3_s* bcore_arr_u3_s_reorder(   bcore_arr_u3_s* o, const bcore_arr_uz_s* order );
 uz_t            bcore_arr_u3_s_count_equal( const bcore_arr_u3_s* o, u3_t val ); // number of occurrence
+
+/**********************************************************************************************************************/
+
+typedef struct bcore_arr_s0_s
+{
+    aware_t _;
+    BCORE_ARRAY_DYN_SOLID_STATIC_S( s0_t, );
+} bcore_arr_s0_s;
+
+BCORE_DECLARE_FUNCTIONS_OBJ( bcore_arr_s0_s )
+
+bcore_arr_s0_s* bcore_arr_s0_s_clear(     bcore_arr_s0_s* o ); // sets size to zero
+bcore_arr_s0_s* bcore_arr_s0_s_set_space( bcore_arr_s0_s* o, uz_t space );
+bcore_arr_s0_s* bcore_arr_s0_s_set_size(  bcore_arr_s0_s* o, uz_t size ); // resize
+bcore_arr_s0_s* bcore_arr_s0_s_fill(      bcore_arr_s0_s* o, uz_t size, s0_t v ); // creates filled array of size <size>
+bcore_arr_s0_s* bcore_arr_s0_s_step_fill( bcore_arr_s0_s* o, s0_t v_start, s0_t step, uz_t size ); // creates filled array according to stepping
+bcore_arr_s0_s* bcore_arr_s0_s_push(      bcore_arr_s0_s* o, s0_t v );
+bcore_arr_s0_s* bcore_arr_s0_s_push_left( bcore_arr_s0_s* o, s0_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+bcore_arr_s0_s* bcore_arr_s0_s_push_arr(  bcore_arr_s0_s* o, const bcore_arr_s0_s* arr ); // appends arr
+s0_t            bcore_arr_s0_s_pop(       bcore_arr_s0_s* o );
+s2_t            bcore_arr_s0_s_cmp( const bcore_arr_s0_s* o, const bcore_arr_s0_s* b ); // see comment cmp( o, b ) above
+bcore_arr_s0_s* bcore_arr_s0_s_sort(      bcore_arr_s0_s* o, s2_t order ); // stable
+bcore_arr_s0_s* bcore_arr_s0_s_reorder(   bcore_arr_s0_s* o, const bcore_arr_uz_s* order );
+uz_t            bcore_arr_s0_s_count_equal( const bcore_arr_s0_s* o, s0_t val ); // number of occurrence
+
+uz_t            bcore_arr_s0_s_find(    const bcore_arr_s0_s* o, uz_t start, uz_t end, s0_t v ); // behaves like st_s_find_*
+s0_t            bcore_arr_s0_s_max(     const bcore_arr_s0_s* o );
+s0_t            bcore_arr_s0_s_min(     const bcore_arr_s0_s* o );
+uz_t            bcore_arr_s0_s_idx_max( const bcore_arr_s0_s* o );
+uz_t            bcore_arr_s0_s_idx_min( const bcore_arr_s0_s* o );
 
 /**********************************************************************************************************************/
 
