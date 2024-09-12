@@ -1,4 +1,4 @@
-//  Last update: 2024-09-12T10:10:32Z
+//  Last update: 2024-09-12T16:15:16Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -1122,8 +1122,8 @@
   BCORE_DECLARE_OBJECT( xoico_source_s ) \
   { \
       aware_t _; \
+      st_s full_path; \
       st_s name; \
-      st_s path; \
       st_s ext; \
       BCORE_ARRAY_DYN_LINK_STATIC_S( xoico_group_s, ); \
       bcore_arr_u0_s* plain_data; \
@@ -2072,5 +2072,5 @@ BETH_EXPAND_GROUP_xoico_builder
 BETH_EXPAND_GROUP_xoico_main
 
 #endif // __xoico_xo_H
-// XOICO_BODY_SIGNATURE 0xE1BB03F5460F3D2C
-// XOICO_FILE_SIGNATURE 0xE92F108232D24460
+// XOICO_BODY_SIGNATURE 0x7BBF1256BE9A2F56
+// XOICO_FILE_SIGNATURE 0xCD75E3999B1F7E66

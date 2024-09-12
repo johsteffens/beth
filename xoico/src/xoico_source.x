@@ -28,8 +28,8 @@ signature er_t get_group_if_preexsting( m @* o, xoico_host* host, m x_source* so
 
 stamp :s = aware :
 {
+    st_s full_path; // full file path (including extension)
     st_s name; // file name excluding directory and extension
-    st_s path; // file path excluding extension
     st_s ext;  // file extension ( "h" or "x" )
     xoico_group_s => [];
 

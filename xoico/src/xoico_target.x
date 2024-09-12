@@ -118,15 +118,11 @@ stamp :s = aware :
 
 func (:s) :.parse_from_path
 {
-    m st_s* source_name        = bcore_file_strip_extension( bcore_file_name( source_path ) )^^;
-    m st_s* source_folder_path = bcore_file_folder_path( source_path )^^;
-    m st_s* source_path_n      = st_s_create_fa( "#<sc_t>/#<sc_t>", source_folder_path.sc, source_name.sc )^^;
-
     bl_t source_exists = false;
 
     foreach( m $* e in o )
     {
-        if( source_path_n.equal_st( e.path ) )
+        if( sc_t_equal( e.full_path.sc, source_path ) )
         {
             source_exists = true;
             break;
@@ -140,8 +136,8 @@ func (:s) :.parse_from_path
 
         sc_t file_extension = bcore_file_extension( source_path );
 
-        xsource.name.copy_sc( source_name.sc );
-        xsource.path.copy( source_path_n );
+        xsource.full_path.copy_sc( source_path );
+        xsource.name.copy_sc( bcore_file_strip_extension( bcore_file_name( source_path ) )^.sc );
         xsource.ext.copy_sc( file_extension );
 
         if( bcore_file_exists( source_path ) )
