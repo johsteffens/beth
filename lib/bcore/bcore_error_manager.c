@@ -101,6 +101,23 @@ static er_t context_s_last( bcore_error_manager_context_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// removes last error if of given id
+static void context_s_remove_last_if_of( bcore_error_manager_context_s* o, er_t id )
+{
+    bcore_mutex_s_lock( &o->mutex );
+    if( o->adl.size > 0 )
+    {
+        const bcore_error_manager_error_s* error = o->adl.data[ o->adl.size - 1 ];
+        if( id == error->id )
+        {
+            bcore_error_manager_error_adl_s_set_size( &o->adl, o->adl.size > 0 ? o->adl.size - 1 : 0 );
+        }
+    }
+    bcore_mutex_s_unlock( &o->mutex );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static bl_t context_s_pop_st( bcore_error_manager_context_s* o, er_t* id, st_s* msg )
 {
     bcore_mutex_s_lock( &o->mutex );
@@ -136,6 +153,13 @@ void bcore_error_clear_stack( void )
 void bcore_error_remove_last( void )
 {
     context_s_remove_last( get_context() );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_error_remove_last_if_of( er_t id )
+{
+    context_s_remove_last_if_of( get_context(), id );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

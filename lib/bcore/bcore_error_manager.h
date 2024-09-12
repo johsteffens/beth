@@ -90,6 +90,9 @@ func void clear_stack();
 /// Removes last error from stack (if any)
 func void remove_last();
 
+/// Removes last error from stack (if last error exists and is of given id )
+func void remove_last_if_of( er_t id );
+
 /// Pushes an error onto stack; returns id
 func er_t push_sc( er_t id, sc_t msg );
 func er_t push_fv( er_t id, sc_t format, va_list args );
@@ -103,7 +106,7 @@ func er_t push_fa( er_t id, sc_t format, ... );
 func er_t push_ffl_fv( er_t id, sc_t func, sc_t file, sz_t line, sc_t format, va_list args );
 func er_t push_ffl_fa( er_t id, sc_t func, sc_t file, sz_t line, sc_t format, ... );
 
-/// (See also macro 'GERR_fa') 'push_ffl_fa' using general_error~
+/// 'push_ffl_fa' using general_error~ (See also macro 'GERR_fa')
 func er_t push_gffl_fv( sc_t func, sc_t file, sz_t line, sc_t format, va_list args );
 func er_t push_gffl_fa( sc_t func, sc_t file, sz_t line, sc_t format, ... );
 
