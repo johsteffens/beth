@@ -439,12 +439,48 @@ f = func(a,b){...};
 ```
 
 # Stamp
-A stamp can be instantiated via btml:
+A general stamp can be instantiated via btml:
 
 ``` C
-anystamp = <bcore_arr_st_s></>
+anystamp = <bcore_arr_st_s> /* any btml code here */ </>
+```
+``` C
+anystamp = <bcore_arr_st_s/> // brief instantiation
 ```
 Stamp members can be accessed via '.' operator.
+
+## Stamp Modifiers
+A stamp modifier changes a stamp. The result of the modifier  expressioon is a copy of the original stamp with the specified parts modified.
+
+### Entire Stamp
+Modifying the entire stamp can be done using a function style syntax:
+
+``` C
+<bcore_arr_st_s/>( ["a","b","c"] );
+```
+
+The stamp is modified via [generic conversion ](#generic-conversion).
+
+### Elements
+Stamp elements can be changed after instantiation via stamp modifiers. Syntactically is has the style of a function call, with elements to be modified identified in the form
+```.<element_name> = <source>```
+as assignment expression.
+
+``` C
+<bcore_main_frame_s/>( .create_log_file = TRUE, .log_file_extension = "log" );
+```
+Stamp elements are modified using [generic conversion ](#generic-conversion)
+
+### Generic Conversion
+Generic conversion is a btcl-specific type conversion when general stamps are involved in an assignement/modification operation using following criteria in given order until one succeeds
+*  If source and destination have the same type, as simple copy is instigated.
+*  If feature 'copy_from' is overloaded for given type it is used.
+*  A generic btcl-conversion is used:
+   *  If both types are arrays, the destination array is filled with elements of source.
+
+
+* If none of the above succeeds, an error message is generated.
+
 
 # Built-in Operators
 The following operators are hardwired in form of unary functions.
@@ -491,7 +527,7 @@ feature er_t btcl_function(       @* o, tp_t name, bcore_arr_sr_s* args, m sr_s*
 ```
 These define a set of functions. Each can be used in btcl like a member function of the stamp that implements the features.
 
-### Example: Definition (X)
+### Example: Definition (XOILA)
 
 ``` C
 name add_a;
@@ -499,7 +535,21 @@ name add_a;
 stamp my_stamp
 {
     f3_t additive = 0;
-    func x_btcl.btcl_function_arity = ( name == add_a~ ) 1 : -1; // return -1 for all invalid names
+    
+    /* Must return the arity of the function specified by name.
+     * Must return -1 for any invalid name.
+     */
+    func x_btcl.btcl_function_arity
+    {
+         switch( name )
+         {
+             case add_a~: =  1; // add_a accepts one argument
+             default:     = -1;
+         }
+         = -1;
+    }
+    
+    /// Implements all functions which names are listed in the arity function above.
     func x_btcl.btcl_function
     {
          switch( name )

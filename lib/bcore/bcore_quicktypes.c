@@ -138,8 +138,15 @@ static sr_s object_typelist()
     bcore_array_r_push_sc( &list, "bcore_bin_ml_interpreter_s" );
     bcore_array_r_push_sc( &list, "bcore_arr_uz_s" );
     bcore_array_r_push_sc( &list, "bcore_arr_sz_s" );
+    bcore_array_r_push_sc( &list, "bcore_arr_u0_s" );
+    bcore_array_r_push_sc( &list, "bcore_arr_u1_s" );
+    bcore_array_r_push_sc( &list, "bcore_arr_u2_s" );
     bcore_array_r_push_sc( &list, "bcore_arr_u3_s" );
+    bcore_array_r_push_sc( &list, "bcore_arr_s0_s" );
+    bcore_array_r_push_sc( &list, "bcore_arr_s1_s" );
+    bcore_array_r_push_sc( &list, "bcore_arr_s2_s" );
     bcore_array_r_push_sc( &list, "bcore_arr_s3_s" );
+    bcore_array_r_push_sc( &list, "bcore_arr_f2_s" );
     bcore_array_r_push_sc( &list, "bcore_arr_f3_s" );
     bcore_array_r_push_sc( &list, "bcore_arr_tp_s" );
     bcore_array_r_push_sc( &list, "bcore_arr_bl_s" );

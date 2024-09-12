@@ -1,4 +1,4 @@
-//  Last update: 2024-09-04T07:01:48Z
+//  Last update: 2024-09-06T14:37:22Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -1264,6 +1264,7 @@
   sz_t bcore_error_stack_size( void ); \
   void bcore_error_clear_stack( void ); \
   void bcore_error_remove_last( void ); \
+  void bcore_error_remove_last_if_of( er_t id ); \
   er_t bcore_error_push_sc( er_t id, sc_t msg ); \
   er_t bcore_error_push_fv( er_t id, sc_t format, va_list args ); \
   er_t bcore_error_push_fa( er_t id, sc_t format, ... ); \
@@ -2950,6 +2951,7 @@
   er_t x_btcl_to_sink( bl_t detailed, const sr_s* sr, x_sink* sink ); \
   er_t x_btcl_parse_create_object( x_source* source, sr_s* obj ); \
   void x_btcl_selftest( sc_t file ); \
+  er_t x_btcl_generic_copy( sr_s* sr, const sr_s* sb ); \
   typedef sz_t (*x_btcl_btcl_function_arity)(const x_btcl* o, tp_t name ); \
   typedef er_t (*x_btcl_btcl_function)(const x_btcl* o, tp_t name, const bcore_arr_sr_s* args, sr_s* result ); \
   XOILA_DECLARE_SPECT( x_btcl ) \
@@ -3278,5 +3280,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xF2332B92B62F68FE
-// XOICO_FILE_SIGNATURE 0xBBCB6664BA90E404
+// XOICO_BODY_SIGNATURE 0x3E66720594E15E2A
+// XOICO_FILE_SIGNATURE 0x2EEB0D396DA6DBE5
