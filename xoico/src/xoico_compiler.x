@@ -78,6 +78,11 @@ signature bl_t get_type_member_object_info(   c @* o, tp_t type, tp_t name, m :e
 
 signature bl_t get_type_array_element_info( c @* o, tp_t type,            m :element_info_s* info );
 
+/// parse methods (see embed_method)
+name as_header;
+name as_string;
+name as_group;
+
 // external interface ...
 signature er_t parse
 (
@@ -88,6 +93,7 @@ signature er_t parse
     sc_t  source_path,
     sc_t  group_name, // can be NULL
     sc_t  trait_name, // can be NULL
+    tp_t  embed_method, // default ( = 0), as_header, as_string, ...
     m sz_t* p_target_index
 );
 
@@ -487,7 +493,7 @@ func (:s) :.parse
         ERR_fa( "Target '#<sc_t>': Assigned output path '#<sc_t>' differs from requested output path '#<sc_t>'.", target.name.sc, target.output_path.sc, target_output_path.sc );
     }
 
-    target.parse_from_path( source_path, group_name, trait_name );
+    target.parse_from_path( source_path, group_name, trait_name, embed_method );
     if( p_target_index ) p_target_index.0 = target_index;
 
     return 0;

@@ -240,7 +240,6 @@ Functor-style stamp declaration:
 
     -------------------------
 
-
 ----------------------------------------------------------------------------------------------
 
 set:
@@ -251,9 +250,52 @@ set:
 
 ----------------------------------------------------------------------------------------------
 
-embed:
-  Embeds the content of a file into the section.
-  A relative path is considered relative to the given file location
+Config File:
+The config file is typically named *_xoico.cfg is specified once for each target.
+It contains the list of source files, the list of dependencies and the compiler configuration.
+
+Example:
+
+-------------------------
+name = "byth";
+
+srcs =
+[
+    "group byth_plot    = x_inst byth_plot.py" // default embedding: as_string
+    "group byth_forward = x_inst byth_forward.x",
+    "group byth_frame   = x_inst byth_frame.x",
+    "group byth_obj     = x_inst byth_obj.x",
+];
+
+deps =
+[
+    "../bcore/bcore_xoico.cfg: readonly",
+    "../bmath/bmath_xoico.cfg"
+];
+
+<xoico_builder_target_s/>( .name = name, .sources = srcs, .dependencies = deps )
+-------------------------
+
+Changes in any code leads to updating all affected targets, this may also change targets in dependencies.
+Exception: If a dependency is followed by ': readonly' the respective target is not updated.
+
+Source embedding methods:
+Different types of sources are embedded by different methods:
+C-header files (*.h): These are parsed for xoila-sections code and translated as specified.
+
+X files (*.x)       : These are translated as xoila code. A group and trade can be optionally specified
+                      otherwise the filename (without extension) is taken as group name with trade x_inst.
+                      spaces and dots inside the file name are replaces with '_'.
+
+Other files         : Same group handling as x-files except that the default group name incudes the file's extension.
+                      The files content is embedded (copied) into the build. The embedding method is specified below.
+
+Embedding of other files:
+The default assumption is that the source file is a text file in UTF8 encoding.
+It is translated into the builtin function 'd st_s* as_string();' returning the file's content as string.
+Optionally, the embedding method is selectable using the 'embed' specifier after the file name:
+Example:
+    "group byth_plot = x_inst byth_plot.py: embed as_string"
 
 ----------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------
@@ -322,6 +364,20 @@ Using '=' as statement is interpreted as completion.
 At this corresponds to using a return statement
 Example:
 func ( sz_t seven() ) { = 7; };
+
+
+group signal callback function:
+A group reserves two special (optional) functions which, if defined, are called by the init1, down1 signal handler.
+These functions are called signal_init and signal_down. They may not be used for any other purpose and must
+have the following signature:
+func void group_signal_init1();
+func void group_signal_down1();
+
+group_signal_init1() is called last during the init1 signal cycle for the specifc group.
+group_signal_down1() is called first during the down1 signal cycle for the specifc group.
+
+These function can be used to initialize/discard global objects (e.g. constants) or
+call initializaer/destructors of external libraries, plugins, etc.
 
 ===================================================================
 FEATURES, BUGS ...

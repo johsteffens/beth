@@ -20,7 +20,7 @@
 signature er_t parse_func( m @* o, m x_source* source );
 signature er_t parse_wrap( m @* o, m x_source* source );
 signature er_t make_funcs_overloadable( m @* o );
-signature er_t push_default_funcs( m @* o );
+signature er_t push_inexpandable_funcs( m @* o );
 signature er_t push_compact_initializer_func( m @* o );
 signature c xoico_func_s* get_func_from_name( c @* o, tp_t name ); // returns NULL if not found
 signature c xoico_feature_s* get_traitline_feature_from_name( c @* o, tp_t name ); // returns NULL if not found
@@ -116,7 +116,7 @@ stamp :s = aware :
         return func;
     };
 
-    func :.push_default_funcs;
+    func :.push_inexpandable_funcs;
 
     func xoico_host.parse_name_st { return o.group.parse_name_st( source, name ); };
     func xoico_host.compiler { return o.group.compiler; };
@@ -474,7 +474,7 @@ func (:s) er_t parse_extend( m @* o, m x_source* source )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) er_t push_default_func_from_sc( m @* o, sc_t sc )
+func (:s) er_t push_inexpandable_func_from_sc( m @* o, sc_t sc )
 {
     m $* compiler = o.group.compiler;
     m $* func = xoico_func_s!^;
@@ -524,14 +524,14 @@ func (:s) er_t push_internal_func_from_sc( m @* o, sc_t sc )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) :.push_default_funcs
+func (:s) :.push_inexpandable_funcs
 {
-    o.push_default_func_from_sc( "bcore_stamp_funcs.init;" );
-    o.push_default_func_from_sc( "bcore_stamp_funcs.down;" );
-    o.push_default_func_from_sc( "bcore_stamp_funcs.copy;" );
-    o.push_default_func_from_sc( "bcore_stamp_funcs.create;" );
-    o.push_default_func_from_sc( "bcore_stamp_funcs.discard;" );
-    o.push_default_func_from_sc( "bcore_stamp_funcs.clone;" );
+    o.push_inexpandable_func_from_sc( "bcore_stamp_funcs.init;" );
+    o.push_inexpandable_func_from_sc( "bcore_stamp_funcs.down;" );
+    o.push_inexpandable_func_from_sc( "bcore_stamp_funcs.copy;" );
+    o.push_inexpandable_func_from_sc( "bcore_stamp_funcs.create;" );
+    o.push_inexpandable_func_from_sc( "bcore_stamp_funcs.discard;" );
+    o.push_inexpandable_func_from_sc( "bcore_stamp_funcs.clone;" );
     return 0;
 };
 

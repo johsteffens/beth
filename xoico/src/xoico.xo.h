@@ -1,6 +1,6 @@
-//  Last update: 2024-05-28T08:48:33Z
+//  Last update: 2024-09-12T10:10:32Z
 /** This file was generated from xoila source code.
- *  Compiling Agent : XOICO (C) 2020 ... 2022 J.B.Steffens
+ *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
  *
  *  Copyright and License of this File:
@@ -23,6 +23,7 @@
  *  xoico_funcs.x
  *  xoico_feature.x
  *  xoico_features.x
+ *  xoico_embedded_data.x
  *  xoico_group.x
  *  xoico_wrap.x
  *  xoico_stamp.x
@@ -127,6 +128,7 @@
   typedef er_t (*xoico_expand_indef_declaration)(const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   typedef er_t (*xoico_expand_definition)(const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   typedef er_t (*xoico_expand_init1)(const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
+  typedef er_t (*xoico_expand_down1)(const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   typedef er_t (*xoico_expand_manifesto)(const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   typedef const x_source_point_s* (*xoico_get_source_point)(const xoico* o ); \
   XOILA_DECLARE_SPECT( xoico ) \
@@ -146,6 +148,7 @@
       xoico_expand_indef_declaration expand_indef_declaration; \
       xoico_expand_definition expand_definition; \
       xoico_expand_init1 expand_init1; \
+      xoico_expand_down1 expand_down1; \
       xoico_expand_manifesto expand_manifesto; \
       xoico_get_source_point get_source_point; \
   }; \
@@ -216,6 +219,11 @@
   static inline er_t xoico_p_expand_init1( const xoico_spect_s* p, const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ){ assert( p->expand_init1 ); return p->expand_init1( o, host, indent, sink );} \
   static inline bl_t xoico_p_defines_expand_init1( const xoico_spect_s* p ){ return  true;} \
   static inline er_t xoico_expand_init1_default( const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ){ return  0;} \
+  static inline er_t xoico_a_expand_down1( const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ){ const xoico_spect_s* p = xoico_spect_s_get_aware( o ); assert( p->expand_down1 ); return p->expand_down1( o, host, indent, sink );} \
+  static inline bl_t xoico_defines_expand_down1( const xoico* o ){ return  true;} \
+  static inline er_t xoico_p_expand_down1( const xoico_spect_s* p, const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ){ assert( p->expand_down1 ); return p->expand_down1( o, host, indent, sink );} \
+  static inline bl_t xoico_p_defines_expand_down1( const xoico_spect_s* p ){ return  true;} \
+  static inline er_t xoico_expand_down1_default( const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ){ return  0;} \
   static inline er_t xoico_a_expand_manifesto( const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ){ const xoico_spect_s* p = xoico_spect_s_get_aware( o ); assert( p->expand_manifesto ); return p->expand_manifesto( o, host, indent, sink );} \
   static inline bl_t xoico_defines_expand_manifesto( const xoico* o ){ return  true;} \
   static inline er_t xoico_p_expand_manifesto( const xoico_spect_s* p, const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ){ assert( p->expand_manifesto ); return p->expand_manifesto( o, host, indent, sink );} \
@@ -808,6 +816,38 @@
   BETH_EXPAND_ITEM_xoico_features_s
 
 /**********************************************************************************************************************/
+// source: xoico_embedded_data.x
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: xoico_embedded_data
+
+#define TYPEOF_xoico_embedded_data 0x9C5B825F43A76851ull
+#define TYPEOF_xoico_embedded_data_spect_s 0x7001A59A2AB72C8Dull
+#define TYPEOF_xoico_embedded_data_s 0x1FA0648E172FF75Bull
+#define BETH_EXPAND_ITEM_xoico_embedded_data_s \
+  BCORE_DECLARE_OBJECT( xoico_embedded_data_s ) \
+  { \
+      aware_t _; \
+      xoico_group_s* group; \
+      bcore_arr_u0_s* arr; \
+      tp_t embed_method; \
+      tp_t function_name; \
+  }; \
+  er_t xoico_embedded_data_s_parse( xoico_embedded_data_s* o, const xoico_host* host, x_source* source ); \
+  tp_t xoico_embedded_data_s_get_hash( const xoico_embedded_data_s* o ); \
+  er_t xoico_embedded_data_s_expand_declaration( const xoico_embedded_data_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
+  er_t xoico_embedded_data_s_expand_definition( const xoico_embedded_data_s* o, const xoico_host* host, sz_t indent, x_sink* sink );
+#define BETH_EXPAND_GROUP_xoico_embedded_data \
+  BCORE_FORWARD_OBJECT( xoico_embedded_data ); \
+  BCORE_FORWARD_OBJECT( xoico_embedded_data_s ); \
+  XOILA_DECLARE_SPECT( xoico_embedded_data ) \
+  { \
+      bcore_spect_header_s header; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( xoico_embedded_data ) \
+  BETH_EXPAND_ITEM_xoico_embedded_data_s
+
+/**********************************************************************************************************************/
 // source: xoico_group.x
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -817,6 +857,8 @@
 #define TYPEOF_xoico_group_spect_s 0x3DE6C1C7D3A336F5ull
 #define TYPEOF_x_inst_main 0x0242B13DF94FA288ull
 #define TYPEOF_x_inst_main_c 0x85BAD49DD0D384C2ull
+#define TYPEOF_group_signal_init1 0xF5503B3DB199866Full
+#define TYPEOF_group_signal_down1 0xAB78D80A065BFC75ull
 #define TYPEOF_xoico_group_source_stack_s 0x753CECC8CE8A05B2ull
 #define BETH_EXPAND_ITEM_xoico_group_source_stack_s \
   BCORE_DECLARE_OBJECT( xoico_group_source_stack_s ) \
@@ -844,6 +886,8 @@
       bl_t is_retrievable; \
       bcore_arr_tp_s* retrievable_stamps; \
       bl_t short_spect_name; \
+      bl_t defines_group_signal_init1; \
+      bl_t defines_group_signal_down1; \
       xoico_transient_map_s transient_map; \
       xoico_stamp_s* extending_stamp; \
       xoico_funcs_s funcs; \
@@ -875,11 +919,13 @@
   er_t xoico_group_s_parse_name_recursive( const xoico_group_s* o, x_source* source, st_s* name ); \
   er_t xoico_group_s_parse_name_st( const xoico_group_s* o, x_source* source, st_s* name ); \
   er_t xoico_group_s_parse_name_tp( const xoico_group_s* o, x_source* source, tp_t* name ); \
-  er_t xoico_group_s_push_default_feature_from_sc( xoico_group_s* o, sc_t sc ); \
-  er_t xoico_group_s_push_default_func_from_sc( xoico_group_s* o, sc_t sc ); \
+  er_t xoico_group_s_push_inexpandable_feature_from_sc( xoico_group_s* o, sc_t sc ); \
+  er_t xoico_group_s_push_inexpandable_func_from_sc( xoico_group_s* o, sc_t sc ); \
+  er_t xoico_group_s_push_func_from_sc( xoico_group_s* o, sc_t sc ); \
   er_t xoico_group_s_parse_func( xoico_group_s* o, x_source* source, bl_t register_in_function_manager ); \
   er_t xoico_group_s_push_func_d( xoico_group_s* o, xoico_func_s* func ); \
   er_t xoico_group_s_parse( xoico_group_s* o, const xoico_host* host, bl_t parse_block, x_source* source ); \
+  er_t xoico_group_s_parse_embed( xoico_group_s* o, const xoico_host* host, x_source* source, tp_t embed_method ); \
   er_t xoico_group_s_finalize( xoico_group_s* o, const xoico_host* host ); \
   er_t xoico_group_s_expand_forward( const xoico_group_s* o, sz_t indent, x_sink* sink ); \
   er_t xoico_group_s_expand_spect_declaration( const xoico_group_s* o, sz_t indent, x_sink* sink ); \
@@ -887,6 +933,7 @@
   er_t xoico_group_s_expand_spect_definition( const xoico_group_s* o, sz_t indent, x_sink* sink ); \
   er_t xoico_group_s_expand_definition( const xoico_group_s* o, sz_t indent, x_sink* sink ); \
   er_t xoico_group_s_expand_init1( const xoico_group_s* o, sz_t indent, x_sink* sink ); \
+  er_t xoico_group_s_expand_down1( const xoico_group_s* o, sz_t indent, x_sink* sink ); \
   static inline tp_t xoico_group_s_get_global_name_tp( const xoico_group_s* o ){ return  o->tp_name;} \
   static inline xoico* xoico_group_s_push_item_d( xoico_group_s* o, xoico* item ){ return  ((xoico*)(x_array_push_d(((x_array*)(o)),((x_inst*)(item )))));} \
   static inline void xoico_group_s_explicit_embeddings_push( const xoico_group_s* o, bcore_arr_st_s* arr ){ {const bcore_arr_st_s* __a=&(o->explicit_embeddings );if(__a)for(sz_t __i=0;__i<__a->size;__i++){st_s* st=__a->data[__i]; bcore_arr_st_s_push_st(arr,st );}}} \
@@ -1010,9 +1057,9 @@
   er_t xoico_stamp_s_parse_func( xoico_stamp_s* o, x_source* source ); \
   er_t xoico_stamp_s_parse_wrap( xoico_stamp_s* o, x_source* source ); \
   er_t xoico_stamp_s_parse_extend( xoico_stamp_s* o, x_source* source ); \
-  er_t xoico_stamp_s_push_default_func_from_sc( xoico_stamp_s* o, sc_t sc ); \
+  er_t xoico_stamp_s_push_inexpandable_func_from_sc( xoico_stamp_s* o, sc_t sc ); \
   er_t xoico_stamp_s_push_internal_func_from_sc( xoico_stamp_s* o, sc_t sc ); \
-  er_t xoico_stamp_s_push_default_funcs( xoico_stamp_s* o ); \
+  er_t xoico_stamp_s_push_inexpandable_funcs( xoico_stamp_s* o ); \
   er_t xoico_stamp_s_push_compact_initializer_func( xoico_stamp_s* o ); \
   er_t xoico_stamp_s_parse( xoico_stamp_s* o, const xoico_host* host, x_source* source ); \
   er_t xoico_stamp_s_finalize( xoico_stamp_s* o, const xoico_host* host ); \
@@ -1079,6 +1126,8 @@
       st_s path; \
       st_s ext; \
       BCORE_ARRAY_DYN_LINK_STATIC_S( xoico_group_s, ); \
+      bcore_arr_u0_s* plain_data; \
+      bl_t embed_plain_data_as_string_function; \
       xoico_target_s* target; \
   }; \
   er_t xoico_source_s_expand_setup( xoico_source_s* o, const xoico_host* host ); \
@@ -1088,12 +1137,12 @@
   er_t xoico_source_s_expand_declaration( const xoico_source_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   er_t xoico_source_s_expand_definition( const xoico_source_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   er_t xoico_source_s_expand_init1( const xoico_source_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
+  er_t xoico_source_s_expand_down1( const xoico_source_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   er_t xoico_source_s_expand_manifesto( const xoico_source_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   void xoico_source_s_explicit_embeddings_push( const xoico_source_s* o, bcore_arr_st_s* arr ); \
   xoico_compiler_s* xoico_source_s_compiler( const xoico_source_s* o ); \
   er_t xoico_source_s_get_group_if_preexsting( xoico_source_s* o, const xoico_host* host, x_source* source, sc_t group_name, sc_t trait_name, xoico_group_s** group ); \
-  er_t xoico_source_s_parse_h( xoico_source_s* o, const xoico_host* host, x_source* source ); \
-  er_t xoico_source_s_parse_x( xoico_source_s* o, const xoico_host* host, x_source* source, sc_t group_name, sc_t trait_name );
+  er_t xoico_source_s_parse( xoico_source_s* o, const xoico_host* host, x_source* source, sc_t group_name, sc_t trait_name, tp_t embed_method );
 #define BETH_EXPAND_GROUP_xoico_source \
   BCORE_FORWARD_OBJECT( xoico_source ); \
   BCORE_FORWARD_OBJECT( xoico_source_s ); \
@@ -1147,7 +1196,7 @@
   void xoico_target_s_explicit_embeddings_push( const xoico_target_s* o, bcore_arr_st_s* arr ); \
   static inline xoico_compiler_s* xoico_target_s_compiler( const xoico_target_s* o ); \
   static inline xoico_cengine* xoico_target_s_cengine( const xoico_target_s* o ); \
-  er_t xoico_target_s_parse_from_path( xoico_target_s* o, sc_t source_path, sc_t group_name, sc_t trait_name ); \
+  er_t xoico_target_s_parse_from_path( xoico_target_s* o, sc_t source_path, sc_t group_name, sc_t trait_name, tp_t embed_method ); \
   tp_t xoico_target_s_get_hash( const xoico_target_s* o ); \
   bl_t xoico_target_s_is_cyclic_recursive( xoico_target_s* o ); \
   bl_t xoico_target_s_is_cyclic( xoico_target_s* o ); \
@@ -1198,6 +1247,9 @@
       xoico_compiler_type_info_s type_info; \
       xoico_func_s* func; \
   };
+#define TYPEOF_as_header 0xF646F01E7CF98A97ull
+#define TYPEOF_as_string 0xBAEC3F9151E62207ull
+#define TYPEOF_as_group 0x056176620137FF69ull
 #define TYPEOF_xoico_compiler_s 0xA7C0906C33CBFB69ull
 #define BETH_EXPAND_ITEM_xoico_compiler_s \
   BCORE_DECLARE_OBJECT( xoico_compiler_s ) \
@@ -1255,7 +1307,7 @@
   er_t xoico_compiler_s_register_item( xoico_compiler_s* o, const xoico* item ); \
   er_t xoico_compiler_s_register_func( xoico_compiler_s* o, const xoico_func_s* func ); \
   er_t xoico_compiler_s_check_overwrite( const xoico_compiler_s* o, sc_t file, tp_t body_signature, bl_t* clear_to_overwrite ); \
-  er_t xoico_compiler_s_parse( xoico_compiler_s* o, sc_t target_name, sc_t target_ext, const st_s* target_output_folder, sc_t source_path, sc_t group_name, sc_t trait_name, sz_t* p_target_index ); \
+  er_t xoico_compiler_s_parse( xoico_compiler_s* o, sc_t target_name, sc_t target_ext, const st_s* target_output_folder, sc_t source_path, sc_t group_name, sc_t trait_name, tp_t embed_method, sz_t* p_target_index ); \
   er_t xoico_compiler_s_finalize( xoico_compiler_s* o, const xoico_host* host ); \
   er_t xoico_compiler_s_expand_setup( xoico_compiler_s* o, const xoico_host* host ); \
   bl_t xoico_compiler_s_to_be_modified( const xoico_compiler_s* o ); \
@@ -2007,6 +2059,7 @@ BETH_EXPAND_GROUP_xoico_func
 BETH_EXPAND_GROUP_xoico_funcs
 BETH_EXPAND_GROUP_xoico_feature
 BETH_EXPAND_GROUP_xoico_features
+BETH_EXPAND_GROUP_xoico_embedded_data
 BETH_EXPAND_GROUP_xoico_group
 BETH_EXPAND_GROUP_xoico_wrap
 BETH_EXPAND_GROUP_xoico_stamp
@@ -2019,5 +2072,5 @@ BETH_EXPAND_GROUP_xoico_builder
 BETH_EXPAND_GROUP_xoico_main
 
 #endif // __xoico_xo_H
-// XOICO_BODY_SIGNATURE 0xA75F3EDDA83B3D56
-// XOICO_FILE_SIGNATURE 0xFE7859AD237C0801
+// XOICO_BODY_SIGNATURE 0xE1BB03F5460F3D2C
+// XOICO_FILE_SIGNATURE 0xE92F108232D24460

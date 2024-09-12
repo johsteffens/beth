@@ -17,7 +17,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-signature er_t parse_from_path( m @* o, sc_t source_path, sc_t group_name /* can be NULL */, sc_t trait_name /* can be NULL */ );
+signature er_t parse_from_path( m @* o, sc_t source_path, sc_t group_name /* can be NULL */, sc_t trait_name /* can be NULL */, tp_t embed_method );
 signature bl_t to_be_modified( c @* o );
 signature er_t expand_phase1( m @* o, m bl_t* p_modified );
 signature er_t expand_phase2( m @* o, m bl_t* p_modified );
@@ -138,20 +138,15 @@ func (:s) :.parse_from_path
         m xoico_source_s* xsource = xoico_source_s!^^;
         xsource.target = o;
 
+        sc_t file_extension = bcore_file_extension( source_path );
+
         xsource.name.copy_sc( source_name.sc );
         xsource.path.copy( source_path_n );
-        xsource.ext.copy_sc( bcore_file_extension( source_path ) );
+        xsource.ext.copy_sc( file_extension );
 
         if( bcore_file_exists( source_path ) )
         {
-            if( group_name )
-            {
-                xsource.parse_x( o, bcore_file_open_source( source_path )^^, group_name, trait_name );
-            }
-            else
-            {
-                xsource.parse_h( o, bcore_file_open_source( source_path )^^ );
-            }
+            xsource.parse( o, bcore_file_open_source( source_path )^^, group_name, trait_name, embed_method );
         }
         else
         {
@@ -419,6 +414,13 @@ func (:s) er_t expand_c( c @* o, sz_t indent, m x_sink* sink, mutable tp_t* body
     sink_buf.push_fa( "#rn{ }        {\n", indent );
     o.expand_init1( indent + 12, sink_buf );
     foreach( m $* e in o ) e.expand_init1( o, indent + 12, sink_buf );
+    sink_buf.push_fa( "#rn{ }        }\n", indent );
+    sink_buf.push_fa( "#rn{ }        break;\n", indent );
+
+    sink_buf.push_fa( "#rn{ }        case TYPEOF_down1:\n", indent );
+    sink_buf.push_fa( "#rn{ }        {\n", indent );
+    o.expand_init1( indent + 12, sink_buf );
+    foreach( m $* e in o ) e.expand_down1( o, indent + 12, sink_buf );
     sink_buf.push_fa( "#rn{ }        }\n", indent );
     sink_buf.push_fa( "#rn{ }        break;\n", indent );
 

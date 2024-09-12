@@ -19,14 +19,19 @@
 
 name x_inst_main;
 name x_inst_main_c;
+name group_signal_init1;
+name group_signal_down1;
 
 signature m xoico* /*item*/ push_item_d( m @* o, d xoico* item );
 signature er_t parse_name_recursive( c @* o, m x_source* source, m st_s* name );
 signature er_t expand_declaration(   c @* o, sz_t indent, m x_sink* sink );
 signature er_t expand_definition(    c @* o, sz_t indent, m x_sink* sink );
 signature er_t expand_init1(         c @* o, sz_t indent, m x_sink* sink );
+signature er_t expand_down1(         c @* o, sz_t indent, m x_sink* sink );
 signature void explicit_embeddings_push( c @* o, m bcore_arr_st_s* arr );
-signature er_t parse ( m @* o, c xoico_host* host, bl_t parse_block, m x_source* source );
+
+signature er_t parse      ( m @* o, c xoico_host* host, bl_t parse_block, m x_source* source );
+signature er_t parse_embed( m @* o, c xoico_host* host, m x_source* source, tp_t embed_method );
 
 signature m xoico_source_s*   get_source( c @* o );
 signature m xoico_target_s*   get_target( c @* o );
@@ -98,6 +103,12 @@ stamp :s = aware :
      */
     bl_t short_spect_name;
 
+    /** Defines init1 and down1 functions, which act as group constructor and destructor
+     *  and are called during init1 and down1 signal cycles.
+     */
+    bl_t defines_group_signal_init1;
+    bl_t defines_group_signal_down1;
+
     xoico_transient_map_s transient_map;
 
     private xoico_stamp_s* extending_stamp; // !=NULL: extends this stamp on subsequent stamps
@@ -127,6 +138,7 @@ stamp :s = aware :
     func :.expand_declaration;
     func :.expand_definition;
     func :.expand_init1;
+    func :.expand_down1;
 
     func xoico.expand_manifesto
     {
@@ -325,7 +337,7 @@ func (:s) xoico_host.parse_name_tp
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) er_t push_default_feature_from_sc( m @* o, sc_t sc )
+func (:s) er_t push_inexpandable_feature_from_sc( m @* o, sc_t sc )
 {
     m $* compiler = o.compiler;
     m $* feature = xoico_feature_s!^;
@@ -346,10 +358,21 @@ func (:s) er_t push_default_feature_from_sc( m @* o, sc_t sc )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) er_t push_default_func_from_sc( m @* o, sc_t sc )
+func (:s) er_t push_inexpandable_func_from_sc( m @* o, sc_t sc )
 {
     m $* func = xoico_func_s!^;
     func.expandable = false;
+    func.parse( o, x_source_create_from_sc( sc )^ );
+    o.push_func_d( func.fork() );
+    return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) er_t push_func_from_sc( m @* o, sc_t sc )
+{
+    m $* func = xoico_func_s!^;
+    func.expandable = true;
     func.parse( o, x_source_create_from_sc( sc )^ );
     o.push_func_d( func.fork() );
     return 0;
@@ -362,6 +385,17 @@ func (:s) er_t parse_func( m @* o, m x_source* source, bl_t register_in_function
     m $* func = xoico_func_s!^;
     func.parse( o, source );
     func.register_in_function_manager = register_in_function_manager;
+
+    if( func.name == group_signal_init1~ )
+    {
+        o.defines_group_signal_init1 = true;
+    }
+
+    if( func.name == group_signal_down1~ )
+    {
+        o.defines_group_signal_down1 = true;
+    }
+
     o.push_func_d( func.fork() );
     if( func.signature_global_name == x_inst_main~ || func.signature_global_name == x_inst_main_c~ )
     {
@@ -466,7 +500,7 @@ func (:s) :.parse
             m $* stamp = xoico_stamp_s!^;
             stamp.group = o;
             stamp.parse( o, source );
-            stamp.push_default_funcs();
+            stamp.push_inexpandable_funcs();
             compiler.register_item( o.push_item_d( stamp.fork() ) );
         }
 
@@ -778,13 +812,41 @@ func (:s) :.parse
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:s) :.parse_embed
+{
+    if( embed_method == TYPEOF_as_string )
+    {
+        m $* embedded_data = xoico_embedded_data_s!^;
+
+        embedded_data.group = o;
+        embedded_data.embed_method = embed_method;
+
+        c st_s* full_function_name = st_s!^.copy_fa( "#<sc_t>_as_string", o.st_name.sc );
+
+        embedded_data.function_name = host.entypeof( full_function_name.sc );
+        embedded_data.embed_method = embed_method;
+        embedded_data.parse( o, source );
+
+        o.push_item_d( embedded_data.fork() );
+
+        o.push_func_from_sc( st_s!^.copy_fa( "d st_s* as_string();" ).sc );
+    }
+    else
+    {
+        GERR_fa( "Invalid embed_method." );
+    }
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:s) xoico.finalize
 {
     /// default features
-    o.push_default_feature_from_sc( "d @* clone( c @* o );" );
-    o.push_default_feature_from_sc( "void copy( m @* o, c @* src );" );
-    o.push_default_feature_from_sc( "void discard( m @* o );" );
-    o.push_default_func_from_sc(    "d obliv @* t_create( tp_t t );" );
+    o.push_inexpandable_feature_from_sc( "d @* clone( c @* o );" );
+    o.push_inexpandable_feature_from_sc( "void copy( m @* o, c @* src );" );
+    o.push_inexpandable_feature_from_sc( "void discard( m @* o );" );
+    o.push_inexpandable_func_from_sc(    "d obliv @* t_create( tp_t t );" );
 
     // check validity of trait name
     if( !host.compiler().is_group( o.trait_name ) )
@@ -943,7 +1005,7 @@ func (:s) :.expand_init1
 {
     if( !o.expandable ) return 0;
     sink.push_fa( "\n" );
-    sink.push_fa( "#rn{ }// group: #<sc_t>\n", indent, o->st_name.sc );
+    sink.push_fa( "#rn{ }// group: #<sc_t>\n", indent, o.st_name.sc );
     foreach( m $* e in o ) e.expand_init1( o, indent, sink );
     foreach( m $* func in o->funcs ) func.expand_init1( o, indent, sink );
 
@@ -958,12 +1020,6 @@ func (:s) :.expand_init1
 
     if( o.is_retrievable )
     {
-        /// deprecated
-//        foreach( m $* e in o; e._ == xoico_stamp_s~ )
-//        {
-//            sink.push_fa( "#rn{ }bcore_inst_s_get_typed( TYPEOF_#<sc_t> );\n", indent, e.cast( m xoico_stamp_s* ).st_name.sc );
-//        }
-
         sink.push_fa( "#rn{ }{\n", indent );
         sink.push_fa( "#rn{ }   bcore_arr_tp_s* arr = bcore_arr_tp_s_create();\n", indent );
         foreach( tp_t type in o.retrievable_stamps )
@@ -972,8 +1028,27 @@ func (:s) :.expand_init1
         }
         sink.push_fa( "#rn{ }   bcore_xoila_set_arr_traitline_stamps_d( TYPEOF_#<sc_t>, arr );\n", indent, o.compiler.nameof( o.tp_name ) );
         sink.push_fa( "#rn{ }}\n", indent );
-
     }
+
+
+    if( o.defines_group_signal_init1 )
+    {
+        sink.push_fa( "#rn{ }#<sc_t>_group_signal_init1();\n", indent, o.st_name.sc );
+    }
+
+    return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) :.expand_down1
+{
+    if( !o.expandable ) return 0;
+    if( o.defines_group_signal_down1 )
+    {
+        sink.push_fa( "#rn{ }#<sc_t>_group_signal_down1();\n", indent, o.st_name.sc );
+    }
+
     return 0;
 };
 

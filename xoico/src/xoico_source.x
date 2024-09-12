@@ -17,8 +17,9 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-signature er_t parse_h( m @* o, c xoico_host* host, m x_source* source );
-signature er_t parse_x( m @* o, c xoico_host* host, m x_source* source, sc_t group_name, sc_t trait_name );
+/// parse function for different embedding methods
+signature er_t parse( m @* o, c xoico_host* host, m x_source* source, sc_t group_name, sc_t trait_name, tp_t embed_method );
+
 
 /// retrieves group if already defined (e.g. for extending); sets arg_group.1 NULL if not defined
 signature er_t get_group_if_preexsting( m @* o, xoico_host* host, m x_source* source, sc_t group_name, sc_t trait_name, m xoico_group_s.2 group );
@@ -31,6 +32,10 @@ stamp :s = aware :
     st_s path; // file path excluding extension
     st_s ext;  // file extension ( "h" or "x" )
     xoico_group_s => [];
+
+    // source file represents plain data to be embedded in target
+    bcore_arr_u0_s => plain_data;
+    bl_t embed_plain_data_as_string_function; // embed plain data as string function
 
     hidden aware xoico_target_s* target;
 
@@ -52,15 +57,13 @@ stamp :s = aware :
         return hash;
     };
 
-    func :.parse_h;
-    func :.parse_x;
+    func :.parse;
 
     func xoico.finalize
     {
         foreach( m $* e in o ) e.finalize( o );
         return 0;
     };
-
 
     func xoico.expand_declaration
     {
@@ -88,6 +91,60 @@ stamp :s = aware :
             }
             foreach( m $* e in o ) e.expand_definition( indent, sink );
         }
+
+        if( o.embed_plain_data_as_string_function )
+        {
+            sink.push_fa( "\n" );
+            sink.push_fa( "#rn{ }/*#rn{*}*/\n", indent, sz_max( 0, 116 - indent ) );
+            sink.push_fa( "#rn{ }// source: #<sc_t>.#<sc_t>\n", indent, o.name.sc, o.ext.sc );
+            sink.push_fa( "#rn{ }// Embedded as string function.\n", indent );
+
+            st_s^ func_global_name.push_fa( "#<sc_t>_#<sc_t>", o.name.sc, o.ext.sc );
+            func_global_name.replace_sc_sc( ".", "_" );
+
+            sink.push_fa( "#rn{ }st_s* #<sc_t>( void )\n", indent, func_global_name.sc );
+            sink.push_fa( "#rn{ }{\n"                            , indent );
+
+            sink.push_fa( "#rn{ }    sc_t sc[] =\n", indent );
+            sink.push_fa( "#rn{ }    {\n" , indent );
+            sink.push_fa( "#rn{ }        \"" , indent );
+
+            sz_t lines = 0;
+
+            for( sz_t i = 0; i < o.plain_data.size; i++ )
+            {
+                u0_t c = o.plain_data.[ i ];
+                switch( c )
+                {
+                    case '\\': sink.push_sc( "\\\\" ); break;
+                    case '"' : sink.push_sc( "\\\"" ); break;
+                    case '\n':
+                    {
+                        if( i + 1 < o.plain_data.size )
+                        {
+                            sink.push_fa( "\\n\",\n" );
+                            sink.push_fa( "#rn{ }        \"" , indent );
+                            lines++;
+                        }
+                    }
+                    break;
+
+                    default: sink.push_char( c );  break;
+                }
+            }
+            sink.push_fa( "\\n\"\n" );
+            sink.push_fa( "#rn{ }    };\n", indent );
+            lines++;
+
+            sink.push_fa( "#rn{ }    st_s* st = st_s_create();\n", indent );
+            sink.push_fa( "#rn{ }    for( sz_t i = 0; i < #<sz_t>; i++ )\n", indent, lines );
+            sink.push_fa( "#rn{ }    {\n", indent );
+            sink.push_fa( "#rn{ }        st_s_push_sc( st, sc[ i ] );\n", indent );
+            sink.push_fa( "#rn{ }    }\n", indent );
+            sink.push_fa( "#rn{ }    return st;\n", indent, func_global_name.sc );
+            sink.push_fa( "#rn{ }}\n", indent, func_global_name.sc );
+        }
+
         return 0;
     };
 
@@ -99,6 +156,19 @@ stamp :s = aware :
             sink.push_fa( "#rn{ }// #rn{-}\n", indent, sz_max( 0, 80 - indent ) );
             sink.push_fa( "#rn{ }// source: #<sc_t>.#<sc_t>\n", indent, o.name.sc, o.ext.sc );
             foreach( m $* e in o ) e.expand_init1( indent, sink );
+        }
+        return 0;
+    };
+
+    func xoico.expand_down1
+    {
+        if( o.size > 0 )
+        {
+            // there is hardly any code in the down1-handler, so for the moment we need omit commenting the sources
+//            sink.push_fa( "\n" );
+//            sink.push_fa( "#rn{ }// #rn{-}\n", indent, sz_max( 0, 80 - indent ) );
+//            sink.push_fa( "#rn{ }// source: #<sc_t>.#<sc_t>\n", indent, o.name.sc, o.ext.sc );
+            foreach( m $* e in o ) e.expand_down1( indent, sink );
         }
         return 0;
     };
@@ -153,83 +223,90 @@ func (:s) get_group_if_preexsting
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) parse_h
+func (:s) parse
 {
     m $* compiler = o.target.compiler;
-    while( !source.eos() )
-    {
-        if( source.parse_bl( " #?w'XOILA_DEFINE_GROUP'" ) )
-        {
-            st_s^ st_trait_name;
-            st_s^ st_group_name;
-            source.parse_fa( " ( #name , #name", st_group_name.1, st_trait_name.1 );
-            m xoico_group_s* group = NULL;
-            o.get_group_if_preexsting( host, source, st_group_name.sc, st_trait_name.sc, group.2 );
-            if( !group )
-            {
-                group = o.push_d( xoico_group_s! );
-                group.xoico_source = o;
-                group.compiler = compiler;
-                group.set_name_sc( host, st_group_name.sc );
-                group.trait_name = compiler.entypeof( st_trait_name.sc );
-            }
 
-            if( source.parse_bl( " #=?','" ) )
+    if( embed_method == TYPEOF_as_header )
+    {
+        while( !source.eos() )
+        {
+            if( source.parse_bl( " #?w'XOILA_DEFINE_GROUP'" ) )
             {
-                while( source.parse_bl( " #?','" ) )
+                st_s^ st_trait_name;
+                st_s^ st_group_name;
+                source.parse_fa( " ( #name , #name", st_group_name.1, st_trait_name.1 );
+                m xoico_group_s* group = NULL;
+                o.get_group_if_preexsting( host, source, st_group_name.sc, st_trait_name.sc, group.2 );
+                if( !group )
                 {
-                    m st_s* embed_file = st_s!^;
-                    source.parse_fa( " #string", embed_file );
-                    d x_source* embed_source = NULL;
-                    xoico_embed_file_open( source, embed_file.sc, embed_source.2 );
-                    embed_source^^;
-                    group.explicit_embeddings.push_st( embed_file );
-                    group.parse( o, false, embed_source );
+                    group = o.push_d( xoico_group_s! );
+                    group.xoico_source = o;
+                    group.compiler = compiler;
+                    group.set_name_sc( host, st_group_name.sc );
+                    group.trait_name = compiler.entypeof( st_trait_name.sc );
                 }
-                source.parse_fa( " )" );
+
+                if( source.parse_bl( " #=?','" ) )
+                {
+                    while( source.parse_bl( " #?','" ) )
+                    {
+                        m st_s* embed_file = st_s!^;
+                        source.parse_fa( " #string", embed_file );
+                        d x_source* embed_source = NULL;
+                        xoico_embed_file_open( source, embed_file.sc, embed_source.2 );
+                        embed_source^^;
+                        group.explicit_embeddings.push_st( embed_file );
+                        group.parse( o, false, embed_source );
+                    }
+                    source.parse_fa( " )" );
+                }
+                else
+                {
+                    source.parse_fa( " )" );
+                    group.parse( o, false, source );
+                }
+                o.target.compiler.register_group( group );
             }
             else
             {
-                source.parse_fa( " )" );
-                group.parse( o, false, source );
+                source.get_u0();
             }
-            o.target.compiler.register_group( group );
-        }
-        else
-        {
-            source.get_u0();
-        }
-    }
-    return 0;
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) parse_x
-{
-    m $* compiler = o.target.compiler;
-    m xoico_group_s* group = NULL;
-
-    o.get_group_if_preexsting( host, source, group_name, trait_name, group.2 );
-    if( group )
-    {
-        if( group.xoico_source != o )
-        {
-            group.explicit_embeddings.push_st( st_s_create_fa( "#<sc_t>.#<sc_t>", o.name.sc, o.ext.sc )^ );
         }
     }
     else
     {
-        group = o.push_d( xoico_group_s! );
-        group.xoico_source = o;
-        group.compiler = compiler;
-        group.set_name_sc( host, group_name );
-        group.trait_name = compiler.entypeof( trait_name );
-        group.is_manifesto = true;
-    }
+        m xoico_group_s* group = NULL;
 
-    group.parse( o, false, source );
-    compiler.register_group( group );
+        o.get_group_if_preexsting( host, source, group_name, trait_name, group.2 );
+        if( group )
+        {
+            if( group.xoico_source != o )
+            {
+                group.explicit_embeddings.push_st( st_s_create_fa( "#<sc_t>.#<sc_t>", o.name.sc, o.ext.sc )^ );
+            }
+        }
+        else
+        {
+            group = o.push_d( xoico_group_s! );
+            group.xoico_source = o;
+            group.compiler = compiler;
+            group.set_name_sc( host, group_name );
+            group.trait_name = compiler.entypeof( trait_name );
+            group.is_manifesto = true;
+        }
+
+        if( embed_method == TYPEOF_as_group )
+        {
+            group.parse( o, false, source );
+        }
+        else
+        {
+            group.parse_embed( o, source, embed_method );
+        }
+
+        compiler.register_group( group );
+    }
 
     return 0;
 };

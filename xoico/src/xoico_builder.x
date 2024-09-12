@@ -302,18 +302,50 @@ func (:target_s) :.build
         st_s^ group_name;
         st_s^ trait_name;
         st_s^ file_path;
+
+        tp_t embed_method = 0;
+
         source.parse_fa( " " ); // take whitespaces
 
-        if( source.parse_bl( "#?w'group'" ) )
+        if( source.parse_bl( "#?w'group' " ) )
         {
-            source.parse_fa( " #name", group_name.1 );
+            source.parse_fa( "#name ", group_name.1 );
             if( group_name.size == 0 ) return source.parse_error_fa( "Group name expected in source declaration." );
-            source.parse_fa( " = #name", trait_name.1 );
+            source.parse_fa( "= #name ", trait_name.1 );
             if( trait_name.size == 0 ) return source.parse_error_fa( "Trait name expected in source declaration." );
-            source.parse_fa( " " );
         }
 
-        while( !source.eos() ) file_path.push_char( source.get_char() );
+        if( source.parse_bl( "#?w'embed' " ) )
+        {
+            if( source.parse_bl( "#?w'as string' " ) )
+            {
+                embed_method = TYPEOF_as_string;
+            }
+            else
+            {
+                return source.parse_error_fa( "Specify embedding method before file path (e.g. 'as string')" );
+            }
+        }
+
+        while( !source.eos() )
+        {
+            char c = source.get_char();
+            if( c == ':' ) break;
+            file_path.push_char( c );
+        }
+
+        if( source.parse_bl( " #?w'embed'" ) )
+        {
+            if( source.parse_bl( " #?w'as_string'" ) )
+            {
+                embed_method = TYPEOF_as_string;
+            }
+            else
+            {
+                return source.parse_error_fa( "Select a valid embedding method (e.g. 'as_string')" );
+            }
+        }
+
         if( file_path.size == 0 ) return source.parse_error_fa( "File name expected in source declaration." );
 
         if( e.sc[ 0 ] != '/' && o.root_folder )
@@ -322,9 +354,29 @@ func (:target_s) :.build
             file_path.copy_fa( "#<sc_t>/#<sc_t>", o.root_folder.sc, tmp.sc );
         }
 
-        if( group_name.size == 0 && file_path.ends_in_sc( ".x" ) )
+        if( embed_method == 0 )
         {
-            group_name.copy( bcore_file_strip_extension( bcore_file_name( file_path.sc ) )^ );
+            if     ( file_path.ends_in_sc( ".h" ) ) embed_method = TYPEOF_as_header;
+            else if( file_path.ends_in_sc( ".x" ) ) embed_method = TYPEOF_as_group;
+            else                                    embed_method = TYPEOF_as_string;
+        }
+
+        if( group_name.size == 0 )
+        {
+            if( embed_method == TYPEOF_as_header )
+            {
+                /// nothing here
+            }
+            else if( embed_method == TYPEOF_as_group )
+            {
+                group_name.copy( bcore_file_strip_extension( bcore_file_name( file_path.sc ) )^ );
+            }
+            else
+            {
+                group_name.copy_sc( bcore_file_name( file_path.sc ) );
+            }
+            group_name.replace_char_char( '.', '_' );
+            group_name.replace_char_char( ' ', '_' );
             trait_name.copy_sc( "x_inst" );
         }
 
@@ -332,22 +384,7 @@ func (:target_s) :.build
         ASSERT( o.extension );
         sz_t index = -1;
 
-        if( group_name.size == 0 )
-        {
-            if( !file_path.ends_in_sc( ".h" ) )
-            {
-                return source.parse_error_fa( "File name should have extension *.h" );
-            }
-            o.compiler.parse( o.name.sc, o.extension.sc, o.root_output_folder(), file_path.sc, NULL, NULL, index.1 );
-        }
-        else
-        {
-            if( !file_path.ends_in_sc( ".x" ) )
-            {
-                return source.parse_error_fa( "File name should have extension *.x" );
-            }
-            o.compiler.parse( o.name.sc, o.extension.sc, o.root_output_folder(), file_path.sc, group_name.sc, trait_name.sc, index.1 );
-        }
+        o.compiler.parse( o.name.sc, o.extension.sc, o.root_output_folder(), file_path.sc, group_name.sc, trait_name.sc, embed_method, index.1 );
 
         if( o.target_index_ == -1 ) o.target_index_ = index;
         if( index != o.target_index_ )
