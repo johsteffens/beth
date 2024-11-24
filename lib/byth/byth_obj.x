@@ -24,7 +24,7 @@ include "bmath_std.h";
 /** PyObject interface
  *  Implements a PyObject wrapper and conversion functions between stamp and PyObject.
  *  This implementation makes no assumptions about the python ABI. Hence, conversion functions
- *  copy all data across the beth-bython border.
+ *  copy all data across the beth-python border.
  *
  *  (!) Thread Safety:
  *  :obj_s const-functions are not concurrent unless the Python API is entirely concurrent.
@@ -37,8 +37,18 @@ include "bmath_std.h";
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func m PyObject* py_incref( m PyObject* o ) { Py_XINCREF( o ); = o; }
-func m PyObject* py_decref( m PyObject* o ) { Py_XDECREF( o ); = o; }
+/// same as PyDict_GetItemString except that errors are not ignored (workaround of a flaw in PyDict_Get_itemString)
+func m PyObject* py_dict_get_item_string( m PyObject* o, sc_t key )
+{
+    m PyObject* py_key = PyUnicode_FromString( key );
+    if( !py_key ) = NULL;
+
+    m PyObject* result = PyDict_GetItemWithError( o, py_key );
+
+    byth_py_decref( py_key );
+    = result;
+}
+
 
 /** obj_s wraps PyObject and provides functions for conversion between beth-objects and python-objects.
  *  py_object is either NULL or a strong python reference.
@@ -46,13 +56,25 @@ func m PyObject* py_decref( m PyObject* o ) { Py_XDECREF( o ); = o; }
 stamp :s
 {
     $ private PyObject* py_object;
+    func bcore_inst_call.init_x o.py_object = Py_None;
     func bcore_inst_call.down_e o.clear();
 
-    func o clear( m@* o ) { :py_decref( o.py_object ); o.py_object = NULL; }
+    func o clear( m@* o )
+    {
+        if( o.py_object == Py_None ) = o;
+        byth_py_decref( o.py_object ); o.py_object = Py_None;
+        = o;
+    }
 
     /// creates PyObject by conversion from beth-stamp
     func er_t setup_from_t_inst( m@* o, tp_t type, c obliv x_inst* inst );
     func er_t setup_from_inst  ( m@* o,            c aware x_inst* inst ) = inst ? o.setup_from_t_inst( inst._, inst ) : 0;
+
+    /// converts hmap into a dictionary (assumes types are registered in global name map)
+    func er_t setup_from_hmap( m@* o, c bcore_hmap_tp_sr_s* hmap );
+
+    func o setup_as_dict( m@* o            ) o.clear().py_object = PyDict_New();
+    func o setup_as_list( m@* o, sz_t size ) o.clear().py_object = PyList_New( size );
 
     func bl_t is_py_long   ( c@* o ) = o.py_object && PyLong_Check   ( o.py_object );
     func bl_t is_py_float  ( c@* o ) = o.py_object && PyFloat_Check  ( o.py_object );
@@ -69,17 +91,49 @@ stamp :s
     func bl_t to_bl( c@* o );
     func tp_t to_tp( c@* o ) = o.to_u3();
 
+    func o from_u3( m@* o, u3_t v ) o.setup_from_t_inst( TYPEOF_u3_t, v );
+    func o from_s3( m@* o, s3_t v ) o.setup_from_t_inst( TYPEOF_s3_t, v );
+    func o from_uz( m@* o, uz_t v ) o.setup_from_t_inst( TYPEOF_uz_t, v );
+    func o from_sz( m@* o, sz_t v ) o.setup_from_t_inst( TYPEOF_sz_t, v );
+    func o from_f3( m@* o, f3_t v ) o.setup_from_t_inst( TYPEOF_f3_t, v );
+    func o from_bl( m@* o, bl_t v ) o.setup_from_t_inst( TYPEOF_bl_t, v );
+    func o from_tp( m@* o, tp_t v ) o.setup_from_t_inst( TYPEOF_tp_t, v );
+
     /// checks if a dictionary contains key
     func bl_t py_dict_contains( c@* o, sc_t key );
 
     /// gets an element from dictionary (strongified reference)
-    func m PyObject* py_dict_get( m@* o, sc_t key ) = :py_incref( PyDict_GetItemString( o.py_object, key ) );
+    func m PyObject* py_dict_get( m@* o, sc_t key ) = byth_py_incref( :py_dict_get_item_string( o.py_object, key ) );
+
+    // sets an element in dictionary
+    func o py_dict_set( m@* o, sc_t key, m PyObject* py_object )
+    {
+        s2_t py_ret = PyDict_SetItemString( o.py_object, key, py_object );
+        if( py_ret < 0 )
+        {
+            byth_py_check_error();
+            ERR_fa( "PyDict_SetItem failed." );
+        }
+        = o;
+    }
 
     /// gets an element as obj_s from dictionary
     func d @* py_dict_get_obj( m@* o, sc_t key );
 
     /// gets an element from list (strongified reference)
-    func m PyObject* py_list_get( m@* o, sz_t index ) = :py_incref( PyList_GetItem( o.py_object, index ) );
+    func m PyObject* py_list_get( m@* o, sz_t index ) = byth_py_incref( PyList_GetItem( o.py_object, index ) );
+
+    /// sets an element in list
+    func o py_list_set( m@* o, sz_t index, m PyObject* py_object )
+    {
+        s2_t py_ret = PyList_SetItem( o.py_object, index, byth_py_incref( py_object ) );
+        if( py_ret < 0 )
+        {
+            byth_py_check_error();
+            ERR_fa( "PyList_SetItem failed." );
+        }
+        = o;
+    }
 
     /// gets an element as obj_s from list
     func d @* py_list_get_obj( m@* o, sz_t index );
@@ -91,11 +145,14 @@ stamp :s
     func er_t to_t_inst( c@* o, tp_t type, m obliv x_inst* inst );
     func er_t to_inst  ( c@* o,            m aware x_inst* inst ) = o.to_t_inst( inst._, inst );
 
+    /// converts dictionary into hmap (complements setup_from_hamap)
+    func er_t to_hmap( c@* o, m bcore_hmap_tp_sr_s* hmap );
+
     /// creates a (strongly referenced) stamp from PyObject
     func er_t to_sr( c@* o, m sr_s* sr );
 
-    func d st_s* to_string( @* o );
-    func o       to_stdout( @* o );
+    func d st_s* to_string( @* o ) = :py_object_to_string( o.py_object );
+    func o       to_stdout( @* o )   :py_object_to_stdout( o.py_object );
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -162,7 +219,7 @@ func (:s) to_bl
 func (:s) py_dict_contains
 {
     if( !o.is_py_dict() ) = false;
-    = PyDict_GetItemString( o.py_object, key ) != NULL;
+    = :py_dict_get_item_string( o.py_object, key ) != NULL;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -172,6 +229,7 @@ func (:s) py_dict_get_obj
     m @* obj = @!^( o.py_dict_get( key ) );
     if( !o.py_object )
     {
+        byth_py_check_error();
         GERR_fa( "Error retrieving Item from PyDict." );
         = NULL;
     }
@@ -185,6 +243,7 @@ func (:s) py_list_get_obj
     m @* obj = @!^( o.py_list_get( index ) );
     if( !o.py_object )
     {
+        byth_py_check_error();
         GERR_fa( "Error retrieving Item from PyList." );
         = NULL;
     }
@@ -195,7 +254,7 @@ func (:s) py_list_get_obj
 
 func (:s) setup_from_t_inst
 {
-    if( o.py_object ) o.clear();
+    if( o.py_object != Py_None ) o.clear();
     if( !inst ) = 0;
 
     if( !x_inst_exists( type ) ) ERR_fa( "Type value does not represent an object." );
@@ -225,7 +284,11 @@ func (:s) setup_from_t_inst
 
     if( py_object != Py_None )
     {
-        if( py_object == NULL ) = GERR_fa( "Converting '#<sc_t>' failed.", bnameof( type ) );
+        if( py_object == NULL )
+        {
+            byth_py_check_error();
+            = GERR_fa( "Converting '#<sc_t>' failed.", bnameof( type ) );
+        }
         o.py_object = py_object;
         = 0;
     }
@@ -235,18 +298,19 @@ func (:s) setup_from_t_inst
     {
         m PyObject* val = PyLong_FromUnsignedLongLong( type );
         s2_t py_ret = PyDict_SetItemString( py_object, "_", val );
-        :py_decref( val );
-        if( py_ret < 0 ) = GERR_fa( "PyDict_SetItem failed." );
+        byth_py_decref( val );
+        if( py_ret < 0 )
+        {
+            byth_py_check_error();
+            = GERR_fa( "PyDict_SetItem failed." );
+        }
     }
-
-    x_stamp* stamp = inst;
-    sz_t size = stamp.t_size( type );
 
     if( x_stamp_t_is_pure_array( type ) )
     {
         x_array* arr = inst;
         sz_t size = arr.t_size( type );
-        m PyObject* key  = PyUnicode_FromString( "_pure_array_" );
+        m PyObject* key  = PyUnicode_FromString( "_list_" );
         m PyObject* list = PyList_New( size );
         er_t err = 0;
         for( sz_t i = 0; i < size; i++ )
@@ -254,22 +318,30 @@ func (:s) setup_from_t_inst
             sr_s sr = arr.t_c_get_sr( type, i );
             m$* item = :s!^;
             item.setup_from_t_inst( sr.type(), sr.o );
-            s2_t py_ret = PyList_SetItem( list, i, :py_incref( item.py_object ) );
+            s2_t py_ret = PyList_SetItem( list, i, byth_py_incref( item.py_object ) );
             sr_down( sr );
             if( py_ret < 0 )
             {
+                byth_py_check_error();
                 err = GERR_fa( "PyList_SetItem failed." );
                 break;
             }
         }
         if( err ) = err;
         s2_t py_ret = PyDict_SetItem( py_object, key, list );
-        :py_decref( key );
-        :py_decref( list );
-        if( py_ret < 0 ) GERR_fa( "PyDict_SetItem failed." );
+        byth_py_decref( key );
+        byth_py_decref( list );
+        if( py_ret < 0 )
+        {
+            byth_py_check_error();
+            GERR_fa( "PyDict_SetItem failed." );
+        }
     }
     else
     {
+        x_stamp* stamp = inst;
+        sz_t size = stamp.t_size( type );
+
         er_t err = 0;
         for( sz_t i = 0; i < size; i++ )
         {
@@ -285,6 +357,7 @@ func (:s) setup_from_t_inst
 
             if( py_ret < 0 )
             {
+                byth_py_check_error();
                 err = GERR_fa( "PyDict_SetItem failed." );
                 break;
             }
@@ -296,12 +369,14 @@ func (:s) setup_from_t_inst
     {
         if( py_object == NULL )
         {
+            byth_py_check_error();
             = GERR_fa( "Converting '#<sc_t>' failed.", bnameof( type ) );
         }
         o.py_object = py_object;
         = 0;
     }
 
+    byth_py_check_error();
     = GERR_fa( "Converting '#<sc_t>' failed.", bnameof( type ) );
 }
 
@@ -375,9 +450,13 @@ func (:s) to_t_inst
             if( !o.is_py_unicode() ) = GERR_fa( "Attempt to convert to st_s from non unicode PyObject" );
             m st_s* st = inst.cast( m st_s* );
             m PyObject* py_unicode = PyUnicode_AsEncodedString( o.py_object, "utf-8", "strict" ); // create UTF8 encoding
-            if( !py_unicode ) = GERR_fa( "PyUnicode_AsEncodedString error" );
+            if( !py_unicode )
+            {
+                byth_py_check_error();
+                = GERR_fa( "PyUnicode_AsEncodedString error" );
+            }
             st.copy_sc( PyBytes_AsString( py_unicode ) );
-            :py_decref( py_unicode );
+            byth_py_decref( py_unicode );
             = 0;
         }
 
@@ -386,20 +465,28 @@ func (:s) to_t_inst
 
     if( o.is_py_dict() )
     {
-        if( x_stamp_t_is_pure_array( type ) && o.py_dict_contains( "_pure_array_" ) )
+        if( x_stamp_t_is_pure_array( type ) && o.py_dict_contains( "_list_" ) )
         {
             m x_array* arr = inst;
             arr.t_set_size( type, 0 );
 
-            m@* obj_list = o.cast( m$* ).py_dict_get_obj( "_pure_array_" )^;
+            m@* obj_list = o.cast( m$* ).py_dict_get_obj( "_list_" )^;
             if( !obj_list ) = general_error~;
-            if( !obj_list.is_py_list() ) = GERR_fa( "Error retrieving PyList from PyDict." );
+            if( !obj_list.is_py_list() )
+            {
+                byth_py_check_error();
+                = GERR_fa( "Error retrieving PyList from PyDict." );
+            }
             sz_t size = obj_list.py_list_size();
 
             for( sz_t i = 0; i < size; i++ )
             {
                 m PyObject* py_item = obj_list.py_list_get( i );
-                if( !py_item ) = GERR_fa( "Error retrieving Item from PyList." );
+                if( !py_item )
+                {
+                    byth_py_check_error();
+                    = GERR_fa( "Error retrieving Item from PyList." );
+                }
                 sr_s sr = sr_null();
                 :s!^( py_item ).to_sr( sr );
                 arr.t_push_sr( type, sr );
@@ -468,24 +555,94 @@ func (:s) to_t_inst
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) to_string
+func d st_s* py_object_to_string( PyObject* py_object )
 {
-    if( !o.py_object ) = NULL;
+    if( !py_object ) = NULL;
 
-    m PyObject* repr_object = PyObject_Repr( ( PyObject* )o.py_object ); // turns object to a string represenation
+    m PyObject* repr_object = PyObject_Repr( ( PyObject* )py_object ); // turns object to a string represenation
     m PyObject* py_unicode = PyUnicode_AsEncodedString( repr_object, "utf-8", "strict" ); // create UTF8 encoding
     sc_t cstr_object = PyBytes_AsString( py_unicode );  // get cstring
     m st_s* st = st_s!^.copy_sc( cstr_object );
-    :py_decref( repr_object );
-    :py_decref( py_unicode );
+    byth_py_decref( repr_object );
+    byth_py_decref( py_unicode );
     = st.fork();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) to_stdout
+func void py_object_to_stdout( PyObject* py_object )
 {
-    bcore_msg_fa( "#<sc_t>\n", o.to_string()^.sc );
+    if( !py_object ) ERR_fa( "py_object is NULL" );
+    bcore_msg_fa( "#<sc_t>\n", :py_object_to_string( py_object )^.sc );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) setup_from_hmap
+{
+    o.py_object = PyDict_New();
+    if( o.py_object == NULL )
+    {
+        byth_py_check_error();
+        = GERR_fa( "Creating PyDict failed." );
+    }
+
+    sz_t size = hmap.size();
+    for( sz_t i = 0; i < size; i++ )
+    {
+        tp_t key = hmap.idx_key( i );
+        if( key )
+        {
+            sc_t sc_key = bnameof( key );
+            if( !sc_key ) = GERR_fa( "hmap contains a key not registered in the global name map." );
+
+            c sr_s* sr = hmap.idx_val( i );
+
+            m$* obj_val = :s!^;
+            obj_val.setup_from_t_inst( sr.type(), sr.o );
+            m PyObject* py_val = obj_val.py_object;
+            s2_t py_ret = PyDict_SetItemString( o.py_object, sc_key, py_val );
+            if( py_ret < 0 )
+            {
+                byth_py_check_error();
+                = GERR_fa( "PyDict_SetItem failed." );
+            }
+        }
+    }
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) to_hmap
+{
+    hmap.clear();
+    if( !o.is_py_dict() ) GERR_fa( "py_object is no dictionary" );
+    m PyObject* py_key = NULL;
+    m PyObject* py_value = NULL;
+    Py_ssize_t py_index = 0;
+
+    while( PyDict_Next( o.py_object, &py_index, &py_key, &py_value ) )
+    {
+        if( !PyUnicode_Check( py_key ) ) = GERR_fa( "py_key is not PyUnicode" );
+        m PyObject* py_unicode = PyUnicode_AsEncodedString( py_key, "utf-8", "strict" ); // create UTF8 encoding
+        if( !py_unicode )
+        {
+            byth_py_check_error();
+            = GERR_fa( "PyUnicode_AsEncodedString error" );
+        }
+        $* st_key = st_s!^.copy_sc( PyBytes_AsString( py_unicode ) );
+        byth_py_decref( py_unicode );
+
+        $* obj_value = :s!^( byth_py_incref( py_value ) );
+        m$* sr = sr_s!^;
+        obj_value.to_sr( sr );
+
+        hmap.set( bentypeof( st_key.sc ), sr_tsm( sr.type(), sr.o.fork() ) );
+    }
+
+
+    = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

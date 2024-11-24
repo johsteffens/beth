@@ -18,13 +18,11 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 include "byth_base.h";
-include "bcore_std.h";
-include "bmath_std.h";
 
 /** Runtime frame for embedded python code.
  *  The frame gets instantiated during the init1 cycle.
  *  Only one instance of byth_frame_s can exist.
- *  It can be used via function byth_frame_get()
+ *  It can be obtained and used via function byth_frame_get()
  *  There are also directly routed convenience functions.
  */
 
@@ -34,42 +32,61 @@ include "bmath_std.h";
 
 //----------------------------------------------------------------------------------------------------------------------
 
-identifier Py_Initialize;
-identifier Py_FinalizeEx;
-name byth_frame_const_key;
+name byth_frame_global_key;
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/** Global frame.
+ *  Sets up the global environment of the Python/C API.
+ *  Only one instance exists as element in beth_global_mananger.
+ *  You can obtain a reference via function byth_frame_get()
+ */
 stamp :s
 {
+    bl_t is_initialized;
     x_mutex_s mutex;
 
-    func bcore_inst_call.init_x
-    {
-        if( bcore_const_exists( byth_frame_const_key~ ) )
-        {
-            GERR_fa
-            (
-                "Attempt to instantiate byth_frame_s.\n"
-                "byth_frame_s is only instantiated once during init1 cycle and stored in bcore_const_manager.\n"
-                "Use function byth_frame_s* byth_frame_get() to obtain a reference.\n"
-            );
-        }
-    }
+    func o initialize( m@* o );
+    func o finalize  ( m@* o );
+    func bcore_inst_call.init_x;
+    func bcore_inst_call.down_e;
 
-    func o lock  ( @* o ) o.cast( m@* ).mutex.lock();
-    func o unlock( @* o ) o.cast( m@* ).mutex.unlock();
+    func o lock  ( m@* o ) o.cast( m@* ).mutex.lock();
+    func o unlock( m@* o ) o.cast( m@* ).mutex.unlock();
 
     /// creates lifetime bounded lock/unlock
-    func d x_lock_s*   create_lock  ( @* o ) = x_lock_s!  ( o.cast( m@* ).mutex );
-    func d x_unlock_s* create_unlock( @* o ) = x_unlock_s!( o.cast( m@* ).mutex );
+    func d x_lock_s*   create_lock  ( m@* o ) = x_lock_s!  ( o.cast( m@* ).mutex );
+    func d x_unlock_s* create_unlock( m@* o ) = x_unlock_s!( o.cast( m@* ).mutex );
+
+    /** Runs a python program with optional input and output
+     *  byth_in, byth_out are input and output data:
+     *      Outside python they are selfaware stamps.
+     *      Inside python they are dictionaries, with stamp members accessible via the associated member names.
+     *  byth_in, byth_out can be NULL when not needed.
+     */
+    func er_t run( m@* o, sc_t program, c aware x_inst* byth_in, m aware x_inst* byth_out );
+
+
+    /** Runs a python program with optional input and output via hashmaps
+     *  'direct_in' is directly converted into a dictionary.
+     *   The elements of direct_in are accessible as local variables inside the python program.
+     *   If after execution the python program generates a disctionary 'byth_out', it is converted into
+     *   the hashmap byth_out.
+     */
+    func er_t run_hmap( m@* o, sc_t program, c bcore_hmap_tp_sr_s* direct_in, m bcore_hmap_tp_sr_s* byth_out );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func :s* get   () = bcore_const_get_o( byth_frame_const_key~ ).cast( :s* );
-func :s* lock  () = :get().lock();
-func :s* unlock() = :get().unlock();
+func m :s* get()
+{
+    m :s* frame = bcore_global_get_o( byth_frame_global_key~ ).cast( m :s* );
+    frame.initialize();
+    = frame;
+}
+
+func m :s* lock  () = :get().lock();
+func m :s* unlock() = :get().unlock();
 
 /// creates lifetime bounded lock/unlock
 func d x_lock_s*   create_lock  ( @* o ) = :get().create_lock();
@@ -77,23 +94,4 @@ func d x_unlock_s* create_unlock( @* o ) = :get().create_unlock();
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// init1 cycle callback
-func void group_signal_init1()
-{
-    Py_Initialize();
-    bcore_const_a_set_d( byth_frame_const_key~, :s! );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/// down1 cycle callback
-func void group_signal_down1()
-{
-    bcore_const_remove( byth_frame_const_key~ );
-    Py_FinalizeEx();
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 /**********************************************************************************************************************/
-
