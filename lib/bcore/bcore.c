@@ -148,7 +148,6 @@ void bcore_init()
     bcore_register_signal_handler( NULL );
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 
 vd_t bcore_global_signal_handler( const bcore_signal_s* signal )
