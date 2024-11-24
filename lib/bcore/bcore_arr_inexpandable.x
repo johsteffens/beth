@@ -20,22 +20,22 @@
 group bcore_arr = x_inst
 {
 
-signature m @* clear    ( m @* o ); // sets size to zero
-signature m @* set_space( m @* o, uz_t space );
-signature m @* set_size ( m @* o, uz_t size  ); // resize
+signature o clear    ( m @* o ); // sets size to zero
+signature o set_space( m @* o, uz_t space );
+signature o set_size ( m @* o, uz_t size  ); // resize
 signature s2_t cmp      (   @* o, @* b );
-signature m @* sort     ( m @* o, s2_t order ); // stable
-signature m @* reorder  ( m @* o, c bcore_arr_uz_s* order );
-signature m @* push_arr ( m @* o, c @* arr ); // appends array
+signature o sort     ( m @* o, s2_t order ); // stable
+signature o reorder  ( m @* o, c bcore_arr_uz_s* order );
+signature o push_arr ( m @* o, c @* arr ); // appends array
 
 //----------------------------------------------------------------------------------------------------------------------
 
 group :uz = :
 {
-    signature m @* fill       ( m @* o, uz_t size, uz_t v ); // creates filled array of size <size>
-    signature m @* step_fill  ( m @* o, uz_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
+    signature o    fill       ( m @* o, uz_t size, uz_t v ); // creates filled array of size <size>
+    signature o    step_fill  ( m @* o, uz_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
     signature void push       ( m @* o, uz_t v );
-    signature m @* push_left  ( m @* o, uz_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+    signature o    push_left  ( m @* o, uz_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature uz_t pop        ( m @* o );
     signature uz_t find       ( c @* o,   uz_t start, uz_t end, uz_t v ); // behaves like st_s_find_*
     signature uz_t max        ( c @* o );
@@ -72,10 +72,10 @@ group :uz = :
 
 group :sz = :
 {
-    signature m @* fill       ( m @* o, uz_t size, sz_t v ); // creates filled array of size <size>
-    signature m @* step_fill  ( m @* o, sz_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
+    signature o    fill       ( m @* o, uz_t size, sz_t v ); // creates filled array of size <size>
+    signature o    step_fill  ( m @* o, sz_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
     signature void push       ( m @* o, sz_t v );
-    signature m @* push_left  ( m @* o, sz_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+    signature o    push_left  ( m @* o, sz_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature sz_t pop        ( m @* o );
     signature uz_t find       ( c @* o,   uz_t start, uz_t end, sz_t v ); // behaves like st_s_find_*
     signature sz_t max        ( c @* o );
@@ -112,10 +112,10 @@ group :sz = :
 
 group :u0 = :
 {
-    signature m @* fill       ( m @* o, uz_t size, u0_t v ); // creates filled array of size <size>
-    signature m @* step_fill  ( m @* o, u0_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
+    signature o    fill       ( m @* o, uz_t size, u0_t v ); // creates filled array of size <size>
+    signature o    step_fill  ( m @* o, u0_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
     signature void push       ( m @* o, u0_t v );
-    signature m @* push_left  ( m @* o, u0_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+    signature o    push_left  ( m @* o, u0_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature u0_t pop        ( m @* o );
     signature uz_t count_equal( c @* o, u0_t val ); // number of occurrence
 
@@ -142,10 +142,10 @@ group :u0 = :
 
 group :u3 = :
 {
-    signature m @* fill       ( m @* o, uz_t size, u3_t v ); // creates filled array of size <size>
-    signature m @* step_fill  ( m @* o, u3_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
+    signature o    fill       ( m @* o, uz_t size, u3_t v ); // creates filled array of size <size>
+    signature o    step_fill  ( m @* o, u3_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
     signature void push       ( m @* o, u3_t v );
-    signature m @* push_left  ( m @* o, u3_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+    signature o    push_left  ( m @* o, u3_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature u3_t pop        ( m @* o );
     signature uz_t count_equal( c @* o, u3_t val ); // number of occurrence
 
@@ -172,10 +172,10 @@ group :u3 = :
 
 group :s0 = :
 {
-    signature m @* fill       ( m @* o, uz_t size, s0_t v ); // creates filled array of size <size>
-    signature m @* step_fill  ( m @* o, s0_t v_start, s0_t step, uz_t size ); // creates filled array according to stepping
+    signature o    fill       ( m @* o, uz_t size, s0_t v ); // creates filled array of size <size>
+    signature o    step_fill  ( m @* o, s0_t v_start, s0_t step, uz_t size ); // creates filled array according to stepping
     signature void push       ( m @* o, s0_t v );
-    signature m @* push_left  ( m @* o, s0_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+    signature o    push_left  ( m @* o, s0_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature s0_t pop        ( m @* o );
     signature uz_t count_equal( c @* o, s0_t val ); // number of occurrence
     signature uz_t find       ( c @* o, uz_t start, uz_t end, s0_t v ); // behaves like st_s_find_*
@@ -212,10 +212,10 @@ group :s0 = :
 
 group :s3 = :
 {
-    signature m @* fill       ( m @* o, uz_t size, s3_t v ); // creates filled array of size <size>
-    signature m @* step_fill  ( m @* o, s3_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
+    signature o    fill       ( m @* o, uz_t size, s3_t v ); // creates filled array of size <size>
+    signature o    step_fill  ( m @* o, s3_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
     signature void push       ( m @* o, s3_t v );
-    signature m @* push_left  ( m @* o, s3_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+    signature o    push_left  ( m @* o, s3_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature s3_t pop        ( m @* o );
     signature uz_t count_equal( c @* o, s3_t val ); // number of occurrence
     signature uz_t find       ( c @* o, uz_t start, uz_t end, s3_t v ); // behaves like st_s_find_*
@@ -252,10 +252,10 @@ group :s3 = :
 
 group :f3 = :
 {
-    signature m @* fill       ( m @* o, uz_t size, f3_t v ); // creates filled array of size <size>
-    signature m @* step_fill  ( m @* o, f3_t v_start, f3_t step, uz_t size ); // creates filled array according to stepping
+    signature o    fill       ( m @* o, uz_t size, f3_t v ); // creates filled array of size <size>
+    signature o    step_fill  ( m @* o, f3_t v_start, f3_t step, uz_t size ); // creates filled array according to stepping
     signature void push       ( m @* o, f3_t v );
-    signature m @* push_left  ( m @* o, f3_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+    signature o    push_left  ( m @* o, f3_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature f3_t pop        ( m @* o );
     signature uz_t count_equal( c @* o, f3_t val ); // number of occurrence
     signature uz_t find       ( c @* o,   uz_t start, uz_t end, f3_t v ); // behaves like st_s_find_*
@@ -292,10 +292,10 @@ group :f3 = :
 
 group :tp = :
 {
-    signature m @* fill       ( m @* o, uz_t size, tp_t v ); // creates filled array of size <size>
-    signature m @* step_fill  ( m @* o, tp_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
+    signature o    fill       ( m @* o, uz_t size, tp_t v ); // creates filled array of size <size>
+    signature o    step_fill  ( m @* o, tp_t v_start, s3_t step, uz_t size ); // creates filled array according to stepping
     signature void push       ( m @* o, tp_t v );
-    signature m @* push_left  ( m @* o, tp_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+    signature o    push_left  ( m @* o, tp_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature tp_t pop        ( m @* o );
     signature uz_t find       ( c @* o, uz_t start, uz_t end, tp_t v ); // behaves like st_s_find_*
     signature bl_t exists     ( c @* o, tp_t v );
@@ -325,9 +325,9 @@ group :tp = :
 
 group :bl = :
 {
-    signature m @* fill       ( m @* o, uz_t size, bl_t v ); // creates filled array of size <size>
+    signature o    fill       ( m @* o, uz_t size, bl_t v ); // creates filled array of size <size>
     signature void push       ( m @* o, bl_t v );
-    signature m @* push_left  ( m @* o, bl_t v ); // extends array by one; moves all elements up one index and copies v to position 0
+    signature o    push_left  ( m @* o, bl_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature bl_t pop        ( m @* o );
     signature uz_t count_equal( c @* o,   bl_t val ); // number of occurrence
 
@@ -401,7 +401,7 @@ group :st = :
 
 group :vd = :
 {
-    signature m @* fill       ( m @* o, uz_t size, vd_t v ); // creates filled array of size <size>
+    signature o    fill       ( m @* o, uz_t size, vd_t v ); // creates filled array of size <size>
     signature void push       ( m @* o, vd_t v );
     signature vd_t pop        ( m @* o );
     signature uz_t find       ( c @* o, uz_t start, uz_t end, vd_t v ); // behaves like st_s_find_*
@@ -426,7 +426,7 @@ group :vd = :
 
 group :fp = :
 {
-    signature m @* fill       ( m @* o, uz_t size, fp_t v ); // creates filled array of size <size>
+    signature o    fill       ( m @* o, uz_t size, fp_t v ); // creates filled array of size <size>
     signature void push       ( m @* o, fp_t v );
     signature fp_t pop        ( m @* o );
     signature uz_t find       ( c @* o, uz_t start, uz_t end, fp_t v ); // behaves like st_s_find_*
@@ -454,7 +454,7 @@ group :sr = :
     signature m sr_s* push_sr( m @* o, sr_s v );
     signature m sr_s* push_tp( m @* o, tp_t type );
     signature sr_s pop      ( m @* o );
-    signature m @* set_spect( m @* o, tp_t spect_type ); // switches perspective of all references to 'spect'
+    signature o    set_spect( m @* o, tp_t spect_type ); // switches perspective of all references to 'spect'
 
     // the check below returns true when all elements check true for the given sr_s property or when array-size is zero
     signature bl_t is_numeric ( c@* o );
