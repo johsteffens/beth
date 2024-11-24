@@ -105,13 +105,18 @@ stamp :condition_s
     func bcore_inst_call.init_x;
     func bcore_inst_call.down_e;
 
-    /** Suspends calling thread until woken from another thread.
-     *  This function may be called from multiple different threads.
-     *  The mutex passed must be locked.
-     *  The mutex is unlocked during sleep and re-locked when woken up.
-     *  Beware of spurious wakeups: A wakeup may happen spuriously without
-     *  actual cause from wake-trigger send to this condition.
-     *  Synchronizes memory (employs a memory barrier).
+    /** sleep: Suspends calling thread until woken from another thread.
+     *  This function may be called from multiple different threads; each thread must use its own mutex.
+     *  The function exits only when receiving a 'wakeup' signal.
+     *  A wakeup signal can be triggered by one of the wake functions below.
+     *  The mutex passed as argument must be locked.
+     *  The function unlocks the mutex upon entering and re-locks upon exiting.
+     *
+     *  Beware of spurious wakeups:
+     *     A wakeup signal can also spuriously occur (e.g. on specific system events) without
+     *     an explicit call to a wake function below.
+     *
+     *  This function properly employs a memory barrier.
      */
     func void sleep( m@* o, m x_mutex_s* mutex );
 
