@@ -7,7 +7,7 @@ BTCL is a simple and easy to use text based weakly typed functional language to 
 BTCL is backward compatible to [BTML](btml.md).
 
 ## Constructive Language
-I use the term ***constructive language*** to specify a language specialized for object construction. It can be placed somewhere between mere markup and general purpose programming. It offers variables, operators and functions but offers limited interactivity. It it intended to represent a state rather than a process.
+I use the term ***constructive language*** to specify a language specialized for object construction. It can be placed somewhere between mere markup and general purpose programming. It provides variables, operators and functions but only limited interactivity. It is intended to represent a state rather than a process.
 
 Specifically:
 
@@ -16,6 +16,8 @@ Specifically:
   * Functions are first class objects.
 
 ## Cheat Sheet
+
+The language supports C-style comments inside the code.
 
 ``` C
 // String
@@ -83,12 +85,17 @@ BTCL uses C/C++ style comments:
 BTCL has no distinct statements. Any contiguous code represents just one expression. This can be a composite (or tree) of expressions joined via functions, operators or conditional branches. Non-composite expressions are called ***Literals***.
 
 ## Continuation operator
-Although the semicolon ';' is traditionally understood as separator for consecutive statements, in BTCL it is a binary operator combining two consecutive expressions. Hence the semicolon behaves as a [binary operator](#operators).
+Although the semicolon ';' is traditionally understood as separator for consecutive statements, in BTCL it is a binary operator joining two consecutive expressions. Hence the semicolon behaves as a [binary operator](#operators).
 In BTCL this operator is called **Continuation**.
 
 ```a ; b``` means:
 
-Evaluate first ```a``` then ```b``` and represent the result of ```b```. Superficially, this seems to render ```a``` meaningless. However ```a``` can define a variable, which is used in ```b``` at multiple places.
+Evaluate first ```a``` then ```b``` but represent only the result of ```b```. 
+
+Superficially, this appears to render expression ```a``` meaningless. However, ```a``` can define a variable, which is visible in ```b```. Thus ```a``` creates a context for ```b```. This helps simplifying complex expressions and can make code easier to read and maintain.
+
+More generally: The semicolon operator divides consecutive expressions into
+**context creation** and **context usage**.
 
 **Example:**
 
@@ -225,7 +232,7 @@ Depending on the condition, the associated block is either evaluated or skipped.
 
 # Signature
 
-The signature represents the interface of a function.
+The signature represents the interface of a function. It is identified by the keyword ```func```.
 A function is created by joining a signature with a body.
 
 ## Syntax
@@ -261,7 +268,7 @@ bracket ```( ... )``` for that purpose. </sub>
 
 # Function
 
-A function is defined by joining a signature with a block.
+A function is defined by joining a [signature](#signature) with a [block](#block).
 
 ## Syntax
 
@@ -288,7 +295,7 @@ f( 1, 2 ) 		  // function usage; result is 3
 ```
 
 ## Lexical Frame
-The lexical frame is the frame in which a function is used and not where it is defined. 
+The lexical frame of a function is the frame in which a [function](#function) is used. It is not where the function is defined. 
 
 #### Reasoning: 
 
@@ -571,5 +578,5 @@ obj = <my_stamp/>( .additive = 10 );
 
 
 ------
-<sub>&copy; Johannes B. Steffens</sub>
+<sub>&copy; 2024 Johannes B. Steffens</sub>
 
