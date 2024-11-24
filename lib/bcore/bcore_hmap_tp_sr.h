@@ -72,6 +72,28 @@ uz_t  bcore_hmap_tp_sr_s_size(   const bcore_hmap_tp_sr_s* o           ); // ret
 tp_t        bcore_hmap_tp_sr_s_idx_key( const bcore_hmap_tp_sr_s* o, uz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
 const sr_s* bcore_hmap_tp_sr_s_idx_val( const bcore_hmap_tp_sr_s* o, uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
 
+const bcore_inst* bcore_hmap_tp_sr_s_get_c_inst( const bcore_hmap_tp_sr_s* o, tp_t key ); // returns associated instance (NULL when key does not exists)
+      bcore_inst* bcore_hmap_tp_sr_s_get_m_inst(       bcore_hmap_tp_sr_s* o, tp_t key ); // returns associated instance (NULL when key does not exists)
+tp_t              bcore_hmap_tp_sr_s_get_type(   const bcore_hmap_tp_sr_s* o, tp_t key ); // returns associated instance-type (0 when key does not exists)
+sr_s* bcore_hmap_tp_sr_s_set_t_inst_c( bcore_hmap_tp_sr_s* o, tp_t key, tp_t type, const bcore_inst* inst ); // sets new value by copying typed inst
+sr_s* bcore_hmap_tp_sr_s_set_t_inst_d( bcore_hmap_tp_sr_s* o, tp_t key, tp_t type,       bcore_inst* inst ); // sets new value by referencing discardable typed inst
+sr_s* bcore_hmap_tp_sr_s_set_inst_c  ( bcore_hmap_tp_sr_s* o, tp_t key,            const bcore_inst* inst ); // sets new value by copying aware inst
+sr_s* bcore_hmap_tp_sr_s_set_inst_d  ( bcore_hmap_tp_sr_s* o, tp_t key,                  bcore_inst* inst ); // sets new value by referencing discardable aware inst
+
+/// bcore_hmap_tp_sr_s_sc_-functions below use a sc_t-key via bentypeof, bnameof (all key names get enrolled)
+sr_s* bcore_hmap_tp_sr_s_sc_get(    const bcore_hmap_tp_sr_s* o, sc_t key ); // returns pointer to value or sr_null when key does not exist
+sr_s* bcore_hmap_tp_sr_s_sc_set(          bcore_hmap_tp_sr_s* o, sc_t key, sr_s val ); // assumes ownership (fork if necessary); no deep copy
+sr_s  bcore_hmap_tp_sr_s_sc_remove(       bcore_hmap_tp_sr_s* o, sc_t key ); // removes key, returns value; call sr_down( remove(...) ) to eliminate entry
+bl_t  bcore_hmap_tp_sr_s_sc_exists( const bcore_hmap_tp_sr_s* o, sc_t key ); // checks if key exists
+sc_t  bcore_hmap_tp_sr_s_sc_idx_key( const bcore_hmap_tp_sr_s* o, uz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
+const bcore_inst* bcore_hmap_tp_sr_s_sc_get_c_inst( const bcore_hmap_tp_sr_s* o, sc_t key ); // returns associated instance (NULL when key does not exists)
+      bcore_inst* bcore_hmap_tp_sr_s_sc_get_m_inst(       bcore_hmap_tp_sr_s* o, sc_t key ); // returns associated instance (NULL when key does not exists)
+tp_t              bcore_hmap_tp_sr_s_sc_get_type(   const bcore_hmap_tp_sr_s* o, sc_t key ); // returns associated instance-type (0 when key does not exists)
+sr_s* bcore_hmap_tp_sr_s_sc_set_t_inst_c( bcore_hmap_tp_sr_s* o, sc_t key, tp_t type, const bcore_inst* inst ); // sets new value by copying typed inst
+sr_s* bcore_hmap_tp_sr_s_sc_set_t_inst_d( bcore_hmap_tp_sr_s* o, sc_t key, tp_t type,       bcore_inst* inst ); // sets new value by referencing discardable typed inst
+sr_s* bcore_hmap_tp_sr_s_sc_set_inst_c  ( bcore_hmap_tp_sr_s* o, sc_t key,            const bcore_inst* inst ); // sets new value by copying aware inst
+sr_s* bcore_hmap_tp_sr_s_sc_set_inst_d  ( bcore_hmap_tp_sr_s* o, sc_t key,                  bcore_inst* inst ); // sets new value by referencing discardable aware inst
+
 /**********************************************************************************************************************/
 
 vd_t bcore_hmap_tp_sr_signal_handler( const bcore_signal_s* o );

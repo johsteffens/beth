@@ -55,10 +55,14 @@ void bcore_hnode_tp_sr_s_init( bcore_hnode_tp_sr_s* o )
     bcore_memzero( o, sizeof( *o ) );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_hnode_tp_sr_s_down( bcore_hnode_tp_sr_s* o )
 {
     sr_s_down( &o->val );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_hnode_tp_sr_s_clear( bcore_hnode_tp_sr_s* o )
 {
@@ -66,17 +70,23 @@ void bcore_hnode_tp_sr_s_clear( bcore_hnode_tp_sr_s* o )
     o->key = 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_hnode_tp_sr_s_copy( bcore_hnode_tp_sr_s* o, const bcore_hnode_tp_sr_s* src )
 {
     o->key = src->key;
     sr_s_copy( &o->val, &src->val );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 sr_s* bcore_hnode_tp_sr_s_set( bcore_hnode_tp_sr_s* o, sr_s obj )
 {
     sr_s_set( &o->val, obj );
     return &o->val;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* hnode_tp_sr_s_create_self( void )
 {
@@ -93,14 +103,20 @@ static bcore_self_s* hnode_tp_sr_s_create_self( void )
     return self;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 // bcore_hmap_tp_sr_s
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_hmap_tp_sr_s_init( bcore_hmap_tp_sr_s* o )
 {
     bcore_memzero( o, sizeof( *o ) );
     o->_ = typeof( "bcore_hmap_tp_sr_s" );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_hmap_tp_sr_s_down( bcore_hmap_tp_sr_s* o )
 {
@@ -109,6 +125,8 @@ void bcore_hmap_tp_sr_s_down( bcore_hmap_tp_sr_s* o )
     o->flags = bcore_alloc( o->flags, 0 );
     o->size = 0;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_hmap_tp_sr_s_copy( bcore_hmap_tp_sr_s* o, const bcore_hmap_tp_sr_s* src )
 {
@@ -127,7 +145,11 @@ BCORE_DEFINE_FUNCTION_CREATE(  bcore_hmap_tp_sr_s )
 BCORE_DEFINE_FUNCTION_DISCARD( bcore_hmap_tp_sr_s )
 BCORE_DEFINE_FUNCTION_CLONE(   bcore_hmap_tp_sr_s )
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static uz_t tp_sr_find( const bcore_hmap_tp_sr_s* o, tp_t key ) // returns valid index or o->size
 {
@@ -139,6 +161,8 @@ static uz_t tp_sr_find( const bcore_hmap_tp_sr_s* o, tp_t key ) // returns valid
     if( o->nodes[ idx ].key == key ) return idx;
     return o->size;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static uz_t tp_sr_set( bcore_hmap_tp_sr_s* o, bcore_hnode_tp_sr_s node, uz_t depth ) // sets new node
 {
@@ -191,12 +215,16 @@ static uz_t tp_sr_set( bcore_hmap_tp_sr_s* o, bcore_hnode_tp_sr_s node, uz_t dep
     return size;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 sr_s* bcore_hmap_tp_sr_s_get( const bcore_hmap_tp_sr_s* o, tp_t key )
 {
     if( !key ) return NULL;
     uz_t idx = tp_sr_find( o, key );
     return ( idx < o->size ) ? &o->nodes[ idx ].val : NULL;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 sr_s* bcore_hmap_tp_sr_s_set( bcore_hmap_tp_sr_s* o, tp_t key, sr_s val )
 {
@@ -244,6 +272,8 @@ sr_s* bcore_hmap_tp_sr_s_set( bcore_hmap_tp_sr_s* o, tp_t key, sr_s val )
     return bcore_hmap_tp_sr_s_set( o, key, val );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 sr_s bcore_hmap_tp_sr_s_remove( bcore_hmap_tp_sr_s* o, tp_t key )
 {
     if( key )
@@ -263,11 +293,15 @@ sr_s bcore_hmap_tp_sr_s_remove( bcore_hmap_tp_sr_s* o, tp_t key )
 }
 bl_t bcore_hmap_tp_sr_s_exists( const bcore_hmap_tp_sr_s* o, tp_t key )
 
+//----------------------------------------------------------------------------------------------------------------------
+
 {
     if( !key ) return false;
     uz_t idx = tp_sr_find( o, key );
     return ( idx < o->size );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_hmap_tp_sr_s_clear( bcore_hmap_tp_sr_s* o )
 {
@@ -277,6 +311,8 @@ void bcore_hmap_tp_sr_s_clear( bcore_hmap_tp_sr_s* o )
     o->size = 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_hmap_tp_sr_s_keys( const bcore_hmap_tp_sr_s* o )
 {
     uz_t count = 0;
@@ -284,10 +320,14 @@ uz_t bcore_hmap_tp_sr_s_keys( const bcore_hmap_tp_sr_s* o )
     return count;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_hmap_tp_sr_s_size( const bcore_hmap_tp_sr_s* o )
 {
     return o->size;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 tp_t bcore_hmap_tp_sr_s_idx_key( const bcore_hmap_tp_sr_s* o, uz_t idx )
 {
@@ -295,11 +335,15 @@ tp_t bcore_hmap_tp_sr_s_idx_key( const bcore_hmap_tp_sr_s* o, uz_t idx )
     return o->nodes[ idx ].key;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 const sr_s* bcore_hmap_tp_sr_s_idx_val( const bcore_hmap_tp_sr_s* o, uz_t idx )
 {
     assert( idx < o->size );
     return &o->nodes[ idx ].val;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static sr_s tp_sr_s_get_data( const bcore_hmap_tp_sr_s* o )
 {
@@ -312,6 +356,8 @@ static sr_s tp_sr_s_get_data( const bcore_hmap_tp_sr_s* o )
     }
     return sr;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static void tp_sr_s_set_data( bcore_hmap_tp_sr_s* o, sr_s data )
 {
@@ -339,7 +385,150 @@ static void tp_sr_s_set_data( bcore_hmap_tp_sr_s* o, sr_s data )
     sr_down( data );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
+bcore_inst* bcore_hmap_tp_sr_s_get_m_inst( bcore_hmap_tp_sr_s* o, tp_t key )
+{
+    sr_s* sr = bcore_hmap_tp_sr_s_get( o, key );
+    if( !sr ) return NULL;
+    return sr->o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+const bcore_inst* bcore_hmap_tp_sr_s_get_c_inst( const bcore_hmap_tp_sr_s* o, tp_t key )
+{
+    sr_s* sr = bcore_hmap_tp_sr_s_get( o, key );
+    if( !sr ) return NULL;
+    return sr->o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+tp_t bcore_hmap_tp_sr_s_get_type( const bcore_hmap_tp_sr_s* o, tp_t key )
+{
+    sr_s* sr = bcore_hmap_tp_sr_s_get( o, key );
+    if( !sr ) return 0;
+    return sr_s_type( sr );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sr_s* bcore_hmap_tp_sr_s_set_t_inst_c( bcore_hmap_tp_sr_s* o, tp_t key, tp_t type, const bcore_inst* inst )
+{
+    return bcore_hmap_tp_sr_s_set( o, key, sr_clone( sr_twc( type, inst ) ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sr_s* bcore_hmap_tp_sr_s_set_t_inst_d( bcore_hmap_tp_sr_s* o, tp_t key, tp_t type, bcore_inst* inst )
+{
+    return bcore_hmap_tp_sr_s_set( o, key, sr_tsm( type, inst ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sr_s* bcore_hmap_tp_sr_s_set_inst_c  ( bcore_hmap_tp_sr_s* o, tp_t key, const bcore_inst* inst )
+{
+    return bcore_hmap_tp_sr_s_set( o, key, sr_clone( sr_awc( inst ) ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sr_s* bcore_hmap_tp_sr_s_set_inst_d  ( bcore_hmap_tp_sr_s* o, tp_t key, bcore_inst* inst )
+{
+    return bcore_hmap_tp_sr_s_set( o, key, sr_asm( inst ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sr_s* bcore_hmap_tp_sr_s_sc_get( const bcore_hmap_tp_sr_s* o, sc_t key )
+{
+    return bcore_hmap_tp_sr_s_get( o, bentypeof( key ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sr_s* bcore_hmap_tp_sr_s_sc_set( bcore_hmap_tp_sr_s* o, sc_t key, sr_s val )
+{
+    return bcore_hmap_tp_sr_s_set( o, bentypeof( key ), val );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sr_s bcore_hmap_tp_sr_s_sc_remove( bcore_hmap_tp_sr_s* o, sc_t key )
+{
+    return bcore_hmap_tp_sr_s_remove( o, bentypeof( key ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t bcore_hmap_tp_sr_s_sc_exists( const bcore_hmap_tp_sr_s* o, sc_t key )
+{
+    return bcore_hmap_tp_sr_s_exists( o, bentypeof( key ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sc_t bcore_hmap_tp_sr_s_sc_idx_key( const bcore_hmap_tp_sr_s* o, uz_t idx )
+{
+    return bnameof( bcore_hmap_tp_sr_s_idx_key( o, idx ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+const bcore_inst* bcore_hmap_tp_sr_s_sc_get_c_inst( const bcore_hmap_tp_sr_s* o, sc_t key )
+{
+    return bcore_hmap_tp_sr_s_get_c_inst( o, bentypeof( key ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bcore_inst* bcore_hmap_tp_sr_s_sc_get_m_inst( bcore_hmap_tp_sr_s* o, sc_t key )
+{
+    return bcore_hmap_tp_sr_s_get_m_inst( o, bentypeof( key ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+tp_t bcore_hmap_tp_sr_s_sc_get_type( const bcore_hmap_tp_sr_s* o, sc_t key )
+{
+    return bcore_hmap_tp_sr_s_get_type( o, bentypeof( key ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sr_s* bcore_hmap_tp_sr_s_sc_set_t_inst_c( bcore_hmap_tp_sr_s* o, sc_t key, tp_t type, const bcore_inst* inst )
+{
+    return bcore_hmap_tp_sr_s_set_t_inst_c( o, bentypeof( key ), type, inst );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sr_s* bcore_hmap_tp_sr_s_sc_set_t_inst_d( bcore_hmap_tp_sr_s* o, sc_t key, tp_t type, bcore_inst* inst )
+{
+    return bcore_hmap_tp_sr_s_set_t_inst_d( o, bentypeof( key ), type, inst );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sr_s* bcore_hmap_tp_sr_s_sc_set_inst_c( bcore_hmap_tp_sr_s* o, sc_t key, const bcore_inst* inst )
+{
+    return bcore_hmap_tp_sr_s_set_inst_c( o, bentypeof( key ), inst );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sr_s* bcore_hmap_tp_sr_s_sc_set_inst_d( bcore_hmap_tp_sr_s* o, sc_t key, bcore_inst* inst )
+{
+    return bcore_hmap_tp_sr_s_set_inst_d( o, bentypeof( key ), inst );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* hmap_tp_sr_s_create_self( void )
 {
