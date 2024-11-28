@@ -53,7 +53,7 @@ frame.show( NULL );
 
 **Result:**
 
-![](/home/johannes/dev/beth/data/byth/doc/plot_example1.png)
+![](../../data/byth/doc/plot_example1.png)
 
 ### Multiple Plots in one Window
 
