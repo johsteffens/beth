@@ -1,13 +1,9 @@
 # Author J.B. Steffens
 
-import matplotlib.pyplot as plt
-import math
-
 if appearance[ 'preferred_style' ] in plt.style.available:
     plt.style.use( appearance[ 'preferred_style' ] )
 
 # plot font default parameters...
-
 
 # general text
 plt.rc( 'font',   size        = appearance[ 'textpoint_font_size' ] )
@@ -32,14 +28,15 @@ plt.rc( 'figure', titleweight  = appearance[ 'arr_title_weight' ] )
 linewidth = appearance['line_width']
 plotcols = min( len( frame_arr[ '' ][ '_list_' ] ), appearance['cols'] )
 
-fig = plt.figure()
-
 if appearance['window_title'] is not None:
     fig.canvas.manager.set_window_title( appearance['window_title'] )
 
 if frame_arr['title'] is not None:
     fig.suptitle( frame_arr['title'] )
 
+# fig = plt.figure()
+
+fig.clear()
 fig.subplots_adjust( hspace = appearance['ver_spacing'], wspace = appearance['hor_spacing'] )
 
 plot_count = len( frame_arr[ '' ][ '_list_' ] )
@@ -90,21 +87,4 @@ for i in range( plot_count ):
     if( show_legend ): ax.legend() # adds legend with specified plot labels above
 
 plt.ion() # interactive mode
-
-
-def on_window_close( event ):
-    # keep_looping is defined as global variable
-    global keep_looping
-    keep_looping = 0 # this stops the event loop
-
-fig.canvas.mpl_connect( 'close_event', on_window_close )
-
-# the calling framework runs the event loop
-# polling variable keep_looping
-
-"""
-Internal Bug:
-It seems that multiple window closings (at least 3) in one session can cause error on Py_FinalizeEx(): free(): invalid pointer
-The error occurs when multiple plots have been used. It occurs also when simply plt.show() is used.
-"""
 

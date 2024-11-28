@@ -19,10 +19,6 @@
 
 include "byth_base.h";
 
-/** Thread safe runtime environment to run python programs or python code fragments.
- *  Provides an interface to interact with python data.
- *  Use one instance of byth_run_s per running python program.
- */
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -30,19 +26,53 @@ include "byth_base.h";
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/** Runtime environment to run python programs or python code fragments.
+ *  Provides an interface to interact with python data.
+ *  Use one instance of byth_rte_core_s per running python program.
+ *  Calls Py_Initialize() on setup and Py_Finalize on destruction.
+ */
+name byth_rte_s_global_key;
 stamp :s
 {
     bl_t is_setup;
-    byth_frame_s -> global_frame; // global environment
 
     byth_obj_s -> globals;
     byth_obj_s -> locals;
     byth_obj_s -> result; // result of last run
 
+    func bcore_inst_call.init_x o.setup();
+    func bcore_inst_call.down_e o.shut_down();
+
+    func o shut_down( m@* o )
+    {
+        if( !o.is_setup ) = o;
+        o->globals =< NULL;
+        o->locals  =< NULL;
+        o->result  =< NULL;
+        // Calling FinalizeEx does not seem to allo stable re-initialization.
+        // Since Py_Initialize() is reentrant, we can also keep python initialized until the program closes
+        //if( Py_FinalizeEx() ) WRN_fa( "Py_FinalizeEx() failed.\n" );
+        bcore_global_remove( byth_rte_s_global_key~ );
+        o.is_setup = false;
+        = o;
+    }
+
     func o setup( m@* o )
     {
         if( o.is_setup ) = o;
-        o.global_frame =< byth_frame_get().fork();
+
+        if( bcore_global_exists( byth_rte_s_global_key~ ) )
+        {
+            ERR_fa
+            (
+                "Attempt to instantiate byth_rte_core_s more than once.\n"
+                "Only one instance of byth_rte_core_s should exist at a given time.\n"
+            );
+        }
+
+        bcore_global_t_set_d( byth_rte_s_global_key~, 0, NULL );
+        Py_Initialize();
+
         o.globals =< byth_obj_s!.setup_as_dict();
         o.locals  =< byth_obj_s!.setup_as_dict();
         o.result  =< byth_obj_s!;
@@ -50,19 +80,9 @@ stamp :s
         = o;
     }
 
-    func m byth_frame_s* frame( @* o ) = o.cast( m$* ).setup().global_frame;
-
-    func o lock  ( @* o ) o.frame().lock();
-    func o unlock( @* o ) o.frame().unlock();
-
-    /// creates lifetime bounded lock/unlock
-    func d x_lock_s*   create_lock  ( @* o ) = o.frame().create_lock();
-    func d x_unlock_s* create_unlock( @* o ) = o.frame().create_unlock();
-
     func o set_local_t_inst( m@* o, sc_t name, tp_t type, obliv x_inst* inst )
     {
         if( !inst ) = o;
-        o.create_lock()^;
         m$* obj_val = byth_obj_s!^;
         obj_val.setup_from_t_inst( type, inst );
         o.locals.py_dict_set( name, obj_val.py_object );
@@ -78,7 +98,6 @@ stamp :s
     func o set_global_t_inst( m@* o, sc_t name, tp_t type, obliv x_inst* inst )
     {
         if( !inst ) = o;
-        o.create_lock()^;
         m$* obj_val = byth_obj_s!^;
         obj_val.setup_from_t_inst( type, inst );
         o.globals.py_dict_set( name, obj_val.py_object );
@@ -94,7 +113,6 @@ stamp :s
     func er_t get_local_t_inst( @* o, sc_t name, tp_t type, m obliv x_inst* inst )
     {
         if( !inst ) = 0;
-        o.create_lock()^;
         m byth_obj_s* obj = o.locals.py_dict_get_obj( name )^;
         obj.to_t_inst( type, inst );
         = 0;
@@ -103,7 +121,6 @@ stamp :s
     func er_t get_global_t_inst( @* o, sc_t name, tp_t type, m obliv x_inst* inst )
     {
         if( !inst ) = 0;
-        o.create_lock()^;
         m byth_obj_s* obj = o.globals.py_dict_get_obj( name )^;
         obj.to_t_inst( type, inst );
         = 0;
@@ -142,9 +159,8 @@ stamp :s
     func tp_t get_global_tp( @* o, sc_t name ) { tp_t v = 0; o.get_global_t_inst( name, TYPEOF_tp_t, v.1 ); = v; }
 
     /// run s a program (fragment) (sequence of statements)
-    func o run_sequence( m@* o, sc_t string )
+    func o run_program( m@* o, sc_t string )
     {
-        o.create_lock()^;
         o.result.clear();
 
         o.result.py_object = PyRun_String( string, Py_file_input, o.globals.py_object, o.locals.py_object );
@@ -161,7 +177,6 @@ stamp :s
     /// single statement
     func o run_statement( m@* o, sc_t string )
     {
-        o.create_lock()^;
         o.result.clear();
 
         o.result.py_object = PyRun_String( string, Py_single_input, o.globals.py_object, o.locals.py_object );
