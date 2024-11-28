@@ -20,8 +20,8 @@ This library provides python functionality in beth by using the &#x1F517;[Python
 
 ## Features and Interfaces
 
-[Object Interface](../../doc/byth/object.md): Low level interface for conversions across beth objects and python objects.
-[Plotting Interface](../../doc/byth/plot.md): Wrapper of functionality in the `matplotlib.pyplot` package.
+  * [Object Interface](../../doc/byth/object.md): Low level interface for conversions across beth objects and python objects.
+  * [Plotting Interface](../../doc/byth/plot.md): Wrapper of functionality in the `matplotlib.pyplot` package.
 
 ------
 <sub>&copy; 2024 Johannes B. Steffens</sub>
