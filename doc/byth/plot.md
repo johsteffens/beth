@@ -19,7 +19,7 @@ The plotting interface wraps python's [matplotlib](https://matplotlib.org/).
 - Call `(byth_plot_frame_s) show()`
   - Use argument NULL for default appearance.
   - Use argument `byth_plot_appearance_s` for custom appearance.
-
+  - Ths function show a plot request to the [plot runtime manager](#plot-runtime-manager) and returns.
 
 **Example for plot with two curves:**
 
@@ -45,8 +45,9 @@ for( sz_t i = 0; i < samples; i++ )
     frame.[1].push( f3_cos( x ) * 0.5 ); // curve 1
 }
 
-// Displaying plot in dedicated window. (NULL for default appearance)
-// Use argument byth_plot_appearance_s for custom appearance.
+// Displaying plot in dedicated window.
+// Use argument byth_plot_appearance_s for custom appearance or NULL for default appearance
+// Repeated calls to 'show' would update the plot window accordingly.
 frame.show( NULL ); 
 ```
 
@@ -64,5 +65,12 @@ frame.show( NULL );
   - Use argument NULL for default appearance.
   - Use argument `byth_plot_appearance_s` for custom appearance.
 
+## Plot Runtime Manager
+The byth plot runtime manager works in the background. 
+
+When a plot request is received, the manager updates a graphical plot window in which all plots are drawn. The plot window stays open until closed manually or the program ends. The window is newly opened upon the first plot request or when it was closed manually in-between.
+
+
 ------
 <sub>&copy; 2024 Johannes B. Steffens</sub>
+
