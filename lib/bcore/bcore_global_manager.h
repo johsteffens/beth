@@ -39,12 +39,18 @@
   * Defining an existing key overwrites the previous object.
   * (Check existence via bcore_global_exists).
   */
-void bcore_global_t_set_d( tp_t key, tp_t t, vd_t v ); // assumes ownership of v
-void bcore_global_a_set_d( tp_t key,         vd_t v ); // assumes ownership of v
+void bcore_global_t_set_d( tp_t key, tp_t t, vd_t v ); // assumes ownership of v (v can be NULL)
+void bcore_global_a_set_d( tp_t key,         vd_t v ); // assumes ownership of v (v can be NULL)
 void bcore_global_x_set_d( tp_t key,         sr_s v ); // owns, forks depending on sr_s flags
 void bcore_global_t_set_c( tp_t key, tp_t t, vc_t v ); // clones v
 void bcore_global_a_set_c( tp_t key,         vc_t v ); // clones v
 void bcore_global_x_set_c( tp_t key,         sr_s v ); // clones v
+
+/** Conditional Get/Set function
+  * Value is only set in case key does not yet exists.
+  * Returns pointer to global instance.
+  */
+vd_t bcore_global_get_ifnexists_set( tp_t key, tp_t t );
 
 /// Removes key if existing. (Use only during init or down cycles)
 void bcore_global_remove( tp_t key );

@@ -71,6 +71,20 @@ void bcore_global_x_set_c( tp_t key, sr_s v )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+vd_t bcore_global_get_ifnexists_set( tp_t key, tp_t t )
+{
+    assert( hmap_g );
+    bcore_mutex_s_lock( mutex_g );
+    if( !bcore_hmap_tp_sr_s_exists( hmap_g, key ) )
+    {
+        bcore_hmap_tp_sr_s_set( hmap_g, key, sr_create( t ) );
+    }
+    const sr_s* sr = bcore_hmap_tp_sr_s_get( hmap_g, key );
+    bcore_mutex_s_unlock( mutex_g );
+    return ( sr ) ? sr->o : NULL;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_global_remove( tp_t key )
 {

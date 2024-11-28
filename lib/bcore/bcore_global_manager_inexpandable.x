@@ -36,12 +36,18 @@ group bcore_global = x_inst
       * Defining an existing key overwrites the previous object.
       * (Check existence via bcore_global_exists).
       */
-    func void t_set_d( tp_t key, tp_t t, vd_t v ); // assumes ownership of v
-    func void a_set_d( tp_t key,         vd_t v ); // assumes ownership of v
+    func void t_set_d( tp_t key, tp_t t, vd_t v ); // assumes ownership of v (v can be NULL)
+    func void a_set_d( tp_t key,         vd_t v ); // assumes ownership of v (v can be NULL)
     func void x_set_d( tp_t key,         sr_s v ); // owns, forks depending on sr_s flags
     func void t_set_c( tp_t key, tp_t t, vc_t v ); // clones v
     func void a_set_c( tp_t key,         vc_t v ); // clones v
     func void x_set_c( tp_t key,         sr_s v ); // clones v
+
+    /** Conditional Set function
+      * Value is only set in case key does not yet exists
+      * Returns pointer to global instance.
+      */
+    func vd_t get_ifnexists_set( tp_t key, tp_t t );
 
     /// Removes key if existing. (Use only during init or down cycles)
     func void remove( tp_t key );
