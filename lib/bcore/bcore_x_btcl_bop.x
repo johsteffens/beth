@@ -683,6 +683,10 @@ func (:frame_s) er_t eval_bop_assign( m@* o, s2_t bop_priority, m x_source* sour
 
 func (:frame_s) er_t eval_bop_continuation( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
 {
+    // if the last expression in a file, block or frame has a trailing semicolon, the continuation is ignored
+    if( source.parse_bl( " #=?([0]=='}'||[0]==')')" ) ) = 0;
+    if( source.eos() ) = 0;
+
     sr.clear();
     o.eval( bop_priority, source, sr );
     = 0;

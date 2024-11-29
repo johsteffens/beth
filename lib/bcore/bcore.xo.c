@@ -1,4 +1,4 @@
-//  Last update: 2024-11-29T11:41:59Z
+//  Last update: 2024-11-29T13:04:42Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -65,7 +65,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0x4080BBBF61E105A4ull
+// HKEYOF_bcore 0x3327FE193ACC3120ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -5015,7 +5015,13 @@ er_t x_btcl_frame_s_eval( x_btcl_frame_s* o, s2_t exit_priority, x_source* sourc
         x_btcl_list_s* list = ((x_btcl_list_s*)BLM_LEVEL_T_PUSH(2,x_btcl_list_s,x_btcl_list_s_create()));
         for(sz_t i = 0; !x_source_eos(source) && !x_source_parse_bl(source," #=?']'" ); i++ )
         {BLM_INIT_LEVEL(4);
-            if( i > 0 ) BLM_TRY(x_source_parse_fa(source," ," ))
+            if( i > 0 )
+            {
+                BLM_TRY(x_source_parse_fa(source," ," ))
+                // a trailing comma is allowed on a non-empty list
+                if( x_source_parse_bl(source," #=?']'" ) ) BLM_BREAK_LEVEL(3);
+            }
+    
             sr_s* sr = ((sr_s*)BLM_LEVEL_T_PUSH(4,sr_s,sr_s_create()));
             BLM_TRY(x_btcl_frame_s_eval(o,0, source, sr ))
             if( sr_s_is_strong(sr) )
@@ -5994,6 +6000,10 @@ er_t x_btcl_frame_s_eval_bop_continuation( x_btcl_frame_s* o, s2_t bop_priority,
 {
     // bcore_x_btcl_bop.x:685:1
     
+    // if the last expression in a file, block or frame has a trailing semicolon, the continuation is ignored
+    if( x_source_parse_bl(source," #=?([0]=='}'||[0]==')')" ) ) return  0;
+    if( x_source_eos(source) ) return  0;
+    
     sr_s_clear(sr);
     BLM_TRY(x_btcl_frame_s_eval(o,bop_priority, source, sr ))
     return  0;
@@ -6001,7 +6011,7 @@ er_t x_btcl_frame_s_eval_bop_continuation( x_btcl_frame_s* o, s2_t bop_priority,
 
 er_t x_btcl_frame_s_eval_bop( x_btcl_frame_s* o, s2_t exit_priority, x_source* source, sr_s* obj )
 {
-    // bcore_x_btcl_bop.x:698:1
+    // bcore_x_btcl_bop.x:702:1
     
     // operators in descending order of priority
     
@@ -6657,7 +6667,7 @@ er_t x_btcl_to_sink( bl_t detailed, const sr_s* sr, x_sink* sink )
 
 er_t x_btcl_parse_create_object( x_source* source, sr_s* obj )
 {
-    // bcore_x_btcl.x:1093:1
+    // bcore_x_btcl.x:1099:1
     BLM_INIT_LEVEL(0);
     x_btcl_frame_s* frame = x_btcl_frame_s_setup_as_root(((x_btcl_frame_s*)BLM_LEVEL_T_PUSH(0,x_btcl_frame_s,x_btcl_frame_s_create())),NULL );
     sr_s* sr = ((sr_s*)BLM_LEVEL_T_PUSH(0,sr_s,sr_s_create()));
@@ -6690,7 +6700,7 @@ er_t x_btcl_parse_create_object( x_source* source, sr_s* obj )
 
 void x_btcl_selftest( sc_t file )
 {
-    // bcore_x_btcl.x:1131:1
+    // bcore_x_btcl.x:1137:1
     BLM_INIT_LEVEL(0);
     sr_s* obj = ((sr_s*)BLM_LEVEL_T_PUSH(0,sr_s,sr_s_create()));
     BLM_TRY_EXIT(x_btcl_parse_create_object(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_check_create_from_file(file ))), obj ))
@@ -8227,5 +8237,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x835963B22AA19D9A
-// XOICO_FILE_SIGNATURE 0x03E80994C31A9B7C
+// XOICO_BODY_SIGNATURE 0x6078168826F3CCDB
+// XOICO_FILE_SIGNATURE 0x5727F4D33854F438

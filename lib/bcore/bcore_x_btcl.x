@@ -1031,7 +1031,13 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
         m :list_s* list = :list_s!^;
         for( sz_t i = 0; !source.eos() && !source.parse_bl( " #=?']'" ); i++ )
         {
-            if( i > 0 ) source.parse_fa( " ," );
+            if( i > 0 )
+            {
+                source.parse_fa( " ," );
+                // a trailing comma is allowed on a non-empty list
+                if( source.parse_bl( " #=?']'" ) ) break;
+            }
+
             m sr_s* sr = sr_s!^;
             o.eval( 0, source, sr );
             if( sr.is_strong() )

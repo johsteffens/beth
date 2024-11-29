@@ -72,6 +72,8 @@ a : b; // if a or b is a list, the list is extended (not nested)
 // relative path is relative to current file location
 embed ( "../data/file.btcl" );
 
+// A trailing semicolon as last valid symbol in a file, block or frame is not evaluated as continuation
+
 ```
 
 # Comments
@@ -106,6 +108,9 @@ More generally: The semicolon operator divides consecutive expressions into
 
 More generally: The semicolon operator divides consecutive expressions into
 **context creation** and **context usage**.
+
+**Note:**
+A trailing semicolon is allowed for the last expression in a file, block or frame. In that case the semicolon is simply ignored.
 
 ## Chain of Expressions
 
@@ -166,7 +171,7 @@ All other operators have each a unique priority. A higher group letter means low
 
 |Symbol|Description|
 |:---|:---|
-|```;```|[Continuation](continuation-operator)|
+|```;```|[Continuation](#continuation-operator)|
 
 # Number
 Numbers are represented as integer ```s3_t``` or floating point ```f3_t```.
@@ -362,16 +367,19 @@ Binary operators where the left operand is a function.
 // List literal
 mylist = [1,2,3];
 
+// A trailing comma in a non-empty list is allowed
+mylist = [1,2,3,]; // same as [1,2,3];
+
 // Element access
 mylist.[ 2 ] // is 3 here
 
-// Creating a list by concatenating elements or lists
+// Creating a list by concatenating elements of lists a,b,c
 mylist = a : b : c;
 
-// if any operand is already a list, it will be unfolded and extended
+// concatenating: if any operand is already a list, it will be unfolded and extended
 [1,2]:3 == 1:2:3; // this is TRUE
 
-// to explicitly insert a list as element to another list, fold it twice:
+// concatenating: to explicitly insert a list as element to another list, fold it twice:
 a = [1,2];
 b = a:[[4,5]];
 b == [1,2,[4,5]]; // this is TRUE
