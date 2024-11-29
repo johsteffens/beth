@@ -4,7 +4,7 @@
 
 ## Plotting
 
-The plotting interface wraps python's [matplotlib](https://matplotlib.org/).
+The plotting interface wraps python's &#x1F517;[matplotlib](https://matplotlib.org/).
 
 ### Simple Plot
 
@@ -21,7 +21,7 @@ The plotting interface wraps python's [matplotlib](https://matplotlib.org/).
   - Use argument `byth_plot_appearance_s` for custom appearance.
   - Ths function show a plot request to the [plot runtime manager](#plot-runtime-manager) and returns.
 
-**Example for plot with two curves:**
+**Example for a plot with two curves:**
 
 ``` C
 m$* frame = byth_plot_frame_s!^;
@@ -59,8 +59,9 @@ frame.show( NULL );
 
 **Principle approach:**
 
-- Instantiate `byth_plot_frame_arr_s`, as defined in [byth_plot.x](byth_plot.x).
+- Instantiate `byth_plot_frame_arr_s`, as defined in [byth_plot.x](../../lib/byth/byth_plot.x).
 - Setup individual plots `byth_plot_frame_s` as array elements.
+- Note: byth_plot_apperance_s holds parameters on how to arrange multiple plots in the plot window.
 - Call `(byth_plot_frame_arr_s) show()`
   - Use argument NULL for default appearance.
   - Use argument `byth_plot_appearance_s` for custom appearance.
@@ -68,7 +69,7 @@ frame.show( NULL );
 ## Plot Runtime Manager
 The byth plot runtime manager works in the background. 
 
-When a plot request is received, the manager updates a graphical plot window in which all plots are drawn. The plot window stays open until closed manually or the program ends. The window is newly opened upon the first plot request or when it was closed manually in-between.
+When a plot request is received, the manager updates a graphical plot window in which all plots are drawn. The plot-window is newly opened upon the first plot request. The window stays open until closed manually or the program ends. When the window it was closed manually, it reopens on new data provided a proper appearance parameter is set.
 
 
 ------

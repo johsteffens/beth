@@ -41,7 +41,7 @@ y = <bcore_arr_s3_s> 1 2 3 </>;
 // same result as above (using btcl array initialization)
 z = <bcore_arr_s3_s></>( [1,2,3] );
 
-// btcl element initialization
+// element initialization
 <bcore_main_frame_s></>( .create_log_file = TRUE, .log_file_extension = "log" );
 
 // prints object z to stdout (for messaging, inspection, debugging)
@@ -438,7 +438,7 @@ The operation O(L<sub>n</sub>,F) with ...
 
 ``` C
 4 :: b == [b,b,b,b];
-4 :: func(x){x} == [0,1,2,3];
+4 :: func(i){i} == [0,1,2,3];
 
 f = func(a,b){...};
 [1,2,3,4] :: f == f(f(f(1,2),3),4);
@@ -492,26 +492,34 @@ Generic conversion is a btcl-specific type conversion when general stamps are in
 # Built-in Operators
 The following operators are hardwired in form of unary functions.
 
-  * EXP
-  * LOG
-  * LOG2
-  * LOG10
-  * SIN
-  * COS
-  * TAN
-  * TANH
-  * SIGN
-  * SQRT
-  * ABS
+|Name|Description|
+|:---|:---|
+|EXP|Exponentiation base ```e```|
+|LOG|Logarithm base ```e```|
+|LOG2|Logarithm base ```2```|
+|LOG10|Logarithm base ```10```|
+|SIN|Sine|
+|COS|Cosine|
+|TAN|Tangens|
+|TANH|Tangens hyperbolicus|
+|SIGN|Sign of value ```1 or -1```|
+|SQRT|Squareroot|
+|ABS|Absolute value|
+|CEIL|Ceiling function|
+|FLOOR|Floor function|
 
 # Built-in Constants
 The following operators are hardwired constants.
 
-  * TRUE
-  * FALSE
-  * true
-  * false
-  * PI
+|Name|Description|
+|:---|:---|
+|TRUE|Boolean 'true'|
+|FALSE|Boolean 'false'|
+|true|Boolean 'true'|
+|false|Boolean 'false'|
+|PI|Math: Pi constant|
+|PATH|Path of source file; error if source has no file associated|
+|DIR|Directory of source file; error if source has no file associated|
 
 # Including other source files.
 
