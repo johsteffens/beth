@@ -77,6 +77,8 @@ stamp :appearance_s
 {
     st_s preferred_style = "ggplot"; // run 'print( matplotlib.pyplot.style.available )' to get all available styles
     st_s => window_title; // title on window frame
+    bl_t reopen_window = true; // True: after window was manually close it is reopened on new data
+    bl_t keep_window_alive = false; // True: application terminator waits while a window is open
 
     f3_t line_width   = 0.7;    // line thickness
 

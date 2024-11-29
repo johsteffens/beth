@@ -3,8 +3,8 @@
 import matplotlib.pyplot
 
 def on_window_close( event ):
-    global keep_looping
-    keep_looping = 0
+    global window_was_closed
+    window_was_closed = 1
 
 def setup_plot( plt, fig ):
     global on_window_close

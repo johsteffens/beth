@@ -28,30 +28,30 @@ stamp :engine_s x_thread
     x_mutex_s mutex;
     x_thread_s thread;
 
-    bl_t exit_thread_flag;
-    bl_t thread_is_running;
+    bl_t exit_thread_request_flag;
+    bl_t thread_was_opened;
+    bl_t thread_was_closed;
 
     private :frame_arr_s* frame_arr;
     private :appearance_s* appearance;
+
+    func bl_t exit_thread_request( m@* o )
+    {
+        o.mutex.lock();
+        bl_t flag = o.exit_thread_request_flag;
+        o.mutex.unlock();
+        = flag;
+    }
 
     func bcore_inst_call.down_e o.close_thread();
 
     func o close_thread( m@* o )
     {
         o.mutex.lock();
-        o.exit_thread_flag = true;
+        o.exit_thread_request_flag = true;
         o.mutex.unlock();
         o.thread.join();
-        o.exit_thread_flag = false;
-        o.thread_is_running = false;
-    }
-
-    func bl_t exit_thread( m@* o )
-    {
-        o.mutex.lock();
-        bl_t flag = o.exit_thread_flag;
-        o.mutex.unlock();
-        = flag;
+        o.exit_thread_request_flag = false;
     }
 
     func x_thread.m_thread_func
@@ -59,47 +59,65 @@ stamp :engine_s x_thread
         m$* rte = byth_rte_s!^;
         rte.run_program( byth_plot_functions_py_as_string()^.sc );
 
-        rte.run_statement( "plt = matplotlib.pyplot" );
-        rte.run_statement( "fig = plt.figure()" );
-        rte.set_global_u3( "keep_looping", 1 );
-
-        rte.run_statement( "setup_plot( plt, fig )" );
-
         bl_t refresh = false;
-        bl_t exit = false;
+        bl_t open_window = true;
+        bl_t window_is_open = false;
+        bl_t keep_window_alive = true;
 
-        // variable keep_looping is set 0 when the window is closed
-        while( rte.get_global_u3( "keep_looping" ) && !exit )
+        rte.set_global_u3( "window_was_closed", 0 );
+
+        while( !o.exit_thread_request() || ( keep_window_alive && window_is_open ) )
         {
             o.mutex.lock();
-            exit = o.exit_thread_flag;
             if( o.frame_arr && o.appearance )
             {
                 m$* appearance = o.appearance;
                 m$* frame_arr  = o.frame_arr;
                 rte.set_local_inst( "frame_arr", frame_arr );
                 rte.set_local_inst( "appearance", appearance );
+                refresh = true;
+                if( rte.get_global_u3( "window_was_closed" ) )
+                {
+                    open_window = appearance.reopen_window;
+                    rte.set_global_u3( "window_was_closed", 0 );
+                }
+                keep_window_alive = appearance.keep_window_alive;
                 o.frame_arr = NULL;
                 o.appearance = NULL;
-                refresh = true;
             }
             o.mutex.unlock();
 
-            if( refresh )
+            if( open_window )
             {
-
-                rte.run_statement( "update_appearance( plt, fig, appearance )" );
-                rte.run_statement( "update_plot( plt, fig, frame_arr, appearance )" );
-                refresh = false;
+                rte.run_statement( "plt = matplotlib.pyplot" );
+                rte.run_statement( "fig = plt.figure()" );
+                rte.run_statement( "setup_plot( plt, fig )" );
+                open_window = false;
+                window_is_open = true;
             }
 
-            rte.run_statement( "plt.pause(0.1)" );
+            if( !rte.get_global_u3( "window_was_closed" ) )
+            {
+                if( refresh )
+                {
+                    rte.run_statement( "update_appearance( plt, fig, appearance )" );
+                    rte.run_statement( "update_plot( plt, fig, frame_arr, appearance )" );
+                    refresh = false;
+                }
+
+                rte.run_statement( "plt.pause(0.05)" );
+            }
+            else
+            {
+                window_is_open = false;
+                x_threads_sleep_ms( 100 );
+            }
         }
 
         rte.run_statement( "plt.close()" );
 
         o.mutex.lock();
-        o.thread_is_running = false;
+        o.thread_was_closed = true;
         o.mutex.unlock();
         = NULL;
     }
@@ -107,22 +125,24 @@ stamp :engine_s x_thread
     // shows plots in a dedicated window; appearance can be NULL
     func o show_frame_arr( m@* o, const :frame_arr_s* frame_arr, const :appearance_s* appearance )
     {
-        o.mutex.lock();
-        o.frame_arr = frame_arr.cast( m$* );
-        if( appearance )
         {
-            o.appearance = appearance.cast( m$* );
+            o.mutex.create_lock()^;
+            if( o.thread_was_closed ) = o;
+            o.frame_arr = frame_arr.cast( m$* );
+            if( appearance )
+            {
+                o.appearance = appearance.cast( m$* );
+            }
+            else
+            {
+                o.appearance = :appearance_s!^^;
+            }
         }
-        else
-        {
-            o.appearance = :appearance_s!^^;
-        }
-        o.mutex.unlock();
 
-        if( !o.thread_is_running )
+        if( !o.thread_was_opened )
         {
             o.thread.call_m_thread_func( o );
-            o.thread_is_running = true;
+            o.thread_was_opened = true;
         }
 
         bl_t exit_loop = false;
@@ -133,6 +153,8 @@ stamp :engine_s x_thread
             o.mutex.unlock();
             x_threads_sleep_ms( 10 );
         }
+
+        = o;
     }
 
     // shows plots in a dedicated window; appearance can be NULL
