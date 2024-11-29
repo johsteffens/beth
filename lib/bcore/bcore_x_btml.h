@@ -109,7 +109,7 @@ feature 'at' void btml_body_to_sink(     c@* o, m x_sink* sink );
 func t_from_source
 {
     sr_s sr = sr_null();
-    :parse_create_object( source, NULL, sr.1 );
+    :parse_create_object( source, NULL, 0, sr.1 );
     x_inst_t_copy_typed( o, t, sr_s_o_type( sr.1 ), sr.o );
     sr_s_down( sr );
     = 0;
@@ -125,7 +125,7 @@ func create_from_source_t
         = NULL;
     }
     sr_s sr = sr_null();
-    if( :parse_create_object( source, NULL, sr.1 ) ) = NULL;
+    if( :parse_create_object( source, NULL, 0, sr.1 ) ) = NULL;
     if( sr.o && type ) type.0 = sr_s_o_type( sr );
     = sr.o.cast( d @* ); // sr.o is NULL in case of error
 }
@@ -243,8 +243,9 @@ func t_appears_valid
 /** On entering, obj should be sr_null
  *  In case of error obj need not be discarded
  *  if default_obj is defined, obj copies from default_obj before parsing the body
+ *  default_tp != 0 takes the place of an empty type specifier (syntax: <>)
  */
-func er_t parse_create_object( m x_source* source, sr_s* default_obj, m sr_s* obj )
+func er_t parse_create_object( m x_source* source, sr_s* default_obj, tp_t default_tp, m sr_s* obj )
 {
     er_t er = 0;
     m st_s* type_string = st_s!^;
@@ -254,13 +255,26 @@ func er_t parse_create_object( m x_source* source, sr_s* default_obj, m sr_s* ob
     {
         source.parse_fa( "#until'>'>", type_string );
         bl_t compact = false; // compact version of <mystamp_s></> is <mystamp_s/>
+        tp_t type = 0;
         if( type_string.size > 0 && type_string.[ type_string.size - 1 ] =='/' )
         {
             type_string.pop_char();
             compact = true;
         }
 
-        tp_t type = :type_of( type_string );
+        if( type_string.size == 1 && type_string.[ 0 ] =='*' )
+        {
+            if( default_tp == 0 )
+            {
+                = source.parse_error_fa( "Context does not provide an inheritable type." );
+            }
+            type = default_tp;
+        }
+        else
+        {
+            type = :type_of( type_string );
+        }
+
         if( type )
         {
             if( bcore_flect_exists( type ) )
@@ -313,7 +327,7 @@ func er_t parse_create_object( m x_source* source, sr_s* default_obj, m sr_s* ob
                     {
                         if( bcore_file_exists( path.sc ) )
                         {
-                            :parse_create_object( bcore_file_open_source( path.sc )^, NULL, obj );
+                            :parse_create_object( bcore_file_open_source( path.sc )^, NULL, 0, obj );
                         }
                         else
                         {
@@ -381,7 +395,7 @@ func er_t t_parse_body( m @* o, tp_t t, m x_source* source )
 
     if( source.parse_bl( "#?w'#default:'" ) )
     {
-        :parse_create_object( source, NULL, default_element.1 );
+        :parse_create_object( source, NULL, 0, default_element.1 );
         default_sr = default_element.1;
     }
 
@@ -424,20 +438,23 @@ func er_t t_parse_body( m @* o, tp_t t, m x_source* source )
             if( source.parse_bl( "#?'type:'" ) )
             {
                 sr_s sr = sr_null();
-                :parse_create_object( source, default_sr, sr.1 );
+                :parse_create_object( source, default_sr, 0, sr.1 );
                 type = sr_to_tp( sr );
             }
             arr.t_set_gtype( t, type );
         }
 
+        tp_t mono_type = arr.t_get_mono_type( t ); // mono type is 0 in case array has no mono type
+
         if( arr.t_is_fixed( t ) )
         {
             sz_t arr_size = arr.t_size( t );
             sz_t arr_count = 0;
+
             while( !source.parse_bl( " #=?'</>'" ) )
             {
                 sr_s sr = sr_null();
-                :parse_create_object( source, default_sr, sr.1 );
+                :parse_create_object( source, default_sr, mono_type, sr.1 );
                 if( arr_count < arr_size )
                 {
                     arr.t_set_sr( t, arr_count, sr );
@@ -455,7 +472,7 @@ func er_t t_parse_body( m @* o, tp_t t, m x_source* source )
             while( !source.parse_bl( " #=?'</>'" ) )
             {
                 sr_s sr = sr_null();
-                :parse_create_object( source, default_sr, sr.1 );
+                :parse_create_object( source, default_sr, mono_type, sr.1 );
                 arr.t_push_sr( t, sr );
             }
         }
@@ -468,14 +485,15 @@ func er_t t_parse_body( m @* o, tp_t t, m x_source* source )
             source.parse_fa( " #name :", name );
             tp_t tp_name = btypeof( name.sc );
             sr_s sr = sr_null();
-            :parse_create_object( source, default_sr, sr.1 );
             // non existing member variables are parsed but not assigned
             if( stamp.t_exists( t, tp_name ) )
             {
+                :parse_create_object( source, default_sr, stamp.t_type( t, tp_name ), sr.1 );
                 stamp.t_set_sr( t, tp_name, sr );
             }
             else
             {
+                :parse_create_object( source, default_sr, 0, sr.1 ); // skip object and remove it
                 sr_down( sr );
             }
         }

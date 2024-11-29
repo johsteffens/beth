@@ -1,4 +1,4 @@
-//  Last update: 2024-09-06T14:37:22Z
+//  Last update: 2024-11-29T09:55:57Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -242,6 +242,7 @@
   void x_source_parse_msg_fv( const x_source* o, sc_t format, va_list args ); \
   static inline void x_source_parse_msg_fa( const x_source* o, sc_t format, ... ); \
   static inline sc_t x_source_get_file( const x_source* o ); \
+  st_s* x_source_get_d_dir( const x_source* o ); \
   static inline x_source* x_source_stdin( void ); \
   XOILA_DECLARE_SPECT( x_source ) \
   { \
@@ -2438,7 +2439,7 @@
   tp_t x_btml_type_of( const st_s* name ); \
   bl_t x_btml_appears_valid( x_source* source ); \
   bl_t x_btml_t_appears_valid( tp_t type, x_source* source ); \
-  er_t x_btml_parse_create_object( x_source* source, const sr_s* default_obj, sr_s* obj ); \
+  er_t x_btml_parse_create_object( x_source* source, const sr_s* default_obj, tp_t default_tp, sr_s* obj ); \
   er_t x_btml_t_parse_body( x_btml* o, tp_t t, x_source* source ); \
   er_t x_btml_skip_body( x_source* source ); \
   void x_btml_t_translate_recursive( const x_btml* o, tp_t t, tp_t name, bl_t shelve, x_sink* sink, sz_t depth ); \
@@ -2906,11 +2907,15 @@
 #define TYPEOF_SIGN 0x630140244A4BA664ull
 #define TYPEOF_SQRT 0xAA2CD0247323A3CFull
 #define TYPEOF_ABS 0xFA2FF219A0745E1Bull
+#define TYPEOF_CEIL 0xEDACD99C60C7DDC8ull
+#define TYPEOF_FLOOR 0xCA975D16304CB71Dull
 #define TYPEOF_true 0x5B5C98EF514DBFA5ull
 #define TYPEOF_false 0xB5FAE2C14238B978ull
 #define TYPEOF_TRUE 0x704E59FAB561C2A5ull
 #define TYPEOF_FALSE 0x09DCCB2F68F0A098ull
 #define TYPEOF_PI 0x09421F07B5D1F0B2ull
+#define TYPEOF_PATH 0x17DD2E194F31D276ull
+#define TYPEOF_DIR 0xE0447E1991CAD034ull
 #define BETH_EXPAND_GROUP_x_btcl \
   BCORE_FORWARD_OBJECT( x_btcl ); \
   BCORE_FORWARD_OBJECT( x_btcl_btcl_function_stamp_s ); \
@@ -3280,5 +3285,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x3E66720594E15E2A
-// XOICO_FILE_SIGNATURE 0x2EEB0D396DA6DBE5
+// XOICO_BODY_SIGNATURE 0x46A284645CA0A8EE
+// XOICO_FILE_SIGNATURE 0x3EBAB6994599B53E

@@ -153,6 +153,14 @@ func parse_msg_fa { va_list a; va_start( a, format ); o.parse_msg_fv( format, a 
 /// returns file path or NULL in case source is not associated with a file
 func sc_t get_file( c @*o ) = o.cast( bcore_source* ).get_file();
 
+/// returns file directory or NULL in case source is not associated with a file
+func d st_s* get_d_dir( c @*o )
+{
+    sc_t file = o.get_file();
+    if( !file ) = NULL;
+    = bcore_file_folder_path( file );
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 func m x_source* stdin() = ( x_source* )BCORE_STDIN;

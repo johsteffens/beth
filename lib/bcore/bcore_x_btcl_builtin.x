@@ -31,6 +31,8 @@ name TANH;
 name SIGN;
 name SQRT;
 name ABS;
+name CEIL;
+name FLOOR;
 
 // constants
 name true;
@@ -38,6 +40,8 @@ name false;
 name TRUE;
 name FALSE;
 name PI;
+name PATH;
+name DIR;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -55,6 +59,8 @@ func (:context_s) set_reserved_funcs
     o.hmap_reserved_func.set_sc( "SIGN" );
     o.hmap_reserved_func.set_sc( "SQRT" );
     o.hmap_reserved_func.set_sc( "ABS" );
+    o.hmap_reserved_func.set_sc( "CEIL" );
+    o.hmap_reserved_func.set_sc( "FLOOR" );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -66,6 +72,8 @@ func (:context_s) set_reserved_consts
     o.hmap_reserved_const.set_sc( "TRUE" );
     o.hmap_reserved_const.set_sc( "FALSE" );
     o.hmap_reserved_const.set_sc( "PI" );
+    o.hmap_reserved_const.set_sc( "PATH" );
+    o.hmap_reserved_const.set_sc( "DIR" );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -79,6 +87,28 @@ func (:frame_s) er_t eval_reserved_const( m@* o, tp_t name, m x_source* source, 
         case TYPEOF_TRUE : sr.const_from_bl(  true ); break;
         case TYPEOF_FALSE: sr.const_from_bl( false ); break;
         case TYPEOF_PI:    sr.const_from_f3( 3.1415926535897932384626434 ); break;
+
+        case TYPEOF_PATH:
+        {
+            sc_t path = source.get_file();
+            if( !path )
+            {
+                = source.parse_error_fa( "Cannot retrieve a file path from source.\n", o.nameof( name ) );
+            }
+            sr.asc( st_s!.copy_sc( path ) );
+        }
+        break;
+
+        case TYPEOF_DIR:
+        {
+            m st_s* dir = source.get_d_dir()^;
+            if( !dir )
+            {
+                = source.parse_error_fa( "Cannot retrieve a directory from source.\n", o.nameof( name ) );
+            }
+            sr.asc( dir.fork() );
+        }
+        break;
 
         default:
         {
@@ -263,6 +293,32 @@ func (:frame_s) er_t eval_reserved_func( m@* o, tp_t name, m x_source* source, m
                     f3_t x = sb.to_f3();
                     sr.const_from_f3( ( x >= 0 ) ? x : -x );
                 }
+            }
+            else
+            {
+                = source.parse_error_fa( "Function #<sc_t>: Argument '#<sc_t>' is not numeric.\n", o.nameof( name ), bnameof( sb.o_type() ) );
+            }
+        }
+        break;
+
+        case CEIL~:
+        {
+            if( sb.is_numeric() )
+            {
+                sr.const_from_f3( ceil( sb.to_f3() ) );
+            }
+            else
+            {
+                = source.parse_error_fa( "Function #<sc_t>: Argument '#<sc_t>' is not numeric.\n", o.nameof( name ), bnameof( sb.o_type() ) );
+            }
+        }
+        break;
+
+        case FLOOR~:
+        {
+            if( sb.is_numeric() )
+            {
+                sr.const_from_f3( floor( sb.to_f3() ) );
             }
             else
             {
