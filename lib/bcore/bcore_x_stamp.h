@@ -70,10 +70,20 @@ func bl_t t_exists( tp_t t,       tp_t name ) = bcore_via_t_nexists( t, NULL, na
 /// checks if element is static (type need not be recorded)
 func bl_t   is_static_i( aware @* o, sz_t index ) = bcore_via_a_iis_static( o.cast( c bcore_via* ), index );
 func bl_t t_is_static_i( tp_t t, sz_t index )     = bcore_via_t_iis_static( t, NULL, index );
+func bl_t   is_static  ( aware @* o, tp_t name )  = bcore_via_a_nis_static( o.cast( c bcore_via* ), name );
+func bl_t t_is_static  ( tp_t t, tp_t name )      = bcore_via_t_nis_static( t, NULL, name );
 
 /// checks if element is a link (means that it can be NULL); (Note: An array is a distinct static object -> not a link)
 func bl_t   is_link_i( aware @* o, sz_t index ) = bcore_via_a_iis_link( o.cast( c bcore_via* ), index );
 func bl_t t_is_link_i( tp_t t, sz_t index )     = bcore_via_t_iis_link( t, NULL, index );
+func bl_t   is_link  ( aware @* o, tp_t name )  = bcore_via_a_nis_link( o.cast( c bcore_via* ), name );
+func bl_t t_is_link  ( tp_t t, tp_t name )      = bcore_via_t_nis_link( t, NULL, name );
+
+/// checks if element is an array
+func bl_t   is_array_i( aware @* o, sz_t index ) = bcore_via_a_iis_array( o.cast( c bcore_via* ), index );
+func bl_t t_is_array_i( tp_t t, sz_t index )     = bcore_via_t_iis_array( t, NULL, index );
+func bl_t   is_array_n( aware @* o, tp_t name )  = bcore_via_a_nis_array( o.cast( c bcore_via* ), name );
+func bl_t t_is_array_n( tp_t t, tp_t name )      = bcore_via_t_nis_array( t, NULL, name );
 
 /// returns type of element (note that the type might be defined at runtime, hence the object o is always required)
 func tp_t   type  ( aware @* o,         tp_t name  ) = bcore_via_a_nget_type(    o.cast( c bcore_via* ), name );

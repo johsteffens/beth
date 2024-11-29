@@ -318,6 +318,12 @@ bl_t bcore_via_default_iis_array( const bcore_via_s* p, const bcore_via* o, uz_t
     return bcore_flect_caps_is_array( p->vitem_arr[ index ].caps );
 }
 
+bl_t bcore_via_default_nis_array( const bcore_via_s* p, const bcore_via* o, tp_t name )
+{
+    uz_t index = bcore_via_default_nget_index( p, o, name );
+    return bcore_via_default_iis_array( p, o, index );
+}
+
 bl_t bcore_via_default_iis_static( const bcore_via_s* p, const bcore_via* o, uz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
@@ -340,6 +346,12 @@ bl_t bcore_via_default_iis_static( const bcore_via_s* p, const bcore_via* o, uz_
     return false;
 }
 
+bl_t bcore_via_default_nis_static( const bcore_via_s* p, const bcore_via* o, tp_t name )
+{
+    uz_t index = bcore_via_default_nget_index( p, o, name );
+    return bcore_via_default_iis_static( p, o, index );
+}
+
 bl_t bcore_via_default_iis_link( const bcore_via_s* p, const bcore_via* o, uz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
@@ -360,6 +372,12 @@ bl_t bcore_via_default_iis_link( const bcore_via_s* p, const bcore_via* o, uz_t 
         default: ERR( "Unhandled encapsulation '%s'", bcore_flect_caps_e_sc( p->vitem_arr[ index ].caps ) );
     }
     return false;
+}
+
+bl_t bcore_via_default_nis_link( const bcore_via_s* p, const bcore_via* o, tp_t name )
+{
+    uz_t index = bcore_via_default_nget_index( p, o, name );
+    return bcore_via_default_iis_link( p, o, index );
 }
 
 void bcore_via_default_source( const bcore_via_s* p, bcore_via* o, bcore_source* source )

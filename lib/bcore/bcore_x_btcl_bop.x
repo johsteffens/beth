@@ -19,41 +19,6 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-// copies sb into sr by first trying type conversion then using generic conversions
-func er_t generic_copy( m sr_s* sr, c sr_s* sb )
-{
-    er_t copy_typed_err = x_inst_t_copy_typed( sr.o, sr.o_type(), sb.o_type(), sb.o );
-    if( copy_typed_err == conversion_error~ )
-    {
-        if( sb.o_type() == :list_s~ )
-        {
-            m x_array* array = NULL;
-            tp_t t_array = 0;
-            if( x_array_t_is_array( sr.type() ) )
-            {
-                array = sr.o;
-                t_array = sr.type();
-            }
-            else if( x_stamp_t_is_aware( sr.type() ) && ( array = sr.o.cast( m x_array_feature* ).m_get_wrapped_array() ) )
-            {
-                t_array = array._;
-            }
-
-            if( array )
-            {
-                :list_s* list = sb.o.cast( :list_s* );
-                x_array_t_clear( array, t_array );
-                for( sz_t i = 0; i < list.arr.size; i++ ) x_array_t_push_sr( array, t_array, sr_cw( list.arr.[ i ] ) );
-                bcore_error_remove_last_if_of( conversion_error~ );
-                copy_typed_err = 0;
-            }
-        }
-    }
-    = copy_typed_err;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 func (:frame_s) er_t eval_bop_member( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
 {
     bl_t is_const = sr.is_const();
@@ -745,13 +710,6 @@ func (:frame_s) er_t eval_bop( m@* o, s2_t exit_priority, m x_source* source, m 
         if( source.parse_bl( " #?'('" ) ) { o.eval_bop_functional( source, obj ); source.parse_fa( " )" ); }
     }
     bop_priority--;
-
-//    while( source.parse_bl( " #?'.'" ) ) o.eval_bop_member( bop_priority, source, obj );
-//    bop_priority--;
-//
-//    if( bop_priority <= exit_priority ) = 0;
-//    while( source.parse_bl( " #?'('" ) ) { o.eval_bop_functional( source, obj ); source.parse_fa( " )" ); }
-//    bop_priority--;
 
     /// priority group c ---------------------
 

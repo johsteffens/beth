@@ -75,6 +75,42 @@ func er_t get_embedding_file_path( m x_source* source, sc_t in_path, m st_s* out
     = 0;
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
+// copies sb into sr by first trying type conversion then using generic conversions
+func er_t generic_copy( m sr_s* sr, c sr_s* sb )
+{
+    er_t copy_typed_err = x_inst_t_copy_typed( sr.o, sr.o_type(), sb.o_type(), sb.o );
+    if( copy_typed_err == conversion_error~ )
+    {
+        if( sb.o_type() == :list_s~ )
+        {
+            m x_array* array = NULL;
+            tp_t t_array = 0;
+            if( x_array_t_is_array( sr.type() ) )
+            {
+                array = sr.o;
+                t_array = sr.type();
+            }
+            else if( x_stamp_t_is_aware( sr.type() ) && ( array = sr.o.cast( m x_array_feature* ).m_get_wrapped_array() ) )
+            {
+                t_array = array._;
+            }
+
+            if( array )
+            {
+                :list_s* list = sb.o.cast( :list_s* );
+                x_array_t_clear( array, t_array );
+                for( sz_t i = 0; i < list.arr.size; i++ ) x_array_t_push_sr( array, t_array, sr_cw( list.arr.[ i ] ) );
+                bcore_error_remove_last_if_of( conversion_error~ );
+                copy_typed_err = 0;
+            }
+        }
+    }
+    = copy_typed_err;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 
@@ -250,7 +286,7 @@ stamp :null_variable_s { $ tp_t tp_name; }
 //----------------------------------------------------------------------------------------------------------------------
 
 /** A null member is a stamp member defined as reference and being NULL at the point of query.
- *  Normally this represents an error except when the expression stand left of an assignment.
+ *  Normally this represents an error except when the expression stands left of an assignment.
  *  The null member allows assignments being regular binary operators.
  */
 stamp :null_member_s
@@ -265,8 +301,21 @@ stamp :null_member_s
 
     func sr_s set_sr( m@* o, m sr_s* src )
     {
-        x_stamp_t_set_sr( o.base.o.cast( m x_stamp* ), o.base.o_type(), o.tp_name, sr_cw( src ) );
-        = x_stamp_t_m_get_sr( o.base.o.cast( m x_stamp* ), o.base.o_type(), o.tp_name );
+        uz_t index = x_stamp_t_index( o.base.o_type(), o.tp_name );
+
+        if( x_stamp_t_is_static_i( o.base.o_type(), index ) && src.o )
+        {
+            tp_t dst_type = x_stamp_t_type_i( o.base.o, o.base.o_type(), index );
+            sr_s sr = sr_tsm( dst_type, x_inst_create( dst_type ) );
+            :generic_copy( sr, src );
+            x_stamp_t_set_sr( o.base.o, o.base.o_type(), o.tp_name, sr );
+        }
+        else
+        {
+            x_stamp_t_set_sr( o.base.o, o.base.o_type(), o.tp_name, sr_cw( src ) );
+        }
+
+        = x_stamp_t_m_get_sr( o.base.o, o.base.o_type(), o.tp_name );
     }
 }
 
@@ -286,7 +335,18 @@ stamp :null_arr_element_s
 
     func sr_s set_sr( m@* o, m sr_s* src )
     {
-        x_array_t_set_sr( o.base.o.cast( m x_stamp* ), o.base.o_type(), o.index, sr_cw( src ) );
+        if( x_array_t_is_static( o.base.o_type() ) && src.o )
+        {
+            tp_t dst_type = x_array_t_get_static_type( o.base.o_type() );
+            sr_s sr = sr_tsm( dst_type, x_inst_create( dst_type ) );
+            :generic_copy( sr, src );
+            x_array_t_set_sr( o.base.o.cast( m x_stamp* ), o.base.o_type(), o.index, sr );
+        }
+        else
+        {
+            x_array_t_set_sr( o.base.o.cast( m x_stamp* ), o.base.o_type(), o.index, sr_cw( src ) );
+        }
+
         = x_array_t_m_get_sr( o.base.o.cast( m x_stamp* ), o.base.o_type(), o.index );
     }
 }
@@ -858,10 +918,8 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
         {
             switch( name )
             {
-                /// Signature or Function definition
                 case TYPEOF_else: = source.parse_error_fa( "Misplaced 'else'.\n" );
 
-                /// Signature or Function definition
                 case TYPEOF_if:
                 {
                     bl_t condition = false;

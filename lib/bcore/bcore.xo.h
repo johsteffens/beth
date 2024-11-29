@@ -1,4 +1,4 @@
-//  Last update: 2024-11-29T09:55:57Z
+//  Last update: 2024-11-29T11:16:57Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -638,8 +638,16 @@
   static inline bl_t x_stamp_t_exists( tp_t t, tp_t name ); \
   static inline bl_t x_stamp_is_static_i( const x_stamp* o, sz_t index ); \
   static inline bl_t x_stamp_t_is_static_i( tp_t t, sz_t index ); \
+  static inline bl_t x_stamp_is_static( const x_stamp* o, tp_t name ); \
+  static inline bl_t x_stamp_t_is_static( tp_t t, tp_t name ); \
   static inline bl_t x_stamp_is_link_i( const x_stamp* o, sz_t index ); \
   static inline bl_t x_stamp_t_is_link_i( tp_t t, sz_t index ); \
+  static inline bl_t x_stamp_is_link( const x_stamp* o, tp_t name ); \
+  static inline bl_t x_stamp_t_is_link( tp_t t, tp_t name ); \
+  static inline bl_t x_stamp_is_array_i( const x_stamp* o, sz_t index ); \
+  static inline bl_t x_stamp_t_is_array_i( tp_t t, sz_t index ); \
+  static inline bl_t x_stamp_is_array_n( const x_stamp* o, tp_t name ); \
+  static inline bl_t x_stamp_t_is_array_n( tp_t t, tp_t name ); \
   static inline tp_t x_stamp_type( const x_stamp* o, tp_t name ); \
   static inline tp_t x_stamp_t_type( const x_stamp* o, tp_t t, tp_t name ); \
   static inline tp_t x_stamp_type_i( const x_stamp* o, sz_t index ); \
@@ -715,8 +723,16 @@
   static inline bl_t x_stamp_t_exists( tp_t t, tp_t name ){return  bcore_via_t_nexists( t, NULL, name );} \
   static inline bl_t x_stamp_is_static_i( const x_stamp* o, sz_t index ){return  bcore_via_a_iis_static( ((const bcore_via*)(o)),index );} \
   static inline bl_t x_stamp_t_is_static_i( tp_t t, sz_t index ){return  bcore_via_t_iis_static( t, NULL, index );} \
+  static inline bl_t x_stamp_is_static( const x_stamp* o, tp_t name ){return  bcore_via_a_nis_static( ((const bcore_via*)(o)), name );} \
+  static inline bl_t x_stamp_t_is_static( tp_t t, tp_t name ){return  bcore_via_t_nis_static( t, NULL, name );} \
   static inline bl_t x_stamp_is_link_i( const x_stamp* o, sz_t index ){return  bcore_via_a_iis_link( ((const bcore_via*)(o)),index );} \
   static inline bl_t x_stamp_t_is_link_i( tp_t t, sz_t index ){return  bcore_via_t_iis_link( t, NULL, index );} \
+  static inline bl_t x_stamp_is_link( const x_stamp* o, tp_t name ){return  bcore_via_a_nis_link( ((const bcore_via*)(o)), name );} \
+  static inline bl_t x_stamp_t_is_link( tp_t t, tp_t name ){return  bcore_via_t_nis_link( t, NULL, name );} \
+  static inline bl_t x_stamp_is_array_i( const x_stamp* o, sz_t index ){return  bcore_via_a_iis_array( ((const bcore_via*)(o)),index );} \
+  static inline bl_t x_stamp_t_is_array_i( tp_t t, sz_t index ){return  bcore_via_t_iis_array( t, NULL, index );} \
+  static inline bl_t x_stamp_is_array_n( const x_stamp* o, tp_t name ){return  bcore_via_a_nis_array( ((const bcore_via*)(o)), name );} \
+  static inline bl_t x_stamp_t_is_array_n( tp_t t, tp_t name ){return  bcore_via_t_nis_array( t, NULL, name );} \
   static inline tp_t x_stamp_type( const x_stamp* o, tp_t name ){return  bcore_via_a_nget_type(    ((const bcore_via*)(o)),name );} \
   static inline tp_t x_stamp_t_type( const x_stamp* o, tp_t t, tp_t name ){return  bcore_via_t_nget_type( t, ((const bcore_via*)(o)), name );} \
   static inline tp_t x_stamp_type_i( const x_stamp* o, sz_t index ){return  bcore_via_a_iget_type(    ((const bcore_via*)(o)),index );} \
@@ -2947,6 +2963,7 @@
   void x_btcl_clone_if_weak( sr_s* sr ); \
   void x_btcl_clone_if_weak_or_twice_referenced( sr_s* sr ); \
   er_t x_btcl_get_embedding_file_path( x_source* source, sc_t in_path, st_s* out_path ); \
+  er_t x_btcl_generic_copy( sr_s* sr, const sr_s* sb ); \
   static inline sz_t x_btcl_max_frame_depth( void ); \
   static inline s2_t x_btcl_priority_a( void ); \
   static inline s2_t x_btcl_priority_b( void ); \
@@ -2956,7 +2973,6 @@
   er_t x_btcl_to_sink( bl_t detailed, const sr_s* sr, x_sink* sink ); \
   er_t x_btcl_parse_create_object( x_source* source, sr_s* obj ); \
   void x_btcl_selftest( sc_t file ); \
-  er_t x_btcl_generic_copy( sr_s* sr, const sr_s* sb ); \
   typedef sz_t (*x_btcl_btcl_function_arity)(const x_btcl* o, tp_t name ); \
   typedef er_t (*x_btcl_btcl_function)(const x_btcl* o, tp_t name, const bcore_arr_sr_s* args, sr_s* result ); \
   XOILA_DECLARE_SPECT( x_btcl ) \
@@ -3285,5 +3301,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x46A284645CA0A8EE
-// XOICO_FILE_SIGNATURE 0x3EBAB6994599B53E
+// XOICO_BODY_SIGNATURE 0x7ABF6F6A9C3EDBA8
+// XOICO_FILE_SIGNATURE 0xF6E1C6356F544EB9
