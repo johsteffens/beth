@@ -19,8 +19,10 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:frame_s) er_t eval_bop_member( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
+func (:frame_s) er_t eval_bop_member( m@* o, m x_source* source, m sr_s* sr )
 {
+    if( sr.type() == :net_node_s~ ) = o.eval_net_node_member( source, sr );
+
     bl_t is_const = sr.is_const();
 
     /// Identifier
@@ -135,7 +137,12 @@ func (:frame_s) er_t eval_bop_functional( m@* o, m x_source* source, m sr_s* sr 
     }
     else if( sr.o_type() == :block_s~ )
     {
-        = source.parse_error_fa( "Attempt to execute a block as function. Join block with signature to create a function.\n" );
+        = source.parse_error_fa( "Attempt to evaluate a block as function. Join the block with a signature to create a function.\n" );
+    }
+    else if( sr.o_type() == :net_node_s~ )
+    {
+        :frame_s!^.setup( o ).eval_net_node_modifier( source, sr );
+        :clone_if_weak( sr );
     }
     else
     {
@@ -357,8 +364,41 @@ func (:frame_s) er_t eval_bop_mul( m@* o, s2_t bop_priority, m x_source* source,
             = 0;
         }
     }
+    else if( sr.type() == :function_s~ )
+    {
+        m :function_s* f = sr.o.cast( m :function_s* ).fork()^;
+        m $* arg_list = bcore_arr_sr_s!^;
+        arg_list.push_sr( sr_null() ).fork_from( sb );
+        f.call( source, o, arg_list, sr );
+        = 0;
+    }
 
     = source.parse_error_fa( "Operator #<sc_t> * #<sc_t> is not defined.\n", bnameof( sr.o_type() ), bnameof( sb.o_type() ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:frame_s) er_t eval_bop_stream_left( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
+{
+    sr_s^ sb; o.eval( bop_priority, source, sb );
+
+    if( sr.type() == :function_s~ )
+    {
+        m :function_s* f = sr.o.cast( m :function_s* ).fork()^;
+        m $* arg_list = bcore_arr_sr_s!^;
+        arg_list.push_sr( sr_null() ).fork_from( sb );
+        f.call( source, o, arg_list, sr );
+        = 0;
+    }
+    else if( sr.type() == :net_node_s~ )
+    {
+        m :net_node_s* node = sr.o.cast( m :net_node_s* ).clone()^;
+        node.push_anonymous_fork( sb );
+        sr.asc( node.fork() );
+        = 0;
+    }
+
+    = source.parse_error_fa( "Operator #<sc_t> << #<sc_t> is not defined.\n", bnameof( sr.o_type() ), bnameof( sb.o_type() ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -710,8 +750,16 @@ func (:frame_s) er_t eval_bop( m@* o, s2_t exit_priority, m x_source* source, m 
 
     while( source.parse_bl( " #?([0]=='.'||[0]=='(')" ) )
     {
-        if( source.parse_bl( " #?'.'" ) ) o.eval_bop_member( bop_priority, source, obj );
-        if( source.parse_bl( " #?'('" ) ) { o.eval_bop_functional( source, obj ); source.parse_fa( " )" ); }
+        if( source.parse_bl( " #?'.'" ) )
+        {
+            o.eval_bop_member( source, obj );
+        }
+
+        if( source.parse_bl( " #?'('" ) )
+        {
+            o.eval_bop_functional( source, obj );
+            source.parse_fa( " )" );
+        }
     }
     bop_priority--;
 
@@ -788,7 +836,7 @@ func (:frame_s) er_t eval_bop( m@* o, s2_t exit_priority, m x_source* source, m 
     bop_priority--;
 
     if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'<'" ) ) o.eval_bop_smaller( bop_priority, source, obj );
+    while( source.parse_bl( " #?([0]=='<'&&[1]!='<')" ) ) { source.get_char(); o.eval_bop_smaller( bop_priority, source, obj ); }
     bop_priority--;
 
     if( bop_priority <= exit_priority ) = 0;
@@ -797,6 +845,10 @@ func (:frame_s) er_t eval_bop( m@* o, s2_t exit_priority, m x_source* source, m 
 
     if( bop_priority <= exit_priority ) = 0;
     while( source.parse_bl( " #?'|'" ) ) o.eval_bop_logic_or( bop_priority, source, obj );
+    bop_priority--;
+
+    if( bop_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'<<'" ) ) = o.eval_bop_stream_left( bop_priority, source, obj );
     bop_priority--;
 
     if( bop_priority <= exit_priority ) = 0;

@@ -41,9 +41,9 @@ int main( void )
     bcore_flect_parse_all_flects();
     bcore_inst_test_all_types();
 
-//    bcore_quicktypes_to_stdout( NULL ); return 0;
-//    bclos_quicktypes_to_stdout( NULL ); return 0;
-//    bmath_quicktypes_to_stdout( NULL ); return 0;
+    bcore_quicktypes_to_stdout( NULL ); return 0;
+    bclos_quicktypes_to_stdout( NULL ); return 0;
+    bmath_quicktypes_to_stdout( NULL ); return 0;
 
 
     selftest( "bcore_spect_inst" );

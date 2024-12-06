@@ -20,10 +20,21 @@ err = err + !test( "string2", x = 12; x + x + "ab" == "24ab" );
 err = err + !test( "prefix priority", x = func(){5}; -x()*2 == -10 );
 
 // ---------------------------------------------------------------------------------------------------------------------
+
+/// functions
+f1 = func( a, b ) { a + b };
+f2 = f1 * 1;
+f3 = f2 * 2;
+err = err + !test( "function - mul", f3 == 3 );
+
+f3 = f2 << 3 + 1; // same as f2 * ( 3 + 1 ); stream has lower priority
+err = err + !test( "function - stream", f3 == 5 );
+
+// ---------------------------------------------------------------------------------------------------------------------
 /// recursions
 
-// infinite recursions: expression below should produce a frame depth error
-// func() { self() }();
+// infinite recursions: expression below produces a frame depth error
+//func() { self() }();
 
 /// factorial function
 factorial = func( x ) { if( x <= 1 ) { 1.0 } else { x * self( x - 1 ) } };
@@ -124,6 +135,16 @@ err = err + !test( "list unfold transform", func(a,b){a*b}*.:([1,2]*[4,5]) == [4
 /// spawned recursion
 
 err = err + !test( "spawned recursion", ["a","b","c","d"] :: func(a,b) { a + b } == "abcd" );
+
+// ---------------------------------------------------------------------------------------------------------------------
+/// network
+
+net_node = &sine( .frq = 1000 );
+net_rack = &:xyz( .lfo = net_node( .frq = 234 )( .frq2 = 123 ), 456, 889 );
+net_wire = &-xyz.lfo;
+err = err + !test( "net_rack", net_rack.lfo.frq == 234 );
+
+?(net_rack << net_node);
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// bug fixes

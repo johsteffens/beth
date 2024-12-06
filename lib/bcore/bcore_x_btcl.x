@@ -18,6 +18,8 @@
 /**********************************************************************************************************************/
 /// supportive functions
 
+func bl_t is_identifier( m x_source* source ) = source.parse_bl( " #?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z')||[0]=='_')" );
+
 //----------------------------------------------------------------------------------------------------------------------
 
 /** Creates a strong clone in case sr is weak; const flag is preserved
@@ -247,6 +249,7 @@ stamp :frame_s
 
     bcore_hmap_name_s hmap_name;
     func tp_t entypeof( m@* o, sc_t name ) = o.hmap_name.set_sc( name );
+
     func sc_t nameof( @* o, tp_t type )
     {
         sc_t name = o.hmap_name.get_sc( type ); = name ? name : bnameof( type );
@@ -401,7 +404,7 @@ stamp :list_s
  */
 stamp :block_s
 {
-    x_source_point_s source_point;
+    hidden x_source_point_s source_point;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -465,7 +468,7 @@ func (:block_s) er_t eval( @* o, c :frame_s* parent_frame, m sr_s* obj )
 /// signature of a function: syntax func ( a, b, ... )   (a,b arbitrary identifiers for function arguments)
 stamp :signature_s
 {
-    x_source_point_s source_point;
+    hidden x_source_point_s source_point;
 
     // argument list
     bcore_arr_tp_s arg_list;
@@ -487,7 +490,7 @@ func (:signature_s) er_t parse( m@* o, m :frame_s* frame, m x_source* source )
     while( !source.eos() && !source.parse_bl( " #=?')'" ) )
     {
         // identifier
-        if( source.parse_bl( " #?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z')||[0]=='_')" ) )
+        if( :is_identifier( source ) )
         {
             tp_t name = frame.get_identifier( source, true );
             frame.check_reserved( name, source );
@@ -689,11 +692,11 @@ func (:function_s) er_t call_via_evaluation( m@* o, m x_source* source, m :frame
 func (:frame_s) tp_t get_identifier( m @* o, m x_source* source, bl_t take_from_source )
 {
     tp_t tp_identifier = 0;
-    if( source.parse_bl( " #?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z')||[0]=='_')" ) )
+    if( :is_identifier( source ) )
     {
         sz_t source_index = take_from_source ? 0 : source.get_index();
         m st_s* st_name = st_s!^;
-        source.parse_fa( "#name", st_name );
+        source.parse_fa( " #name", st_name );
         tp_identifier = o.entypeof( st_name.sc );
         if( !take_from_source ) source.set_index( source_index );
     }
@@ -909,7 +912,7 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
     }
 
     /// Identifier
-    else if( source.parse_bl( " #?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z')||[0]=='_')" ) )
+    else if( :is_identifier( source ) )
     {
         tp_t name = o.get_identifier( source, true );
 
@@ -987,7 +990,7 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
                     source.parse_fa( " (" );
                     o.eval( 0, source, sb );
                     source.parse_fa( " )" );
-                    if( sb.type() != st_s~ )  = source.parse_error_fa( "Keyword 'embed': Expression must evaluate to a string.\n" );
+                    if( sb.type() != st_s~ ) = source.parse_error_fa( "Keyword 'embed': Expression must evaluate to a string.\n" );
                     m st_s* path = st_s!^;
                     :get_embedding_file_path( source, sb.o.cast( st_s* ).sc, path );
                     m x_source* emb_source = bcore_file_open_source( path.sc )^;
@@ -1078,6 +1081,39 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
         obj.asm( block.fork() );
     }
 
+    /// Network object
+    else if( source.parse_bl( " #?'&'" ) )
+    {
+        if( source.parse_bl( " #?'-'" ) ) // wire
+        {
+            m :net_wire_s* wire = :net_wire_s!^;
+            if( !:is_identifier( source ) ) = source.parse_error_fa( "Rack identifier expected.\n" );
+            wire.rack_name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
+            if( source.parse_bl( " #?'.' " ) )
+            {
+                if( !:is_identifier( source ) ) = source.parse_error_fa( "Branch identifier expected.\n" );
+                wire.branch_name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
+            }
+            wire.source_point.setup_from_source( source );
+            obj.asm( wire.fork() );
+        }
+        else
+        {
+            tp_t node_type = 0; // generic
+            if( source.parse_bl( " #?':'" ) ) // rack
+            {
+                node_type = rack~;
+            }
+
+            if( !:is_identifier( source ) ) = source.parse_error_fa( "Identifier expected.\n" );
+            m :net_node_s* node = :net_node_s!^;
+            node.type = node_type;
+            node.name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
+            node.source_point.setup_from_source( source );
+            obj.asm( node.fork() );
+        }
+    }
+
     else
     {
         = source.parse_error_fa( "Expression does not evaluate to an object.\n" );
@@ -1093,13 +1129,14 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
 
 /**********************************************************************************************************************/
 
-//----------------------------------------------------------------------------------------------------------------------
-
-func parse_create_object
+/** On entering, obj should be sr_null
+ *  In case of error obj need not be discarded
+ *  if default_obj is defined, obj copies from default_obj before parsing the body
+ */
+func (:frame_s) er_t parse_create_object( m@* o, m x_source* source, m sr_s* obj )
 {
-    m$* frame = :frame_s!^.setup_as_root( NULL );
     m$* sr = sr_s!^;
-    frame.eval( 0, source, sr );
+    o.eval( 0, source, sr );
 
     if( obj )
     {
@@ -1113,7 +1150,7 @@ func parse_create_object
             {
                 /** A weak reference might be an embedded member of an object.
                  *  We clone it here to be sure we don't get runtime issues.
-                 *  If the object is not embedded, it could be forked ...
+                 *  If the object is not embedded, it could be forked (s. above)
                  */
                 obj.clone_from( sr );
             }
@@ -1124,6 +1161,14 @@ func parse_create_object
         }
     }
     = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func parse_create_object
+{
+    m$* frame = :frame_s!^.setup_as_root( NULL );
+    = frame.parse_create_object( source, obj );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1148,4 +1193,5 @@ func void selftest( sc_t file )
 
 embed "bcore_x_btcl_builtin.x";
 embed "bcore_x_btcl_bop.x";
+embed "bcore_x_btcl_net.x";
 
