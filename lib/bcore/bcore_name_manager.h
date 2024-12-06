@@ -49,11 +49,11 @@ BCORE_FORWARD_OBJECT( bcore_hmap_name_s );
 typedef struct st_s st_s;
 st_s* st_s_create();
 
-/// enroll name in global manager (thread safe); checks for collisions; returns hash
-tp_t bcore_name_enroll(                     sc_t name );
-tp_t bcore_name_enroll_n(                   sc_t name, uz_t n );
-tp_t bcore_name_enroll_s(  tp_t name_space, sc_t name );
-tp_t bcore_name_enroll_sn( tp_t name_space, sc_t name, uz_t n );
+/// enroll name in global manager (thread safe); checks for collisions; returns hash; no effect if name is already enrolled
+tp_t bcore_name_enroll(                     sc_t name );             // enrolls name
+tp_t bcore_name_enroll_n(                   sc_t name, uz_t n );     // enrolls first n characters of name
+tp_t bcore_name_enroll_s(  tp_t name_space, sc_t name );             // enrolls name in a namespace
+tp_t bcore_name_enroll_sn( tp_t name_space, sc_t name, uz_t n );     // enrolls first n characters of name in a namespace
 
 /// hash --> name; returns NULL when not enrolled (thread safe)
 sc_t bcore_name_try_name( tp_t type );

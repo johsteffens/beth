@@ -75,10 +75,6 @@ identifier __TIME__;
 identifier ERR_fa;
 identifier WRN_fa;
 identifier ASSERT;
-identifier ifnameof;
-identifier btypeof;
-identifier bentypeof;
-identifier bnameof;
 identifier assert;
 identifier tanh;
 identifier sizeof;
@@ -401,6 +397,7 @@ group bcore_thread = bcore_inst
 
 //----------------------------------------------------------------------------------------------------------------------
 
+embed "bcore_name_manager_inexpandable.x";
 embed "bcore_const_manager_inexpandable.x";
 embed "bcore_global_manager_inexpandable.x";
 embed "bcore_function_manager_inexpandable.x";
