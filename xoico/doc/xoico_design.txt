@@ -44,8 +44,10 @@ XOILA_DEFINE_GROUP( <group_name>, <trait_name> )
     extending stump ...; // extends this stump definition
     extending;           // turns automatic extending off
 
-    name <name>;
-    type <name>;
+    name       <name> [, <name>, <name>, ...];
+    type       <name> [, <name>, <name>, ...];
+    identifier <name> [, <name>, <name>, ...];
+    forward    <expr> [, <expr>, <expr>, ...];
 
     group <name> = [<trait>] { ... }; // sub-group; inheriting from parent: 'extending'
 
@@ -121,6 +123,13 @@ name:
 type:
   Like 'name' with additional type-registration at compiler level.
   This is used to tell the compiler about external types and traits. e.g. st_s, bcore_source, ...
+
+----------------------------------------------------------------------------------------------
+identifier:
+  External identifier registration.
+  External identifiers are typically used for functions from external libraries. It circumvents xoico's
+  argument and type checking or type conversion but simply translates the function call as it appears intended.
+  It is up to the programmer to use the identifier correctly.
 
 ----------------------------------------------------------------------------------------------
 forward:

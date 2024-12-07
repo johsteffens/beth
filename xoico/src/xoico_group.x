@@ -596,29 +596,49 @@ func (:s) :.parse
         }
         else if( source.parse_bl( " #?w'name' " ) )
         {
-            m $* name = xoico_name_s!^;
-            name.parse( o, source );
-            o.push_item_d( name.fork() );
-            o.compiler.hmap_declared_name.set( name.name );
+            while( !source.eos() )
+            {
+                m $* name = xoico_name_s!^;
+                name.parse( o, source );
+                o.push_item_d( name.fork() );
+                o.compiler.hmap_declared_name.set( name.name );
+                if( source.parse_bl( " #?';'" ) ) break;
+                source.parse_fa( " ," );
+            }
         }
         else if( source.parse_bl( " #?w'type' " ) )
         {
-            xoico_name_s^ name.parse( o, source );
-            compiler.register_external_type( name.name );
-            o.pre_hash = bcore_tp_fold_tp( o.pre_hash, name.get_hash() );
+            while( !source.eos() )
+            {
+                xoico_name_s^ name.parse( o, source );
+                compiler.register_external_type( name.name );
+                o.pre_hash = bcore_tp_fold_tp( o.pre_hash, name.get_hash() );
+                if( source.parse_bl( " #?';'" ) ) break;
+                source.parse_fa( " ," );
+            }
         }
         else if( source.parse_bl( " #?w'identifier' " ) )
         {
-            xoico_name_s^ name.parse( o, source );
-            compiler.register_external_identifier( name.name );
-            o.pre_hash = bcore_tp_fold_tp( o.pre_hash, name.get_hash() );
+            while( !source.eos() )
+            {
+                xoico_name_s^ name.parse( o, source );
+                compiler.register_external_identifier( name.name );
+                o.pre_hash = bcore_tp_fold_tp( o.pre_hash, name.get_hash() );
+                if( source.parse_bl( " #?';'" ) ) break;
+                source.parse_fa( " ," );
+            }
         }
         else if( source.parse_bl( " #?w'forward' " ) )
         {
-            m $* forward = xoico_forward_s!^;
-            forward.group = o;
-            forward.parse( o, source );
-            o.push_item_d( forward.fork() );
+            while( !source.eos() )
+            {
+                m $* forward = xoico_forward_s!^;
+                forward.group = o;
+                forward.parse( o, source );
+                o.push_item_d( forward.fork() );
+                if( source.parse_bl( " #?';'" ) ) break;
+                source.parse_fa( " ," );
+            }
         }
         else if( source.parse_bl( " #?w'extending'" ) )
         {

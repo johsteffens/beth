@@ -24,7 +24,7 @@ stamp :s = aware :
     {
         o.source_point.setup_from_source( source );
         host.parse_name_tp( source, o.name.1 );
-        source.parse_fa( " ; " );
+        //source.parse_fa( " ; " );
         return 0;
     };
 
