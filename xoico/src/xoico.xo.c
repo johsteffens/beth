@@ -1,4 +1,4 @@
-//  Last update: 2024-12-07T12:31:33Z
+//  Last update: 2024-12-08T12:28:06Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -49,7 +49,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_xoico 0xBB28D2937D13AAFBull
+// HKEYOF_xoico 0x37605AFFA4547DBEull
 
 /**********************************************************************************************************************/
 // source: xoico.x
@@ -3366,7 +3366,9 @@ er_t xoico_group_s_parse( xoico_group_s* o, const xoico_host* host, bl_t parse_b
         }
         else
         {
-            BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Xoico: syntax error." ))
+            sz_t index = x_source_get_index(source);
+            x_source_set_index(source,index );
+            BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Xoico group parser: Invalid expression." ))
         }
     
         BLM_TRY(x_source_parse_fa(source," " ))// consume whitespaces
@@ -3382,7 +3384,7 @@ er_t xoico_group_s_parse( xoico_group_s* o, const xoico_host* host, bl_t parse_b
 
 er_t xoico_group_s_parse_embed( xoico_group_s* o, const xoico_host* host, x_source* source, tp_t embed_method )
 {
-    // xoico_group.x:836:1
+    // xoico_group.x:838:1
     
     if( embed_method == TYPEOF_as_string )
     {BLM_INIT_LEVEL(1);
@@ -3410,7 +3412,7 @@ er_t xoico_group_s_parse_embed( xoico_group_s* o, const xoico_host* host, x_sour
 
 er_t xoico_group_s_finalize( xoico_group_s* o, const xoico_host* host )
 {
-    // xoico_group.x:864:1
+    // xoico_group.x:866:1
     
     /// default features
     BLM_TRY(xoico_group_s_push_inexpandable_feature_from_sc(o,"d @* clone( c @* o );" ))
@@ -3436,7 +3438,7 @@ er_t xoico_group_s_finalize( xoico_group_s* o, const xoico_host* host )
 
 er_t xoico_group_s_expand_forward( const xoico_group_s* o, sz_t indent, x_sink* sink )
 {
-    // xoico_group.x:890:1
+    // xoico_group.x:892:1
     
     if( !o->expandable ) return  0;
     x_sink_push_fa(sink," \\\n#rn{ }BCORE_FORWARD_OBJECT( #<sc_t> );", indent, o->st_name.sc );
@@ -3447,7 +3449,7 @@ er_t xoico_group_s_expand_forward( const xoico_group_s* o, sz_t indent, x_sink* 
 
 er_t xoico_group_s_expand_spect_declaration( const xoico_group_s* o, sz_t indent, x_sink* sink )
 {
-    // xoico_group.x:901:1
+    // xoico_group.x:903:1
     
     if( !o->expandable ) return  0;
     if( o->short_spect_name )
@@ -3475,7 +3477,7 @@ er_t xoico_group_s_expand_spect_declaration( const xoico_group_s* o, sz_t indent
 
 er_t xoico_group_s_expand_declaration( const xoico_group_s* o, sz_t indent, x_sink* sink )
 {
-    // xoico_group.x:931:1
+    // xoico_group.x:933:1
     BLM_INIT_LEVEL(0);
     if( !o->expandable ) BLM_RETURNV(er_t, 0)
     
@@ -3516,7 +3518,7 @@ er_t xoico_group_s_expand_declaration( const xoico_group_s* o, sz_t indent, x_si
 
 er_t xoico_group_s_expand_spect_definition( const xoico_group_s* o, sz_t indent, x_sink* sink )
 {
-    // xoico_group.x:972:1
+    // xoico_group.x:974:1
     
     xoico_compiler_s* compiler = o->compiler;
     if( !o->expandable ) return  0;
@@ -3539,7 +3541,7 @@ er_t xoico_group_s_expand_spect_definition( const xoico_group_s* o, sz_t indent,
 
 er_t xoico_group_s_expand_definition( const xoico_group_s* o, sz_t indent, x_sink* sink )
 {
-    // xoico_group.x:995:1
+    // xoico_group.x:997:1
     
     if( !o->expandable ) return  0;
     x_sink_push_fa(sink,"\n" );
@@ -3569,7 +3571,7 @@ er_t xoico_group_s_expand_definition( const xoico_group_s* o, sz_t indent, x_sin
 
 er_t xoico_group_s_expand_init1( const xoico_group_s* o, sz_t indent, x_sink* sink )
 {
-    // xoico_group.x:1025:1
+    // xoico_group.x:1027:1
     
     if( !o->expandable ) return  0;
     x_sink_push_fa(sink,"\n" );
@@ -3609,7 +3611,7 @@ er_t xoico_group_s_expand_init1( const xoico_group_s* o, sz_t indent, x_sink* si
 
 er_t xoico_group_s_expand_down1( const xoico_group_s* o, sz_t indent, x_sink* sink )
 {
-    // xoico_group.x:1065:1
+    // xoico_group.x:1067:1
     
     if( !o->expandable ) return  0;
     if( o->defines_group_signal_down1 )
@@ -11448,5 +11450,5 @@ int main( int argc, char** argv )
     BETH_CLOSEV( 0 );
     return retv;
 }
-// XOICO_BODY_SIGNATURE 0x1728BDA7F976759F
-// XOICO_FILE_SIGNATURE 0x1686F304E9169946
+// XOICO_BODY_SIGNATURE 0x2F73C1304700E298
+// XOICO_FILE_SIGNATURE 0xA0F61858B40E6360

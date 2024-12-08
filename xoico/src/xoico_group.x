@@ -816,7 +816,9 @@ func (:s) :.parse
         }
         else
         {
-            return source.parse_error_fa( "Xoico: syntax error." );
+            sz_t index = source.get_index();
+            source.set_index( index );
+            return source.parse_error_fa( "Xoico group parser: Invalid expression." );
         }
 
         source.parse_fa( " " );// consume whitespaces
