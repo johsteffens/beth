@@ -528,6 +528,9 @@ void bcore_source_string_s_init( bcore_source_string_s* o )
     o->_ = TYPEOF_bcore_source_string_s;
     o->prefetch_size = 16384;
     o->refill_limit  = 4096;
+
+    //o->refill_limit  = 8000;
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -837,38 +840,26 @@ static void string_get_context( const bcore_source_string_s* o, bcore_source_con
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static uz_t string_s_parse_err( vd_t arg, const st_s* string, uz_t idx, st_s* ext_msg )
-{
-    const bcore_source_string_s* o = arg;
-
-    bcore_source_context_s* context = bcore_source_context_s_create();
-    st_s* msg = st_s_create();
-
-    string_get_context( o, context );
-
-    bcore_source_context_s_get_msg_fa( context, msg, "Parse error: #<sc_t>", ext_msg->sc );
-
-    bcore_sink_a_push_fa( BCORE_STDERR, "#<sc_t>\n", msg->sc );
-
-    bcore_source_context_s_discard( context );
-    st_s_discard( msg );
-
-    bcore_down_exit( -1, 1 );
-
-    return idx;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-static void string_parse_fv( bcore_source_string_s* o, sc_t format, va_list args )
-{
-    if( o->ext_supplier )
-    {
-        string_refill( o, o->refill_limit );
-    }
-    if( !o->string ) ERR( "No string defined." );
-    o->index = st_s_parse_efv( o->string, o->index, o->string->size, string_s_parse_err, o, format, args );
-}
+//static uz_t string_s_parse_err( vd_t arg, const st_s* string, uz_t idx, st_s* ext_msg )
+//{
+//    const bcore_source_string_s* o = arg;
+//
+//    bcore_source_context_s* context = bcore_source_context_s_create();
+//    st_s* msg = st_s_create();
+//
+//    string_get_context( o, context );
+//
+//    bcore_source_context_s_get_msg_fa( context, msg, "Parse error: #<sc_t>", ext_msg->sc );
+//
+//    bcore_sink_a_push_fa( BCORE_STDERR, "#<sc_t>\n", msg->sc );
+//
+//    bcore_source_context_s_discard( context );
+//    st_s_discard( msg );
+//
+//    bcore_down_exit( -1, 1 );
+//
+//    return idx;
+//}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -890,12 +881,44 @@ static er_t string_parse_em_fv( bcore_source_string_s* o, sc_t format, va_list a
     struct { er_t er; st_s* msg; } er_arg;
     er_arg.er = 0;
     er_arg.msg = NULL;
-    uz_t index = st_s_parse_efv( o->string, o->index, o->string->size, string_s_parse_em_err, &er_arg, format, args );
+
+    bl_t success = false;
+    uz_t new_index = 0;
+
+    while( !success )
+    {
+        new_index = st_s_parse_efv( o->string, o->index, o->string->size, string_s_parse_em_err, &er_arg, format, args );
+
+        /** If in buffering mode and string parsing reached the end of buffered data, we clear all possible errors,
+         *  double prefetch and refill limits, refill data and try parsing again.
+         *  This situation should occur rarely so that we can tolerate the extra effort and memory overhead.
+         */
+        if( o->ext_supplier && ( ( new_index + 1 ) >= o->string->size ) )
+        {
+
+            success = false;
+
+            // clear parse error if any
+            er_arg.er = 0;
+            if( er_arg.msg ) bcore_inst_a_discard( er_arg.msg );
+            er_arg.msg = NULL;
+
+            // refill with new limits
+            o->refill_limit  = o->refill_limit * 2;
+            o->prefetch_size = o->prefetch_size * 2;
+            string_refill( o, o->refill_limit ); // turns buffering mode off after all data has been fetched
+        }
+        else
+        {
+            success = true;
+        }
+    }
+
     if( er_arg.er )
     {
         BLM_INIT();
         st_s* msg_main    = BLM_CREATE( st_s );
-        st_s* msg_pref    = BLM_CREATE( st_s );
+        st_s* msg_prefix  = BLM_CREATE( st_s );
         st_s* msg_context = BLM_CREATE( st_s );
         if( er_arg.msg ) BLM_A_PUSH( er_arg.msg );
 
@@ -907,7 +930,7 @@ static er_t string_parse_em_fv( bcore_source_string_s* o, sc_t format, va_list a
                 s3_t index = bcore_source_chain_s_get_index( o->parent );
                 uz_t line, col;
                 bcore_source_file_s_get_line_col_context( fo, index, &line, &col, msg_context );
-                st_s_push_fa( msg_pref, "#<sc_t>:#<uz_t>:#<uz_t>", bcore_source_file_s_get_name( fo ), line, col );
+                st_s_push_fa( msg_prefix, "#<sc_t>:#<uz_t>:#<uz_t>", bcore_source_file_s_get_name( fo ), line, col );
             }
         }
         else
@@ -915,17 +938,35 @@ static er_t string_parse_em_fv( bcore_source_string_s* o, sc_t format, va_list a
             msg_context = BLM_A_PUSH( st_s_show_line_context( o->string, o->index ) );
             uz_t line = st_s_lineof( o->string, o->index );
             uz_t col  = st_s_colof( o->string, o->index );
-            st_s_push_fa( msg_pref, "At line #<uz_t>, col #<uz_t>", line, col );
+            st_s_push_fa( msg_prefix, "At line #<uz_t>, col #<uz_t>", line, col );
         }
 
-        st_s_push_fa( msg_main, "#<sc_t>: error: #<sc_t>\n", msg_pref->sc, er_arg.msg ? er_arg.msg->sc : "" );
+        st_s_push_fa( msg_main, "#<sc_t>: error: #<sc_t>\n", msg_prefix->sc, er_arg.msg ? er_arg.msg->sc : "" );
         st_s_push_fa( msg_main, "#<sc_t>\n", msg_context->sc );
 
         bcore_error_push_sc( er_arg.er, msg_main->sc );
         BLM_DOWN();
     }
-    o->index = index;
+    o->index = new_index;
     return er_arg.er;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static void string_parse_fv( bcore_source_string_s* o, sc_t format, va_list args )
+{
+    if( string_parse_em_fv( o, format, args ) )
+    {
+        bcore_error_pop_all_to_stderr();
+        bcore_down_exit( -1, 1 );
+    }
+
+//    if( o->ext_supplier )
+//    {
+//        string_refill( o, o->refill_limit );
+//    }
+//    if( !o->string ) ERR( "No string defined." );
+//    o->index = st_s_parse_efv( o->string, o->index, o->string->size, string_s_parse_err, o, format, args );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

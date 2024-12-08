@@ -115,6 +115,12 @@ void bcore_source_buffer_s_set_index(       bcore_source_buffer_s* o, s3_t index
 /** String based data source supporting bcore_source_s perspective.
  *  Can be used as buffer in a source-chain or as initial data source.
  *  Implements feature bcore_source_fp_parse_fv.
+ *
+ *  Parsing beyond the buffered size is allowed:
+ *    When the source is in buffering mode and a parse attempt reaches
+ *    the end of the buffer, a refill with increased limits is triggered
+ *    and the attempt repeated. Intermediate parse errors are cleared
+ *    in that case.
  */
 typedef struct bcore_source_string_s
 {
@@ -202,7 +208,7 @@ void bcore_source_file_s_get_line_col_context( bcore_source_file_s* o, s3_t inde
 
 /** stdin source wrapper
  *  Maintains its own buffer and can be used for text and binary streaming.
- *  (no deed to chain with another source buffer).
+ *  (no need to chain with another source buffer).
  *  Text streaming and buffering is optimized for interactive I/O:
  *  New data is fetched from stdin only when the buffer is empty, was previously completely consumed or
  *  the format string begins with a space and the remaining buffer content holds only whitespaces.
