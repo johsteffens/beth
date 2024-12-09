@@ -840,29 +840,6 @@ static void string_get_context( const bcore_source_string_s* o, bcore_source_con
 
 //----------------------------------------------------------------------------------------------------------------------
 
-//static uz_t string_s_parse_err( vd_t arg, const st_s* string, uz_t idx, st_s* ext_msg )
-//{
-//    const bcore_source_string_s* o = arg;
-//
-//    bcore_source_context_s* context = bcore_source_context_s_create();
-//    st_s* msg = st_s_create();
-//
-//    string_get_context( o, context );
-//
-//    bcore_source_context_s_get_msg_fa( context, msg, "Parse error: #<sc_t>", ext_msg->sc );
-//
-//    bcore_sink_a_push_fa( BCORE_STDERR, "#<sc_t>\n", msg->sc );
-//
-//    bcore_source_context_s_discard( context );
-//    st_s_discard( msg );
-//
-//    bcore_down_exit( -1, 1 );
-//
-//    return idx;
-//}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 static uz_t string_s_parse_em_err( vd_t arg, const st_s* string, uz_t idx, st_s* ext_msg )
 {
     struct { er_t er; st_s* msg; }* er_arg = arg;
@@ -960,13 +937,6 @@ static void string_parse_fv( bcore_source_string_s* o, sc_t format, va_list args
         bcore_error_pop_all_to_stderr();
         bcore_down_exit( -1, 1 );
     }
-
-//    if( o->ext_supplier )
-//    {
-//        string_refill( o, o->refill_limit );
-//    }
-//    if( !o->string ) ERR( "No string defined." );
-//    o->index = st_s_parse_efv( o->string, o->index, o->string->size, string_s_parse_err, o, format, args );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
