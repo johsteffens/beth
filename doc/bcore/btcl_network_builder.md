@@ -23,7 +23,7 @@ A leaf is a node with no further branches. Any beth-object can be a leaf node. T
 |:---|:---|:---|
 |```&<name>```|Generic node|```x_btcl_net_node```|
 |```&:<name>```|Rack|```x_btcl_net_node```|
-|```&-<name>```|Wire (name represents rack-name)|```x_btcl_net_wire```|
+|```&-<name>```|Wire (<name> is the name of the associated rack)|```x_btcl_net_wire```|
 
 ### Using operators on nodes
 

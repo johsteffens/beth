@@ -16,6 +16,84 @@
 /** BTCL: Beth text constructive language (interpreter) */
 
 /**********************************************************************************************************************/
+/// List of operator types ordered in groups and descending priority
+
+//----------------------------------------------------------------------------------------------------------------------
+
+// Group A, binary
+name member, frame;
+
+// Group B, unary
+name identity, neg, not, print_compact, print_detailed;
+
+// Group C, unary
+name pow, div, mod, chain, mul_dot_colon, mul_dot, mul_colon;
+name mul, sub, add, spawn, cat;
+name equal, unequal, larger_equal, larger, smaller_equal, smaller;
+name and, or, shift_left, assign;
+
+// Group E, binary
+name continuation;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// returns the operator symbol for given type
+func sc_t operator_symbol( tp_t type )
+{
+    switch( type )
+    {
+        // Group A, binary
+        case member~: = ".";
+        case frame~:  = "(";
+
+        // Group B, unary
+        case identity~: = "+";
+        case neg~:  = "-";
+        case not~:  = "!";
+        case print_compact~:  = "?";
+        case print_detailed~:  = "??";
+
+        // Group C, unary
+        case pow~:           = "^";
+        case div~:           = "/";
+        case mod~:           = "%";
+        case chain~:         = "**";
+        case mul_dot_colon~: = "*.:";
+        case mul_dot~:       = "*.";
+        case mul_colon~:     = "*:";
+
+        case mul~: = "*";
+        case sub~: = "-";
+        case add~: = "+";
+        case spawn~: = "::";
+        case cat~: = ":";
+
+        case equal~:         = "==";
+        case unequal~:       = "!=";
+        case larger_equal~:  = ">=";
+        case larger~:        = ">";
+        case smaller_equal~: = "<=";
+        case smaller~:       = "<";
+
+        case and~:        = "&";
+        case or~:         = "|";
+        case shift_left~: = "<<";
+        case assign~:     = "=";
+
+        // Group E, binary
+        case continuation~: = ";";
+
+        default: break;
+    }
+
+    ERR_fa( "Unhandled operator type '#<sc_t>'.", bnameof( type ) );
+
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 /// supportive functions
 
 func bl_t is_identifier( m x_source* source ) = source.parse_bl( " #?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z')||[0]=='_')" );
@@ -128,10 +206,18 @@ name embed;
 // The context is created in the root frame and shared across all child frames
 stamp :context_s
 {
-    /// reserved keywors
+    /// reserved keywords
     bcore_hmap_name_s hmap_reserved_key;
     bcore_hmap_name_s hmap_reserved_func;
     bcore_hmap_name_s hmap_reserved_const;
+
+    /** Map of constructible operators.
+     *  Purpose:
+     *  Reducible operators are immediately reduced by the interpreter.
+     *  Irreducible but constructible operators are allowed to become part of the construction.
+     *  Irreducible but not constructible operators are treated as error by the interpreter.
+     */
+    bcore_hmap_tp_s constructible_operator;
 
     func o setup( m@* o )
     {
@@ -180,6 +266,10 @@ stamp :context_s
         if( o.is_reserved( name ) ) = source.parse_error_fa( "#<sc_t> is a reserved keyword or function.\n", o.sc_reserved( name ) );
         = 0;
     }
+
+    func bl_t is_exportable( @* o, bl_t type ) = o.constructible_operator.exists( type );
+
+    func o set_constructible( m@* o, bl_t type ) o.constructible_operator.set( type );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -279,6 +369,7 @@ stamp :frame_s
          = o.var_map.set( name, sr );
     }
 
+    func bl_t is_exportable( @* o, bl_t type ) = o.context.is_exportable( type );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -523,9 +614,9 @@ stamp :external_function_s
         o.object =< object.cast( m$* ).fork();
     }
 
-    func er_t execute( m@* o, m x_source* source, bcore_arr_sr_s* args, m sr_s* sr )
+    func er_t execute( m@* o, m x_source_point_s* source_point, bcore_arr_sr_s* args, m sr_s* sr )
     {
-        if( o.object.btcl_function( o.name, args, sr ) ) { = source.parse_error_fa( "#<sc_t>", bcore_error_pop_all_to_st( st_s!^ ).sc ); }
+        if( o.object.btcl_function( o.name, args, sr ) ) { = source_point.parse_error_fa( "#<sc_t>", bcore_error_pop_all_to_st( st_s!^ ).sc ); }
         = 0;
     }
 }
@@ -598,9 +689,9 @@ stamp :function_s
 //----------------------------------------------------------------------------------------------------------------------
 
 /// sets up frame for executing the function
-func (:function_s) er_t setup_frame( m@* o, m :frame_s* lexical_frame, m x_source* source, m :frame_s* frame )
+func (:function_s) er_t setup_frame( m@* o, m :frame_s* lexical_frame, m x_source_point_s* source_point, m :frame_s* frame )
 {
-    if( lexical_frame.depth >= :max_frame_depth() ) = source.parse_error_fa( "Maximum frame depth (#<sz_t>) exceeded. Check for unlimited recursions.\n", :max_frame_depth() );
+    if( lexical_frame.depth >= :max_frame_depth() ) = source_point.parse_error_fa( "Maximum frame depth (#<sz_t>) exceeded. Check for unlimited recursions.\n", :max_frame_depth() );
     frame.setup( lexical_frame );
     frame.var_set( TYPEOF_self, sr_asm( o.fork() ) );
 
@@ -610,7 +701,7 @@ func (:function_s) er_t setup_frame( m@* o, m :frame_s* lexical_frame, m x_sourc
 //----------------------------------------------------------------------------------------------------------------------
 
 /// executes function in frame (variables are set in frame) from a list of arguments
-func (:function_s) er_t call( m@* o, m x_source* source, m :frame_s* lexical_frame, m bcore_arr_sr_s* arg_list, m sr_s* sr )
+func (:function_s) er_t call( m@* o, m x_source_point_s* source_point, m :frame_s* lexical_frame, m bcore_arr_sr_s* arg_list, m sr_s* sr )
 {
     :signature_s* signature = o.signature;
     if( arg_list.size < signature.arg_list.size )
@@ -623,7 +714,7 @@ func (:function_s) er_t call( m@* o, m x_source* source, m :frame_s* lexical_fra
         if( o.block )
         {
             m$* frame = :frame_s!^;
-            o.setup_frame( lexical_frame, source, frame );
+            o.setup_frame( lexical_frame, source_point, frame );
             for( sz_t i = 0; i < signature.arg_list.size; i++ ) frame.var_set( signature.arg_list.[ i ], sr_null() ).fork_from( arg_list.[ i ] );
             sr.clear();
             o.block.eval( frame, sr );
@@ -631,24 +722,24 @@ func (:function_s) er_t call( m@* o, m x_source* source, m :frame_s* lexical_fra
         }
         else if( o.external_function )
         {
-            o.external_function.execute( source, arg_list, sr );
+            o.external_function.execute( source_point, arg_list, sr );
         }
         else if( o.wrapped_function )
         {
             m $* full_arg_list = bcore_arr_sr_s!^;
             for( sz_t i = 0; i < o.wrapped_arg_list.size; i++ ) full_arg_list.push_sr( sr_null() ).fork_from( o.wrapped_arg_list.[ i ] );
             for( sz_t i = 0; i < arg_list.size          ; i++ ) full_arg_list.push_sr( sr_null() ).fork_from(           arg_list.[ i ] );
-            o.wrapped_function.call( source, lexical_frame, full_arg_list, sr );
+            o.wrapped_function.call( source_point, lexical_frame, full_arg_list, sr );
         }
         else
         {
-            source.parse_error_fa( "Internal error: Function is incomplete.\n" );
+            source_point.parse_error_fa( "Internal error: Function is incomplete.\n" );
         }
 
         // chain of functions ...
         if( o.tail )
         {
-            o.tail.call_unary( source, lexical_frame, sr, sr );
+            o.tail.call_unary( source_point, lexical_frame, sr, sr );
         }
         = 0;
     }
@@ -656,20 +747,20 @@ func (:function_s) er_t call( m@* o, m x_source* source, m :frame_s* lexical_fra
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:function_s) er_t call_unary( m@* o, m x_source* source, m :frame_s* lexical_frame, m sr_s* s_arg, m sr_s* sr )
+func (:function_s) er_t call_unary( m@* o, m x_source_point_s* source_point, m :frame_s* lexical_frame, m sr_s* s_arg, m sr_s* sr )
 {
     m $* arg_list = bcore_arr_sr_s!^;
     arg_list.push_sr( sr_null() ).fork_from( s_arg );
-    = o.call( source, lexical_frame, arg_list, sr );
+    = o.call( source_point, lexical_frame, arg_list, sr );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:function_s) er_t call_via_arg_list( m@* o, m x_source* source, m :frame_s* lexical_frame, m :list_s* arg_list1, m sr_s* sr )
+func (:function_s) er_t call_via_arg_list( m@* o, m x_source_point_s* source_point, m :frame_s* lexical_frame, m :list_s* arg_list1, m sr_s* sr )
 {
     m $* arg_list = bcore_arr_sr_s!^.set_size( arg_list1.size() );
     for( sz_t i = 0; i < arg_list.size; i++ ) arg_list.[ i ].fork_from( arg_list1.arr.[ i ] );
-    = o.call( source, lexical_frame, arg_list, sr );
+    = o.call( source_point, lexical_frame, arg_list, sr );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -684,7 +775,7 @@ func (:function_s) er_t call_via_evaluation( m@* o, m x_source* source, m :frame
         arg_list.push_sr( sr_null() ).fork_from( sr_arg );
         if( !source.parse_bl( " #=?')'" ) ) source.parse_fa( " ," );
     }
-    = o.call( source, lexical_frame, arg_list, sr );
+    = o.call( x_source_point_s!^( source ), lexical_frame, arg_list, sr );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -877,26 +968,15 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
     ASSERT( obj.o == NULL );
 
     /// prefix operators
-    if( source.parse_bl( " #?'+'" ) )
-    {
-        o.eval( :priority_c(), source, obj );
-    }
+    if     ( source.parse_bl( " #?'+'" ) ) o.eval_export_uop_type( identity~, :priority_c(), source, obj );
+    else if( source.parse_bl( " #?'-'" ) ) o.eval_export_uop_type( neg~,      :priority_c(), source, obj );
+    else if( source.parse_bl( " #?'!'" ) ) o.eval_export_uop_type( not~,      :priority_c(), source, obj );
     else if( source.parse_bl( " #?'?'" ) )
     {
         bl_t detail = source.parse_bl( " #?'?'" );
         o.eval( :priority_c(), source, obj );
         o.to_sink( detail, obj, x_sink_stdout() );
         x_sink_stdout().flush();
-    }
-    else if( source.parse_bl( " #?'-'" ) )
-    {
-        o.eval( :priority_c(), source, obj );
-        o.negate( source, obj );
-    }
-    else if( source.parse_bl( " #?'!'" ) )
-    {
-        o.eval( :priority_c(), source, obj );
-        o.logic_not( source, obj );
     }
 
     /// number literal
@@ -1084,33 +1164,26 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
     /// Network object
     else if( source.parse_bl( " #?'&'" ) )
     {
+        x_source_point_s* sp = x_source_point_s!^.setup_from_source( source );
         if( source.parse_bl( " #?'-'" ) ) // wire
         {
-            m :net_wire_s* wire = :net_wire_s!^;
             if( !:is_identifier( source ) ) = source.parse_error_fa( "Rack identifier expected.\n" );
-            wire.rack_name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
+            tp_t rack_name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
+            tp_t wire_name = 0;
             if( source.parse_bl( " #?'.' " ) )
             {
                 if( !:is_identifier( source ) ) = source.parse_error_fa( "Branch identifier expected.\n" );
-                wire.branch_name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
+                wire_name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
             }
-            wire.source_point.setup_from_source( source );
-            obj.asm( wire.fork() );
+            obj.asm( :net_node_s!.setup_wire( rack_name, wire_name, sp ) );
         }
         else
         {
             tp_t node_type = 0; // generic
-            if( source.parse_bl( " #?':'" ) ) // rack
-            {
-                node_type = rack~;
-            }
-
+            if( source.parse_bl( " #?':'" ) ) node_type = rack~;
             if( !:is_identifier( source ) ) = source.parse_error_fa( "Identifier expected.\n" );
-            m :net_node_s* node = :net_node_s!^;
-            node.type = node_type;
-            node.name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
-            node.source_point.setup_from_source( source );
-            obj.asm( node.fork() );
+            tp_t node_name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
+            obj.asm( :net_node_s!.setup( node_type, node_name, sp ) );
         }
     }
 
@@ -1193,5 +1266,6 @@ func void selftest( sc_t file )
 
 embed "bcore_x_btcl_builtin.x";
 embed "bcore_x_btcl_bop.x";
+embed "bcore_x_btcl_export.x";
 embed "bcore_x_btcl_net.x";
 

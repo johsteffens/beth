@@ -12,6 +12,8 @@ err = err + !test( "constant", TRUE == (1==1) );
 
 err = err + !test( "arithmetic", 5 + 3 * 2 == 11 );
 err = err + !test( "arithmetic", 5^2 == 25 );
+err = err + !test( "arithmetic", 6/2 == 3 );
+err = err + !test( "arithmetic", 6.5/2 == 3.25 );
 err = err + !test( "arithmetic", 13%10 == 3 );
 err = err + !test( "negation", -( 5 + 3 * 2 ) == 0-11 );
 err = err + !test( "variable", x = 5; x + 3 * 2 == 11 );
@@ -79,11 +81,11 @@ err = err + !test( "func args list", f_head *. [1,2] == 3 );
 /// stamps, members, type conversion
 
 s = <bmath_mfx_eval_s> rows: 10 cols: 20 </>;
-err = err + !test( "member query", s.rows == 10 & s.cols == 20 );
+err = err + !test( "member query", s.rows == 10 && s.cols == 20 );
 
 // modifier
 s = s( .rows = 30, .cols = 40 );
-err = err + !test( "member query", s.rows == 30 & s.cols == 40 );
+err = err + !test( "member query", s.rows == 30 && s.cols == 40 );
 
 // type conversion float -> bool
 err = err + !test( "conversion", <bl_t/>( 0.5 ) == TRUE );
@@ -116,10 +118,10 @@ list = [1,2,3];
 err = err + !test( "list size", SIZE( list ) == 3 );
 err = err + !test( "list size", list.SIZE() == 3 );
 err = err + !test( "list size", list.arr.SIZE() == 3 );
-err = err + !test( "list element", list.[ 0 ] == 1 & list.[ 1 ] == 2 );
+err = err + !test( "list element", list.[ 0 ] == 1 && list.[ 1 ] == 2 );
 
 arr = <bcore_arr_s3_s/>(list);
-err = err + !test( "arr element", arr.[ 0 ] == 1 & arr.[ 1 ] == 2 );
+err = err + !test( "arr element", arr.[ 0 ] == 1 && arr.[ 1 ] == 2 );
 
 err = err + !test( "list spawn", 3::0 == [0,0,0] );
 err = err + !test( "list spawn", 3::func(x){x+1} == [1,2,3] );
@@ -142,9 +144,10 @@ err = err + !test( "spawned recursion", ["a","b","c","d"] :: func(a,b) { a + b }
 net_node = &sine( .frq = 1000 );
 net_rack = &:xyz( .lfo = net_node( .frq = 234 )( .frq2 = 123 ), 456, 889 );
 net_wire = &-xyz.lfo;
+err = err + !test( "net_node", net_node.frq == 1000 );
 err = err + !test( "net_rack", net_rack.lfo.frq == 234 );
-
-?(net_rack << net_node);
+net_rack << net_node;
+? net_rack;
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// bug fixes

@@ -122,57 +122,65 @@ Each operator has a numeric priority. On chained operations, higher priority ope
 Additionally operators are grouped into priority-groups. Each group is associated with a letter A ... E. Operators in group A have highest and also identical prority.
 All other operators have each a unique priority. A higher group letter means lower priority. A lower position within the group means lower priority.
 
+The following tables contain available operators:
+
+* **Symbol:** The symbol used in BTCL Syntax
+* **Type Name:** Identifier for the operator. 
+  * The type name is for BTCL internal bookkeeping, error reporting and special purpose BTCL extensions.
+* **Polymorph:** When irreducible, the operator can be exported as a meta object (part of constructed object) where an external builder gives it a suitable meaning.
+
+
 ## Group A - Binary
 
-|Symbol|Description|
-|:---|:---|
-|```.```|Stamp member access|
-|```(```|Function call or stamp modifier; closed by ')'|
+|Symbol|Description|Type Name|Polymorph|
+|:---|:---|----|----|
+|```.```|Stamp: Member access; [Node](btcl_network_builder.md): Branch access|member|no|
+|```(```|Function call or stamp modifier; closed by ')'|frame|no|
 
 ## Group B - Unary
 
-|Symbol|Description|
-|:---|:---|
-|```+```|Identity|
-|```-```|Arithmetic Negation|
-|```!```|Logic Negation|
-|```?```|Identity: Object is printed to stdout. Leaf objects are printed in compact form.|
-|```??```|Identity: Object is printed in detail to stdout.|
+|Symbol|Description|Type Name|Polymorph|
+|:---|:---|----|----|
+|```+```|Identity|identity|yes|
+|```-```|Arithmetic Negation|neg|yes|
+|```!```|Logic Negation|not|yes|
+|```?```|Identity: Object is printed to stdout. Leaf objects are printed in compact form.|print_compact|no|
+|```??```|Identity: Object is printed in detail to stdout.|print_detailed|no|
 
 ## Group C - Binary
 
-|Symbol|Description|
-|:---|:---|
-|```^```|**Arithmetic**: exponentiation; result type is f3_t|
-|```/```|**Arithmetic**: division|
-|```%```|**Arithmetic**: modulo division|
-|```**```|**[Function](#function-operators)**: Chains two functions|
-|```*.:```|**[Function](#function-operators)**: Applies function to unfolded list elements|
-|```*.```|**[Function](#function-operators)**: Applies function to unfolded list|
-|```*:```|**[Function](#function-operators)**: Applies function to list elements|
-|```*```|**Arithmetic,[List](#list-operators),[Function](#function-operators)**: multiplication; Unary function application; Assigning r-expression as argument|
-|```-```|**Arithmetic**: subtraction|
-|```+```|**Arithmetic**: addition; Concatenation of strings.|
-|```::```|**[List](#list-operators)**: [Spawning Operator](#Spawning-Operator)|
-|```:```|**[List](#list-operators)**: Joining objects to form a list; Concatenation of lists|
-|```==```|**Logic**: equal|
-|```!=```|**Logic**: unequal|
-|```>=```|**Logic**: larger or equal|
-|```>```|**Logic**: larger|
-|```<=```|**Logic**: smaller or equal|
-|```<```|**Logic**: smaller|
-|```&```|**Logic**: AND|
-|```|```|**Logic**: OR|
-|```<<```|**[Function](#function-operators)**: Assigning r-expression as argument|
-|```=```|Assignment|
+|Symbol|Description|Type Name|Polymorph|
+|:---|:---|----|----|
+|```^```|**Arithmetic**: exponentiation; result type is f3_t|pow|yes|
+|```/```|**Arithmetic**: division|div|yes|
+|```%```|**Arithmetic**: modulo division|mod|yes|
+|```**```|**[Function-Function](#function-operators)**: Chains two functions|chain|yes|
+|```*.:```|**[Function-List](#function-operators)**: Applies function to unfolded list elements|mul_dot_colon|no|
+|```*.```|**[Function-List](#function-operators)**: Applies function to unfolded list|mul_dot|no|
+|```*:```|**[Function-List](#function-operators)**: Applies function to list elements|mul_colon|no|
+|```*```|**Arithmetic, [List](#list-operators), [Function](#function-operators)**: multiplication; Unary function application; Assigning r-expression as argument|mul|yes|
+|```-```|**Arithmetic**: subtraction|sub|yes|
+|```+```|**Arithmetic**: addition; Concatenation of strings.|add|yes|
+|```::```|**[List](#list-operators)**: [Spawning Operator](#Spawning-Operator)|spawn|yes|
+|```:```|**[List](#list-operators)**: Concatenation of objects to form a list; Concatenation of lists|cat|yes|
+|```==```|**Logic**: equal|equal|yes|
+|```!=```|**Logic**: unequal|unequal|yes|
+|```>=```|**Logic**: larger or equal|larger_equal|yes|
+|```>```|**Logic**: larger|larger|yes|
+|```<=```|**Logic**: smaller or equal|smaller_equal|yes|
+|```<```|**Logic**: smaller|smaller|yes|
+|```&&```|**Logic**: AND|and|yes|
+|```||```|**Logic**: OR|or|yes|
+|```<<```|**[Function](#function-operators)**: Assigning r-expression as argument|shift_left|yes|
+|```=```|Assignment|assign|no|
 
 ## Group D (Reserved)
 
 ## Group E - Binary
 
-|Symbol|Description|
-|:---|:---|
-|```;```|[Continuation](#continuation-operator)|
+|Symbol|Description|Type Name|Polymorph|
+|:---|:---|----|----|
+|```;```|[Continuation](#continuation-operator)|continuation|no|
 
 # Number
 Numbers are represented as integer ```s3_t``` or floating point ```f3_t```.
@@ -499,28 +507,24 @@ Generic conversion is a btcl-specific type conversion when general stamps are in
 * If none of the above succeeds, an error message is generated.
 
 
-# Built-in Operators
-The following operators are hardwired in form of unary functions.
-
-|Name|Description|
-|:---|:---|
-|EXP|Exponentiation base ```e```|
-|LOG|Logarithm base ```e```|
-|LOG2|Logarithm base ```2```|
-|LOG10|Logarithm base ```10```|
-|SIN|Sine|
-|COS|Cosine|
-|TAN|Tangens|
-|TANH|Tangens hyperbolicus|
-|SIGN|Sign of value ```1 or -1```|
-|SQRT|Squareroot|
-|ABS|Absolute value|
-|CEIL|Ceiling function|
-|FLOOR|Floor function|
+# Built-in Functions
+|Name|Description|Type Name|
+|:---|:---|----|
+|EXP|Exponentiation base ```e```|exp|
+|LOG|Logarithm base ```e```|log|
+|LOG2|Logarithm base ```2```|log2|
+|LOG10|Logarithm base ```10```|log10|
+|SIN|Sine|sin|
+|COS|Cosine|cos|
+|TAN|Tangens|tan|
+|TANH|Tangens hyperbolicus|tanh|
+|SIGN|Sign of value ```1 or -1```|sign|
+|SQRT|Squareroot|sqrt|
+|ABS|Absolute value|abs|
+|CEIL|Ceiling function|ceil|
+|FLOOR|Floor function|floor|
 
 # Built-in Constants
-The following operators are hardwired constants.
-
 |Name|Description|
 |:---|:---|
 |TRUE|Boolean 'true'|
@@ -546,8 +550,8 @@ The file is embedded in the current frame (no dedicated frame). This allows defi
 # Advanced
 The features below provide special control and functionality for specific use cases that go beyond the typical use of btcl.
 
-* [External Functions](btcl_external_functions.md): Beth-btcl API for btcl functions.
-* [Network Builder](btcl_network_builder.md): Advanced language features and components for the construction of a network object.
+* [External Functions](btcl_external_functions.md): Beth-BTCL API for calling external functions from BTCL code.
+* [Network Builder](btcl_network_builder.md): Construction of a network meta structure.
 
 
 
