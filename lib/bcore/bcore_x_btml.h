@@ -157,6 +157,19 @@ func t_to_sink
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func bl_t is_identifier( m x_source* source ) = source.parse_bl( " #?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z')||[0]=='_')" );
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func d st_s* parse_name( m x_source* source )
+{
+    m st_s* st_name = st_s!^;
+    source.parse_fa( " #name", st_name );
+    = st_name.fork();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func sc_t name_of( tp_t type, m st_s* buf )
 {
     sc_t n = bcore_name_try_name( type );
@@ -427,7 +440,29 @@ func er_t t_parse_body( m @* o, tp_t t, m x_source* source )
     }
     else if( stamp.t_is_leaf( t ) )
     {
-        source.parse_fa( st_s_create_fa( " ##<#<sc_t>*>", :name_of( t, st_s!^ ) )^.sc, o );
+        switch( t )
+        {
+            case tp_t~:
+            case er_t~:
+            case aware_t~:
+            {
+                if( :is_identifier( source ) )
+                {
+                    o.cast( m tp_t* ).0 = btypeof( :parse_name( source )^.sc );
+                }
+                else
+                {
+                    source.parse_fa( st_s_create_fa( " ##<#<sc_t>*>", :name_of( t, st_s!^ ) )^.sc, o );
+                }
+            }
+            break;
+
+            default:
+            {
+                source.parse_fa( st_s_create_fa( " ##<#<sc_t>*>", :name_of( t, st_s!^ ) )^.sc, o );
+            }
+            break;
+        }
     }
     else if( stamp.t_is_pure_array( t ) )
     {
@@ -582,7 +617,30 @@ func void t_translate_recursive( @* o, tp_t t, tp_t name, bl_t shelve, m x_sink*
         }
         else if( x_stamp_t_is_leaf( t ) )
         {
-            sink.push_st_d( st_s_create_typed( t, o ) );
+            switch( t )
+            {
+                case tp_t~:
+                case er_t~:
+                case aware_t~:
+                {
+                    sc_t sc_name = bnameof( *( tp_t* )o );
+                    if( sc_name )
+                    {
+                        sink.push_fa( "#<sc_t>", sc_name );
+                    }
+                    else
+                    {
+                        sink.push_st_d( st_s_create_typed( t, o ) );
+                    }
+                }
+                break;
+
+                default:
+                {
+                    sink.push_st_d( st_s_create_typed( t, o ) );
+                }
+                break;
+            }
         }
         else
         {

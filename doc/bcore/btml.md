@@ -20,6 +20,7 @@ stamp foo =
 {
     st_s string = "hello!";
     tp_t id = 1234;
+    tp_t enrolled_id = hello;
 };
 
 serializes to
@@ -27,6 +28,7 @@ serializes to
 <foo>
     string:<st_s>"hello!"</>
     id:<tp_t>1234</>
+    enrolled_id:<tp_t>hello</>
 </>
 
 /// Shortcuts:
