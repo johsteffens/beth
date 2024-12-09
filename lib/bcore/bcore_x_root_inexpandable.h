@@ -36,30 +36,15 @@ set inexpandable;
 // External types and identifiers
 
 // primitive types
-type u0_t;
-type u1_t;
-type u2_t;
-type u3_t;
-type s0_t;
-type s1_t;
-type s2_t;
-type s3_t;
-type f2_t;
-type f3_t;
-type uz_t;
-type sz_t;
-type tp_t;
-type er_t;
-type aware_t;
-type sc_t;
-type sd_t;
+type u0_t, u1_t, u2_t, u3_t;
+type s0_t, s1_t, s2_t, s3_t;
+type f2_t, f3_t;
+type uz_t, sz_t;
 type bl_t;
-type vd_t;
-type vc_t;
+type tp_t, aware_t, er_t, sc_t, sd_t;
+type vd_t, vc_t;
 type fp_t;
-type char;
-type void;
-type int;
+type char, void, int;
 type clock_t;
 
 // objects
@@ -131,42 +116,28 @@ identifier bcore_time_ms; /// returns (full) time in milliseconds
 
 identifier bcore_folder_get_current;
 
-identifier sz_max;
-identifier sz_min;
-identifier sz_abs;
-identifier sz_sqr;
-identifier s3_max;
-identifier s3_min;
-identifier s3_sig;
-identifier s3_abs;
-identifier s3_sqr;
-identifier s2_max;
-identifier s2_min;
-identifier s2_sig;
-identifier s2_abs;
-identifier s2_sqr;
-identifier s1_max;
-identifier s1_min;
-identifier s1_sig;
-identifier s1_abs;
-identifier s1_sqr;
-identifier u3_max;
-identifier u3_min;
-identifier u3_abs;
-identifier u2_max;
-identifier u2_min;
-identifier u2_abs;
-identifier u1_max;
-identifier u1_min;
-identifier u1_abs;
-identifier sz_t_swap;
-identifier uz_t_swap;
-identifier s3_t_swap;
-identifier s2_t_swap;
-identifier s1_t_swap;
-identifier u3_t_swap;
-identifier u2_t_swap;
-identifier u1_t_swap;
+identifier sz_max, sz_min, sz_t_swap, sz_gcd, sz_sig, sz_abs, sz_sqr;
+identifier uz_max, uz_min, uz_t_swap, uz_gcd;
+identifier s3_max, s3_min, s3_t_swap, s3_sig, s3_abs, s3_sqr;
+identifier s2_max, s2_min, s2_t_swap, s2_sig, s2_abs, s2_sqr;
+identifier s1_max, s1_min, s1_t_swap, s1_sig, s1_abs, s1_sqr;
+identifier u3_max, u3_min, u3_t_swap;
+identifier u2_max, u2_min, u2_t_swap;
+identifier u1_max, u1_min, u1_t_swap;
+
+identifier f3_max, f3_min, f3_t_swap, f3_sig, f3_abs, f3_sqr, f3_srt, f3_inv, f3_rs2, f3_rs3;
+identifier f2_max, f2_min, f2_t_swap, f2_sig, f2_abs, f2_sqr, f2_srt, f2_inv, f2_rs2, f2_rs3;
+
+identifier f3_lim_min; // minimum normalized representable positive number
+identifier f3_lim_max; // maximum normalized representable positive number
+identifier f3_lim_eps; // minimum representable positive difference to 1.0
+identifier f3_lim_inf; // floating point representation of infinity
+
+identifier f2_lim_min; // minimum normalized representable positive number
+identifier f2_lim_max; // maximum normalized representable positive number
+identifier f2_lim_eps; // minimum representable positive difference to 1.0
+identifier f2_lim_inf; // floating point representation of infinity
+
 identifier tp_t_swap;
 identifier f3_t_swap;
 identifier f2_t_swap;
@@ -216,38 +187,6 @@ identifier bcore_cday_from_string;
 identifier bcore_cday_from_sc;
 
 identifier bcore_life_s_push_aware;
-
-identifier f3_lim_min; // minimum normalized representable positive number
-identifier f3_lim_max; // maximum normalized representable positive number
-identifier f3_lim_eps; // minimum representable positive difference to 1.0
-identifier f3_lim_inf; // floating point representation of infinity
-
-identifier f3_sqr;
-identifier f3_srt;
-identifier f3_min;
-identifier f3_max;
-identifier f3_sig;
-identifier f3_abs;
-identifier f3_inv;
-identifier f3_rs2;
-identifier f3_rs3;
-identifier f3_t_swap;
-
-identifier f2_lim_min; // minimum normalized representable positive number
-identifier f2_lim_max; // maximum normalized representable positive number
-identifier f2_lim_eps; // minimum representable positive difference to 1.0
-identifier f2_lim_inf; // floating point representation of infinity
-
-identifier f2_sqr;
-identifier f2_srt;
-identifier f2_min;
-identifier f2_max;
-identifier f2_sig;
-identifier f2_abs;
-identifier f2_inv;
-identifier f2_rs2;
-identifier f2_rs3;
-identifier f2_t_swap;
 
 identifier bcore_abort;
 identifier bcore_exit;
