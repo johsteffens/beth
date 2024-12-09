@@ -558,7 +558,7 @@ sr_s bcore_spect_via_create_zoo( uz_t size )
 {
     bcore_life_s* l = bcore_life_s_create();
                       bcore_flect_type_parse_sc( "vectors = aware { st_s => [ 2 ] data1; u3_t [ 3 ] data2; }" );
-    tp_t t_animal   = bcore_flect_type_parse_sc( "animal = aware { st_s => type; f3_t weight; st_s => [] features; vectors vdata; }" );
+    tp_t t_animal   = bcore_flect_type_parse_sc( "animal = aware { st_s => st_type; tp_t => tp_type; f3_t weight; st_s => [] features; vectors vdata; }" );
     tp_t t_compound = bcore_flect_type_parse_sc( "compound = aware { u3_t id; uz_t area; animal => [] animals; }" );
     tp_t t_zoo      = bcore_flect_type_parse_sc( "zoo = aware { st_s => name; typed => [] compounds; }" );
 
@@ -574,7 +574,8 @@ sr_s bcore_spect_via_create_zoo( uz_t size )
         sr_s animals = bcore_life_s_push_sr( l, bcore_via_x_nget( compound, typeof( "animals" ) ) );
         {
             sr_s bird = sr_cl( bcore_inst_t_create_sr( t_animal ), l );
-            bcore_via_x_nset_sc( bird, typeof( "type" ), "Owl" );
+            bcore_via_x_nset_sc( bird, typeof( "st_type" ), "Owl" );
+            bcore_via_x_nset_tp( bird, typeof( "tp_type" ), bentypeof( "Owl" ) );  // name enrolled
             bcore_via_x_nset_f3( bird, typeof( "weight" ), 2.5 );
             sr_s features = sr_cl( bcore_via_x_nget( bird, typeof( "features" ) ), l );
             {
@@ -585,7 +586,8 @@ sr_s bcore_spect_via_create_zoo( uz_t size )
         }
         {
             sr_s bird = sr_cl( bcore_inst_t_create_sr( t_animal ), l );
-            bcore_via_x_nset_sc( bird, typeof( "type" ), "Pidgin" );
+            bcore_via_x_nset_sc( bird, typeof( "st_type" ), "Pidgin" );
+            bcore_via_x_nset_tp( bird, typeof( "tp_type" ), btypeof( "Pidgin" ) ); // name not enrolled
             bcore_via_x_nset_f3( bird, typeof( "weight" ), 0.5 );
             sr_s features = sr_cl( bcore_via_x_nget( bird, typeof( "features" ) ), l );
             {
