@@ -620,7 +620,7 @@ static er_t bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
                     ( f_link ? BCORE_CAPS_LINK_STATIC : BCORE_CAPS_SOLID_STATIC );
     }
 
-    if( o->type == typeof( "aware_t" ) )
+    if( o->type == TYPEOF_aware_t )
     {
         if( o->caps != BCORE_CAPS_SOLID_STATIC )
         {
@@ -707,11 +707,11 @@ static er_t bcore_self_item_s_parse_data_src( bcore_self_item_s* o, sr_s src, co
                     {
                         BLM_TRY( bcore_source_r_parse_em_fa( &src, " #<umax_t*>", &o->default_umax ) );
                     }
-                    else if( bcore_source_r_parse_bl_fa( &src, " #?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z'))" ) )
+                    else if( bcore_source_r_parse_bl_fa( &src, " #?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z')||[0]=='_')" ) )
                     {
                         st_s* name = st_s_create();
                         BLM_TRY( bcore_source_r_parse_em_fa( &src, "#name", name ) );
-                        o->default_tp = entypeof( name->sc );
+                        o->default_tp = bentypeof( name->sc );
                         st_s_discard( name );
                     }
                     else
