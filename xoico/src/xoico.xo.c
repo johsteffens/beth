@@ -1,4 +1,4 @@
-//  Last update: 2024-12-08T12:28:06Z
+//  Last update: 2024-12-13T16:45:19Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -49,7 +49,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_xoico 0x37605AFFA4547DBEull
+// HKEYOF_xoico 0x194A9D1CF2178F86ull
 
 /**********************************************************************************************************************/
 // source: xoico.x
@@ -7188,6 +7188,7 @@ er_t xoico_che_s_trans_type( xoico_che_s* o, x_source* source, xoico_che_result*
             BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Operator '!': lvalue is a group." ))
         }
         xoico_che_result_arr_s_clear(result_local);
+    
         BLM_TRY(xoico_che_result_push_fa(((xoico_che_result*)(result_local)),"#<sc_t>_create()", xoico_che_s_nameof(o,tp_identifier ) ))
     
         xoico_typespec_s* typespec = ((xoico_typespec_s*)BLM_LEVEL_T_PUSH(0,xoico_typespec_s,xoico_typespec_s_create()));
@@ -7227,7 +7228,7 @@ er_t xoico_che_s_trans_type( xoico_che_s* o, x_source* source, xoico_che_result*
 
 er_t xoico_che_s_trans_name( xoico_che_s* o, x_source* source, xoico_che_result* result, xoico_typespec_s* out_typespec )
 {
-    // xoico_che.x:1227:1
+    // xoico_che.x:1228:1
     BLM_INIT_LEVEL(0);
     xoico_che_result_arr_s* result_local = ((xoico_che_result_arr_s*)BLM_LEVEL_T_PUSH(0,xoico_che_result_arr_s,xoico_che_result_arr_s_create()));
     tp_t tp_identifier;
@@ -7252,7 +7253,7 @@ er_t xoico_che_s_trans_name( xoico_che_s* o, x_source* source, xoico_che_result*
 
 er_t xoico_che_s_trans_ternary_branch( xoico_che_s* o, x_source* source, xoico_che_result* result, xoico_typespec_s* out_typespec )
 {
-    // xoico_che.x:1258:1
+    // xoico_che.x:1259:1
     BLM_INIT_LEVEL(0);
     BLM_TRY(x_source_parse_fa(source,"?" ))
     BLM_TRY(xoico_che_result_a_push_sc(result,"?" ))
@@ -7293,7 +7294,7 @@ er_t xoico_che_s_trans_ternary_branch( xoico_che_s* o, x_source* source, xoico_c
 
 er_t xoico_che_s_trans_bracket( xoico_che_s* o, x_source* source, xoico_che_result* result, xoico_typespec_s* out_typespec )
 {
-    // xoico_che.x:1310:1
+    // xoico_che.x:1311:1
     
     BLM_TRY(x_source_parse_fa(source,"(" ))
     BLM_TRY(xoico_che_result_a_push_char(result,'(' ))
@@ -7311,7 +7312,7 @@ er_t xoico_che_s_trans_bracket( xoico_che_s* o, x_source* source, xoico_che_resu
 
 er_t xoico_che_s_trans_array_subscript( xoico_che_s* o, x_source* source, xoico_che_result* result, xoico_typespec_s* out_typespec )
 {
-    // xoico_che.x:1334:1
+    // xoico_che.x:1335:1
     
     BLM_TRY(x_source_parse_fa(source,"[" ))
     BLM_TRY(xoico_che_result_a_push_sc(result,"[" ))
@@ -7323,7 +7324,7 @@ er_t xoico_che_s_trans_array_subscript( xoico_che_s* o, x_source* source, xoico_
 
 er_t xoico_che_s_trans_expression( xoico_che_s* o, x_source* source, xoico_che_result* result_out, xoico_typespec_s* out_typespec )
 {
-    // xoico_che.x:1352:1
+    // xoico_che.x:1353:1
     BLM_INIT_LEVEL(0);
     sc_t sc_bl_end_of_expression = "#?([0]==';'||[0]=='{'||[0]=='}'||[0]==')'||[0]==']'||[0]==','||([0]=='.'&&[1]=='.')||([0]==':'&&([1]==' '||[1]=='\t'||[1]=='\n'||[1]=='/')))";
     
@@ -7511,7 +7512,7 @@ er_t xoico_che_s_trans_expression( xoico_che_s* o, x_source* source, xoico_che_r
 
 er_t xoico_che_s_try_trans_declaration( xoico_che_s* o, x_source* source, xoico_che_result* result_out, bl_t* success )
 {
-    // xoico_che.x:1549:1
+    // xoico_che.x:1550:1
     BLM_INIT_LEVEL(0);
     if( success ) (*(success)) = false;
     
@@ -7664,7 +7665,7 @@ er_t xoico_che_s_try_trans_declaration( xoico_che_s* o, x_source* source, xoico_
 
 er_t xoico_che_s_inspect_expression( xoico_che_s* o, x_source* source )
 {
-    // xoico_che.x:1702:1
+    // xoico_che.x:1703:1
     BLM_INIT_LEVEL(0);
     BLM_TRY(x_source_parse_fa(source,"\?\?" ))
     
@@ -7711,7 +7712,7 @@ er_t xoico_che_s_inspect_expression( xoico_che_s* o, x_source* source )
 
 er_t xoico_che_s_trans_statement_expression( xoico_che_s* o, x_source* source, xoico_che_result* result )
 {
-    // xoico_che.x:1749:1
+    // xoico_che.x:1750:1
     BLM_INIT_LEVEL(0);
     xoico_che_result_statement_s* result_statement = xoico_che_result_statement_s__(((xoico_che_result_statement_s*)BLM_LEVEL_T_PUSH(0,xoico_che_result_statement_s,xoico_che_result_statement_s_create())),((xoico_che_result*)(xoico_che_result_arr_s_create() )));
     
@@ -7762,7 +7763,7 @@ er_t xoico_che_s_trans_statement_expression( xoico_che_s* o, x_source* source, x
 
 er_t xoico_che_s_trans_statement( xoico_che_s* o, x_source* source, xoico_che_result* result )
 {
-    // xoico_che.x:1800:1
+    // xoico_che.x:1801:1
     
     BLM_TRY(xoico_che_s_trans_whitespace(o,source, result ))
     
@@ -7862,7 +7863,7 @@ er_t xoico_che_s_trans_statement( xoico_che_s* o, x_source* source, xoico_che_re
 
 er_t xoico_che_s_trans_block_inside( xoico_che_s* o, x_source* source, xoico_che_result* result_out )
 {
-    // xoico_che.x:1900:1
+    // xoico_che.x:1901:1
     BLM_INIT_LEVEL(0);
     xoico_che_result_arr_s* result = ((xoico_che_result_arr_s*)BLM_LEVEL_T_PUSH(0,xoico_che_result_arr_s,xoico_che_result_arr_s_create()));
     
@@ -7904,7 +7905,7 @@ er_t xoico_che_s_trans_block_inside( xoico_che_s* o, x_source* source, xoico_che
 
 er_t xoico_che_s_trans_block( xoico_che_s* o, x_source* source, xoico_che_result* result_out, bl_t is_break_ledge )
 {
-    // xoico_che.x:1942:1
+    // xoico_che.x:1943:1
     BLM_INIT_LEVEL(0);
     xoico_che_s_inc_block(o);
     xoico_che_result_arr_s* result = ((xoico_che_result_arr_s*)BLM_LEVEL_T_PUSH(0,xoico_che_result_arr_s,xoico_che_result_arr_s_create()));
@@ -7921,7 +7922,7 @@ er_t xoico_che_s_trans_block( xoico_che_s* o, x_source* source, xoico_che_result
 
 er_t xoico_che_s_trans_statement_as_block( xoico_che_s* o, x_source* source, xoico_che_result* result_out, bl_t is_break_ledge )
 {
-    // xoico_che.x:1959:1
+    // xoico_che.x:1960:1
     BLM_INIT_LEVEL(0);
     xoico_che_result_arr_s* result = ((xoico_che_result_arr_s*)BLM_LEVEL_T_PUSH(0,xoico_che_result_arr_s,xoico_che_result_arr_s_create()));
     
@@ -7959,7 +7960,7 @@ er_t xoico_che_s_trans_statement_as_block( xoico_che_s* o, x_source* source, xoi
 
 er_t xoico_che_s_trans_block_inside_verbatim_c( xoico_che_s* o, x_source* source, xoico_che_result* result )
 {
-    // xoico_che.x:1997:1
+    // xoico_che.x:1998:1
     
     o->has_verbatim_code = true;
     BLM_TRY(xoico_che_s_trans_whitespace(o,source, result ))
@@ -8001,7 +8002,7 @@ er_t xoico_che_s_trans_block_inside_verbatim_c( xoico_che_s* o, x_source* source
 
 er_t xoico_che_s_trans_level0_block( xoico_che_s* o, bl_t exit_after_first_statement, x_source* source, xoico_che_result* result_out )
 {
-    // xoico_che.x:2040:1
+    // xoico_che.x:2041:1
     BLM_INIT_LEVEL(0);
     xoico_che_result_arr_s* result = ((xoico_che_result_arr_s*)BLM_LEVEL_T_PUSH(0,xoico_che_result_arr_s,xoico_che_result_arr_s_create()));
     
@@ -8049,7 +8050,7 @@ er_t xoico_che_s_trans_level0_block( xoico_che_s* o, bl_t exit_after_first_state
 
 er_t xoico_che_s_setup( xoico_che_s* o, const xoico_host* host, const xoico_signature_s* signature )
 {
-    // xoico_che.x:2088:1
+    // xoico_che.x:2089:1
     BLM_INIT_LEVEL(0);
     xoico_signature_s_attach( &(o->signature ),  xoico_signature_s_clone(signature));
     BLM_TRY(xoico_signature_s_relent(o->signature,host, xoico_host_a_obj_type(host) ))
@@ -8104,7 +8105,7 @@ er_t xoico_che_s_setup( xoico_che_s* o, const xoico_host* host, const xoico_sign
 
 sz_t xoico_che_s_assess_indentation( x_source* source )
 {
-    // xoico_che.x:2143:1
+    // xoico_che.x:2144:1
     
     sz_t index = x_source_get_index(source);
     while( !x_source_eos(source) ) if( x_source_get_char(source) == '\n' ) break;
@@ -8120,7 +8121,7 @@ sz_t xoico_che_s_assess_indentation( x_source* source )
 
 void xoico_che_s_remove_indentation( st_s* string, sz_t indentation )
 {
-    // xoico_che.x:2159:1
+    // xoico_che.x:2160:1
     
     ASSERT( string->space >= string->size );
     
@@ -8145,7 +8146,7 @@ void xoico_che_s_remove_indentation( st_s* string, sz_t indentation )
 
 er_t xoico_che_s_translate_mutable( xoico_che_s* o, const xoico_host* host, const xoico_body_s* body, const xoico_signature_s* signature, x_sink* sink )
 {
-    // xoico_che.x:2184:1
+    // xoico_che.x:2185:1
     BLM_INIT_LEVEL(0);
     BLM_TRY(xoico_che_s_setup(o,host, signature ))
     
@@ -8253,7 +8254,7 @@ er_t xoico_che_s_translate_mutable( xoico_che_s* o, const xoico_host* host, cons
 
 er_t xoico_che_s_translate( const xoico_che_s* o, const xoico_host* host, const xoico_body_s* body, const xoico_signature_s* signature, x_sink* sink )
 {
-    // xoico_che.x:2292:1
+    // xoico_che.x:2293:1
     BLM_INIT_LEVEL(0);
     er_t er = xoico_che_s_translate_mutable(((xoico_che_s*)BLM_LEVEL_T_PUSH(0,xoico_che_s,xoico_che_s_clone(o))),host, body, signature, sink );
     BLM_RETURNV(er_t, er)
@@ -11450,5 +11451,5 @@ int main( int argc, char** argv )
     BETH_CLOSEV( 0 );
     return retv;
 }
-// XOICO_BODY_SIGNATURE 0x2F73C1304700E298
-// XOICO_FILE_SIGNATURE 0xA0F61858B40E6360
+// XOICO_BODY_SIGNATURE 0xBFBED0E11989C755
+// XOICO_FILE_SIGNATURE 0xCDB43B1EDE027488

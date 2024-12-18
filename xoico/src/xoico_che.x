@@ -1178,6 +1178,7 @@ func (:s) er_t trans_type
             return source.parse_error_fa( "Operator '!': lvalue is a group." );
         }
         result_local.clear();
+
         result_local.push_fa( "#<sc_t>_create()", o.nameof( tp_identifier ) );
 
         m xoico_typespec_s* typespec = xoico_typespec_s!^^;
