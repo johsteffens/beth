@@ -13,15 +13,15 @@
  *  limitations under the License.
  */
 
-/** BTCL: Beth text constructive language (interpreter) - Binary Operators */
+/** BTCL: Beth text constructive language (interpreter) - Operators */
 
 /**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:frame_s) er_t eval_bop_member( m@* o, m x_source* source, m sr_s* sr )
+func (:frame_s) er_t eval_op_member( m@* o, m x_source* source, m sr_s* sr )
 {
-    if( sr.type() == :net_node_s~ ) = o.eval_net_node_member( source, sr );
+    if( sr.type() == :net_node_s~ ) = :net_eval_node_member( o, source, sr );
 
     bl_t is_const = sr.is_const();
 
@@ -129,7 +129,7 @@ func (:frame_s) er_t eval_bop_member( m@* o, m x_source* source, m sr_s* sr )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:frame_s) er_t eval_bop_functional( m@* o, m x_source* source, m sr_s* sr )
+func (:frame_s) er_t eval_op_functional( m@* o, m x_source* source, m sr_s* sr )
 {
     if( sr.o_type() == :function_s~ )
     {
@@ -141,12 +141,26 @@ func (:frame_s) er_t eval_bop_functional( m@* o, m x_source* source, m sr_s* sr 
     }
     else if( sr.o_type() == :net_node_s~ )
     {
-        :frame_s!^.setup( o ).eval_net_node_modifier( source, sr );
+        if( !source.parse_bl( " #=?')'" ) )
+        {
+            :net_eval_node_modifier( :frame_s!^.setup( o ), source, sr );
+        }
+        :clone_if_weak( sr );
+    }
+    else if( sr.o_type() == :functor_s~ )
+    {
+        if( !source.parse_bl( " #=?')'" ) )
+        {
+            :functor_eval_modifier( :frame_s!^.setup( o ), source, sr );
+        }
         :clone_if_weak( sr );
     }
     else
     {
-        :frame_s!^.setup( o ).eval_bop_modifier( source, sr );
+        if( !source.parse_bl( " #=?')'" ) )
+        {
+            :frame_s!^.setup( o ).eval_op_modifier( source, sr );
+        }
         :clone_if_weak( sr );
     }
     = 0;
@@ -154,34 +168,34 @@ func (:frame_s) er_t eval_bop_functional( m@* o, m x_source* source, m sr_s* sr 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:frame_s) er_t eval_bop_modifier( m@* o, m x_source* source, m sr_s* sr )
+func (:frame_s) er_t eval_op_modifier( m@* o, m x_source* source, m sr_s* sr )
 {
     sr.0 = sr_clone( sr.0 );
     sr_s^ sr_weak;
     sr_weak = sr_cw( sr.0 );
     if( source.parse_bl( " #=?'.'") )
     {
-        o.eval_bop( 0, source, sr_weak );
+        o.eval_op( 0, source, sr_weak );
     }
     else
     {
         m$* sb = sr_s!^;
         o.eval( 0, source, sb );
-        er_t err = :generic_copy( sr, sb );
+        er_t err = o.generic_copy( x_source_point_s!^.setup_from_source( source ), sr, sb );
         if( err ) { = source.parse_error_fa( "#<sc_t>\n", bcore_error_pop_all_to_st( st_s!^ ).sc ); }
     }
 
     sr.o.cast( m x_stamp* ).t_mutated( sr.type() );
 
-    if( source.parse_bl( " #?','" ) ) = o.eval_bop_modifier( source, sr );
+    if( source.parse_bl( " #?','" ) ) = o.eval_op_modifier( source, sr );
     = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:frame_s) er_t eval_bop_func_list_unfold( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
+func (:frame_s) er_t eval_op_func_list_unfold( m@* o, s2_t op_priority, m x_source* source, m sr_s* sr )
 {
-    sr_s^ sb; o.eval( bop_priority, source, sb );
+    sr_s^ sb; o.eval( op_priority, source, sb );
 
     if( sr.type() == :function_s~ && sb.type() == :list_s~ )
     {
@@ -196,9 +210,9 @@ func (:frame_s) er_t eval_bop_func_list_unfold( m@* o, s2_t bop_priority, m x_so
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:frame_s) er_t eval_bop_func_list_transform( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
+func (:frame_s) er_t eval_op_func_list_transform( m@* o, s2_t op_priority, m x_source* source, m sr_s* sr )
 {
-    sr_s^ sb; o.eval( bop_priority, source, sb );
+    sr_s^ sb; o.eval( op_priority, source, sb );
 
     if( sr.type() == :function_s~ && sb.type() == :list_s~ )
     {
@@ -222,9 +236,9 @@ func (:frame_s) er_t eval_bop_func_list_transform( m@* o, s2_t bop_priority, m x
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:frame_s) er_t eval_bop_func_list_unfold_transform( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
+func (:frame_s) er_t eval_op_func_list_unfold_transform( m@* o, s2_t op_priority, m x_source* source, m sr_s* sr )
 {
-    sr_s^ sb; o.eval( bop_priority, source, sb );
+    sr_s^ sb; o.eval( op_priority, source, sb );
 
     if( sr.type() == :function_s~ && sb.type() == :list_s~ )
     {
@@ -248,23 +262,47 @@ func (:frame_s) er_t eval_bop_func_list_unfold_transform( m@* o, s2_t bop_priori
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:frame_s) er_t bop_cat_ab( m@* o, m sr_s* sa, m sr_s* sb, m sr_s* sr )
-{
-    :clone_if_weak( sa );
-    :clone_if_weak( sb );
+//func (:frame_s) er_t bop_cat_ab( m@* o, m sr_s* sa, m sr_s* sb, m sr_s* sr )
+//{
+//    :clone_if_weak( sa );
+//    :clone_if_weak( sb );
+//
+//    if( sa.type() == :signature_s~ && sb.type() == :block_s~ )
+//    {
+//        m :signature_s* signature = sa.o.cast( m :signature_s* );
+//        m :block_s*     block     = sb.o.cast( m :block_s* );
+//        m :function_s*  function = :function_s!^.setup( signature, block, NULL );
+//        sr.asc( function.fork() );
+//    }
+//    else
+//    {
+//        m :list_s* list = :list_s!^;
+//        if( sa.type() == :list_s~ ) list.push_list_fork( sa.o.cast( m :list_s* ) ); else list.push_fork( sa );
+//        if( sb.type() == :list_s~ ) list.push_list_fork( sb.o.cast( m :list_s* ) ); else list.push_fork( sb );
+//        sr.asc( list.fork() );
+//    }
+//
+//    = 0;
+//}
 
-    if( sa.type() == :signature_s~ && sb.type() == :block_s~ )
+//----------------------------------------------------------------------------------------------------------------------
+
+func er_t bop_cat_ab( m sr_s* a, m sr_s* b, m sr_s* sr )
+{
+    :clone_if_weak( a );
+    :clone_if_weak( b );
+    if( a.type() == :signature_s~ && b.type() == :block_s~ )
     {
-        m :signature_s* signature = sa.o.cast( m :signature_s* );
-        m :block_s*     block     = sb.o.cast( m :block_s* );
+        m :signature_s* signature = a.o.cast( m :signature_s* );
+        m :block_s*     block     = b.o.cast( m :block_s* );
         m :function_s*  function = :function_s!^.setup( signature, block, NULL );
         sr.asc( function.fork() );
     }
     else
     {
         m :list_s* list = :list_s!^;
-        if( sa.type() == :list_s~ ) list.push_list_fork( sa.o.cast( m :list_s* ) ); else list.push_fork( sa );
-        if( sb.type() == :list_s~ ) list.push_list_fork( sb.o.cast( m :list_s* ) ); else list.push_fork( sb );
+        if( a.type() == :list_s~ ) list.push_list_fork( a.o.cast( m :list_s* ) ); else list.push_fork( a );
+        if( b.type() == :list_s~ ) list.push_list_fork( b.o.cast( m :list_s* ) ); else list.push_fork( b );
         sr.asc( list.fork() );
     }
 
@@ -273,11 +311,11 @@ func (:frame_s) er_t bop_cat_ab( m@* o, m sr_s* sa, m sr_s* sb, m sr_s* sr )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:frame_s) er_t eval_bop_assign( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
+func (:frame_s) er_t eval_op_assign( m@* o, s2_t op_priority, m x_source* source, m sr_s* sr )
 {
     if( sr.is_const() ) = source.parse_error_fa( "Assignment to a const object.\n" );
 
-    sr_s^ sb; o.eval( bop_priority, source, sb );
+    sr_s^ sb; o.eval( op_priority, source, sb );
 
     sb.set_const( true );
 
@@ -293,7 +331,7 @@ func (:frame_s) er_t eval_bop_assign( m@* o, s2_t bop_priority, m x_source* sour
 
         case :null_member_s~:
         {
-            sr_s sr1 = sr.o.cast( m :null_member_s* ).set_sr( sb );
+            sr_s sr1 = sr.o.cast( m :null_member_s* ).set_sr( o, x_source_point_s!^.setup_from_source( source ), sb );
             sr.down();
             sr.0 = sr1;
         }
@@ -301,7 +339,7 @@ func (:frame_s) er_t eval_bop_assign( m@* o, s2_t bop_priority, m x_source* sour
 
         case :null_arr_element_s~:
         {
-            sr_s sr1 = sr.o.cast( m :null_arr_element_s* ).set_sr( sb );
+            sr_s sr1 = sr.o.cast( m :null_arr_element_s* ).set_sr( o, x_source_point_s!^.setup_from_source( source ), sb );
             sr.down();
             sr.0 = sr1;
         }
@@ -311,7 +349,7 @@ func (:frame_s) er_t eval_bop_assign( m@* o, s2_t bop_priority, m x_source* sour
         {
             if( sr.o )
             {
-                er_t err = :generic_copy( sr, sb );
+                er_t err = o.generic_copy( x_source_point_s!^.setup_from_source( source ), sr, sb );
                 if( err ) { = source.parse_error_fa( "operator '=': #<sc_t>\n", bcore_error_pop_all_to_st( st_s!^ ).sc ); }
             }
         }
@@ -323,14 +361,14 @@ func (:frame_s) er_t eval_bop_assign( m@* o, s2_t bop_priority, m x_source* sour
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:frame_s) er_t eval_bop_continuation( m@* o, s2_t bop_priority, m x_source* source, m sr_s* sr )
+func (:frame_s) er_t eval_op_continuation( m@* o, s2_t op_priority, m x_source* source, m sr_s* sr )
 {
     // if the last expression in a file, block or frame has a trailing semicolon, the continuation is ignored
     if( source.parse_bl( " #=?([0]=='}'||[0]==')')" ) ) = 0;
     if( source.eos() ) = 0;
 
     sr.clear();
-    o.eval( bop_priority, source, sr );
+    o.eval( op_priority, source, sr );
     = 0;
 }
 
@@ -338,132 +376,132 @@ func (:frame_s) er_t eval_bop_continuation( m@* o, s2_t bop_priority, m x_source
 
 /** Binary Operators
  *  Binary operators span a binary tree.
- *  bop_priority determines which operator takes the root position for each branch.
+ *  op_priority determines which operator takes the root position for each branch.
  */
-func (:frame_s) er_t eval_bop( m@* o, s2_t exit_priority, m x_source* source, m sr_s* obj )
+func (:frame_s) er_t eval_op( m@* o, s2_t exit_priority, m x_source* source, m sr_s* obj )
 {
     // operators in descending order of priority
 
     /// priority group a ---------------------
 
-    s2_t bop_priority = :priority_a();
+    s2_t op_priority = :priority_a();
 
-    if( bop_priority <= exit_priority ) = 0;
+    if( op_priority <= exit_priority ) = 0;
 
     while( source.parse_bl( " #?([0]=='.'||[0]=='(')" ) )
     {
         if( source.parse_bl( " #?'.'" ) )
         {
-            o.eval_bop_member( source, obj );
+            o.eval_op_member( source, obj );
         }
 
         if( source.parse_bl( " #?'('" ) )
         {
-            o.eval_bop_functional( source, obj );
+            o.eval_op_functional( source, obj );
             source.parse_fa( " )" );
         }
     }
-    bop_priority--;
+    op_priority--;
 
     /// priority group c ---------------------
 
-    bop_priority = :priority_c();
+    op_priority = :priority_c();
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'^'" ) ) o.eval_export_bop_type( pow~, bop_priority, source, obj, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'^'" ) ) :export_eval_bop_type( o, pow~, op_priority, source, obj, obj );
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'/'" ) ) o.eval_export_bop_type( div~, bop_priority, source, obj, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'/'" ) ) :export_eval_bop_type( o, div~, op_priority, source, obj, obj );
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'%'" ) ) o.eval_export_bop_type( mod~, bop_priority, source, obj, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'%'" ) ) :export_eval_bop_type( o, mod~, op_priority, source, obj, obj );
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'**'" ) ) o.eval_export_bop_type( chain~, bop_priority, source, obj, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'**'" ) ) :export_eval_bop_type( o, chain~, op_priority, source, obj, obj );
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'*.:'" ) ) o.eval_bop_func_list_unfold_transform( bop_priority, source, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'*.:'" ) ) o.eval_op_func_list_unfold_transform( op_priority, source, obj );
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'*.'" ) ) o.eval_bop_func_list_unfold( bop_priority, source, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'*.'" ) ) o.eval_op_func_list_unfold( op_priority, source, obj );
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'*:'" ) ) o.eval_bop_func_list_transform( bop_priority, source, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'*:'" ) ) o.eval_op_func_list_transform( op_priority, source, obj );
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'*'" ) ) o.eval_export_bop_type( mul~, bop_priority, source, obj, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'*'" ) ) :export_eval_bop_type( o, mul~, op_priority, source, obj, obj );
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'-'" ) ) o.eval_export_bop_type( sub~, bop_priority, source, obj, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'-'" ) ) :export_eval_bop_type( o, sub~, op_priority, source, obj, obj );
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'+'" ) ) o.eval_export_bop_type( add~, bop_priority, source, obj, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'+'" ) ) :export_eval_bop_type( o, add~, op_priority, source, obj, obj );
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'::'" ) ) o.eval_export_bop_type( spawn~, bop_priority, source, obj, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'::'" ) ) :export_eval_bop_type( o, spawn~, op_priority, source, obj, obj );
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?':'" ) ) o.eval_export_bop_type( cat~, bop_priority, source, obj, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?':'" ) ) :export_eval_bop_type( o, cat~, op_priority, source, obj, obj );
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'!='" ) ) o.eval_export_bop_type( unequal~, bop_priority, source, obj, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'!='" ) ) :export_eval_bop_type( o, unequal~, op_priority, source, obj, obj );
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'=='" ) ) o.eval_export_bop_type( equal~, bop_priority, source, obj, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'=='" ) ) :export_eval_bop_type( o, equal~, op_priority, source, obj, obj );
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'>='" ) ) o.eval_export_bop_type( larger_equal~, bop_priority, source, obj, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'>='" ) ) :export_eval_bop_type( o, larger_equal~, op_priority, source, obj, obj );
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?([0]=='>'&&[1]!='>')" ) ) { source.get_char(); o.eval_export_bop_type( larger~, bop_priority, source, obj, obj ); }
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?([0]=='>'&&[1]!='>')" ) ) { source.get_char(); :export_eval_bop_type( o, larger~, op_priority, source, obj, obj ); }
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'<='" ) ) o.eval_export_bop_type( smaller_equal~, bop_priority, source, obj, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'<='" ) ) :export_eval_bop_type( o, smaller_equal~, op_priority, source, obj, obj );
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?([0]=='<'&&[1]!='<')" ) ) { source.get_char(); o.eval_export_bop_type( smaller~, bop_priority, source, obj, obj ); }
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?([0]=='<'&&[1]!='<')" ) ) { source.get_char(); :export_eval_bop_type( o, smaller~, op_priority, source, obj, obj ); }
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'&&'" ) ) o.eval_export_bop_type( and~, bop_priority, source, obj, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'&&'" ) ) :export_eval_bop_type( o, and~, op_priority, source, obj, obj );
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'||'" ) ) o.eval_export_bop_type( or~, bop_priority, source, obj, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'||'" ) ) :export_eval_bop_type( o, or~, op_priority, source, obj, obj );
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'<<'" ) ) = o.eval_export_bop_type( shift_left~, bop_priority, source, obj, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'<<'" ) ) = :export_eval_bop_type( o, shift_left~, op_priority, source, obj, obj );
+    op_priority--;
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'='" ) ) o.eval_bop_assign( bop_priority, source, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?'='" ) ) o.eval_op_assign( op_priority, source, obj );
+    op_priority--;
 
     /// priority group e ---------------------
 
-    bop_priority = :priority_e();
+    op_priority = :priority_e();
 
-    if( bop_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?';'" ) ) o.eval_bop_continuation( bop_priority, source, obj );
-    bop_priority--;
+    if( op_priority <= exit_priority ) = 0;
+    while( source.parse_bl( " #?';'" ) ) o.eval_op_continuation( op_priority, source, obj );
+    op_priority--;
 
     = 0;
 }

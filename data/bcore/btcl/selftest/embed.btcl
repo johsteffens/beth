@@ -1,6 +1,6 @@
 // test function
 test = func( name, ok )
 {
-    if( !ok ) { ?(name+" failed \n") };
+    if( !ok ) { PRINT(name+" failed \n") };
     ok
 }

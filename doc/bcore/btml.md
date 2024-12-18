@@ -41,7 +41,7 @@ stamp bar = { foo => a_foo; };
 */
         
 // here, type <foo> is already provided by the context of <bar>;        
-<bar> a_foo: <*> string:"hello!" </> </>
+<bar> a_foo: <> string:"hello!" </> </>
   
 
 ```
@@ -72,7 +72,7 @@ For various types simplified encoding is possible:
 * Strings by using quotes ```"..."```
 
 ## Version tolerance
-Changes in the (stamp-) object do not (generally) produce a parser error. This allows handling of different stamp version without explicit version contol. The following conditions are handled:
+If stamp structure differs from the BTML structure, the following implicit conversions takes place:
 
 * **New stamp element:** An incomplete set of members is allowed by setting unspecified elements to their respective default.
 * **Retired stamp element:** An unrecognized element name is ignored by the parser.
@@ -81,7 +81,7 @@ Changes in the (stamp-) object do not (generally) produce a parser error. This a
 * **Retired stamps:** An unrecognized object type is skipped by the parser and treated as if 'NULL' was parsed.
 
 ## Overloading
-All stamps support the BTML syntax natively. Overloading is discouraged and should be used sparingly. Overloading might be justified in case the stamp must call specific initialization code or general I/O syntax change is desirable. 
+All stamps support the BTML syntax natively. Overloading is discouraged and should be used sparingly. Overloading might be justified in case the stamp must call specific initialization code or a general I/O syntax change is desirable. 
 
 #### I/O syntax
 Overload following features in [bcore_x_btml.h](../../lib/bcore/bcore_x_btml.h) to define special I/O syntax for a stamp:
@@ -110,9 +110,9 @@ The null assignment may be used in case a referenced object is to be explicitly 
 
 #### Context type shortcut
 
-**Syntax:** ```<*> ... </>```
+**Syntax:** ```<> ... </>```
 
-Expressing the full type may be omitted and replaced by an asterisk ```*``` when the context already provides type information, e.g. in case of a static typed element or elements to a mono-typed array (see [cheat-sheet](#cheat-sheet). Note that using this notation limits version tolerance. A shortcut without sufficient context leads to a parse error.
+Expressing the full type may be omitted when the context already provides type information, e.g. in case of a static typed element or elements to a mono-typed array (see [cheat-sheet](#cheat-sheet). Note that using this notation limits version tolerance. Using this shortcut outside sufficient context leads to a parse error.
 
 #### Embedding a file
 **Syntax:** ```<#file> <string in quotes> </>``` (Closing ```</>``` is optional)

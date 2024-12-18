@@ -2,12 +2,12 @@
 
 ## What it is
 
-BTCL is a simple and easy to use text based weakly typed functional language to construct an object.
+BTCL is a simple, easy to use, text based and weakly typed functional language. Its purpose is constructing an object.
 
 BTCL is backward compatible to [BTML](btml.md).
 
 ## Constructive Language
-I use the term ***constructive language*** to specify a language specialized for object construction. It can be placed somewhere between mere markup and general purpose programming. It provides variables, operators and functions but only limited interactivity. It is intended to represent a state rather than a process.
+I use the term ***constructive language*** to specify a language specialized for object construction. It can be placed somewhere between mere markup and general purpose programming. It has the marks of a mature language but offers limited interactivity. It is intended to represent a state rather than a process.
 
 Specifically:
 
@@ -45,8 +45,8 @@ z = <bcore_arr_s3_s></>( [1,2,3] );
 <bcore_main_frame_s></>( .create_log_file = TRUE, .log_file_extension = "log" );
 
 // prints object z to stdout (for messaging, inspection, debugging)
- ? z;  // compact formatting where possible
-?? z; // always btml format
+PRINT(z);  // compact formatting where possible
+PRINTX(z); // always btml format
 
 // condition (else-part is optional)
 if( a >= b ) { a } else { b };
@@ -72,7 +72,10 @@ a : b; // if a or b is a list, the list is extended (not nested)
 // relative path is relative to current file location
 embed ( "../data/file.btcl" );
 
-// A trailing semicolon as last valid symbol in a file, block or frame is not evaluated as continuation
+// converting a function into a functor (a functor can be used externally)
+<x_btcl_functor_s/>( func( a, b ) { a + b } );
+
+// A trailing semicolon as last valid symbol in a file, block or frame is ignored (no continuation)
 
 ```
 
@@ -94,7 +97,7 @@ In BTCL this operator is called **Continuation**.
 
 Evaluate first ```a``` then ```b``` but represent only the result of ```b```. 
 
-Superficially, this appears to render expression ```a``` meaningless. However, ```a``` can define a variable, which is visible in ```b```. Thus ```a``` creates a context for ```b```. This helps simplifying complex expressions and can make code easier to read and maintain.
+Superficially, this appears to render expression ```a``` meaningless. However, ```a``` can define a variable, which is visible in ```b```. Thus ```a``` creates context for ```b```. This helps simplifying complex expressions and can make code easier to read and maintain.
 
 More generally: The semicolon operator divides consecutive expressions into
 **context creation** and **context usage**.
@@ -106,20 +109,17 @@ More generally: The semicolon operator divides consecutive expressions into
 ( x=7.0; x/(ABS(x)+1) )
 ```
 
-More generally: The semicolon operator divides consecutive expressions into
-**context creation** and **context usage**.
-
 **Note:**
-A trailing semicolon is allowed for the last expression in a file, block or frame. In that case the semicolon is simply ignored.
+A trailing semicolon is allowed for the last expression in a file, block or frame. In that case no continuation is expected; the semicolon is simply ignored.
 
 ## Chain of Expressions
 
-Multiple consecutive expressions can be chained up much like a list of statements in a procedural language would be chained. However, the last expression representing the sate of the chain must not be terminated by a semicolon. The advantage compared to a procedural language is that such a chain can be part of any sub-expression.
+Multiple consecutive expressions can be chained up, much like a list of statements in a procedural language would be chained. The advantage compared to a procedural language is that such a chain can be part of any sub-expression.
 
 # Operators
 
-Each operator has a numeric priority. On chained operations, higher priority operators are evaluated before lower priority operators. Equal operators are evaluated in the chained order (e.g. ```3 - 1 - 1 == 2```).
-Additionally operators are grouped into priority-groups. Each group is associated with a letter A ... E. Operators in group A have highest and also identical prority.
+Each operator has a numeric priority. On chained operations, higher priority operators are evaluated before lower priority operators. Equal operators are evaluated in the given order (e.g. ```4-1-1 == (4-1)-1 == 2```, ```8/2/2 == (8/2)/2 == 2```).
+Operators are grouped into priority-groups. Each group is associated with a letter A ... E. Operators in group A have highest and also identical priority.
 All other operators have each a unique priority. A higher group letter means lower priority. A lower position within the group means lower priority.
 
 The following tables contain available operators:
@@ -127,29 +127,27 @@ The following tables contain available operators:
 * **Symbol:** The symbol used in BTCL Syntax
 * **Type Name:** Identifier for the operator. 
   * The type name is for BTCL internal bookkeeping, error reporting and special purpose BTCL extensions.
-* **Polymorph:** When irreducible, the operator can be exported as a meta object (part of constructed object) where an external builder gives it a suitable meaning.
+* **Exportable:** When irreducible, the operator can be exported as a meta object (part of constructed object) where an external builder gives it a suitable meaning. (BTCL solution for polymorphism). Exportable operators are important for constructing a [Functor](#functor).
 
 
 ## Group A - Binary
 
-|Symbol|Description|Type Name|Polymorph|
+|Symbol|Description|Type Name|Exportable|
 |:---|:---|----|----|
 |```.```|Stamp: Member access; [Node](btcl_network_builder.md): Branch access|member|no|
 |```(```|Function call or stamp modifier; closed by ')'|frame|no|
 
 ## Group B - Unary
 
-|Symbol|Description|Type Name|Polymorph|
+|Symbol|Description|Type Name|Exportable|
 |:---|:---|----|----|
 |```+```|Identity|identity|yes|
 |```-```|Arithmetic Negation|neg|yes|
 |```!```|Logic Negation|not|yes|
-|```?```|Identity: Object is printed to stdout. Leaf objects are printed in compact form.|print_compact|no|
-|```??```|Identity: Object is printed in detail to stdout.|print_detailed|no|
 
 ## Group C - Binary
 
-|Symbol|Description|Type Name|Polymorph|
+|Symbol|Description|Type Name|Exportable|
 |:---|:---|----|----|
 |```^```|**Arithmetic**: exponentiation; result type is f3_t|pow|yes|
 |```/```|**Arithmetic**: division|div|yes|
@@ -178,7 +176,7 @@ The following tables contain available operators:
 
 ## Group E - Binary
 
-|Symbol|Description|Type Name|Polymorph|
+|Symbol|Description|Type Name|Exportable|
 |:---|:---|----|----|
 |```;```|[Continuation](#continuation-operator)|continuation|no|
 
@@ -371,6 +369,71 @@ Binary operators where the left operand is a function.
 |```*.```|Applying a function using list elements as arguments: ```f*.l == f(l.[0], l.[1], ...)```|
 |```*.:```|Transforming a list of lists (Applying f *. l.[i] on list elements)|
 
+
+## Functor
+A functor is an exportable function. It is represented by the object ``` x_btcl_functor_s```;
+
+A functor can be used outside the btcl parser framework.
+
+A BTCL Function can be converted into a functor.
+
+**Explicit conversion:** See example below.
+
+**Implicit conversion:** A function is implicitly converted into a functor when it is externalized.
+
+**Example:**
+
+```C
+f = func( a, b, c ) { a + b + c };
+
+<x_btxl_functor_s/>( f ); // explicit conversion
+
+<my_stamp_s/>( .my_member = f ); // implicit conversion
+
+f; // if the script ends here, f is implicitly converted
+```
+
+Note: If a function contains inexportable syntax, the conversion attempt fails with a parsing error.  Inexportable syntax is generated when at least one argument is involved in ...
+
+* a branch-condition: ```func(a){ if( a > 0 ) { do_this } else { do_that } }```
+* an operand for inexportable operators
+* an object modifier
+
+### Using a Functor
+
+``` x_btcl_functor_s``` provides member function to set arguments and to execute the function.
+
+Execute functions are thread safe.
+
+**Example:**
+
+Script file:
+
+```C
+func( a, b, c ) { a + b + c };
+```
+
+XOILA Code:
+
+```C
+m x_inst* inst = x_btcl_create_from_file( "scipt_file.btcl" )^;
+if( !inst ) = bcore_error_last();
+
+ASSERT( inst._ == x_btcl_functor_s~ );
+m x_btcl_functor_s* functor = inst.cast( m x_btcl_functor_s* );
+
+// sets areguments
+functor.set_arg_f3( 0, 2.0 );
+functor.set_arg_f3( 1, 3.0 );
+functor.set_arg_f3( 2, 4.0 );
+
+// executes function: should output 9 (=2+3+4)
+bcore_msg_fa( "#<f3_t>\n", functor.call_to_f3() );
+```
+
+
+
+
 # List
 
 ``` C
@@ -387,7 +450,7 @@ mylist.[ 2 ] // is 3 here
 mylist = a : b : c;
 
 // concatenating: if any operand is already a list, it will be unfolded and extended
-[1,2]:3 == 1:2:3; // this is TRUE
+[1,2]:[3,4] == [1,2,3,4]; // this is TRUE
 
 // concatenating: to explicitly insert a list as element to another list, fold it twice:
 a = [1,2];
@@ -506,23 +569,27 @@ Generic conversion is a btcl-specific type conversion when general stamps are in
 
 * If none of the above succeeds, an error message is generated.
 
-
 # Built-in Functions
-|Name|Description|Type Name|
-|:---|:---|----|
-|EXP|Exponentiation base ```e```|exp|
-|LOG|Logarithm base ```e```|log|
-|LOG2|Logarithm base ```2```|log2|
-|LOG10|Logarithm base ```10```|log10|
-|SIN|Sine|sin|
-|COS|Cosine|cos|
-|TAN|Tangens|tan|
-|TANH|Tangens hyperbolicus|tanh|
-|SIGN|Sign of value ```1 or -1```|sign|
-|SQRT|Squareroot|sqrt|
-|ABS|Absolute value|abs|
-|CEIL|Ceiling function|ceil|
-|FLOOR|Floor function|floor|
+
+Built-in functions are available by the names listed in the table below. They are exportable as unary operator.
+
+|Name|Description|Type Name|Exportable|
+|:---|:---|----|----|
+|EXP|Exponentiation base ```e```|exp|yes|
+|LOG|Logarithm base ```e```|log|yes|
+|LOG2|Logarithm base ```2```|log2|yes|
+|LOG10|Logarithm base ```10```|log10|yes|
+|SIN|Sine|sin|yes|
+|COS|Cosine|cos|yes|
+|TAN|Tangent|tan|yes|
+|TANH|Hyperbolic Tangent|tanh|yes|
+|SIGN|Sign of value: ```1 or -1```|sign|yes|
+|SQRT|Square root|sqrt|yes|
+|ABS|Absolute value|abs|yes|
+|CEIL|Ceiling function|ceil|yes|
+|FLOOR|Floor function|floor|yes|
+|PRINT|Prints object to stdout in compact form; behaves as identity|print|no|
+|PRINTX|Prints object to stdout in detailed form; behaves as identity|printx|no|
 
 # Built-in Constants
 |Name|Description|
@@ -543,7 +610,7 @@ The keyword **embed** evaluates code from another file.
 ```
 embed ( "path_to_another_file.txt" )
 ```
-If the file path is relative it is taken relative to the folder in which the current source is located.
+If the file path is relative, it is taken relative to the folder in which the current source is located.
 
 The file is embedded in the current frame (no dedicated frame). This allows defining variables (functions) in the embedded file to be used outside the embedding.
 

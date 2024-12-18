@@ -13,7 +13,7 @@
  *  limitations under the License.
  */
 
-/** BTCL: Beth text constructive language (interpreter) - Binary Operators */
+/** BTCL: Beth text constructive language (interpreter) - Builtin Functions */
 
 /**********************************************************************************************************************/
 /// builtin constants and functions
@@ -33,6 +33,8 @@ name SQRT;
 name ABS;
 name CEIL;
 name FLOOR;
+name PRINT;
+name PRINTX;
 
 // constants
 name true;
@@ -61,6 +63,8 @@ func (:context_s) set_reserved_funcs
     o.hmap_reserved_func.set_sc( "ABS" );
     o.hmap_reserved_func.set_sc( "CEIL" );
     o.hmap_reserved_func.set_sc( "FLOOR" );
+    o.hmap_reserved_func.set_sc( "PRINT" );
+    o.hmap_reserved_func.set_sc( "PRINTX" );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -324,6 +328,22 @@ func (:frame_s) er_t eval_reserved_func( m@* o, tp_t name, m x_source* source, m
             {
                 = source.parse_error_fa( "Function #<sc_t>: Argument '#<sc_t>' is not numeric.\n", o.nameof( name ), bnameof( sb.o_type() ) );
             }
+        }
+        break;
+
+        case PRINT~:
+        {
+            o.to_sink( false, sb, x_sink_stdout() );
+            sr.0 = sb.0;
+            sb.0 = sr_null();
+        }
+        break;
+
+        case PRINTX~:
+        {
+            o.to_sink( true, sb, x_sink_stdout() );
+            sr.0 = sb.0;
+            sb.0 = sr_null();
         }
         break;
 

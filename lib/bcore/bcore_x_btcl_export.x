@@ -38,14 +38,43 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// indicates if o is an operator
+feature 'at' bl_t is_operator( @* o ) = false;
+func bl_t sr_is_operator( sr_s* sr ) = sr ? sr.o ? :t_is_operator( sr.o.cast( x_btcl* ), sr.type() ) : false : false;
+
+/// true: if o is used as operand, the operator (together with the operand) should be exported
+feature 'at' bl_t is_exportable_operand( @* o ) = false;
+func bl_t sr_is_exportable_operand( sr_s* sr ) = :t_is_exportable_operand( sr.o.cast( x_btcl* ), sr.type() );
+
+/// Solves operator according to operator and operand specific criteria
+feature er_t solve( m@* o, m ::frame_s* frame, m sr_s* result, m bl_t* success )
+{
+    = GERR_fa( "'#<sc_t>' is no operator.", bnameof( o._ ) );
+}
+
+/// Signal broadcast in operator tree
+feature o signal( m@* o, tp_t name, m x_inst* arg )
+{
+    ERR_fa( "'#<sc_t>' is no operator.", bnameof( o._ ) );
+}
+
+/// Executes operator recursively. Typically used in an exported functor.
+feature 'at' er_t execute( @* o, m sr_s* result )
+{
+    = GERR_fa( "'#<sc_t>' is no operator.", bnameof( o._ ) );
+}
+
 /// exportable unary operator
-stamp :export_uop_s
+stamp :uop_s
 {
     tp_t type;
 
     sr_s a;
 
-    x_source_point_s source_point;
+    hidden x_source_point_s source_point;
+
+    func :.is_operator = true;
+    func :.is_exportable_operand = true;
 
     func o _( m@* o, tp_t type, m sr_s* a, m x_source_point_s* source_point )
     {
@@ -54,13 +83,19 @@ stamp :export_uop_s
         if( source_point ) o.source_point.copy( source_point );
     }
 
-    /// If reducible: Creates reduced sr, and returns 'true'. Otherwise returns false;
-    func er_t get_reduced_sr( m@* o, m :frame_s* frame, m sr_s* result, m bl_t* success );
+    func :.solve;
+    func :.execute;
+
+    func :.signal
+    {
+        if( :sr_is_operator( o.a ) ) o.a.o.cast( m:* ).signal( name, arg );
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:export_uop_s) get_reduced_sr
+/// frameless uop-solve function (covers solve and execute)
+func (:uop_s) er_t solve_exportable_a( @* o, sr_s* a, m sr_s* result, m bl_t* success )
 {
     success.0 = true;
 
@@ -68,21 +103,21 @@ func (:export_uop_s) get_reduced_sr
     {
         case identity~:
         {
-            result.tsc( o.a.type(), o.a.o.fork() );
+            result.tsc( a.type(), a.o.fork() );
             = 0;
         }
         break;
 
         case neg~:
         {
-            if( o.a.is_integer() ) { result.const_from_s3( -o.a.to_s3() ); = 0; }
-            if( o.a.is_float()   ) { result.const_from_f3( -o.a.to_f3() ); = 0; }
+            if( a.is_integer() ) { result.const_from_s3( -a.to_s3() ); = 0; }
+            if( a.is_float()   ) { result.const_from_f3( -a.to_f3() ); = 0; }
         }
         break;
 
         case not~:
         {
-            if( o.a.is_numeric() ) { result.const_from_bl( !o.a.to_bl() ); = 0; }
+            if( a.is_numeric() ) { result.const_from_bl( !a.to_bl() ); = 0; }
         }
         break;
 
@@ -95,23 +130,55 @@ func (:export_uop_s) get_reduced_sr
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:frame_s) er_t eval_export_uop_type( m@* o, tp_t type, s2_t priority, m x_source* source, m sr_s* result )
+func (:uop_s) solve
+{
+    o.solve_exportable_a( o.a, result, success );
+    if( success.0 ) = 0;
+
+    if( :sr_is_exportable_operand( o.a ) )
+    {
+        result.asc( o.fork() );
+        success.0 = true;
+    }
+
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:uop_s) execute
+{
+    sr_s* a = NULL;
+    if( :sr_is_operator( o.a ) )
+    {
+        m sr_s* r = sr_s!^^;
+        o.a.o.cast( :* ).execute( r );
+        a = r;
+    }
+    else
+    {
+        a = o.a.1;
+    }
+
+    bl_t success = false;
+    o.solve_exportable_a( a, result, success );
+    if( success ) = 0;
+
+    = o.source_point.parse_error_fa( "Operator #<sc_t> #<sc_t> is not executable.\n", ::operator_symbol( o.type ), bnameof( a.type() ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func er_t eval_uop_type( m ::frame_s * frame, tp_t type, s2_t priority, m x_source* source, m sr_s* result )
 {
     m$* source_point = x_source_point_s!^( source );
-    sr_s^ sa; o.eval( priority, source, sa );
-    m$* uop = :export_uop_s!^( type, sa, source_point );
-    bl_t reduced_success = false;
-    uop.get_reduced_sr( o, result, reduced_success );
-    if( !reduced_success )
+    sr_s^ sa; frame.eval( priority, source, sa );
+    m$* uop = :uop_s!^( type, sa, source_point );
+    bl_t success = false;
+    uop.solve( frame, result, success );
+    if( !success )
     {
-        if( o.is_exportable( type ) )
-        {
-            result.asc( uop.fork() );
-        }
-        else
-        {
-            = source_point.parse_error_fa( "Operator #<sc_t> #<sc_t> is not defined.\n", :operator_symbol( type ), bnameof( sa.o_type() ) );
-        }
+        = source_point.parse_error_fa( "Operator #<sc_t> #<sc_t> is not defined.\n", ::operator_symbol( type ), bnameof( sa.o_type() ) );
     }
     = 0;
 }
@@ -123,14 +190,17 @@ func (:frame_s) er_t eval_export_uop_type( m@* o, tp_t type, s2_t priority, m x_
 //----------------------------------------------------------------------------------------------------------------------
 
 /// exportable binary operator
-stamp :export_bop_s
+stamp :bop_s
 {
     tp_t type;
 
     sr_s a; // l-value
     sr_s b; // r-value
 
-    x_source_point_s source_point;
+    func :.is_operator = true;
+    func :.is_exportable_operand = true;
+
+    hidden x_source_point_s source_point;
 
     func o _( m@* o, tp_t type, m sr_s* a, m sr_s* b, m x_source_point_s* source_point )
     {
@@ -140,36 +210,36 @@ stamp :export_bop_s
         if( source_point ) o.source_point.copy( source_point );
     }
 
-    /// If reducible: Creates reduced sr, and returns 'true'. Otherwise returns false;
-    func er_t get_reduced_sr( m@* o, m :frame_s* frame, m sr_s* result, m bl_t* success );
+    func :.solve;
+    func :.execute;
+
+    func :.signal
+    {
+        if( :sr_is_operator( o.a ) ) o.a.o.cast( m:* ).signal( name, arg );
+        if( :sr_is_operator( o.b ) ) o.b.o.cast( m:* ).signal( name, arg );
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:frame_s) er_t eval_export_bop_type( m@* o, tp_t type, s2_t priority, m x_source* source, m sr_s* sa, m sr_s* result )
+func er_t eval_bop_type( m ::frame_s* frame, tp_t type, s2_t priority, m x_source* source, m sr_s* sa, m sr_s* result )
 {
     m$* source_point = x_source_point_s!^( source );
-    sr_s^ sb; o.eval( priority, source, sb );
-    m$* bop = :export_bop_s!^( type, sa, sb, source_point );
-    bl_t reduced_success = false;
-    bop.get_reduced_sr( o, result, reduced_success );
-    if( !reduced_success )
+    sr_s^ sb; frame.eval( priority, source, sb );
+    m$* bop = :bop_s!^( type, sa, sb, source_point );
+    bl_t success = false;
+    bop.solve( frame, result, success );
+    if( !success )
     {
-        if( o.is_exportable( type ) )
-        {
-            result.asc( bop.fork() );
-        }
-        else
-        {
-            = source_point.parse_error_fa( "Operator #<sc_t> #<sc_t> #<sc_t> is not defined.\n", bnameof( sa.o_type() ), :operator_symbol( type ), bnameof( sb.o_type() ) );
-        }
+        = source_point.parse_error_fa( "Operator #<sc_t> #<sc_t> #<sc_t> is not defined.\n", bnameof( sa.o_type() ), ::operator_symbol( type ), bnameof( sb.o_type() ) );
     }
     = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:export_bop_s) get_reduced_sr
+/// frameless bop-solve function (covers solve and execute)
+func (:bop_s) er_t solve_exportable_a_b( @* o, sr_s* a, sr_s* b, m sr_s* result, m bl_t* success )
 {
     success.0 = true;
 
@@ -177,9 +247,9 @@ func (:export_bop_s) get_reduced_sr
     {
         case pow~:
         {
-            if( bcore_tp_is_numeric( o.a.type() ) && bcore_tp_is_numeric( o.b.type() ) )
+            if( bcore_tp_is_numeric( a.type() ) && bcore_tp_is_numeric( b.type() ) )
             {
-                result.const_from_f3( pow( o.a.to_f3(), o.b.to_f3() ) );
+                result.const_from_f3( pow( a.to_f3(), b.to_f3() ) );
                 = 0;
             }
         }
@@ -187,17 +257,17 @@ func (:export_bop_s) get_reduced_sr
 
         case div~:
         {
-            if( bcore_tp_is_numeric( o.a.type() ) && bcore_tp_is_numeric( o.b.type() ) )
+            if( bcore_tp_is_numeric( a.type() ) && bcore_tp_is_numeric( b.type() ) )
             {
-                if( o.b.to_f3() == 0 ) = o.source_point.parse_error_fa( "Division by zero.\n" );
+                if( b.to_f3() == 0 ) = o.source_point.parse_error_fa( "Division by zero.\n" );
 
-                if( bcore_tp_is_integer( o.a.type() ) && bcore_tp_is_integer( o.b.type() ) )
+                if( bcore_tp_is_integer( a.type() ) && bcore_tp_is_integer( b.type() ) )
                 {
-                    result.const_from_s3( o.a.to_s3() / o.b.to_s3() );
+                    result.const_from_s3( a.to_s3() / b.to_s3() );
                 }
                 else
                 {
-                    result.const_from_f3( o.a.to_f3() / o.b.to_f3() );
+                    result.const_from_f3( a.to_f3() / b.to_f3() );
                 }
                 = 0;
             }
@@ -206,10 +276,10 @@ func (:export_bop_s) get_reduced_sr
 
         case mod~:
         {
-            if( bcore_tp_is_integer( o.a.type() ) && bcore_tp_is_integer( o.b.type() ) )
+            if( bcore_tp_is_integer( a.type() ) && bcore_tp_is_integer( b.type() ) )
             {
-                if( o.b.to_s3() == 0 ) = o.source_point.parse_error_fa( "Modulo division by zero.\n" );
-                result.const_from_s3( o.a.to_s3() % o.b.to_s3() );
+                if( b.to_s3() == 0 ) = o.source_point.parse_error_fa( "Modulo division by zero.\n" );
+                result.const_from_s3( a.to_s3() % b.to_s3() );
                 = 0;
             }
         }
@@ -217,14 +287,14 @@ func (:export_bop_s) get_reduced_sr
 
         case chain~:
         {
-            if( o.a.type() == :function_s~ && o.b.type() == :function_s~ )
+            if( a.type() == ::function_s~ && b.type() == ::function_s~ )
             {
-                m :function_s* fa = o.a.o.cast( m :function_s* ).fork()^;
-                m :function_s* fb = o.b.o.cast( m :function_s* ).fork()^;
+                m ::function_s* fa = a.o.cast( m ::function_s* ).fork()^;
+                m ::function_s* fb = b.o.cast( m ::function_s* ).fork()^;
 
                 if( !fa.is_unary() ) o.source_point.parse_error_fa( "Operator *: Left argument is not a unary function.\n" );
 
-                m :function_s* fc = :function_s!^.setup( fb.signature, fb.block, fb.tail );
+                m ::function_s* fc = ::function_s!^.setup( fb.signature, fb.block, fb.tail );
                 fc.append_tail( fa );
 
                 result.asm( fc.fork() );
@@ -235,25 +305,25 @@ func (:export_bop_s) get_reduced_sr
 
         case mul~:
         {
-            if( bcore_tp_is_numeric( o.a.type() ) && bcore_tp_is_numeric( o.b.type() ) )
+            if( bcore_tp_is_numeric( a.type() ) && bcore_tp_is_numeric( b.type() ) )
             {
-                if( bcore_tp_is_integer( o.a.type() ) && bcore_tp_is_integer( o.b.type() ) )
+                if( bcore_tp_is_integer( a.type() ) && bcore_tp_is_integer( b.type() ) )
                 {
-                    result.const_from_s3( o.a.to_s3() * o.b.to_s3() );
+                    result.const_from_s3( a.to_s3() * b.to_s3() );
                 }
                 else
                 {
-                    result.const_from_f3( o.a.to_f3() * o.b.to_f3() );
+                    result.const_from_f3( a.to_f3() * b.to_f3() );
                 }
                 = 0;
             }
-            else if( o.a.type() == :list_s~ )
+            else if( a.type() == ::list_s~ )
             {
-                :list_s* list_a = o.a.o.cast( :list_s* );
-                if( o.b.type() == :list_s~ )
+                ::list_s* list_a = a.o.cast( ::list_s* );
+                if( b.type() == ::list_s~ )
                 {
-                    :list_s* list_b = o.b.o.cast( :list_s* );
-                    m :list_s* list_r = :list_s!^;
+                    ::list_s* list_b = b.o.cast( ::list_s* );
+                    m ::list_s* list_r = ::list_s!^;
                     list_r.set_size( list_a.size() * list_b.size() );
                     for( sz_t i = 0; i < list_a.size(); i++ )
                     {
@@ -262,35 +332,27 @@ func (:export_bop_s) get_reduced_sr
                         for( sz_t j = 0; j < list_b.size(); j++ )
                         {
                             m sr_s* sb = list_b.arr.[ j ];
-                            frame.bop_cat_ab( sa, sb, list_r.arr.[ i * list_b.size() + j ] );
+                            ::bop_cat_ab( sa, sb, list_r.arr.[ i * list_b.size() + j ] );
                         }
                     }
                     result.asc( list_r.fork() );
                     = 0;
                 }
             }
-            else if( o.a.type() == :function_s~ )
-            {
-                m :function_s* f = o.a.o.cast( m :function_s* ).fork()^;
-                m $* arg_list = bcore_arr_sr_s!^;
-                arg_list.push_sr( sr_null() ).fork_from( o.b );
-                f.call( o.source_point, frame, arg_list, result );
-                = 0;
-            }
         }
         break;
 
         case sub~:
         {
-            if( bcore_tp_is_numeric( o.a.type() ) && bcore_tp_is_numeric( o.b.type() ) )
+            if( bcore_tp_is_numeric( a.type() ) && bcore_tp_is_numeric( b.type() ) )
             {
-                if( bcore_tp_is_integer( o.a.type() ) && bcore_tp_is_integer( o.b.type() ) )
+                if( bcore_tp_is_integer( a.type() ) && bcore_tp_is_integer( b.type() ) )
                 {
-                    result.const_from_s3( o.a.to_s3() - o.b.to_s3() );
+                    result.const_from_s3( a.to_s3() - b.to_s3() );
                 }
                 else
                 {
-                    result.const_from_f3( o.a.to_f3() - o.b.to_f3() );
+                    result.const_from_f3( a.to_f3() - b.to_f3() );
                 }
                 = 0;
             }
@@ -299,28 +361,28 @@ func (:export_bop_s) get_reduced_sr
 
         case add~:
         {
-            if( bcore_tp_is_numeric( o.a.type() ) )
+            if( bcore_tp_is_numeric( a.type() ) )
             {
-                if( bcore_tp_is_numeric( o.b.type() ) )
+                if( bcore_tp_is_numeric( b.type() ) )
                 {
-                    if( bcore_tp_is_integer( o.a.type() ) && bcore_tp_is_integer( o.b.type() ) )
+                    if( bcore_tp_is_integer( a.type() ) && bcore_tp_is_integer( b.type() ) )
                     {
-                        result.const_from_s3( o.a.to_s3() + o.b.to_s3() );
+                        result.const_from_s3( a.to_s3() + b.to_s3() );
                     }
                     else
                     {
-                        result.const_from_f3( o.a.to_f3() + o.b.to_f3() );
+                        result.const_from_f3( a.to_f3() + b.to_f3() );
                     }
                     = 0;
                 }
             }
 
-            if( o.a.type() == st_s~ || o.b.type() == st_s~ )
+            if( a.type() == st_s~ || b.type() == st_s~ )
             {
                 m $* st1 = st_s!^;
                 m $* st2 = st_s!^;
-                if( st1.copy_typed( o.a.type(), o.a.o ) ) { = o.source_point.parse_error_fa( "operator '+': #<sc_t>\n", bcore_error_pop_all_to_st( st_s!^ ).sc ); }
-                if( st2.copy_typed( o.b.type(), o.b.o ) ) { = o.source_point.parse_error_fa( "operator '+': #<sc_t>\n", bcore_error_pop_all_to_st( st_s!^ ).sc ); }
+                if( st1.copy_typed( a.type(), a.o ) ) { = o.source_point.parse_error_fa( "operator '+': #<sc_t>\n", bcore_error_pop_all_to_st( st_s!^ ).sc ); }
+                if( st2.copy_typed( b.type(), b.o ) ) { = o.source_point.parse_error_fa( "operator '+': #<sc_t>\n", bcore_error_pop_all_to_st( st_s!^ ).sc ); }
                 st1.push_st( st2 );
 
                 result.asc( st1.fork() );
@@ -331,14 +393,129 @@ func (:export_bop_s) get_reduced_sr
 
         case spawn~:
         {
+            if( a.is_numeric() && b.type() != ::function_s~ )
+            {
+                m ::list_s* list = ::list_s!^;
+                list.arr.set_size( a.to_s3() );
+                for( sz_t i = 0; i < list.arr.size; i++ )
+                {
+                    list.arr.[ i ].tsc( b.type(), x_inst_t_clone( b.o, b.type() ) );
+                }
+                result.asc( list.fork() );
+                = 0;
+            }
+        }
+        break;
+
+        case cat~: = ::bop_cat_ab( a.cast( m$* ), b.cast( m$* ), result );
+
+        case equal~:
+        {
+            if( :sr_is_operator( a ) || :sr_is_operator( b ) ) break;
+            result.from_bl( 0 == x_compare_t_num_dominant( a.type(), a.o, b.type(), b.o ) );
+            = 0;
+        }
+        break;
+
+        case unequal~:
+        {
+            if( :sr_is_operator( a ) || :sr_is_operator( b ) ) break;
+            result.from_bl( 0 != x_compare_t_num_dominant( a.type(), a.o, b.type(), b.o ) );
+             = 0;
+        }
+        break;
+
+        case larger_equal~:
+        {
+            if( :sr_is_operator( a ) || :sr_is_operator( b ) ) break;
+            result.from_bl( 0 >= x_compare_t_num_dominant( a.type(), a.o, b.type(), b.o ) );
+             = 0;
+        }
+        break;
+
+
+        case larger~:
+        {
+            if( :sr_is_operator( a ) || :sr_is_operator( b ) ) break;
+            result.from_bl( 0 >  x_compare_t_num_dominant( a.type(), a.o, b.type(), b.o ) );
+             = 0;
+        }
+        break;
+
+        case smaller_equal~:
+        {
+            if( :sr_is_operator( a ) || :sr_is_operator( b ) ) break;
+            result.from_bl( 0 <= x_compare_t_num_dominant( a.type(), a.o, b.type(), b.o ) );
+             = 0;
+        }
+        break;
+
+        case smaller~:
+        {
+            if( :sr_is_operator( a ) || :sr_is_operator( b ) ) break;
+            result.from_bl( 0 <  x_compare_t_num_dominant( a.type(), a.o, b.type(), b.o ) );
+             = 0;
+        }
+        break;
+
+        case and~: if( a.is_numeric() && b.is_numeric() ) { result.from_bl( a.to_bl() && b.to_bl() ); = 0; } break;
+        case or~:  if( a.is_numeric() && b.is_numeric() ) { result.from_bl( a.to_bl() || b.to_bl() ); = 0; } break;
+
+        case shift_left~:
+        {
+            if( a.type() == ::net_node_s~ )
+            {
+                m ::net_node_s* node = a.o.cast( m ::net_node_s* ).clone()^;
+                node.push_branch( 0, false, o.source_point, b.cast( m$* ) );
+                result.asc( node.fork() );
+                = 0;
+            }
+        }
+        break;
+
+        default: break;
+    }
+
+    success.0 = false;
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bop_s) solve
+{
+    // exportable operations
+    o.solve_exportable_a_b( o.a, o.b, result, success );
+    if( success.0 ) = 0;
+
+    success.0 = true;
+
+    // residual (not exportable) operations
+    switch( o.type )
+    {
+        case mul~:
+        {
+            if( o.a.type() == ::function_s~ )
+            {
+                m ::function_s* f = o.a.o.cast( m ::function_s* ).fork()^;
+                m $* arg_list = bcore_arr_sr_s!^;
+                arg_list.push_sr( sr_null() ).fork_from( o.b );
+                f.call( o.source_point, frame, arg_list, result );
+                = 0;
+            }
+        }
+        break;
+
+        case spawn~:
+        {
             if( o.a.is_numeric() )
             {
-                m :list_s* list = :list_s!^;
+                m ::list_s* list = ::list_s!^;
                 list.arr.set_size( o.a.to_s3() );
-                if( o.b.type() == :function_s~ )
+                if( o.b.type() == ::function_s~ )
                 {
-                    m :frame_s* local_frame = :frame_s!^.setup( frame );
-                    :function_s* function = o.b.o.cast( :function_s* );
+                    m ::frame_s* local_frame = ::frame_s!^.setup( frame );
+                    ::function_s* function = o.b.o.cast( ::function_s* );
                     if( function.args() != 1 ) = o.source_point.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Right operand must be unary (single argument).\n", bnameof( o.a.type() ), bnameof( o.b.type() ) );
                     tp_t arg_name = function.arg_name( 0 );
                     for( sz_t i = 0; i < list.arr.size; i++ )
@@ -346,31 +523,22 @@ func (:export_bop_s) get_reduced_sr
                         local_frame.var_set( arg_name, sr_s3( i ) );
                         function.block.eval( local_frame, list.arr.[ i ] );
                     }
+                    result.asc( list.fork() );
+                    = 0;
                 }
-                else
-                {
-                    for( sz_t i = 0; i < list.arr.size; i++ )
-                    {
-                        list.arr.[ i ].tsc( o.b.type(), x_inst_t_clone( o.b.o, o.b.type() ) );
-                    }
-                }
-
-                result.asc( list.fork() );
-
-                = 0;
             }
-            else if( o.a.type() == :list_s~ )
+            else if( o.a.type() == ::list_s~ )
             {
-                :list_s* list_a = o.a.o.cast( :list_s* );
+                ::list_s* list_a = o.a.o.cast( ::list_s* );
 
-                if( o.b.type() == :function_s~ )
+                if( o.b.type() == ::function_s~ )
                 {
-                    m :frame_s* local_frame = :frame_s!^.setup( frame );
-                    :function_s* function = o.b.o.cast( :function_s* );
+                    m ::frame_s* local_frame = ::frame_s!^.setup( frame );
+                    ::function_s* function = o.b.o.cast( ::function_s* );
 
                     if( function.args() == 1 )
                     {
-                        m :list_s* list = :list_s!^;
+                        m ::list_s* list = ::list_s!^;
                         list.set_size( list_a.size() );
                         tp_t arg_name = function.arg_name( 0 );
                         for( sz_t i = 0; i < list.arr.size; i++ )
@@ -411,32 +579,14 @@ func (:export_bop_s) get_reduced_sr
         }
         break;
 
-        case cat~:            = frame.bop_cat_ab( o.a, o.b, result );
-        case equal~:         result.from_bl( 0 == x_compare_t_num_dominant( o.a.type(), o.a.o, o.b.type(), o.b.o ) ); = 0;
-        case unequal~:       result.from_bl( 0 != x_compare_t_num_dominant( o.a.type(), o.a.o, o.b.type(), o.b.o ) ); = 0;
-        case larger_equal~:  result.from_bl( 0 >= x_compare_t_num_dominant( o.a.type(), o.a.o, o.b.type(), o.b.o ) ); = 0;
-        case larger~:        result.from_bl( 0 >  x_compare_t_num_dominant( o.a.type(), o.a.o, o.b.type(), o.b.o ) ); = 0;
-        case smaller_equal~: result.from_bl( 0 <= x_compare_t_num_dominant( o.a.type(), o.a.o, o.b.type(), o.b.o ) ); = 0;
-        case smaller~:       result.from_bl( 0 <  x_compare_t_num_dominant( o.a.type(), o.a.o, o.b.type(), o.b.o ) ); = 0;
-
-        case and~: if( o.a.is_numeric() && o.b.is_numeric() ) { result.from_bl( o.a.to_bl() && o.b.to_bl() ); = 0; } break;
-        case or~:  if( o.a.is_numeric() && o.b.is_numeric() ) { result.from_bl( o.a.to_bl() || o.b.to_bl() ); = 0; } break;
-
         case shift_left~:
         {
-            if( o.a.type() == :function_s~ )
+            if( o.a.type() == ::function_s~ )
             {
-                m :function_s* f = o.a.o.cast( m :function_s* ).fork()^;
+                m ::function_s* f = o.a.o.cast( m ::function_s* ).fork()^;
                 m $* arg_list = bcore_arr_sr_s!^;
                 arg_list.push_sr( sr_null() ).fork_from( o.b );
                 f.call( o.source_point, frame, arg_list, result );
-                = 0;
-            }
-            else if( o.a.type() == :net_node_s~ )
-            {
-                m :net_node_s* node = o.a.o.cast( m :net_node_s* ).clone()^;
-                node.push_branch( 0, false, o.source_point, o.b );
-                result.asc( node.fork() );
                 = 0;
             }
         }
@@ -445,10 +595,57 @@ func (:export_bop_s) get_reduced_sr
         default: break;
     }
 
+    if( :sr_is_exportable_operand( o.a ) )
+    {
+        if( :sr_is_exportable_operand( o.b ) ) { result.asc( o.fork() ); = 0; }
+        if( o.b.is_numeric()                                                          ) { result.asc( o.fork() ); = 0; }
+    }
+
+    if( :sr_is_exportable_operand( o.b ) )
+    {
+        if( o.b.is_numeric() ) { result.asc( o.fork() ); = 0; }
+    }
+
     success.0 = false;
     = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:bop_s) execute
+{
+    sr_s* a = NULL;
+    sr_s* b = NULL;
+    if( :sr_is_operator( o.a ) )
+    {
+        m sr_s* r = sr_s!^^;
+        o.a.o.cast( :* ).execute( r );
+        a = r;
+    }
+    else
+    {
+        a = o.a.1;
+    }
+
+    if( :sr_is_operator( o.b ) )
+    {
+        m sr_s* r = sr_s!^^;
+        o.b.o.cast( :* ).execute( r );
+        b = r;
+    }
+    else
+    {
+        b = o.b.1;
+    }
+
+    bl_t success = false;
+    o.solve_exportable_a_b( a, b, result, success );
+    if( success ) = 0;
+
+    = o.source_point.parse_error_fa( "Operator #<sc_t> #<sc_t> #<sc_t> is not executable.\n", bnameof( a.type() ), ::operator_symbol( o.type ), bnameof( b.type() ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+

@@ -60,7 +60,8 @@ func bl_t exists( tp_t type ) = bcore_flect_exists( type );
 /**********************************************************************************************************************/
 /// create/copy/clone/discard
 
-//  func d obliv x_inst* t_create( tp_t type ) = bcore_inst_t_create( type ) // this is already a default function for groups, hence commented out
+// t_create below behaves as shown but is defined elsewhere; hence commented out here to avoid xoico compiler errors
+//  func d obliv x_inst* t_create( tp_t type ) = bcore_inst_t_create( type )
     func d aware x_inst*   create( tp_t type ); // only for aware types (checked at runtime)
 
 func o t_copy( m obliv @* o, tp_t t, c@* src ) bcore_inst_t_copy( t, o.cast( m bcore_inst* ), src );

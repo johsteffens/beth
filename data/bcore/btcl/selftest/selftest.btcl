@@ -80,12 +80,12 @@ err = err + !test( "func args list", f_head *. [1,2] == 3 );
 // ---------------------------------------------------------------------------------------------------------------------
 /// stamps, members, type conversion
 
-s = <bmath_mfx_eval_s> rows: 10 cols: 20 </>;
-err = err + !test( "member query", s.rows == 10 && s.cols == 20 );
+s = <bcore_hnode_tpuz_s> key: 10 val: 20 </>;
+err = err + !test( "member query", s.key == 10 && s.val == 20 );
 
 // modifier
-s = s( .rows = 30, .cols = 40 );
-err = err + !test( "member query", s.rows == 30 && s.cols == 40 );
+s = s( .key= 30, .val = 40 );
+err = err + !test( "member query", s.key == 30 && s.val == 40 );
 
 // type conversion float -> bool
 err = err + !test( "conversion", <bl_t/>( 0.5 ) == TRUE );
@@ -139,15 +139,20 @@ err = err + !test( "list unfold transform", func(a,b){a*b}*.:([1,2]*[4,5]) == [4
 err = err + !test( "spawned recursion", ["a","b","c","d"] :: func(a,b) { a + b } == "abcd" );
 
 // ---------------------------------------------------------------------------------------------------------------------
+/// functor
+
+fo = <x_btcl_functor_s/>( func( a, b ){ a - b } );
+err = err + !test( "functor", fo.call( 2, 3 ) == -1 );
+
+// ---------------------------------------------------------------------------------------------------------------------
 /// network
 
-net_node = &sine( .frq = 1000 );
-net_rack = &:xyz( .lfo = net_node( .frq = 234 )( .frq2 = 123 ), 456, 889 );
-net_wire = &-xyz.lfo;
+net_node = @sine( .frq = 1000 );
+net_rack = @:xyz( .lfo = net_node( .frq = 234 )( .frq2 = 123 ), 456, 889 );
+net_wire = @~xyz.lfo;
 err = err + !test( "net_node", net_node.frq == 1000 );
 err = err + !test( "net_rack", net_rack.lfo.frq == 234 );
 net_rack << net_node;
-? net_rack;
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// bug fixes
@@ -155,7 +160,7 @@ net_rack << net_node;
 f = func(){y=10}; // assignment result was not cloned when frame was closed (buggy code returned 0)
 err = err + !test( "bug: assignment lifetime", f() == 10 );
 
-? if( err > 0 ) { "BTCL: Selftest failed.\n" } else { "BTCL: Selftest finished successfully.\n" };
+PRINT( if( err > 0 ) { "BTCL: Selftest failed.\n" } else { "BTCL: Selftest finished successfully.\n" } );
 
 err
 

@@ -1,5 +1,5 @@
 # Network Builder
-The network builder is btcl sub-system allowing to construct a network or graph composed of nodes en edges. 
+The network builder allows constructing a network or graph composed of nodes en edges. 
 
 ## Usage
 The graph is intended as meta structure use by an external builder to general the final object, process or program. How exactly the graph is interpreted is up to that builder.
@@ -12,7 +12,7 @@ The principal structure of the graph is a tree consisting of nodes and branches.
 A generic tree-node carries a name and maintains a list of named branches. Names can also be empty, in which case the branch is considered anonymous. 
 
 ### Wires
-Additional connections between nodes can be made though wires. Wires can represent edges outside a valid tree structure, thus exteneding the tree to a general purpose graph.
+Additional connections between nodes can be made though wires. Wires can represent edges outside a valid tree structure, thus extending the tree to a general purpose graph.
 
 ### Leafs
 A leaf is a node with no further branches. Any beth-object can be a leaf node. The external builder may impose additional restrictions.
@@ -21,13 +21,13 @@ A leaf is a node with no further branches. Any beth-object can be a leaf node. T
 
 |Syntax|Description|btcl object|
 |:---|:---|:---|
-|```&<name>```|Generic node|```x_btcl_net_node```|
-|```&:<name>```|Rack|```x_btcl_net_node```|
-|```&-<name>```|Wire (<name> is the name of the associated rack)|```x_btcl_net_wire```|
+|```@<name>```|Generic node|```x_btcl_net_node```|
+|```@:<name>```|Rack|```x_btcl_net_node```|
+|```@~<name>```|Wire to rack of ```<name>```|```x_btcl_net_node```|
 
 ### Using operators on nodes
 
-BCTL applies the generic operator object (```x_btcl_operator```) in case an operator- expression cannot be reduced immediately.
+BCTL exports operators on nodes. 
 
 The external builder should treat operators as nodes with one or more anonymous branches according to the operator's arity.
 
@@ -38,8 +38,8 @@ a = 1;
 b = 2;
 c = a + b; // c is immediately reduced to 3
 
-a = &sine;
-b = &triangle;
+a = @sine;
+b = @triangle;
 c = a + b; // c is the btcl operator'plus' with anonymous braches 'a' and 'b';
 
 ```
@@ -58,7 +58,7 @@ A rack is a specialized node to which wires can connect.
 
 A rack has one main (anonymous) branch and optional named branches.
 
-Only wires in the main branch can connect to the rack.
+Only wires in one of the rack's branches can connect to the rack.
 
 Multiple racks of the same name are allowed in the tree.
 
@@ -96,16 +96,16 @@ Anonymous branches are assigned like arguments to a function.
 **Example:**
 
 ```C
-lfo = &sine( .frq = 1 );
-mynode1 = &sine( .frq = 1000, .length = 10 );
-mynode2 = &rect( .frq = 1000, .length = 10 );
+lfo = @sine( .frq = 1 );
+mynode1 = @sine( .frq = 1000, .length = 10 );
+mynode2 = @rect( .frq = 1000, .length = 10 );
 mynode3 = mynode1 + mynode2;
 
 // setup a filter node with main (anonymous) branch 'mynode3'
-&filter_biquad( .type = "lp" .frq = 2000 + lfo * 1000, mynode3 );
+@filter_biquad( .type = "lp" .frq = 2000 + lfo * 1000, mynode3 );
 
 // also possible
-&filter_biquad( .type = "lp" .frq = 2000 + lfo * 1000 ) << mynode3;
+@filter_biquad( .type = "lp" .frq = 2000 + lfo * 1000 ) << mynode3;
 ```
 
 ### Wiring
@@ -114,14 +114,14 @@ Rack and wires are named by the rack name. In case of wiring to a named branch, 
 **Example: (wiring to main rack branch)**
 
 ```C
-simple_loop = &:rk( &sine( .frq = 1000 ) - &-rk );
+simple_loop = @:rk( @sine( .frq = 1000 ) - @~rk );
 ```
 
 **Example: (wiring to named rack branch)**
 
 ```C
-lfo = &sine( .frq = 2 );
-vibrato = &:rk( .lfo = lfo, &sine( .frq = 1000 + 100 * &-rk.lfo ) );
+lfo = @sine( .frq = 2 );
+vibrato = @:rk( .lfo = lfo, @sine( .frq = 1000 + 100 * @~rk.lfo ) );
 ```
 
 <sub>&copy; 2024 Johannes B. Steffens</sub>

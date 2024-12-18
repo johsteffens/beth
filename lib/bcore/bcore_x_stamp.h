@@ -40,7 +40,7 @@ func sz_t   size( c aware @* o ) = bcore_via_a_get_size( o.cast( c bcore_via* ) 
 func sz_t t_size( tp_t t ) = bcore_via_t_get_size( t, NULL );
 
 /// checks if t is a leaf-type (note that leaf types are not self-aware)
-func bl_t   is_leaf( c aware @* o ) = bcore_via_a_is_leaf( o );
+//func bl_t   is_leaf( c aware @* o ) = bcore_via_a_is_leaf( o );
 func bl_t t_is_leaf( tp_t t ) = bcore_via_t_is_leaf( t, NULL );
 
 /// checks if object is aware

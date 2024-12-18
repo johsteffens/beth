@@ -211,14 +211,6 @@ stamp :context_s
     bcore_hmap_name_s hmap_reserved_func;
     bcore_hmap_name_s hmap_reserved_const;
 
-    /** Map of constructible operators.
-     *  Purpose:
-     *  Reducible operators are immediately reduced by the interpreter.
-     *  Irreducible but constructible operators are allowed to become part of the construction.
-     *  Irreducible but not constructible operators are treated as error by the interpreter.
-     */
-    bcore_hmap_tp_s constructible_operator;
-
     func o setup( m@* o )
     {
         o.set_reserved_keys();
@@ -266,10 +258,6 @@ stamp :context_s
         if( o.is_reserved( name ) ) = source.parse_error_fa( "#<sc_t> is a reserved keyword or function.\n", o.sc_reserved( name ) );
         = 0;
     }
-
-    func bl_t is_exportable( @* o, bl_t type ) = o.constructible_operator.exists( type );
-
-    func o set_constructible( m@* o, bl_t type ) o.constructible_operator.set( type );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -303,7 +291,6 @@ stamp :frame_s
     func bl_t is_reserved( @* o, tp_t name ) = o.context.is_reserved( name );
     func sc_t sc_reserved( @* o, tp_t name ) = o.context.sc_reserved( name );
     func er_t check_reserved( @* o, tp_t name, m x_source* source ) = o.context.check_reserved( name, source );
-
 
     /// if parent is NULL, this frame is the root frame
     func o setup_as_root( m@* o, m :context_s* context )
@@ -369,7 +356,24 @@ stamp :frame_s
          = o.var_map.set( name, sr );
     }
 
-    func bl_t is_exportable( @* o, bl_t type ) = o.context.is_exportable( type );
+    // copies sb into sr by first trying type conversion then using generic conversions
+    func er_t generic_copy( m@* o, x_source_point_s* sp, m sr_s* sr, c sr_s* sb )
+    {
+        /// convert functions into functor
+        if( sb.type() == :function_s~ )
+        {
+            m$* function = sb.o.cast( m :function_s* );
+            m$* functor = :functor_s!^;
+            functor.setup( sp, function, o );
+            sr_s functor_sr = sr_awc( functor );
+            :generic_copy( sr, functor_sr );
+        }
+        else
+        {
+            :generic_copy( sr, sb );
+        }
+        = 0;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -393,7 +397,7 @@ stamp :null_member_s
         o.tp_name = tp_name;
     }
 
-    func sr_s set_sr( m@* o, m sr_s* src )
+    func sr_s set_sr( m@* o, m :frame_s* frame, x_source_point_s* sp, m sr_s* src )
     {
         uz_t index = x_stamp_t_index( o.base.o_type(), o.tp_name );
 
@@ -401,7 +405,7 @@ stamp :null_member_s
         {
             tp_t dst_type = x_stamp_t_type_i( o.base.o, o.base.o_type(), index );
             sr_s sr = sr_tsm( dst_type, x_inst_create( dst_type ) );
-            :generic_copy( sr, src );
+            frame.generic_copy( sp, sr, src );
             x_stamp_t_set_sr( o.base.o, o.base.o_type(), o.tp_name, sr );
         }
         else
@@ -427,13 +431,13 @@ stamp :null_arr_element_s
         o.index = index;
     }
 
-    func sr_s set_sr( m@* o, m sr_s* src )
+    func sr_s set_sr( m@* o, m :frame_s* frame, x_source_point_s* sp, m sr_s* src )
     {
         if( x_array_t_is_static( o.base.o_type() ) && src.o )
         {
             tp_t dst_type = x_array_t_get_static_type( o.base.o_type() );
             sr_s sr = sr_tsm( dst_type, x_inst_create( dst_type ) );
-            :generic_copy( sr, src );
+            frame.generic_copy( sp, sr, src );
             x_array_t_set_sr( o.base.o.cast( m x_stamp* ), o.base.o_type(), o.index, sr );
         }
         else
@@ -701,12 +705,12 @@ func (:function_s) er_t setup_frame( m@* o, m :frame_s* lexical_frame, m x_sourc
 //----------------------------------------------------------------------------------------------------------------------
 
 /// executes function in frame (variables are set in frame) from a list of arguments
-func (:function_s) er_t call( m@* o, m x_source_point_s* source_point, m :frame_s* lexical_frame, m bcore_arr_sr_s* arg_list, m sr_s* sr )
+func (:function_s) er_t call( m@* o, m x_source_point_s* source_point, m :frame_s* lexical_frame, m bcore_arr_sr_s* arg_list, m sr_s* result )
 {
     :signature_s* signature = o.signature;
     if( arg_list.size < signature.arg_list.size )
     {
-        sr.asm( :function_s!.setup_wrapped_function( o, arg_list) );
+        result.asm( :function_s!.setup_wrapped_function( o, arg_list) );
         = 0;
     }
     else
@@ -716,20 +720,20 @@ func (:function_s) er_t call( m@* o, m x_source_point_s* source_point, m :frame_
             m$* frame = :frame_s!^;
             o.setup_frame( lexical_frame, source_point, frame );
             for( sz_t i = 0; i < signature.arg_list.size; i++ ) frame.var_set( signature.arg_list.[ i ], sr_null() ).fork_from( arg_list.[ i ] );
-            sr.clear();
-            o.block.eval( frame, sr );
-            :clone_if_weak( sr );
+            result.clear();
+            o.block.eval( frame, result );
+            :clone_if_weak( result );
         }
         else if( o.external_function )
         {
-            o.external_function.execute( source_point, arg_list, sr );
+            o.external_function.execute( source_point, arg_list, result );
         }
         else if( o.wrapped_function )
         {
             m $* full_arg_list = bcore_arr_sr_s!^;
             for( sz_t i = 0; i < o.wrapped_arg_list.size; i++ ) full_arg_list.push_sr( sr_null() ).fork_from( o.wrapped_arg_list.[ i ] );
             for( sz_t i = 0; i < arg_list.size          ; i++ ) full_arg_list.push_sr( sr_null() ).fork_from(           arg_list.[ i ] );
-            o.wrapped_function.call( source_point, lexical_frame, full_arg_list, sr );
+            o.wrapped_function.call( source_point, lexical_frame, full_arg_list, result );
         }
         else
         {
@@ -739,7 +743,7 @@ func (:function_s) er_t call( m@* o, m x_source_point_s* source_point, m :frame_
         // chain of functions ...
         if( o.tail )
         {
-            o.tail.call_unary( source_point, lexical_frame, sr, sr );
+            o.tail.call_unary( source_point, lexical_frame, result, result );
         }
         = 0;
     }
@@ -747,20 +751,20 @@ func (:function_s) er_t call( m@* o, m x_source_point_s* source_point, m :frame_
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:function_s) er_t call_unary( m@* o, m x_source_point_s* source_point, m :frame_s* lexical_frame, m sr_s* s_arg, m sr_s* sr )
+func (:function_s) er_t call_unary( m@* o, m x_source_point_s* source_point, m :frame_s* lexical_frame, m sr_s* s_arg, m sr_s* result )
 {
     m $* arg_list = bcore_arr_sr_s!^;
     arg_list.push_sr( sr_null() ).fork_from( s_arg );
-    = o.call( source_point, lexical_frame, arg_list, sr );
+    = o.call( source_point, lexical_frame, arg_list, result );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:function_s) er_t call_via_arg_list( m@* o, m x_source_point_s* source_point, m :frame_s* lexical_frame, m :list_s* arg_list1, m sr_s* sr )
+func (:function_s) er_t call_via_arg_list( m@* o, m x_source_point_s* source_point, m :frame_s* lexical_frame, m :list_s* arg_list1, m sr_s* result )
 {
     m $* arg_list = bcore_arr_sr_s!^.set_size( arg_list1.size() );
     for( sz_t i = 0; i < arg_list.size; i++ ) arg_list.[ i ].fork_from( arg_list1.arr.[ i ] );
-    = o.call( source_point, lexical_frame, arg_list, sr );
+    = o.call( source_point, lexical_frame, arg_list, result );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -968,16 +972,9 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
     ASSERT( obj.o == NULL );
 
     /// prefix operators
-    if     ( source.parse_bl( " #?'+'" ) ) o.eval_export_uop_type( identity~, :priority_c(), source, obj );
-    else if( source.parse_bl( " #?'-'" ) ) o.eval_export_uop_type( neg~,      :priority_c(), source, obj );
-    else if( source.parse_bl( " #?'!'" ) ) o.eval_export_uop_type( not~,      :priority_c(), source, obj );
-    else if( source.parse_bl( " #?'?'" ) )
-    {
-        bl_t detail = source.parse_bl( " #?'?'" );
-        o.eval( :priority_c(), source, obj );
-        o.to_sink( detail, obj, x_sink_stdout() );
-        x_sink_stdout().flush();
-    }
+    if     ( source.parse_bl( " #?'+'" ) ) :export_eval_uop_type( o, identity~, :priority_c(), source, obj );
+    else if( source.parse_bl( " #?'-'" ) ) :export_eval_uop_type( o, neg~,      :priority_c(), source, obj );
+    else if( source.parse_bl( " #?'!'" ) ) :export_eval_uop_type( o, not~,      :priority_c(), source, obj );
 
     /// number literal
     else if( source.parse_bl( " #?([0]>='0'&&[0]<='9')" ) )
@@ -1161,11 +1158,11 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
         obj.asm( block.fork() );
     }
 
-    /// Network object
-    else if( source.parse_bl( " #?'&'" ) )
+    /// Exportable object
+    else if( source.parse_bl( " #?'@'" ) )
     {
         x_source_point_s* sp = x_source_point_s!^.setup_from_source( source );
-        if( source.parse_bl( " #?'-'" ) ) // wire
+        if( source.parse_bl( " #?'~'" ) ) // wire
         {
             if( !:is_identifier( source ) ) = source.parse_error_fa( "Rack identifier expected.\n" );
             tp_t rack_name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
@@ -1180,20 +1177,19 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
         else
         {
             tp_t node_type = 0; // generic
-            if( source.parse_bl( " #?':'" ) ) node_type = rack~;
+            if     ( source.parse_bl( " #?':'" ) ) node_type = rack~;
             if( !:is_identifier( source ) ) = source.parse_error_fa( "Identifier expected.\n" );
             tp_t node_name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
             obj.asm( :net_node_s!.setup( node_type, node_name, sp ) );
         }
     }
-
     else
     {
         = source.parse_error_fa( "Expression does not evaluate to an object.\n" );
     }
 
-    // binary operators if any
-    o.eval_bop( exit_priority, source, obj );
+    // operators (if any)
+    o.eval_op( exit_priority, source, obj );
 
     = 0;
 }
@@ -1206,7 +1202,7 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
  *  In case of error obj need not be discarded
  *  if default_obj is defined, obj copies from default_obj before parsing the body
  */
-func (:frame_s) er_t parse_create_object( m@* o, m x_source* source, m sr_s* obj )
+func (:frame_s) er_t parse_create_final_object( m@* o, m x_source* source, m sr_s* obj )
 {
     m$* sr = sr_s!^;
     o.eval( 0, source, sr );
@@ -1215,6 +1211,14 @@ func (:frame_s) er_t parse_create_object( m@* o, m x_source* source, m sr_s* obj
     {
         if( sr.o )
         {
+            /// convert function into functor
+            if( sr.type() == :function_s~ )
+            {
+                m$* functor = :functor_s!^;
+                functor.setup( x_source_point_s!^.setup_from_source( source ), sr.o.cast( m :function_s* ), o );
+                sr.asm( functor.fork() );
+            }
+
             if( sr.is_strong() )
             {
                 obj.fork_from( sr );
@@ -1241,8 +1245,21 @@ func (:frame_s) er_t parse_create_object( m@* o, m x_source* source, m sr_s* obj
 func parse_create_object
 {
     m$* frame = :frame_s!^.setup_as_root( NULL );
-    = frame.parse_create_object( source, obj );
+    = frame.parse_create_final_object( source, obj );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+embed "bcore_x_btcl_builtin.x";
+embed "bcore_x_btcl_op.x";
+
+group :export  { embed "bcore_x_btcl_export.x";  }
+group :net     { embed "bcore_x_btcl_net.x";     }
+group :functor { embed "bcore_x_btcl_functor.x"; }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -1263,9 +1280,4 @@ func void selftest( sc_t file )
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
-
-embed "bcore_x_btcl_builtin.x";
-embed "bcore_x_btcl_bop.x";
-embed "bcore_x_btcl_export.x";
-embed "bcore_x_btcl_net.x";
 

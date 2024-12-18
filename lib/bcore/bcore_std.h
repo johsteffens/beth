@@ -41,7 +41,6 @@
 #include "bcore_x_btml.h"
 #include "bcore_x_bbml.h"
 #include "bcore_x_bcml.h"
-#include "bcore_x_btcl.h"
 #include "bcore_signal.h"
 #include "bcore_life.h"
 #include "bcore_sinks.h"
@@ -78,5 +77,7 @@
 #include "bcore_x_hmap.h"
 #include "bcore_x_deque.h"
 #include "bcore_x_compare.h"
+
+#include "bcore_x_btcl.h"
 
 #endif // BCORE_STD_H

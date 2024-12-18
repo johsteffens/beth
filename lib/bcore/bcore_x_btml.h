@@ -256,7 +256,7 @@ func t_appears_valid
 /** On entering, obj should be sr_null
  *  In case of error obj need not be discarded
  *  if default_obj is defined, obj copies from default_obj before parsing the body
- *  default_tp != 0 takes the place of an empty type specifier (syntax: <>)
+ *  default_tp != 0 takes the place of an empty type specifier (syntax: <> ... </>)
  */
 func er_t parse_create_object( m x_source* source, sr_s* default_obj, tp_t default_tp, m sr_s* obj )
 {
@@ -275,12 +275,9 @@ func er_t parse_create_object( m x_source* source, sr_s* default_obj, tp_t defau
             compact = true;
         }
 
-        if( type_string.size == 1 && type_string.[ 0 ] =='*' )
+        if( type_string.size == 0 && !source.parse_bl( " #=?'</>'" ) )
         {
-            if( default_tp == 0 )
-            {
-                = source.parse_error_fa( "Context does not provide an inheritable type." );
-            }
+            if( default_tp == 0 ) = source.parse_error_fa( "Context does not provide an inheritable type." );
             type = default_tp;
         }
         else

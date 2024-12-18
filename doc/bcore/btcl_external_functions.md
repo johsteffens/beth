@@ -34,7 +34,7 @@ stamp my_stamp
     {
          switch( name )
          {
-             case add_a~: sr.from_f3( args.[0].to_f3() + o.addditive ); break;
+             case add_a~: result.from_f3( args.[0].to_f3() + o.addditive ); break;
              default: break; // never reached
          }
          = 0;
