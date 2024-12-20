@@ -128,10 +128,57 @@ identifier u1_max, u1_min, u1_t_swap;
 identifier f3_max, f3_min, f3_t_swap, f3_sig, f3_abs, f3_sqr, f3_srt, f3_inv, f3_rs2, f3_rs3;
 identifier f2_max, f2_min, f2_t_swap, f2_sig, f2_abs, f2_sqr, f2_srt, f2_inv, f2_rs2, f2_rs3;
 
+
+identifier sin, cos, tan, tanh, pow, lrint, atan2, frexp;
+
+identifier f3_pi;
+identifier f3_pi_2; // PI / 2
+identifier f3_tau;  // 2 * PI
+identifier f3_srt2; // squareroot( 2 )
+identifier f3_is_nan; // nan compares unequal to itself
+identifier f3_exp;
+identifier f3_log;
+identifier f3_log2;
+identifier f3_log10;
+identifier f3_pow;
+identifier f3_erf;
+identifier f3_sin;
+identifier f3_cos;
+identifier f3_tan;
+identifier f3_tanh;
+identifier f3_ferm; // fermi function (2ferm(2x)-1 == tanh(x))
+identifier f3_sign; // sign function
+identifier f3_ustp; // unit step function (heavyside function)
+identifier f3_sqrt;
+identifier f3_ceil;
+identifier f3_floor;
+
 identifier f3_lim_min; // minimum normalized representable positive number
 identifier f3_lim_max; // maximum normalized representable positive number
 identifier f3_lim_eps; // minimum representable positive difference to 1.0
 identifier f3_lim_inf; // floating point representation of infinity
+
+identifier f2_pi;
+identifier f2_pi_2; // PI / 2
+identifier f2_tau; // 2 * PI
+identifier f2_srt2; // squareroot( 2 )
+identifier f2_is_nan; // nan compares unequal to itself
+identifier f2_exp;
+identifier f2_log;
+identifier f2_log2;
+identifier f2_log10;
+identifier f2_pow;
+identifier f2_erf;
+identifier f2_sin;
+identifier f2_cos;
+identifier f2_tan;
+identifier f2_tanh;
+identifier f2_ferm; // fermi function (2ferm(2x)-1 == tanh(x))
+identifier f2_sign; // sign function
+identifier f2_ustp; // unit step function (heavyside function)
+identifier f2_sqrt;
+identifier f2_ceil;
+identifier f2_floor;
 
 identifier f2_lim_min; // minimum normalized representable positive number
 identifier f2_lim_max; // maximum normalized representable positive number

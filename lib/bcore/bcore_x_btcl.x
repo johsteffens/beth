@@ -23,8 +23,11 @@
 // Group A, binary
 name member, frame;
 
+// builtin functions
+name exp, log, log2, log10, sin, cos, tan, tanh, sign, sqrt, abs, ceil, floor, size;
+
 // Group B, unary
-name identity, neg, not, print_compact, print_detailed;
+name identity, neg, not, print, printx;
 
 // Group C, unary
 name pow, div, mod, chain, mul_dot_colon, mul_dot, mul_colon;
@@ -46,12 +49,28 @@ func sc_t operator_symbol( tp_t type )
         case member~: = ".";
         case frame~:  = "(";
 
+        // builtin functions
+        case exp~:    = "EXP";
+        case log~:    = "LOG";
+        case log2~:   = "LOG2";
+        case log10~:  = "LOG10";
+        case sin~:    = "SIN";
+        case cos~:    = "COS";
+        case tan~:    = "TAN";
+        case tanh~:   = "TANH";
+        case sign~:   = "SIGN";
+        case sqrt~:   = "SQRT";
+        case abs~:    = "ABS";
+        case ceil~:   = "CEIL";
+        case floor~:  = "FLOOR";
+        case size~:   = "SIZE";
+        case print~:  = "PRINT";
+        case printx~: = "PRINTX";
+
         // Group B, unary
         case identity~: = "+";
         case neg~:  = "-";
         case not~:  = "!";
-        case print_compact~:  = "?";
-        case print_detailed~:  = "??";
 
         // Group C, unary
         case pow~:           = "^";
@@ -618,9 +637,9 @@ stamp :external_function_s
         o.object =< object.cast( m$* ).fork();
     }
 
-    func er_t execute( m@* o, m x_source_point_s* source_point, bcore_arr_sr_s* args, m sr_s* sr )
+    func er_t execute( m@* o, x_source_point_s* sp, m :frame_s* lexical_frame, bcore_arr_sr_s* args, m sr_s* sr )
     {
-        if( o.object.btcl_function( o.name, args, sr ) ) { = source_point.parse_error_fa( "#<sc_t>", bcore_error_pop_all_to_st( st_s!^ ).sc ); }
+        if( o.object.btcl_function( o.name, sp, lexical_frame, args, sr ) ) { = sp.parse_error_fa( "#<sc_t>", bcore_error_pop_all_to_st( st_s!^ ).sc ); }
         = 0;
     }
 }
@@ -726,7 +745,7 @@ func (:function_s) er_t call( m@* o, m x_source_point_s* source_point, m :frame_
         }
         else if( o.external_function )
         {
-            o.external_function.execute( source_point, arg_list, result );
+            o.external_function.execute( source_point, lexical_frame, arg_list, result );
         }
         else if( o.wrapped_function )
         {
@@ -972,9 +991,9 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
     ASSERT( obj.o == NULL );
 
     /// prefix operators
-    if     ( source.parse_bl( " #?'+'" ) ) :export_eval_uop_type( o, identity~, :priority_c(), source, obj );
-    else if( source.parse_bl( " #?'-'" ) ) :export_eval_uop_type( o, neg~,      :priority_c(), source, obj );
-    else if( source.parse_bl( " #?'!'" ) ) :export_eval_uop_type( o, not~,      :priority_c(), source, obj );
+    if     ( source.parse_bl( " #?'+'" ) ) :export_eval_uop_type( o, identity~, :priority_c(), source, false, obj );
+    else if( source.parse_bl( " #?'-'" ) ) :export_eval_uop_type( o, neg~,      :priority_c(), source, false, obj );
+    else if( source.parse_bl( " #?'!'" ) ) :export_eval_uop_type( o, not~,      :priority_c(), source, false, obj );
 
     /// number literal
     else if( source.parse_bl( " #?([0]>='0'&&[0]<='9')" ) )
@@ -1085,7 +1104,7 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
         else if( o.is_reserved_func( name ) )
         {
             source.parse_fa( " (" );
-            o.eval_reserved_func( name, source, obj );
+            o.eval_reserved_func( name, source, false, obj );
             source.parse_fa( " )" );
         }
         else if( source.parse_bl( " #?([0]=='='&&[1]!='=')" ) ) // identifier with assignment --> variable declaration

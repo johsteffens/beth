@@ -168,7 +168,7 @@ The following tables contain available operators:
 |```<=```|**Logic**: smaller or equal|smaller_equal|yes|
 |```<```|**Logic**: smaller|smaller|yes|
 |```&&```|**Logic**: AND|and|yes|
-|```||```|**Logic**: OR|or|yes|
+|\|\||**Logic**: OR|or|yes|
 |```<<```|**[Function](#function-operators)**: Assigning r-expression as argument|shift_left|yes|
 |```=```|Assignment|assign|no|
 

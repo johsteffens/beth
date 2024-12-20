@@ -216,6 +216,29 @@ stamp :s
         = 0;
     }
 
+    func ::.unary_f3
+    {
+        ASSERT( o.args() == 1 );
+        o.set_arg_f3( 0, x );
+        = o.call_to_f3();
+    }
+
+    func ::.binary_f3
+    {
+        ASSERT( o.args() == 2 );
+        o.set_arg_f3( 0, x );
+        o.set_arg_f3( 1, y );
+        = o.call_to_f3();
+    }
+
+    func ::.ternary_f3
+    {
+        ASSERT( o.args() == 3 );
+        o.set_arg_f3( 0, x );
+        o.set_arg_f3( 1, y );
+        o.set_arg_f3( 2, z );
+        = o.call_to_f3();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

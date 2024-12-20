@@ -2,8 +2,11 @@
 BTCL can access stamp member functions by implementing the features 
 
 ``` C
-feature sz_t btcl_function_arity( @* o, tp_t name ) = -1; // return -1 when function 'name' is not defined
-feature er_t btcl_function(       @* o, tp_t name, bcore_arr_sr_s* args, m sr_s* result ); // must handle all names as indicated by btcl_function_arity
+// return -1 when function 'name' is not defined
+feature sz_t btcl_function_arity( @* o, tp_t name ) = -1;
+
+// must handle all names as indicated by btcl_function_arity; sp and lexical_frame can be ignored
+feature er_t btcl_function( @* o, tp_t name, x_source_point_s* sp, m :frame_s* lexical_frame, bcore_arr_sr_s* args, m sr_s* result );
 ```
 These define a set of functions. Each can be used in btcl like a member function of the stamp that implements the features.
 

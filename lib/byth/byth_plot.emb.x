@@ -180,6 +180,44 @@ func m :engine_s* get_global_engine()
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:frame_s) from_functor_list
+{
+    for( sz_t i = 0; i < samples; i++ )
+    {
+        f3_t x = x1 + ( x2 - x1 ) * ( i.cast( f3_t ) / samples );
+        o.push_x( x );
+    }
+
+    for( sz_t i = 0; i < list.size; i++ )
+    {
+        :functor_s* f = list.[ i ];
+        x_btcl_functor_s* functor = f.functor;
+        if( functor.args() != 1 ) = GERR_fa( "Functor is not unary; args == #<sz_t>", functor.args() );
+
+        m$* data = :data_s!^;
+        if( f.label && f.label.size > 0 )
+        {
+            data.set_label( f.label.sc );
+        }
+        else if( list.size > 1 )
+        {
+            data.set_label( st_s!^.push_fa( "[#<sz_t>]", i ).sc );
+        }
+
+        for( sz_t i = 0; i < samples; i++ )
+        {
+            f3_t x = x1 + ( x2 - x1 ) * ( i.cast( f3_t ) / samples );
+            data.push( functor.unary_f3( x ) );
+        }
+
+        o.push_d( data.fork() );
+    }
+
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:frame_s) show
 {
     byth_plot_get_global_engine().show_frame( o, appearance );
@@ -191,6 +229,80 @@ func (:frame_s) show
 func (:frame_arr_s) show
 {
     byth_plot_get_global_engine().show_frame_arr( o, appearance );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:btcl_function_s) btcl_function
+{
+    switch( name )
+    {
+        case plot~:
+        {
+            result.tsc( args.[ 0 ].type(), args.[ 0 ].o.fork() );
+
+            m$* functor_list = :functor_list_s!^;
+
+            if( args.[ 0 ].type() == x_btcl_functor_s~ )
+            {
+                functor_list.push_btcl( "", args.[ 0 ].o.cast( m x_btcl_functor_s* ) );
+            }
+            else if( args.[ 0 ].type() == x_btcl_function_s~ )
+            {
+                m$* functor = x_btcl_functor_s!^;
+                functor.setup( sp, args.[ 0 ].o.cast( m x_btcl_function_s* ), lexical_frame );
+                functor_list.push_btcl( "", functor );
+            }
+            else if( args.[ 0 ].type() == x_btcl_list_s~ )
+            {
+                x_btcl_list_s* list = args.[ 0 ].o.cast( x_btcl_list_s* );
+                for( sz_t i = 0; i < list.size(); i++ )
+                {
+                    m sr_s* sr = list.arr.[ i ];
+                    m$* functor = x_btcl_functor_s!^;
+                    m$* label = st_s!^;
+                    if     ( sr.type() == x_btcl_functor_s~  ) functor.copy( sr.o.cast( x_btcl_functor_s* ) );
+                    else if( sr.type() == x_btcl_function_s~ ) functor.setup( sp, sr.o.cast( m x_btcl_function_s* ), lexical_frame );
+                    else if( sr.type() == st_s~ ) label.copy( sr.o.cast( st_s* ) );
+                    else if( sr.type() == x_btcl_list_s~ )
+                    {
+                        x_btcl_list_s* list2 = list.arr.[ i ].o.cast( x_btcl_list_s* );
+                        for( sz_t i = 0; i < list2.size(); i++ )
+                        {
+                            m sr_s* sr = list2.arr.[ i ];
+
+                            if     ( sr.type() == x_btcl_functor_s~  ) functor.copy( sr.o.cast( x_btcl_functor_s* ) );
+                            else if( sr.type() == x_btcl_function_s~ ) functor.setup( sp, sr.o.cast( m x_btcl_function_s* ), lexical_frame );
+                            else if( sr.type() == st_s~ ) label.copy( sr.o.cast( st_s* ) );
+                        }
+                    }
+
+                    if( functor.op_tree ) functor_list.push_btcl( label.sc, functor );
+                }
+            }
+            else
+            {
+                = GERR_fa( "Cannot plot '#<sc_t>'.", bnameof( args.[ 0 ].type() ) );
+            }
+
+            if( functor_list.size > 0 )
+            {
+                m$* frame = :frame_s!^;
+                if( o.title ) frame.title =< o.title.clone();
+                frame.from_functor_list( functor_list, o.x1, o.x2, o.samples );
+                frame.show( o.appearance );
+                if( o.wait_for_enter_key ) x_source_stdin().parse_fa( "\n" );
+            }
+        }
+        break;
+
+        default: break; // never reached
+    }
     = 0;
 }
 

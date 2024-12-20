@@ -72,13 +72,30 @@ func d aware @* create_from_st( c st_s* st )  = :create_from_source( x_source_cr
 func d aware @* create_from_sc(   sc_t  sc )  = :create_from_source( x_source_create_from_sc( sc )^ );
 func d aware @* create_from_file( sc_t file ) = :create_from_source( x_source_create_from_file( file )^ );
 
+/** Executes script as standalone.
+ *  Discards returned object.
+ */
+func er_t run_from_source( m x_source* source );
+func er_t run_from_st( c st_s* st )  = :run_from_source( x_source_create_from_st( st )^ );
+func er_t run_from_sc(   sc_t  sc )  = :run_from_source( x_source_create_from_sc( sc )^ );
+func er_t run_from_file( sc_t file ) = :run_from_source( x_source_create_from_file( file )^ );
+
 //----------------------------------------------------------------------------------------------------------------------
 
 /** Implement both features below to define member functions of a stamp which shall be accessible by bctl code.
  *  See :test_stamp_s for an example implementation
  */
-feature sz_t btcl_function_arity( @* o, tp_t name ) = -1; // return -1 when function 'name' is not defined
-feature er_t btcl_function(       @* o, tp_t name, bcore_arr_sr_s* args, m sr_s* result ); // must handle all names as indicated by btcl_function_arity
+
+// return -1 when function 'name' is not defined
+feature sz_t btcl_function_arity( @* o, tp_t name ) = -1;
+
+// must handle all names as indicated by btcl_function_arity; sp and lexical_frame can be ignored
+feature er_t btcl_function( @* o, tp_t name, x_source_point_s* sp, m :frame_s* lexical_frame, bcore_arr_sr_s* args, m sr_s* result );
+
+/// features of functors (overloaded by x_btcl_functor_s)
+feature f3_t unary_f3  ( @* o, f3_t x );
+feature f3_t binary_f3 ( @* o, f3_t x, f3_t y );
+feature f3_t ternary_f3( @* o, f3_t x, f3_t y, f3_t z );
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -157,6 +174,14 @@ func create_from_source
         ASSERT( x_stamp_t_is_aware( t ) );
     }
     = o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func run_from_source
+{
+    if( !source ) = 0;
+    = :parse_create_object( source, sr_s!^ );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

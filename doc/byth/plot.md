@@ -71,6 +71,37 @@ The byth plot runtime manager works in the background.
 
 When a plot request is received, the manager updates a graphical plot window in which all plots are drawn. The plot-window is newly opened upon the first plot request. The window stays open until closed manually or the program ends. When the window it was closed manually, it reopens on new data provided a proper appearance parameter is set.
 
+# BTCL Interface
+The byth plot framework offers a BTCL interface to allow plotting BTCL functions:
+
+* Instantiate ```x_byth_plot_btcl_function_s```; set parameters as desired.
+* Call function ```<x_byth_plot_btcl_function_s/>.plot( ... )```.
+* Possible argument types:
+  * ```x_btcl_function_s```, ```x_btcl_functor_s```: Plots that function.
+  * \[ <function> ,<function> , ... \]: Plots multiple functions.
+  * \[ [<text>,<function>] ,[<text>,<function>] , ... \]: Plots multiple functions with labels
+
+
+
+**Example (BTCL):**
+
+```C
+plotter = <byth_plot_btcl_function_s/>
+(
+    .wait_for_enter_key = true, // halts execution after plotting until enter is pressed
+    .title = "Sigmoid Functions: x/(a+ABS(x))",
+    .x1 = -10,
+    .x2 =  10,
+    .samples = 1000,
+);
+
+plotter.plot( [ 0.25, 0.5, 1, 2, 4 ] :: func( a ) { ( "a="+a ) : func( a, x ){ x/(a+ABS(x)) }( a ) } );
+```
+
+**Result:**
+
+![](../../data/byth/doc/plot_example2.png)
+
 
 ------
 <sub>&copy; 2024 Johannes B. Steffens</sub>

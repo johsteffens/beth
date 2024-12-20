@@ -34,55 +34,6 @@ XOILA_DEFINE_GROUP( bmath_x_root, x_inst )
 
 set inexpandable;
 
-identifier sin;
-identifier cos;
-identifier tan;
-identifier tanh;
-identifier pow;
-identifier lrint;
-identifier atan2;
-identifier frexp;
-
-identifier f3_pi;
-identifier f3_pi_2; // PI / 2
-identifier f3_tau;  // 2 * PI
-identifier f3_srt2; // squareroot( 2 )
-identifier f3_is_nan; // nan compares unequal to itself
-identifier f3_exp;
-identifier f3_log;
-identifier f3_log2;
-identifier f3_log10;
-identifier f3_pow;
-identifier f3_erf;
-identifier f3_sin;
-identifier f3_cos;
-identifier f3_tan;
-identifier f3_tanh;
-identifier f3_ferm; // fermi function (2ferm(2x)-1 == tanh(x))
-identifier f3_sign; // sign function
-identifier f3_ustp; // unit step function (heavyside function)
-identifier f3_sqrt;
-
-identifier f2_pi;
-identifier f2_pi_2; // PI / 2
-identifier f2_tau; // 2 * PI
-identifier f2_srt2; // squareroot( 2 )
-identifier f2_is_nan; // nan compares unequal to itself
-identifier f2_exp;
-identifier f2_log;
-identifier f2_log2;
-identifier f2_log10;
-identifier f2_pow;
-identifier f2_erf;
-identifier f2_sin;
-identifier f2_cos;
-identifier f2_tan;
-identifier f2_tanh;
-identifier f2_ferm; // fermi function (2ferm(2x)-1 == tanh(x))
-identifier f2_sign; // sign function
-identifier f2_ustp; // unit step function (heavyside function)
-identifier f2_sqrt;
-
 //----------------------------------------------------------------------------------------------------------------------
 
 stamp bmath_arr_vf2_s = x_array

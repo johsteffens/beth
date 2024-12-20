@@ -32,7 +32,7 @@ stamp :data_s
 stamp :limit_s
 {
      $ f3_t min = 0;
-     $ f3_t max = 1E38;
+     $ f3_t max = 1E300;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -114,6 +114,31 @@ stamp :appearance_s
 
 //----------------------------------------------------------------------------------------------------------------------
 
+stamp :functor_s
+{
+    st_s => label;
+    x_btcl_functor_s => functor;
+
+    func o setup( m@* o, sc_t label, m x_btcl_functor_s* functor )
+    {
+        if( label ) o.label!.copy_sc( label );
+        o.functor =< functor.fork();
+    }
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+stamp :functor_list_s x_array
+{
+    :functor_s => [];
+    func o push_btcl( m@* o, sc_t label, m x_btcl_functor_s* functor )
+    {
+        o.push().setup( label, functor );
+    }
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /// Single plot. Multiple curves.
 stamp :frame_s x_array
 {
@@ -132,6 +157,16 @@ stamp :frame_s x_array
 
     // pushes x value
     func o push_x( m@* o, f3_t v ) o.x_arr!.push( v );
+
+    /// expects a unary functor
+    func er_t from_functor( m@* o, m :functor_s* functor, f3_t x1, f3_t x2, sz_t samples )
+    {
+         m$* list = :functor_list_s!^;
+         list.push_d( functor.fork() );
+         = o.from_functor_list( list , x1, x2, samples );
+    }
+
+    func er_t from_functor_list( m@* o, m :functor_list_s* list, f3_t x1, f3_t x2, sz_t samples );
 
     // shows plot in a dedicated window; appearance can be NULL
     func er_t show( @* o, const :appearance_s* appearance );
@@ -154,6 +189,42 @@ stamp :frame_arr_s x_array
 
     // shows plots in a dedicated window; appearance can be NULL
     func er_t show( @* o, const :appearance_s* appearance );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// BTCL plotting interface
+
+//----------------------------------------------------------------------------------------------------------------------
+
+name plot;
+stamp :btcl_function_s
+{
+    st_s => title;
+
+    :appearance_s appearance;
+
+    /// number of samples taken
+    sz_t samples = 1000;
+    f3_t x1 = 0;
+    f3_t x2 = 1;
+
+    /// waits for enter key after each plot
+    bl_t wait_for_enter_key = false;
+
+    func x_btcl.btcl_function_arity
+    {
+        switch( name )
+        {
+            case plot~: =  1;
+            default:    = -1;
+        }
+        = -1;
+    }
+
+    func x_btcl.btcl_function;
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------

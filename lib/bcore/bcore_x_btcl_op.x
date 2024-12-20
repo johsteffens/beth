@@ -33,7 +33,7 @@ func (:frame_s) er_t eval_op_member( m@* o, m x_source* source, m sr_s* sr )
         if( o.is_reserved_func( name ) )
         {
             source.parse_fa( " (" );
-            o.eval_reserved_func( name, source, sr );
+            o.eval_reserved_func( name, source, true, sr );
             source.parse_fa( " )" );
         }
         else if( x_stamp_t_exists( sr.o_type(), name ) )
@@ -187,7 +187,7 @@ func (:frame_s) er_t eval_op_modifier( m@* o, m x_source* source, m sr_s* sr )
 
     sr.o.cast( m x_stamp* ).t_mutated( sr.type() );
 
-    if( source.parse_bl( " #?','" ) ) = o.eval_op_modifier( source, sr );
+    if( source.parse_bl( " #?','" ) && !source.parse_bl( " #=?')'" ) ) = o.eval_op_modifier( source, sr );
     = 0;
 }
 

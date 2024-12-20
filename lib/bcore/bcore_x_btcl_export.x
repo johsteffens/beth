@@ -25,7 +25,7 @@
 //name member, frame;
 //
 //// Group B, unary
-//name identity, neg, not, print_compact, print_detailed;
+//name identity, neg, not, print, printx;
 //
 //// Group C, unary
 //name pow, div, mod, chain, mul_dot_colon, mul_dot, mul_colon;
@@ -101,12 +101,7 @@ func (:uop_s) er_t solve_exportable_a( @* o, sr_s* a, m sr_s* result, m bl_t* su
 
     switch( o.type )
     {
-        case identity~:
-        {
-            result.tsc( a.type(), a.o.fork() );
-            = 0;
-        }
-        break;
+        case identity~: result.tsc( a.type(), a.o.fork() ); = 0;
 
         case neg~:
         {
@@ -115,11 +110,34 @@ func (:uop_s) er_t solve_exportable_a( @* o, sr_s* a, m sr_s* result, m bl_t* su
         }
         break;
 
-        case not~:
+        case size~:
         {
-            if( a.is_numeric() ) { result.const_from_bl( !a.to_bl() ); = 0; }
+            if( a.type() == ::list_s~          ) { result.const_from_s3( a.o.cast( ::list_s* ).arr.size ); = 0; }
+            if( x_array_t_is_array( a.type() ) ) { result.const_from_s3( x_array_t_size( a.o, a.type() ) ); = 0; }
         }
         break;
+
+        case not~:   if( a.is_numeric() ) { result.const_from_bl( !a.to_bl() ); = 0; } break;
+        case exp~:   if( a.is_numeric() ) { result.const_from_f3( f3_exp(   a.to_f3() ) ); = 0; } break;
+        case log~:   if( a.is_numeric() ) { result.const_from_f3( f3_log(   a.to_f3() ) ); = 0; } break;
+        case log2~:  if( a.is_numeric() ) { result.const_from_f3( f3_log2(  a.to_f3() ) ); = 0; } break;
+        case log10~: if( a.is_numeric() ) { result.const_from_f3( f3_log10( a.to_f3() ) ); = 0; } break;
+        case sin~:   if( a.is_numeric() ) { result.const_from_f3( f3_sin(   a.to_f3() ) ); = 0; } break;
+        case cos~:   if( a.is_numeric() ) { result.const_from_f3( f3_cos(   a.to_f3() ) ); = 0; } break;
+        case tan~:   if( a.is_numeric() ) { result.const_from_f3( f3_tan(   a.to_f3() ) ); = 0; } break;
+        case tanh~:  if( a.is_numeric() ) { result.const_from_f3( f3_tanh(  a.to_f3() ) ); = 0; } break;
+        case sqrt~:  if( a.is_numeric() ) { result.const_from_f3( f3_sqrt(  a.to_f3() ) ); = 0; } break;
+        case sign~:  if( a.is_numeric() ) { result.const_from_s3( f3_sign(  a.to_f3() ) ); = 0; } break;
+
+        case abs~:
+        {
+            if( a.is_integer() ) { result.const_from_s3( s3_abs( a.to_s3() ) ); = 0; }
+            if( a.is_numeric() ) { result.const_from_f3( f3_abs( a.to_f3() ) ); = 0; }
+        }
+        break;
+
+        case ceil~:  if( a.is_numeric() ) { result.const_from_f3( f3_ceil(  a.to_f3() ) ); = 0; } break;
+        case floor~: if( a.is_numeric() ) { result.const_from_f3( f3_floor( a.to_f3() ) ); = 0; } break;
 
         default: break;
     }
@@ -169,10 +187,22 @@ func (:uop_s) execute
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func er_t eval_uop_type( m ::frame_s * frame, tp_t type, s2_t priority, m x_source* source, m sr_s* result )
+/// postfix: true: result is operand, false: operand has yet to be parsed
+func er_t eval_uop_type( m ::frame_s * frame, tp_t type, s2_t priority, m x_source* source, bl_t postfix, m sr_s* result )
 {
     m$* source_point = x_source_point_s!^( source );
-    sr_s^ sa; frame.eval( priority, source, sa );
+    m sr_s* sa = sr_s!^;
+
+    if( postfix )
+    {
+        sa.0 = result.0;
+        result.0 = sr_null();
+    }
+    else
+    {
+        frame.eval( priority, source, sa );
+    }
+
     m$* uop = :uop_s!^( type, sa, source_point );
     bl_t success = false;
     uop.solve( frame, result, success );
@@ -598,12 +628,12 @@ func (:bop_s) solve
     if( :sr_is_exportable_operand( o.a ) )
     {
         if( :sr_is_exportable_operand( o.b ) ) { result.asc( o.fork() ); = 0; }
-        if( o.b.is_numeric()                                                          ) { result.asc( o.fork() ); = 0; }
+        if( o.b.is_numeric() ) { result.asc( o.fork() ); = 0; }
     }
 
     if( :sr_is_exportable_operand( o.b ) )
     {
-        if( o.b.is_numeric() ) { result.asc( o.fork() ); = 0; }
+        if( o.a.is_numeric() ) { result.asc( o.fork() ); = 0; }
     }
 
     success.0 = false;
