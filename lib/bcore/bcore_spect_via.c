@@ -28,14 +28,22 @@
 /**********************************************************************************************************************/
 // bcore_via_s
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static void bcore_via_s_down( bcore_via_s* o )
 {
     if( o->vitem_arr ) bcore_release( o->vitem_arr );
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
-sr_s bcore_via_default_iget( const bcore_via_s* p, const bcore_via* o, uz_t index         )
+
+//----------------------------------------------------------------------------------------------------------------------
+
+sr_s bcore_via_default_iget( const bcore_via_s* p, const bcore_via* o, uz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
     const bcore_vitem_s* vitem = &p->vitem_arr[ index ];
@@ -86,6 +94,9 @@ sr_s bcore_via_default_iget( const bcore_via_s* p, const bcore_via* o, uz_t inde
     return sr_null();
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------
+
 tp_t bcore_via_default_iget_type( const bcore_via_s* p, const bcore_via* o, uz_t index )
 {
     if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
@@ -105,6 +116,8 @@ tp_t bcore_via_default_iget_type( const bcore_via_s* p, const bcore_via* o, uz_t
     }
     return vitem->type;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_via_default_iset( const bcore_via_s* p, bcore_via* o, uz_t index, sr_s src )
 {
@@ -239,6 +252,8 @@ void bcore_via_default_iset( const bcore_via_s* p, bcore_via* o, uz_t index, sr_
     sr_down( src );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_via_default_iset_s3( const bcore_via_s* p, bcore_via* o, uz_t index, s3_t val ) { bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_s3_t, &val ) ); }
 void bcore_via_default_iset_u3( const bcore_via_s* p, bcore_via* o, uz_t index, u3_t val ) { bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_u3_t, &val ) ); }
 void bcore_via_default_iset_f3( const bcore_via_s* p, bcore_via* o, uz_t index, f3_t val ) { bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_f3_t, &val ) ); }
@@ -247,6 +262,8 @@ void bcore_via_default_iset_uz( const bcore_via_s* p, bcore_via* o, uz_t index, 
 void bcore_via_default_iset_sc( const bcore_via_s* p, bcore_via* o, uz_t index, sc_t val ) { bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_sc_t, &val ) ); }
 void bcore_via_default_iset_bl( const bcore_via_s* p, bcore_via* o, uz_t index, bl_t val ) { bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_bl_t, &val ) ); }
 void bcore_via_default_iset_tp( const bcore_via_s* p, bcore_via* o, uz_t index, tp_t val ) { bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_tp_t, &val ) ); }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 const bcore_array_s* bcore_via_default_iget_array( const bcore_via_s* p, const bcore_via* o, uz_t index )
 {
@@ -262,10 +279,14 @@ const bcore_array_s* bcore_via_default_iget_array( const bcore_via_s* p, const b
     return bcore_array_s_get_typed( vitem->type );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 vc_t bcore_via_default_iget_spect( const bcore_via_s* p, const bcore_via* o, uz_t index, tp_t spect_type )
 {
     return bcore_spect_get_typed( spect_type, bcore_via_default_iget_type( p, o, index ) );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static inline bl_t v_test_idx( const bcore_via_s* p, tp_t name )
 {
@@ -273,11 +294,15 @@ static inline bl_t v_test_idx( const bcore_via_s* p, tp_t name )
     return false;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static inline uz_t vidx( const bcore_via_s* p, tp_t name )
 {
     for( uz_t i = 0; i < p->size; i++ ) if( p->vitem_arr[ i ].name == name ) return i;
     return ( uz_t )-1;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 bl_t                 NPX(default_nexists      )( const NPX(s)* p, const bcore_via* o, tp_t n           ) { return v_test_idx( p, n ); }
 uz_t                 NPX(default_nget_index   )( const NPX(s)* p, const bcore_via* o, tp_t n           ) { return vidx(       p, n ); }
@@ -297,20 +322,28 @@ const NPX(s)*        NPX(default_nget_via     )( const NPX(s)* p, const bcore_vi
 const bcore_array_s* NPX(default_nget_array   )( const NPX(s)* p, const bcore_via* o, tp_t n           ) { return NPX(default_iget_array )( p, o, vidx( p, n )         ); }
 vc_t                 NPX(default_nget_spect   )( const NPX(s)* p, const bcore_via* o, tp_t n, tp_t stp ) { return NPX(default_iget_spect )( p, o, vidx( p, n ), stp    ); }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bl_t bcore_via_default_is_leaf( const bcore_via_s* p, const bcore_via* o )
 {
     return p->is_leaf;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 bl_t bcore_via_default_is_aware( const bcore_via_s* p, const bcore_via* o )
 {
     return p->is_aware;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bl_t bcore_via_default_is_pure_array( const bcore_via_s* p, const bcore_via* o )
 {
     return ( ( p->size == 1 ) && bcore_via_default_iis_array( p, o, 0 ) );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 bl_t bcore_via_default_iis_array( const bcore_via_s* p, const bcore_via* o, uz_t index )
 {
@@ -318,11 +351,15 @@ bl_t bcore_via_default_iis_array( const bcore_via_s* p, const bcore_via* o, uz_t
     return bcore_flect_caps_is_array( p->vitem_arr[ index ].caps );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bl_t bcore_via_default_nis_array( const bcore_via_s* p, const bcore_via* o, tp_t name )
 {
     uz_t index = bcore_via_default_nget_index( p, o, name );
     return bcore_via_default_iis_array( p, o, index );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 bl_t bcore_via_default_iis_static( const bcore_via_s* p, const bcore_via* o, uz_t index )
 {
@@ -346,11 +383,15 @@ bl_t bcore_via_default_iis_static( const bcore_via_s* p, const bcore_via* o, uz_
     return false;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bl_t bcore_via_default_nis_static( const bcore_via_s* p, const bcore_via* o, tp_t name )
 {
     uz_t index = bcore_via_default_nget_index( p, o, name );
     return bcore_via_default_iis_static( p, o, index );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 bl_t bcore_via_default_iis_link( const bcore_via_s* p, const bcore_via* o, uz_t index )
 {
@@ -374,33 +415,47 @@ bl_t bcore_via_default_iis_link( const bcore_via_s* p, const bcore_via* o, uz_t 
     return false;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bl_t bcore_via_default_nis_link( const bcore_via_s* p, const bcore_via* o, tp_t name )
 {
     uz_t index = bcore_via_default_nget_index( p, o, name );
     return bcore_via_default_iis_link( p, o, index );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_via_default_source( const bcore_via_s* p, bcore_via* o, bcore_source* source )
 {
     if( p->via_call_p->source ) p->via_call_p->source( ( bcore_via_call* ) o, source );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void bcore_via_default_mutated( const bcore_via_s* p, bcore_via* o )
 {
     if( p->via_call_p->mutated ) p->via_call_p->mutated( ( bcore_via_call* ) o );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_via_default_shelve( const bcore_via_s* p, bcore_via* o )
 {
     if( p->via_call_p->shelve ) p->via_call_p->shelve( ( bcore_via_call* ) o );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 bl_t bcore_via_default_defines_shelve( const bcore_via_s* p, bcore_via* o )
 {
     return ( p->via_call_p->shelve ) ? true : false;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static bcore_via_s* bcore_via_s_create_from_self( const bcore_self_s* self )
 {
@@ -538,6 +593,8 @@ static bcore_via_s* bcore_via_s_create_from_self( const bcore_self_s* self )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 BCORE_DEFINE_SPECT( bcore_inst, bcore_via )
 "{"
     "bcore_spect_header_s header;"
@@ -552,7 +609,11 @@ BCORE_DEFINE_SPECT( bcore_inst, bcore_via )
     "func bcore_fp:down;"
 "}";
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 sr_s bcore_spect_via_create_zoo( uz_t size )
 {
@@ -608,6 +669,8 @@ sr_s bcore_spect_via_create_zoo( uz_t size )
     return ret;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static st_s* spect_via_selftest( void )
 {
     bcore_life_s* l = bcore_life_s_create();
@@ -654,8 +717,12 @@ static st_s* spect_via_selftest( void )
     return NULL;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 // signal
+
+//----------------------------------------------------------------------------------------------------------------------
 
 BCORE_DEFINE_SPECT_CACHE( bcore_via_s );
 
@@ -684,3 +751,7 @@ vd_t bcore_spect_via_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
