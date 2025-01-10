@@ -125,8 +125,8 @@ identifier u3_max, u3_min, u3_t_swap;
 identifier u2_max, u2_min, u2_t_swap;
 identifier u1_max, u1_min, u1_t_swap;
 
-identifier f3_max, f3_min, f3_t_swap, f3_sig, f3_abs, f3_sqr, f3_srt, f3_inv, f3_rs2, f3_rs3;
-identifier f2_max, f2_min, f2_t_swap, f2_sig, f2_abs, f2_sqr, f2_srt, f2_inv, f2_rs2, f2_rs3;
+identifier f3_ident, f3_neg, f3_max, f3_min, f3_t_swap, f3_sig, f3_abs, f3_sqr, f3_srt, f3_inv, f3_rs2, f3_rs3;
+identifier f2_ident, f2_neg, f2_max, f2_min, f2_t_swap, f2_sig, f2_abs, f2_sqr, f2_srt, f2_inv, f2_rs2, f2_rs3;
 
 
 identifier sin, cos, tan, tanh, pow, lrint, atan2, frexp;

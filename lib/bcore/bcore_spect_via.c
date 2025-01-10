@@ -22,6 +22,7 @@
 #include "bcore_signal.h"
 #include "bcore_signal.h"
 #include "bcore_life.h"
+#include "bcore_error_manager.h"
 
 #define NPX( name ) bcore_via_##name
 
@@ -119,15 +120,23 @@ tp_t bcore_via_default_iget_type( const bcore_via_s* p, const bcore_via* o, uz_t
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_via_default_iset( const bcore_via_s* p, bcore_via* o, uz_t index, sr_s src )
+er_t bcore_via_default_iset( const bcore_via_s* p, bcore_via* o, uz_t index, sr_s src )
 {
-    if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
+    if( index >= p->size )
+    {
+        sr_down( src );
+        return EM_ERR_fa( "index #<uz_t> out of range #<uz_t>", index, p->size );
+    }
+
     const bcore_vitem_s* vitem  = &p->vitem_arr[ index ];
+
     if( vitem->fp_set ) // explicit setter
     {
         vitem->fp_set( o, src );
-        return;
+        return 0;
     }
+
+    er_t err = 0;
     switch( vitem->caps )
     {
         case BCORE_CAPS_SOLID_STATIC:
@@ -140,7 +149,7 @@ void bcore_via_default_iset( const bcore_via_s* p, bcore_via* o, uz_t index, sr_
             }
             else
             {
-                bcore_inst_p_copy_typed( inst_p, dst, sr_s_type( &src ), src.o );
+                err = bcore_inst_p_copy_typed( inst_p, dst, sr_s_type( &src ), src.o );
             }
         }
         break;
@@ -211,7 +220,7 @@ void bcore_via_default_iset( const bcore_via_s* p, bcore_via* o, uz_t index, sr_
                     }
                     else
                     {
-                        ERR( "Cannot convert '%s' to self-aware object", ifnameof( sr_s_type( &src ) ) );
+                        err = EM_ERR_fa( "Cannot convert #<sc_t> to self-aware object", ifnameof( sr_s_type( &src ) ) );
                     }
                 }
                 else
@@ -240,28 +249,29 @@ void bcore_via_default_iset( const bcore_via_s* p, bcore_via* o, uz_t index, sr_
             }
             else
             {
-                bcore_inst_p_copy_typed( inst_p, dst, sr_s_type( &src ), src.o );
+                err = bcore_inst_p_copy_typed( inst_p, dst, sr_s_type( &src ), src.o );
             }
         }
         break;
 
         default:
-            ERR( "Unsupported caps '%s'", bcore_flect_caps_e_sc( vitem->caps ) );
+            err = EM_ERR_fa( "Unsupported caps '#<sc_t>'", bcore_flect_caps_e_sc( vitem->caps ) );
             break;
     }
     sr_down( src );
+    return err;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_via_default_iset_s3( const bcore_via_s* p, bcore_via* o, uz_t index, s3_t val ) { bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_s3_t, &val ) ); }
-void bcore_via_default_iset_u3( const bcore_via_s* p, bcore_via* o, uz_t index, u3_t val ) { bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_u3_t, &val ) ); }
-void bcore_via_default_iset_f3( const bcore_via_s* p, bcore_via* o, uz_t index, f3_t val ) { bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_f3_t, &val ) ); }
-void bcore_via_default_iset_sz( const bcore_via_s* p, bcore_via* o, uz_t index, sz_t val ) { bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_sz_t, &val ) ); }
-void bcore_via_default_iset_uz( const bcore_via_s* p, bcore_via* o, uz_t index, uz_t val ) { bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_uz_t, &val ) ); }
-void bcore_via_default_iset_sc( const bcore_via_s* p, bcore_via* o, uz_t index, sc_t val ) { bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_sc_t, &val ) ); }
-void bcore_via_default_iset_bl( const bcore_via_s* p, bcore_via* o, uz_t index, bl_t val ) { bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_bl_t, &val ) ); }
-void bcore_via_default_iset_tp( const bcore_via_s* p, bcore_via* o, uz_t index, tp_t val ) { bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_tp_t, &val ) ); }
+er_t bcore_via_default_iset_s3( const bcore_via_s* p, bcore_via* o, uz_t index, s3_t val ) { return bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_s3_t, &val ) ); }
+er_t bcore_via_default_iset_u3( const bcore_via_s* p, bcore_via* o, uz_t index, u3_t val ) { return bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_u3_t, &val ) ); }
+er_t bcore_via_default_iset_f3( const bcore_via_s* p, bcore_via* o, uz_t index, f3_t val ) { return bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_f3_t, &val ) ); }
+er_t bcore_via_default_iset_sz( const bcore_via_s* p, bcore_via* o, uz_t index, sz_t val ) { return bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_sz_t, &val ) ); }
+er_t bcore_via_default_iset_uz( const bcore_via_s* p, bcore_via* o, uz_t index, uz_t val ) { return bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_uz_t, &val ) ); }
+er_t bcore_via_default_iset_sc( const bcore_via_s* p, bcore_via* o, uz_t index, sc_t val ) { return bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_sc_t, &val ) ); }
+er_t bcore_via_default_iset_bl( const bcore_via_s* p, bcore_via* o, uz_t index, bl_t val ) { return bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_bl_t, &val ) ); }
+er_t bcore_via_default_iset_tp( const bcore_via_s* p, bcore_via* o, uz_t index, tp_t val ) { return bcore_via_default_iset( p, o, index, sr_twc( TYPEOF_tp_t, &val ) ); }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -307,15 +317,15 @@ static inline uz_t vidx( const bcore_via_s* p, tp_t name )
 bl_t                 NPX(default_nexists      )( const NPX(s)* p, const bcore_via* o, tp_t n           ) { return v_test_idx( p, n ); }
 uz_t                 NPX(default_nget_index   )( const NPX(s)* p, const bcore_via* o, tp_t n           ) { return vidx(       p, n ); }
 sr_s                 NPX(default_nget         )( const NPX(s)* p, const bcore_via* o, tp_t n           ) { return NPX(default_iget       )( p, o, vidx( p, n )         ); }
-void                 NPX(default_nset         )( const NPX(s)* p,       bcore_via* o, tp_t n, sr_s src ) {        NPX(default_iset       )( p, o, vidx( p, n ), src    ); }
-void                 NPX(default_nset_s3      )( const NPX(s)* p,       bcore_via* o, tp_t n, s3_t val ) {        NPX(default_iset_s3    )( p, o, vidx( p, n ), val    ); }
-void                 NPX(default_nset_u3      )( const NPX(s)* p,       bcore_via* o, tp_t n, u3_t val ) {        NPX(default_iset_u3    )( p, o, vidx( p, n ), val    ); }
-void                 NPX(default_nset_f3      )( const NPX(s)* p,       bcore_via* o, tp_t n, f3_t val ) {        NPX(default_iset_f3    )( p, o, vidx( p, n ), val    ); }
-void                 NPX(default_nset_sz      )( const NPX(s)* p,       bcore_via* o, tp_t n, sz_t val ) {        NPX(default_iset_sz    )( p, o, vidx( p, n ), val    ); }
-void                 NPX(default_nset_uz      )( const NPX(s)* p,       bcore_via* o, tp_t n, uz_t val ) {        NPX(default_iset_uz    )( p, o, vidx( p, n ), val    ); }
-void                 NPX(default_nset_sc      )( const NPX(s)* p,       bcore_via* o, tp_t n, sc_t val ) {        NPX(default_iset_sc    )( p, o, vidx( p, n ), val    ); }
-void                 NPX(default_nset_bl      )( const NPX(s)* p,       bcore_via* o, tp_t n, bl_t val ) {        NPX(default_iset_bl    )( p, o, vidx( p, n ), val    ); }
-void                 NPX(default_nset_tp      )( const NPX(s)* p,       bcore_via* o, tp_t n, tp_t val ) {        NPX(default_iset_tp    )( p, o, vidx( p, n ), val    ); }
+er_t                 NPX(default_nset         )( const NPX(s)* p,       bcore_via* o, tp_t n, sr_s src ) { return NPX(default_iset       )( p, o, vidx( p, n ), src    ); }
+er_t                 NPX(default_nset_s3      )( const NPX(s)* p,       bcore_via* o, tp_t n, s3_t val ) { return NPX(default_iset_s3    )( p, o, vidx( p, n ), val    ); }
+er_t                 NPX(default_nset_u3      )( const NPX(s)* p,       bcore_via* o, tp_t n, u3_t val ) { return NPX(default_iset_u3    )( p, o, vidx( p, n ), val    ); }
+er_t                 NPX(default_nset_f3      )( const NPX(s)* p,       bcore_via* o, tp_t n, f3_t val ) { return NPX(default_iset_f3    )( p, o, vidx( p, n ), val    ); }
+er_t                 NPX(default_nset_sz      )( const NPX(s)* p,       bcore_via* o, tp_t n, sz_t val ) { return NPX(default_iset_sz    )( p, o, vidx( p, n ), val    ); }
+er_t                 NPX(default_nset_uz      )( const NPX(s)* p,       bcore_via* o, tp_t n, uz_t val ) { return NPX(default_iset_uz    )( p, o, vidx( p, n ), val    ); }
+er_t                 NPX(default_nset_sc      )( const NPX(s)* p,       bcore_via* o, tp_t n, sc_t val ) { return NPX(default_iset_sc    )( p, o, vidx( p, n ), val    ); }
+er_t                 NPX(default_nset_bl      )( const NPX(s)* p,       bcore_via* o, tp_t n, bl_t val ) { return NPX(default_iset_bl    )( p, o, vidx( p, n ), val    ); }
+er_t                 NPX(default_nset_tp      )( const NPX(s)* p,       bcore_via* o, tp_t n, tp_t val ) { return NPX(default_iset_tp    )( p, o, vidx( p, n ), val    ); }
 tp_t                 NPX(default_nget_type    )( const NPX(s)* p, const bcore_via* o, tp_t n           ) { return NPX(default_iget_type  )( p, o, vidx( p, n )         ); }
 const bcore_vitem_s* NPX(default_nget_vitem   )( const NPX(s)* p, const bcore_via* o, tp_t n           ) { return NPX(default_iget_vitem )( p, o, vidx( p, n )         ); }
 const NPX(s)*        NPX(default_nget_via     )( const NPX(s)* p, const bcore_via* o, tp_t n           ) { return NPX(default_iget_via   )( p, o, vidx( p, n )         ); }

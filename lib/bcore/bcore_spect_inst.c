@@ -1380,13 +1380,6 @@ static er_t copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
             ifnameof( type ),
             ifnameof( dst_type )
         );
-//        ERR_fa
-//        (
-//            "Type conversion '#<sc_t>' --> '#<sc_t>' is not defined.\n"
-//            "Consider implementing feature bcore_fp.copy_typed.\n",
-//            ifnameof( type ),
-//            ifnameof( dst_type )
-//        );
     }
 }
 

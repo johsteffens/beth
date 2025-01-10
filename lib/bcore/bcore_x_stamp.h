@@ -120,11 +120,11 @@ func u3_t get_u3( c aware @* o, tp_t name ) { sr_s sr = o.c_get_sr( name ); u3_t
 func tp_t get_tp( c aware @* o, tp_t name ) { sr_s sr = o.c_get_sr( name ); tp_t v = sr.to_f3(); if( sr.is_strong() ) sr.clear(); = v; }
 func bl_t get_bl( c aware @* o, tp_t name ) { sr_s sr = o.c_get_sr( name ); bl_t v = sr.to_f3(); if( sr.is_strong() ) sr.clear(); = v; }
 
-/// sets element in o. (no effect in case of invalid index or name)
-func void t_set_sr  ( m obliv @* o, tp_t t, tp_t name, sr_s sr_src );
-func void   set_sr  ( m aware @* o,         tp_t name, sr_s sr_src ) o.t_set_sr( o._, name, sr_src );
-func void t_set_sr_i( m obliv @* o, tp_t t, sz_t index, sr_s sr_src );
-func void   set_sr_i( m aware @* o,         sz_t index, sr_s sr_src ) o.t_set_sr_i( o._, index, sr_src );
+/// sets element in o. (no effect in case of invalid index or name); returns recoverable rror in case of an internal assignment or conversion error
+func er_t t_set_sr  ( m obliv @* o, tp_t t, tp_t name, sr_s sr_src );
+func er_t   set_sr  ( m aware @* o,         tp_t name, sr_s sr_src ) = o.t_set_sr( o._, name, sr_src );
+func er_t t_set_sr_i( m obliv @* o, tp_t t, sz_t index, sr_s sr_src );
+func er_t   set_sr_i( m aware @* o,         sz_t index, sr_s sr_src ) = o.t_set_sr_i( o._, index, sr_src );
 
 /// sets element in o and returns a weak smart reference to it in case the element is not a shell; returns sr_null() for invalid index.
 func sr_s t_set_sr_ret  ( m obliv @* o, tp_t t, tp_t name, sr_s sr_src );
@@ -138,12 +138,12 @@ func m x_inst* set_d( m aware @* o, tp_t name, d aware x_inst* src ) = o.set_sr_
 func m x_inst* set_t_c( m aware @* o, tp_t name, tp_t src_type, c obliv x_inst* src ) = o.set_sr_ret( name, sr_twc( src_type, src ) ).o;
 func m x_inst* set_t_d( m aware @* o, tp_t name, tp_t src_type, d obliv x_inst* src ) = o.set_sr_ret( name, sr_tsm( src_type, src ) ).o;
 
-func void set_f3( m aware @* o, tp_t name, f3_t  val ) o.set_sr( name, sr_twc( f3_t~, val.1 ) );
-func void set_s3( m aware @* o, tp_t name, s3_t  val ) o.set_sr( name, sr_twc( s3_t~, val.1 ) );
-func void set_u3( m aware @* o, tp_t name, u3_t  val ) o.set_sr( name, sr_twc( u3_t~, val.1 ) );
-func void set_tp( m aware @* o, tp_t name, tp_t  val ) o.set_sr( name, sr_twc( tp_t~, val.1 ) );
-func void set_bl( m aware @* o, tp_t name, bl_t  val ) o.set_sr( name, sr_twc( bl_t~, val.1 ) );
-func void set_st( m aware @* o, tp_t name, st_s* val ) o.set_sr( name, sr_twc( st_s~, val.1 ) );
+func er_t set_f3( m aware @* o, tp_t name, f3_t  val ) = o.set_sr( name, sr_twc( f3_t~, val.1 ) );
+func er_t set_s3( m aware @* o, tp_t name, s3_t  val ) = o.set_sr( name, sr_twc( s3_t~, val.1 ) );
+func er_t set_u3( m aware @* o, tp_t name, u3_t  val ) = o.set_sr( name, sr_twc( u3_t~, val.1 ) );
+func er_t set_tp( m aware @* o, tp_t name, tp_t  val ) = o.set_sr( name, sr_twc( tp_t~, val.1 ) );
+func er_t set_bl( m aware @* o, tp_t name, bl_t  val ) = o.set_sr( name, sr_twc( bl_t~, val.1 ) );
+func er_t set_st( m aware @* o, tp_t name, st_s* val ) = o.set_sr( name, sr_twc( st_s~, val.1 ) );
 
 /// tells stamp that it was mutated (stamp must overload bcore_via_call:mutated to receive this signal)
 func void t_mutated( m obliv @* o, tp_t t ) if( bcore_via_call_t_defines_mutated( t ) ) o.cast( m bcore_via_call* ).t_mutated( t );
@@ -407,6 +407,7 @@ func :.t_m_get_sr_i
 
 /** Sets element in o
  *  No effect in case of invalid address.
+ *  Returns recoverable error in case there was an internal conversion or assignment error.
  */
 func :.t_set_sr
 {
@@ -415,9 +416,9 @@ func :.t_set_sr
     if( index < 0 )
     {
         sr_src.down();
-        return;
+        = 0;
     }
-    bcore_via_p_iset( p, o.cast( m bcore_via* ), index, sr_src );
+    = bcore_via_p_iset( p, o.cast( m bcore_via* ), index, sr_src );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -445,6 +446,7 @@ func :.t_set_sr_ret
 
 /** Sets element in o.
  *  No effect in case of invalid address.
+ *  Returns recoverable error in case there was an internal conversion or assignment error.
  */
 func :.t_set_sr_i
 {
@@ -452,9 +454,9 @@ func :.t_set_sr_i
     if( index < 0 || index >= bcore_via_p_get_size( p, o.cast( bcore_via* ) ) )
     {
         sr_src.down();
-        return;
+        = 0;
     }
-    bcore_via_p_iset( p, o.cast( m bcore_via* ), index, sr_src );
+    = bcore_via_p_iset( p, o.cast( m bcore_via* ), index, sr_src );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

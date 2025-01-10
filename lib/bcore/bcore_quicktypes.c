@@ -125,6 +125,7 @@ static sr_s object_typelist()
     bcore_array_r_push_sc( &list, "bcore_hmap_u2vd_s"     );
     bcore_array_r_push_sc( &list, "bcore_hmap_u3vd_s"     );
     bcore_array_r_push_sc( &list, "bcore_hmap_tpuz_s"     );
+    bcore_array_r_push_sc( &list, "bcore_hmap_tpsz_s"     );
     bcore_array_r_push_sc( &list, "bcore_hmap_tptp_s"     );
     bcore_array_r_push_sc( &list, "bcore_hmap_tpvd_s"     );
     bcore_array_r_push_sc( &list, "bcore_hmap_tpto_s"     );
@@ -132,6 +133,10 @@ static sr_s object_typelist()
     bcore_array_r_push_sc( &list, "bcore_hmap_tpfp_s"     );
     bcore_array_r_push_sc( &list, "bcore_hmap_tp_s"       );
     bcore_array_r_push_sc( &list, "bcore_hmap_tp_sr_s"    );
+    bcore_array_r_push_sc( &list, "bcore_hnode_tpuz_s"    );
+    bcore_array_r_push_sc( &list, "bcore_hnode_tpsz_s"    );
+    bcore_array_r_push_sc( &list, "bcore_hnode_tpfp_s"    );
+    bcore_array_r_push_sc( &list, "bcore_hnode_tptp_s"    );
     bcore_array_r_push_sc( &list, "bcore_txt_ml_translator_s"  );
     bcore_array_r_push_sc( &list, "bcore_txt_ml_interpreter_s" );
     bcore_array_r_push_sc( &list, "bcore_bin_ml_translator_s"  );

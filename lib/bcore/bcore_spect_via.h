@@ -96,16 +96,16 @@ const bcore_via_s* bcore_via_default_iget_via( const bcore_via_s* p, const bcore
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_via, get_size,  uz_t )                         // Number of items
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget_name, tp_t, uz_t, index )            // Returns name for given index
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget,      sr_s, uz_t, index )            // Returns indexed reference
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset,            uz_t, index, sr_s, src ) // Sets indexed const item.
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_via, iset,      er_t, uz_t, index, sr_s, src ) // Sets indexed item. Returns recoverable error in case of failure.
 
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_s3,         uz_t, index, s3_t, val ) // Sets (internal) item by converting s3_t into target type
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_u3,         uz_t, index, u3_t, val ) // Sets (internal) item by converting u3_t into target type
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_f3,         uz_t, index, f3_t, val ) // Sets (internal) item by converting f3_t into target type
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_sz,         uz_t, index, sz_t, val ) // Sets (internal) item by converting sz_t into target type
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_uz,         uz_t, index, uz_t, val ) // Sets (internal) item by converting uz_t into target type
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_sc,         uz_t, index, sc_t, val ) // Sets (internal) item by converting sc_t into target type
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_bl,         uz_t, index, bl_t, val ) // Sets (internal) item by converting bl_t into target type
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, iset_tp,         uz_t, index, tp_t, val ) // Sets (internal) item by converting tp_t into target type
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_via, iset_s3,   er_t, uz_t, index, s3_t, val ) // Sets (internal) item by converting s3_t into target type
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_via, iset_u3,   er_t, uz_t, index, u3_t, val ) // Sets (internal) item by converting u3_t into target type
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_via, iset_f3,   er_t, uz_t, index, f3_t, val ) // Sets (internal) item by converting f3_t into target type
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_via, iset_sz,   er_t, uz_t, index, sz_t, val ) // Sets (internal) item by converting sz_t into target type
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_via, iset_uz,   er_t, uz_t, index, uz_t, val ) // Sets (internal) item by converting uz_t into target type
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_via, iset_sc,   er_t, uz_t, index, sc_t, val ) // Sets (internal) item by converting sc_t into target type
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_via, iset_bl,   er_t, uz_t, index, bl_t, val ) // Sets (internal) item by converting bl_t into target type
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_via, iset_tp,   er_t, uz_t, index, tp_t, val ) // Sets (internal) item by converting tp_t into target type
 
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget_type, tp_t, uz_t, index )            // Returns type of object
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iget_vitem, const bcore_vitem_s*, uz_t, index ) // Returns bcore_vitem_s structure;
@@ -116,15 +116,15 @@ BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAP0( bcore_via, iget_spect,                 v
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nexists,    bl_t, tp_t, name ) // Checks if given name exists (object can be NULL)
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nget_index, uz_t, tp_t, name ) // Returns index for given name (object can be NULL); returns ( uz_t )-1 if not found
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nget      , sr_s, tp_t, name )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset      ,       tp_t, name, sr_s, src )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_s3   ,       tp_t, name, s3_t, val )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_u3   ,       tp_t, name, u3_t, val )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_f3   ,       tp_t, name, f3_t, val )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_sz   ,       tp_t, name, sz_t, val )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_uz   ,       tp_t, name, uz_t, val )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_sc   ,       tp_t, name, sc_t, val )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_bl   ,       tp_t, name, bl_t, val )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_via, nset_tp   ,       tp_t, name, tp_t, val )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_via, nset      , er_t, tp_t, name, sr_s, src ) // Sets named item. Returns recoverable error in case of failure.
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_via, nset_s3   , er_t, tp_t, name, s3_t, val )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_via, nset_u3   , er_t, tp_t, name, u3_t, val )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_via, nset_f3   , er_t, tp_t, name, f3_t, val )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_via, nset_sz   , er_t, tp_t, name, sz_t, val )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_via, nset_uz   , er_t, tp_t, name, uz_t, val )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_via, nset_sc   , er_t, tp_t, name, sc_t, val )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_via, nset_bl   , er_t, tp_t, name, bl_t, val )
+BCORE_FUNC_SPECT_CONST0_RET1_ARG2_MAP0( bcore_via, nset_tp   , er_t, tp_t, name, tp_t, val )
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nget_type , tp_t, tp_t, name ) // Returns type of object
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nget_vitem, const bcore_vitem_s*, tp_t, name )
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nget_via,   const bcore_via_s*,   tp_t, name )

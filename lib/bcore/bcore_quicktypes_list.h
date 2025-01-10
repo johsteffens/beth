@@ -84,12 +84,17 @@
 #define TYPEOF_bcore_hmap_tp_sr_s          0xAE83A642027D3024ull
 #define TYPEOF_bcore_hmap_tpaw_s           0xC548F8C429C030A4ull
 #define TYPEOF_bcore_hmap_tpfp_s           0xFAFC09CA90EE28B6ull
+#define TYPEOF_bcore_hmap_tpsz_s           0xF8B93529D2C6527Dull
 #define TYPEOF_bcore_hmap_tpto_s           0xCEA13853E8F2A1C1ull
 #define TYPEOF_bcore_hmap_tptp_s           0xE4C7E55364804B78ull
 #define TYPEOF_bcore_hmap_tpuz_s           0x451E6D5EFC9C4FFFull
 #define TYPEOF_bcore_hmap_tpvd_s           0x8D19DD46A1FE7C02ull
 #define TYPEOF_bcore_hmap_u2vd_s           0xC71B82BE8D7F7045ull
 #define TYPEOF_bcore_hmap_u3vd_s           0x7D47FD5B47C44656ull
+#define TYPEOF_bcore_hnode_tpfp_s          0x9B8ED05C04AF11DAull
+#define TYPEOF_bcore_hnode_tpsz_s          0x0DE7EBFDA92CF3E9ull
+#define TYPEOF_bcore_hnode_tptp_s          0x9A8AABE5754219DCull
+#define TYPEOF_bcore_hnode_tpuz_s          0xC814A3EBD7F481B3ull
 #define TYPEOF_bcore_img_u2_argb           0xA6DDA316D6721513ull
 #define TYPEOF_bcore_img_u2_s              0x7E104F76F874D1B6ull
 #define TYPEOF_bcore_inst                  0xAA5D2F9D6D85F007ull
