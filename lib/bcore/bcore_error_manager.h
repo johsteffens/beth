@@ -73,6 +73,7 @@ name conversion_error; // error in type conversion (created by 'copy_typed' and 
 name parse_error; // errors from text/string parsing
 name plant_error; // errors from beth plant management
 name error_stack; // error stack is not zero (usually a subsequent error for functions that require an empty error stack)
+name assert_error; // general purpose error
 
 identifier __func__;
 identifier __FILE__;
@@ -98,7 +99,7 @@ func er_t push_sc( er_t id, sc_t msg );
 func er_t push_fv( er_t id, sc_t format, va_list args );
 func er_t push_fa( er_t id, sc_t format, ... );
 
-/** (See also macro 'GERR_fa')
+/** (See also macro 'EM_ERR_fa')
  *  'push_fa' with location details in parseable format including function name, file and line.
  *  Call with __func__, __FILE__, __LINE__
  *  Example: bcore_error_push_ffl_fa( general_error~, __func__, __FILE__, __LINE__, "Something wrong here." );
@@ -106,7 +107,7 @@ func er_t push_fa( er_t id, sc_t format, ... );
 func er_t push_ffl_fv( er_t id, sc_t func, sc_t file, sz_t line, sc_t format, va_list args );
 func er_t push_ffl_fa( er_t id, sc_t func, sc_t file, sz_t line, sc_t format, ... );
 
-/// 'push_ffl_fa' using general_error~ (See also macro 'GERR_fa')
+/// 'push_ffl_fa' using general_error~ (See also macro 'EM_ERR_fa')
 func er_t push_gffl_fv( sc_t func, sc_t file, sz_t line, sc_t format, va_list args );
 func er_t push_gffl_fa( sc_t func, sc_t file, sz_t line, sc_t format, ... );
 
@@ -129,13 +130,33 @@ func st pop_all_to_st( m st_s* st ) { :pop_all_to_sink( st ); = st; }
 
 /**********************************************************************************************************************/
 
+//----------------------------------------------------------------------------------------------------------------------
+
+/// deprecated: prefer group EM below
 group GERR
 {
     set inexpandable;
 
-    /// GERR_fa is a makro definition below; like ERR_fa but via bcore_error manager using generic_error
+    /// EM_ERR_fa is a makro definition below; like ERR_fa but via bcore_error manager using generic_error
     func er_t fa( sc_t format, ... );
 };
+
+//----------------------------------------------------------------------------------------------------------------------
+
+group EM
+{
+    set inexpandable;
+
+    /// EM_ERR_fa is a makro definition below; like ERR_fa but via bcore_error manager using generic_error
+    func er_t ERR_fa( sc_t format, ... );
+
+    /// ASSERT with error management
+    func er_t ASSERT( bl_t condition );
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 
 #endif // XOILA_SECTION
 
@@ -143,6 +164,12 @@ group GERR
 /// Macros
 
 /// generic managed detailed error (like ERR_fa but via bcore_error manager using general_error)
+#define EM_ERR_fa( ... ) bcore_error_push_gffl_fa( __func__, __FILE__, __LINE__, __VA_ARGS__ )
+
+/// same purpose as ASSERT() but returns er_t and can be used in x-exception handling
+#define EM_ASSERT( condition ) ( ( condition ) ? (er_t)0 : bcore_error_push_fa( TYPEOF_assert_error, "assertion '#<sc_t>' failed in function #<sc_t> (#<sc_t> line #<sz_t>)\n", #condition, __func__, __FILE__, (sz_t)__LINE__ ) )
+
+/// (deprecated) same as EM_ERR_fa above
 #define GERR_fa( ... ) bcore_error_push_gffl_fa( __func__, __FILE__, __LINE__, __VA_ARGS__ )
 
 /**********************************************************************************************************************/
