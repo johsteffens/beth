@@ -168,7 +168,7 @@ stamp :s
         if( !o.result.py_object )
         {
             byth_py_check_error();
-            GERR_fa( "PyRun_String returned NULL." );
+            EM_ERR_fa( "PyRun_String returned NULL." );
         }
 
         = o;
@@ -184,7 +184,7 @@ stamp :s
         if( !o.result.py_object )
         {
             byth_py_check_error();
-            GERR_fa( "PyRun_String returned NULL." );
+            EM_ERR_fa( "PyRun_String returned NULL." );
         }
 
         = o;

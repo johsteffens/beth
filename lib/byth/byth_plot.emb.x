@@ -192,7 +192,7 @@ func (:frame_s) from_functor_list
     {
         :functor_s* f = list.[ i ];
         x_btcl_functor_s* functor = f.functor;
-        if( functor.args() != 1 ) = GERR_fa( "Functor is not unary; args == #<sz_t>", functor.args() );
+        if( functor.args() != 1 ) = EM_ERR_fa( "Functor is not unary; args == #<sz_t>", functor.args() );
 
         m$* data = :data_s!^;
         if( f.label && f.label.size > 0 )
@@ -287,7 +287,7 @@ func (:btcl_function_s) btcl_function
             }
             else
             {
-                = GERR_fa( "Cannot plot '#<sc_t>'.", bnameof( args.[ 0 ].type() ) );
+                = EM_ERR_fa( "Cannot plot '#<sc_t>'.", bnameof( args.[ 0 ].type() ) );
             }
 
             if( functor_list.size > 0 )
