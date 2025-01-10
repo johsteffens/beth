@@ -170,21 +170,30 @@ er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args 
 
         bcore_source* source = bcore_file_open_source( object_path );
 
-        x_inst* object = NULL;
+        x_inst* object_inst = NULL;
+        tp_t object_type = 0;
 
-        if     ( sc_t_equal( o->object_interpreter, "x_btcl" ) ) object = ( x_inst* )x_btcl_create_from_source( ( x_source* )source );
-        else if( sc_t_equal( o->object_interpreter, "x_btml" ) ) object = ( x_inst* )x_btml_create_from_source( ( x_source* )source );
-        else if( sc_t_equal( o->object_interpreter, "x_bbml" ) ) object = ( x_inst* )x_bbml_create_from_source( ( x_source* )source );
-        else if( sc_t_equal( o->object_interpreter, "x_bcml" ) ) object = ( x_inst* )x_bcml_create_from_source( ( x_source* )source );
+        if     ( sc_t_equal( o->object_interpreter, "x_btcl" ) ) object_inst = ( x_inst* )x_btcl_create_from_source_t( ( x_source* )source, &object_type );
+        else if( sc_t_equal( o->object_interpreter, "x_btml" ) ) object_inst = ( x_inst* )x_btml_create_from_source_t( ( x_source* )source, &object_type );
+        else if( sc_t_equal( o->object_interpreter, "x_bbml" ) ) object_inst = ( x_inst* )x_bbml_create_from_source_t( ( x_source* )source, &object_type );
+        else if( sc_t_equal( o->object_interpreter, "x_bcml" ) ) object_inst = ( x_inst* )x_bcml_create_from_source_t( ( x_source* )source, &object_type );
         else BLM_RETURNV( er_t, bcore_error_push_fa( TYPEOF_general_error, "bcore_main_frame_s: Invalid object interpreter '#<sc_t>'.", o->object_interpreter ) );
 
-        if( !object )
+        if( !object_inst )
         {
             bcore_source_a_detach( &source );
-            BLM_RETURNV( er_t, bcore_error_push_fa( TYPEOF_general_error, "bcore_main_frame_s: File '#<sc_t>' contains no valid object.", object_path ) );
+
+            if( bcore_error_stack_size() > 0 )
+            {
+                BLM_RETURNV( er_t, TYPEOF_general_error );
+            }
+            else
+            {
+                BLM_RETURNV( er_t, bcore_error_push_fa( TYPEOF_general_error, "bcore_main_frame_s: File '#<sc_t>' contains no valid object.", object_path ) );
+            }
         }
 
-        o->object_sr = sr_asm( object );
+        o->object_sr = sr_tsm( object_type, object_inst );
         bcore_source_a_detach( &source );
     }
     else if( o->object_default_type )
@@ -210,28 +219,19 @@ er_t bcore_main_frame_s_exec( bcore_main_frame_s* o, const bcore_arr_st_s* args 
 
     if( o->object_sr.o )
     {
-        /// redirect signals
-        bcore_default_sigint  = signal( SIGINT , signal_callback );
-        bcore_default_sigterm = signal( SIGTERM, signal_callback );
-        bcore_default_sigtstp = signal( SIGTSTP, signal_callback );
-
         if( bcore_main_r_defines_main( &o->object_sr ) )
         {
-            error = bcore_main_r_main( &o->object_sr, o );
-        }
-        else
-        {
-            bcore_error_push_fa
-            (
-                TYPEOF_general_error, "bcore_main_frame_s: Object '#<sc_t>' does not define callback feature bcore_main.main.",
-                bnameof( sr_s_o_type( &o->object_sr ) )
-            );
-            error = TYPEOF_general_error;
-        }
+            /// redirect signals
+            bcore_default_sigint  = signal( SIGINT , signal_callback );
+            bcore_default_sigterm = signal( SIGTERM, signal_callback );
+            bcore_default_sigtstp = signal( SIGTSTP, signal_callback );
 
-        signal( SIGINT , bcore_default_sigint );
-        signal( SIGTERM, bcore_default_sigterm );
-        signal( SIGTSTP, bcore_default_sigtstp );
+            error = bcore_main_r_main( &o->object_sr, o );
+
+            signal( SIGINT , bcore_default_sigint );
+            signal( SIGTERM, bcore_default_sigterm );
+            signal( SIGTSTP, bcore_default_sigtstp );
+        }
     }
     else
     {
