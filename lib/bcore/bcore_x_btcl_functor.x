@@ -60,7 +60,6 @@ stamp :arg_uop_s
         = 0;
     }
 
-
     func ::export.signal
     {
         if( name == signal_arg_uop_update_val~ )
@@ -78,6 +77,8 @@ stamp :arg_uop_s
 // copyable functor argument
 stamp :arg_s
 {
+    tp_t name;
+
     :arg_val_s => val;
     :arg_uop_s => uop;
 
@@ -151,6 +152,7 @@ stamp :s
         for( sz_t i = 0; i < args; i++ )
         {
             arr_sr.[ i ].asc( o.arg_arr.[ i ].get_uop().fork() );
+            o.arg_arr.[ i ].name = function.signature.arg_name( i );
         }
         function.call( o.source_point, lexical_frame, arr_sr, o.op_tree! );
         = 0;
@@ -158,19 +160,48 @@ stamp :s
 
     func sz_t args( @* o ) = o.arg_arr.size;
 
+    func tp_t arg_name( @* o, sz_t index )
+    {
+        if( index < 0 || index >= o.args() ) ERR_fa( "index (#<sz_t>) is out of range [0,#<sz_t>]", index, o.args() - 1 );
+        = o.arg_arr.[ index ].name;
+    }
+
+    /// returns -1 in case name is not an argument name
+    func sz_t arg_index( @* o, tp_t name )
+    {
+        for( sz_t i = 0; i < o.arg_arr.size; i++ ) if( o.arg_name( i ) == name ) = i;
+        = -1;
+    }
+
+    func bl_t arg_name_exists( @* o, tp_t name ) = o.arg_index( name ) >= 0;
+
     func o set_arg_sr( @* o, sz_t index, m sr_s* sr )
     {
         if( index < 0 || index >= o.args() ) ERR_fa( "index (#<sz_t>) is out of range [0,#<sz_t>]", index, o.args() - 1 );
         o.arg_arr.[ index ].set_val( sr );
     }
 
+    /// no effect on name mismatch
+    func o set_arg_sr_by_name( @* o, tp_t name, m sr_s* sr )
+    {
+        sz_t index = o.arg_index( name );
+        if( index >= 0 ) o.set_arg_sr( index, sr );
+    }
+
     func o set_arg_f3( @* o, sz_t index, f3_t v ) o.set_arg_sr( index, sr_s!^.from_f3( v ) );
+
+    /// no effect on name mismatch
+    func o set_arg_f3_by_name( @* o, tp_t name, f3_t v )
+    {
+        sz_t index = o.arg_index( name );
+        if( index >= 0 ) o.set_arg_f3( index, v );
+    }
 
     // for external use (thread safe)
     func er_t call( @* o, m sr_s* result )
     {
         o.cast( m$* ).call_mutex.create_lock()^;
-        if( !o.op_tree ) = GERR_fa( "Functor has not been set up." );
+        if( !o.op_tree ) = EM_ERR_fa( "Functor has not been set up." );
         if( ::export_sr_is_operator( o.op_tree ) )
         {
             o.op_tree.o.cast( x_btcl_export* ).execute( result );

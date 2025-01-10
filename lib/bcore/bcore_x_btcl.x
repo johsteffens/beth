@@ -27,13 +27,15 @@ name member, frame;
 name exp, log, log2, log10, sin, cos, tan, tanh, sign, sqrt, abs, ceil, floor, size;
 
 // Group B, unary
-name identity, neg, not, print, printx;
+name identity, neg, not, print, println, printx, assert;
 
 // Group C, unary
 name pow, div, mod, chain, mul_dot_colon, mul_dot, mul_colon;
-name mul, sub, add, spawn, cat;
+name mul, sub, add;
 name equal, unequal, larger_equal, larger, smaller_equal, smaller;
-name and, or, shift_left, assign;
+name and, or;
+name conditional;
+name spawn, cat, shift_left, assign;
 
 // Group E, binary
 name continuation;
@@ -50,22 +52,24 @@ func sc_t operator_symbol( tp_t type )
         case frame~:  = "(";
 
         // builtin functions
-        case exp~:    = "EXP";
-        case log~:    = "LOG";
-        case log2~:   = "LOG2";
-        case log10~:  = "LOG10";
-        case sin~:    = "SIN";
-        case cos~:    = "COS";
-        case tan~:    = "TAN";
-        case tanh~:   = "TANH";
-        case sign~:   = "SIGN";
-        case sqrt~:   = "SQRT";
-        case abs~:    = "ABS";
-        case ceil~:   = "CEIL";
-        case floor~:  = "FLOOR";
-        case size~:   = "SIZE";
-        case print~:  = "PRINT";
-        case printx~: = "PRINTX";
+        case exp~:     = "EXP";
+        case log~:     = "LOG";
+        case log2~:    = "LOG2";
+        case log10~:   = "LOG10";
+        case sin~:     = "SIN";
+        case cos~:     = "COS";
+        case tan~:     = "TAN";
+        case tanh~:    = "TANH";
+        case sign~:    = "SIGN";
+        case sqrt~:    = "SQRT";
+        case abs~:     = "ABS";
+        case ceil~:    = "CEIL";
+        case floor~:   = "FLOOR";
+        case size~:    = "SIZE";
+        case print~:   = "PRINT";
+        case println~: = "PRINTLN";
+        case printx~:  = "PRINTX";
+        case assert~:  = "ASSERT";
 
         // Group B, unary
         case identity~: = "+";
@@ -84,8 +88,6 @@ func sc_t operator_symbol( tp_t type )
         case mul~: = "*";
         case sub~: = "-";
         case add~: = "+";
-        case spawn~: = "::";
-        case cat~: = ":";
 
         case equal~:         = "==";
         case unequal~:       = "!=";
@@ -94,10 +96,13 @@ func sc_t operator_symbol( tp_t type )
         case smaller_equal~: = "<=";
         case smaller~:       = "<";
 
-        case and~:        = "&";
-        case or~:         = "|";
-        case shift_left~: = "<<";
-        case assign~:     = "=";
+        case and~:         = "&";
+        case or~:          = "|";
+        case conditional~: = "?";
+        case spawn~:       = "::";
+        case cat~:         = ":";
+        case shift_left~:  = "<<";
+        case assign~:      = "=";
 
         // Group E, binary
         case continuation~: = ";";
@@ -283,7 +288,10 @@ stamp :context_s
 /// global constants
 
 // frame depth limit: used to detect unlimited recursions
-func sz_t max_frame_depth() = 0x1000;
+func sz_t max_frame_depth() = 0x500;
+
+// frame eval depth limit: used to detect recursive evaluation structures
+func sz_t max_frame_eval_depth() = 0x1000;
 
 /// priority groups
 func s2_t priority_a() = 50000; // element access, function/modifier call
@@ -298,7 +306,8 @@ stamp :frame_s
 {
     private :frame_s* parent;
     :context_s -> context;
-    sz_t depth;
+    sz_t depth; // counts depth of parenting
+    sz_t eval_depth; // counts depth of evaluation
 
     func bl_t is_reserved_key( @* o, tp_t name ) = o.context.is_reserved_key( name );
     func sc_t sc_reserved_key( @* o, tp_t name ) = o.context.sc_reserved_key( name );
@@ -478,8 +487,9 @@ stamp :list_s
     func sz_t size( c@* o ) = o.arr.size;
     func o set_size( m@* o, sz_t size ) o.arr.set_size( size );
 
-    func o push_clone( m@* o, c sr_s* a ) o.arr.push_sr( sr_clone( sr_cw( a ) ) );
-    func o push_fork ( m@* o, m sr_s* a ) o.arr.push_sr( sr_fork ( sr_cw( a ) ) );
+    func o push_sr   ( m@* o, sr_s sr )   o.arr.push_sr( sr );
+    func o push_clone( m@* o, c sr_s* a ) o.push_sr( sr_clone( sr_cw( a ) ) );
+    func o push_fork ( m@* o, m sr_s* a ) o.push_sr( sr_fork ( sr_cw( a ) ) );
 
     func o push_list_clone( m@* o, c @* a ) foreach( c$*e in a.arr ) o.push_clone( e );
     func o push_list_fork ( m@* o, m @* a ) foreach( m$*e in a.arr ) o.push_fork ( e );
@@ -648,13 +658,12 @@ stamp :external_function_s
 stamp :function_s
 {
     :signature_s         -> signature;
-
     :block_s             -> block;
     :external_function_s -> external_function;
     :function_s          -> wrapped_function;  // wrapped function on partial call
     bcore_arr_sr_s       -> wrapped_arg_list;  // wrapped arguments on partial call
 
-    :function_s  => tail; // tail of a cain of function (the head is the function that defines the signature of the entire chain)
+    :function_s => tail; // tail of a cain of function (the head is the function that defines the signature of the entire chain)
 
     func o setup( m@* o, m :signature_s* signature, m :block_s* block, c :function_s* tail )
     {
@@ -714,7 +723,7 @@ stamp :function_s
 /// sets up frame for executing the function
 func (:function_s) er_t setup_frame( m@* o, m :frame_s* lexical_frame, m x_source_point_s* source_point, m :frame_s* frame )
 {
-    if( lexical_frame.depth >= :max_frame_depth() ) = source_point.parse_error_fa( "Maximum frame depth (#<sz_t>) exceeded. Check for unlimited recursions.\n", :max_frame_depth() );
+    if( lexical_frame.depth >= :max_frame_depth() ) = source_point.parse_error_fa( "Maximum frame depth (#<sz_t>) exceeded. Check for unguarded recursions.\n", :max_frame_depth() );
     frame.setup( lexical_frame );
     frame.var_set( TYPEOF_self, sr_asm( o.fork() ) );
 
@@ -914,41 +923,6 @@ func(:frame_s) er_t eval_condition( m @* o, m x_source* source, m bl_t* conditio
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:frame_s) er_t negate( m@* o, m x_source* source, m sr_s* sr )
-{
-    if( sr.is_integer() )
-    {
-        sr.const_from_s3( -sr.to_s3() );
-    }
-    else if( sr.is_float() )
-    {
-        sr.const_from_f3( -sr.to_f3() );
-    }
-    else
-    {
-        = source.parse_error_fa( "Negation of #<sc_t> is not defined.\n", bnameof( sr.o_type() ) );
-    }
-
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:frame_s) er_t logic_not( m@* o, m x_source* source, m sr_s* sr )
-{
-    if( sr.is_numeric() )
-    {
-        sr.const_from_bl( !sr.to_bl() );
-    }
-    else
-    {
-        = source.parse_error_fa( "Negation of #<sc_t> is not defined.\n", bnameof( sr.o_type() ) );
-    }
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 func er_t to_sink( bl_t detailed, sr_s* sr, m x_sink* sink )
 {
     if( detailed )
@@ -988,6 +962,10 @@ func (:frame_s) er_t eval_in_frame( @* o, s2_t priority, m x_source* source, m s
 
 func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s* obj )
 {
+    o.eval_depth++;
+
+    if( o.eval_depth >= :max_frame_eval_depth() ) = source.parse_error_fa( "Evaluation depth exceeded. Check for unguarded recursive expressions.\n" );
+
     ASSERT( obj.o == NULL );
 
     /// prefix operators
@@ -1091,6 +1069,9 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
                     :get_embedding_file_path( source, sb.o.cast( st_s* ).sc, path );
                     m x_source* emb_source = bcore_file_open_source( path.sc )^;
                     o.eval( 0, emb_source, obj );
+
+                    emb_source.parse_fa( " " );
+                    if( !emb_source.eos() ) emb_source.parse_error_fa( "Unexpected expression. Semicolon ';' missing on previous expression?\n" );
                 }
                 break;
 
@@ -1196,7 +1177,7 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
         else
         {
             tp_t node_type = 0; // generic
-            if     ( source.parse_bl( " #?':'" ) ) node_type = rack~;
+            if( source.parse_bl( " #?':'" ) ) node_type = rack~;
             if( !:is_identifier( source ) ) = source.parse_error_fa( "Identifier expected.\n" );
             tp_t node_name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
             obj.asm( :net_node_s!.setup( node_type, node_name, sp ) );
@@ -1209,6 +1190,8 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
 
     // operators (if any)
     o.eval_op( exit_priority, source, obj );
+
+    o.eval_depth--;
 
     = 0;
 }
@@ -1225,6 +1208,13 @@ func (:frame_s) er_t parse_create_final_object( m@* o, m x_source* source, m sr_
 {
     m$* sr = sr_s!^;
     o.eval( 0, source, sr );
+
+    source.parse_fa( " " );
+
+    if( !source.eos() )
+    {
+        = source.parse_error_fa( "Isolated expression: Operator or semicolon expected." );
+    }
 
     if( obj )
     {
@@ -1256,6 +1246,8 @@ func (:frame_s) er_t parse_create_final_object( m@* o, m x_source* source, m sr_
             obj.clear();
         }
     }
+
+
     = 0;
 }
 

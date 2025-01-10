@@ -87,15 +87,15 @@ func er_t run_from_file( sc_t file ) = :run_from_source( x_source_create_from_fi
  */
 
 // return -1 when function 'name' is not defined
-feature sz_t btcl_function_arity( @* o, tp_t name ) = -1;
+feature 'at' sz_t btcl_function_arity( @* o, tp_t name ) = -1;
 
 // must handle all names as indicated by btcl_function_arity; sp and lexical_frame can be ignored
-feature er_t btcl_function( @* o, tp_t name, x_source_point_s* sp, m :frame_s* lexical_frame, bcore_arr_sr_s* args, m sr_s* result );
+feature 'at' er_t btcl_function( @* o, tp_t name, x_source_point_s* sp, m :frame_s* lexical_frame, bcore_arr_sr_s* args, m sr_s* result );
 
 /// features of functors (overloaded by x_btcl_functor_s)
-feature f3_t unary_f3  ( @* o, f3_t x );
-feature f3_t binary_f3 ( @* o, f3_t x, f3_t y );
-feature f3_t ternary_f3( @* o, f3_t x, f3_t y, f3_t z );
+feature 'at' f3_t unary_f3  ( @* o, f3_t x );
+feature 'at' f3_t binary_f3 ( @* o, f3_t x, f3_t y );
+feature 'at' f3_t ternary_f3( @* o, f3_t x, f3_t y, f3_t z );
 
 //----------------------------------------------------------------------------------------------------------------------
 

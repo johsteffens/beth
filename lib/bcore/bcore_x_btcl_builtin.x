@@ -34,7 +34,9 @@ name ABS;
 name CEIL;
 name FLOOR;
 name PRINT;
+name PRINTLN;
 name PRINTX;
+name ASSERT;
 
 // constants
 name true;
@@ -64,7 +66,9 @@ func (:context_s) set_reserved_funcs
     o.hmap_reserved_func.set_sc( "CEIL" );
     o.hmap_reserved_func.set_sc( "FLOOR" );
     o.hmap_reserved_func.set_sc( "PRINT" );
+    o.hmap_reserved_func.set_sc( "PRINTLN" );
     o.hmap_reserved_func.set_sc( "PRINTX" );
+    o.hmap_reserved_func.set_sc( "ASSERT" );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -146,6 +150,7 @@ func (:frame_s) er_t eval_reserved_func( m@* o, tp_t name, m x_source* source, b
         case FLOOR~: :export_eval_uop_type( o, floor~, 0, source, postfix, sr ); break;
 
         case PRINT~:
+        case PRINTLN~:
         case PRINTX~:
         {
             m$* sb = sr_s!^;
@@ -160,9 +165,28 @@ func (:frame_s) er_t eval_reserved_func( m@* o, tp_t name, m x_source* source, b
             }
 
             o.eval( 0, source, sb );
-            o.to_sink( ( name == PRINTX~ ), sb, x_sink_stdout() );
+
+            m$* st = st_s!^;
+            o.to_sink( ( name == PRINTX~ ), sb, st );
+            if( name == PRINTLN~ )
+            {
+                if( st.size == 0 || st.[ st.size - 1 ] != '\n' ) st.push_char( '\n' );
+            }
+            st.to_stdout();
+
             sr.0 = sb.0;
             sb.0 = sr_null();
+        }
+        break;
+
+        case ASSERT~:
+        {
+            m$* sb = sr_s!^;
+            o.eval( 0, source, sb );
+
+            if( !sb.is_numeric() ) = source.parse_error_fa( "Expression does not represent a condition.\n" );
+            if( !sb.to_bl()      ) = source.parse_error_fa( "Assertion failed.\n" );
+            sr.from_bl( true );
         }
         break;
 

@@ -29,7 +29,7 @@ stamp :branch_s
     hidden x_source_point_s sp;
 
     /// forking sr (sr can be NULL); reentrant
-    func o setup( m@* o,tp_t name, x_source_point_s* sp, m sr_s* sr )
+    func o setup( m@* o, tp_t name, x_source_point_s* sp, m sr_s* sr )
     {
         o.name = name;
         o.sp.copy( sp );
@@ -98,25 +98,51 @@ func er_t eval_node_modifier( m ::frame_s* frame, m x_source* source, m sr_s* no
     node_sr.0 = sr_clone( node_sr.0 );
     m$* node = node_sr.o.cast( m :node_s* ).fork()^;
 
-    x_source_point_s* sp = x_source_point_s!^.setup_from_source( source );
-    m sr_s* branch_sr = sr_s!^;
+    bl_t do_loop = true;
+    while( do_loop )
+    {
+        m sr_s* branch_sr = sr_s!^;
+        x_source_point_s* sp = x_source_point_s!^.setup_from_source( source );
 
-    if( source.parse_bl( " #?'.'") )
-    {
-        if( !::is_identifier( source ) ) = source.parse_error_fa( "Identifier expected.\n" );
-        tp_t branch_name = bcore_name_enroll( frame.nameof( frame.get_identifier( source, true ) ) );
-        source.parse_fa( " =");
-        frame.eval( 0, source, branch_sr );
-        node.push_branch( branch_name, true, sp, branch_sr );
-    }
-    else if( !source.parse_bl( " #=?')'") )
-    {
-        frame.eval( 0, source, branch_sr );
-        node.push_branch( 0, false, sp, branch_sr );
+        if( source.parse_bl( " #?'.'") )
+        {
+            if( !::is_identifier( source ) ) = source.parse_error_fa( "Identifier expected.\n" );
+            tp_t branch_name = bcore_name_enroll( frame.nameof( frame.get_identifier( source, true ) ) );
+            source.parse_fa( " =" );
+            frame.eval( 0, source, branch_sr );
+
+            // convert functions to functors
+            if( branch_sr.type() == ::function_s~ )
+            {
+                m$* functor = x_btcl_functor_s!^;
+                functor.setup( x_source_point_s!( source )^, branch_sr.o.cast( m ::function_s* ), frame );
+                branch_sr.asm( functor.fork() );
+            }
+
+            node.push_branch( branch_name, true, sp, branch_sr );
+        }
+        else
+        {
+            frame.eval( 0, source, branch_sr );
+
+            // convert functions to functors
+            if( branch_sr.type() == ::function_s~ )
+            {
+                m$* functor = x_btcl_functor_s!^;
+                functor.setup( x_source_point_s!( source )^, branch_sr.o.cast( m ::function_s* ), frame );
+                branch_sr.asm( functor.fork() );
+            }
+
+            node.push_branch( 0, false, sp, branch_sr );
+        }
+
+        do_loop = false;
+
+        if( source.parse_bl( " #?','"  ) ) do_loop = true;
+        if( source.parse_bl( " #=?')'" ) ) do_loop = false;
     }
 
     node_sr.o.cast( m x_stamp* ).t_mutated( node_sr.type() );
-    if( source.parse_bl( " #?','" ) ) = :eval_node_modifier( frame, source, node_sr );
     = 0;
 }
 

@@ -49,7 +49,7 @@ func bl_t sr_is_exportable_operand( sr_s* sr ) = :t_is_exportable_operand( sr.o.
 /// Solves operator according to operator and operand specific criteria
 feature er_t solve( m@* o, m ::frame_s* frame, m sr_s* result, m bl_t* success )
 {
-    = GERR_fa( "'#<sc_t>' is no operator.", bnameof( o._ ) );
+    = EM_ERR_fa( "'#<sc_t>' is no operator.", bnameof( o._ ) );
 }
 
 /// Signal broadcast in operator tree
@@ -61,17 +61,23 @@ feature o signal( m@* o, tp_t name, m x_inst* arg )
 /// Executes operator recursively. Typically used in an exported functor.
 feature 'at' er_t execute( @* o, m sr_s* result )
 {
-    = GERR_fa( "'#<sc_t>' is no operator.", bnameof( o._ ) );
+    = EM_ERR_fa( "'#<sc_t>' is no operator.", bnameof( o._ ) );
 }
 
-/// exportable unary operator
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// unary operator
+
+//----------------------------------------------------------------------------------------------------------------------
+
 stamp :uop_s
 {
     tp_t type;
 
     sr_s a;
 
-    hidden x_source_point_s source_point;
+    hidden x_source_point_s sp;
 
     func :.is_operator = true;
     func :.is_exportable_operand = true;
@@ -80,7 +86,7 @@ stamp :uop_s
     {
         o.type = type;
         o.a.tsm( a.type(), a.o.fork() );
-        if( source_point ) o.source_point.copy( source_point );
+        if( source_point ) o.sp.copy( source_point );
     }
 
     func :.solve;
@@ -182,7 +188,7 @@ func (:uop_s) execute
     o.solve_exportable_a( a, result, success );
     if( success ) = 0;
 
-    = o.source_point.parse_error_fa( "Operator #<sc_t> #<sc_t> is not executable.\n", ::operator_symbol( o.type ), bnameof( a.type() ) );
+    = o.sp.parse_error_fa( "Operator #<sc_t> #<sc_t> is not executable.\n", ::operator_symbol( o.type ), bnameof( a.type() ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -208,7 +214,7 @@ func er_t eval_uop_type( m ::frame_s * frame, tp_t type, s2_t priority, m x_sour
     uop.solve( frame, result, success );
     if( !success )
     {
-        = source_point.parse_error_fa( "Operator #<sc_t> #<sc_t> is not defined.\n", ::operator_symbol( type ), bnameof( sa.o_type() ) );
+        = source_point.parse_error_fa( "Unary operator '#<sc_t>' on '#<sc_t>' is not defined.\n", ::operator_symbol( type ), bnameof( sa.o_type() ) );
     }
     = 0;
 }
@@ -216,10 +222,10 @@ func er_t eval_uop_type( m ::frame_s * frame, tp_t type, s2_t priority, m x_sour
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+/// binary operator
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// exportable binary operator
 stamp :bop_s
 {
     tp_t type;
@@ -230,14 +236,14 @@ stamp :bop_s
     func :.is_operator = true;
     func :.is_exportable_operand = true;
 
-    hidden x_source_point_s source_point;
+    hidden x_source_point_s sp;
 
     func o _( m@* o, tp_t type, m sr_s* a, m sr_s* b, m x_source_point_s* source_point )
     {
         o.type = type;
         o.a.tsm( a.type(), a.o.fork() );
         o.b.tsm( b.type(), b.o.fork() );
-        if( source_point ) o.source_point.copy( source_point );
+        if( source_point ) o.sp.copy( source_point );
     }
 
     func :.solve;
@@ -261,7 +267,7 @@ func er_t eval_bop_type( m ::frame_s* frame, tp_t type, s2_t priority, m x_sourc
     bop.solve( frame, result, success );
     if( !success )
     {
-        = source_point.parse_error_fa( "Operator #<sc_t> #<sc_t> #<sc_t> is not defined.\n", bnameof( sa.o_type() ), ::operator_symbol( type ), bnameof( sb.o_type() ) );
+        = source_point.parse_error_fa( "Operator '#<sc_t> #<sc_t> #<sc_t>' is not defined.\n", bnameof( sa.o_type() ), ::operator_symbol( type ), bnameof( sb.o_type() ) );
     }
     = 0;
 }
@@ -289,7 +295,7 @@ func (:bop_s) er_t solve_exportable_a_b( @* o, sr_s* a, sr_s* b, m sr_s* result,
         {
             if( bcore_tp_is_numeric( a.type() ) && bcore_tp_is_numeric( b.type() ) )
             {
-                if( b.to_f3() == 0 ) = o.source_point.parse_error_fa( "Division by zero.\n" );
+                if( b.to_f3() == 0 ) = o.sp.parse_error_fa( "Division by zero.\n" );
 
                 if( bcore_tp_is_integer( a.type() ) && bcore_tp_is_integer( b.type() ) )
                 {
@@ -308,7 +314,7 @@ func (:bop_s) er_t solve_exportable_a_b( @* o, sr_s* a, sr_s* b, m sr_s* result,
         {
             if( bcore_tp_is_integer( a.type() ) && bcore_tp_is_integer( b.type() ) )
             {
-                if( b.to_s3() == 0 ) = o.source_point.parse_error_fa( "Modulo division by zero.\n" );
+                if( b.to_s3() == 0 ) = o.sp.parse_error_fa( "Modulo division by zero.\n" );
                 result.const_from_s3( a.to_s3() % b.to_s3() );
                 = 0;
             }
@@ -322,7 +328,7 @@ func (:bop_s) er_t solve_exportable_a_b( @* o, sr_s* a, sr_s* b, m sr_s* result,
                 m ::function_s* fa = a.o.cast( m ::function_s* ).fork()^;
                 m ::function_s* fb = b.o.cast( m ::function_s* ).fork()^;
 
-                if( !fa.is_unary() ) o.source_point.parse_error_fa( "Operator *: Left argument is not a unary function.\n" );
+                if( !fa.is_unary() ) o.sp.parse_error_fa( "Operator *: Left argument is not a unary function.\n" );
 
                 m ::function_s* fc = ::function_s!^.setup( fb.signature, fb.block, fb.tail );
                 fc.append_tail( fa );
@@ -411,8 +417,8 @@ func (:bop_s) er_t solve_exportable_a_b( @* o, sr_s* a, sr_s* b, m sr_s* result,
             {
                 m $* st1 = st_s!^;
                 m $* st2 = st_s!^;
-                if( st1.copy_typed( a.type(), a.o ) ) { = o.source_point.parse_error_fa( "operator '+': #<sc_t>\n", bcore_error_pop_all_to_st( st_s!^ ).sc ); }
-                if( st2.copy_typed( b.type(), b.o ) ) { = o.source_point.parse_error_fa( "operator '+': #<sc_t>\n", bcore_error_pop_all_to_st( st_s!^ ).sc ); }
+                if( st1.copy_typed( a.type(), a.o ) ) { = o.sp.parse_error_fa( "operator '+': #<sc_t>\n", bcore_error_pop_all_to_st( st_s!^ ).sc ); }
+                if( st2.copy_typed( b.type(), b.o ) ) { = o.sp.parse_error_fa( "operator '+': #<sc_t>\n", bcore_error_pop_all_to_st( st_s!^ ).sc ); }
                 st1.push_st( st2 );
 
                 result.asc( st1.fork() );
@@ -496,7 +502,7 @@ func (:bop_s) er_t solve_exportable_a_b( @* o, sr_s* a, sr_s* b, m sr_s* result,
             if( a.type() == ::net_node_s~ )
             {
                 m ::net_node_s* node = a.o.cast( m ::net_node_s* ).clone()^;
-                node.push_branch( 0, false, o.source_point, b.cast( m$* ) );
+                node.push_branch( 0, false, o.sp, b.cast( m$* ) );
                 result.asc( node.fork() );
                 = 0;
             }
@@ -530,7 +536,7 @@ func (:bop_s) solve
                 m ::function_s* f = o.a.o.cast( m ::function_s* ).fork()^;
                 m $* arg_list = bcore_arr_sr_s!^;
                 arg_list.push_sr( sr_null() ).fork_from( o.b );
-                f.call( o.source_point, frame, arg_list, result );
+                f.call( o.sp, frame, arg_list, result );
                 = 0;
             }
         }
@@ -546,7 +552,7 @@ func (:bop_s) solve
                 {
                     m ::frame_s* local_frame = ::frame_s!^.setup( frame );
                     ::function_s* function = o.b.o.cast( ::function_s* );
-                    if( function.args() != 1 ) = o.source_point.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Right operand must be unary (single argument).\n", bnameof( o.a.type() ), bnameof( o.b.type() ) );
+                    if( function.args() != 1 ) = o.sp.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Right operand must be unary (single argument).\n", bnameof( o.a.type() ), bnameof( o.b.type() ) );
                     tp_t arg_name = function.arg_name( 0 );
                     for( sz_t i = 0; i < list.arr.size; i++ )
                     {
@@ -583,7 +589,7 @@ func (:bop_s) solve
                     {
                         if( list_a.arr.size < 1 )
                         {
-                            = o.source_point.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Left operand must be a list of size >= 1.\n", bnameof( o.a.type() ), bnameof( o.b.type() ) );
+                            = o.sp.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Left operand must be a list of size >= 1.\n", bnameof( o.a.type() ), bnameof( o.b.type() ) );
                         }
 
                         m sr_s* sa = sr_s!^;
@@ -602,7 +608,7 @@ func (:bop_s) solve
                     }
                     else
                     {
-                        = o.source_point.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Right operand must be unary (one argument) or binary (two arguments).\n", bnameof( o.a.type() ), bnameof( o.b.type() ) );
+                        = o.sp.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Right operand must be unary (one argument) or binary (two arguments).\n", bnameof( o.a.type() ), bnameof( o.b.type() ) );
                     }
                 }
             }
@@ -616,7 +622,7 @@ func (:bop_s) solve
                 m ::function_s* f = o.a.o.cast( m ::function_s* ).fork()^;
                 m $* arg_list = bcore_arr_sr_s!^;
                 arg_list.push_sr( sr_null() ).fork_from( o.b );
-                f.call( o.source_point, frame, arg_list, result );
+                f.call( o.sp, frame, arg_list, result );
                 = 0;
             }
         }
@@ -672,10 +678,183 @@ func (:bop_s) execute
     o.solve_exportable_a_b( a, b, result, success );
     if( success ) = 0;
 
-    = o.source_point.parse_error_fa( "Operator #<sc_t> #<sc_t> #<sc_t> is not executable.\n", bnameof( a.type() ), ::operator_symbol( o.type ), bnameof( b.type() ) );
+    = o.sp.parse_error_fa( "Operator #<sc_t> #<sc_t> #<sc_t> is not executable.\n", bnameof( a.type() ), ::operator_symbol( o.type ), bnameof( b.type() ) );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+/// ternary operator
+
+//----------------------------------------------------------------------------------------------------------------------
+
+stamp :top_s
+{
+    tp_t type;
+
+    sr_s a; // l-value
+    sr_s b; // m-value
+    sr_s c; // r-value
+
+    func :.is_operator = true;
+    func :.is_exportable_operand = true;
+
+    hidden x_source_point_s sp;
+
+    func o _( m@* o, tp_t type, m sr_s* a, m sr_s* b, m sr_s* c, m x_source_point_s* source_point )
+    {
+        o.type = type;
+        o.a.tsm( a.type(), a.o.fork() );
+        o.b.tsm( b.type(), b.o.fork() );
+        o.c.tsm( c.type(), c.o.fork() );
+        if( source_point ) o.sp.copy( source_point );
+    }
+
+    func :.solve;
+    func :.execute;
+
+    func :.signal
+    {
+        if( :sr_is_operator( o.a ) ) o.a.o.cast( m:* ).signal( name, arg );
+        if( :sr_is_operator( o.b ) ) o.b.o.cast( m:* ).signal( name, arg );
+        if( :sr_is_operator( o.c ) ) o.c.o.cast( m:* ).signal( name, arg );
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func er_t eval_top_type( m ::frame_s* frame, tp_t type, s2_t priority, m x_source* source, m sr_s* sa, m sr_s* result )
+{
+    m$* source_point = x_source_point_s!^( source );
+    sr_s^ sb; frame.eval( priority, source, sb );
+
+    source.parse_fa( " :" );
+
+    sr_s^ sc; frame.eval( priority, source, sc );
+
+    m$* top = :top_s!^( type, sa, sb, sc, source_point );
+    bl_t success = false;
+    top.solve( frame, result, success );
+    if( !success )
+    {
+        = source_point.parse_error_fa( "Operator '#<sc_t> #<sc_t> #<sc_t> '<div-operator>' #<sc_t>' is not defined.\n", bnameof( sa.type() ), ::operator_symbol( type ), bnameof( sb.type() ), bnameof( sc.type() ) );
+    }
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// frameless bop-solve function (covers solve and execute)
+func (:top_s) er_t solve_exportable_a_b_c( @* o, sr_s* a, sr_s* b, sr_s* c, m sr_s* result, m bl_t* success )
+{
+    success.0 = true;
+
+    switch( o.type )
+    {
+        case conditional~:
+        {
+            if( a.is_numeric() )
+            {
+                if( a.to_bl() )
+                {
+                    result.tsc( b.type(), b.o.fork() );
+                }
+                else
+                {
+                    result.tsc( c.type(), c.o.fork() );
+                }
+                = 0;
+            }
+        }
+        break;
+
+        default: break;
+    }
+
+    success.0 = false;
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:top_s) solve
+{
+    // exportable operations
+    o.solve_exportable_a_b_c( o.a, o.b, o.c, result, success );
+    if( success.0 ) = 0;
+
+    success.0 = true;
+
+    // residual (not exportable) operations
+    switch( o.type )
+    {
+        default: break;
+    }
+
+    if
+    (
+           ( :sr_is_exportable_operand( o.a ) || o.a.is_numeric() )
+        && ( :sr_is_exportable_operand( o.b ) || o.b.is_numeric() )
+        && ( :sr_is_exportable_operand( o.c ) || o.c.is_numeric() )
+    )
+    {
+        result.asc( o.fork() );
+        = 0;
+    }
+
+    success.0 = false;
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:top_s) execute
+{
+    sr_s* a = NULL;
+    sr_s* b = NULL;
+    sr_s* c = NULL;
+    if( :sr_is_operator( o.a ) )
+    {
+        m sr_s* r = sr_s!^^;
+        o.a.o.cast( :* ).execute( r );
+        a = r;
+    }
+    else
+    {
+        a = o.a.1;
+    }
+
+    if( :sr_is_operator( o.b ) )
+    {
+        m sr_s* r = sr_s!^^;
+        o.b.o.cast( :* ).execute( r );
+        b = r;
+    }
+    else
+    {
+        b = o.b.1;
+    }
+
+    if( :sr_is_operator( o.c ) )
+    {
+        m sr_s* r = sr_s!^^;
+        o.c.o.cast( :* ).execute( r );
+        c = r;
+    }
+    else
+    {
+        c = o.c.1;
+    }
+
+    bl_t success = false;
+    o.solve_exportable_a_b_c( a, b, c, result, success );
+    if( success ) = 0;
+
+    = o.sp.parse_error_fa( "Operator '#<sc_t> #<sc_t> #<sc_t> '<div-operator>' #<sc_t>' is not executable.\n", bnameof( a.type() ), ::operator_symbol( o.type ), bnameof( b.type() ), bnameof( c.type() ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
 
