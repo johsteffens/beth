@@ -1,6 +1,2 @@
 // test function
-test = func( name, ok )
-{
-    if( !ok ) { PRINT(name+" failed \n") };
-    ok
-}
+embed_function = func( a, b ) { a + b; }

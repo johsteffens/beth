@@ -6,20 +6,19 @@
 
 embed( "../selftest/embed.btcl" );
 
-err = 0;
-
-err = err + !test( "constant", TRUE == (1==1) );
-
-err = err + !test( "arithmetic", 5 + 3 * 2 == 11 );
-err = err + !test( "arithmetic", 5^2 == 25 );
-err = err + !test( "arithmetic", 6/2 == 3 );
-err = err + !test( "arithmetic", 6.5/2 == 3.25 );
-err = err + !test( "arithmetic", 13%10 == 3 );
-err = err + !test( "negation", -( 5 + 3 * 2 ) == 0-11 );
-err = err + !test( "variable", x = 5; x + 3 * 2 == 11 );
-err = err + !test( "string1", x = 12; x + "ab" + x == "12ab12" );
-err = err + !test( "string2", x = 12; x + x + "ab" == "24ab" );
-err = err + !test( "prefix priority", x = func(){5}; -x()*2 == -10 );
+ASSERT( embed_function( 1, 2 ) == 3 );
+ASSERT( TRUE == (1==1) );
+ASSERT( 5 + 3 * 2 == 11 );
+ASSERT( 5^2 == 25 );
+ASSERT( 6/2 == 3 );
+ASSERT( 6.5/2 == 3.25 );
+ASSERT( 13%10 == 3 );
+ASSERT( -( 5 + 3 * 2 ) == 0-11 );
+ASSERT( x = 5; x + 3 * 2 == 11 );
+ASSERT( x = 12; x + "ab" + x == "12ab12" );
+ASSERT( x = 12; x + x + "ab" == "24ab" );
+ASSERT( x = func(){5}; -x()*2 == -10 );
+ASSERT( ( x = 2; y = 3; (x > y) ? "A" : "B" ) == "B" );
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -27,10 +26,10 @@ err = err + !test( "prefix priority", x = func(){5}; -x()*2 == -10 );
 f1 = func( a, b ) { a + b };
 f2 = f1 * 1;
 f3 = f2 * 2;
-err = err + !test( "function - mul", f3 == 3 );
+ASSERT( f3 == 3 );
 
 f3 = f2 << 3 + 1; // same as f2 * ( 3 + 1 ); stream has lower priority
-err = err + !test( "function - stream", f3 == 5 );
+ASSERT( f3 == 5 );
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// recursions
@@ -41,7 +40,7 @@ err = err + !test( "function - stream", f3 == 5 );
 /// factorial function
 factorial = func( x ) { if( x <= 1 ) { 1.0 } else { x * self( x - 1 ) } };
 
-err = err + !test( "factorial", factorial( 4 ) == 24 );
+ASSERT( factorial( 4 ) == 24 );
 
 /// ackermann function
 ackermann = func( n, m )
@@ -63,7 +62,7 @@ ackermann = func( n, m )
     }
 };
 
-err = err + !test( "ackermann", ackermann( 3, 1 ) == 13 );
+ASSERT( ackermann( 3, 1 ) == 13 );
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// func chain
@@ -72,77 +71,78 @@ f1 = func( a ) { a +   1 };
 f2 = func( a ) { a +  10 };
 f3 = func( a ) { a + 100 };
 f_chained = ( f3 ** f2 ) ** ( f1 ** f_head );
-err = err + !test( "func chain", f_chained( 1, 2 ) == 114 );
+ASSERT( f_chained( 1, 2 ) == 114 );
 
 /// args list
-err = err + !test( "func args list", f_head *. [1,2] == 3 );
+ASSERT( f_head *. [1,2] == 3 );
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// stamps, members, type conversion
 
 s = <bcore_hnode_tpuz_s> key: 10 val: 20 </>;
-err = err + !test( "member query", s.key == 10 && s.val == 20 );
+ASSERT( s.key == 10 && s.val == 20 );
 
 // modifier
 s = s( .key= 30, .val = 40 );
-err = err + !test( "member query", s.key == 30 && s.val == 40 );
+ASSERT( s.key == 30 && s.val == 40 );
 
 // type conversion float -> bool
-err = err + !test( "conversion", <bl_t/>( 0.5 ) == TRUE );
+ASSERT( <bl_t/>( 0.0 ) == FALSE );
+ASSERT( <bl_t/>( 0.1 ) == TRUE );
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// external function
 
 ext_add_a   = <x_btcl_btcl_function_stamp_s></> ( .additive = 10 ).add_a;
 ext_add_a_b = <x_btcl_btcl_function_stamp_s/>( .additive = 10 ).add_a_b;
-err = err + !test( "external function", ext_add_a  ( 2    ) == 12 );
-err = err + !test( "external function", ext_add_a_b( 2, 3 ) == 15 );
+ASSERT( ext_add_a  ( 2    ) == 12 );
+ASSERT( ext_add_a_b( 2, 3 ) == 15 );
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// partial function call
 
 f = func( a, b, c, d ) { 1000 * a + 100 * b + 10 * c + d };
-err = err + !test( "partial function", f( 1, 2, 3 )( 4 )   == 1234 );
-err = err + !test( "partial function", f( 1, 2 )( 3 )( 4 ) == 1234 );
-err = err + !test( "partial function", f( 1 )( 2 )( 3, 4 ) == 1234 );
+ASSERT( f( 1, 2, 3 )( 4 )   == 1234 );
+ASSERT( f( 1, 2 )( 3 )( 4 ) == 1234 );
+ASSERT( f( 1 )( 2 )( 3, 4 ) == 1234 );
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// lists
 
-err = err + !test( "list init", [1,2,3]     == 1:2:3 );
-err = err + !test( "list init", [1,2,3]     == [1,2]:3 );
-err = err + !test( "list init", [1,2]:[3]   == [1,2,3] );
-err = err + !test( "list init", [1,2]:[[3]] == [1,2,[3]] );
+ASSERT( [1,2,3]       == (1:2:3) );
+ASSERT( [1,2,3]       == ([1,2]:3) );
+ASSERT( ([1,2]:[3])   == [1,2,3] );
+ASSERT( ([1,2]:[[3]]) == [1,2,[3]] );
 
 list = [1,2,3];
-err = err + !test( "list size", SIZE( list ) == 3 );
-err = err + !test( "list size", list.SIZE() == 3 );
-err = err + !test( "list size", list.arr.SIZE() == 3 );
-err = err + !test( "list element", list.[ 0 ] == 1 && list.[ 1 ] == 2 );
+ASSERT( SIZE( list ) == 3 );
+ASSERT( list.SIZE() == 3 );
+ASSERT( list.arr.SIZE() == 3 );
+ASSERT( list.[ 0 ] == 1 && list.[ 1 ] == 2 );
 
 arr = <bcore_arr_s3_s/>(list);
-err = err + !test( "arr element", arr.[ 0 ] == 1 && arr.[ 1 ] == 2 );
+ASSERT( arr.[ 0 ] == 1 && arr.[ 1 ] == 2 );
 
-err = err + !test( "list spawn", 3::0 == [0,0,0] );
-err = err + !test( "list spawn", 3::func(x){x+1} == [1,2,3] );
+ASSERT( (3::0) == [0,0,0] );
+ASSERT( (3::func(x){x+1}) == [1,2,3] );
 
-err = err + !test( "list transform", [1,2,3]::func(x){-x} == [-1,-2,-3] );
-err = err + !test( "list transform", func(x){-x}*:[1,2,3] == [-1,-2,-3] );
+ASSERT( ([1,2,3]::func(x){-x}) == [-1,-2,-3] );
+ASSERT( (func(x){-x}*:[1,2,3]) == [-1,-2,-3] );
 
-err = err + !test( "list product", ([0]*[1,2]*[4,5]) == ([[0,1,4],[0,1,5],[0,2,4],[0,2,5]]));
+ASSERT( ([0]*[1,2]*[4,5]) == ([[0,1,4],[0,1,5],[0,2,4],[0,2,5]]));
 
-err = err + !test( "list unfold transform", func(a,b){a*b}*.:([1,2]*[4,5]) == [4,5,8,10] );
+ASSERT( (func(a,b){a*b}*.:([1,2]*[4,5])) == [4,5,8,10] );
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// spawned recursion
 
-err = err + !test( "spawned recursion", ["a","b","c","d"] :: func(a,b) { a + b } == "abcd" );
+ASSERT( (["a","b","c","d"] :: func(a,b) { a + b }) == "abcd" );
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// functor
 
 fo = <x_btcl_functor_s/>( func( a, b ){ a - b } );
-err = err + !test( "functor", fo.call( 2, 3 ) == -1 );
+ASSERT( fo.call( 2, 3 ) == -1 );
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// network
@@ -150,18 +150,18 @@ err = err + !test( "functor", fo.call( 2, 3 ) == -1 );
 net_node = @sine( .frq = 1000 );
 net_rack = @:xyz( .lfo = net_node( .frq = 234 )( .frq2 = 123 ), 456, 889 );
 net_wire = @~xyz.lfo;
-err = err + !test( "net_node", net_node.frq == 1000 );
-err = err + !test( "net_rack", net_rack.lfo.frq == 234 );
+ASSERT( net_node.frq == 1000 );
+ASSERT( net_rack.lfo.frq == 234 );
 net_rack << net_node;
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// bug fixes
 
 f = func(){y=10}; // assignment result was not cloned when frame was closed (buggy code returned 0)
-err = err + !test( "bug: assignment lifetime", f() == 10 );
+ASSERT( f() == 10 );
 
-PRINT( if( err > 0 ) { "BTCL: Selftest failed.\n" } else { "BTCL: Selftest finished successfully.\n" } );
+PRINT( "BTCL: Selftest finished successfully.\n" );
 
-err
+0
 
 )

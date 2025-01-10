@@ -2,12 +2,12 @@
 
 ## What it is
 
-BTCL is a simple, easy to use, text based and weakly typed functional language. Its purpose is constructing an object.
+BTCL is a simple, easy to use, text based and weakly typed functional language. Its principal purpose is constructing an object.
 
 BTCL is backward compatible to [BTML](btml.md).
 
 ## Constructive Language
-I use the term ***constructive language*** to specify a language specialized for object construction. It can be placed somewhere between mere markup and general purpose programming. It has the marks of a mature language but offers limited interactivity. It is intended to represent a state rather than a process.
+I use the term ***constructive language*** to specify a language specialized for object construction. In its basic form BTCL is purely functional. Via [specific extensions](#advanced) interactivity and procedural-like behavior can be provided.
 
 Specifically:
 
@@ -45,11 +45,18 @@ z = <bcore_arr_s3_s></>( [1,2,3] );
 <bcore_main_frame_s></>( .create_log_file = TRUE, .log_file_extension = "log" );
 
 // prints object z to stdout (for messaging, inspection, debugging)
-PRINT(z);  // compact formatting where possible
-PRINTX(z); // always btml format
+PRINT(z);   // compact formatting where possible
+PRINTLN(z); // compact formatting where possible; ensures tht output ends in 'newline'
+PRINTX(z);  // prints in btml format
 
-// condition (else-part is optional)
+// assertion (for testing/debugging)
+ASSERT( [1,2,3] == [1,2,3] ); // if expression yields false a parse error is generated
+
+// condition expression (else-part is optional) (not exportable)
 if( a >= b ) { a } else { b };
+
+// conditional operator (exportable)
+a >= b ? a : b;
 
 // List with elements 1, 2, 3
 [1,2,3];
@@ -118,67 +125,80 @@ Multiple consecutive expressions can be chained up, much like a list of statemen
 
 # Operators
 
-Each operator has a numeric priority. On chained operations, higher priority operators are evaluated before lower priority operators. Equal operators are evaluated in the given order (e.g. ```4-1-1 == (4-1)-1 == 2```, ```8/2/2 == (8/2)/2 == 2```).
+Each operator has a numeric priority. On chained or nested operations, higher priority operators are evaluated before lower priority operators. Repeated binary operators are usually evaluated in the LR-order (e.g. ```4-1-1 == (4-1)-1 == 2```, ```8/2/2 == (8/2)/2 == 2```). Certain binary operators are evaluated in RL-order (e.g.```a<<b<<c == a<<(b<<c)```). See also table column 'Order'.
+
 Operators are grouped into priority-groups. Each group is associated with a letter A ... E. Operators in group A have highest and also identical priority.
 All other operators have each a unique priority. A higher group letter means lower priority. A lower position within the group means lower priority.
 
 The following tables contain available operators:
 
 * **Symbol:** The symbol used in BTCL Syntax
+
 * **Type Name:** Identifier for the operator. 
   * The type name is for BTCL internal bookkeeping, error reporting and special purpose BTCL extensions.
+  
 * **Exportable:** When irreducible, the operator can be exported as a meta object (part of constructed object) where an external builder gives it a suitable meaning. (BTCL solution for polymorphism). Exportable operators are important for constructing a [Functor](#functor).
 
+* **Order:** (Only binary operators) If the same operator reoccurs, it is evaluated in the specified order.
 
-## Group A - Binary
+  * **LR:** left to right; **example:**  ```a * b * c == (a * b) * c```
 
-|Symbol|Description|Type Name|Exportable|
-|:---|:---|----|----|
-|```.```|Stamp: Member access; [Node](btcl_network_builder.md): Branch access|member|no|
-|```(```|Function call or stamp modifier; closed by ')'|frame|no|
+  * **RL:** right to left; **example:** ```a << b << c == a << ( b << c )```
 
-## Group B - Unary
+    
 
-|Symbol|Description|Type Name|Exportable|
-|:---|:---|----|----|
-|```+```|Identity|identity|yes|
-|```-```|Arithmetic Negation|neg|yes|
-|```!```|Logic Negation|not|yes|
 
-## Group C - Binary
 
-|Symbol|Description|Type Name|Exportable|
-|:---|:---|----|----|
-|```^```|**Arithmetic**: exponentiation; result type is f3_t|pow|yes|
-|```/```|**Arithmetic**: division|div|yes|
-|```%```|**Arithmetic**: modulo division|mod|yes|
-|```**```|**[Function-Function](#function-operators)**: Chains two functions|chain|yes|
-|```*.:```|**[Function-List](#function-operators)**: Applies function to unfolded list elements|mul_dot_colon|no|
-|```*.```|**[Function-List](#function-operators)**: Applies function to unfolded list|mul_dot|no|
-|```*:```|**[Function-List](#function-operators)**: Applies function to list elements|mul_colon|no|
-|```*```|**Arithmetic, [List](#list-operators), [Function](#function-operators)**: multiplication; Unary function application; Assigning r-expression as argument|mul|yes|
-|```-```|**Arithmetic**: subtraction|sub|yes|
-|```+```|**Arithmetic**: addition; Concatenation of strings.|add|yes|
-|```::```|**[List](#list-operators)**: [Spawning Operator](#Spawning-Operator)|spawn|yes|
-|```:```|**[List](#list-operators)**: Concatenation of objects to form a list; Concatenation of lists|cat|yes|
-|```==```|**Logic**: equal|equal|yes|
-|```!=```|**Logic**: unequal|unequal|yes|
-|```>=```|**Logic**: larger or equal|larger_equal|yes|
-|```>```|**Logic**: larger|larger|yes|
-|```<=```|**Logic**: smaller or equal|smaller_equal|yes|
-|```<```|**Logic**: smaller|smaller|yes|
-|```&&```|**Logic**: AND|and|yes|
-|\|\||**Logic**: OR|or|yes|
-|```<<```|**[Function](#function-operators)**: Assigning r-expression as argument|shift_left|yes|
-|```=```|Assignment|assign|no|
+## Group A
+
+|Symbol|Description|Arity|Type Name|Exportable|
+|:---|:---|----|----|----|
+|```.```|Stamp: Member access; [Node](btcl_network_builder.md): Branch access|unary|member|no|
+|```(```|Function call or stamp modifier; closed by ')'|unary|frame|no|
+
+## Group B
+
+|Symbol|Description|Arity|Type Name|Exportable|
+|:---|:---|----|----|----|
+|```+```|Identity|unary|identity|yes|
+|```-```|Arithmetic Negation|unary|neg|yes|
+|```!```|Logic Negation|unary|not|yes|
+
+## Group C
+
+|Symbol|Description|Arity|Type Name|Exportable|Order|
+|:---|:---|----|----|----|----|
+|```^```|**Arithmetic**: exponentiation; result type is f3_t|binary|pow|yes|LR|
+|```/```|**Arithmetic**: division|binary|div|yes|LR|
+|```%```|**Arithmetic**: modulo division|binary|mod|yes|LR|
+|```**```|**[Function-Function](#function-operators)**: Chains two functions|binary|chain|yes|LR|
+|```*.:```|**[Function-List](#function-operators)**: Applies function to unfolded list elements|binary|mul_dot_colon|no|LR|
+|```*.```|**[Function-List](#function-operators)**: Applies function to unfolded list|binary|mul_dot|no|LR|
+|```*:```|**[Function-List](#function-operators)**: Applies function to list elements|binary|mul_colon|no|LR|
+|```*```|**Arithmetic, [List](#list-operators), [Function](#function-operators)**: multiplication; Unary function application; Assigning r-expression as argument|binary|mul|yes|LR|
+|```-```|**Arithmetic**: subtraction|binary|sub|yes|LR|
+|```+```|**Arithmetic**: addition; Concatenation of strings.|binary|add|yes|LR|
+|```==```|**Logic**: equal|binary|equal|yes|LR|
+|```!=```|**Logic**: unequal|binary|unequal|yes|LR|
+|```>=```|**Logic**: larger or equal|binary|larger_equal|yes|LR|
+|```>```|**Logic**: larger|binary|larger|yes|LR|
+|```<=```|**Logic**: smaller or equal|binary|smaller_equal|yes|LR|
+|```<```|**Logic**: smaller|binary|smaller|yes|LR|
+|```&&```|**Logic**: AND|binary|and|yes|LR|
+|\|\||**Logic**: OR|binary|or|yes|LR|
+|```?```|Conditional operator: \<cond\> ```?``` \<case:true\> ```:``` \<case:false\>|ternary|condition|yes|--|
+|```::```|**[List](#list-operators)**: [Spawning Operator](#Spawning-Operator)|binary|spawn|yes|LR|
+|```:```|**[List](#list-operators)**: Concatenation of objects to form a list; Concatenation of lists|binary|cat|yes|LR|
+|```<<```|Assigning r-expression as function argument or network node.|binary|shift_left|yes|**RL (!)**|
+|```=```|Assignment|binary|assign|no|LR|
 
 ## Group D (Reserved)
 
-## Group E - Binary
+## Group E
 
-|Symbol|Description|Type Name|Exportable|
-|:---|:---|----|----|
-|```;```|[Continuation](#continuation-operator)|continuation|no|
+|Symbol|Description|Arity|Type Name|Exportable|
+|:---|:---|----|----|----|
+|```;```|[Continuation](#continuation-operator)|binary|continuation|no|
 
 # Number
 Numbers are represented as integer ```s3_t``` or floating point ```f3_t```.
@@ -589,7 +609,9 @@ Built-in functions are available by the names listed in the table below. They ar
 |CEIL|Ceiling function|ceil|yes|
 |FLOOR|Floor function|floor|yes|
 |PRINT|Prints object to stdout in compact form; behaves as identity|print|no|
+|PRINTLN|Prints object to stdout in compact form; last character is 'newline'; behaves as identity|println|no|
 |PRINTX|Prints object to stdout in detailed form; behaves as identity|printx|no|
+|ASSERT|Creates an error condition in case expression evaluates to FALSE. Returns TRUE otherwise.|assert|no|
 
 # Built-in Constants
 |Name|Description|
@@ -615,10 +637,11 @@ If the file path is relative, it is taken relative to the folder in which the cu
 The file is embedded in the current frame (no dedicated frame). This allows defining variables (functions) in the embedded file to be used outside the embedding.
 
 # Advanced
-The features below provide special control and functionality for specific use cases that go beyond the typical use of btcl.
+The features below provide special control and functionality for specific use cases that go beyond the typical use of BTCL.
 
-* [External Functions](btcl_external_functions.md): Beth-BTCL API for calling external functions from BTCL code.
-* [Network Builder](btcl_network_builder.md): Construction of a network meta structure.
+* **[External Functions](btcl_external_functions.md)**: Beth-BTCL API for calling external functions from BTCL code.
+* **[Network Builder](btcl_network_builder.md)**: Construction of a network meta structure.
+* **[Plotting](../byth/plot.md#btcl-interface)**: [Byth](../../lib/byth/README.md)-BTCL external functions for plotting using the Python Plotting Framework.
 
 
 

@@ -6,6 +6,8 @@ The graph is intended as meta structure use by an external builder to general th
 
 Each node carries a source point to pass on source information to the external builder.
 
+A typical use case is the construction of signal processing components in a network of data flow. E.g. Video processing; audio processing such as synthesizer and sequencer design. The syntax examples below refer to the synthesize application 'Symbre'.
+
 ## Tree
 The principal structure of the graph is a tree consisting of nodes and branches. For descriptive purposes we imagine the tree to branch out from left to right. Hence the leftmost node is the root of the tree.
 
@@ -80,9 +82,9 @@ The following operators represent a special behavior:
 
 ### Group C - Binary
 
-| Symbol   | Description                                |
-| :------- | :----------------------------------------- |
-| ```<<``` | x_btcl_net_node: Pushes an anonymous node. |
+| Symbol   | Description                                | Order |
+| :------- | :----------------------------------------- | ----- |
+| ```<<``` | x_btcl_net_node: Pushes an anonymous node. | RL    |
 
 
 ## Syntax
@@ -123,5 +125,7 @@ simple_loop = @:rk( @sine( .frq = 1000 ) - @~rk );
 lfo = @sine( .frq = 2 );
 vibrato = @:rk( .lfo = lfo, @sine( .frq = 1000 + 100 * @~rk.lfo ) );
 ```
+### Functions
+When a function is passed as parameter, it is converted into a functor.
 
 <sub>&copy; 2024 Johannes B. Steffens</sub>
