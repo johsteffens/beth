@@ -76,6 +76,54 @@ group bcore_hmap_tpuz = bcore_inst
 
 //----------------------------------------------------------------------------------------------------------------------
 
+stamp bcore_hnode_tpsz_s = obliv bcore_inst
+{
+    tp_t key;
+    sz_t val;
+};
+
+group bcore_hmap_tpsz = bcore_inst
+{
+    signature m sz_t* get   ( c @* o, tp_t key ); // returns pointer to value or NULL when key does not exist
+    signature m sz_t* fget  ( m @* o, tp_t key, sz_t init_val ); // forced-get: returns pointer to value associated with key; if key does not exist, it is crated and value initialized init_val
+    signature m sz_t* set   ( m @* o, tp_t key, sz_t val ); // sets new key; sets/overwrites value and returns pointer to value location
+    signature sz_t remove ( m @* o, tp_t key ); // removes key, returns copy of associated value if existing, 0 otherwise.
+    signature sz_t idx_val( c @* o, uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
+
+    /** Compute a map from (aware) array where -
+     *  - key is the hash from the specified member of each array-element.
+     *  - val is the index position of the array-element.
+     *  Uses via and hash perspectives.
+     *  Elements without 'member_name' are not indexed.
+     *  In case of duplicate-key, the first entry for the key is indexed.
+     *  Duplicate keys can arise from duplicate member values or hash collisions.
+     *  Returns the number of duplicate-keys detected.
+     */
+    signature sz_t from_array( m @* o, m bcore_array* array, tp_t member_name );
+
+    stamp :s = aware bcore_inst
+    {
+        private bcore_hnode_tpsz_s* nodes;
+        private bl_t* flags;
+        uz_t size;
+        uz_t depth_limit;
+
+        func  : .get;
+        func  : .fget;
+        func  : .set;
+        func  : .remove;
+        func :: .exists;
+        func :: .clear;
+        func :: .keys;
+        func :: .size;
+        func :: .idx_key;
+        func  : .idx_val;
+        func  : .from_array;
+    };
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 stamp bcore_hnode_tpfp_s = obliv bcore_inst
 {
     tp_t key;
@@ -265,7 +313,7 @@ group bcore_hmap_tpaw = bcore_inst
 
 group bcore_hmap_tp = bcore_inst
 {
-    signature uz_t get(      c @* o, tp_t key ); // returns index of key; if not existing, index is o->size
+    signature uz_t get(    c @* o, tp_t key ); // returns index of key; if not existing, index is o->size
     signature uz_t set(    m @* o, tp_t key ); // sets new key if not already existing; returns index
     signature uz_t remove( m @* o, tp_t key ); // removes key, returns old index
 

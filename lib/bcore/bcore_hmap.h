@@ -156,6 +156,57 @@ sz_t bcore_hmap_tpuz_s_from_array( bcore_hmap_tpuz_s* o, bcore_array* array, tp_
 
 /**********************************************************************************************************************/
 
+/** bcore_hmap_tpsz_s:
+ *    key-type: tp_t
+ *    val-type: sz_t.
+ *    content shell { bcore_hnode_tpsz_s []; } data; }
+ */
+typedef struct bcore_hnode_tpsz_s
+{
+    tp_t key;
+    sz_t val;
+} bcore_hnode_tpsz_s;
+
+typedef struct bcore_hmap_tpsz_s
+{
+    aware_t _;
+    bcore_hnode_tpsz_s* nodes;
+    bl_t* flags;
+    uz_t size;
+    uz_t depth_limit;
+} bcore_hmap_tpsz_s;
+
+BCORE_DECLARE_FUNCTION_INIT(    bcore_hmap_tpsz_s )
+BCORE_DECLARE_FUNCTION_DOWN(    bcore_hmap_tpsz_s )
+BCORE_DECLARE_FUNCTION_COPY(    bcore_hmap_tpsz_s )
+BCORE_DECLARE_FUNCTION_CREATE(  bcore_hmap_tpsz_s )
+BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_tpsz_s )
+BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_tpsz_s )
+
+sz_t* bcore_hmap_tpsz_s_get(     const bcore_hmap_tpsz_s* o, tp_t key ); // returns pointer to value or NULL when key does not exist
+sz_t* bcore_hmap_tpsz_s_fget(          bcore_hmap_tpsz_s* o, tp_t key, sz_t init_val ); // forced-get: returns pointer to value associated with key; if key does not exist, it is created and value initialized init_val
+sz_t* bcore_hmap_tpsz_s_set(           bcore_hmap_tpsz_s* o, tp_t key, sz_t val ); // sets new key; sets/overwrites value and returns pointer to value location
+sz_t  bcore_hmap_tpsz_s_remove(        bcore_hmap_tpsz_s* o, tp_t key ); // removes key, returns copy of associated value if existing, 0 otherwise.
+bl_t  bcore_hmap_tpsz_s_exists(  const bcore_hmap_tpsz_s* o, tp_t key ); // checks if key exists
+void  bcore_hmap_tpsz_s_clear(         bcore_hmap_tpsz_s* o           ); // removes all entries and frees memory
+sz_t  bcore_hmap_tpsz_s_keys(    const bcore_hmap_tpsz_s* o           ); // returns number of registered keys
+sz_t  bcore_hmap_tpsz_s_size(    const bcore_hmap_tpsz_s* o           ); // returns current size of the hash map (note that this includes empty places)
+tp_t  bcore_hmap_tpsz_s_idx_key( const bcore_hmap_tpsz_s* o, uz_t idx ); // returns indexed key (idx indexes the entire table including empty places)
+sz_t  bcore_hmap_tpsz_s_idx_val( const bcore_hmap_tpsz_s* o, uz_t idx ); // returns indexed value (idx indexes the entire table including empty places)
+
+/** Compute a map from (aware) array where -
+ *  - key is the hash from the specified member of each array-element.
+ *  - val is the index position of the array-element.
+ *  Uses via and hash perspectives.
+ *  Elements without 'member_name' are not indexed.
+ *  In case of duplicate-key, the first entry for the key is indexed.
+ *  Duplicate keys can arise from duplicate member values or hash collisions.
+ *  Returns the number of duplicate-keys detected.
+ */
+sz_t bcore_hmap_tpsz_s_from_array( bcore_hmap_tpsz_s* o, bcore_array* array, tp_t member_name );
+
+/**********************************************************************************************************************/
+
 /** bcore_hmap_tpfp_s:
  *    key-type: tp_t
  *    val-type: fp_t.
