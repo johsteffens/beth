@@ -40,15 +40,17 @@ static const f3_t f3_lim_max = DBL_MAX;     // maximum normalized representable 
 static const f3_t f3_lim_eps = DBL_EPSILON; // minimum representable positive difference to 1.0
 static const f3_t f3_lim_inf = INFINITY;    // floating point representation of infinity
 
-static inline f3_t f3_sqr( f3_t v ) { return v * v; }
-static inline f3_t f3_srt( f3_t v ) { return sqrt( v ); }
-static inline f3_t f3_min( f3_t a, f3_t b ) { return a < b ? a : b; }
-static inline f3_t f3_max( f3_t a, f3_t b ) { return a > b ? a : b; }
-static inline f3_t f3_sig( f3_t v ) { return v  < 0 ? -1 : 1; }
-static inline f3_t f3_abs( f3_t v ) { return v  < 0 ? -v : v; }
-static inline f3_t f3_inv( f3_t v ) { return v != 0 ? 1.0 / v : f3_lim_inf; }
-static inline s2_t f3_rs2( f3_t v ) { return  lrint( v ); }
-static inline s3_t f3_rs3( f3_t v ) { return llrint( v ); }
+static inline f3_t f3_ident( f3_t v ) { return  v; }
+static inline f3_t f3_neg  ( f3_t v ) { return -v; }
+static inline f3_t f3_sqr  ( f3_t v ) { return v * v; }
+static inline f3_t f3_srt  ( f3_t v ) { return sqrt( v ); }
+static inline f3_t f3_min  ( f3_t a, f3_t b ) { return a < b ? a : b; }
+static inline f3_t f3_max  ( f3_t a, f3_t b ) { return a > b ? a : b; }
+static inline f3_t f3_sig  ( f3_t v ) { return v  < 0 ? -1 : 1; }
+static inline f3_t f3_abs  ( f3_t v ) { return v  < 0 ? -v : v; }
+static inline f3_t f3_inv  ( f3_t v ) { return v != 0 ? 1.0 / v : f3_lim_inf; }
+static inline s2_t f3_rs2  ( f3_t v ) { return  lrint( v ); }
+static inline s3_t f3_rs3  ( f3_t v ) { return llrint( v ); }
 static inline void f3_t_swap( f3_t* v1, f3_t* v2 ) { f3_t t = *v1; *v1 = *v2; *v2 = t;  }
 
 /// math constants
@@ -59,7 +61,7 @@ static inline f3_t f3_srt2( void ) { return 1.4142135623730950488016887; } // sq
 
 static inline bl_t f3_is_nan( f3_t v ) { return v != v; } // nan compares unequal to itself
 
-/// functions
+/// extended math functions
 static inline f3_t f3_exp  ( f3_t v ) { return exp( v ); }
 static inline f3_t f3_log  ( f3_t v ) { return v > 0 ? log  ( v ) : -f3_lim_max; }
 static inline f3_t f3_log2 ( f3_t v ) { return v > 0 ? log2 ( v ) : -f3_lim_max; }
@@ -93,15 +95,17 @@ static const f2_t f2_lim_max = FLT_MAX;     // maximum normalized representable 
 static const f2_t f2_lim_eps = FLT_EPSILON; // minimum representable positive difference to 1.0
 static const f2_t f2_lim_inf = INFINITY;    // floating point representation of infinity
 
-static inline f2_t f2_sqr( f2_t v ) { return v * v; }
-static inline f2_t f2_srt( f2_t v ) { return sqrt( v ); }
-static inline f2_t f2_min( f2_t a, f2_t b ) { return a < b ? a : b; }
-static inline f2_t f2_max( f2_t a, f2_t b ) { return a > b ? a : b; }
-static inline f2_t f2_sig( f2_t v ) { return v  < 0 ? -1 : 1; }
-static inline f2_t f2_abs( f2_t v ) { return v  < 0 ? -v : v; }
-static inline f2_t f2_inv( f2_t v ) { return v != 0 ? 1.0 / v : f2_lim_inf; }
-static inline s2_t f2_rs2( f2_t v ) { return  lrintf( v ); }
-static inline s3_t f2_rs3( f2_t v ) { return llrintf( v ); }
+static inline f2_t f2_ident( f2_t v ) { return  v; }
+static inline f2_t f2_neg  ( f2_t v ) { return -v; }
+static inline f2_t f2_sqr  ( f2_t v ) { return v * v; }
+static inline f2_t f2_srt  ( f2_t v ) { return sqrt( v ); }
+static inline f2_t f2_min  ( f2_t a, f2_t b ) { return a < b ? a : b; }
+static inline f2_t f2_max  ( f2_t a, f2_t b ) { return a > b ? a : b; }
+static inline f2_t f2_sig  ( f2_t v ) { return v  < 0 ? -1 : 1; }
+static inline f2_t f2_abs  ( f2_t v ) { return v  < 0 ? -v : v; }
+static inline f2_t f2_inv  ( f2_t v ) { return v != 0 ? 1.0 / v : f2_lim_inf; }
+static inline s2_t f2_rs2  ( f2_t v ) { return  lrintf( v ); }
+static inline s3_t f2_rs3  ( f2_t v ) { return llrintf( v ); }
 static inline void f2_t_swap( f2_t* v1, f2_t* v2 ) { f2_t t = *v1; *v1 = *v2; *v2 = t;  }
 
 /// math constants
@@ -112,7 +116,7 @@ static inline f2_t f2_srt2( void ) { return 1.4142135623730950488016887; } // sq
 
 static inline bl_t f2_is_nan( f2_t v ) { return v != v; } // nan compares unequal to itself
 
-/// functions
+/// extended math functions
 static inline f2_t f2_exp  ( f2_t v ) { return expf( v ); }
 static inline f2_t f2_log  ( f2_t v ) { return v > 0 ? logf  ( v ) : -f2_lim_max; }
 static inline f2_t f2_log2 ( f2_t v ) { return v > 0 ? log2f ( v ) : -f2_lim_max; }
