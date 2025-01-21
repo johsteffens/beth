@@ -33,6 +33,9 @@ name SQRT;
 name ABS;
 name CEIL;
 name FLOOR;
+name MAX;
+name MIN;
+name IFE;
 name PRINT;
 name PRINTLN;
 name PRINTX;
@@ -65,6 +68,9 @@ func (:context_s) set_reserved_funcs
     o.hmap_reserved_func.set_sc( "ABS" );
     o.hmap_reserved_func.set_sc( "CEIL" );
     o.hmap_reserved_func.set_sc( "FLOOR" );
+    o.hmap_reserved_func.set_sc( "MAX" );
+    o.hmap_reserved_func.set_sc( "MIN" );
+    o.hmap_reserved_func.set_sc( "IFE" );
     o.hmap_reserved_func.set_sc( "PRINT" );
     o.hmap_reserved_func.set_sc( "PRINTLN" );
     o.hmap_reserved_func.set_sc( "PRINTX" );
@@ -134,20 +140,85 @@ func (:frame_s) er_t eval_reserved_func( m@* o, tp_t name, m x_source* source, b
 {
     switch( name )
     {
-        case SIZE~:  :export_eval_uop_type( o, size~,  0, source, postfix, sr ); break;
-        case EXP~:   :export_eval_uop_type( o, exp~,   0, source, postfix, sr ); break;
-        case LOG~:   :export_eval_uop_type( o, log~,   0, source, postfix, sr ); break;
-        case LOG2~:  :export_eval_uop_type( o, log2~,  0, source, postfix, sr ); break;
-        case LOG10~: :export_eval_uop_type( o, log10~, 0, source, postfix, sr ); break;
-        case SIN~:   :export_eval_uop_type( o, sin~,   0, source, postfix, sr ); break;
-        case COS~:   :export_eval_uop_type( o, cos~,   0, source, postfix, sr ); break;
-        case TAN~:   :export_eval_uop_type( o, tan~,   0, source, postfix, sr ); break;
-        case TANH~:  :export_eval_uop_type( o, tanh~,  0, source, postfix, sr ); break;
-        case SIGN~:  :export_eval_uop_type( o, sign~,  0, source, postfix, sr ); break;
-        case SQRT~:  :export_eval_uop_type( o, sqrt~,  0, source, postfix, sr ); break;
-        case ABS~:   :export_eval_uop_type( o, abs~,   0, source, postfix, sr ); break;
-        case CEIL~:  :export_eval_uop_type( o, ceil~,  0, source, postfix, sr ); break;
-        case FLOOR~: :export_eval_uop_type( o, floor~, 0, source, postfix, sr ); break;
+        case SIZE~:  :operator_eval_uop_type( o, size~,  0, source, postfix, sr ); break;
+        case EXP~:   :operator_eval_uop_type( o, exp~,   0, source, postfix, sr ); break;
+        case LOG~:   :operator_eval_uop_type( o, log~,   0, source, postfix, sr ); break;
+        case LOG2~:  :operator_eval_uop_type( o, log2~,  0, source, postfix, sr ); break;
+        case LOG10~: :operator_eval_uop_type( o, log10~, 0, source, postfix, sr ); break;
+        case SIN~:   :operator_eval_uop_type( o, sin~,   0, source, postfix, sr ); break;
+        case COS~:   :operator_eval_uop_type( o, cos~,   0, source, postfix, sr ); break;
+        case TAN~:   :operator_eval_uop_type( o, tan~,   0, source, postfix, sr ); break;
+        case TANH~:  :operator_eval_uop_type( o, tanh~,  0, source, postfix, sr ); break;
+        case SIGN~:  :operator_eval_uop_type( o, sign~,  0, source, postfix, sr ); break;
+        case SQRT~:  :operator_eval_uop_type( o, sqrt~,  0, source, postfix, sr ); break;
+        case ABS~:   :operator_eval_uop_type( o, abs~,   0, source, postfix, sr ); break;
+        case CEIL~:  :operator_eval_uop_type( o, ceil~,  0, source, postfix, sr ); break;
+        case FLOOR~: :operator_eval_uop_type( o, floor~, 0, source, postfix, sr ); break;
+
+        case MAX~:
+        {
+            sr_s^ sa;
+            if( postfix )
+            {
+                sa.twc( sr.type(), sr.o );
+            }
+            else
+            {
+                o.eval( 0, source, sa );
+            }
+            source.parse_fa( " , " );
+            :operator_eval_bop_type( o, max~, 0, source, sa, sr );
+        }
+        break;
+
+        case MIN~:
+        {
+            sr_s^ sa;
+            if( postfix )
+            {
+                sa.twc( sr.type(), sr.o );
+            }
+            else
+            {
+                o.eval( 0, source, sa );
+            }
+            source.parse_fa( " , " );
+            :operator_eval_bop_type( o, min~, 0, source, sa, sr );
+        }
+        break;
+
+        case IFE~:
+        {
+            sr_s^ sa;
+            if( postfix )
+            {
+                sa.twc( sr.type(), sr.o );
+            }
+            else
+            {
+                o.eval( 0, source, sa );
+            }
+            source.parse_fa( " , " );
+
+            sr_s^ sb;
+            o.eval( 0, source, sb );
+
+            source.parse_fa( " , " );
+
+            sr_s^ sc;
+            o.eval( 0, source, sc );
+
+
+            tp_t op_type = conditional~;
+            m$* top = :operator_top_s!^( op_type, sa, sb, sc, x_source_point_s!^( source ) );
+            bl_t success = false;
+            top.solve( o, sr, success );
+            if( !success )
+            {
+                = source.parse_error_fa( "Operator IFE( #<sc_t>, #<sc_t>, #<sc_t> ) is not defined.\n", bnameof( sa.type() ), bnameof( sb.type() ), bnameof( sc.type() ) );
+            }
+        }
+        break;
 
         case PRINT~:
         case PRINTLN~:

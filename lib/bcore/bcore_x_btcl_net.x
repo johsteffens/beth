@@ -51,7 +51,7 @@ stamp :node_s x_array
     :branch_s => [];
     hidden x_source_point_s sp;
 
-    func ::export.is_exportable_operand = true;
+    func ::operator.is_exportable_operand = true;
 
     func o setup( m@* o, tp_t type, tp_t name, x_source_point_s* sp )
     {
@@ -63,7 +63,9 @@ stamp :node_s x_array
 
     func o setup_wire( m@* o, tp_t rack_name, tp_t wire_name, x_source_point_s* sp )
     {
-        = o.setup( wire~, rack_name, sp ).push_branch( wire_name, true, sp, NULL );
+        o.setup( wire~, rack_name, sp );
+        if( wire_name ) o.push_branch( wire_name, true, sp, NULL );
+        = o;
     }
 
     func bl_t exists( m@* o, tp_t branch_name )

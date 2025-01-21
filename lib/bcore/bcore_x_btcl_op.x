@@ -391,19 +391,19 @@ func (:frame_s) er_t eval_op( m@* o, s2_t exit_priority, m x_source* source, m s
     op_priority = :priority_c();
 
     if( op_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'^'" ) ) :export_eval_bop_type( o, pow~, op_priority, source, obj, obj );
+    while( source.parse_bl( " #?'^'" ) ) :operator_eval_bop_type( o, pow~, op_priority, source, obj, obj );
     op_priority--;
 
     if( op_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'/'" ) ) :export_eval_bop_type( o, div~, op_priority, source, obj, obj );
+    while( source.parse_bl( " #?'/'" ) ) :operator_eval_bop_type( o, div~, op_priority, source, obj, obj );
     op_priority--;
 
     if( op_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'%'" ) ) :export_eval_bop_type( o, mod~, op_priority, source, obj, obj );
+    while( source.parse_bl( " #?'%'" ) ) :operator_eval_bop_type( o, mod~, op_priority, source, obj, obj );
     op_priority--;
 
     if( op_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'**'" ) ) :export_eval_bop_type( o, chain~, op_priority, source, obj, obj );
+    while( source.parse_bl( " #?'**'" ) ) :operator_eval_bop_type( o, chain~, op_priority, source, obj, obj );
     op_priority--;
 
     if( op_priority <= exit_priority ) = 0;
@@ -419,65 +419,65 @@ func (:frame_s) er_t eval_op( m@* o, s2_t exit_priority, m x_source* source, m s
     op_priority--;
 
     if( op_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'*'" ) ) :export_eval_bop_type( o, mul~, op_priority, source, obj, obj );
+    while( source.parse_bl( " #?'*'" ) ) :operator_eval_bop_type( o, mul~, op_priority, source, obj, obj );
     op_priority--;
 
     if( op_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'-'" ) ) :export_eval_bop_type( o, sub~, op_priority, source, obj, obj );
+    while( source.parse_bl( " #?'-'" ) ) :operator_eval_bop_type( o, sub~, op_priority, source, obj, obj );
     op_priority--;
 
     if( op_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'+'" ) ) :export_eval_bop_type( o, add~, op_priority, source, obj, obj );
+    while( source.parse_bl( " #?'+'" ) ) :operator_eval_bop_type( o, add~, op_priority, source, obj, obj );
     op_priority--;
 
     if( op_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'!='" ) ) :export_eval_bop_type( o, unequal~, op_priority, source, obj, obj );
+    while( source.parse_bl( " #?'!='" ) ) :operator_eval_bop_type( o, unequal~, op_priority, source, obj, obj );
     op_priority--;
 
     if( op_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'=='" ) ) :export_eval_bop_type( o, equal~, op_priority, source, obj, obj );
+    while( source.parse_bl( " #?'=='" ) ) :operator_eval_bop_type( o, equal~, op_priority, source, obj, obj );
     op_priority--;
 
     if( op_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'>='" ) ) :export_eval_bop_type( o, larger_equal~, op_priority, source, obj, obj );
+    while( source.parse_bl( " #?'>='" ) ) :operator_eval_bop_type( o, larger_equal~, op_priority, source, obj, obj );
     op_priority--;
 
     if( op_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?([0]=='>'&&[1]!='>')" ) ) { source.get_char(); :export_eval_bop_type( o, larger~, op_priority, source, obj, obj ); }
+    while( source.parse_bl( " #?([0]=='>'&&[1]!='>')" ) ) { source.get_char(); :operator_eval_bop_type( o, larger~, op_priority, source, obj, obj ); }
     op_priority--;
 
     if( op_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'<='" ) ) :export_eval_bop_type( o, smaller_equal~, op_priority, source, obj, obj );
+    while( source.parse_bl( " #?'<='" ) ) :operator_eval_bop_type( o, smaller_equal~, op_priority, source, obj, obj );
     op_priority--;
 
     if( op_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?([0]=='<'&&[1]!='<')" ) ) { source.get_char(); :export_eval_bop_type( o, smaller~, op_priority, source, obj, obj ); }
+    while( source.parse_bl( " #?([0]=='<'&&[1]!='<')" ) ) { source.get_char(); :operator_eval_bop_type( o, smaller~, op_priority, source, obj, obj ); }
     op_priority--;
 
     if( op_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'&&'" ) ) :export_eval_bop_type( o, and~, op_priority, source, obj, obj );
+    while( source.parse_bl( " #?'&&'" ) ) :operator_eval_bop_type( o, and~, op_priority, source, obj, obj );
     op_priority--;
 
     if( op_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'||'" ) ) :export_eval_bop_type( o, or~, op_priority, source, obj, obj );
+    while( source.parse_bl( " #?'||'" ) ) :operator_eval_bop_type( o, or~, op_priority, source, obj, obj );
     op_priority--;
 
     if( op_priority <= exit_priority ) = 0;
     op_priority--; // extra priority decrease to allow conditional reoccurring in a branch
-    /*no loop here:*/ if( source.parse_bl( " #?'?'" ) ) :export_eval_top_type( o, conditional~, op_priority, source, obj, obj );
+    /*no loop here:*/ if( source.parse_bl( " #?'?'" ) ) :operator_eval_top_type( o, conditional~, op_priority, source, obj, obj );
     op_priority--;
 
     if( op_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?'::'" ) ) :export_eval_bop_type( o, spawn~, op_priority, source, obj, obj );
+    while( source.parse_bl( " #?'::'" ) ) :operator_eval_bop_type( o, spawn~, op_priority, source, obj, obj );
     op_priority--;
 
     if( op_priority <= exit_priority ) = 0;
-    while( source.parse_bl( " #?':'" ) ) :export_eval_bop_type( o, cat~, op_priority, source, obj, obj );
+    while( source.parse_bl( " #?':'" ) ) :operator_eval_bop_type( o, cat~, op_priority, source, obj, obj );
     op_priority--;
 
     // !!! '<<' evaluates in RL-order !!!
     if( op_priority < /*not '<=' */ exit_priority ) = 0; // op_priority < exit_priority ensures evaluation from right to left
-    while( source.parse_bl( " #?'<<'" ) ) :export_eval_bop_type( o, shift_left~, op_priority, source, obj, obj );
+    while( source.parse_bl( " #?'<<'" ) ) :operator_eval_bop_type( o, shift_left~, op_priority, source, obj, obj );
     op_priority--;
 
     if( op_priority <= exit_priority ) = 0;

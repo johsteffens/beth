@@ -24,7 +24,7 @@
 name member, frame;
 
 // builtin functions
-name exp, log, log2, log10, sin, cos, tan, tanh, sign, sqrt, abs, ceil, floor, size;
+name exp, log, log2, log10, sin, cos, tan, tanh, sign, sqrt, abs, ceil, floor, max, min, ife, size;
 
 // Group B, unary
 name identity, neg, not, print, println, printx, assert;
@@ -65,6 +65,9 @@ func sc_t operator_symbol( tp_t type )
         case abs~:     = "ABS";
         case ceil~:    = "CEIL";
         case floor~:   = "FLOOR";
+        case max~:     = "MAX";
+        case min~:     = "MIN";
+        case ife~:     = "IFE";
         case size~:    = "SIZE";
         case print~:   = "PRINT";
         case println~: = "PRINTLN";
@@ -156,31 +159,6 @@ func void clone_if_weak_or_twice_referenced( m sr_s* sr )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// crates a usable path from an embedded file path
-func er_t get_embedding_file_path( m x_source* source, sc_t in_path, m st_s* out_path )
-{
-    m st_s* folder = bcore_file_folder_path( source.get_file() )^^;
-    if( folder.size == 0 ) folder.push_char( '.' );
-
-    if( in_path[ 0 ] == '/' )
-    {
-        out_path.copy_sc( in_path );
-    }
-    else
-    {
-        out_path.copy_fa( "#<sc_t>/#<sc_t>", folder.sc, in_path );
-    }
-
-    if( !bcore_file_exists( out_path.sc ) )
-    {
-        = source.parse_error_fa( "embed: File '#<sc_t>' not found.", out_path->sc );
-    }
-
-    = 0;
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
 // copies sb into sr by first trying type conversion then using generic conversions
 func er_t generic_copy( m sr_s* sr, c sr_s* sb )
 {
@@ -226,10 +204,14 @@ name else;
 name self;
 name func;
 name embed;
+name prefix;
 
 // The context is created in the root frame and shared across all child frames
 stamp :context_s
 {
+    /// Search paths for embedding other files.
+    bcore_arr_st_s => embed_path_arr;
+
     /// reserved keywords
     bcore_hmap_name_s hmap_reserved_key;
     bcore_hmap_name_s hmap_reserved_func;
@@ -251,6 +233,7 @@ stamp :context_s
         o.hmap_reserved_key.set_sc( "self" );
         o.hmap_reserved_key.set_sc( "func" );
         o.hmap_reserved_key.set_sc( "embed" );
+        o.hmap_reserved_key.set_sc( "prefix" );
     }
 
 
@@ -284,7 +267,51 @@ stamp :context_s
     }
 }
 
+/// crates a usable path from an embedded file path
+func (:context_s) er_t get_embedding_file_path( @* o, m x_source* source, sc_t in_path, m st_s* out_path )
+{
+    m$* try_path = st_s!^;
+
+    if( in_path[ 0 ] == '/' )
+    {
+        try_path.copy_sc( in_path );
+    }
+    else
+    {
+        m st_s* folder = bcore_file_folder_path( source.get_file() )^;
+        if( folder.size == 0 ) folder.push_char( '.' );
+        try_path.copy_fa( "#<sc_t>/#<sc_t>", folder.sc, in_path );
+
+        if( !bcore_file_exists( try_path.sc ) )
+        {
+            if( o.embed_path_arr )
+            {
+                foreach( $* st in o.embed_path_arr )
+                {
+                    try_path.copy_fa( "#<sc_t>/#<sc_t>", st.sc, in_path );
+                    if( bcore_file_exists( try_path.sc ) ) break;
+                }
+            }
+        }
+    }
+
+    if( !bcore_file_exists( try_path.sc ) )
+    {
+        = source.parse_error_fa( "embed: File '#<sc_t>' not found.", in_path );
+    }
+
+    out_path.copy( try_path );
+
+    = 0;
+};
+
 //----------------------------------------------------------------------------------------------------------------------
+
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /// global constants
 
 // frame depth limit: used to detect unlimited recursions
@@ -299,6 +326,10 @@ func s2_t priority_b() = 40000; // unary prefix operators
 func s2_t priority_c() = 30000; // most remaining binary operators
 func s2_t priority_d() = 20000; // reserved
 func s2_t priority_e() = 10000; // continuation
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -382,6 +413,27 @@ stamp :frame_s
     func m sr_s* var_set( m@* o, tp_t name, sr_s sr )
     {
          = o.var_map.set( name, sr );
+    }
+
+    // adds variables from src_frame optionally applying '<prefix>_' to variable names
+    func o import_forked_vars( m@* o, tp_t prefix, m@* src_frame )
+    {
+        sz_t size = src_frame.var_map.size;
+        for( sz_t i = 0; i < size; i++ )
+        {
+            tp_t key = src_frame.var_map.idx_key( i );
+            if( key )
+            {
+                tp_t name = key;
+                if( prefix )
+                {
+                    sc_t prefix_name = o.nameof( prefix );
+                    name = o.entypeof( st_s!^.copy_fa( "#<sc_t>_#<sc_t>", prefix_name, src_frame.nameof( key ) ).sc ) ;
+                }
+                c sr_s* src_sr = src_frame.var_map.idx_val( i );
+                o.var_set( name, sr_tsm( src_sr.type(), src_sr.o.fork() ) );
+            }
+        }
     }
 
     // copies sb into sr by first trying type conversion then using generic conversions
@@ -512,7 +564,6 @@ stamp :list_s
         if( detailed ) sink.push_fa( "\n" );
         = 0;
     }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -649,10 +700,13 @@ stamp :external_function_s
 
     func er_t execute( m@* o, x_source_point_s* sp, m :frame_s* lexical_frame, bcore_arr_sr_s* args, m sr_s* sr )
     {
+        sr.clear();
         if( o.object.btcl_function( o.name, sp, lexical_frame, args, sr ) ) { = sp.parse_error_fa( "#<sc_t>", bcore_error_pop_all_to_st( st_s!^ ).sc ); }
         = 0;
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /// a function is a composition of signature and block
 stamp :function_s
@@ -741,7 +795,7 @@ func (:function_s) er_t call( m@* o, m x_source_point_s* source_point, m :frame_
         result.asm( :function_s!.setup_wrapped_function( o, arg_list) );
         = 0;
     }
-    else
+    else if( arg_list.size == signature.arg_list.size )
     {
         if( o.block )
         {
@@ -775,6 +829,11 @@ func (:function_s) er_t call( m@* o, m x_source_point_s* source_point, m :frame_
         }
         = 0;
     }
+    else
+    {
+        source_point.parse_error_fa( "Too many arguments. Function accepts #<sz_t> argument#<sc_t>.\n", signature.arg_list.size, signature.arg_list.size != 1 ? "s" : "" );
+    }
+    = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -888,17 +947,61 @@ func(:frame_s) er_t eval_number_literal( m @* o, m x_source* source, m sr_s* sr 
         }
     }
 
+    f3_t factor = 1.0;
+    bl_t use_suffix = true;
+
+    char c = source.inspect_char();
+    switch( c )
+    {
+        case 'd': factor = 1E-1;  break; // deci
+        case 'c': factor = 1E-2;  break; // centi
+        case 'm': factor = 1E-3;  break; // milli
+        case 'u': factor = 1E-6;  break; // micro
+        case 'n': factor = 1E-9;  break; // nano
+        case 'p': factor = 1E-12; break; // pico
+        case 'f': factor = 1E-15; break; // femto
+        case 'a': factor = 1E-18; break; // atto
+        case 'z': factor = 1E-21; break; // zepto
+        case 'y': factor = 1E-24; break; // yocto
+        case 'r': factor = 1E-27; break; // ronto
+        case 'q': factor = 1E-30; break; // quecto
+
+        case 'D': factor = 1E+1;  break; // deca
+        case 'C': factor = 1E+2;  break; // cento
+        case 'K': factor = 1E+3;  break; // kilo
+        case 'M': factor = 1E+6;  break; // mega
+        case 'G': factor = 1E+9;  break; // giga
+        case 'T': factor = 1E+12; break; // tera
+        case 'P': factor = 1E+15; break; // peta
+        case 'E': factor = 1E+18; break; // exa
+        case 'Z': factor = 1E+21; break; // zetta
+        case 'Y': factor = 1E+24; break; // yotta
+        case 'R': factor = 1E+27; break; // ronna
+        case 'Q': factor = 1E+30; break; // quetta
+
+        default: use_suffix = false; break;
+    }
+
+    if( use_suffix ) source.get_char();
+
     if( is_float )
     {
         f3_t f3 = 0;
         st.parse_fa( 0, -1, "#<f3_t*>", f3.1 );
-        sr.const_from_f3( f3 );
+        sr.const_from_f3( f3 * factor );
     }
     else
     {
         s3_t s3 = 0;
         st.parse_fa( 0, -1, "#<s3_t*>", s3.1 );
-        sr.const_from_s3( s3 );
+        if( use_suffix )
+        {
+            sr.const_from_f3( s3 * factor );
+        }
+        else
+        {
+            sr.const_from_s3( s3 );
+        }
     }
 
     = 0;
@@ -969,9 +1072,9 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
     ASSERT( obj.o == NULL );
 
     /// prefix operators
-    if     ( source.parse_bl( " #?'+'" ) ) :export_eval_uop_type( o, identity~, :priority_c(), source, false, obj );
-    else if( source.parse_bl( " #?'-'" ) ) :export_eval_uop_type( o, neg~,      :priority_c(), source, false, obj );
-    else if( source.parse_bl( " #?'!'" ) ) :export_eval_uop_type( o, not~,      :priority_c(), source, false, obj );
+    if     ( source.parse_bl( " #?'+'" ) ) :operator_eval_uop_type( o, identity~, :priority_c(), source, false, obj );
+    else if( source.parse_bl( " #?'-'" ) ) :operator_eval_uop_type( o, neg~,      :priority_c(), source, false, obj );
+    else if( source.parse_bl( " #?'!'" ) ) :operator_eval_uop_type( o, not~,      :priority_c(), source, false, obj );
 
     /// number literal
     else if( source.parse_bl( " #?([0]>='0'&&[0]<='9')" ) )
@@ -1066,12 +1169,47 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
                     source.parse_fa( " )" );
                     if( sb.type() != st_s~ ) = source.parse_error_fa( "Keyword 'embed': Expression must evaluate to a string.\n" );
                     m st_s* path = st_s!^;
-                    :get_embedding_file_path( source, sb.o.cast( st_s* ).sc, path );
+                    o.context.get_embedding_file_path( source, sb.o.cast( st_s* ).sc, path );
                     m x_source* emb_source = bcore_file_open_source( path.sc )^;
                     o.eval( 0, emb_source, obj );
 
                     emb_source.parse_fa( " " );
                     if( !emb_source.eos() ) emb_source.parse_error_fa( "Unexpected expression. Semicolon ';' missing on previous expression?\n" );
+                }
+                break;
+
+                /// Prefixing
+                case TYPEOF_prefix:
+                {
+                    source.parse_fa( " (" );
+
+                    m$* result = sr_s!^;
+                    m$* frame = :frame_s!^.setup( o );
+                    frame.eval( 0, source, result );
+
+                    if( result.type() != st_s~ ) = source.parse_error_fa( "Keyword 'prefix': Prefix identifier must evaluate to a string.\n" );
+
+                    $* st_prefix = result.o.cast( st_s* );
+
+                    if( st_prefix.size == 0 ) = source.parse_error_fa( "Keyword 'prefix': Prefix is the empty string.\n" );
+
+                    tp_t prefix_name = o.entypeof( st_prefix.sc );
+
+                    source.parse_fa( " ," );
+
+                    result.clear();
+
+                    frame.eval( 0, source, result );
+                    :clone_if_weak( result );
+
+                    o.import_forked_vars( prefix_name, frame );
+
+                    if( result.o )
+                    {
+                        o.var_set( prefix_name, sr_tsm( result.type(), result.o.fork() ) );
+                    }
+
+                    source.parse_fa( " )" );
                 }
                 break;
 
@@ -1164,22 +1302,34 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
         x_source_point_s* sp = x_source_point_s!^.setup_from_source( source );
         if( source.parse_bl( " #?'~'" ) ) // wire
         {
-            if( !:is_identifier( source ) ) = source.parse_error_fa( "Rack identifier expected.\n" );
-            tp_t rack_name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
+            tp_t rack_name = 0;
+            if( :is_identifier( source ) )
+            {
+                rack_name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
+            }
+
             tp_t wire_name = 0;
             if( source.parse_bl( " #?'.' " ) )
             {
                 if( !:is_identifier( source ) ) = source.parse_error_fa( "Branch identifier expected.\n" );
                 wire_name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
             }
+
             obj.asm( :net_node_s!.setup_wire( rack_name, wire_name, sp ) );
         }
         else
         {
             tp_t node_type = 0; // generic
             if( source.parse_bl( " #?':'" ) ) node_type = rack~;
-            if( !:is_identifier( source ) ) = source.parse_error_fa( "Identifier expected.\n" );
-            tp_t node_name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
+            tp_t node_name = 0;
+            if( :is_identifier( source ) )
+            {
+                node_name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
+            }
+            else if( node_type != TYPEOF_rack )
+            {
+                = source.parse_error_fa( "Node identifier expected.\n" );
+            }
             obj.asm( :net_node_s!.setup( node_type, node_name, sp ) );
         }
     }
@@ -1253,9 +1403,11 @@ func (:frame_s) er_t parse_create_final_object( m@* o, m x_source* source, m sr_
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func parse_create_object
+func (:s) parse_create_object
 {
-    m$* frame = :frame_s!^.setup_as_root( NULL );
+    m$* context = :context_s!^.setup();
+    context.embed_path_arr =< o.embed_path_arr.fork();
+    m$* frame = :frame_s!^.setup_as_root( context );
     = frame.parse_create_final_object( source, obj );
 }
 
@@ -1268,9 +1420,11 @@ func parse_create_object
 embed "bcore_x_btcl_builtin.x";
 embed "bcore_x_btcl_op.x";
 
-group :export  { embed "bcore_x_btcl_export.x";  }
-group :net     { embed "bcore_x_btcl_net.x";     }
-group :functor { embed "bcore_x_btcl_functor.x"; }
+group :operator    { embed "bcore_x_btcl_operator.x";  }
+group :operator_f3 { embed "bcore_x_btcl_operator_f3.x"; }
+group :net         { embed "bcore_x_btcl_net.x";     }
+group :functor     { embed "bcore_x_btcl_functor.x"; }
+group :functor_f3  { embed "bcore_x_btcl_functor_f3.x"; }
 
 //----------------------------------------------------------------------------------------------------------------------
 

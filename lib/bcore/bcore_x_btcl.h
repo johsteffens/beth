@@ -41,7 +41,61 @@ XOILA_DEFINE_GROUP( x_btcl, x_inst )
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
-/// Interface
+/// Main Parser Interface
+
+//----------------------------------------------------------------------------------------------------------------------
+
+stamp :s
+{
+    /// Search paths for embedding other files.
+    bcore_arr_st_s => embed_path_arr;
+
+    /** Reads full object from source.
+     *  If o implements copy_typed, automatic type conversion is used.
+     *  Allows recovering from parse errors and conversion errors.
+     *  Checks error-stack after copy_typed.
+     *  In case of a parse error o is not being changed.
+     */
+    func er_t t_from_source( @* o, m:* obj, tp_t t, m x_source* source );
+    func er_t   from_source( @* o, m:* obj,         m x_source* source ) = o.t_from_source( obj, obj._, source );
+    func er_t t_from_file  ( @* o, m:* obj, tp_t t,   sc_t file ) = o.t_from_source( obj, t, x_source_check_create_from_file( file )^ );
+    func er_t   from_file  ( @* o, m:* obj,           sc_t file ) = o.t_from_file  ( obj, obj._, file );
+    func er_t t_from_st    ( @* o, m:* obj, tp_t t, c st_s* st  ) = o.t_from_source( obj, t, x_source_create_from_st( st )^ );
+    func er_t   from_st    ( @* o, m:* obj,         c st_s* st  ) = o.t_from_st    ( obj, obj._, st );
+    func er_t t_from_sc    ( @* o, m:* obj, tp_t t,   sc_t  sc  ) = o.t_from_source( obj, t, x_source_create_from_sc( sc )^ );
+    func er_t   from_sc    ( @* o, m:* obj,           sc_t  sc  ) = o.t_from_sc    ( obj, obj._, sc );
+
+    /** Reads and creates object from source.
+     *  Returns NULL in case of parse error (check error-stack).
+     *  If type is != NULL Sets type.0 to object's type.
+     */
+    func d obliv :* create_from_source_t( @* o, m x_source* source, m tp_t* type );
+    func d obliv :* create_from_st_t    ( @* o, c st_s* st, m tp_t* type ) = o.create_from_source_t( x_source_create_from_st( st )^, type );
+    func d obliv :* create_from_sc_t    ( @* o,   sc_t  sc, m tp_t* type ) = o.create_from_source_t( x_source_create_from_sc( sc )^, type );
+    func d aware :* create_from_source  ( @* o, m x_source* source );
+    func d aware :* create_from_st      ( @* o, c st_s* st )  = o.create_from_source( x_source_create_from_st( st )^ );
+    func d aware :* create_from_sc      ( @* o,   sc_t  sc )  = o.create_from_source( x_source_create_from_sc( sc )^ );
+    func d aware :* create_from_file    ( @* o, sc_t file )   = o.create_from_source( x_source_create_from_file( file )^ );
+
+    /** Executes script as standalone.
+     *  Discards returned object.
+     */
+    func er_t run_from_source( @* o, m x_source* source );
+    func er_t run_from_st    ( @* o, c st_s* st ) = o.run_from_source( x_source_create_from_st( st )^ );
+    func er_t run_from_sc    ( @* o,   sc_t  sc ) = o.run_from_source( x_source_create_from_sc( sc )^ );
+    func er_t run_from_file  ( @* o,  sc_t file ) = o.run_from_source( x_source_create_from_file( file )^ );
+
+    /** On entering, obj should be sr_null
+     *  In case of error obj need not be discarded
+     *  if default_obj is defined, obj copies from default_obj before parsing the body
+     */
+    func er_t parse_create_object( @* o, m x_source* source, m sr_s* obj );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// Direct Interface (creates x_btcl_s default instance on the fly)
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -51,7 +105,7 @@ XOILA_DEFINE_GROUP( x_btcl, x_inst )
  *  Checks error-stack after copy_typed.
  *  In case of a parse error o is not being changed.
  */
-func er_t t_from_source( m@* o, tp_t t, m x_source* source );
+func er_t t_from_source( m@* o, tp_t t, m x_source* source ) = :s!^.t_from_source( o, t, source );
 func er_t   from_source( m@* o,         m x_source* source ) = o.t_from_source( o._, source );
 func er_t t_from_file  ( m@* o, tp_t t,   sc_t file ) = o.t_from_source( t, x_source_check_create_from_file( file )^ );
 func er_t   from_file  ( m@* o,           sc_t file ) = o.t_from_file( o._, file );
@@ -64,10 +118,10 @@ func er_t   from_sc    ( m@* o,           sc_t  sc  ) = o.t_from_sc( o._, sc );
  *  Returns NULL in case of parse error (check error-stack).
  *  If type is != NULL Sets type.0 to object's type.
  */
-func d obliv @* create_from_source_t( m x_source* source, m tp_t* type );
+func d obliv @* create_from_source_t( m x_source* source, m tp_t* type ) = :s!^.create_from_source_t( source, type );
 func d obliv @* create_from_st_t( c st_s* st, m tp_t* type ) = :create_from_source_t( x_source_create_from_st( st )^, type );
 func d obliv @* create_from_sc_t(   sc_t  sc, m tp_t* type ) = :create_from_source_t( x_source_create_from_sc( sc )^, type );
-func d aware @* create_from_source( m x_source* source );
+func d aware @* create_from_source( m x_source* source ) = :s!^.create_from_source( source );
 func d aware @* create_from_st( c st_s* st )  = :create_from_source( x_source_create_from_st( st )^ );
 func d aware @* create_from_sc(   sc_t  sc )  = :create_from_source( x_source_create_from_sc( sc )^ );
 func d aware @* create_from_file( sc_t file ) = :create_from_source( x_source_create_from_file( file )^ );
@@ -75,10 +129,16 @@ func d aware @* create_from_file( sc_t file ) = :create_from_source( x_source_cr
 /** Executes script as standalone.
  *  Discards returned object.
  */
-func er_t run_from_source( m x_source* source );
+func er_t run_from_source( m x_source* source ) = :s!^.run_from_source( source );
 func er_t run_from_st( c st_s* st )  = :run_from_source( x_source_create_from_st( st )^ );
 func er_t run_from_sc(   sc_t  sc )  = :run_from_source( x_source_create_from_sc( sc )^ );
 func er_t run_from_file( sc_t file ) = :run_from_source( x_source_create_from_file( file )^ );
+
+/** On entering, obj should be sr_null
+ *  In case of error obj need not be discarded
+ *  if default_obj is defined, obj copies from default_obj before parsing the body
+ */
+func er_t parse_create_object( m x_source* source, m sr_s* obj ) = :s!^.parse_create_object( source, obj );
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -93,6 +153,7 @@ feature 'at' sz_t btcl_function_arity( @* o, tp_t name ) = -1;
 feature 'at' er_t btcl_function( @* o, tp_t name, x_source_point_s* sp, m :frame_s* lexical_frame, bcore_arr_sr_s* args, m sr_s* result );
 
 /// features of functors (overloaded by x_btcl_functor_s)
+feature 'at' f3_t nullary_f3( @* o );
 feature 'at' f3_t unary_f3  ( @* o, f3_t x );
 feature 'at' f3_t binary_f3 ( @* o, f3_t x, f3_t y );
 feature 'at' f3_t ternary_f3( @* o, f3_t x, f3_t y, f3_t z );
@@ -129,7 +190,7 @@ stamp :btcl_function_stamp_s
             case TYPEOF_add_a  : result.from_f3( o.additive + args.[0].to_f3() ); = 0;
             default: break;
         }
-        = bcore_error_push_fa( TYPEOF_general_error, "Unhandled function." ); // should never occur
+        = GERR_fa( "Unhandled function." ); // should never occur
     }
 }
 
@@ -139,22 +200,22 @@ stamp :btcl_function_stamp_s
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func t_from_source
+func (:s) t_from_source
 {
     m$* sr = sr_s!^;
-    :parse_create_object( source, sr );
-    x_inst_t_copy_typed( o, t, sr_s_o_type( sr ), sr.o );
+    o.parse_create_object( source, sr );
+    x_inst_t_copy_typed( obj, t, sr_s_o_type( sr ), sr.o );
     = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func create_from_source_t
+func (:s) create_from_source_t
 {
     type.0 = 0;
     if( !source ) = NULL;
     m$* sr = sr_s!^;
-    if( :parse_create_object( source, sr ) )
+    if( o.parse_create_object( source, sr ) )
     {
         = NULL;
     }
@@ -165,34 +226,30 @@ func create_from_source_t
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func create_from_source
+func (:s) create_from_source
 {
     tp_t t = 0;
-    d @* o = :create_from_source_t( source, t.1 );
+    d :* obj = o.create_from_source_t( source, t.1 );
     if( t )
     {
         ASSERT( x_stamp_t_is_aware( t ) );
     }
-    = o;
+    = obj;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func run_from_source
+func (:s) run_from_source
 {
     if( !source ) = 0;
-    = :parse_create_object( source, sr_s!^ );
+    = o.parse_create_object( source, sr_s!^ );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/** On entering, obj should be sr_null
- *  In case of error obj need not be discarded
- *  if default_obj is defined, obj copies from default_obj before parsing the body
- */
-func er_t parse_create_object( m x_source* source, m sr_s* obj );
-
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 embed "bcore_x_btcl.x";
 

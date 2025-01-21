@@ -26,6 +26,14 @@
 stamp :arg_val_s
 {
     sr_s sr;
+
+    func o set_f3( m@* o, f3_t v ) o.sr.from_f3( v );
+
+    func m f3_t* get_f3_ptr( m@* o, f3_t v_init )
+    {
+        if( o.sr.type() != f3_t~ ) o.sr.from_f3( v_init );
+        = o.sr.o.cast( m f3_t* );
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -38,16 +46,16 @@ stamp :arg_uop_s
     sz_t index; // index into the arg array
     :arg_val_s -> val; // pointer to value of arg array
 
-    func ::export.is_operator = true;
-    func ::export.is_exportable_operand = true;
+    func ::operator.is_operator = true;
+    func ::operator.is_exportable_operand = true;
 
-    func ::export.solve
+    func ::operator.solve
     {
         success = false;
         = 0;
     }
 
-    func ::export.execute
+    func ::operator.execute
     {
         if( o.val )
         {
@@ -60,7 +68,7 @@ stamp :arg_uop_s
         = 0;
     }
 
-    func ::export.signal
+    func ::operator.signal
     {
         if( name == signal_arg_uop_update_val~ )
         {
@@ -83,7 +91,9 @@ stamp :arg_s
     :arg_uop_s => uop;
 
     func o set_val( m@* o, m sr_s* sr ) o.val!.sr.fork_from( sr );
-    func o set_f3 ( m@* o, f3_t v     ) o.val!.sr.from_f3( v );
+
+    func o set_f3( m@* o, f3_t v ) o.val!.set_f3( v );
+    func m f3_t* get_f3_ptr( @* o, f3_t v_init ) = o.val!.get_f3_ptr( v_init );
 
     func o clear_val( m@* o ) o.val!.sr.clear();
 
@@ -119,13 +129,11 @@ stamp :s
     :arg_arr_s arg_arr;
     sr_s => op_tree; // operator tree
 
-    hidden x_mutex_s call_mutex;
-    hidden x_source_point_s source_point;
+    hidden x_source_point_s sp;
 
+    func bl_t is_operator( @* o ) = ( o.op_tree && ::operator_sr_is_operator( o.op_tree ) );
 
-    func bl_t is_operator( @* o ) = ( o.op_tree && ::export_sr_is_operator( o.op_tree ) );
-
-    func m x_btcl_export* operator( m@* o ) = o.op_tree.o.cast( m x_btcl_export* );
+    func m x_btcl_operator* operator( m@* o ) = o.op_tree.o.cast( m x_btcl_operator* );
 
     /// signal to tree
     func o signal( m@* o, tp_t name, m x_inst* arg )
@@ -143,9 +151,9 @@ stamp :s
         o.signal( signal_arg_uop_update_val~, o.arg_arr );
     }
 
-    func er_t setup( m@* o, x_source_point_s* source_point, m ::function_s* function, m ::frame_s* lexical_frame )
+    func er_t setup( m@* o, x_source_point_s* sp, m ::function_s* function, m ::frame_s* lexical_frame )
     {
-        o.source_point.copy( source_point );
+        o.sp.copy( sp );
         sz_t args = function.signature.arg_list.size;
         o.arg_arr.set_size( args );
         m$* arr_sr = bcore_arr_sr_s!^.set_size( args );
@@ -154,7 +162,7 @@ stamp :s
             arr_sr.[ i ].asc( o.arg_arr.[ i ].get_uop().fork() );
             o.arg_arr.[ i ].name = function.signature.arg_name( i );
         }
-        function.call( o.source_point, lexical_frame, arr_sr, o.op_tree! );
+        function.call( o.sp, lexical_frame, arr_sr, o.op_tree! );
         = 0;
     }
 
@@ -190,6 +198,12 @@ stamp :s
 
     func o set_arg_f3( @* o, sz_t index, f3_t v ) o.set_arg_sr( index, sr_s!^.from_f3( v ) );
 
+    func m f3_t* get_arg_f3_ptr( @* o, sz_t index, f3_t v_init )
+    {
+        if( index < 0 || index >= o.args() ) ERR_fa( "index (#<sz_t>) is out of range [0,#<sz_t>]", index, o.args() - 1 );
+        = o.arg_arr.[ index ].get_f3_ptr( v_init );
+    }
+
     /// no effect on name mismatch
     func o set_arg_f3_by_name( @* o, tp_t name, f3_t v )
     {
@@ -197,14 +211,21 @@ stamp :s
         if( index >= 0 ) o.set_arg_f3( index, v );
     }
 
-    // for external use (thread safe)
+    /// returns NULL on mismatch
+    func m f3_t* get_arg_f3_ptr_by_name( @* o, tp_t name, f3_t v_init )
+    {
+        sz_t index = o.arg_index( name );
+        if( index >= 0 ) = o.get_arg_f3_ptr( index, v_init );
+        = NULL;
+    }
+
+    // for external use
     func er_t call( @* o, m sr_s* result )
     {
-        o.cast( m$* ).call_mutex.create_lock()^;
         if( !o.op_tree ) = EM_ERR_fa( "Functor has not been set up." );
-        if( ::export_sr_is_operator( o.op_tree ) )
+        if( ::operator_sr_is_operator( o.op_tree ) )
         {
-            o.op_tree.o.cast( x_btcl_export* ).execute( result );
+            o.op_tree.o.cast( x_btcl_operator* ).execute( result );
         }
         else
         {
@@ -219,7 +240,6 @@ stamp :s
         o.call( result );
         = result.to_f3();
     }
-
 
     func x_btcl.btcl_function_arity
     {
@@ -245,6 +265,12 @@ stamp :s
             default: break; // never reached
         }
         = 0;
+    }
+
+    func ::.nullary_f3
+    {
+        ASSERT( o.args() == 0 );
+        = o.call_to_f3();
     }
 
     func ::.unary_f3
