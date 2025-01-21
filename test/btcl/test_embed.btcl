@@ -1,0 +1,5 @@
+// test function
+embed_function = func( a, b ) { a + b; };
+
+// return value
+1234;

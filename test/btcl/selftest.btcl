@@ -4,9 +4,19 @@
 
 (
 
-embed( "../selftest/embed.btcl" );
+(
+    embed( "test_embed.btcl" );
+    ASSERT( embed_function( 1, 2 ) == 3 );
+);
 
-ASSERT( embed_function( 1, 2 ) == 3 );
+ASSERT( ( embed( "test_embed.btcl" ) ) == 1234 );
+
+(
+    prefix( prf, embed( "test_embed.btcl" ) );
+    ASSERT( prf_embed_function( 1, 2 ) == 3 );
+);
+
+/// basics
 ASSERT( TRUE == (1==1) );
 ASSERT( 5 + 3 * 2 == 11 );
 ASSERT( 5^2 == 25 );
@@ -18,7 +28,32 @@ ASSERT( x = 5; x + 3 * 2 == 11 );
 ASSERT( x = 12; x + "ab" + x == "12ab12" );
 ASSERT( x = 12; x + x + "ab" == "24ab" );
 ASSERT( x = func(){5}; -x()*2 == -10 );
-ASSERT( ( x = 2; y = 3; (x > y) ? "A" : "B" ) == "B" );
+
+/// conditional operator
+ASSERT( ( x = 2; y = 3;      (x > y) ? "A" : "B" )   == "B" ); // using -- ? -- : --
+ASSERT( ( x = 2; y = 3; IFE( (x > y),  "A" , "B" ) ) == "B" ); // using IFE
+ASSERT( IFE( (2 > 3), 2 , 3 ) == 3 );
+
+/// numeric suffixes
+ASSERT( 5D  == 50 );
+ASSERT( 4C  == 400 );
+ASSERT( 3K  == 3000 );
+ASSERT( 3M  == 3000000 );
+ASSERT( ABS( 44.1K - 44100 ) < 1E-3 );
+ASSERT( ABS( 5d - 0.5      ) < 1E-4 );
+ASSERT( ABS( 5c - 0.05     ) < 1E-5 );
+ASSERT( ABS( 5m - 0.005    ) < 1E-6 );
+ASSERT( ABS( 5u - 0.000005 ) < 1E-9 );
+
+/// testing num-dominace in comparison
+ASSERT( [1.0,2.0,3.0] == [1,2,3] );
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// buildin functions
+ASSERT( ABS( -3 ) == 3 );
+ASSERT( MAX( 1, 2 ) == 2 );
+ASSERT( MIN( 1, 2 ) == 1 );
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -141,8 +176,11 @@ ASSERT( (["a","b","c","d"] :: func(a,b) { a + b }) == "abcd" );
 // ---------------------------------------------------------------------------------------------------------------------
 /// functor
 
-fo = <x_btcl_functor_s/>( func( a, b ){ a - b } );
-ASSERT( fo.call( 2, 3 ) == -1 );
+fo1 = <x_btcl_functor_s/>( func( a, b ){ a - b } );
+ASSERT( fo1.call( 2, 3 ) == -1 );
+
+fo2 = <x_btcl_functor_f3_s/>( func( a, b ){ a - b } );
+ASSERT( fo2.call( 2, 3 ) == -1 );
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// network

@@ -101,7 +101,7 @@ int main( void )
     x_btml_selftest();
     x_bbml_selftest();
     x_bcml_selftest();
-    x_btcl_selftest( "../data/bcore/btcl/selftest/selftest.btcl" );
+    x_btcl_selftest( "btcl/selftest.btcl" );
 
     selftest( "bcore_btree" );
     selftest( "bcore_arr" );
