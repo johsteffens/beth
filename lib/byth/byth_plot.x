@@ -117,9 +117,9 @@ stamp :appearance_s
 stamp :functor_s
 {
     st_s => label;
-    x_btcl_functor_s => functor;
+    x_btcl_functor_f3_s => functor;
 
-    func o setup( m@* o, sc_t label, m x_btcl_functor_s* functor )
+    func o setup( m@* o, sc_t label, m x_btcl_functor_f3_s* functor )
     {
         if( label ) o.label!.copy_sc( label );
         o.functor =< functor.fork();
@@ -131,7 +131,7 @@ stamp :functor_s
 stamp :functor_list_s x_array
 {
     :functor_s => [];
-    func o push_btcl( m@* o, sc_t label, m x_btcl_functor_s* functor )
+    func o push_btcl( m@* o, sc_t label, m x_btcl_functor_f3_s* functor )
     {
         o.push().setup( label, functor );
     }
@@ -157,14 +157,6 @@ stamp :frame_s x_array
 
     // pushes x value
     func o push_x( m@* o, f3_t v ) o.x_arr!.push( v );
-
-    /// expects a unary functor
-    func er_t from_functor( m@* o, m :functor_s* functor, f3_t x1, f3_t x2, sz_t samples )
-    {
-         m$* list = :functor_list_s!^;
-         list.push_d( functor.fork() );
-         = o.from_functor_list( list , x1, x2, samples );
-    }
 
     func er_t from_functor_list( m@* o, m :functor_list_s* list, f3_t x1, f3_t x2, sz_t samples );
 
@@ -199,6 +191,7 @@ stamp :frame_arr_s x_array
 //----------------------------------------------------------------------------------------------------------------------
 
 name plot;
+name plot_f3;
 stamp :btcl_function_s
 {
     st_s => title;

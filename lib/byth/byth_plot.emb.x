@@ -191,7 +191,7 @@ func (:frame_s) from_functor_list
     for( sz_t i = 0; i < list.size; i++ )
     {
         :functor_s* f = list.[ i ];
-        x_btcl_functor_s* functor = f.functor;
+        x_btcl_functor_f3_s* functor = f.functor;
         if( functor.args() != 1 ) = EM_ERR_fa( "Functor is not unary; args == #<sz_t>", functor.args() );
 
         m$* data = :data_s!^;
@@ -248,13 +248,19 @@ func (:btcl_function_s) btcl_function
 
             m$* functor_list = :functor_list_s!^;
 
-            if( args.[ 0 ].type() == x_btcl_functor_s~ )
+            if( args.[ 0 ].type() == x_btcl_functor_f3_s~ )
             {
-                functor_list.push_btcl( "", args.[ 0 ].o.cast( m x_btcl_functor_s* ) );
+                functor_list.push_btcl( "", args.[ 0 ].o.cast( m x_btcl_functor_f3_s* ) );
+            }
+            else if( args.[ 0 ].type() == x_btcl_functor_s~ )
+            {
+                m$* functor = x_btcl_functor_f3_s!^;
+                functor.from_functor( args.[ 0 ].o.cast( m x_btcl_functor_s* ) );
+                functor_list.push_btcl( "", functor );
             }
             else if( args.[ 0 ].type() == x_btcl_function_s~ )
             {
-                m$* functor = x_btcl_functor_s!^;
+                m$* functor = x_btcl_functor_f3_s!^;
                 functor.setup( sp, args.[ 0 ].o.cast( m x_btcl_function_s* ), lexical_frame );
                 functor_list.push_btcl( "", functor );
             }
@@ -264,10 +270,11 @@ func (:btcl_function_s) btcl_function
                 for( sz_t i = 0; i < list.size(); i++ )
                 {
                     m sr_s* sr = list.arr.[ i ];
-                    m$* functor = x_btcl_functor_s!^;
+                    m$* functor = x_btcl_functor_f3_s!^;
                     m$* label = st_s!^;
-                    if     ( sr.type() == x_btcl_functor_s~  ) functor.copy( sr.o.cast( x_btcl_functor_s* ) );
-                    else if( sr.type() == x_btcl_function_s~ ) functor.setup( sp, sr.o.cast( m x_btcl_function_s* ), lexical_frame );
+                    if     ( sr.type() == x_btcl_functor_f3_s~  ) functor.copy( sr.o.cast( x_btcl_functor_f3_s* ) );
+                    else if( sr.type() == x_btcl_functor_s~     ) functor.from_functor( sr.o.cast( x_btcl_functor_s* ) );
+                    else if( sr.type() == x_btcl_function_s~    ) functor.setup( sp, sr.o.cast( m x_btcl_function_s* ), lexical_frame );
                     else if( sr.type() == st_s~ ) label.copy( sr.o.cast( st_s* ) );
                     else if( sr.type() == x_btcl_list_s~ )
                     {
@@ -276,7 +283,7 @@ func (:btcl_function_s) btcl_function
                         {
                             m sr_s* sr = list2.arr.[ i ];
 
-                            if     ( sr.type() == x_btcl_functor_s~  ) functor.copy( sr.o.cast( x_btcl_functor_s* ) );
+                            if     ( sr.type() == x_btcl_functor_f3_s~  ) functor.copy( sr.o.cast( x_btcl_functor_f3_s* ) );
                             else if( sr.type() == x_btcl_function_s~ ) functor.setup( sp, sr.o.cast( m x_btcl_function_s* ), lexical_frame );
                             else if( sr.type() == st_s~ ) label.copy( sr.o.cast( st_s* ) );
                         }
