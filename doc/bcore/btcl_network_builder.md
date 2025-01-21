@@ -58,7 +58,9 @@ To push an anonymous branch use the modifier syntax without a name specification
 
 A rack is a specialized node to which wires can connect.
 
-A rack has one main (anonymous) branch and optional named branches.
+A rack can be anonymous.
+
+A rack has an arbitrary amount of voice branches and optional named branches which can serve as wire-sockets.
 
 Only wires in one of the rack's branches can connect to the rack.
 

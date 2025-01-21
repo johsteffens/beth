@@ -77,10 +77,9 @@ The byth plot framework offers a BTCL interface to allow plotting BTCL functions
 * Instantiate ```x_byth_plot_btcl_function_s```; set parameters as desired.
 * Call function ```<x_byth_plot_btcl_function_s/>.plot( ... )```.
 * Possible argument types:
-  * ```x_btcl_function_s```, ```x_btcl_functor_s```: Plots that function.
+  * ```x_btcl_function_s```, ```x_btcl_functor_s```,  ```x_btcl_functor_f3_s```: Plots that function.
   * \[ \<function\>, \<function\>, ... \]: Plots multiple functions.
   * \[ [\<text\>, \<function\>] ,[\<text\>, \<function\>], ... \]: Plots multiple functions with labels
-
 
 **Example (BTCL):**
 

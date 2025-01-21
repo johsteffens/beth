@@ -58,6 +58,9 @@ if( a >= b ) { a } else { b };
 // conditional operator (exportable)
 a >= b ? a : b;
 
+// alternative conditional operator (exportable)
+IFE( a >= b, a, b );
+
 // List with elements 1, 2, 3
 [1,2,3];
 
@@ -81,6 +84,9 @@ embed ( "../data/file.btcl" );
 
 // converting a function into a functor (a functor can be used externally)
 <x_btcl_functor_s/>( func( a, b ) { a + b } );
+
+// functor_f3_s is limited to numeric operands but runs much faster than functor_s
+<x_btcl_functor_f3_s/>( func( a, b ) { a + b } );
 
 // A trailing semicolon as last valid symbol in a file, block or frame is ignored (no continuation)
 
@@ -207,7 +213,7 @@ Integer literals can be expressed as decimal or, when using prefix ```0x``` as h
 
 Float literals are specified via decimal point (even if the value is a whole number), or using exponential notation.
 
-## Examples
+### Examples
 
 ``` C
 1023578     // int (s3_t) in decimal form
@@ -215,7 +221,54 @@ Float literals are specified via decimal point (even if the value is a whole num
 123.0       // float (f3_t)
 123E1       // float (f3_t)
 ```
+## Shortcuts for literals
+
+For certain groups of small and large numbers, the literal expression can be simplified by appending a character representing a shortcut for a factor.
+
+Using that shortcut with a number literal turns the type always into floating point. This holds true even if the resulting value could be represented by an integer.
+
+| Character | Derived from | Factor |
+| --------- | ------------ | ------ |
+| d         | deci         | 1E-1   |
+| c         | centi        | 1E-2   |
+| m         | milli        | 1E-3   |
+| u         | micro        | 1E-6   |
+| n         | nano        | 1E-9   |
+| p         | pico        | 1E-12   |
+| f         | femto        | 1E-15   |
+| a         | atto        | 1E-18   |
+| z         | zepto        | 1E-21   |
+| y         | yocto        | 1E-24   |
+| r         | ronto        | 1E-27   |
+| q         | quecto        | 1E-30   |
+| D         | Deca         | 1E1    |
+| C         | Cento        | 1E2    |
+| K         | Kilo         | 1E3    |
+| M         | Mega         | 1E6    |
+| G         | Giga         | 1E9    |
+| T         | Tera         | 1E12    |
+| P         | Peta         | 1E15    |
+| E         | Exa         | 1E18    |
+| Z         | Zetta         | 1E21    |
+| Y         | Yotta         | 1E24    |
+| R         | Ronna         | 1E27    |
+| Q         | Quetta       | 1E30    |
+
+### Examples
+
+``` C
+5d == 0.5;
+5c == 0.05;
+5m == 0.005;
+5.1u == 5.1E-6;
+5D == 50;
+5C == 500;
+5K == 5000;
+5.2M == 5.2E6;
+```
+
 ## Arithmetic
+
 Binary arithmetic operators return f3_t when one of the operands is f3_t, otherwise they return s3_t.
 
 # String
@@ -423,8 +476,6 @@ Note: If a function contains inexportable syntax, the conversion attempt fails w
 
 ``` x_btcl_functor_s``` provides member function to set arguments and to execute the function.
 
-Execute functions are thread safe.
-
 **Example:**
 
 Script file:
@@ -451,7 +502,13 @@ functor.set_arg_f3( 2, 4.0 );
 bcore_msg_fa( "#<f3_t>\n", functor.call_to_f3() );
 ```
 
+### Fast Numeric Functor
 
+```btcl_functor_f3_s``` is a very fast version of ```btcl_functor_s``` but limited to numeric operands. 
+
+Internally, it operates on ```f3_t``` and returns ```f3_t```.
+
+You can convert ```btcl_functor_s``` into ```btcl_functor_f3_s``` using member function ```from_functor``` or via ```copy_typed```.
 
 
 # List
@@ -591,7 +648,7 @@ Generic conversion is a btcl-specific type conversion when general stamps are in
 
 # Built-in Functions
 
-Built-in functions are available by the names listed in the table below. They are exportable as unary operator.
+Built-in functions are available by the names listed in the table below. They are exportable as operator.
 
 |Name|Description|Type Name|Exportable|
 |:---|:---|----|----|
@@ -608,6 +665,9 @@ Built-in functions are available by the names listed in the table below. They ar
 |ABS|Absolute value|abs|yes|
 |CEIL|Ceiling function|ceil|yes|
 |FLOOR|Floor function|floor|yes|
+|MAX|maximum of two operands|max|yes|
+|MIN|minimum of two operands|min|yes|
+|IFE|Conditional ternary operator: ```IFE( a, b, c ) == a ? b : c```|conditional|yes|
 |PRINT|Prints object to stdout in compact form; behaves as identity|print|no|
 |PRINTLN|Prints object to stdout in compact form; last character is 'newline'; behaves as identity|println|no|
 |PRINTX|Prints object to stdout in detailed form; behaves as identity|printx|no|
@@ -624,17 +684,38 @@ Built-in functions are available by the names listed in the table below. They ar
 |PATH|Path of source file; error if source has no file associated|
 |DIR|Directory of source file; error if source has no file associated|
 
-# Including other source files.
+# Embedding other files
 
-The keyword **embed** evaluates code from another file.
+The keyword **embed** evaluates code from another file as if it was copied into the embed-position. See also: [Prefixing](#prefixing).
 
 ## Syntax
-```
-embed ( "path_to_another_file.txt" )
+```c
+embed("file.btcl");                // full embedding (variables and evaluation result is imported )
+prefix( foo, embed("file.btcl") ); // full embedding with prefixing of embedded code
+a = ( embed("file.btcl") );        // elvaluation only (variables defined in the embedded file are dropped)
 ```
 If the file path is relative, it is taken relative to the folder in which the current source is located.
 
 The file is embedded in the current frame (no dedicated frame). This allows defining variables (functions) in the embedded file to be used outside the embedding.
+
+# Prefixing
+
+The keyword **prefix** evaluates code an imports result and all variables into the current frame by using the specified prefix. 
+
+Prefixing is useful in conjunction with [Embedding](#embedding-other-files). This wraps the embedded content into a dedicated name-space.
+
+## Syntax
+
+```c
+prefix( foo, 
+  bar = 1234;
+  4321
+);    
+ASSERT( foo_bar == 1234 );
+ASSERT( foo     == 4321 );
+```
+
+
 
 # Advanced
 The features below provide special control and functionality for specific use cases that go beyond the typical use of BTCL.
