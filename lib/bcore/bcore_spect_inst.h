@@ -143,7 +143,10 @@ static inline er_t bcore_inst_default_copy_typed( const bcore_inst_s* p, bcore_i
 
 // functions below are exempted from generic framework for inst-specific reasons
 static inline void bcore_inst_p_discard(      const bcore_inst_s* p, vd_t obj )           { if( obj ) p->discard( p, obj ); }
+
+// creates target and copies from typed obj; returns NULL in case of conversion error (check bcore_error in case)
 static inline vd_t bcore_inst_p_create_typed( const bcore_inst_s* p, tp_t otp, vc_t obj ) { return p->create_typed( p, otp, obj ); }
+
 static inline vd_t bcore_inst_p_create( const bcore_inst_s* p )    { return p->create( p ); }
 static inline vd_t bcore_inst_t_create( tp_t type )                { return type != 0 ? bcore_inst_p_create( bcore_inst_s_get_typed( type ) ) : NULL; }
 static inline sr_s bcore_inst_p_create_sr( const bcore_inst_s* p ) { return sr_psm( p, p->create( p ) ); }

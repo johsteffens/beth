@@ -173,6 +173,7 @@ er_t bcore_via_default_iset( const bcore_via_s* p, bcore_via* o, uz_t index, sr_
                 else
                 {
                     dst->link = bcore_inst_p_create_typed( inst_p, sr_s_type( &src ), src.o );
+                    if( !dst->link ) return bcore_error_last();
                 }
             }
         }

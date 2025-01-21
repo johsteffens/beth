@@ -1375,8 +1375,7 @@ static er_t copy_typed( const bcore_inst_s* p, vd_t dst, tp_t type, vc_t src )
         return bcore_error_push_fa
         (
             TYPEOF_conversion_error,
-            "Type conversion '#<sc_t>' --> '#<sc_t>' is not defined.\n"
-            "Consider implementing feature bcore_fp.copy_typed.\n",
+            "Type conversion '#<sc_t>' --> '#<sc_t>' is not defined.",
             ifnameof( type ),
             ifnameof( dst_type )
         );
@@ -1426,8 +1425,11 @@ static vd_t create_typed( const bcore_inst_s* p, tp_t t, vc_t src )
 {
     vd_t o = bcore_u_alloc( p->size, NULL, 1, NULL );
     p->init( p, o );
-    p->copy_typed( p, o, t, src );
-    return o;
+    if( p->copy_typed( p, o, t, src ) == 0 ) return o;
+
+    p->down( p, o );
+    bcore_u_alloc( p->size, o, 0, NULL );
+    return NULL;
 }
 
 static void discard_null( const bcore_inst_s* p, vd_t o ) {}
