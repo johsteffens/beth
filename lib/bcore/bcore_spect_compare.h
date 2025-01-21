@@ -23,11 +23,24 @@
  *      ==0 when both objects are equal.
  *       >0 when object1 is ordered before object2
  *       <0 when object1 is ordered after  object2
+ *
+ *  Type and numeric dominance:
+ *  Functions containing 'num_dominant' compare with numeric dominance otherwise with type dominance.
+ *
+ *  A type dominant comparison returns the order of types in case both types are different.
+ *  A numeric dominant (num_dominant) comparison returns the order of values in case both types are numeric (including boolean types).
+ *
+ *  The dominance is a deep operation: Meaning it compares recursively all elements of an object with the same specified dominance.
+ *
  */
 
 #include "bcore_spect.h"
 #include "bcore_feature.h"
 #include "bcore_spect_via.h"
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /// optional features:
 typedef s2_t (*bcore_fp_compare)( vc_t obj1, vc_t obj2 );  // also supported as (ap_t, "compare")
@@ -45,10 +58,13 @@ typedef struct bcore_compare_s
 BCORE_DEFINE_INLINE_SPECT_GET_TYPED_CACHED( bcore_compare_s )
 BCORE_DEFINE_INLINE_SPECT_GET_AWARE( bcore_compare_s )
 
-s2_t bcore_compare_spect(   const bcore_compare_s* p, vc_t obj1, vc_t obj2 );
-s2_t bcore_compare_typed(   tp_t type,                vc_t obj1, vc_t obj2 );
+s2_t bcore_compare_spect             ( const bcore_compare_s* p, vc_t obj1, vc_t obj2 );
+s2_t bcore_compare_num_dominant_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 );
+s2_t bcore_compare_typed             ( tp_t type, vc_t obj1, vc_t obj2 );
+s2_t bcore_compare_num_dominant_typed( tp_t type, vc_t obj1, vc_t obj2 );
 s2_t bcore_compare_bityped( tp_t type1, vc_t obj1, tp_t type2, vc_t obj2 );
-s2_t bcore_compare_sr( sr_s obj1, sr_s obj2 );
+s2_t bcore_compare_sr             ( sr_s obj1, sr_s obj2 );
+s2_t bcore_compare_num_dominant_sr( sr_s obj1, sr_s obj2 );
 s2_t bcore_compare_q_sr( const sr_s* obj1, const sr_s* obj2 );
 
 bool bcore_equal_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 );
@@ -68,5 +84,9 @@ st_s* bcore_diff_sr( sr_s obj1, sr_s obj2 );
 st_s* bcore_diff_q_sr( const sr_s* obj1, const sr_s* obj2 );
 
 vd_t bcore_spect_compare_signal_handler( const bcore_signal_s* o );
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 
 #endif // BCORE_SPECT_COMPARE_H

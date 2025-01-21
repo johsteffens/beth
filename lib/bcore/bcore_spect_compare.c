@@ -24,15 +24,23 @@
 /**********************************************************************************************************************/
 // bcore_compare_s
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static void compare_s_init( bcore_compare_s* o )
 {
     bcore_memzero( o, sizeof( bcore_compare_s ) );
     o->p_type = typeof( "bcore_compare_s" );
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static void compare_s_down( bcore_compare_s* o )
 {
 }
+
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static bcore_compare_s* compare_s_create()
 {
@@ -41,83 +49,119 @@ static bcore_compare_s* compare_s_create()
     return o;
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static void compare_s_discard( bcore_compare_s* o )
 {
     if( !o ) return;
     bcore_release_obj( ( fp_t )compare_s_down, o );
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static s2_t compare_s3_t( const bcore_compare_s* p, const s3_t* o1, const s3_t* o2 )
 {
     return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static s2_t compare_s2_t( const bcore_compare_s* p, const s2_t* o1, const s2_t* o2 )
 {
     return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static s2_t compare_s1_t( const bcore_compare_s* p, const s1_t* o1, const s1_t* o2 )
 {
     return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static s2_t compare_s0_t( const bcore_compare_s* p, const s0_t* o1, const s0_t* o2 )
 {
     return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static s2_t compare_u3_t( const bcore_compare_s* p, const u3_t* o1, const u3_t* o2 )
 {
     return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static s2_t compare_u2_t( const bcore_compare_s* p, const u2_t* o1, const u2_t* o2 )
 {
     return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static s2_t compare_u1_t( const bcore_compare_s* p, const u1_t* o1, const u1_t* o2 )
 {
     return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static s2_t compare_u0_t( const bcore_compare_s* p, const u0_t* o1, const u0_t* o2 )
 {
     return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static s2_t compare_f3_t( const bcore_compare_s* p, const f3_t* o1, const f3_t* o2 )
 {
     return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static s2_t compare_f2_t( const bcore_compare_s* p, const f2_t* o1, const f2_t* o2 )
 {
     return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static s2_t compare_sz_t( const bcore_compare_s* p, const sz_t* o1, const sz_t* o2 )
 {
     return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static s2_t compare_uz_t( const bcore_compare_s* p, const uz_t* o1, const uz_t* o2 )
 {
     return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static s2_t compare_tp_t( const bcore_compare_s* p, const tp_t* o1, const tp_t* o2 )
 {
     return o1 ? ( o2 ? ( ( *o1 < *o2 ) ? 1 : ( ( *o1 > *o2 ) ? -1 : 0 ) ) : -1 ) : ( o2 ? 1 : 0 );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static s2_t compare_o( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
 {
     return ( ( bcore_fp_compare )p->fp_compare )( obj1, obj2 );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static s2_t compare_leaf( tp_t type, vc_t obj1, vc_t obj2 )
 {
@@ -144,6 +188,8 @@ static s2_t compare_leaf( tp_t type, vc_t obj1, vc_t obj2 )
     }
     return 0;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static s2_t compare_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
 {
@@ -178,6 +224,43 @@ static s2_t compare_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
     return 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
+static s2_t compare_generic_num_dominant( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
+{
+    if( obj1 == obj2 ) return  0;
+    if( obj1 == NULL ) return  1;
+    if( obj2 == NULL ) return -1;
+    if( bcore_via_p_is_leaf( p->via, NULL ) )
+    {
+        return compare_leaf( p->o_type, obj1, obj2 );
+    }
+
+    if( bcore_via_p_is_pure_array( p->via, NULL ) )
+    {
+        const bcore_array_s* arr_p = bcore_array_s_get_typed( p->via->header.o_type );
+        uz_t size1 = bcore_array_p_get_size( arr_p, obj1 );
+        uz_t size2 = bcore_array_p_get_size( arr_p, obj2 );
+        if( size1 != size2 ) return size1 < size2 ? 1 : -1;
+        for( uz_t j = 0; j < size1; j++ )
+        {
+            s2_t c = bcore_compare_num_dominant_sr( arr_p->get( arr_p, obj1, j ), arr_p->get( arr_p, obj2, j ) );
+            if( c != 0 ) return c;
+        }
+        return 0;
+    }
+
+    const bcore_via_s* via = p->via;
+    for( uz_t i = 0; i < via->size; i++ )
+    {
+        s2_t c = bcore_compare_num_dominant_sr( bcore_via_p_iget( via, obj1, i ), bcore_via_p_iget( via, obj2, i ) );
+        if( c != 0 ) return c;
+    }
+    return 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 typedef struct { ap_t ap; const bcore_compare_s* p; vc_t obj1; vc_t obj2; s2_t ret; } compare_nc;
 static void compare_amoeba( compare_nc* nc ) { compare_generic( nc->p, nc->obj1, nc->obj2 ); }
 
@@ -187,6 +270,8 @@ static s2_t compare_amoebic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
     ( ( ap_t )p->fp_compare )( &nc );
     return nc.ret;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static st_s* diff_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
 {
@@ -238,13 +323,18 @@ static st_s* diff_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
     return NULL;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static void compare_s_define_trait()
 {
     bcore_trait_set( entypeof( "bcore_compare" ), entypeof( "bcore_inst" ) );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
 static bcore_compare_s* create_from_self( const bcore_self_s* self )
 {
@@ -285,7 +375,11 @@ static bcore_compare_s* create_from_self( const bcore_self_s* self )
     return o;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static bcore_self_s* compare_s_create_self( void )
 {
@@ -299,17 +393,39 @@ static bcore_self_s* compare_s_create_self( void )
     return self;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 s2_t bcore_compare_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
 {
     return p->compare( p, obj1, obj2 );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
+s2_t bcore_compare_num_dominant_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
+{
+    return compare_generic_num_dominant( p, obj1, obj2 );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 s2_t bcore_compare_typed( tp_t type, vc_t obj1, vc_t obj2 )
 {
     return bcore_compare_spect( bcore_compare_s_get_typed( type ), obj1, obj2 );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+s2_t bcore_compare_num_dominant_typed( tp_t type, vc_t obj1, vc_t obj2 )
+{
+    return bcore_compare_num_dominant_spect( bcore_compare_s_get_typed( type ), obj1, obj2 );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 s2_t bcore_compare_sr( sr_s obj1, sr_s obj2 )
 {
@@ -321,12 +437,72 @@ s2_t bcore_compare_sr( sr_s obj1, sr_s obj2 )
     return c;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
+s2_t bcore_compare_num_dominant_sr( sr_s sr_a, sr_s sr_b )
+{
+    if( sr_s_is_numeric( &sr_a ) && sr_s_is_numeric( &sr_b ) && sr_a.o && sr_b.o )
+    {
+        s2_t c = 0;
+        if( sr_s_is_float( &sr_a ) || sr_s_is_float( &sr_b ) )
+        {
+            f3_t fa = sr_s_to_f3( &sr_a );
+            f3_t fb = sr_s_to_f3( &sr_b );
+            c = ( fa == fb ) ? 0 : ( fa < fb ) ? 1 : -1;
+        }
+        else if( sr_s_is_unsigned( &sr_a ) )
+        {
+            u3_t ua = sr_s_to_u3( &sr_a );
+            if( sr_s_is_unsigned( &sr_b ) )
+            {
+                u3_t ub = sr_s_to_u3( &sr_b );
+                c = ( ua == ub ) ? 0 : ( ua < ub ) ? 1 : -1;
+            }
+            else
+            {
+                s3_t sb = sr_s_to_s3( &sr_b );
+                c = ( ua == sb ) ? 0 : ( ua < sb ) ? 1 : -1;
+            }
+        }
+        else
+        {
+            s3_t sa = sr_s_to_s3( &sr_a );
+            if( sr_s_is_unsigned( &sr_b ) )
+            {
+                u3_t ub = sr_s_to_u3( &sr_b );
+                c = ( sa == ub ) ? 0 : ( sa < ub ) ? 1 : -1;
+            }
+            else
+            {
+                s3_t sb = sr_s_to_s3( &sr_b );
+                c = ( sa == sb ) ? 0 : ( sa < sb ) ? 1 : -1;
+            }
+        }
+        sr_down( sr_a );
+        sr_down( sr_b );
+        return c;
+    }
+    else
+    {
+        if( sr_s_type( &sr_a ) != sr_s_type( &sr_b ) ) return ( sr_s_type( &sr_a ) < sr_s_type( &sr_b ) ) ? 1 : -1;
+        if( sr_s_type( &sr_a ) == 0 ) return 0;
+        s2_t c = bcore_compare_num_dominant_typed( sr_s_type( &sr_a ), sr_a.o, sr_b.o );
+        sr_down( sr_a );
+        sr_down( sr_b );
+        return c;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 s2_t bcore_compare_q_sr( const sr_s* obj1, const sr_s* obj2 )
 {
     if( sr_s_type( obj1 ) != sr_s_type( obj2 ) ) return ( sr_s_type( obj1 ) < sr_s_type( obj2 ) ) ? 1 : -1;
     if( sr_s_type( obj1 ) == 0 ) return 0;
     return bcore_compare_typed( sr_s_type( obj1 ), obj1->o, obj2->o );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 s2_t bcore_compare_bityped( tp_t type1, vc_t obj1, tp_t type2, vc_t obj2 )
 {
@@ -335,20 +511,28 @@ s2_t bcore_compare_bityped( tp_t type1, vc_t obj1, tp_t type2, vc_t obj2 )
     return bcore_compare_typed( type1, obj1, obj2 );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bool bcore_equal_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
 {
     return bcore_compare_spect( p, obj1, obj2 ) == 0;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 bool bcore_equal_typed( tp_t type, vc_t obj1, vc_t obj2 )
 {
     return bcore_compare_typed( type, obj1, obj2 ) == 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bool bcore_equal_bityped( tp_t type1, vc_t obj1, tp_t type2, vc_t obj2 )
 {
     return bcore_compare_bityped( type1, obj1, type2, obj2 ) == 0;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 s2_t bcore_compare_aware( vc_t obj1, vc_t obj2 )
 {
@@ -357,10 +541,14 @@ s2_t bcore_compare_aware( vc_t obj1, vc_t obj2 )
     return bcore_compare_bityped( type1, obj1, type2, obj2 );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bool bcore_equal_aware( vc_t obj1, vc_t obj2 )
 {
     return bcore_compare_aware( obj1, obj2 ) == 0;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* bcore_diff_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
 {
@@ -383,10 +571,14 @@ st_s* bcore_diff_spect( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
     return NULL;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* bcore_diff_typed( tp_t type, vc_t obj1, vc_t obj2 )
 {
     return bcore_diff_spect( bcore_compare_s_get_typed( type ), obj1, obj2 );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* bcore_diff_bityped( tp_t type1, vc_t obj1, tp_t type2, vc_t obj2 )
 {
@@ -395,12 +587,16 @@ st_s* bcore_diff_bityped( tp_t type1, vc_t obj1, tp_t type2, vc_t obj2 )
     return bcore_diff_typed( type1, obj1, obj2 );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* bcore_diff_aware( vc_t obj1, vc_t obj2 )
 {
     tp_t type1 = obj1 ? *( aware_t* )obj1 : 0;
     tp_t type2 = obj2 ? *( aware_t* )obj2 : 0;
     return bcore_diff_bityped( type1, obj1, type2, obj2 );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 st_s* bcore_diff_sr( sr_s obj1, sr_s obj2 )
 {
@@ -412,6 +608,8 @@ st_s* bcore_diff_sr( sr_s obj1, sr_s obj2 )
     return s;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* bcore_diff_q_sr( const sr_s* obj1, const sr_s* obj2 )
 {
     if( sr_s_type( obj1 ) != sr_s_type( obj2 ) ) return st_s_createf( "obj1 of '%s', obj2 of '%s'", ifnameof( sr_s_type( obj1 ) ), ifnameof( sr_s_type( obj2 ) ) );
@@ -419,8 +617,12 @@ st_s* bcore_diff_q_sr( const sr_s* obj1, const sr_s* obj2 )
     return bcore_diff_typed( sr_s_type( obj1 ), obj1->o, obj2->o );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 /// testing
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static st_s* spect_compare_selftest( void )
 {
@@ -463,8 +665,12 @@ static st_s* spect_compare_selftest( void )
     return NULL;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 // signal
+
+//----------------------------------------------------------------------------------------------------------------------
 
 BCORE_DEFINE_SPECT_CACHE( bcore_compare_s );
 
@@ -491,3 +697,7 @@ vd_t bcore_spect_compare_signal_handler( const bcore_signal_s* o )
 
     return NULL;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
