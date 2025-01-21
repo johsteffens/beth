@@ -173,7 +173,7 @@ func (:s) er_t setup_functions( m @* o, c xoico_host* host )
     sc_t sc_obj_type = compiler.nameof( host.obj_type() );
     sc_t sc_spect_name = host.create_spect_name()^^.sc;
 
-    m st_s* st_ret_typespec = st_s!^^;
+    m st_s* st_ret_typespec = st_s!^;
 
     bl_t has_ret = o.signature.returns_a_value();
     o.signature.expand_ret_x( host, st_ret_typespec );
@@ -186,7 +186,7 @@ func (:s) er_t setup_functions( m @* o, c xoico_host* host )
 
     if( o.flag_a )
     {
-        m st_s* st = st_s!^^;
+        m st_s* st = st_s!^;
         st.push_fa( "#<sc_t> a_#<sc_t>( ", sc_ret_typespec, sc_name );
         st.push_fa( flag_const ? "c" : flag_discardable ? "d" : "m" );
         st.push_fa( " @* o" );
@@ -212,7 +212,7 @@ func (:s) er_t setup_functions( m @* o, c xoico_host* host )
 
     if( o.flag_a )
     {
-        m st_s* st = st_s!^^;
+        m st_s* st = st_s!^;
         st.push_fa( "bl_t defines_#<sc_t>( c @* o ) ", sc_name );
         if( always_defined )
         {
@@ -235,7 +235,7 @@ func (:s) er_t setup_functions( m @* o, c xoico_host* host )
     if( o.flag_t )
     {
         /// new
-        m st_s* st = st_s!^^;
+        m st_s* st = st_s!^;
         st.push_fa( "#<sc_t> t_#<sc_t>( ", sc_ret_typespec, sc_name );
         st.push_fa( flag_const ? "c" : flag_discardable ? "d" : "m" );
         st.push_fa( " #<sc_t>* o, tp_t t", sc_obj_type );
@@ -259,7 +259,7 @@ func (:s) er_t setup_functions( m @* o, c xoico_host* host )
 
     if( o->flag_t )
     {
-        m st_s* st = st_s!^^;
+        m st_s* st = st_s!^;
         st.push_fa( "bl_t t_defines_#<sc_t>( tp_t t ) ", sc_name );
         if( always_defined )
         {
@@ -281,7 +281,7 @@ func (:s) er_t setup_functions( m @* o, c xoico_host* host )
 
     if( o.flag_p )
     {
-        m st_s* st = st_s!^^;
+        m st_s* st = st_s!^;
         st.push_fa( "#<sc_t> p_#<sc_t>( c #<sc_t>* p, ", sc_ret_typespec, sc_name, sc_spect_name );
         st.push_fa( flag_const ? "c" : flag_discardable ? "d" : "m" );
         st.push_fa( " #<sc_t>* o", sc_obj_type );
@@ -299,7 +299,7 @@ func (:s) er_t setup_functions( m @* o, c xoico_host* host )
 
     if( o.flag_p )
     {
-        m st_s* st = st_s!^^;
+        m st_s* st = st_s!^;
         st.push_fa( "bl_t p_defines_#<sc_t>( c #<sc_t>* p ) ", sc_name, sc_spect_name );
         if( always_defined )
         {
@@ -316,7 +316,7 @@ func (:s) er_t setup_functions( m @* o, c xoico_host* host )
 
     if( o.flag_r )
     {
-        m st_s* st = st_s!^^;
+        m st_s* st = st_s!^;
         st.push_fa( "#<sc_t> r_#<sc_t>(", sc_ret_typespec, sc_name );
         st.push_fa( " c sr_s* o" );
         o.signature.args.expand_x( host, false, st );
@@ -342,7 +342,7 @@ func (:s) er_t setup_functions( m @* o, c xoico_host* host )
 
     if( o.flag_r )
     {
-        m st_s* st = st_s!^^;
+        m st_s* st = st_s!^;
 
         st.push_fa( "bl_t r_defines_#<sc_t>( c sr_s* o ) ", sc_name );
         if( always_defined )
@@ -380,6 +380,11 @@ func (:s) er_t setup_functions( m @* o, c xoico_host* host )
         m xoico_func_s* func = o.push_func_from_sc( host, st.sc );
         func.declare_in_expand_forward = false;
         if( o.default_body ) func.body =< o.default_body.fork();
+
+        d xoico_func_s* func_to_group = func.clone();
+        func_to_group.body =< NULL;
+        func_to_group.expandable = false;
+        o.funcs_return_to_group.push_d( func_to_group );
     }
 
     return 0;

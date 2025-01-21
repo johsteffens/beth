@@ -1,4 +1,4 @@
-//  Last update: 2025-01-09T12:09:40Z
+//  Last update: 2025-01-10T22:32:28Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -49,7 +49,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_xoico 0xEF05A7C389D72A08ull
+// HKEYOF_xoico 0xBCC022AEF9649C2Aull
 
 /**********************************************************************************************************************/
 // source: xoico.x
@@ -2209,8 +2209,8 @@ er_t xoico_feature_s_setup_functions( xoico_feature_s* o, const xoico_host* host
     bl_t always_defined = ( o->strict || o->default_body || o->st_default_func_name.size > 0 );
     
     if( o->flag_a )
-    {
-        st_s* st = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
+    {BLM_INIT_LEVEL(1);
+        st_s* st = ((st_s*)BLM_LEVEL_T_PUSH(1,st_s,st_s_create()));
         st_s_push_fa(st,"#<sc_t> a_#<sc_t>( ", sc_ret_typespec, sc_name );
         st_s_push_fa(st,flag_const ? "c" : flag_discardable ? "d" : "m" );
         st_s_push_fa(st," @* o" );
@@ -2232,11 +2232,11 @@ er_t xoico_feature_s_setup_functions( xoico_feature_s* o, const xoico_host* host
         func_to_group->name = o->signature.name;
         func_to_group->expandable = false;
         x_array_push_d(((x_array*)(&(o->funcs_return_to_group))),((x_inst*)(func_to_group )));
-    }
+    BLM_DOWN();}
     
     if( o->flag_a )
-    {
-        st_s* st = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
+    {BLM_INIT_LEVEL(1);
+        st_s* st = ((st_s*)BLM_LEVEL_T_PUSH(1,st_s,st_s_create()));
         st_s_push_fa(st,"bl_t defines_#<sc_t>( c @* o ) ", sc_name );
         if( always_defined )
         {
@@ -2254,12 +2254,12 @@ er_t xoico_feature_s_setup_functions( xoico_feature_s* o, const xoico_host* host
         xoico_body_s_attach( &(func_to_group->body ),  NULL);
         func_to_group->expandable = false;
         x_array_push_d(((x_array*)(&(o->funcs_return_to_group))),((x_inst*)(func_to_group )));
-    }
+    BLM_DOWN();}
     
     if( o->flag_t )
-    {
+    {BLM_INIT_LEVEL(1);
         /// new
-        st_s* st = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
+        st_s* st = ((st_s*)BLM_LEVEL_T_PUSH(1,st_s,st_s_create()));
         st_s_push_fa(st,"#<sc_t> t_#<sc_t>( ", sc_ret_typespec, sc_name );
         st_s_push_fa(st,flag_const ? "c" : flag_discardable ? "d" : "m" );
         st_s_push_fa(st," #<sc_t>* o, tp_t t", sc_obj_type );
@@ -2279,11 +2279,11 @@ er_t xoico_feature_s_setup_functions( xoico_feature_s* o, const xoico_host* host
         xoico_body_s_attach( &(func_to_group->body ),  NULL);
         func_to_group->expandable = false;
         x_array_push_d(((x_array*)(&(o->funcs_return_to_group))),((x_inst*)(func_to_group )));
-    }
+    BLM_DOWN();}
     
     if( o->flag_t )
-    {
-        st_s* st = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
+    {BLM_INIT_LEVEL(1);
+        st_s* st = ((st_s*)BLM_LEVEL_T_PUSH(1,st_s,st_s_create()));
         st_s_push_fa(st,"bl_t t_defines_#<sc_t>( tp_t t ) ", sc_name );
         if( always_defined )
         {
@@ -2301,11 +2301,11 @@ er_t xoico_feature_s_setup_functions( xoico_feature_s* o, const xoico_host* host
         xoico_body_s_attach( &(func_to_group->body ),  NULL);
         func_to_group->expandable = false;
         x_array_push_d(((x_array*)(&(o->funcs_return_to_group))),((x_inst*)(func_to_group )));
-    }
+    BLM_DOWN();}
     
     if( o->flag_p )
-    {
-        st_s* st = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
+    {BLM_INIT_LEVEL(1);
+        st_s* st = ((st_s*)BLM_LEVEL_T_PUSH(1,st_s,st_s_create()));
         st_s_push_fa(st,"#<sc_t> p_#<sc_t>( c #<sc_t>* p, ", sc_ret_typespec, sc_name, sc_spect_name );
         st_s_push_fa(st,flag_const ? "c" : flag_discardable ? "d" : "m" );
         st_s_push_fa(st," #<sc_t>* o", sc_obj_type );
@@ -2319,11 +2319,11 @@ er_t xoico_feature_s_setup_functions( xoico_feature_s* o, const xoico_host* host
     
         xoico_func_s* func = xoico_feature_s_push_func_from_sc(o,host, st->sc );
         func->declare_in_expand_forward = false;
-    }
+    BLM_DOWN();}
     
     if( o->flag_p )
-    {
-        st_s* st = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
+    {BLM_INIT_LEVEL(1);
+        st_s* st = ((st_s*)BLM_LEVEL_T_PUSH(1,st_s,st_s_create()));
         st_s_push_fa(st,"bl_t p_defines_#<sc_t>( c #<sc_t>* p ) ", sc_name, sc_spect_name );
         if( always_defined )
         {
@@ -2336,11 +2336,11 @@ er_t xoico_feature_s_setup_functions( xoico_feature_s* o, const xoico_host* host
     
         xoico_func_s* func = xoico_feature_s_push_func_from_sc(o,host, st->sc );
         func->declare_in_expand_forward = false;
-    }
+    BLM_DOWN();}
     
     if( o->flag_r )
-    {
-        st_s* st = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
+    {BLM_INIT_LEVEL(1);
+        st_s* st = ((st_s*)BLM_LEVEL_T_PUSH(1,st_s,st_s_create()));
         st_s_push_fa(st,"#<sc_t> r_#<sc_t>(", sc_ret_typespec, sc_name );
         st_s_push_fa(st," c sr_s* o" );
         BLM_TRY(xoico_args_s_expand_x(&(o->signature.args),host, false,((x_sink*)( st ))))
@@ -2360,11 +2360,11 @@ er_t xoico_feature_s_setup_functions( xoico_feature_s* o, const xoico_host* host
     
         xoico_func_s* func = xoico_feature_s_push_func_from_sc(o,host, st->sc );
         func->declare_in_expand_forward = false;
-    }
+    BLM_DOWN();}
     
     if( o->flag_r )
-    {
-        st_s* st = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
+    {BLM_INIT_LEVEL(1);
+        st_s* st = ((st_s*)BLM_LEVEL_T_PUSH(1,st_s,st_s_create()));
     
         st_s_push_fa(st,"bl_t r_defines_#<sc_t>( c sr_s* o ) ", sc_name );
         if( always_defined )
@@ -2378,7 +2378,7 @@ er_t xoico_feature_s_setup_functions( xoico_feature_s* o, const xoico_host* host
     
         xoico_func_s* func = xoico_feature_s_push_func_from_sc(o,host, st->sc );
         func->declare_in_expand_forward = false;
-    }
+    BLM_DOWN();}
     
     if( o->st_default_func_name.size > 0 )
     {BLM_INIT_LEVEL(1);
@@ -2402,6 +2402,11 @@ er_t xoico_feature_s_setup_functions( xoico_feature_s* o, const xoico_host* host
         xoico_func_s* func = xoico_feature_s_push_func_from_sc(o,host, st->sc );
         func->declare_in_expand_forward = false;
         if( o->default_body ) xoico_body_s_attach( &(func->body ),  ((xoico_body_s*)bcore_fork(o->default_body)));
+    
+        xoico_func_s* func_to_group = xoico_func_s_clone(func);
+        xoico_body_s_attach( &(func_to_group->body ),  NULL);
+        func_to_group->expandable = false;
+        x_array_push_d(((x_array*)(&(o->funcs_return_to_group))),((x_inst*)(func_to_group )));
     BLM_DOWN();}
     
     BLM_RETURNV(er_t, 0)
@@ -2409,7 +2414,7 @@ er_t xoico_feature_s_setup_functions( xoico_feature_s* o, const xoico_host* host
 
 er_t xoico_feature_s_finalize( xoico_feature_s* o, const xoico_host* host )
 {
-    // xoico_feature.x:391:1
+    // xoico_feature.x:396:1
     
     {const xoico_funcs_s* __a=&(o->funcs );if(__a)for(sz_t __i=0;__i<__a->size;__i++){xoico_func_s* func=__a->data[__i]; BLM_TRY(xoico_func_s_finalize(func,host ))
     }}return  0;
@@ -2417,7 +2422,7 @@ er_t xoico_feature_s_finalize( xoico_feature_s* o, const xoico_host* host )
 
 er_t xoico_feature_s_expand_forward( const xoico_feature_s* o, const xoico_host* host, sz_t indent, x_sink* sink )
 {
-    // xoico_feature.x:399:1
+    // xoico_feature.x:404:1
     
     {const xoico_funcs_s* __a=&(o->funcs );if(__a)for(sz_t __i=0;__i<__a->size;__i++){xoico_func_s* func=__a->data[__i]; BLM_TRY(xoico_func_s_expand_forward(func,host, indent, sink ))
     }}return  0;
@@ -2425,7 +2430,7 @@ er_t xoico_feature_s_expand_forward( const xoico_feature_s* o, const xoico_host*
 
 er_t xoico_feature_s_expand_indef_typedef( const xoico_feature_s* o, const xoico_host* host, sz_t indent, x_sink* sink )
 {
-    // xoico_feature.x:407:1
+    // xoico_feature.x:412:1
     
     if( !o->expandable ) return  0;
     xoico_compiler_s* compiler = xoico_host_a_compiler(host);
@@ -2440,7 +2445,7 @@ er_t xoico_feature_s_expand_indef_typedef( const xoico_feature_s* o, const xoico
 
 er_t xoico_feature_s_expand_spect_declaration( const xoico_feature_s* o, const xoico_host* host, sz_t indent, x_sink* sink )
 {
-    // xoico_feature.x:422:1
+    // xoico_feature.x:427:1
     
     if( !o->expandable ) return  0;
     xoico_compiler_s* compiler = xoico_host_a_compiler(host);
@@ -2450,7 +2455,7 @@ er_t xoico_feature_s_expand_spect_declaration( const xoico_feature_s* o, const x
 
 er_t xoico_feature_s_expand_spect_definition( const xoico_feature_s* o, const xoico_host* host, sz_t indent, x_sink* sink )
 {
-    // xoico_feature.x:432:1
+    // xoico_feature.x:437:1
     
     if( !o->expandable ) return  0;
     xoico_compiler_s* compiler = xoico_host_a_compiler(host);
@@ -2469,7 +2474,7 @@ er_t xoico_feature_s_expand_spect_definition( const xoico_feature_s* o, const xo
 
 er_t xoico_feature_s_expand_indef_declaration( const xoico_feature_s* o, const xoico_host* host, sz_t indent, x_sink* sink )
 {
-    // xoico_feature.x:451:1
+    // xoico_feature.x:456:1
     
     if( !o->expandable ) return  0;
     {const xoico_funcs_s* __a=&(o->funcs );if(__a)for(sz_t __i=0;__i<__a->size;__i++){xoico_func_s* func=__a->data[__i]; BLM_TRY(xoico_func_s_expand_declaration(func,host, indent + 2, sink ))
@@ -2478,7 +2483,7 @@ er_t xoico_feature_s_expand_indef_declaration( const xoico_feature_s* o, const x
 
 er_t xoico_feature_s_expand_definition( const xoico_feature_s* o, const xoico_host* host, sz_t indent, x_sink* sink )
 {
-    // xoico_feature.x:460:1
+    // xoico_feature.x:465:1
     
     if( !o->expandable ) return  0;
     {const xoico_funcs_s* __a=&(o->funcs );if(__a)for(sz_t __i=0;__i<__a->size;__i++){xoico_func_s* func=__a->data[__i]; BLM_TRY(xoico_func_s_expand_definition(func,host, indent, sink ))
@@ -2487,7 +2492,7 @@ er_t xoico_feature_s_expand_definition( const xoico_feature_s* o, const xoico_ho
 
 er_t xoico_feature_s_expand_init1( const xoico_feature_s* o, const xoico_host* host, sz_t indent, x_sink* sink )
 {
-    // xoico_feature.x:469:1
+    // xoico_feature.x:474:1
     
     if( !o->expandable ) return  0;
     xoico_compiler_s* compiler = xoico_host_a_compiler(host);
@@ -11451,5 +11456,5 @@ int main( int argc, char** argv )
     BETH_CLOSEV( 0 );
     return retv;
 }
-// XOICO_BODY_SIGNATURE 0xBFBED0E11989C755
-// XOICO_FILE_SIGNATURE 0x8F3359BE0EFFB733
+// XOICO_BODY_SIGNATURE 0x5564E88E5A13AFBC
+// XOICO_FILE_SIGNATURE 0x60483DCACD26F0BA
