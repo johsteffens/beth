@@ -1,4 +1,4 @@
-//  Last update: 2025-01-10T13:52:13Z
+//  Last update: 2025-01-19T15:35:19Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -54,10 +54,12 @@
  *  bcore_via_inexpandable.x
  *  bcore_x_btcl.x
  *  bcore_x_btcl_builtin.x
- *  bcore_x_btcl_export.x
  *  bcore_x_btcl_functor.x
+ *  bcore_x_btcl_functor_f3.x
  *  bcore_x_btcl_net.x
  *  bcore_x_btcl_op.x
+ *  bcore_x_btcl_operator.x
+ *  bcore_x_btcl_operator_f3.x
  *  bcore_x_hmap.x
  *
  */
@@ -146,16 +148,18 @@
 #define TYPEOF_x_compare_spect_s 0xD13B4A3F5F184257ull
 #define BETH_EXPAND_GROUP_x_compare \
   BCORE_FORWARD_OBJECT( x_compare ); \
-  s2_t x_compare_t_type_dominant( tp_t ta, const x_inst* a, tp_t tb, const x_inst* b ); \
+  static inline s2_t x_compare_t_type_dominant( tp_t ta, const x_inst* a, tp_t tb, const x_inst* b ); \
   static inline s2_t x_compare_type_dominant( const x_inst* a, const x_inst* b ); \
-  s2_t x_compare_t_num_dominant( tp_t ta, const x_inst* a, tp_t tb, const x_inst* b ); \
+  static inline s2_t x_compare_t_num_dominant( tp_t ta, const x_inst* a, tp_t tb, const x_inst* b ); \
   static inline s2_t x_compare_num_dominant( const x_inst* a, const x_inst* b ); \
   XOILA_DECLARE_SPECT( x_compare ) \
   { \
       bcore_spect_header_s header; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_compare ) \
+  static inline s2_t x_compare_t_type_dominant( tp_t ta, const x_inst* a, tp_t tb, const x_inst* b ){return  ( ta == tb ) ? bcore_compare_typed( ta, a, b ) : ( ta < tb ) ? 1 : -1;} \
   static inline s2_t x_compare_type_dominant( const x_inst* a, const x_inst* b ){return  x_compare_t_type_dominant(a ? a->_ : 0, a, b ? b->_ : 0, b );} \
+  static inline s2_t x_compare_t_num_dominant( tp_t ta, const x_inst* a, tp_t tb, const x_inst* b ){return  bcore_compare_num_dominant_sr( sr_twc(ta, a ), sr_twc(tb, b ) );} \
   static inline s2_t x_compare_num_dominant( const x_inst* a, const x_inst* b ){return  x_compare_t_num_dominant(a ? a->_ : 0, a, b ? b->_ : 0, b );}
 
 /**********************************************************************************************************************/
@@ -2691,6 +2695,48 @@
 
 #define TYPEOF_x_btcl 0xEDA9A5C25324F131ull
 #define TYPEOF_x_btcl_spect_s 0x235E6DC4678C61EDull
+#define TYPEOF_x_btcl_s 0x56270522F5DAAAFBull
+#define BETH_EXPAND_ITEM_x_btcl_s \
+  BCORE_DECLARE_OBJECT( x_btcl_s ) \
+  { \
+      aware_t _; \
+      bcore_arr_st_s* embed_path_arr; \
+  }; \
+  static inline er_t x_btcl_s_from_source( const x_btcl_s* o, x_btcl* obj, x_source* source ); \
+  static inline er_t x_btcl_s_t_from_file( const x_btcl_s* o, x_btcl* obj, tp_t t, sc_t file ); \
+  static inline er_t x_btcl_s_from_file( const x_btcl_s* o, x_btcl* obj, sc_t file ); \
+  static inline er_t x_btcl_s_t_from_st( const x_btcl_s* o, x_btcl* obj, tp_t t, const st_s* st ); \
+  static inline er_t x_btcl_s_from_st( const x_btcl_s* o, x_btcl* obj, const st_s* st ); \
+  static inline er_t x_btcl_s_t_from_sc( const x_btcl_s* o, x_btcl* obj, tp_t t, sc_t sc ); \
+  static inline er_t x_btcl_s_from_sc( const x_btcl_s* o, x_btcl* obj, sc_t sc ); \
+  static inline x_btcl* x_btcl_s_create_from_st_t( const x_btcl_s* o, const st_s* st, tp_t* type ); \
+  static inline x_btcl* x_btcl_s_create_from_sc_t( const x_btcl_s* o, sc_t sc, tp_t* type ); \
+  static inline x_btcl* x_btcl_s_create_from_st( const x_btcl_s* o, const st_s* st ); \
+  static inline x_btcl* x_btcl_s_create_from_sc( const x_btcl_s* o, sc_t sc ); \
+  static inline x_btcl* x_btcl_s_create_from_file( const x_btcl_s* o, sc_t file ); \
+  static inline er_t x_btcl_s_run_from_st( const x_btcl_s* o, const st_s* st ); \
+  static inline er_t x_btcl_s_run_from_sc( const x_btcl_s* o, sc_t sc ); \
+  static inline er_t x_btcl_s_run_from_file( const x_btcl_s* o, sc_t file ); \
+  er_t x_btcl_s_t_from_source( const x_btcl_s* o, x_btcl* obj, tp_t t, x_source* source ); \
+  x_btcl* x_btcl_s_create_from_source_t( const x_btcl_s* o, x_source* source, tp_t* type ); \
+  x_btcl* x_btcl_s_create_from_source( const x_btcl_s* o, x_source* source ); \
+  er_t x_btcl_s_run_from_source( const x_btcl_s* o, x_source* source ); \
+  er_t x_btcl_s_parse_create_object( const x_btcl_s* o, x_source* source, sr_s* obj ); \
+  static inline er_t x_btcl_s_from_source( const x_btcl_s* o, x_btcl* obj, x_source* source ){return  x_btcl_s_t_from_source(o,obj, obj->_, source );} \
+  static inline er_t x_btcl_s_t_from_file( const x_btcl_s* o, x_btcl* obj, tp_t t, sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_btcl_s_t_from_source(o,obj, t, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_check_create_from_file(file ))) ))} \
+  static inline er_t x_btcl_s_from_file( const x_btcl_s* o, x_btcl* obj, sc_t file ){return  x_btcl_s_t_from_file(o,obj, obj->_, file );} \
+  static inline er_t x_btcl_s_t_from_st( const x_btcl_s* o, x_btcl* obj, tp_t t, const st_s* st ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_btcl_s_t_from_source(o,obj, t, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))) ))} \
+  static inline er_t x_btcl_s_from_st( const x_btcl_s* o, x_btcl* obj, const st_s* st ){return  x_btcl_s_t_from_st(o,obj, obj->_, st );} \
+  static inline er_t x_btcl_s_t_from_sc( const x_btcl_s* o, x_btcl* obj, tp_t t, sc_t sc ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_btcl_s_t_from_source(o,obj, t, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))} \
+  static inline er_t x_btcl_s_from_sc( const x_btcl_s* o, x_btcl* obj, sc_t sc ){return  x_btcl_s_t_from_sc(o,obj, obj->_, sc );} \
+  static inline x_btcl* x_btcl_s_create_from_st_t( const x_btcl_s* o, const st_s* st, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_s_create_from_source_t(o,((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))), type ))} \
+  static inline x_btcl* x_btcl_s_create_from_sc_t( const x_btcl_s* o, sc_t sc, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_s_create_from_source_t(o,((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))), type ))} \
+  static inline x_btcl* x_btcl_s_create_from_st( const x_btcl_s* o, const st_s* st ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_s_create_from_source(o,((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))) ))} \
+  static inline x_btcl* x_btcl_s_create_from_sc( const x_btcl_s* o, sc_t sc ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_s_create_from_source(o,((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))} \
+  static inline x_btcl* x_btcl_s_create_from_file( const x_btcl_s* o, sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_s_create_from_source(o,((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))) ))} \
+  static inline er_t x_btcl_s_run_from_st( const x_btcl_s* o, const st_s* st ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_btcl_s_run_from_source(o,((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))) ))} \
+  static inline er_t x_btcl_s_run_from_sc( const x_btcl_s* o, sc_t sc ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_btcl_s_run_from_source(o,((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))} \
+  static inline er_t x_btcl_s_run_from_file( const x_btcl_s* o, sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_btcl_s_run_from_source(o,((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))) ))}
 #define TYPEOF_add_a_b 0xD859D6BBC345568Dull
 #define TYPEOF_add_a 0x22DCF9FDFCE6CD70ull
 #define TYPEOF_x_btcl_btcl_function_stamp_s 0xD6541420FA20E7A2ull
@@ -2717,6 +2763,9 @@
 #define TYPEOF_abs 0xE71FB2190541727Bull
 #define TYPEOF_ceil 0xD9951890FD6D7E88ull
 #define TYPEOF_floor 0xA03A74A942DB43BDull
+#define TYPEOF_max 0x080F5119176D1FF9ull
+#define TYPEOF_min 0x07F4431917564077ull
+#define TYPEOF_ife 0x2B84E0192BBDCBD9ull
 #define TYPEOF_size 0x4DEA9618E618AE3Cull
 #define TYPEOF_identity 0xE90F184C6AA3FFBBull
 #define TYPEOF_neg 0x2138E5192571D261ull
@@ -2754,11 +2803,13 @@
 #define TYPEOF_self 0x2D19E518D40792B7ull
 #define TYPEOF_func 0x86628378DB071EA7ull
 #define TYPEOF_embed 0x0B0E48B4160DCA6Eull
+#define TYPEOF_prefix 0xBA8821B572531E29ull
 #define TYPEOF_x_btcl_context_s 0x833EA022A3607597ull
 #define BETH_EXPAND_ITEM_x_btcl_context_s \
   BCORE_DECLARE_OBJECT( x_btcl_context_s ) \
   { \
       aware_t _; \
+      bcore_arr_st_s* embed_path_arr; \
       bcore_hmap_name_s hmap_reserved_key; \
       bcore_hmap_name_s hmap_reserved_func; \
       bcore_hmap_name_s hmap_reserved_const; \
@@ -2774,6 +2825,7 @@
   bl_t x_btcl_context_s_is_reserved( const x_btcl_context_s* o, tp_t name ); \
   sc_t x_btcl_context_s_sc_reserved( const x_btcl_context_s* o, tp_t name ); \
   er_t x_btcl_context_s_check_reserved( const x_btcl_context_s* o, tp_t name, x_source* source ); \
+  er_t x_btcl_context_s_get_embedding_file_path( const x_btcl_context_s* o, x_source* source, sc_t in_path, st_s* out_path ); \
   x_btcl_context_s* x_btcl_context_s_set_reserved_funcs( x_btcl_context_s* o ); \
   x_btcl_context_s* x_btcl_context_s_set_reserved_consts( x_btcl_context_s* o ); \
   static inline bl_t x_btcl_context_s_is_reserved_key( const x_btcl_context_s* o, tp_t name ){return  bcore_hmap_name_s_exists(&(o->hmap_reserved_key),name );} \
@@ -2812,6 +2864,7 @@
   bl_t x_btcl_frame_s_var_exists( const x_btcl_frame_s* o, tp_t name ); \
   sr_s* x_btcl_frame_s_var_get( const x_btcl_frame_s* o, tp_t name ); \
   sr_s* x_btcl_frame_s_var_set( x_btcl_frame_s* o, tp_t name, sr_s sr ); \
+  x_btcl_frame_s* x_btcl_frame_s_import_forked_vars( x_btcl_frame_s* o, tp_t prefix, x_btcl_frame_s* src_frame ); \
   er_t x_btcl_frame_s_generic_copy( x_btcl_frame_s* o, const x_source_point_s* sp, sr_s* sr, const sr_s* sb ); \
   tp_t x_btcl_frame_s_get_identifier( x_btcl_frame_s* o, x_source* source, bl_t take_from_source ); \
   er_t x_btcl_frame_s_eval_number_literal( x_btcl_frame_s* o, x_source* source, sr_s* sr ); \
@@ -2965,6 +3018,9 @@
 #define TYPEOF_ABS 0xFA2FF219A0745E1Bull
 #define TYPEOF_CEIL 0xEDACD99C60C7DDC8ull
 #define TYPEOF_FLOOR 0xCA975D16304CB71Dull
+#define TYPEOF_MAX 0x1E855119B582C7D9ull
+#define TYPEOF_MIN 0x1E6A4319B56BE857ull
+#define TYPEOF_IFE 0x41212019C91A3CB9ull
 #define TYPEOF_PRINT 0xADC3387E5F0C2A48ull
 #define TYPEOF_PRINTLN 0xB722269D563BC8E6ull
 #define TYPEOF_PRINTX 0x4EE30EBB81AB7930ull
@@ -2978,6 +3034,7 @@
 #define TYPEOF_DIR 0xE0447E1991CAD034ull
 #define BETH_EXPAND_GROUP_x_btcl \
   BCORE_FORWARD_OBJECT( x_btcl ); \
+  BCORE_FORWARD_OBJECT( x_btcl_s ); \
   BCORE_FORWARD_OBJECT( x_btcl_btcl_function_stamp_s ); \
   BCORE_FORWARD_OBJECT( x_btcl_context_s ); \
   BCORE_FORWARD_OBJECT( x_btcl_frame_s ); \
@@ -2989,9 +3046,12 @@
   BCORE_FORWARD_OBJECT( x_btcl_signature_s ); \
   BCORE_FORWARD_OBJECT( x_btcl_external_function_s ); \
   BCORE_FORWARD_OBJECT( x_btcl_function_s ); \
-  BCORE_FORWARD_OBJECT( x_btcl_export ); \
+  BCORE_FORWARD_OBJECT( x_btcl_operator ); \
+  BCORE_FORWARD_OBJECT( x_btcl_operator_f3 ); \
   BCORE_FORWARD_OBJECT( x_btcl_net ); \
   BCORE_FORWARD_OBJECT( x_btcl_functor ); \
+  BCORE_FORWARD_OBJECT( x_btcl_functor_f3 ); \
+  static inline er_t x_btcl_t_from_source( x_btcl* o, tp_t t, x_source* source ); \
   static inline er_t x_btcl_from_source( x_btcl* o, x_source* source ); \
   static inline er_t x_btcl_t_from_file( x_btcl* o, tp_t t, sc_t file ); \
   static inline er_t x_btcl_from_file( x_btcl* o, sc_t file ); \
@@ -2999,23 +3059,22 @@
   static inline er_t x_btcl_from_st( x_btcl* o, const st_s* st ); \
   static inline er_t x_btcl_t_from_sc( x_btcl* o, tp_t t, sc_t sc ); \
   static inline er_t x_btcl_from_sc( x_btcl* o, sc_t sc ); \
+  static inline x_btcl* x_btcl_create_from_source_t( x_source* source, tp_t* type ); \
   static inline x_btcl* x_btcl_create_from_st_t( const st_s* st, tp_t* type ); \
   static inline x_btcl* x_btcl_create_from_sc_t( sc_t sc, tp_t* type ); \
+  static inline x_btcl* x_btcl_create_from_source( x_source* source ); \
   static inline x_btcl* x_btcl_create_from_st( const st_s* st ); \
   static inline x_btcl* x_btcl_create_from_sc( sc_t sc ); \
   static inline x_btcl* x_btcl_create_from_file( sc_t file ); \
+  static inline er_t x_btcl_run_from_source( x_source* source ); \
   static inline er_t x_btcl_run_from_st( const st_s* st ); \
   static inline er_t x_btcl_run_from_sc( sc_t sc ); \
   static inline er_t x_btcl_run_from_file( sc_t file ); \
-  er_t x_btcl_t_from_source( x_btcl* o, tp_t t, x_source* source ); \
-  x_btcl* x_btcl_create_from_source_t( x_source* source, tp_t* type ); \
-  x_btcl* x_btcl_create_from_source( x_source* source ); \
-  er_t x_btcl_run_from_source( x_source* source ); \
+  static inline er_t x_btcl_parse_create_object( x_source* source, sr_s* obj ); \
   sc_t x_btcl_operator_symbol( tp_t type ); \
   static inline bl_t x_btcl_is_identifier( x_source* source ); \
   void x_btcl_clone_if_weak( sr_s* sr ); \
   void x_btcl_clone_if_weak_or_twice_referenced( sr_s* sr ); \
-  er_t x_btcl_get_embedding_file_path( x_source* source, sc_t in_path, st_s* out_path ); \
   er_t x_btcl_generic_copy( sr_s* sr, const sr_s* sb ); \
   static inline sz_t x_btcl_max_frame_depth( void ); \
   static inline sz_t x_btcl_max_frame_eval_depth( void ); \
@@ -3025,11 +3084,11 @@
   static inline s2_t x_btcl_priority_d( void ); \
   static inline s2_t x_btcl_priority_e( void ); \
   er_t x_btcl_to_sink( bl_t detailed, const sr_s* sr, x_sink* sink ); \
-  er_t x_btcl_parse_create_object( x_source* source, sr_s* obj ); \
   er_t x_btcl_bop_cat_ab( sr_s* a, sr_s* b, sr_s* sr ); \
   void x_btcl_selftest( sc_t file ); \
   typedef sz_t (*x_btcl_btcl_function_arity)(const x_btcl* o, tp_t name ); \
   typedef er_t (*x_btcl_btcl_function)(const x_btcl* o, tp_t name, const x_source_point_s* sp, x_btcl_frame_s* lexical_frame, const bcore_arr_sr_s* args, sr_s* result ); \
+  typedef f3_t (*x_btcl_nullary_f3)(const x_btcl* o ); \
   typedef f3_t (*x_btcl_unary_f3)(const x_btcl* o, f3_t x ); \
   typedef f3_t (*x_btcl_binary_f3)(const x_btcl* o, f3_t x, f3_t y ); \
   typedef f3_t (*x_btcl_ternary_f3)(const x_btcl* o, f3_t x, f3_t y, f3_t z ); \
@@ -3038,11 +3097,13 @@
       bcore_spect_header_s header; \
       x_btcl_btcl_function_arity btcl_function_arity; \
       x_btcl_btcl_function btcl_function; \
+      x_btcl_nullary_f3 nullary_f3; \
       x_btcl_unary_f3 unary_f3; \
       x_btcl_binary_f3 binary_f3; \
       x_btcl_ternary_f3 ternary_f3; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_btcl ) \
+  BETH_EXPAND_ITEM_x_btcl_s \
   static inline sz_t x_btcl_a_btcl_function_arity( const x_btcl* o, tp_t name ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_aware( o ); assert( p->btcl_function_arity ); return p->btcl_function_arity( o, name );} \
   static inline bl_t x_btcl_defines_btcl_function_arity( const x_btcl* o ){ return  true;} \
   static inline sz_t x_btcl_t_btcl_function_arity( const x_btcl* o, tp_t t, tp_t name ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_typed( t ); assert( p->btcl_function_arity ); return p->btcl_function_arity( o, name );} \
@@ -3052,6 +3113,10 @@
   static inline bl_t x_btcl_defines_btcl_function( const x_btcl* o ){  return x_btcl_spect_s_get_aware( o )->btcl_function != NULL;} \
   static inline er_t x_btcl_t_btcl_function( const x_btcl* o, tp_t t, tp_t name, const x_source_point_s* sp, x_btcl_frame_s* lexical_frame, const bcore_arr_sr_s* args, sr_s* result ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_typed( t ); assert( p->btcl_function ); return p->btcl_function( o, name, sp, lexical_frame, args, result );} \
   static inline bl_t x_btcl_t_defines_btcl_function( tp_t t ){  return x_btcl_spect_s_get_typed( t )->btcl_function != NULL;} \
+  static inline f3_t x_btcl_a_nullary_f3( const x_btcl* o ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_aware( o ); assert( p->nullary_f3 ); return p->nullary_f3( o );} \
+  static inline bl_t x_btcl_defines_nullary_f3( const x_btcl* o ){  return x_btcl_spect_s_get_aware( o )->nullary_f3 != NULL;} \
+  static inline f3_t x_btcl_t_nullary_f3( const x_btcl* o, tp_t t ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_typed( t ); assert( p->nullary_f3 ); return p->nullary_f3( o );} \
+  static inline bl_t x_btcl_t_defines_nullary_f3( tp_t t ){  return x_btcl_spect_s_get_typed( t )->nullary_f3 != NULL;} \
   static inline f3_t x_btcl_a_unary_f3( const x_btcl* o, f3_t x ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_aware( o ); assert( p->unary_f3 ); return p->unary_f3( o, x );} \
   static inline bl_t x_btcl_defines_unary_f3( const x_btcl* o ){  return x_btcl_spect_s_get_aware( o )->unary_f3 != NULL;} \
   static inline f3_t x_btcl_t_unary_f3( const x_btcl* o, tp_t t, f3_t x ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_typed( t ); assert( p->unary_f3 ); return p->unary_f3( o, x );} \
@@ -3075,9 +3140,12 @@
   BETH_EXPAND_ITEM_x_btcl_signature_s \
   BETH_EXPAND_ITEM_x_btcl_external_function_s \
   BETH_EXPAND_ITEM_x_btcl_function_s \
-  BETH_EXPAND_GROUP_x_btcl_export \
+  BETH_EXPAND_GROUP_x_btcl_operator \
+  BETH_EXPAND_GROUP_x_btcl_operator_f3 \
   BETH_EXPAND_GROUP_x_btcl_net \
   BETH_EXPAND_GROUP_x_btcl_functor \
+  BETH_EXPAND_GROUP_x_btcl_functor_f3 \
+  static inline er_t x_btcl_t_from_source( x_btcl* o, tp_t t, x_source* source ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_btcl_s_t_from_source(((x_btcl_s*)BLM_LEVEL_T_PUSH(0,x_btcl_s,x_btcl_s_create())),o, t, source ))} \
   static inline er_t x_btcl_from_source( x_btcl* o, x_source* source ){return  x_btcl_t_from_source(o,o->_, source );} \
   static inline er_t x_btcl_t_from_file( x_btcl* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_btcl_t_from_source(o,t, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_check_create_from_file(file ))) ))} \
   static inline er_t x_btcl_from_file( x_btcl* o, sc_t file ){return  x_btcl_t_from_file(o,o->_, file );} \
@@ -3085,14 +3153,18 @@
   static inline er_t x_btcl_from_st( x_btcl* o, const st_s* st ){return  x_btcl_t_from_st(o,o->_, st );} \
   static inline er_t x_btcl_t_from_sc( x_btcl* o, tp_t t, sc_t sc ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_btcl_t_from_source(o,t, ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))} \
   static inline er_t x_btcl_from_sc( x_btcl* o, sc_t sc ){return  x_btcl_t_from_sc(o,o->_, sc );} \
+  static inline x_btcl* x_btcl_create_from_source_t( x_source* source, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_s_create_from_source_t(((x_btcl_s*)BLM_LEVEL_T_PUSH(0,x_btcl_s,x_btcl_s_create())),source, type ))} \
   static inline x_btcl* x_btcl_create_from_st_t( const st_s* st, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))), type ))} \
   static inline x_btcl* x_btcl_create_from_sc_t( sc_t sc, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))), type ))} \
+  static inline x_btcl* x_btcl_create_from_source( x_source* source ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_s_create_from_source(((x_btcl_s*)BLM_LEVEL_T_PUSH(0,x_btcl_s,x_btcl_s_create())),source ))} \
   static inline x_btcl* x_btcl_create_from_st( const st_s* st ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))) ))} \
   static inline x_btcl* x_btcl_create_from_sc( sc_t sc ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))} \
   static inline x_btcl* x_btcl_create_from_file( sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))) ))} \
+  static inline er_t x_btcl_run_from_source( x_source* source ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_btcl_s_run_from_source(((x_btcl_s*)BLM_LEVEL_T_PUSH(0,x_btcl_s,x_btcl_s_create())),source ))} \
   static inline er_t x_btcl_run_from_st( const st_s* st ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_btcl_run_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))) ))} \
   static inline er_t x_btcl_run_from_sc( sc_t sc ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_btcl_run_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))} \
   static inline er_t x_btcl_run_from_file( sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_btcl_run_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))) ))} \
+  static inline er_t x_btcl_parse_create_object( x_source* source, sr_s* obj ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, x_btcl_s_parse_create_object(((x_btcl_s*)BLM_LEVEL_T_PUSH(0,x_btcl_s,x_btcl_s_create())),source, obj ))} \
   static inline bl_t x_btcl_is_identifier( x_source* source ){return  x_source_parse_bl(source," #?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z')||[0]=='_')" );} \
   static inline sz_t x_btcl_max_frame_depth( void ){return  0x500;} \
   static inline sz_t x_btcl_max_frame_eval_depth( void ){return  0x1000;} \
@@ -3103,31 +3175,31 @@
   static inline s2_t x_btcl_priority_e( void ){return  10000;}
 
 //----------------------------------------------------------------------------------------------------------------------
-// group: x_btcl_export; embeds: bcore_x_btcl_export.x
+// group: x_btcl_operator; embeds: bcore_x_btcl_operator.x
 
-#define TYPEOF_x_btcl_export 0x2BD065E7248C2748ull
-#define TYPEOF_x_btcl_export_spect_s 0x9C99F6DB9BEA3B90ull
-#define TYPEOF_x_btcl_export_uop_s 0x0992E95578D5A5D1ull
-#define BETH_EXPAND_ITEM_x_btcl_export_uop_s \
-  BCORE_DECLARE_OBJECT( x_btcl_export_uop_s ) \
+#define TYPEOF_x_btcl_operator 0x3AF9B7BEC62CAADAull
+#define TYPEOF_x_btcl_operator_spect_s 0xD29F4034B3518586ull
+#define TYPEOF_x_btcl_operator_uop_s 0x9BBD7DAAD0C98C63ull
+#define BETH_EXPAND_ITEM_x_btcl_operator_uop_s \
+  BCORE_DECLARE_OBJECT( x_btcl_operator_uop_s ) \
   { \
       aware_t _; \
       tp_t type; \
       sr_s a; \
       x_source_point_s sp; \
   }; \
-  static inline bl_t x_btcl_export_uop_s_is_operator( const x_btcl_export_uop_s* o ); \
-  static inline bl_t x_btcl_export_uop_s_is_exportable_operand( const x_btcl_export_uop_s* o ); \
-  x_btcl_export_uop_s* x_btcl_export_uop_s__( x_btcl_export_uop_s* o, tp_t type, sr_s* a, x_source_point_s* source_point ); \
-  x_btcl_export_uop_s* x_btcl_export_uop_s_signal( x_btcl_export_uop_s* o, tp_t name, x_inst* arg ); \
-  er_t x_btcl_export_uop_s_solve_exportable_a( const x_btcl_export_uop_s* o, const sr_s* a, sr_s* result, bl_t* success ); \
-  er_t x_btcl_export_uop_s_solve( x_btcl_export_uop_s* o, x_btcl_frame_s* frame, sr_s* result, bl_t* success ); \
-  er_t x_btcl_export_uop_s_execute( const x_btcl_export_uop_s* o, sr_s* result ); \
-  static inline bl_t x_btcl_export_uop_s_is_operator( const x_btcl_export_uop_s* o ){return  true;} \
-  static inline bl_t x_btcl_export_uop_s_is_exportable_operand( const x_btcl_export_uop_s* o ){return  true;}
-#define TYPEOF_x_btcl_export_bop_s 0xADDB8FD185CD2044ull
-#define BETH_EXPAND_ITEM_x_btcl_export_bop_s \
-  BCORE_DECLARE_OBJECT( x_btcl_export_bop_s ) \
+  static inline bl_t x_btcl_operator_uop_s_is_operator( const x_btcl_operator_uop_s* o ); \
+  static inline bl_t x_btcl_operator_uop_s_is_exportable_operand( const x_btcl_operator_uop_s* o ); \
+  x_btcl_operator_uop_s* x_btcl_operator_uop_s__( x_btcl_operator_uop_s* o, tp_t type, sr_s* a, x_source_point_s* source_point ); \
+  x_btcl_operator_uop_s* x_btcl_operator_uop_s_signal( x_btcl_operator_uop_s* o, tp_t name, x_inst* arg ); \
+  er_t x_btcl_operator_uop_s_solve_exportable_a( const x_btcl_operator_uop_s* o, const sr_s* a, sr_s* result, bl_t* success ); \
+  er_t x_btcl_operator_uop_s_solve( x_btcl_operator_uop_s* o, x_btcl_frame_s* frame, sr_s* result, bl_t* success ); \
+  er_t x_btcl_operator_uop_s_execute( const x_btcl_operator_uop_s* o, sr_s* result ); \
+  static inline bl_t x_btcl_operator_uop_s_is_operator( const x_btcl_operator_uop_s* o ){return  true;} \
+  static inline bl_t x_btcl_operator_uop_s_is_exportable_operand( const x_btcl_operator_uop_s* o ){return  true;}
+#define TYPEOF_x_btcl_operator_bop_s 0x3736F25BC629E322ull
+#define BETH_EXPAND_ITEM_x_btcl_operator_bop_s \
+  BCORE_DECLARE_OBJECT( x_btcl_operator_bop_s ) \
   { \
       aware_t _; \
       tp_t type; \
@@ -3135,18 +3207,18 @@
       sr_s b; \
       x_source_point_s sp; \
   }; \
-  static inline bl_t x_btcl_export_bop_s_is_operator( const x_btcl_export_bop_s* o ); \
-  static inline bl_t x_btcl_export_bop_s_is_exportable_operand( const x_btcl_export_bop_s* o ); \
-  x_btcl_export_bop_s* x_btcl_export_bop_s__( x_btcl_export_bop_s* o, tp_t type, sr_s* a, sr_s* b, x_source_point_s* source_point ); \
-  x_btcl_export_bop_s* x_btcl_export_bop_s_signal( x_btcl_export_bop_s* o, tp_t name, x_inst* arg ); \
-  er_t x_btcl_export_bop_s_solve_exportable_a_b( const x_btcl_export_bop_s* o, const sr_s* a, const sr_s* b, sr_s* result, bl_t* success ); \
-  er_t x_btcl_export_bop_s_solve( x_btcl_export_bop_s* o, x_btcl_frame_s* frame, sr_s* result, bl_t* success ); \
-  er_t x_btcl_export_bop_s_execute( const x_btcl_export_bop_s* o, sr_s* result ); \
-  static inline bl_t x_btcl_export_bop_s_is_operator( const x_btcl_export_bop_s* o ){return  true;} \
-  static inline bl_t x_btcl_export_bop_s_is_exportable_operand( const x_btcl_export_bop_s* o ){return  true;}
-#define TYPEOF_x_btcl_export_top_s 0x0343A435EFB30A0Eull
-#define BETH_EXPAND_ITEM_x_btcl_export_top_s \
-  BCORE_DECLARE_OBJECT( x_btcl_export_top_s ) \
+  static inline bl_t x_btcl_operator_bop_s_is_operator( const x_btcl_operator_bop_s* o ); \
+  static inline bl_t x_btcl_operator_bop_s_is_exportable_operand( const x_btcl_operator_bop_s* o ); \
+  x_btcl_operator_bop_s* x_btcl_operator_bop_s__( x_btcl_operator_bop_s* o, tp_t type, sr_s* a, sr_s* b, x_source_point_s* source_point ); \
+  x_btcl_operator_bop_s* x_btcl_operator_bop_s_signal( x_btcl_operator_bop_s* o, tp_t name, x_inst* arg ); \
+  er_t x_btcl_operator_bop_s_solve_exportable_a_b( const x_btcl_operator_bop_s* o, const sr_s* a, const sr_s* b, sr_s* result, bl_t* success ); \
+  er_t x_btcl_operator_bop_s_solve( x_btcl_operator_bop_s* o, x_btcl_frame_s* frame, sr_s* result, bl_t* success ); \
+  er_t x_btcl_operator_bop_s_execute( const x_btcl_operator_bop_s* o, sr_s* result ); \
+  static inline bl_t x_btcl_operator_bop_s_is_operator( const x_btcl_operator_bop_s* o ){return  true;} \
+  static inline bl_t x_btcl_operator_bop_s_is_exportable_operand( const x_btcl_operator_bop_s* o ){return  true;}
+#define TYPEOF_x_btcl_operator_top_s 0x25EA5FDB026468E0ull
+#define BETH_EXPAND_ITEM_x_btcl_operator_top_s \
+  BCORE_DECLARE_OBJECT( x_btcl_operator_top_s ) \
   { \
       aware_t _; \
       tp_t type; \
@@ -3155,66 +3227,211 @@
       sr_s c; \
       x_source_point_s sp; \
   }; \
-  static inline bl_t x_btcl_export_top_s_is_operator( const x_btcl_export_top_s* o ); \
-  static inline bl_t x_btcl_export_top_s_is_exportable_operand( const x_btcl_export_top_s* o ); \
-  x_btcl_export_top_s* x_btcl_export_top_s__( x_btcl_export_top_s* o, tp_t type, sr_s* a, sr_s* b, sr_s* c, x_source_point_s* source_point ); \
-  x_btcl_export_top_s* x_btcl_export_top_s_signal( x_btcl_export_top_s* o, tp_t name, x_inst* arg ); \
-  er_t x_btcl_export_top_s_solve_exportable_a_b_c( const x_btcl_export_top_s* o, const sr_s* a, const sr_s* b, const sr_s* c, sr_s* result, bl_t* success ); \
-  er_t x_btcl_export_top_s_solve( x_btcl_export_top_s* o, x_btcl_frame_s* frame, sr_s* result, bl_t* success ); \
-  er_t x_btcl_export_top_s_execute( const x_btcl_export_top_s* o, sr_s* result ); \
-  static inline bl_t x_btcl_export_top_s_is_operator( const x_btcl_export_top_s* o ){return  true;} \
-  static inline bl_t x_btcl_export_top_s_is_exportable_operand( const x_btcl_export_top_s* o ){return  true;}
-#define BETH_EXPAND_GROUP_x_btcl_export \
-  BCORE_FORWARD_OBJECT( x_btcl_export ); \
-  BCORE_FORWARD_OBJECT( x_btcl_export_uop_s ); \
-  BCORE_FORWARD_OBJECT( x_btcl_export_bop_s ); \
-  BCORE_FORWARD_OBJECT( x_btcl_export_top_s ); \
-  static inline bl_t x_btcl_export_sr_is_operator( const sr_s* sr ); \
-  static inline bl_t x_btcl_export_sr_is_exportable_operand( const sr_s* sr ); \
-  er_t x_btcl_export_eval_uop_type( x_btcl_frame_s* frame, tp_t type, s2_t priority, x_source* source, bl_t postfix, sr_s* result ); \
-  er_t x_btcl_export_eval_bop_type( x_btcl_frame_s* frame, tp_t type, s2_t priority, x_source* source, sr_s* sa, sr_s* result ); \
-  er_t x_btcl_export_eval_top_type( x_btcl_frame_s* frame, tp_t type, s2_t priority, x_source* source, sr_s* sa, sr_s* result ); \
-  typedef bl_t (*x_btcl_export_is_operator)(const x_btcl_export* o ); \
-  typedef bl_t (*x_btcl_export_is_exportable_operand)(const x_btcl_export* o ); \
-  typedef er_t (*x_btcl_export_solve)(x_btcl_export* o, x_btcl_frame_s* frame, sr_s* result, bl_t* success ); \
-  typedef x_btcl_export* (*x_btcl_export_signal)(x_btcl_export* o, tp_t name, x_inst* arg ); \
-  typedef er_t (*x_btcl_export_execute)(const x_btcl_export* o, sr_s* result ); \
-  XOILA_DECLARE_SPECT( x_btcl_export ) \
+  static inline bl_t x_btcl_operator_top_s_is_operator( const x_btcl_operator_top_s* o ); \
+  static inline bl_t x_btcl_operator_top_s_is_exportable_operand( const x_btcl_operator_top_s* o ); \
+  x_btcl_operator_top_s* x_btcl_operator_top_s__( x_btcl_operator_top_s* o, tp_t type, sr_s* a, sr_s* b, sr_s* c, x_source_point_s* source_point ); \
+  x_btcl_operator_top_s* x_btcl_operator_top_s_signal( x_btcl_operator_top_s* o, tp_t name, x_inst* arg ); \
+  er_t x_btcl_operator_top_s_solve_exportable_a_b_c( const x_btcl_operator_top_s* o, const sr_s* a, const sr_s* b, const sr_s* c, sr_s* result, bl_t* success ); \
+  er_t x_btcl_operator_top_s_solve( x_btcl_operator_top_s* o, x_btcl_frame_s* frame, sr_s* result, bl_t* success ); \
+  er_t x_btcl_operator_top_s_execute( const x_btcl_operator_top_s* o, sr_s* result ); \
+  static inline bl_t x_btcl_operator_top_s_is_operator( const x_btcl_operator_top_s* o ){return  true;} \
+  static inline bl_t x_btcl_operator_top_s_is_exportable_operand( const x_btcl_operator_top_s* o ){return  true;}
+#define BETH_EXPAND_GROUP_x_btcl_operator \
+  BCORE_FORWARD_OBJECT( x_btcl_operator ); \
+  BCORE_FORWARD_OBJECT( x_btcl_operator_uop_s ); \
+  BCORE_FORWARD_OBJECT( x_btcl_operator_bop_s ); \
+  BCORE_FORWARD_OBJECT( x_btcl_operator_top_s ); \
+  static inline bl_t x_btcl_operator_sr_is_operator( const sr_s* sr ); \
+  static inline bl_t x_btcl_operator_sr_is_exportable_operand( const sr_s* sr ); \
+  er_t x_btcl_operator_eval_uop_type( x_btcl_frame_s* frame, tp_t type, s2_t priority, x_source* source, bl_t postfix, sr_s* result ); \
+  er_t x_btcl_operator_eval_bop_type( x_btcl_frame_s* frame, tp_t type, s2_t priority, x_source* source, sr_s* sa, sr_s* result ); \
+  er_t x_btcl_operator_eval_top_type( x_btcl_frame_s* frame, tp_t type, s2_t priority, x_source* source, sr_s* sa, sr_s* result ); \
+  typedef bl_t (*x_btcl_operator_is_operator)(const x_btcl_operator* o ); \
+  typedef bl_t (*x_btcl_operator_is_exportable_operand)(const x_btcl_operator* o ); \
+  typedef er_t (*x_btcl_operator_solve)(x_btcl_operator* o, x_btcl_frame_s* frame, sr_s* result, bl_t* success ); \
+  typedef x_btcl_operator* (*x_btcl_operator_signal)(x_btcl_operator* o, tp_t name, x_inst* arg ); \
+  typedef er_t (*x_btcl_operator_execute)(const x_btcl_operator* o, sr_s* result ); \
+  XOILA_DECLARE_SPECT( x_btcl_operator ) \
   { \
       bcore_spect_header_s header; \
-      x_btcl_export_is_operator is_operator; \
-      x_btcl_export_is_exportable_operand is_exportable_operand; \
-      x_btcl_export_solve solve; \
-      x_btcl_export_signal signal; \
-      x_btcl_export_execute execute; \
+      x_btcl_operator_is_operator is_operator; \
+      x_btcl_operator_is_exportable_operand is_exportable_operand; \
+      x_btcl_operator_solve solve; \
+      x_btcl_operator_signal signal; \
+      x_btcl_operator_execute execute; \
   }; \
-  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_btcl_export ) \
-  static inline bl_t x_btcl_export_a_is_operator( const x_btcl_export* o ){ const x_btcl_export_spect_s* p = x_btcl_export_spect_s_get_aware( o ); assert( p->is_operator ); return p->is_operator( o );} \
-  static inline bl_t x_btcl_export_defines_is_operator( const x_btcl_export* o ){ return  true;} \
-  static inline bl_t x_btcl_export_t_is_operator( const x_btcl_export* o, tp_t t ){ const x_btcl_export_spect_s* p = x_btcl_export_spect_s_get_typed( t ); assert( p->is_operator ); return p->is_operator( o );} \
-  static inline bl_t x_btcl_export_t_defines_is_operator( tp_t t ){ return  true;} \
-  static inline bl_t x_btcl_export_is_operator_default( const x_btcl_export* o ){return  false;} \
-  static inline bl_t x_btcl_export_a_is_exportable_operand( const x_btcl_export* o ){ const x_btcl_export_spect_s* p = x_btcl_export_spect_s_get_aware( o ); assert( p->is_exportable_operand ); return p->is_exportable_operand( o );} \
-  static inline bl_t x_btcl_export_defines_is_exportable_operand( const x_btcl_export* o ){ return  true;} \
-  static inline bl_t x_btcl_export_t_is_exportable_operand( const x_btcl_export* o, tp_t t ){ const x_btcl_export_spect_s* p = x_btcl_export_spect_s_get_typed( t ); assert( p->is_exportable_operand ); return p->is_exportable_operand( o );} \
-  static inline bl_t x_btcl_export_t_defines_is_exportable_operand( tp_t t ){ return  true;} \
-  static inline bl_t x_btcl_export_is_exportable_operand_default( const x_btcl_export* o ){return  false;} \
-  static inline er_t x_btcl_export_a_solve( x_btcl_export* o, x_btcl_frame_s* frame, sr_s* result, bl_t* success ){ const x_btcl_export_spect_s* p = x_btcl_export_spect_s_get_aware( o ); assert( p->solve ); return p->solve( o, frame, result, success );} \
-  static inline bl_t x_btcl_export_defines_solve( const x_btcl_export* o ){ return  true;} \
-  er_t x_btcl_export_solve_default( x_btcl_export* o, x_btcl_frame_s* frame, sr_s* result, bl_t* success ); \
-  static inline x_btcl_export* x_btcl_export_a_signal( x_btcl_export* o, tp_t name, x_inst* arg ){ const x_btcl_export_spect_s* p = x_btcl_export_spect_s_get_aware( o ); assert( p->signal ); return p->signal( o, name, arg );} \
-  static inline bl_t x_btcl_export_defines_signal( const x_btcl_export* o ){ return  true;} \
-  x_btcl_export* x_btcl_export_signal_default( x_btcl_export* o, tp_t name, x_inst* arg ); \
-  static inline er_t x_btcl_export_a_execute( const x_btcl_export* o, sr_s* result ){ const x_btcl_export_spect_s* p = x_btcl_export_spect_s_get_aware( o ); assert( p->execute ); return p->execute( o, result );} \
-  static inline bl_t x_btcl_export_defines_execute( const x_btcl_export* o ){ return  true;} \
-  static inline er_t x_btcl_export_t_execute( const x_btcl_export* o, tp_t t, sr_s* result ){ const x_btcl_export_spect_s* p = x_btcl_export_spect_s_get_typed( t ); assert( p->execute ); return p->execute( o, result );} \
-  static inline bl_t x_btcl_export_t_defines_execute( tp_t t ){ return  true;} \
-  er_t x_btcl_export_execute_default( const x_btcl_export* o, sr_s* result ); \
-  BETH_EXPAND_ITEM_x_btcl_export_uop_s \
-  BETH_EXPAND_ITEM_x_btcl_export_bop_s \
-  BETH_EXPAND_ITEM_x_btcl_export_top_s \
-  static inline bl_t x_btcl_export_sr_is_operator( const sr_s* sr ){return  sr ? sr->o ? x_btcl_export_t_is_operator(((const x_btcl_export*)( ((const x_btcl*)(sr->o)))),sr_s_type(sr) ) : false : false;} \
-  static inline bl_t x_btcl_export_sr_is_exportable_operand( const sr_s* sr ){return  x_btcl_export_t_is_exportable_operand(((const x_btcl_export*)( ((const x_btcl*)(sr->o)))),sr_s_type(sr) );}
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_btcl_operator ) \
+  static inline bl_t x_btcl_operator_a_is_operator( const x_btcl_operator* o ){ const x_btcl_operator_spect_s* p = x_btcl_operator_spect_s_get_aware( o ); assert( p->is_operator ); return p->is_operator( o );} \
+  static inline bl_t x_btcl_operator_defines_is_operator( const x_btcl_operator* o ){ return  true;} \
+  static inline bl_t x_btcl_operator_t_is_operator( const x_btcl_operator* o, tp_t t ){ const x_btcl_operator_spect_s* p = x_btcl_operator_spect_s_get_typed( t ); assert( p->is_operator ); return p->is_operator( o );} \
+  static inline bl_t x_btcl_operator_t_defines_is_operator( tp_t t ){ return  true;} \
+  static inline bl_t x_btcl_operator_is_operator_default( const x_btcl_operator* o ){return  false;} \
+  static inline bl_t x_btcl_operator_a_is_exportable_operand( const x_btcl_operator* o ){ const x_btcl_operator_spect_s* p = x_btcl_operator_spect_s_get_aware( o ); assert( p->is_exportable_operand ); return p->is_exportable_operand( o );} \
+  static inline bl_t x_btcl_operator_defines_is_exportable_operand( const x_btcl_operator* o ){ return  true;} \
+  static inline bl_t x_btcl_operator_t_is_exportable_operand( const x_btcl_operator* o, tp_t t ){ const x_btcl_operator_spect_s* p = x_btcl_operator_spect_s_get_typed( t ); assert( p->is_exportable_operand ); return p->is_exportable_operand( o );} \
+  static inline bl_t x_btcl_operator_t_defines_is_exportable_operand( tp_t t ){ return  true;} \
+  static inline bl_t x_btcl_operator_is_exportable_operand_default( const x_btcl_operator* o ){return  false;} \
+  static inline er_t x_btcl_operator_a_solve( x_btcl_operator* o, x_btcl_frame_s* frame, sr_s* result, bl_t* success ){ const x_btcl_operator_spect_s* p = x_btcl_operator_spect_s_get_aware( o ); assert( p->solve ); return p->solve( o, frame, result, success );} \
+  static inline bl_t x_btcl_operator_defines_solve( const x_btcl_operator* o ){ return  true;} \
+  er_t x_btcl_operator_solve_default( x_btcl_operator* o, x_btcl_frame_s* frame, sr_s* result, bl_t* success ); \
+  static inline x_btcl_operator* x_btcl_operator_a_signal( x_btcl_operator* o, tp_t name, x_inst* arg ){ const x_btcl_operator_spect_s* p = x_btcl_operator_spect_s_get_aware( o ); assert( p->signal ); return p->signal( o, name, arg );} \
+  static inline bl_t x_btcl_operator_defines_signal( const x_btcl_operator* o ){ return  true;} \
+  x_btcl_operator* x_btcl_operator_signal_default( x_btcl_operator* o, tp_t name, x_inst* arg ); \
+  static inline er_t x_btcl_operator_a_execute( const x_btcl_operator* o, sr_s* result ){ const x_btcl_operator_spect_s* p = x_btcl_operator_spect_s_get_aware( o ); assert( p->execute ); return p->execute( o, result );} \
+  static inline bl_t x_btcl_operator_defines_execute( const x_btcl_operator* o ){ return  true;} \
+  static inline er_t x_btcl_operator_t_execute( const x_btcl_operator* o, tp_t t, sr_s* result ){ const x_btcl_operator_spect_s* p = x_btcl_operator_spect_s_get_typed( t ); assert( p->execute ); return p->execute( o, result );} \
+  static inline bl_t x_btcl_operator_t_defines_execute( tp_t t ){ return  true;} \
+  er_t x_btcl_operator_execute_default( const x_btcl_operator* o, sr_s* result ); \
+  BETH_EXPAND_ITEM_x_btcl_operator_uop_s \
+  BETH_EXPAND_ITEM_x_btcl_operator_bop_s \
+  BETH_EXPAND_ITEM_x_btcl_operator_top_s \
+  static inline bl_t x_btcl_operator_sr_is_operator( const sr_s* sr ){return  sr ? sr->o ? x_btcl_operator_t_is_operator(((const x_btcl_operator*)( ((const x_btcl*)(sr->o)))),sr_s_type(sr) ) : false : false;} \
+  static inline bl_t x_btcl_operator_sr_is_exportable_operand( const sr_s* sr ){return  x_btcl_operator_t_is_exportable_operand(((const x_btcl_operator*)( ((const x_btcl*)(sr->o)))),sr_s_type(sr) );}
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_btcl_operator_f3; embeds: bcore_x_btcl_operator_f3.x
+#include "bcore_x_btcl_operator_f3.h"
+
+#define TYPEOF_x_btcl_operator_f3 0x1FBA9A06A1E203D8ull
+#define TYPEOF_x_btcl_operator_f3_spect_s 0x37A58F457601BAA0ull
+#define TYPEOF_x_btcl_operator_f3_arg_s 0xFC500A8767BE1761ull
+#define BETH_EXPAND_ITEM_x_btcl_operator_f3_arg_s \
+  BCORE_DECLARE_OBJECT( x_btcl_operator_f3_arg_s ) \
+  { \
+      aware_t _; \
+      f3_t val; \
+      tp_t name; \
+  };
+#define TYPEOF_x_btcl_operator_f3_arg_arr_s 0x9145F58AF512531Dull
+#define BETH_EXPAND_ITEM_x_btcl_operator_f3_arg_arr_s \
+  BCORE_DECLARE_OBJECT( x_btcl_operator_f3_arg_arr_s ) \
+  { \
+      aware_t _; \
+      BCORE_ARRAY_DYN_SOLID_STATIC_S( x_btcl_operator_f3_arg_s, ); \
+  };
+#define TYPEOF_x_btcl_operator_f3_arg_nop_s 0x04F0240B228764B7ull
+#define BETH_EXPAND_ITEM_x_btcl_operator_f3_arg_nop_s \
+  BCORE_DECLARE_OBJECT( x_btcl_operator_f3_arg_nop_s ) \
+  { \
+      aware_t _; \
+      sz_t index; \
+      tp_t name; \
+      f3_t* val; \
+      x_source_point_s sp; \
+  }; \
+  er_t x_btcl_operator_f3_arg_nop_s_set_args( x_btcl_operator_f3_arg_nop_s* o, x_btcl_operator_f3_arg_arr_s* arg_arr ); \
+  static inline f3_t x_btcl_operator_f3_arg_nop_s_get( const x_btcl_operator_f3_arg_nop_s* o ); \
+  static inline er_t x_btcl_operator_f3_arg_nop_s_check_consistency( const x_btcl_operator_f3_arg_nop_s* o ); \
+  static inline f3_t x_btcl_operator_f3_arg_nop_s_get( const x_btcl_operator_f3_arg_nop_s* o ){ assert( o->val ); return  (*(o->val));} \
+  static inline er_t x_btcl_operator_f3_arg_nop_s_check_consistency( const x_btcl_operator_f3_arg_nop_s* o ){ BLM_TRY(EM_ASSERT(o->val )) return 0;}
+#define TYPEOF_x_btcl_operator_f3_const_nop_s 0x50E723BC207F24DCull
+#define BETH_EXPAND_ITEM_x_btcl_operator_f3_const_nop_s \
+  BCORE_DECLARE_OBJECT( x_btcl_operator_f3_const_nop_s ) \
+  { \
+      aware_t _; \
+      f3_t val; \
+  }; \
+  static inline f3_t x_btcl_operator_f3_const_nop_s_get( const x_btcl_operator_f3_const_nop_s* o ); \
+  static inline er_t x_btcl_operator_f3_const_nop_s_check_consistency( const x_btcl_operator_f3_const_nop_s* o ); \
+  static inline f3_t x_btcl_operator_f3_const_nop_s_get( const x_btcl_operator_f3_const_nop_s* o ){return  o->val;} \
+  static inline er_t x_btcl_operator_f3_const_nop_s_check_consistency( const x_btcl_operator_f3_const_nop_s* o ){ return 0;}
+#define TYPEOF_x_btcl_operator_f3_uop_s 0xF7C76D80D69C1EC1ull
+#define BETH_EXPAND_ITEM_x_btcl_operator_f3_uop_s \
+  BCORE_DECLARE_OBJECT( x_btcl_operator_f3_uop_s ) \
+  { \
+      aware_t _; \
+      tp_t type; \
+      x_btcl_operator_f3* a; \
+      x_btcl_operator_f3_spect_s* sa; \
+      x_btcl_operator_f3_fp_f3_ar1 fp_get; \
+      x_source_point_s sp; \
+  }; \
+  er_t x_btcl_operator_f3_uop_s_setup( x_btcl_operator_f3_uop_s* o ); \
+  er_t x_btcl_operator_f3_uop_s_set_args( x_btcl_operator_f3_uop_s* o, x_btcl_operator_f3_arg_arr_s* arg_arr ); \
+  static inline f3_t x_btcl_operator_f3_uop_s_get( const x_btcl_operator_f3_uop_s* o ); \
+  er_t x_btcl_operator_f3_uop_s_check_consistency( const x_btcl_operator_f3_uop_s* o ); \
+  static inline f3_t x_btcl_operator_f3_uop_s_get( const x_btcl_operator_f3_uop_s* o ){ return   o->fp_get( o->sa->get( o->a ) ) ;}
+#define TYPEOF_x_btcl_operator_f3_bop_s 0x333D2A8358C8F554ull
+#define BETH_EXPAND_ITEM_x_btcl_operator_f3_bop_s \
+  BCORE_DECLARE_OBJECT( x_btcl_operator_f3_bop_s ) \
+  { \
+      aware_t _; \
+      tp_t type; \
+      x_btcl_operator_f3* a; \
+      x_btcl_operator_f3* b; \
+      x_btcl_operator_f3_spect_s* sa; \
+      x_btcl_operator_f3_spect_s* sb; \
+      x_btcl_operator_f3_fp_f3_ar2 fp_get; \
+      x_source_point_s sp; \
+  }; \
+  er_t x_btcl_operator_f3_bop_s_setup( x_btcl_operator_f3_bop_s* o ); \
+  er_t x_btcl_operator_f3_bop_s_set_args( x_btcl_operator_f3_bop_s* o, x_btcl_operator_f3_arg_arr_s* arg_arr ); \
+  static inline f3_t x_btcl_operator_f3_bop_s_get( const x_btcl_operator_f3_bop_s* o ); \
+  er_t x_btcl_operator_f3_bop_s_check_consistency( const x_btcl_operator_f3_bop_s* o ); \
+  static inline f3_t x_btcl_operator_f3_bop_s_get( const x_btcl_operator_f3_bop_s* o ){ return   o->fp_get( o->sa->get( o->a ), o->sb->get( o->b ) ) ;}
+#define TYPEOF_x_btcl_operator_f3_top_s 0x46B1264E3350E9FEull
+#define BETH_EXPAND_ITEM_x_btcl_operator_f3_top_s \
+  BCORE_DECLARE_OBJECT( x_btcl_operator_f3_top_s ) \
+  { \
+      aware_t _; \
+      tp_t type; \
+      x_btcl_operator_f3* a; \
+      x_btcl_operator_f3* b; \
+      x_btcl_operator_f3* c; \
+      x_btcl_operator_f3_spect_s* sa; \
+      x_btcl_operator_f3_spect_s* sb; \
+      x_btcl_operator_f3_spect_s* sc; \
+      x_btcl_operator_f3_fp_f3_ar3 fp_get; \
+      x_source_point_s sp; \
+  }; \
+  er_t x_btcl_operator_f3_top_s_setup( x_btcl_operator_f3_top_s* o ); \
+  er_t x_btcl_operator_f3_top_s_set_args( x_btcl_operator_f3_top_s* o, x_btcl_operator_f3_arg_arr_s* arg_arr ); \
+  static inline f3_t x_btcl_operator_f3_top_s_get( const x_btcl_operator_f3_top_s* o ); \
+  er_t x_btcl_operator_f3_top_s_check_consistency( const x_btcl_operator_f3_top_s* o ); \
+  static inline f3_t x_btcl_operator_f3_top_s_get( const x_btcl_operator_f3_top_s* o ){ return   o->fp_get( o->sa->get( o->a ), o->sb->get( o->b ), o->sc->get( o->c ) ) ;}
+#define BETH_EXPAND_GROUP_x_btcl_operator_f3 \
+  BCORE_FORWARD_OBJECT( x_btcl_operator_f3 ); \
+  BCORE_FORWARD_OBJECT( x_btcl_operator_f3_arg_s ); \
+  BCORE_FORWARD_OBJECT( x_btcl_operator_f3_arg_arr_s ); \
+  BCORE_FORWARD_OBJECT( x_btcl_operator_f3_arg_nop_s ); \
+  BCORE_FORWARD_OBJECT( x_btcl_operator_f3_const_nop_s ); \
+  BCORE_FORWARD_OBJECT( x_btcl_operator_f3_uop_s ); \
+  BCORE_FORWARD_OBJECT( x_btcl_operator_f3_bop_s ); \
+  BCORE_FORWARD_OBJECT( x_btcl_operator_f3_top_s ); \
+  void x_btcl_operator_f3_group_signal_init1( void ); \
+  x_btcl_operator_f3* x_btcl_operator_f3_create_op( const sr_s* sr ); \
+  typedef er_t (*x_btcl_operator_f3_setup)(x_btcl_operator_f3* o ); \
+  typedef f3_t (*x_btcl_operator_f3_get)(const x_btcl_operator_f3* o ); \
+  typedef er_t (*x_btcl_operator_f3_set_args)(x_btcl_operator_f3* o, x_btcl_operator_f3_arg_arr_s* arg_arr ); \
+  typedef er_t (*x_btcl_operator_f3_check_consistency)(const x_btcl_operator_f3* o ); \
+  XOILA_DECLARE_SPECT( x_btcl_operator_f3 ) \
+  { \
+      bcore_spect_header_s header; \
+      x_btcl_operator_f3_setup setup; \
+      x_btcl_operator_f3_get get; \
+      x_btcl_operator_f3_set_args set_args; \
+      x_btcl_operator_f3_check_consistency check_consistency; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_btcl_operator_f3 ) \
+  BETH_EXPAND_ITEM_x_btcl_operator_f3_arg_s \
+  BETH_EXPAND_ITEM_x_btcl_operator_f3_arg_arr_s \
+  static inline er_t x_btcl_operator_f3_a_setup( x_btcl_operator_f3* o ){ const x_btcl_operator_f3_spect_s* p = x_btcl_operator_f3_spect_s_get_aware( o ); assert( p->setup ); return p->setup( o );} \
+  static inline bl_t x_btcl_operator_f3_defines_setup( const x_btcl_operator_f3* o ){ return  true;} \
+  static inline er_t x_btcl_operator_f3_setup_default( x_btcl_operator_f3* o ){return  0;} \
+  static inline f3_t x_btcl_operator_f3_a_get( const x_btcl_operator_f3* o ){ const x_btcl_operator_f3_spect_s* p = x_btcl_operator_f3_spect_s_get_aware( o ); assert( p->get ); return p->get( o );} \
+  static inline bl_t x_btcl_operator_f3_defines_get( const x_btcl_operator_f3* o ){ return  true;} \
+  static inline f3_t x_btcl_operator_f3_get_default( const x_btcl_operator_f3* o ){return  0;} \
+  static inline er_t x_btcl_operator_f3_a_set_args( x_btcl_operator_f3* o, x_btcl_operator_f3_arg_arr_s* arg_arr ){ const x_btcl_operator_f3_spect_s* p = x_btcl_operator_f3_spect_s_get_aware( o ); assert( p->set_args ); return p->set_args( o, arg_arr );} \
+  static inline bl_t x_btcl_operator_f3_defines_set_args( const x_btcl_operator_f3* o ){ return  true;} \
+  static inline er_t x_btcl_operator_f3_set_args_default( x_btcl_operator_f3* o, x_btcl_operator_f3_arg_arr_s* arg_arr ){return  0;} \
+  static inline er_t x_btcl_operator_f3_a_check_consistency( const x_btcl_operator_f3* o ){ const x_btcl_operator_f3_spect_s* p = x_btcl_operator_f3_spect_s_get_aware( o ); assert( p->check_consistency ); return p->check_consistency( o );} \
+  static inline bl_t x_btcl_operator_f3_defines_check_consistency( const x_btcl_operator_f3* o ){ return  true;} \
+  static inline er_t x_btcl_operator_f3_check_consistency_default( const x_btcl_operator_f3* o ){return  0;} \
+  BETH_EXPAND_ITEM_x_btcl_operator_f3_arg_nop_s \
+  BETH_EXPAND_ITEM_x_btcl_operator_f3_const_nop_s \
+  BETH_EXPAND_ITEM_x_btcl_operator_f3_uop_s \
+  BETH_EXPAND_ITEM_x_btcl_operator_f3_bop_s \
+  BETH_EXPAND_ITEM_x_btcl_operator_f3_top_s
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_btcl_net; embeds: bcore_x_btcl_net.x
@@ -3276,7 +3493,10 @@
   { \
       aware_t _; \
       sr_s sr; \
-  };
+  }; \
+  static inline x_btcl_functor_arg_val_s* x_btcl_functor_arg_val_s_set_f3( x_btcl_functor_arg_val_s* o, f3_t v ); \
+  f3_t* x_btcl_functor_arg_val_s_get_f3_ptr( x_btcl_functor_arg_val_s* o, f3_t v_init ); \
+  static inline x_btcl_functor_arg_val_s* x_btcl_functor_arg_val_s_set_f3( x_btcl_functor_arg_val_s* o, f3_t v ){sr_s_from_f3(&(o->sr),v );return o;}
 #define TYPEOF_signal_arg_uop_update_val 0xB58769FCD4E38A8Bull
 #define TYPEOF_x_btcl_functor_arg_uop_s 0x27C97E6C217D8867ull
 #define BETH_EXPAND_ITEM_x_btcl_functor_arg_uop_s \
@@ -3304,10 +3524,12 @@
   }; \
   static inline x_btcl_functor_arg_s* x_btcl_functor_arg_s_set_val( x_btcl_functor_arg_s* o, sr_s* sr ); \
   static inline x_btcl_functor_arg_s* x_btcl_functor_arg_s_set_f3( x_btcl_functor_arg_s* o, f3_t v ); \
+  static inline f3_t* x_btcl_functor_arg_s_get_f3_ptr( const x_btcl_functor_arg_s* o, f3_t v_init ); \
   static inline x_btcl_functor_arg_s* x_btcl_functor_arg_s_clear_val( x_btcl_functor_arg_s* o ); \
   x_btcl_functor_arg_uop_s* x_btcl_functor_arg_s_get_uop( x_btcl_functor_arg_s* o ); \
   static inline x_btcl_functor_arg_s* x_btcl_functor_arg_s_set_val( x_btcl_functor_arg_s* o, sr_s* sr ){sr_s_fork_from(&(BCORE_PASS_CREATE(x_btcl_functor_arg_val_s,o->val)->sr),sr );return o;} \
-  static inline x_btcl_functor_arg_s* x_btcl_functor_arg_s_set_f3( x_btcl_functor_arg_s* o, f3_t v ){sr_s_from_f3(&(BCORE_PASS_CREATE(x_btcl_functor_arg_val_s,o->val)->sr),v );return o;} \
+  static inline x_btcl_functor_arg_s* x_btcl_functor_arg_s_set_f3( x_btcl_functor_arg_s* o, f3_t v ){x_btcl_functor_arg_val_s_set_f3(BCORE_PASS_CREATE(x_btcl_functor_arg_val_s,o->val),v );return o;} \
+  static inline f3_t* x_btcl_functor_arg_s_get_f3_ptr( const x_btcl_functor_arg_s* o, f3_t v_init ){return  x_btcl_functor_arg_val_s_get_f3_ptr(BCORE_PASS_CREATE(x_btcl_functor_arg_val_s,o->val),v_init );} \
   static inline x_btcl_functor_arg_s* x_btcl_functor_arg_s_clear_val( x_btcl_functor_arg_s* o ){sr_s_clear(&(BCORE_PASS_CREATE(x_btcl_functor_arg_val_s,o->val)->sr));return o;}
 #define TYPEOF_x_btcl_functor_arg_arr_s 0x4751FB349F0DEE74ull
 #define BETH_EXPAND_ITEM_x_btcl_functor_arg_arr_s \
@@ -3325,15 +3547,14 @@
       aware_t _; \
       x_btcl_functor_arg_arr_s arg_arr; \
       sr_s* op_tree; \
-      x_mutex_s call_mutex; \
-      x_source_point_s source_point; \
+      x_source_point_s sp; \
   }; \
   static inline bl_t x_btcl_functor_s_is_operator( const x_btcl_functor_s* o ); \
-  static inline x_btcl_export* x_btcl_functor_s_operator( x_btcl_functor_s* o ); \
+  static inline x_btcl_operator* x_btcl_functor_s_operator( x_btcl_functor_s* o ); \
   x_btcl_functor_s* x_btcl_functor_s_signal( x_btcl_functor_s* o, tp_t name, x_inst* arg ); \
   void x_btcl_functor_s_copy_x( x_btcl_functor_s* o, const x_btcl_functor_s* src ); \
   void x_btcl_functor_s_mutated( x_btcl_functor_s* o ); \
-  er_t x_btcl_functor_s_setup( x_btcl_functor_s* o, const x_source_point_s* source_point, x_btcl_function_s* function, x_btcl_frame_s* lexical_frame ); \
+  er_t x_btcl_functor_s_setup( x_btcl_functor_s* o, const x_source_point_s* sp, x_btcl_function_s* function, x_btcl_frame_s* lexical_frame ); \
   static inline sz_t x_btcl_functor_s_args( const x_btcl_functor_s* o ); \
   tp_t x_btcl_functor_s_arg_name( const x_btcl_functor_s* o, sz_t index ); \
   sz_t x_btcl_functor_s_arg_index( const x_btcl_functor_s* o, tp_t name ); \
@@ -3341,16 +3562,19 @@
   const x_btcl_functor_s* x_btcl_functor_s_set_arg_sr( const x_btcl_functor_s* o, sz_t index, sr_s* sr ); \
   const x_btcl_functor_s* x_btcl_functor_s_set_arg_sr_by_name( const x_btcl_functor_s* o, tp_t name, sr_s* sr ); \
   static inline const x_btcl_functor_s* x_btcl_functor_s_set_arg_f3( const x_btcl_functor_s* o, sz_t index, f3_t v ); \
+  f3_t* x_btcl_functor_s_get_arg_f3_ptr( const x_btcl_functor_s* o, sz_t index, f3_t v_init ); \
   const x_btcl_functor_s* x_btcl_functor_s_set_arg_f3_by_name( const x_btcl_functor_s* o, tp_t name, f3_t v ); \
+  f3_t* x_btcl_functor_s_get_arg_f3_ptr_by_name( const x_btcl_functor_s* o, tp_t name, f3_t v_init ); \
   er_t x_btcl_functor_s_call( const x_btcl_functor_s* o, sr_s* result ); \
   f3_t x_btcl_functor_s_call_to_f3( const x_btcl_functor_s* o ); \
   sz_t x_btcl_functor_s_btcl_function_arity( const x_btcl_functor_s* o, tp_t name ); \
   er_t x_btcl_functor_s_btcl_function( const x_btcl_functor_s* o, tp_t name, const x_source_point_s* sp, x_btcl_frame_s* lexical_frame, const bcore_arr_sr_s* args, sr_s* result ); \
+  f3_t x_btcl_functor_s_nullary_f3( const x_btcl_functor_s* o ); \
   f3_t x_btcl_functor_s_unary_f3( const x_btcl_functor_s* o, f3_t x ); \
   f3_t x_btcl_functor_s_binary_f3( const x_btcl_functor_s* o, f3_t x, f3_t y ); \
   f3_t x_btcl_functor_s_ternary_f3( const x_btcl_functor_s* o, f3_t x, f3_t y, f3_t z ); \
-  static inline bl_t x_btcl_functor_s_is_operator( const x_btcl_functor_s* o ){return  ( o->op_tree && x_btcl_export_sr_is_operator(o->op_tree ) );} \
-  static inline x_btcl_export* x_btcl_functor_s_operator( x_btcl_functor_s* o ){return  ((x_btcl_export*)(o->op_tree->o));} \
+  static inline bl_t x_btcl_functor_s_is_operator( const x_btcl_functor_s* o ){return  ( o->op_tree && x_btcl_operator_sr_is_operator(o->op_tree ) );} \
+  static inline x_btcl_operator* x_btcl_functor_s_operator( x_btcl_functor_s* o ){return  ((x_btcl_operator*)(o->op_tree->o));} \
   static inline sz_t x_btcl_functor_s_args( const x_btcl_functor_s* o ){return  o->arg_arr.size;} \
   static inline bl_t x_btcl_functor_s_arg_name_exists( const x_btcl_functor_s* o, tp_t name ){return  x_btcl_functor_s_arg_index(o,name ) >= 0;} \
   static inline const x_btcl_functor_s* x_btcl_functor_s_set_arg_f3( const x_btcl_functor_s* o, sz_t index, f3_t v ){BLM_INIT_LEVEL(0);x_btcl_functor_s_set_arg_sr(o,index, sr_s_from_f3(((sr_s*)BLM_LEVEL_T_PUSH(0,sr_s,sr_s_create())),v ) );BLM_RETURNV(const x_btcl_functor_s*,o)}
@@ -3372,6 +3596,57 @@
   BETH_EXPAND_ITEM_x_btcl_functor_arg_s \
   BETH_EXPAND_ITEM_x_btcl_functor_arg_arr_s \
   BETH_EXPAND_ITEM_x_btcl_functor_s
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: x_btcl_functor_f3; embeds: bcore_x_btcl_functor_f3.x
+
+#define TYPEOF_x_btcl_functor_f3 0x16A785E00AD753D1ull
+#define TYPEOF_x_btcl_functor_f3_spect_s 0xB592EF378E77880Dull
+#define TYPEOF_call 0xB5167A90E83BA4A9ull
+#define TYPEOF_x_btcl_functor_f3_s 0xFE3EB32D52AF2EDBull
+#define BETH_EXPAND_ITEM_x_btcl_functor_f3_s \
+  BCORE_DECLARE_OBJECT( x_btcl_functor_f3_s ) \
+  { \
+      aware_t _; \
+      x_btcl_operator_f3_arg_arr_s arg_arr; \
+      x_btcl_operator_f3* op_tree; \
+      x_source_point_s sp; \
+  }; \
+  void x_btcl_functor_f3_s_copy_x( x_btcl_functor_f3_s* o, const x_btcl_functor_f3_s* src ); \
+  er_t x_btcl_functor_f3_s_copy_typed( x_btcl_functor_f3_s* o, tp_t type, vc_t src ); \
+  void x_btcl_functor_f3_s_mutated( x_btcl_functor_f3_s* o ); \
+  er_t x_btcl_functor_f3_s_setup_tree( x_btcl_functor_f3_s* o ); \
+  er_t x_btcl_functor_f3_s_from_functor( x_btcl_functor_f3_s* o, const x_btcl_functor_s* functor ); \
+  er_t x_btcl_functor_f3_s_setup( x_btcl_functor_f3_s* o, const x_source_point_s* sp, x_btcl_function_s* function, x_btcl_frame_s* lexical_frame ); \
+  static inline sz_t x_btcl_functor_f3_s_args( const x_btcl_functor_f3_s* o ); \
+  tp_t x_btcl_functor_f3_s_arg_name( const x_btcl_functor_f3_s* o, sz_t index ); \
+  sz_t x_btcl_functor_f3_s_arg_index( const x_btcl_functor_f3_s* o, tp_t name ); \
+  static inline bl_t x_btcl_functor_f3_s_arg_name_exists( const x_btcl_functor_f3_s* o, tp_t name ); \
+  const x_btcl_functor_f3_s* x_btcl_functor_f3_s_set_arg_f3( const x_btcl_functor_f3_s* o, sz_t index, f3_t v ); \
+  f3_t* x_btcl_functor_f3_s_get_arg_f3_ptr( const x_btcl_functor_f3_s* o, sz_t index ); \
+  const x_btcl_functor_f3_s* x_btcl_functor_f3_s_set_arg_f3_by_name( const x_btcl_functor_f3_s* o, tp_t name, f3_t v ); \
+  f3_t* x_btcl_functor_f3_s_get_arg_f3_ptr_by_name( const x_btcl_functor_f3_s* o, tp_t name ); \
+  static inline f3_t x_btcl_functor_f3_s_call( const x_btcl_functor_f3_s* o ); \
+  static inline f3_t x_btcl_functor_f3_s_call_to_f3( const x_btcl_functor_f3_s* o ); \
+  sz_t x_btcl_functor_f3_s_btcl_function_arity( const x_btcl_functor_f3_s* o, tp_t name ); \
+  er_t x_btcl_functor_f3_s_btcl_function( const x_btcl_functor_f3_s* o, tp_t name, const x_source_point_s* sp, x_btcl_frame_s* lexical_frame, const bcore_arr_sr_s* args, sr_s* result ); \
+  f3_t x_btcl_functor_f3_s_nullary_f3( const x_btcl_functor_f3_s* o ); \
+  f3_t x_btcl_functor_f3_s_unary_f3( const x_btcl_functor_f3_s* o, f3_t x ); \
+  f3_t x_btcl_functor_f3_s_binary_f3( const x_btcl_functor_f3_s* o, f3_t x, f3_t y ); \
+  f3_t x_btcl_functor_f3_s_ternary_f3( const x_btcl_functor_f3_s* o, f3_t x, f3_t y, f3_t z ); \
+  static inline sz_t x_btcl_functor_f3_s_args( const x_btcl_functor_f3_s* o ){return  o->arg_arr.size;} \
+  static inline bl_t x_btcl_functor_f3_s_arg_name_exists( const x_btcl_functor_f3_s* o, tp_t name ){return  x_btcl_functor_f3_s_arg_index(o,name ) >= 0;} \
+  static inline f3_t x_btcl_functor_f3_s_call( const x_btcl_functor_f3_s* o ){ assert( o->op_tree ); return  x_btcl_operator_f3_a_get(o->op_tree);} \
+  static inline f3_t x_btcl_functor_f3_s_call_to_f3( const x_btcl_functor_f3_s* o ){return  x_btcl_functor_f3_s_call(o);}
+#define BETH_EXPAND_GROUP_x_btcl_functor_f3 \
+  BCORE_FORWARD_OBJECT( x_btcl_functor_f3 ); \
+  BCORE_FORWARD_OBJECT( x_btcl_functor_f3_s ); \
+  XOILA_DECLARE_SPECT( x_btcl_functor_f3 ) \
+  { \
+      bcore_spect_header_s header; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_btcl_functor_f3 ) \
+  BETH_EXPAND_ITEM_x_btcl_functor_f3_s
 
 /**********************************************************************************************************************/
 // source: bcore_x_hmap.h
@@ -3657,5 +3932,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x32F1E8E194C326AE
-// XOICO_FILE_SIGNATURE 0x0269BF3A027D1C1D
+// XOICO_BODY_SIGNATURE 0xB8B46555C98933AC
+// XOICO_FILE_SIGNATURE 0xC5B4FAF17C8D8E68
