@@ -12,7 +12,7 @@
 ASSERT( ( embed( "test_embed.btcl" ) ) == 1234 );
 
 (
-    prefix( prf, embed( "test_embed.btcl" ) );
+    prefix( "prf", embed( "test_embed.btcl" ) );
     ASSERT( prf_embed_function( 1, 2 ) == 3 );
 );
 
