@@ -24,9 +24,9 @@
  *
  *  Type and numeric dominance:
  *  A type dominant comparison returns the order of types in case both types are different.
- *  A numeric dominant (num-dominant) comparison returns the order of values in case both types are numeric (including boolean types),
- *  otherwise it behaves like the type dominant comparison.
+ *  A numeric dominant (num_dominant) comparison returns the order of values in case both types are numeric (including boolean types).
  *
+ *  The dominance is a deep operation: Meaning it compares recursively all elements of an object with the same specified dominance.
  */
 
 #ifndef BCORE_X_COMPARE_H
@@ -62,67 +62,10 @@ signature s2_t   num_dominant(          aware x_inst* a,          aware x_inst* 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func t_type_dominant
-{
-    = ( ta == tb ) ? bcore_compare_typed( ta, a, b ) : ( ta < tb ) ? 1 : -1;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func type_dominant = :t_type_dominant( a ? a._ : 0, a, b ? b._ : 0, b );
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func t_num_dominant
-{
-    if( bcore_tp_is_numeric( ta ) && bcore_tp_is_numeric( tb ) && a && b )
-    {
-        sr_s sr_a = sr_twc( ta, a );
-        sr_s sr_b = sr_twc( tb, b );
-        if( sr_a.is_float() || sr_b.is_float() )
-        {
-            f3_t fa = sr_a.to_f3();
-            f3_t fb = sr_b.to_f3();
-            = ( fa == fb ) ? 0 : ( fa < fb ) ? 1 : -1;
-        }
-        else if( sr_a.is_unsigned() )
-        {
-            u3_t ua = sr_a.to_u3();
-            if( sr_b.is_unsigned() )
-            {
-                u3_t ub = sr_b.to_u3();
-                = ( ua == ub ) ? 0 : ( ua < ub ) ? 1 : -1;
-            }
-            else
-            {
-                s3_t sb = sr_b.to_s3();
-                = ( ua == sb ) ? 0 : ( ua < sb ) ? 1 : -1;
-            }
-        }
-        else
-        {
-            s3_t sa = sr_a.to_s3();
-            if( sr_b.is_unsigned() )
-            {
-                u3_t ub = sr_b.to_u3();
-                = ( sa == ub ) ? 0 : ( sa < ub ) ? 1 : -1;
-            }
-            else
-            {
-                s3_t sb = sr_b.to_s3();
-                = ( sa == sb ) ? 0 : ( sa < sb ) ? 1 : -1;
-            }
-        }
-    }
-    else
-    {
-        = :t_type_dominant( ta, a, tb, b );
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func num_dominant = :t_num_dominant( a ? a._ : 0, a, b ? b._ : 0, b );
+func t_type_dominant = ( ta == tb ) ? bcore_compare_typed( ta, a, b ) : ( ta < tb ) ? 1 : -1;
+func   type_dominant = :t_type_dominant( a ? a._ : 0, a, b ? b._ : 0, b );
+func t_num_dominant = bcore_compare_num_dominant_sr( sr_twc( ta, a ), sr_twc( tb, b ) );
+func   num_dominant = :t_num_dominant( a ? a._ : 0, a, b ? b._ : 0, b );
 
 //----------------------------------------------------------------------------------------------------------------------
 
