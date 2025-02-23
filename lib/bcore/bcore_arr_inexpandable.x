@@ -451,6 +451,7 @@ group :fp = :
 
 group :sr = :
 {
+    signature m sr_s* push   ( m @* o );
     signature m sr_s* push_sr( m @* o, sr_s v );
     signature m sr_s* push_tp( m @* o, tp_t type );
     signature sr_s pop      ( m @* o );
@@ -477,6 +478,7 @@ group :sr = :
         func :: .set_space;
         func :: .set_size;
         func :: .reorder;
+        func  : .push;
         func  : .push_sr;
         func  : .push_tp;
         func  : .pop;

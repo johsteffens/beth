@@ -276,6 +276,16 @@ func er_t eval_bop_type( m ::frame_s* frame, tp_t type, s2_t priority, m x_sourc
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func bl_t is_comparable( sr_s* a, sr_s* b )
+{
+    =
+    ( a.is_numeric() && b.is_numeric() ) ||
+    ( ( a.type() == st_s~ ) && ( b.type() == st_s~ ) ) ||
+    ( ( a.type() == x_btcl_list_s~ ) && ( b.type() == x_btcl_list_s~ ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /// frameless bop-solve function (covers solve and execute)
 func (:bop_s) er_t solve_exportable_a_b( @* o, sr_s* a, sr_s* b, m sr_s* result, m bl_t* success )
 {
@@ -465,50 +475,62 @@ func (:bop_s) er_t solve_exportable_a_b( @* o, sr_s* a, sr_s* b, m sr_s* result,
 
         case equal~:
         {
-            if( :sr_is_operator( a ) || :sr_is_operator( b ) ) break;
-            result.from_bl( 0 == x_compare_t_num_dominant( a.type(), a.o, b.type(), b.o ) );
-            = 0;
+            if( :is_comparable( a, b ) )
+            {
+                result.from_bl( 0 == x_compare_t_num_dominant( a.type(), a.o, b.type(), b.o ) );
+                = 0;
+            }
         }
         break;
 
         case unequal~:
         {
-            if( :sr_is_operator( a ) || :sr_is_operator( b ) ) break;
-            result.from_bl( 0 != x_compare_t_num_dominant( a.type(), a.o, b.type(), b.o ) );
-             = 0;
+            if( :is_comparable( a, b ) )
+            {
+                result.from_bl( 0 != x_compare_t_num_dominant( a.type(), a.o, b.type(), b.o ) );
+                = 0;
+            }
         }
         break;
 
         case larger_equal~:
         {
-            if( :sr_is_operator( a ) || :sr_is_operator( b ) ) break;
-            result.from_bl( 0 >= x_compare_t_num_dominant( a.type(), a.o, b.type(), b.o ) );
-             = 0;
+            if( :is_comparable( a, b ) )
+            {
+                result.from_bl( 0 >= x_compare_t_num_dominant( a.type(), a.o, b.type(), b.o ) );
+                = 0;
+            }
         }
         break;
 
 
         case larger~:
         {
-            if( :sr_is_operator( a ) || :sr_is_operator( b ) ) break;
-            result.from_bl( 0 >  x_compare_t_num_dominant( a.type(), a.o, b.type(), b.o ) );
-             = 0;
+            if( :is_comparable( a, b ) )
+            {
+                result.from_bl( 0 >  x_compare_t_num_dominant( a.type(), a.o, b.type(), b.o ) );
+                = 0;
+            }
         }
         break;
 
         case smaller_equal~:
         {
-            if( :sr_is_operator( a ) || :sr_is_operator( b ) ) break;
-            result.from_bl( 0 <= x_compare_t_num_dominant( a.type(), a.o, b.type(), b.o ) );
-             = 0;
+            if( :is_comparable( a, b ) )
+            {
+                result.from_bl( 0 <= x_compare_t_num_dominant( a.type(), a.o, b.type(), b.o ) );
+                = 0;
+            }
         }
         break;
 
         case smaller~:
         {
-            if( :sr_is_operator( a ) || :sr_is_operator( b ) ) break;
-            result.from_bl( 0 <  x_compare_t_num_dominant( a.type(), a.o, b.type(), b.o ) );
-             = 0;
+            if( :is_comparable( a, b ) )
+            {
+                result.from_bl( 0 <  x_compare_t_num_dominant( a.type(), a.o, b.type(), b.o ) );
+                = 0;
+            }
         }
         break;
 
@@ -646,6 +668,29 @@ func (:bop_s) solve
                     {
                         = o.sp.parse_error_fa( "Operator #<sc_t> :: #<sc_t>: Right operand must be unary (one argument) or binary (two arguments).\n", bnameof( o.a.type() ), bnameof( o.b.type() ) );
                     }
+                }
+                else if( o.b.type() == ::list_s~ )
+                {
+                    c$* list_b = o.b.o.cast( ::list_s* );
+                    m$* list_r = ::list_s!^;
+
+                    sz_t smin = sz_min( list_a.size(), list_b.size() );
+                    sz_t smax = sz_max( list_a.size(), list_b.size() );
+
+                    list_r.set_size( smax );
+
+                    for( sz_t i = 0; i < smin; i++ ) ::bop_cat_ab( list_a.arr.[ i ], list_b.arr.[ i ], list_r.arr.[ i ] );
+
+                    if( list_a.size() != list_b.size() )
+                    {
+
+                        m sr_s* sr_list_empty = sr_s!^.asm( ::list_s! );
+                        for( sz_t i = smin; i < list_a.size(); i++ ) ::bop_cat_ab( list_a.arr.[ i ], sr_list_empty,    list_r.arr.[ i ] );
+                        for( sz_t i = smin; i < list_b.size(); i++ ) ::bop_cat_ab( sr_list_empty,    list_b.arr.[ i ], list_r.arr.[ i ] );
+                    }
+
+                    result.asm( list_r.fork() );
+                    = 0;
                 }
             }
         }

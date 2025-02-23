@@ -173,7 +173,8 @@ stamp :s
 /** Dedicated Audio Player using a background thread.
  *  Simplifies setup and control for one-time or continuous playing.
  *  Usage:
- *      m$* player = bmedia_audio_out_player_s!.setup( audio );
+ *      m$* player = bmedia_audio_out_player_s!^
+ *      player.setup( audio );
  *      call player.play( ... ) anytime
  *      call player.wait_unltil_empty() to suspend calling thread until play buffer is empty (everything was played)
  *      when finished, simply destroy player.

@@ -3,16 +3,14 @@
  */
 
 (
-
-(
-    embed( "test_embed.btcl" );
+    eval_file( "test_embed.btcl" );
     ASSERT( embed_function( 1, 2 ) == 3 );
 );
 
-ASSERT( ( embed( "test_embed.btcl" ) ) == 1234 );
+ASSERT( ( eval_file( "test_embed.btcl" ) ) == 1234 );
 
 (
-    prefix( "prf", embed( "test_embed.btcl" ) );
+    prefix( "prf", eval_file( "test_embed.btcl" ) );
     ASSERT( prf_embed_function( 1, 2 ) == 3 );
 );
 
@@ -47,6 +45,15 @@ ASSERT( ABS( 5u - 0.000005 ) < 1E-9 );
 
 /// testing num-dominace in comparison
 ASSERT( [1.0,2.0,3.0] == [1,2,3] );
+
+/// evaluating a string
+my_code = "a = 5; b = 10;";
+eval_string( my_code );
+ASSERT( a == 5 && b == 10 );
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+IS_NEAR = func( x, y, dev ) { ABS( x - y ) <= dev };
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -128,10 +135,21 @@ ASSERT( <bl_t/>( 0.1 ) == TRUE );
 // ---------------------------------------------------------------------------------------------------------------------
 /// external function
 
-ext_add_a   = <x_btcl_btcl_function_stamp_s></> ( .additive = 10 ).add_a;
-ext_add_a_b = <x_btcl_btcl_function_stamp_s/>( .additive = 10 ).add_a_b;
+ext_add_a   = <x_btcl_test_adder_s/>( .additive = 10 ).add_a;
+ext_add_a_b = <x_btcl_test_adder_s/>( .additive = 10 ).add_a_b;
 ASSERT( ext_add_a  ( 2    ) == 12 );
 ASSERT( ext_add_a_b( 2, 3 ) == 15 );
+
+// ---------------------------------------------------------------------------------------------------------------------
+/// external parser
+
+parser = <x_btcl_test_parser_s/>;
+result = parser.parse(
+line1
+line2
+);
+
+ASSERT( result == "\nline1\nline2\n" );
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// partial function call
@@ -144,9 +162,9 @@ ASSERT( f( 1 )( 2 )( 3, 4 ) == 1234 );
 // ---------------------------------------------------------------------------------------------------------------------
 /// lists
 
-ASSERT( [1,2,3]       == (1:2:3) );
+ASSERT( [1,2,3]       == (1:2:3)   );
 ASSERT( [1,2,3]       == ([1,2]:3) );
-ASSERT( ([1,2]:[3])   == [1,2,3] );
+ASSERT( ([1,2]:[3])   == [1,2,3]   );
 ASSERT( ([1,2]:[[3]]) == [1,2,[3]] );
 
 list = [1,2,3];
@@ -164,9 +182,38 @@ ASSERT( (3::func(x){x+1}) == [1,2,3] );
 ASSERT( ([1,2,3]::func(x){-x}) == [-1,-2,-3] );
 ASSERT( (func(x){-x}*:[1,2,3]) == [-1,-2,-3] );
 
+/// nesting
+ASSERT( ([1,2]::[4,5,6]) == [[1,4],[2,5],[6]] );
+ASSERT( ([1,2,3]::[4,5]) == [[1,4],[2,5],[3]] );
+ASSERT( ([1,2,3]::[4,5]::[7])== [[1,4,7],[2,5],[3]] );
+
 ASSERT( ([0]*[1,2]*[4,5]) == ([[0,1,4],[0,1,5],[0,2,4],[0,2,5]]));
 
 ASSERT( (func(a,b){a*b}*.:([1,2]*[4,5])) == [4,5,8,10] );
+
+// example summation of a list (also handles empty list)
+sum_list = func( list ) { (0:0:list) :: func(a,b) {a+b} };
+ASSERT( sum_list([1,2,3,4]) == 10 );
+ASSERT( sum_list([ ]) == 0 );
+ASSERT( sum_list([5]) == 5 );
+
+// example product of a list (also handles empty list)
+prd_list = func( list ) { (1:1:list) :: func(a,b) {a*b} };
+ASSERT( prd_list([1,2,3,4]) == 24 );
+ASSERT( prd_list([ ]) == 1 );
+ASSERT( prd_list([5]) == 5 );
+
+// example dot product
+dot_prd = func( a, b ) { sum_list( (a::b)::prd_list ) };
+ASSERT( dot_prd( [1,2], [3,4]) == 11 );
+
+// ---------------------------------------------------------------------------------------------------------------------
+/// random numbers
+
+random_list = <x_btcl_random_s/>( .seed = 5329, .min = -0.5, .max = +0.5 ).list( 3 );
+ASSERT( IS_NEAR( random_list.[ 0 ], -0.0143433, 1m ) );
+ASSERT( IS_NEAR( random_list.[ 1 ],  0.3851930, 1m ) );
+ASSERT( IS_NEAR( random_list.[ 2 ], -0.4981690, 1m ) );
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// spawned recursion
@@ -200,6 +247,5 @@ ASSERT( f() == 10 );
 
 PRINT( "BTCL: Selftest finished successfully.\n" );
 
-0
+0;
 
-)

@@ -21,10 +21,14 @@
 #define BCORE_X_THREADS_H
 
 #include <pthread.h>
+#include <sys/types.h>
 #include "bcore_types.h"
 #include "bcore_feature.h"
 #include "bcore_x_inst.h"
 #include "bcore.xo.h"
+
+// prototype for getting thread id
+pid_t gettid( void );
 
 /**********************************************************************************************************************/
 
@@ -33,6 +37,7 @@ XOILA_DEFINE_GROUP( x, x_inst )
 #ifdef XOILA_SECTION
 
 forward :mutex_s;
+identifier gettid;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -106,7 +111,7 @@ stamp :condition_s
     func bcore_inst_call.down_e;
 
     /** sleep: Suspends calling thread until woken from another thread.
-     *  This function may be called from multiple different threads; each thread must use its own mutex.
+     *  This function binds the condition to the mutex until return.
      *  The function exits only when receiving a 'wakeup' signal.
      *  A wakeup signal can be triggered by one of the wake functions below.
      *  The mutex passed as argument must be locked.
@@ -181,6 +186,11 @@ group :thread
 func void threads_sleep_ns( u3_t ns ); /// ... nanoseconds
 func void threads_sleep_us( u3_t us ); /// ... microseconds
 func void threads_sleep_ms( u3_t ms ); /// ... milliseconds
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// returns the id of the current thread (fast)
+func tp_t threads_get_id() = gettid();
 
 //----------------------------------------------------------------------------------------------------------------------
 

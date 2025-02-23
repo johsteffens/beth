@@ -163,7 +163,7 @@ static s2_t compare_o( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static s2_t compare_leaf( tp_t type, vc_t obj1, vc_t obj2 )
+static s2_t compare_leaf_or_string( tp_t type, vc_t obj1, vc_t obj2 )
 {
     switch( type )
     {
@@ -181,6 +181,7 @@ static s2_t compare_leaf( tp_t type, vc_t obj1, vc_t obj2 )
         case TYPEOF_uz_t: return ( *( uz_t* )obj1 == *( uz_t* )obj2 ) ? 0 : ( *( uz_t* )obj1 < *( uz_t* )obj2 ) ? 1 : -1;
         case TYPEOF_sd_t: return bcore_strcmp( *( sd_t* )obj1, *( sd_t* )obj2 );
         case TYPEOF_sc_t: return bcore_strcmp( *( sc_t* )obj1, *( sc_t* )obj2 );
+        case TYPEOF_st_s: return bcore_strcmp( ( ( st_s* )obj1 )->sc, ( ( st_s* )obj2 )->sc );
         case TYPEOF_tp_t: return ( *( tp_t* )obj1 == *( tp_t* )obj2 ) ? 0 : ( *( tp_t* )obj1 < *( tp_t* )obj2 ) ? 1 : -1;
         case TYPEOF_bl_t: return ( *( bl_t* )obj1 == *( bl_t* )obj2 ) ? 0 : ( *( bl_t* )obj1 < *( bl_t* )obj2 ) ? 1 : -1;
         case TYPEOF_aware_t: return ( *( aware_t* )obj1 == *( aware_t* )obj2 ) ? 0 : ( *( aware_t* )obj1 < *( aware_t* )obj2 ) ? 1 : -1;
@@ -196,9 +197,9 @@ static s2_t compare_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
     if( obj1 == obj2 ) return  0;
     if( obj1 == NULL ) return  1;
     if( obj2 == NULL ) return -1;
-    if( bcore_via_p_is_leaf( p->via, NULL ) )
+    if( bcore_via_p_is_leaf( p->via, NULL ) || p->o_type == TYPEOF_st_s )
     {
-        return compare_leaf( p->o_type, obj1, obj2 );
+        return compare_leaf_or_string( p->o_type, obj1, obj2 );
     }
 
     if( bcore_via_p_is_pure_array( p->via, NULL ) )
@@ -231,9 +232,9 @@ static s2_t compare_generic_num_dominant( const bcore_compare_s* p, vc_t obj1, v
     if( obj1 == obj2 ) return  0;
     if( obj1 == NULL ) return  1;
     if( obj2 == NULL ) return -1;
-    if( bcore_via_p_is_leaf( p->via, NULL ) )
+    if( bcore_via_p_is_leaf( p->via, NULL ) || p->o_type == TYPEOF_st_s )
     {
-        return compare_leaf( p->o_type, obj1, obj2 );
+        return compare_leaf_or_string( p->o_type, obj1, obj2 );
     }
 
     if( bcore_via_p_is_pure_array( p->via, NULL ) )
@@ -278,9 +279,9 @@ static st_s* diff_generic( const bcore_compare_s* p, vc_t obj1, vc_t obj2 )
     if( obj1 == obj2 ) return NULL;
     if( obj1 == NULL ) return st_s_createf( "obj1 == NULL, obj2!%s", ifnameof( p->o_type ) );
     if( obj2 == NULL ) return st_s_createf( "obj1!%s, obj2 == NULL", ifnameof( p->o_type ) );
-    if( bcore_via_p_is_leaf( p->via, NULL ) )
+    if( bcore_via_p_is_leaf( p->via, NULL ) || p->o_type == TYPEOF_st_s )
     {
-        s2_t c = compare_leaf( p->o_type, obj1, obj2 );
+        s2_t c = compare_leaf_or_string( p->o_type, obj1, obj2 );
         if( c != 0 )
         {
             st_s* s = st_s_create();

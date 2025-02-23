@@ -48,11 +48,21 @@ c = a + b; // c is the btcl operator'plus' with anonymous braches 'a' and 'b';
 
 ## Branches
 
-To push a named branch use the modifier functional syntax ```.<name> = <expression>```.
+To push a named branch use the following syntax
 
-Branch names are unique per node. Pushing an existing name replaces the named branch.
+ ```.<name> = <expression>```.
 
-To push an anonymous branch use the modifier syntax without a name specification. (s. example below)
+or 
+
+ ```:<name> = <expression>```.
+
+The preceding dot `.` is intended for a parameter assignment. 
+
+The preceding colon `:` is intended for a socket definition. (Some nodes may not accept sockets.)
+
+Branch names are unique per node. Pushing an existing name replaces the named branch for a given category.
+
+To push an anonymous branch, use the modifier syntax without a name specification. (s. example below)
 
 ## Rack
 
@@ -60,7 +70,11 @@ A rack is a specialized node to which wires can connect.
 
 A rack can be anonymous.
 
-A rack has an arbitrary amount of voice branches and optional named branches which can serve as wire-sockets.
+A rack has an arbitrary amount of voice branches and optional named branches which can serve as either parameter-feeds or wire-sockets.
+
+The colon `:` specifies a socket definition.
+
+The dot `.` specifies a parameter assignment.
 
 Only wires in one of the rack's branches can connect to the rack.
 
@@ -115,17 +129,17 @@ mynode3 = mynode1 + mynode2;
 ### Wiring
 Rack and wires are named by the rack name. In case of wiring to a named branch, a wire uses a delimiter ```.<name>``` to specify the branch name.
 
-**Example: (wiring to main rack branch)**
+**Example: (wiring to root rack-socket)**
 
 ```C
 simple_loop = @:rk( @sine( .frq = 1000 ) - @~rk );
 ```
 
-**Example: (wiring to named rack branch)**
+**Example: (wiring to named rack-socket)**
 
 ```C
 lfo = @sine( .frq = 2 );
-vibrato = @:rk( .lfo = lfo, @sine( .frq = 1000 + 100 * @~rk.lfo ) );
+vibrato = @:rk( :lfo = lfo, @sine( .frq = 1000 + 100 * @~rk.lfo ) );
 ```
 ### Functions
 When a function is passed as parameter, it is converted into a functor.

@@ -315,6 +315,11 @@ The cdaleth syntax is 'C' with additional syntactic rules.
 Pure C-code can be enforced for any code block with this
 syntax 'verbatim_C{ ... }'.
 
+Note:
+    If the verbatim block completes a statement, place a semicolon after the closing brace:
+    'verbatim_C{ ... };'.
+    Otherwise the parser does not recognize the beginning of a new statement on subsequent code, which might result in misinterpretation
+
 ':' immediately before an identifier or '*' will replace ':' with the group name
 '@' will be replaced with stamp instance name if applicable or with group name otherwise
 
@@ -705,8 +710,9 @@ TODO:
 Keywords (for syntax highlight)
 
 group stamp stump hidden private func name signature body obliv aware feature extending verbatim
-mutable discardable retrievable forward include embed cast foreach in verbatim_C fork
+mutable discardable retrievable forward include embed eval_file eval_string cast foreach in verbatim_C fork
 strict try scope t_scope scope_local scope_func extern wrap restrict type identifier trans TE TO
+
 
 Leaf types (for syntax highlight)
 

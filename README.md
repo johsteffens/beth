@@ -46,7 +46,7 @@ I designed/developed/invented code and methods inside beth from scratch with foc
 # License
 The source code in this repository is licensed under the [Apache 2.0 License](LICENSE). 
 
-*Copyright (C) 2017, ..., 2024 Johannes B. Steffens.*
+*Copyright (C) 2017, ..., 2025 Johannes B. Steffens.*
 
 # Core Concepts
 
@@ -250,8 +250,17 @@ For that matter, getting a grasp on *beth* is probably a bit of a challenge even
 
 **2024**
 
-* Developed and implemented the constructive language [BTCL](doc/bcore/btcl.md)
 * Ongoing work: Improving SVD.
+* Developed and implemented the constructive language [BTCL](doc/bcore/btcl.md)
+* Implemented [byth](lib/byth/README.md), which is a beth-python interface using Python-C API
+  * Implemented a [plotting framework](doc/byth/plot.md).
+  * Added [plotting extension](doc/byth/plot.md#btcl-interface) for [BTCL](doc/bcore/btcl.md).
+
+* 
+
+**2025**
+
+* Ongoing work: Advanced [BTCL](doc/bcore/btcl.md) features.
 
 
 ------

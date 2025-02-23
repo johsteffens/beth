@@ -19,6 +19,9 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
+name parse;
+name parse_file;
+
 func (:frame_s) er_t eval_op_member( m@* o, m x_source* source, m sr_s* sr )
 {
     if( sr.type() == :net_node_s~ ) = :net_eval_node_member( o, source, sr );
@@ -57,7 +60,46 @@ func (:frame_s) er_t eval_op_member( m@* o, m x_source* source, m sr_s* sr )
         else if( x_btcl_t_btcl_function_arity( sr.o, sr.type(), name ) >= 0 )
         {
             s2_t arity = x_btcl_t_btcl_function_arity( sr.o, sr.type(), name );
-            sr.asm( :function_s!.setup_external_function( name, arity, sr.o.cast( :* ) ) );
+            bl_t is_mutable = x_btcl_t_btcl_function_mutable( sr.o, sr.type(), name );
+            sr.asm( :function_s!.setup_external_function( name, arity, is_mutable, sr.o.cast( :* ) ) );
+        }
+        else if( name == TYPEOF_parse )
+        {
+            m$* result = sr_s!^;
+            source.parse_fa( " (" );
+            if( x_btcl_t_defines_btcl_external_parse( sr.type() ) )
+            {
+                x_btcl_t_btcl_external_parse( sr.o, sr.type(), source, o, result );
+            }
+            else if( x_btcl_t_defines_m_btcl_external_parse( sr.type() ) )
+            {
+                x_btcl_t_m_btcl_external_parse( sr.o.clone()^, sr.type(), source, o, result );
+            }
+            source.parse_fa( " )" );
+            sr.tsm( result.type(), result.o.fork() );
+        }
+        else if( name == TYPEOF_parse_file )
+        {
+            m sr_s* sb = sr_s!^;
+            source.parse_fa( " (" );
+            o.eval( 0, source, sb );
+            source.parse_fa( " )" );
+            if( sb.type() != st_s~ ) = source.parse_error_fa( "Member function 'parse_file': Expression must evaluate to a string.\n" );
+            m st_s* path = st_s!^;
+            o.context.get_embedding_file_path( source, sb.o.cast( st_s* ).sc, path );
+            m x_source* emb_source = bcore_file_open_source( path.sc )^;
+            m$* result = sr_s!^;
+            if( x_btcl_t_defines_btcl_external_parse( sr.type() ) )
+            {
+                x_btcl_t_btcl_external_parse( sr.o, sr.type(), emb_source, o, result );
+            }
+            else if( x_btcl_t_defines_m_btcl_external_parse( sr.type() ) )
+            {
+                x_btcl_t_m_btcl_external_parse( sr.o.clone()^, sr.type(), emb_source, o, result );
+            }
+            emb_source.parse_fa( " " );
+            if( !emb_source.eos() ) emb_source.parse_error_fa( "Unexpected expression found.\n" );
+            sr.tsm( result.type(), result.o.fork() );
         }
         else
         {

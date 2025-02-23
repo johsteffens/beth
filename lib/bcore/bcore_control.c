@@ -163,7 +163,8 @@ void bcore_ext_wrn( sc_t func, sc_t file, int line, sc_t format, ... )
 
 void bcore_wrn_fv( sc_t format, va_list args )
 {
-    bcore_writeln_fv( stderr, format, args );
+    bcore_write_fv( stderr, format, args );
+    fflush( stderr );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -172,7 +173,8 @@ void bcore_wrn_fa( sc_t format, ... )
 {
     va_list args;
     va_start( args, format );
-    bcore_writeln_fv( stderr, format, args );
+    bcore_write_fv( stderr, format, args );
+    fflush( stderr );
     va_end( args );
 }
 
@@ -323,7 +325,6 @@ uz_t bcore_references( vc_t ptr )
 
 vd_t bcore_fork( vd_t ptr )
 {
-
     return bcore_tbman_fork( ptr );
 }
 

@@ -230,7 +230,7 @@ func (:s) stream_play
         {
             switch( frames_written )
             {
-                case EBADFD:
+                case -EBADFD:
                 {
                     = bcore_error_push_fa( TYPEOF_general_error, "snd_pcm_writei: PCM is in an improper state." );
                 }

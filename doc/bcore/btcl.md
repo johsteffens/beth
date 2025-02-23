@@ -50,7 +50,7 @@ PRINTLN(z); // compact formatting where possible; ensures tht output ends in 'ne
 PRINTX(z);  // prints in btml format
 
 // assertion (for testing/debugging)
-ASSERT( [1,2,3] == [1,2,3] ); // if expression yields false a parse error is generated
+ASSERT( [1,2,3] == [1,2,3] ); // if expression yields false, a parse error is generated
 
 // condition expression (else-part is optional) (not exportable)
 if( a >= b ) { a } else { b };
@@ -74,13 +74,16 @@ a : b; // if a or b is a list, the list is extended (not nested)
 // Index i runs from 0 to 4. The result is [0,2,4,6,8].
 5 :: func(i){2*i};
 
+// Merging lists
+[1,2]::[4,5] == [[1,4],[2,5]];
+
 // Mapped list through function; the function is applied to list elements
 // forming a new list. The result is [2,4,10].
 [1,2,5] :: func(a){2*a};
 
-// embed the content from another file
+// evaluate the content in another file
 // relative path is relative to current file location
-embed ( "../data/file.btcl" );
+eval_file( "../data/file.btcl" );
 
 // converting a function into a functor (a functor can be used externally)
 <x_btcl_functor_s/>( func( a, b ) { a + b } );
@@ -88,7 +91,10 @@ embed ( "../data/file.btcl" );
 // functor_f3_s is limited to numeric operands but runs much faster than functor_s
 <x_btcl_functor_f3_s/>( func( a, b ) { a + b } );
 
-// A trailing semicolon as last valid symbol in a file, block or frame is ignored (no continuation)
+// list of 10 random numbers between -1.0, and 1.0
+<x_btcl_random_s/>( .seed = 1234, .min = -1.0, .max = 1.0 ).list( 10 );
+
+// If the space behind a semicolon contains no expression then that semicolon is ignored.
 
 ```
 
@@ -99,7 +105,12 @@ BTCL uses C/C++ style comments:
 
 *  ```/* ... */ ```: Comment block.
 
+# Whitespaces
+
+Space, tab and newline characters are elementary whitespaces. A [comment](comments) is also a whitespace(-section). Between identifiers, operator-symbols or literals whitespaces can be placed freely without affecting the code.
+
 # One Expression
+
 BTCL has no distinct statements. Any contiguous code represents just one expression. This can be a composite (or tree) of expressions joined via functions, operators or conditional branches. Non-composite expressions are called ***Literals***.
 
 ## Continuation operator
@@ -275,11 +286,12 @@ Binary arithmetic operators return f3_t when one of the operands is f3_t, otherw
 Sting literals are specified using the C-syntax:
 
 ``` C
-"This is a string"
-"\tThis is a string with tab and newline\n"
+"This is a string";
+"\tThis is a string with tab and newline\n";
 ```
 
-## Operator
+### String Operator
+
 Operator '+' concatenates string with string or string with number by first converting the number to a string
 
 |Operation|Result|
@@ -288,6 +300,15 @@ Operator '+' concatenates string with string or string with number by first conv
 |"ab"+12|"ab12"|
 |12+"ab"|"12ab"|
 |""+12|"12"|
+
+# Label
+
+A label is a hashed string literal stored as tp_t and registered in the beth-name-map. A label is normally used for frequently used names. However, a label can represent any string of any length.
+
+``` C
+'some_label';
+'another one';
+```
 
 # Logic
 Logic literals are the keywords ```true``` and ```false```.
@@ -529,6 +550,12 @@ mylist = a : b : c;
 // concatenating: if any operand is already a list, it will be unfolded and extended
 [1,2]:[3,4] == [1,2,3,4]; // this is TRUE
 
+// Merging lists
+[1,2]::[4,5] == [[1,4],[2,5]];
+
+// Merging lists of unequal size
+[1,2]::[4,5,6] == [[1,4],[2,5],[6]];
+
 // concatenating: to explicitly insert a list as element to another list, fold it twice:
 a = [1,2];
 b = a:[[4,5]];
@@ -576,11 +603,24 @@ Binary Operator ```::``` is a multi-tool for constructing or modifying lists or 
 
 |a-type|b-type|Result|
 |:---|:---|:---|
-|number|unary function|List of a elements, each set to ```b(index)```
-|number|any other|List of a elements, each set to value b
-|list|binary function|Spawned recursion (s. below for details)
+|number|unary function|List of a elements, each set to ```b(index)```|
+|number|any other|List of a elements, each set to value b|
+|list|binary function|Spawned recursion (s. below for details)|
+|list|list|Mering two lists. (S. Below)|
+
+### Merging two lists
+
+If both operators are lists, the operator forms a new list by concatenating list elements of the same index. If lists are of unequal size, the shorter list is expanded with empty list elements ```[]```.
+
+**Example**
+
+``` C
+[1,2]::[4,5]   == [[1,4],[2,5]];
+[1,2]::[4,5,6] == [[1,4],[2,5],[6]];
+```
 
 ### Spawned Recursion
+
 The operation O(L<sub>n</sub>,F) with ...
 
   * L<sub>n</sub> being a list with n > 0 elements: L[0], ..., L[n-1]
@@ -595,11 +635,27 @@ The operation O(L<sub>n</sub>,F) with ...
 **Example**
 
 ``` C
-4 :: b == [b,b,b,b];
-4 :: func(i){i} == [0,1,2,3];
+ASSERT( 4 :: b == [b,b,b,b] );
+ASSERT( 4 :: func(i){i} == [0,1,2,3] );
 
 f = func(a,b){...};
-[1,2,3,4] :: f == f(f(f(1,2),3),4);
+ASSERT( [1,2,3,4] :: f == f(f(f(1,2),3),4) );
+
+// Example: Summation of a list (also handles empty list)
+sum_list = func( list ) { (0:0:list) :: func(a,b) {a+b} };
+ASSERT( sum_list([1,2,3,4]) == 10 );
+ASSERT( sum_list([ ]) == 0 );
+ASSERT( sum_list([5]) == 5 );
+
+// Example: Product of a list (also handles empty list)
+prd_list = func( list ) { (1:1:list) :: func(a,b) {a*b} };
+ASSERT( prd_list([1,2,3,4]) == 24 );
+ASSERT( prd_list([ ]) == 1 );
+ASSERT( prd_list([5]) == 5 );
+
+// Example: Dotproduct
+dot_prd = func( a, b ) { sum_list( (a::b)::prd_list ) };
+ASSERT( dot_prd([1,2], [3,4]) == 11 );
 
 ```
 
@@ -684,35 +740,63 @@ Built-in functions are available by the names listed in the table below. They ar
 |PATH|Path of source file; error if source has no file associated|
 |DIR|Directory of source file; error if source has no file associated|
 
-# Embedding other files
+# Evaluating Files
 
-The keyword **embed** evaluates code from another file as if it was copied into the embed-position. See also: [Prefixing](#prefixing).
+The keyword ```eval_file``` evaluate code from another file as if it was copied into the eval-position. See also: [Prefixing](#prefixing).
 
 ## Syntax
 ```c
-embed("file.btcl");                // full embedding (variables and evaluation result is imported )
-prefix( foo, embed("file.btcl") ); // full embedding with prefixing of embedded code
-a = ( embed("file.btcl") );        // elvaluation only (variables defined in the embedded file are dropped)
+eval_file( "file.btcl" );                  // full embedding (variables and evaluation result is imported )
+prefix( "foo", eval_file( "file.btcl" ) ); // full embedding with prefixing of embedded code
+a = ( eval_file( "file.btcl" ) );          // elvaluation only (variables defined in the embedded file are dropped)
 ```
 If the file path is relative, it is taken relative to the folder in which the current source is located.
 
 The file is embedded in the current frame (no dedicated frame). This allows defining variables (functions) in the embedded file to be used outside the embedding.
 
+# Evaluating Strings
+
+Likewise to evaluating entire files, you can simply embed the content of a string. This assumes that the string contains BTCL code. This allows constructing BTCL code on the fly which is then executed at a later point.
+
+## Example
+
+```c
+my_code = "a = 5; b = 10;";
+eval_string( my_code );
+ASSERT( a == 5 && b == 10 );
+```
+
 # Prefixing
 
 The keyword **prefix** evaluates code an imports result and all variables into the current frame by using the specified prefix. 
 
-Prefixing is useful in conjunction with [Embedding](#embedding-other-files). This wraps the embedded content into a dedicated name-space.
+Prefixing is useful in conjunction with [Evaluation](#evaluating-files). This wraps the embedded content into a dedicated name-space.
 
 ## Syntax
 
 ```c
-prefix( foo, 
+prefix( "foo", 
   bar = 1234;
   4321
 );    
 ASSERT( foo_bar == 1234 );
 ASSERT( foo     == 4321 );
+
+// embedding and prefixing the code from another file
+prefix( "foo", eval_file( "file.btcl" ) );
+
+// embedding and prefixing the code from a string
+prefix( "foo", eval_string( code_in_string ) );
+```
+
+# Random Numbers
+Random number generation is available via object ```x_btcl_random_s``` implementing [external function](#advanced) ```list```. This function generates a list of pseudo random numbers. Repeated calls of ```list```, generates identical results. You can obtain a different list changing the parameter ```seed```.
+
+## Example
+
+```C
+// creates a list of 10 random numbers within [-0.5,+0.5]
+random_list = <x_btcl_random_s/>( .seed = 5329, .min = -0.5, .max = +0.5 ).list( 10 );
 ```
 
 

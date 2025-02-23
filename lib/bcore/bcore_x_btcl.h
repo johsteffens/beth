@@ -48,7 +48,7 @@ XOILA_DEFINE_GROUP( x_btcl, x_inst )
 stamp :s
 {
     /// Search paths for embedding other files.
-    bcore_arr_st_s => embed_path_arr;
+    bcore_arr_st_s => eval_path_arr;
 
     /** Reads full object from source.
      *  If o implements copy_typed, automatic type conversion is used.
@@ -142,57 +142,60 @@ func er_t parse_create_object( m x_source* source, m sr_s* obj ) = :s!^.parse_cr
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/** Implement both features below to define member functions of a stamp which shall be accessible by bctl code.
- *  See :test_stamp_s for an example implementation
+/**********************************************************************************************************************/
+/// External Functions
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/** Implement features below to define member functions of a stamp which shall be accessible by bctl code.
+ *  See btcl_x_test.x for an example implementation
  */
 
-// return -1 when function 'name' is not defined
+// (required) return -1 when function 'name' is not defined
 feature 'at' sz_t btcl_function_arity( @* o, tp_t name ) = -1;
 
-// must handle all names as indicated by btcl_function_arity; sp and lexical_frame can be ignored
+// (optional) indicates if calling the btcl function changes the underlying instance;
+// If true, btcl creates a copy before calling.
+feature 'at' bl_t btcl_function_mutable( @* o, tp_t name ) = false;
+
+// Depending on mutability one or both of the following functions must be implemented.
+// All names declared by arity must be handled in one of these functions.
+
+// Overload for all const functions
 feature 'at' er_t btcl_function( @* o, tp_t name, x_source_point_s* sp, m :frame_s* lexical_frame, bcore_arr_sr_s* args, m sr_s* result );
 
-/// features of functors (overloaded by x_btcl_functor_s)
-feature 'at' f3_t nullary_f3( @* o );
-feature 'at' f3_t unary_f3  ( @* o, f3_t x );
-feature 'at' f3_t binary_f3 ( @* o, f3_t x, f3_t y );
-feature 'at' f3_t ternary_f3( @* o, f3_t x, f3_t y, f3_t z );
+// Overload for all mutable functions
+feature 'at' er_t m_btcl_function( m@* o, tp_t name, x_source_point_s* sp, m :frame_s* lexical_frame, bcore_arr_sr_s* args, m sr_s* result );
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
-/// demonstrating the use of btcl_function features above; see beth/data/bcore/btcl/selftest.btcl for usage
+/** External Parser
+ *  Overloading these features lets BTCL pass parsing control to an external parse function.
+ *  The external code section ends before an unmatched closing bracket ')'.
+ *  The external parse function must either consume all characters before that bracket or generate an error condition.
+ *  In BTCL source code, the parse function is called as member function to the object using keyword 'parse'
+ *  See btcl_x_test.x for an example implementation.
+ */
 
 //----------------------------------------------------------------------------------------------------------------------
 
-name add_a_b;
-name add_a;
+// Overload one of these features depending on whether o is mutable or not.
+feature 'at' er_t   btcl_external_parse( c@* o, m x_source* source, m :frame_s* lexical_frame, m sr_s* result );
+feature 'at' er_t m_btcl_external_parse( m@* o, m x_source* source, m :frame_s* lexical_frame, m sr_s* result );
 
-stamp :btcl_function_stamp_s
-{
-    f3_t additive;
-    func :.btcl_function_arity
-    {
-        switch( name )
-        {
-            case TYPEOF_add_a_b: = 2;
-            case TYPEOF_add_a  : = 1;
-            default: break;
-        }
-        = -1; // return -1 to indicate that a function of given name does not exist
-    }
+//----------------------------------------------------------------------------------------------------------------------
 
-    func :.btcl_function
-    {
-        switch( name )
-        {
-            case TYPEOF_add_a_b: result.from_f3( o.additive + args.[0].to_f3() + args.[1].to_f3() ); = 0;
-            case TYPEOF_add_a  : result.from_f3( o.additive + args.[0].to_f3() ); = 0;
-            default: break;
-        }
-        = GERR_fa( "Unhandled function." ); // should never occur
-    }
-}
+/**********************************************************************************************************************/
+/// Functor
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// features of functors (overloaded by x_btcl_functor_s and x_btcl_functor_f3_s)
+feature 'at' f3_t nullary_f3( @* o );
+feature 'at' f3_t unary_f3  ( @* o, f3_t x );
+feature 'at' f3_t binary_f3 ( @* o, f3_t x, f3_t y );
+feature 'at' f3_t ternary_f3( @* o, f3_t x, f3_t y, f3_t z );
 
 //----------------------------------------------------------------------------------------------------------------------
 

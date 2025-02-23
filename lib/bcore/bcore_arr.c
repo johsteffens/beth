@@ -3270,6 +3270,19 @@ void bcore_arr_sr_s_make_strong( bcore_arr_sr_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+sr_s* bcore_arr_sr_s_push( bcore_arr_sr_s* o )
+{
+    if( o->size > o->space ) bcore_arr_sr_s_make_strong( o );
+    if( o->size == o->space )
+    {
+        o->data = bcore_un_alloc( sizeof( sr_s ), o->data, o->space, o->space > 0 ? o->space * 2 : 1, &o->space );
+    }
+    o->data[ o->size++ ] = sr_null();
+    return &o->data[ o->size - 1 ];
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 sr_s* bcore_arr_sr_s_push_sr( bcore_arr_sr_s* o, sr_s v )
 {
     if( o->size > o->space ) bcore_arr_sr_s_make_strong( o );

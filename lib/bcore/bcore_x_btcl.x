@@ -204,13 +204,17 @@ name else;
 name self;
 name func;
 name embed;
+name eval_file;
+name eval_string;
+name embed_file;
+name embed_string;
 name prefix;
 
 // The context is created in the root frame and shared across all child frames
 stamp :context_s
 {
     /// Search paths for embedding other files.
-    bcore_arr_st_s => embed_path_arr;
+    bcore_arr_st_s => eval_path_arr;
 
     /// reserved keywords
     bcore_hmap_name_s hmap_reserved_key;
@@ -233,6 +237,10 @@ stamp :context_s
         o.hmap_reserved_key.set_sc( "self" );
         o.hmap_reserved_key.set_sc( "func" );
         o.hmap_reserved_key.set_sc( "embed" );
+        o.hmap_reserved_key.set_sc( "eval_file" );
+        o.hmap_reserved_key.set_sc( "eval_string" );
+        o.hmap_reserved_key.set_sc( "embed_file" );
+        o.hmap_reserved_key.set_sc( "embed_string" );
         o.hmap_reserved_key.set_sc( "prefix" );
     }
 
@@ -284,9 +292,9 @@ func (:context_s) er_t get_embedding_file_path( @* o, m x_source* source, sc_t i
 
         if( !bcore_file_exists( try_path.sc ) )
         {
-            if( o.embed_path_arr )
+            if( o.eval_path_arr )
             {
-                foreach( $* st in o.embed_path_arr )
+                foreach( $* st in o.eval_path_arr )
                 {
                     try_path.copy_fa( "#<sc_t>/#<sc_t>", st.sc, in_path );
                     if( bcore_file_exists( try_path.sc ) ) break;
@@ -690,18 +698,27 @@ func (:signature_s) er_t parse( m@* o, m :frame_s* frame, m x_source* source )
 stamp :external_function_s
 {
     tp_t name;
+    bl_t is_mutable;
     : -> object;
 
-    func o setup( m@* o, tp_t name, :* object )
+    func o setup( m@* o, tp_t name, bl_t is_mutable, :* object )
     {
         o.name = name;
+        o.is_mutable = is_mutable;
         o.object =< object.cast( m$* ).fork();
     }
 
     func er_t execute( m@* o, x_source_point_s* sp, m :frame_s* lexical_frame, bcore_arr_sr_s* args, m sr_s* sr )
     {
         sr.clear();
-        if( o.object.btcl_function( o.name, sp, lexical_frame, args, sr ) ) { = sp.parse_error_fa( "#<sc_t>", bcore_error_pop_all_to_st( st_s!^ ).sc ); }
+        if( o.is_mutable )
+        {
+            o.object.clone()^.m_btcl_function( o.name, sp, lexical_frame, args, sr );
+        }
+        else
+        {
+            o.object.btcl_function( o.name, sp, lexical_frame, args, sr );
+        }
         = 0;
     }
 }
@@ -727,12 +744,12 @@ stamp :function_s
         o.external_function =< NULL;
     }
 
-    func o setup_external_function( m@* o, tp_t name, s2_t arity, :* object )
+    func o setup_external_function( m@* o, tp_t name, s2_t arity, bl_t is_mutable, :* object )
     {
         o.signature =< :signature_s!;
         o.signature.arg_list.set_size( arity );
         for( sz_t i = 0; i < arity; i++ ) o.signature.arg_list.[ i ] = i + 1;
-        o.external_function =< :external_function_s!.setup( name, object );
+        o.external_function =< :external_function_s!.setup( name, is_mutable, object );
         o.block =< NULL;
         o.tail  =< NULL;
         = o;
@@ -808,7 +825,13 @@ func (:function_s) er_t call( m@* o, m x_source_point_s* source_point, m :frame_
         }
         else if( o.external_function )
         {
-            o.external_function.execute( source_point, lexical_frame, arg_list, result );
+            er_t err = o.external_function.execute( source_point, lexical_frame, arg_list, result );
+            if( err )
+            {
+                m $* st = st_s!^;
+                bcore_error_pop_all_to_st( st );
+                = source_point.parse_error_fa( "#<sc_t>", st.sc );
+            }
         }
         else if( o.wrapped_function )
         {
@@ -1088,6 +1111,14 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
         source.parse_fa( " #cstring", obj.asm( st_s! ).o.cast( m st_s* ) );
     }
 
+    /// labels (hashed string)
+    else if( source.parse_bl( " #=?|'|" ) )
+    {
+        m$* st = st_s!^;
+        source.parse_fa( " #label", st );
+        obj.from_tp( bentypeof( st.sc ) );
+    }
+
     /// Identifier
     else if( :is_identifier( source ) )
     {
@@ -1162,17 +1193,34 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
 
                 /// Embedding
                 case TYPEOF_embed:
+                case TYPEOF_embed_file:
+                case TYPEOF_eval_file:
                 {
                     m sr_s* sb = sr_s!^;
                     source.parse_fa( " (" );
                     o.eval( 0, source, sb );
                     source.parse_fa( " )" );
-                    if( sb.type() != st_s~ ) = source.parse_error_fa( "Keyword 'embed': Expression must evaluate to a string.\n" );
+                    if( sb.type() != st_s~ ) = source.parse_error_fa( "Keyword 'eval_file': Expression must evaluate to a string, which can be used as file-path.\n" );
                     m st_s* path = st_s!^;
                     o.context.get_embedding_file_path( source, sb.o.cast( st_s* ).sc, path );
                     m x_source* emb_source = bcore_file_open_source( path.sc )^;
                     o.eval( 0, emb_source, obj );
 
+                    emb_source.parse_fa( " " );
+                    if( !emb_source.eos() ) emb_source.parse_error_fa( "Unexpected expression. Semicolon ';' missing on previous expression?\n" );
+                }
+                break;
+
+                case TYPEOF_embed_string:
+                case TYPEOF_eval_string:
+                {
+                    m sr_s* sb = sr_s!^;
+                    source.parse_fa( " (" );
+                    o.eval( 0, source, sb );
+                    source.parse_fa( " )" );
+                    if( sb.type() != st_s~ ) = source.parse_error_fa( "Keyword 'eval_string': Expression must evaluate to a string.\n" );
+                    m x_source* emb_source = x_source_create_from_st( sb.o.cast( st_s* ) )^;
+                    o.eval( 0, emb_source, obj );
                     emb_source.parse_fa( " " );
                     if( !emb_source.eos() ) emb_source.parse_error_fa( "Unexpected expression. Semicolon ';' missing on previous expression?\n" );
                 }
@@ -1187,13 +1235,31 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
                     m$* frame = :frame_s!^.setup( o );
                     frame.eval( 0, source, result );
 
-                    if( result.type() != st_s~ ) = source.parse_error_fa( "Keyword 'prefix': Prefix identifier must evaluate to a string.\n" );
+                    m$* st_prefix = st_s!^;
+                    tp_t prefix_name = 0;
 
-                    $* st_prefix = result.o.cast( st_s* );
+                    if( result.type() == st_s~ )
+                    {
+                        st_prefix.copy( result.o.cast( st_s* ) );
+                        if( st_prefix.size == 0 ) = source.parse_error_fa( "Keyword 'prefix': Prefix is the empty string.\n" );
+                        prefix_name = o.entypeof( st_prefix.sc );
+                    }
+                    else if( result.type() == tp_t~ )
+                    {
+                        prefix_name = result.o.cast( tp_t* ).0;
+                        sc_t sc_prefix = bnameof( prefix_name );
+                        if( !sc_prefix ) = source.parse_error_fa( "Keyword 'prefix': Prefix identifier is tp_t without a registered name.\n" );
+                        st_prefix.copy_sc( sc_prefix );
+                    }
+                    else
+                    {
+                        = source.parse_error_fa( "Keyword 'prefix': Prefix identifier must evaluate to a string or label.\n" );
+                    }
 
-                    if( st_prefix.size == 0 ) = source.parse_error_fa( "Keyword 'prefix': Prefix is the empty string.\n" );
-
-                    tp_t prefix_name = o.entypeof( st_prefix.sc );
+                    if( st_prefix.find_any_sc( 0, st_prefix.size, " \t\r\n" ) < st_prefix.size )
+                    {
+                        = source.parse_error_fa( "Keyword 'prefix': Prefix contains whitespaces.\n" );
+                    }
 
                     source.parse_fa( " ," );
 
@@ -1326,10 +1392,10 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
             {
                 node_name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
             }
-            else if( node_type != TYPEOF_rack )
-            {
-                = source.parse_error_fa( "Node identifier expected.\n" );
-            }
+//            else if( node_type != TYPEOF_rack )
+//            {
+//                = source.parse_error_fa( "Node identifier expected.\n" );
+//            }
             obj.asm( :net_node_s!.setup( node_type, node_name, sp ) );
         }
     }
@@ -1406,7 +1472,7 @@ func (:frame_s) er_t parse_create_final_object( m@* o, m x_source* source, m sr_
 func (:s) parse_create_object
 {
     m$* context = :context_s!^.setup();
-    context.embed_path_arr =< o.embed_path_arr.fork();
+    context.eval_path_arr =< o.eval_path_arr.fork();
     m$* frame = :frame_s!^.setup_as_root( context );
     = frame.parse_create_final_object( source, obj );
 }
@@ -1425,6 +1491,8 @@ group :operator_f3 { embed "bcore_x_btcl_operator_f3.x"; }
 group :net         { embed "bcore_x_btcl_net.x";     }
 group :functor     { embed "bcore_x_btcl_functor.x"; }
 group :functor_f3  { embed "bcore_x_btcl_functor_f3.x"; }
+group :random      { embed "bcore_x_btcl_random.x"; }
+group :test        { embed "bcore_x_btcl_test.x"; }
 
 //----------------------------------------------------------------------------------------------------------------------
 
