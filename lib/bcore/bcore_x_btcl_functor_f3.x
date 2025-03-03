@@ -46,7 +46,20 @@ stamp :s
         {
             case @~: o.copy( src.cast( @* ) ); break;
             case ::functor_s~: o.from_functor( src.cast( ::functor_s* ) ); break;
-            default: GERR_fa( "Cannot convert from #<sc_t>.", bnameof( type ) );
+            default:
+            {
+                if( bcore_tp_is_numeric( type ) )
+                {
+                    m$* nop = x_btcl_operator_f3_const_nop_s!^;
+                    nop.val = sr_s_twc( sr_s!^, type, src ).to_f3();
+                    o.op_tree =< nop.fork();
+                }
+                else
+                {
+                    GERR_fa( "Cannot convert from #<sc_t>.", bnameof( type ) );
+                }
+            }
+            break;
         }
         = 0;
     }

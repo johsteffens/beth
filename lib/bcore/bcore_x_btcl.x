@@ -1375,7 +1375,7 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
             }
 
             tp_t wire_name = 0;
-            if( source.parse_bl( " #?'.' " ) )
+            if( source.parse_bl( " #?':' " ) )
             {
                 if( !:is_identifier( source ) ) = source.parse_error_fa( "Branch identifier expected.\n" );
                 wire_name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );

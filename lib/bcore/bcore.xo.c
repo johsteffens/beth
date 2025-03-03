@@ -1,4 +1,4 @@
-//  Last update: 2025-02-22T10:24:17Z
+//  Last update: 2025-03-02T17:15:47Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -73,7 +73,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0x4726062AC6D72025ull
+// HKEYOF_bcore 0x500F3CBE1F1DD691ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -5279,7 +5279,7 @@ er_t x_btcl_frame_s_eval( x_btcl_frame_s* o, s2_t exit_priority, x_source* sourc
             }
     
             tp_t wire_name = 0;
-            if( x_source_parse_bl(source," #?'.' " ) )
+            if( x_source_parse_bl(source," #?':' " ) )
             {
                 if( !x_btcl_is_identifier(source ) ) BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Branch identifier expected.\n" ))
                 wire_name = bcore_name_enroll(x_btcl_frame_s_nameof(o,x_btcl_frame_s_get_identifier(o,source, true ) ) );
@@ -7072,7 +7072,7 @@ er_t x_btcl_operator_bop_s_solve_exportable_a_b( const x_btcl_operator_bop_s* o,
             if( sr_s_type(a) == ((tp_t)(TYPEOF_x_btcl_net_node_s)) )
             {BLM_INIT_LEVEL(4);
                 x_btcl_net_node_s* node = ((x_btcl_net_node_s*)BLM_LEVEL_T_PUSH(4,x_btcl_net_node_s,x_btcl_net_node_s_clone(((x_btcl_net_node_s*)(a->o)))));
-                x_btcl_net_node_s_push_branch(node,0, false,&( o->sp), ((sr_s*)(b)) );
+                x_btcl_net_node_s_push_plain_branch(node,0, false,&( o->sp), ((sr_s*)(b)) );
                 sr_s_asc(result,((x_btcl_net_node_s*)bcore_fork(node)) );
                 BLM_RETURNV(er_t, 0)
             BLM_DOWN();}
@@ -7593,6 +7593,14 @@ BCORE_DEFINE_OBJECT_INST_P( x_btcl_operator_f3_const_nop_s )
     "func ^:check_consistency;"
 "}";
 
+x_btcl_operator_f3_const_nop_s* x_btcl_operator_f3_const_nop_s__( x_btcl_operator_f3_const_nop_s* o, f3_t val )
+{
+    // :2:1
+    
+    o->val = val;
+    return  o;
+}
+
 BCORE_DEFINE_OBJECT_INST_P( x_btcl_operator_f3_uop_s )
 "aware x_btcl_operator_f3"
 "{"
@@ -7869,87 +7877,124 @@ x_btcl_operator_f3* x_btcl_operator_f3_create_op( const sr_s* sr )
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_btcl_net; embeds: bcore_x_btcl_net.x
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_net_branch_s )
+BCORE_DEFINE_OBJECT_INST_P( x_btcl_net_plain_branch_s )
 "aware x_btcl_net"
 "{"
     "tp_t name;"
     "sr_s sr;"
-    "hidden x_source_point_s sp;"
+    "hidden x_source_point_s => sp;"
 "}";
 
-x_btcl_net_branch_s* x_btcl_net_branch_s_setup( x_btcl_net_branch_s* o, tp_t name, const x_source_point_s* sp, sr_s* sr )
+x_btcl_net_plain_branch_s* x_btcl_net_plain_branch_s_setup( x_btcl_net_plain_branch_s* o, tp_t name, const x_source_point_s* sp, sr_s* sr )
 {
     // bcore_x_btcl_net.x:33:5
     
     o->name = name;
-    x_source_point_s_copy(&(o->sp),sp );
+    x_source_point_s_copy(BCORE_PASS_CREATE(x_source_point_s,o->sp),sp );
     sr_s_clear(&(o->sr));
     if( sr ) sr_s_tsm(&(o->sr),sr_s_type(sr), ((x_inst*)bcore_fork(sr->o)) );
     return o;
 }
 
-x_btcl_net_branch_s* x_btcl_net_branch_s__( x_btcl_net_branch_s* o, tp_t name, const sr_s* sr )
+BCORE_DEFINE_OBJECT_INST_P( x_btcl_net_plain_branch_arr_s )
+"aware x_array"
+"{"
+    "x_btcl_net_plain_branch_s [];"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( x_btcl_net_socket_branch_s )
+"aware x_btcl_net"
+"{"
+    "tp_t name;"
+    "sr_s sr;"
+    "hidden x_source_point_s => sp;"
+"}";
+
+x_btcl_net_socket_branch_s* x_btcl_net_socket_branch_s_setup( x_btcl_net_socket_branch_s* o, tp_t name, const x_source_point_s* sp, sr_s* sr )
 {
-    // :2:1
+    // bcore_x_btcl_net.x:57:5
     
     o->name = name;
-    sr_s_copy(&(o->sr),sr );
-    return  o;
+    x_source_point_s_copy(BCORE_PASS_CREATE(x_source_point_s,o->sp),sp );
+    sr_s_clear(&(o->sr));
+    if( sr ) sr_s_tsm(&(o->sr),sr_s_type(sr), ((x_inst*)bcore_fork(sr->o)) );
+    return o;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_net_node_s )
+BCORE_DEFINE_OBJECT_INST_P( x_btcl_net_socket_branch_arr_s )
 "aware x_array"
+"{"
+    "x_btcl_net_socket_branch_s [];"
+"}";
+
+BCORE_DEFINE_OBJECT_INST_P( x_btcl_net_node_s )
+"aware x_btcl_net"
 "{"
     "tp_t type;"
     "tp_t name;"
-    "x_btcl_net_branch_s => [];"
-    "hidden x_source_point_s sp;"
+    "tp_t sub_name;"
+    "x_btcl_net_plain_branch_arr_s => plain_branch_arr;"
+    "x_btcl_net_socket_branch_arr_s => socket_branch_arr;"
+    "hidden x_source_point_s => sp;"
     "func x_btcl_operator:is_exportable_operand;"
 "}";
 
 x_btcl_net_node_s* x_btcl_net_node_s_setup( x_btcl_net_node_s* o, tp_t type, tp_t name, const x_source_point_s* sp )
 {
-    // bcore_x_btcl_net.x:57:5
+    // bcore_x_btcl_net.x:90:5
     
     o->type = type;
     o->name = name;
-    x_source_point_s_copy(&(o->sp),sp );
+    x_source_point_s_copy(BCORE_PASS_CREATE(x_source_point_s,o->sp),sp );
     return  o;
 }
 
 x_btcl_net_node_s* x_btcl_net_node_s_setup_wire( x_btcl_net_node_s* o, tp_t rack_name, tp_t wire_name, const x_source_point_s* sp )
 {
-    // bcore_x_btcl_net.x:65:5
+    // bcore_x_btcl_net.x:98:5
     
     x_btcl_net_node_s_setup(o,((tp_t)(TYPEOF_wire)), rack_name, sp );
-    if( wire_name ) x_btcl_net_node_s_push_branch(o,wire_name, true, sp, NULL );
+    o->sub_name = wire_name;
     return  o;
 }
 
-bl_t x_btcl_net_node_s_exists( x_btcl_net_node_s* o, tp_t branch_name )
+bl_t x_btcl_net_node_s_plain_branch_exists( x_btcl_net_node_s* o, tp_t branch_name )
 {
-    // bcore_x_btcl_net.x:72:5
+    // bcore_x_btcl_net.x:105:5
     
-    {const x_btcl_net_node_s* __a=o ;if(__a)for(sz_t __i=0;__i<__a->size;__i++){x_btcl_net_branch_s* e=__a->data[__i]; if( e->name == branch_name ) return  true;
+    if( !o->plain_branch_arr ) return  false;
+    {const x_btcl_net_plain_branch_arr_s* __a=o->plain_branch_arr ;if(__a)for(sz_t __i=0;__i<__a->size;__i++){x_btcl_net_plain_branch_s* e=&(__a->data[__i]); if( e->name == branch_name ) return  true;
     }}return  false;
 }
 
-x_btcl_net_branch_s* x_btcl_net_node_s_get_branch( x_btcl_net_node_s* o, tp_t name )
+bl_t x_btcl_net_node_s_socket_branch_exists( x_btcl_net_node_s* o, tp_t branch_name )
 {
-    // bcore_x_btcl_net.x:79:5
+    // bcore_x_btcl_net.x:112:5
     
-    {const x_btcl_net_node_s* __a=o ;if(__a)for(sz_t __i=0;__i<__a->size;__i++){x_btcl_net_branch_s* e=__a->data[__i]; if( e->name == name ) return  e;
-    }}return  NULL;
+    if( !o->socket_branch_arr ) return  false;
+    {const x_btcl_net_socket_branch_arr_s* __a=o->socket_branch_arr ;if(__a)for(sz_t __i=0;__i<__a->size;__i++){x_btcl_net_socket_branch_s* e=&(__a->data[__i]); if( e->name == branch_name ) return  true;
+    }}return  false;
 }
 
-x_btcl_net_node_s* x_btcl_net_node_s_push_branch( x_btcl_net_node_s* o, tp_t name, bl_t replace, const x_source_point_s* sp, sr_s* sr )
+x_btcl_net_node_s* x_btcl_net_node_s_push_plain_branch( x_btcl_net_node_s* o, tp_t name, bl_t replace, const x_source_point_s* sp, sr_s* sr )
 {
-    // bcore_x_btcl_net.x:86:5
+    // bcore_x_btcl_net.x:132:5
     
-    x_btcl_net_branch_s* branch = NULL;
-    if( replace ) branch = x_btcl_net_node_s_get_branch(o,name );
-    if( !branch ) branch = ((x_btcl_net_branch_s*)(x_array_push(((x_array*)(o)))));
-    x_btcl_net_branch_s_setup(branch,name, sp, sr );
+    x_btcl_net_plain_branch_s* branch = NULL;
+    if( replace ) branch = x_btcl_net_node_s_m_plain_branch_by_name(o,name );
+    if( !branch ) branch = ((x_btcl_net_plain_branch_s*)(x_array_push(((x_array*)(BCORE_PASS_CREATE(x_btcl_net_plain_branch_arr_s,o->plain_branch_arr))))));
+    x_btcl_net_plain_branch_s_setup(branch,name, sp, sr );
+    return  o;
+}
+
+x_btcl_net_node_s* x_btcl_net_node_s_push_socket_branch( x_btcl_net_node_s* o, tp_t name, bl_t replace, const x_source_point_s* sp, sr_s* sr )
+{
+    // bcore_x_btcl_net.x:142:5
+    
+    x_btcl_net_socket_branch_s* branch = NULL;
+    if( replace ) branch = x_btcl_net_node_s_m_socket_branch_by_name(o,name );
+    if( !branch ) branch = ((x_btcl_net_socket_branch_s*)(x_array_push(((x_array*)(BCORE_PASS_CREATE(x_btcl_net_socket_branch_arr_s,o->socket_branch_arr))))));
+    x_btcl_net_socket_branch_s_setup(branch,name, sp, sr );
     return  o;
 }
 
@@ -7960,7 +8005,7 @@ XOILA_DEFINE_SPECT( x_btcl, x_btcl_net )
 
 er_t x_btcl_net_eval_node_modifier( x_btcl_frame_s* frame, x_source* source, sr_s* node_sr )
 {
-    // bcore_x_btcl_net.x:99:1
+    // bcore_x_btcl_net.x:154:1
     BLM_INIT_LEVEL(0);
     (*(node_sr)) = sr_clone( (*(node_sr)) );
     x_btcl_net_node_s* node = ((x_btcl_net_node_s*)BLM_LEVEL_T_PUSH(0,x_btcl_net_node_s,((x_btcl_net_node_s*)bcore_fork(((x_btcl_net_node_s*)(node_sr->o))))));
@@ -7986,7 +8031,15 @@ er_t x_btcl_net_eval_node_modifier( x_btcl_frame_s* frame, x_source* source, sr_
                 sr_s_asm(branch_sr,((x_btcl_functor_s*)bcore_fork(functor)) );
             BLM_DOWN();}
     
-            x_btcl_net_node_s_push_branch(node,branch_name, true, sp, branch_sr );
+            x_btcl_net_node_s_push_plain_branch(node,branch_name, true, sp, branch_sr );
+        }
+        else if( x_source_parse_bl(source," #?':'") )
+        {
+            if( !x_btcl_is_identifier(source ) ) BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Identifier expected.\n" ))
+            tp_t branch_name = bcore_name_enroll(x_btcl_frame_s_nameof(frame,x_btcl_frame_s_get_identifier(frame,source, true ) ) );
+            BLM_TRY(x_source_parse_fa(source," =" ))
+            BLM_TRY(x_btcl_frame_s_eval(frame,0, source, branch_sr ))
+            x_btcl_net_node_s_push_socket_branch(node,branch_name, true, sp, branch_sr );
         }
         else
         {
@@ -8000,7 +8053,7 @@ er_t x_btcl_net_eval_node_modifier( x_btcl_frame_s* frame, x_source* source, sr_
                 sr_s_asm(branch_sr,((x_btcl_functor_s*)bcore_fork(functor)) );
             BLM_DOWN();}
     
-            x_btcl_net_node_s_push_branch(node,0, false, sp, branch_sr );
+            x_btcl_net_node_s_push_plain_branch(node,0, false, sp, branch_sr );
         }
     
         do_loop = false;
@@ -8015,7 +8068,7 @@ er_t x_btcl_net_eval_node_modifier( x_btcl_frame_s* frame, x_source* source, sr_
 
 er_t x_btcl_net_eval_node_member( x_btcl_frame_s* frame, x_source* source, sr_s* sr )
 {
-    // bcore_x_btcl_net.x:154:1
+    // bcore_x_btcl_net.x:217:1
     BLM_INIT_LEVEL(0);
     x_btcl_net_node_s* node = ((x_btcl_net_node_s*)BLM_LEVEL_T_PUSH(0,x_btcl_net_node_s,((x_btcl_net_node_s*)bcore_fork(((x_btcl_net_node_s*)(sr->o))))));
     
@@ -8023,7 +8076,7 @@ er_t x_btcl_net_eval_node_member( x_btcl_frame_s* frame, x_source* source, sr_s*
     if( !x_btcl_is_identifier(source ) ) BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Member name '<literal>' expected." ))
     
     tp_t name = x_btcl_frame_s_get_identifier(frame,source, true );
-    x_btcl_net_branch_s* branch = x_btcl_net_node_s_get_branch(node,name );
+    x_btcl_net_plain_branch_s* branch = x_btcl_net_node_s_m_plain_branch_by_name(node,name );
     if( !branch ) BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Branch name '#<sc_t>' not found.", x_btcl_frame_s_nameof(frame,name ) ))
     
     if( sr_s_is_strong(sr) ) x_btcl_frame_s_preserve_and_set_weak(frame,sr );
@@ -8405,21 +8458,34 @@ er_t x_btcl_functor_f3_s_copy_typed( x_btcl_functor_f3_s* o, tp_t type, vc_t src
     {
         case ((tp_t)(TYPEOF_x_btcl_functor_f3_s)): x_btcl_functor_f3_s_copy(o,((const x_btcl_functor_f3_s*)(src)) ); break;
         case ((tp_t)(TYPEOF_x_btcl_functor_s)): BLM_TRY(x_btcl_functor_f3_s_from_functor(o,((const x_btcl_functor_s*)(src)) )) break;
-        default: BLM_TRY(GERR_fa("Cannot convert from #<sc_t>.", bnameof( type ) ))
+        default:
+        {
+            if( bcore_tp_is_numeric( type ) )
+            {BLM_INIT_LEVEL(4);
+                x_btcl_operator_f3_const_nop_s* nop = ((x_btcl_operator_f3_const_nop_s*)BLM_LEVEL_T_PUSH(4,x_btcl_operator_f3_const_nop_s,x_btcl_operator_f3_const_nop_s_create()));
+                nop->val = sr_s_to_f3(sr_s_twc( ((sr_s*)BLM_LEVEL_T_PUSH(4,sr_s,sr_s_create())),type, src ));
+                x_btcl_operator_f3_a_attach( &(o->op_tree ), (x_btcl_operator_f3*)( ((x_btcl_operator_f3_const_nop_s*)bcore_fork(nop))));
+            BLM_DOWN();}
+            else
+            {
+                BLM_TRY(GERR_fa("Cannot convert from #<sc_t>.", bnameof( type ) ))
+            }
+        }
+        break;
     }
     return  0;
 }
 
 void x_btcl_functor_f3_s_mutated( x_btcl_functor_f3_s* o )
 {
-    // bcore_x_btcl_functor_f3.x:55:5
+    // bcore_x_btcl_functor_f3.x:68:5
     
     BLM_TRY_EXIT(x_btcl_functor_f3_s_setup_tree(o))
 }
 
 er_t x_btcl_functor_f3_s_setup_tree( x_btcl_functor_f3_s* o )
 {
-    // bcore_x_btcl_functor_f3.x:60:5
+    // bcore_x_btcl_functor_f3.x:73:5
     
     if( o->op_tree )
     {
@@ -8432,7 +8498,7 @@ er_t x_btcl_functor_f3_s_setup_tree( x_btcl_functor_f3_s* o )
 
 er_t x_btcl_functor_f3_s_from_functor( x_btcl_functor_f3_s* o, const x_btcl_functor_s* functor )
 {
-    // bcore_x_btcl_functor_f3.x:71:5
+    // bcore_x_btcl_functor_f3.x:84:5
     
     sz_t args = x_btcl_functor_s_args(functor);
     x_array_set_size(((x_array*)(&(o->arg_arr))),args );
@@ -8445,7 +8511,7 @@ er_t x_btcl_functor_f3_s_from_functor( x_btcl_functor_f3_s* o, const x_btcl_func
 
 er_t x_btcl_functor_f3_s_setup( x_btcl_functor_f3_s* o, const x_source_point_s* sp, x_btcl_function_s* function, x_btcl_frame_s* lexical_frame )
 {
-    // bcore_x_btcl_functor_f3.x:82:5
+    // bcore_x_btcl_functor_f3.x:95:5
     BLM_INIT_LEVEL(0);
     x_btcl_functor_s* functor = ((x_btcl_functor_s*)BLM_LEVEL_T_PUSH(0,x_btcl_functor_s,x_btcl_functor_s_create()));
     BLM_TRY(x_btcl_functor_s_setup(functor,sp, function, lexical_frame ))
@@ -8455,7 +8521,7 @@ er_t x_btcl_functor_f3_s_setup( x_btcl_functor_f3_s* o, const x_source_point_s* 
 
 tp_t x_btcl_functor_f3_s_arg_name( const x_btcl_functor_f3_s* o, sz_t index )
 {
-    // bcore_x_btcl_functor_f3.x:92:5
+    // bcore_x_btcl_functor_f3.x:105:5
     
     if( index < 0 || index >= x_btcl_functor_f3_s_args(o) ) ERR_fa( "index (#<sz_t>) is out of range [0,#<sz_t>]", index, x_btcl_functor_f3_s_args(o) - 1 );
     return  o->arg_arr.data[ index ].name;
@@ -8463,7 +8529,7 @@ tp_t x_btcl_functor_f3_s_arg_name( const x_btcl_functor_f3_s* o, sz_t index )
 
 sz_t x_btcl_functor_f3_s_arg_index( const x_btcl_functor_f3_s* o, tp_t name )
 {
-    // bcore_x_btcl_functor_f3.x:99:5
+    // bcore_x_btcl_functor_f3.x:112:5
     
     for(sz_t i = 0; i < o->arg_arr.size; i++ ) if( x_btcl_functor_f3_s_arg_name(o,i ) == name ) return  i;
     return  -1;
@@ -8471,7 +8537,7 @@ sz_t x_btcl_functor_f3_s_arg_index( const x_btcl_functor_f3_s* o, tp_t name )
 
 const x_btcl_functor_f3_s* x_btcl_functor_f3_s_set_arg_f3( const x_btcl_functor_f3_s* o, sz_t index, f3_t v )
 {
-    // bcore_x_btcl_functor_f3.x:107:5
+    // bcore_x_btcl_functor_f3.x:120:5
     
     if( !o->op_tree ) ERR_fa( "o.op_tree == NULL. Functor has not been setup." );
     if( index < 0 || index >= x_btcl_functor_f3_s_args(o) ) ERR_fa( "index (#<sz_t>) is out of range [0,#<sz_t>]", index, x_btcl_functor_f3_s_args(o) - 1 );
@@ -8481,7 +8547,7 @@ const x_btcl_functor_f3_s* x_btcl_functor_f3_s_set_arg_f3( const x_btcl_functor_
 
 f3_t* x_btcl_functor_f3_s_get_arg_f3_ptr( const x_btcl_functor_f3_s* o, sz_t index )
 {
-    // bcore_x_btcl_functor_f3.x:114:5
+    // bcore_x_btcl_functor_f3.x:127:5
     
     if( !o->op_tree ) ERR_fa( "o.op_tree == NULL. Functor has not been setup." );
     if( index < 0 || index >= x_btcl_functor_f3_s_args(o) ) ERR_fa( "index (#<sz_t>) is out of range [0,#<sz_t>]", index, x_btcl_functor_f3_s_args(o) - 1 );
@@ -8490,7 +8556,7 @@ f3_t* x_btcl_functor_f3_s_get_arg_f3_ptr( const x_btcl_functor_f3_s* o, sz_t ind
 
 const x_btcl_functor_f3_s* x_btcl_functor_f3_s_set_arg_f3_by_name( const x_btcl_functor_f3_s* o, tp_t name, f3_t v )
 {
-    // bcore_x_btcl_functor_f3.x:122:5
+    // bcore_x_btcl_functor_f3.x:135:5
     
     sz_t index = x_btcl_functor_f3_s_arg_index(o,name );
     if( index >= 0 ) x_btcl_functor_f3_s_set_arg_f3(o,index, v );
@@ -8499,7 +8565,7 @@ const x_btcl_functor_f3_s* x_btcl_functor_f3_s_set_arg_f3_by_name( const x_btcl_
 
 f3_t* x_btcl_functor_f3_s_get_arg_f3_ptr_by_name( const x_btcl_functor_f3_s* o, tp_t name )
 {
-    // bcore_x_btcl_functor_f3.x:129:5
+    // bcore_x_btcl_functor_f3.x:142:5
     
     sz_t index = x_btcl_functor_f3_s_arg_index(o,name );
     if( index >= 0 ) return  x_btcl_functor_f3_s_get_arg_f3_ptr(o,index );
@@ -8508,7 +8574,7 @@ f3_t* x_btcl_functor_f3_s_get_arg_f3_ptr_by_name( const x_btcl_functor_f3_s* o, 
 
 sz_t x_btcl_functor_f3_s_btcl_function_arity( const x_btcl_functor_f3_s* o, tp_t name )
 {
-    // bcore_x_btcl_functor_f3.x:139:5
+    // bcore_x_btcl_functor_f3.x:152:5
     
     switch( name )
     {
@@ -8520,7 +8586,7 @@ sz_t x_btcl_functor_f3_s_btcl_function_arity( const x_btcl_functor_f3_s* o, tp_t
 
 er_t x_btcl_functor_f3_s_btcl_function( const x_btcl_functor_f3_s* o, tp_t name, const x_source_point_s* sp, x_btcl_frame_s* lexical_frame, const bcore_arr_sr_s* args, sr_s* result )
 {
-    // bcore_x_btcl_functor_f3.x:149:5
+    // bcore_x_btcl_functor_f3.x:162:5
     
     switch( name )
     {
@@ -8538,7 +8604,7 @@ er_t x_btcl_functor_f3_s_btcl_function( const x_btcl_functor_f3_s* o, tp_t name,
 
 f3_t x_btcl_functor_f3_s_nullary_f3( const x_btcl_functor_f3_s* o )
 {
-    // bcore_x_btcl_functor_f3.x:165:5
+    // bcore_x_btcl_functor_f3.x:178:5
     
     ASSERT( x_btcl_functor_f3_s_args(o) == 0 );
     return  x_btcl_functor_f3_s_call(o);
@@ -8546,7 +8612,7 @@ f3_t x_btcl_functor_f3_s_nullary_f3( const x_btcl_functor_f3_s* o )
 
 f3_t x_btcl_functor_f3_s_unary_f3( const x_btcl_functor_f3_s* o, f3_t x )
 {
-    // bcore_x_btcl_functor_f3.x:171:5
+    // bcore_x_btcl_functor_f3.x:184:5
     
     ASSERT( x_btcl_functor_f3_s_args(o) == 1 );
     x_btcl_functor_f3_s_set_arg_f3(o,0, x );
@@ -8555,7 +8621,7 @@ f3_t x_btcl_functor_f3_s_unary_f3( const x_btcl_functor_f3_s* o, f3_t x )
 
 f3_t x_btcl_functor_f3_s_binary_f3( const x_btcl_functor_f3_s* o, f3_t x, f3_t y )
 {
-    // bcore_x_btcl_functor_f3.x:178:5
+    // bcore_x_btcl_functor_f3.x:191:5
     
     ASSERT( x_btcl_functor_f3_s_args(o) == 2 );
     x_btcl_functor_f3_s_set_arg_f3(o,0, x );
@@ -8565,7 +8631,7 @@ f3_t x_btcl_functor_f3_s_binary_f3( const x_btcl_functor_f3_s* o, f3_t x, f3_t y
 
 f3_t x_btcl_functor_f3_s_ternary_f3( const x_btcl_functor_f3_s* o, f3_t x, f3_t y, f3_t z )
 {
-    // bcore_x_btcl_functor_f3.x:186:5
+    // bcore_x_btcl_functor_f3.x:199:5
     
     ASSERT( x_btcl_functor_f3_s_args(o) == 3 );
     x_btcl_functor_f3_s_set_arg_f3(o,0, x );
@@ -10311,7 +10377,10 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             x_btcl_operator_f3_group_signal_init1();
 
             // group: x_btcl_net
-            BCORE_REGISTER_OBJECT( x_btcl_net_branch_s );
+            BCORE_REGISTER_OBJECT( x_btcl_net_plain_branch_s );
+            BCORE_REGISTER_OBJECT( x_btcl_net_plain_branch_arr_s );
+            BCORE_REGISTER_OBJECT( x_btcl_net_socket_branch_s );
+            BCORE_REGISTER_OBJECT( x_btcl_net_socket_branch_arr_s );
             BCORE_REGISTER_NAME( rack );
             BCORE_REGISTER_NAME( wire );
             BCORE_REGISTER_FFUNC( x_btcl_operator_is_exportable_operand, x_btcl_net_node_s_is_exportable_operand );
@@ -10453,5 +10522,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0xB6EEF13851DE7FB5
-// XOICO_FILE_SIGNATURE 0x4FB9D723321DDAE6
+// XOICO_BODY_SIGNATURE 0xD0CED8AFAD9B0CD5
+// XOICO_FILE_SIGNATURE 0x1235E1D50B049E76

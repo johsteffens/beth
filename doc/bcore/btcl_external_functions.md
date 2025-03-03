@@ -66,9 +66,9 @@ obj = <my_stamp_s/>( .additive = 10 );
 ```
 
 
-# Parsing External Functions 
+# Parsing-Function 
 
-Parsing function receive full parsing control of a source code section. The parsing function takes responsibility for parsing the designated code section and also recognizing the proper end of that section and thus returning control to the btcl parser at the correct place. In that way the parsing function can impose an alternative syntax onto the btcl source code.
+The parsing function receives full parsing control of a source code section. it takes responsibility for parsing the designated code section and also recognizing the proper end of that section and thus returning control to the btcl parser at the correct place. In that way, the parsing function can impose an alternative syntax onto the btcl source code.
 
 ## Features
 

@@ -1,4 +1,4 @@
-//  Last update: 2025-02-16T17:14:25Z
+//  Last update: 2025-03-02T17:15:08Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -3361,6 +3361,7 @@
   }; \
   static inline f3_t x_btcl_operator_f3_const_nop_s_get( const x_btcl_operator_f3_const_nop_s* o ); \
   static inline er_t x_btcl_operator_f3_const_nop_s_check_consistency( const x_btcl_operator_f3_const_nop_s* o ); \
+  x_btcl_operator_f3_const_nop_s* x_btcl_operator_f3_const_nop_s__( x_btcl_operator_f3_const_nop_s* o, f3_t val ); \
   static inline f3_t x_btcl_operator_f3_const_nop_s_get( const x_btcl_operator_f3_const_nop_s* o ){return  o->val;} \
   static inline er_t x_btcl_operator_f3_const_nop_s_check_consistency( const x_btcl_operator_f3_const_nop_s* o ){ return 0;}
 #define TYPEOF_x_btcl_operator_f3_uop_s 0xF7C76D80D69C1EC1ull
@@ -3466,17 +3467,40 @@
 
 #define TYPEOF_x_btcl_net 0xDAC6EB4F342B58EDull
 #define TYPEOF_x_btcl_net_spect_s 0x9864167133348429ull
-#define TYPEOF_x_btcl_net_branch_s 0x8BB79C367EEE8FB8ull
-#define BETH_EXPAND_ITEM_x_btcl_net_branch_s \
-  BCORE_DECLARE_OBJECT( x_btcl_net_branch_s ) \
+#define TYPEOF_x_btcl_net_plain_branch_s 0xDC4BA7A83D758691ull
+#define BETH_EXPAND_ITEM_x_btcl_net_plain_branch_s \
+  BCORE_DECLARE_OBJECT( x_btcl_net_plain_branch_s ) \
   { \
       aware_t _; \
       tp_t name; \
       sr_s sr; \
-      x_source_point_s sp; \
+      x_source_point_s* sp; \
   }; \
-  x_btcl_net_branch_s* x_btcl_net_branch_s_setup( x_btcl_net_branch_s* o, tp_t name, const x_source_point_s* sp, sr_s* sr ); \
-  x_btcl_net_branch_s* x_btcl_net_branch_s__( x_btcl_net_branch_s* o, tp_t name, const sr_s* sr );
+  x_btcl_net_plain_branch_s* x_btcl_net_plain_branch_s_setup( x_btcl_net_plain_branch_s* o, tp_t name, const x_source_point_s* sp, sr_s* sr );
+#define TYPEOF_x_btcl_net_plain_branch_arr_s 0xECBD4E31966752ADull
+#define BETH_EXPAND_ITEM_x_btcl_net_plain_branch_arr_s \
+  BCORE_DECLARE_OBJECT( x_btcl_net_plain_branch_arr_s ) \
+  { \
+      aware_t _; \
+      BCORE_ARRAY_DYN_SOLID_STATIC_S( x_btcl_net_plain_branch_s, ); \
+  };
+#define TYPEOF_x_btcl_net_socket_branch_s 0xEE7844BE9FDE5912ull
+#define BETH_EXPAND_ITEM_x_btcl_net_socket_branch_s \
+  BCORE_DECLARE_OBJECT( x_btcl_net_socket_branch_s ) \
+  { \
+      aware_t _; \
+      tp_t name; \
+      sr_s sr; \
+      x_source_point_s* sp; \
+  }; \
+  x_btcl_net_socket_branch_s* x_btcl_net_socket_branch_s_setup( x_btcl_net_socket_branch_s* o, tp_t name, const x_source_point_s* sp, sr_s* sr );
+#define TYPEOF_x_btcl_net_socket_branch_arr_s 0xB82B80B892572712ull
+#define BETH_EXPAND_ITEM_x_btcl_net_socket_branch_arr_s \
+  BCORE_DECLARE_OBJECT( x_btcl_net_socket_branch_arr_s ) \
+  { \
+      aware_t _; \
+      BCORE_ARRAY_DYN_SOLID_STATIC_S( x_btcl_net_socket_branch_s, ); \
+  };
 #define TYPEOF_rack 0x6DE0001FD211EFD2ull
 #define TYPEOF_wire 0xA67EEDF655B14178ull
 #define TYPEOF_x_btcl_net_node_s 0xE6B74DF3DDB9D51Cull
@@ -3486,19 +3510,45 @@
       aware_t _; \
       tp_t type; \
       tp_t name; \
-      BCORE_ARRAY_DYN_LINK_STATIC_S( x_btcl_net_branch_s, ); \
-      x_source_point_s sp; \
+      tp_t sub_name; \
+      x_btcl_net_plain_branch_arr_s* plain_branch_arr; \
+      x_btcl_net_socket_branch_arr_s* socket_branch_arr; \
+      x_source_point_s* sp; \
   }; \
   static inline bl_t x_btcl_net_node_s_is_exportable_operand( const x_btcl_net_node_s* o ); \
   x_btcl_net_node_s* x_btcl_net_node_s_setup( x_btcl_net_node_s* o, tp_t type, tp_t name, const x_source_point_s* sp ); \
   x_btcl_net_node_s* x_btcl_net_node_s_setup_wire( x_btcl_net_node_s* o, tp_t rack_name, tp_t wire_name, const x_source_point_s* sp ); \
-  bl_t x_btcl_net_node_s_exists( x_btcl_net_node_s* o, tp_t branch_name ); \
-  x_btcl_net_branch_s* x_btcl_net_node_s_get_branch( x_btcl_net_node_s* o, tp_t name ); \
-  x_btcl_net_node_s* x_btcl_net_node_s_push_branch( x_btcl_net_node_s* o, tp_t name, bl_t replace, const x_source_point_s* sp, sr_s* sr ); \
-  static inline bl_t x_btcl_net_node_s_is_exportable_operand( const x_btcl_net_node_s* o ){return  true;}
+  bl_t x_btcl_net_node_s_plain_branch_exists( x_btcl_net_node_s* o, tp_t branch_name ); \
+  bl_t x_btcl_net_node_s_socket_branch_exists( x_btcl_net_node_s* o, tp_t branch_name ); \
+  static inline sz_t x_btcl_net_node_s_plain_branches( const x_btcl_net_node_s* o ); \
+  static inline x_btcl_net_plain_branch_s* x_btcl_net_node_s_m_plain_branch_by_name( x_btcl_net_node_s* o, tp_t name ); \
+  static inline const x_btcl_net_plain_branch_s* x_btcl_net_node_s_c_plain_branch_by_name( const x_btcl_net_node_s* o, tp_t name ); \
+  static inline x_btcl_net_plain_branch_s* x_btcl_net_node_s_m_plain_branch_by_index( x_btcl_net_node_s* o, sz_t index ); \
+  static inline const x_btcl_net_plain_branch_s* x_btcl_net_node_s_c_plain_branch_by_index( const x_btcl_net_node_s* o, sz_t index ); \
+  static inline sz_t x_btcl_net_node_s_socket_branches( const x_btcl_net_node_s* o ); \
+  static inline x_btcl_net_socket_branch_s* x_btcl_net_node_s_m_socket_branch_by_name( x_btcl_net_node_s* o, tp_t name ); \
+  static inline const x_btcl_net_socket_branch_s* x_btcl_net_node_s_c_socket_branch_by_name( const x_btcl_net_node_s* o, tp_t name ); \
+  static inline x_btcl_net_socket_branch_s* x_btcl_net_node_s_m_socket_branch_by_index( x_btcl_net_node_s* o, sz_t index ); \
+  static inline const x_btcl_net_socket_branch_s* x_btcl_net_node_s_c_socket_branch_by_index( const x_btcl_net_node_s* o, sz_t index ); \
+  x_btcl_net_node_s* x_btcl_net_node_s_push_plain_branch( x_btcl_net_node_s* o, tp_t name, bl_t replace, const x_source_point_s* sp, sr_s* sr ); \
+  x_btcl_net_node_s* x_btcl_net_node_s_push_socket_branch( x_btcl_net_node_s* o, tp_t name, bl_t replace, const x_source_point_s* sp, sr_s* sr ); \
+  static inline bl_t x_btcl_net_node_s_is_exportable_operand( const x_btcl_net_node_s* o ){return  true;} \
+  static inline sz_t x_btcl_net_node_s_plain_branches( const x_btcl_net_node_s* o ){return  o->plain_branch_arr ? o->plain_branch_arr->size : 0;} \
+  static inline x_btcl_net_plain_branch_s* x_btcl_net_node_s_m_plain_branch_by_name( x_btcl_net_node_s* o, tp_t name ){ {const x_btcl_net_plain_branch_arr_s* __a=o->plain_branch_arr ;if(__a)for(sz_t __i=0;__i<__a->size;__i++){x_btcl_net_plain_branch_s* e=&(__a->data[__i]); if( e->name == name ) return  e; }}return  NULL;} \
+  static inline const x_btcl_net_plain_branch_s* x_btcl_net_node_s_c_plain_branch_by_name( const x_btcl_net_node_s* o, tp_t name ){ {const x_btcl_net_plain_branch_arr_s* __a=o->plain_branch_arr ;if(__a)for(sz_t __i=0;__i<__a->size;__i++){const x_btcl_net_plain_branch_s* e=&(__a->data[__i]); if( e->name == name ) return  e; }}return  NULL;} \
+  static inline x_btcl_net_plain_branch_s* x_btcl_net_node_s_m_plain_branch_by_index( x_btcl_net_node_s* o, sz_t index ){return &( o->plain_branch_arr->data[ index ]);} \
+  static inline const x_btcl_net_plain_branch_s* x_btcl_net_node_s_c_plain_branch_by_index( const x_btcl_net_node_s* o, sz_t index ){return &( o->plain_branch_arr->data[ index ]);} \
+  static inline sz_t x_btcl_net_node_s_socket_branches( const x_btcl_net_node_s* o ){return  o->socket_branch_arr ? o->socket_branch_arr->size : 0;} \
+  static inline x_btcl_net_socket_branch_s* x_btcl_net_node_s_m_socket_branch_by_name( x_btcl_net_node_s* o, tp_t name ){ {const x_btcl_net_socket_branch_arr_s* __a=o->socket_branch_arr ;if(__a)for(sz_t __i=0;__i<__a->size;__i++){x_btcl_net_socket_branch_s* e=&(__a->data[__i]); if( e->name == name ) return  e; }}return  NULL;} \
+  static inline const x_btcl_net_socket_branch_s* x_btcl_net_node_s_c_socket_branch_by_name( const x_btcl_net_node_s* o, tp_t name ){ {const x_btcl_net_socket_branch_arr_s* __a=o->socket_branch_arr ;if(__a)for(sz_t __i=0;__i<__a->size;__i++){const x_btcl_net_socket_branch_s* e=&(__a->data[__i]); if( e->name == name ) return  e; }}return  NULL;} \
+  static inline x_btcl_net_socket_branch_s* x_btcl_net_node_s_m_socket_branch_by_index( x_btcl_net_node_s* o, sz_t index ){return &( o->socket_branch_arr->data[ index ]);} \
+  static inline const x_btcl_net_socket_branch_s* x_btcl_net_node_s_c_socket_branch_by_index( const x_btcl_net_node_s* o, sz_t index ){return &( o->socket_branch_arr->data[ index ]);}
 #define BETH_EXPAND_GROUP_x_btcl_net \
   BCORE_FORWARD_OBJECT( x_btcl_net ); \
-  BCORE_FORWARD_OBJECT( x_btcl_net_branch_s ); \
+  BCORE_FORWARD_OBJECT( x_btcl_net_plain_branch_s ); \
+  BCORE_FORWARD_OBJECT( x_btcl_net_plain_branch_arr_s ); \
+  BCORE_FORWARD_OBJECT( x_btcl_net_socket_branch_s ); \
+  BCORE_FORWARD_OBJECT( x_btcl_net_socket_branch_arr_s ); \
   BCORE_FORWARD_OBJECT( x_btcl_net_node_s ); \
   er_t x_btcl_net_eval_node_modifier( x_btcl_frame_s* frame, x_source* source, sr_s* node_sr ); \
   er_t x_btcl_net_eval_node_member( x_btcl_frame_s* frame, x_source* source, sr_s* sr ); \
@@ -3507,7 +3557,10 @@
       bcore_spect_header_s header; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_btcl_net ) \
-  BETH_EXPAND_ITEM_x_btcl_net_branch_s \
+  BETH_EXPAND_ITEM_x_btcl_net_plain_branch_s \
+  BETH_EXPAND_ITEM_x_btcl_net_plain_branch_arr_s \
+  BETH_EXPAND_ITEM_x_btcl_net_socket_branch_s \
+  BETH_EXPAND_ITEM_x_btcl_net_socket_branch_arr_s \
   BETH_EXPAND_ITEM_x_btcl_net_node_s
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -4024,5 +4077,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x526A121E1DEBAD1F
-// XOICO_FILE_SIGNATURE 0x0EC471192934904D
+// XOICO_BODY_SIGNATURE 0xC6471F9478A2E1AD
+// XOICO_FILE_SIGNATURE 0x0D063137CAAF3A9B

@@ -14,7 +14,7 @@ The principal structure of the graph is a tree consisting of nodes and branches.
 A generic tree-node carries a name and maintains a list of named branches. Names can also be empty, in which case the branch is considered anonymous. 
 
 ### Wires
-Additional connections between nodes can be made though wires. Wires can represent edges outside a valid tree structure, thus extending the tree to a general purpose graph.
+Additional connections between nodes can be made though wires. Wires can represent arbitrary connections, thus extending the tree to a general purpose graph.
 
 ### Leafs
 A leaf is a node with no further branches. Any beth-object can be a leaf node. The external builder may impose additional restrictions.
@@ -127,7 +127,7 @@ mynode3 = mynode1 + mynode2;
 ```
 
 ### Wiring
-Rack and wires are named by the rack name. In case of wiring to a named branch, a wire uses a delimiter ```.<name>``` to specify the branch name.
+Rack and wires are named by the rack name. In case of wiring to a named branch, a wire uses a delimiter ```:<name>``` to specify the socket name.
 
 **Example: (wiring to root rack-socket)**
 
@@ -139,9 +139,9 @@ simple_loop = @:rk( @sine( .frq = 1000 ) - @~rk );
 
 ```C
 lfo = @sine( .frq = 2 );
-vibrato = @:rk( :lfo = lfo, @sine( .frq = 1000 + 100 * @~rk.lfo ) );
+vibrato = @:rk( :lfo = lfo, @sine( .frq = 1000 + 100 * @~rk:lfo ) );
 ```
 ### Functions
 When a function is passed as parameter, it is converted into a functor.
 
-<sub>&copy; 2024 Johannes B. Steffens</sub>
+<sub>&copy; 2024 (and onwards) Johannes B. Steffens</sub>

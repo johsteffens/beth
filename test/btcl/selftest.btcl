@@ -233,10 +233,9 @@ ASSERT( fo2.call( 2, 3 ) == -1 );
 /// network
 
 net_node = @sine( .frq = 1000 );
-net_rack = @:xyz( .lfo = net_node( .frq = 234 )( .frq2 = 123 ), 456, 889 );
-net_wire = @~xyz.lfo;
+net_rack = @:xyz( :lfo = net_node( .frq = 234 )( .frq2 = 123 ), 456, 889 );
+net_wire = @~xyz:lfo;
 ASSERT( net_node.frq == 1000 );
-ASSERT( net_rack.lfo.frq == 234 );
 net_rack << net_node;
 
 // ---------------------------------------------------------------------------------------------------------------------

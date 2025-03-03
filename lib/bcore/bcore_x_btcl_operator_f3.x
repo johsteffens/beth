@@ -104,7 +104,7 @@ stamp :arg_nop_s
 
 stamp :const_nop_s
 {
-    f3_t val;
+    $ f3_t val;
     func :.get = o.val;
     func :.check_consistency { =0; }
 }

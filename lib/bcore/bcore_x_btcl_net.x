@@ -22,21 +22,51 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp :branch_s
+stamp :plain_branch_s
 {
-    $ tp_t name;
-    $ sr_s sr;
-    hidden x_source_point_s sp;
+    tp_t name;
+    sr_s sr;
+    hidden x_source_point_s => sp;
 
     /// forking sr (sr can be NULL); reentrant
     func o setup( m@* o, tp_t name, x_source_point_s* sp, m sr_s* sr )
     {
         o.name = name;
-        o.sp.copy( sp );
+        o.sp!.copy( sp );
         o.sr.clear();
         if( sr ) o.sr.tsm( sr.type(), sr.o.fork() );
     }
 }
+
+stamp :plain_branch_arr_s x_array { :plain_branch_s []; }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+stamp :socket_branch_s
+{
+    tp_t name;
+    sr_s sr;
+    hidden x_source_point_s => sp;
+
+    /// forking sr (sr can be NULL); reentrant
+    func o setup( m@* o, tp_t name, x_source_point_s* sp, m sr_s* sr )
+    {
+        o.name = name;
+        o.sp!.copy( sp );
+        o.sr.clear();
+        if( sr ) o.sr.tsm( sr.type(), sr.o.fork() );
+    }
+}
+
+stamp :socket_branch_arr_s x_array { :socket_branch_s []; }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -44,12 +74,15 @@ stamp :branch_s
 name rack;
 name wire;
 
-stamp :node_s x_array
+stamp :node_s
 {
     tp_t type; // node type 0 for generic node
     tp_t name;
-    :branch_s => [];
-    hidden x_source_point_s sp;
+    tp_t sub_name; // type specific (socket name in case of wire)
+
+    :plain_branch_arr_s  => plain_branch_arr;
+    :socket_branch_arr_s => socket_branch_arr;
+    hidden x_source_point_s => sp;
 
     func ::operator.is_exportable_operand = true;
 
@@ -57,40 +90,62 @@ stamp :node_s x_array
     {
         o.type = type;
         o.name = name;
-        o.sp.copy( sp );
+        o.sp!.copy( sp );
         = o;
     }
 
     func o setup_wire( m@* o, tp_t rack_name, tp_t wire_name, x_source_point_s* sp )
     {
         o.setup( wire~, rack_name, sp );
-        if( wire_name ) o.push_branch( wire_name, true, sp, NULL );
+        o.sub_name = wire_name;
         = o;
     }
 
-    func bl_t exists( m@* o, tp_t branch_name )
+    func bl_t plain_branch_exists( m@* o, tp_t branch_name )
     {
-        foreach( m$* e in o ) if( e.name == branch_name ) = true;
+        if( !o.plain_branch_arr ) = false;
+        foreach( m$* e in o.plain_branch_arr ) if( e.name == branch_name ) = true;
         = false;
     }
 
-    /// returns NULL if not existing
-    func m :branch_s* get_branch( m@* o, tp_t name )
+    func bl_t socket_branch_exists( m@* o, tp_t branch_name )
     {
-        foreach( m$* e in o ) if( e.name == name ) = e;
-        = NULL;
+        if( !o.socket_branch_arr ) = false;
+        foreach( m$* e in o.socket_branch_arr ) if( e.name == branch_name ) = true;
+        = false;
     }
 
+    func sz_t plain_branches( @* o ) = o.plain_branch_arr ? o.plain_branch_arr.size : 0;
+    func m :plain_branch_s* m_plain_branch_by_name( m@* o, tp_t name ) { foreach( m$* e in o.plain_branch_arr ) if( e.name == name ) = e; = NULL; }
+    func c :plain_branch_s* c_plain_branch_by_name( c@* o, tp_t name ) { foreach( c$* e in o.plain_branch_arr ) if( e.name == name ) = e; = NULL; }
+    func m :plain_branch_s* m_plain_branch_by_index( m@* o, sz_t index ) = o.plain_branch_arr.[ index ];
+    func c :plain_branch_s* c_plain_branch_by_index( c@* o, sz_t index ) = o.plain_branch_arr.[ index ];
+
+    func sz_t socket_branches( @* o ) = o.socket_branch_arr ? o.socket_branch_arr.size : 0;
+    func m :socket_branch_s* m_socket_branch_by_name( m@* o, tp_t name ) { foreach( m$* e in o.socket_branch_arr ) if( e.name == name ) = e; = NULL; }
+    func c :socket_branch_s* c_socket_branch_by_name( c@* o, tp_t name ) { foreach( c$* e in o.socket_branch_arr ) if( e.name == name ) = e; = NULL; }
+    func m :socket_branch_s* m_socket_branch_by_index( m@* o, sz_t index ) = o.socket_branch_arr.[ index ];
+    func c :socket_branch_s* c_socket_branch_by_index( c@* o, sz_t index ) = o.socket_branch_arr.[ index ];
+
     /// pushes a branch by forking sr (sr can be NULL); replace: if name exists, the branch is replaced
-    func o push_branch( m@* o, tp_t name, bl_t replace, x_source_point_s* sp, m sr_s* sr )
+    func o push_plain_branch( m@* o, tp_t name, bl_t replace, x_source_point_s* sp, m sr_s* sr )
     {
-        m :branch_s* branch = NULL;
-        if( replace ) branch = o.get_branch( name );
-        if( !branch ) branch = o.push();
+        m :plain_branch_s* branch = NULL;
+        if( replace ) branch = o.m_plain_branch_by_name( name );
+        if( !branch ) branch = o.plain_branch_arr!.push();
         branch.setup( name, sp, sr );
         = o;
     }
 
+    /// pushes a branch by forking sr (sr can be NULL); replace: if name exists, the branch is replaced
+    func o push_socket_branch( m@* o, tp_t name, bl_t replace, x_source_point_s* sp, m sr_s* sr )
+    {
+        m :socket_branch_s* branch = NULL;
+        if( replace ) branch = o.m_socket_branch_by_name( name );
+        if( !branch ) branch = o.socket_branch_arr!.push();
+        branch.setup( name, sp, sr );
+        = o;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -121,7 +176,15 @@ func er_t eval_node_modifier( m ::frame_s* frame, m x_source* source, m sr_s* no
                 branch_sr.asm( functor.fork() );
             }
 
-            node.push_branch( branch_name, true, sp, branch_sr );
+            node.push_plain_branch( branch_name, true, sp, branch_sr );
+        }
+        else if( source.parse_bl( " #?':'") )
+        {
+            if( !::is_identifier( source ) ) = source.parse_error_fa( "Identifier expected.\n" );
+            tp_t branch_name = bcore_name_enroll( frame.nameof( frame.get_identifier( source, true ) ) );
+            source.parse_fa( " =" );
+            frame.eval( 0, source, branch_sr );
+            node.push_socket_branch( branch_name, true, sp, branch_sr );
         }
         else
         {
@@ -135,7 +198,7 @@ func er_t eval_node_modifier( m ::frame_s* frame, m x_source* source, m sr_s* no
                 branch_sr.asm( functor.fork() );
             }
 
-            node.push_branch( 0, false, sp, branch_sr );
+            node.push_plain_branch( 0, false, sp, branch_sr );
         }
 
         do_loop = false;
@@ -158,7 +221,7 @@ func er_t eval_node_member( m ::frame_s* frame, m x_source* source, m sr_s* sr )
     if( !::is_identifier( source ) ) = source.parse_error_fa( "Member name '<literal>' expected." );
 
     tp_t name = frame.get_identifier( source, true );
-    m$* branch = node.get_branch( name );
+    m$* branch = node.m_plain_branch_by_name( name );
     if( !branch ) = source.parse_error_fa( "Branch name '#<sc_t>' not found.", frame.nameof( name ) );
 
     if( sr.is_strong() ) frame.preserve_and_set_weak( sr );

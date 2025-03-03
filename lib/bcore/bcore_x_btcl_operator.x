@@ -542,7 +542,7 @@ func (:bop_s) er_t solve_exportable_a_b( @* o, sr_s* a, sr_s* b, m sr_s* result,
             if( a.type() == ::net_node_s~ )
             {
                 m ::net_node_s* node = a.o.cast( m ::net_node_s* ).clone()^;
-                node.push_branch( 0, false, o.sp, b.cast( m$* ) );
+                node.push_plain_branch( 0, false, o.sp, b.cast( m$* ) );
                 result.asc( node.fork() );
                 = 0;
             }
