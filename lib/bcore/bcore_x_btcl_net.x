@@ -182,9 +182,16 @@ func er_t eval_node_modifier( m ::frame_s* frame, m x_source* source, m sr_s* no
         {
             if( !::is_identifier( source ) ) = source.parse_error_fa( "Identifier expected.\n" );
             tp_t branch_name = bcore_name_enroll( frame.nameof( frame.get_identifier( source, true ) ) );
-            source.parse_fa( " =" );
-            frame.eval( 0, source, branch_sr );
-            node.push_socket_branch( branch_name, true, sp, branch_sr );
+            if( source.parse_bl( " #?'='") )
+            {
+                frame.eval( 0, source, branch_sr );
+                node.push_socket_branch( branch_name, true, sp, branch_sr );
+            }
+            else
+            {
+                /// sockets without explicit assignment are initialized with constant '0'
+                node.push_socket_branch( branch_name, true, sp, sr_s!^.from_f3( 0 ) );
+            }
         }
         else
         {

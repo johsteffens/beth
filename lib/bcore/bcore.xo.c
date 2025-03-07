@@ -1,4 +1,4 @@
-//  Last update: 2025-03-02T17:15:47Z
+//  Last update: 2025-03-06T11:01:14Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -73,7 +73,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0x500F3CBE1F1DD691ull
+// HKEYOF_bcore 0x856C5DEFA825642Eull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -8037,9 +8037,16 @@ er_t x_btcl_net_eval_node_modifier( x_btcl_frame_s* frame, x_source* source, sr_
         {
             if( !x_btcl_is_identifier(source ) ) BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Identifier expected.\n" ))
             tp_t branch_name = bcore_name_enroll(x_btcl_frame_s_nameof(frame,x_btcl_frame_s_get_identifier(frame,source, true ) ) );
-            BLM_TRY(x_source_parse_fa(source," =" ))
-            BLM_TRY(x_btcl_frame_s_eval(frame,0, source, branch_sr ))
-            x_btcl_net_node_s_push_socket_branch(node,branch_name, true, sp, branch_sr );
+            if( x_source_parse_bl(source," #?'='") )
+            {
+                BLM_TRY(x_btcl_frame_s_eval(frame,0, source, branch_sr ))
+                x_btcl_net_node_s_push_socket_branch(node,branch_name, true, sp, branch_sr );
+            }
+            else
+            {BLM_INIT_LEVEL(4);
+                /// sockets without explicit assignment are initialized with constant '0'
+                x_btcl_net_node_s_push_socket_branch(node,branch_name, true, sp, sr_s_from_f3(((sr_s*)BLM_LEVEL_T_PUSH(4,sr_s,sr_s_create())),0 ) );
+            BLM_DOWN();}
         }
         else
         {
@@ -8068,7 +8075,7 @@ er_t x_btcl_net_eval_node_modifier( x_btcl_frame_s* frame, x_source* source, sr_
 
 er_t x_btcl_net_eval_node_member( x_btcl_frame_s* frame, x_source* source, sr_s* sr )
 {
-    // bcore_x_btcl_net.x:217:1
+    // bcore_x_btcl_net.x:224:1
     BLM_INIT_LEVEL(0);
     x_btcl_net_node_s* node = ((x_btcl_net_node_s*)BLM_LEVEL_T_PUSH(0,x_btcl_net_node_s,((x_btcl_net_node_s*)bcore_fork(((x_btcl_net_node_s*)(sr->o))))));
     
@@ -10522,5 +10529,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0xD0CED8AFAD9B0CD5
-// XOICO_FILE_SIGNATURE 0x1235E1D50B049E76
+// XOICO_BODY_SIGNATURE 0xF3D036449CA1A3DB
+// XOICO_FILE_SIGNATURE 0x9A8F97E85E826849
