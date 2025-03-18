@@ -229,8 +229,8 @@ Float literals are specified via decimal point (even if the value is a whole num
 ``` C
 1023578     // int (s3_t) in decimal form
 0x378FCD50  // int (s3_t) in hexadecimal form
-123.0       // float (f3_t)
-123E1       // float (f3_t)
+123.0       // float (f3_t) (123.0)
+123E1       // float (f3_t) (1230)
 ```
 ## Shortcuts for literals
 
@@ -259,11 +259,13 @@ Using that shortcut with a number literal turns the type always into floating po
 | G         | Giga         | 1E9    |
 | T         | Tera         | 1E12    |
 | P         | Peta         | 1E15    |
-| E         | Exa         | 1E18    |
+| X (*)    | Exa | 1E18    |
 | Z         | Zetta         | 1E21    |
 | Y         | Yotta         | 1E24    |
 | R         | Ronna         | 1E27    |
 | Q         | Quetta       | 1E30    |
+
+(*): Character 'E' cannot be used here, because it clashes with exponential notation.
 
 ### Examples
 
@@ -276,6 +278,7 @@ Using that shortcut with a number literal turns the type always into floating po
 5C == 500;
 5K == 5000;
 5.2M == 5.2E6;
+5E3X == 5E21
 ```
 
 ## Arithmetic
