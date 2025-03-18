@@ -120,6 +120,7 @@ func (:frame_s) er_t eval_reserved_const( m@* o, tp_t name, m x_source* source, 
             {
                 = source.parse_error_fa( "Cannot retrieve a directory from source.\n", o.nameof( name ) );
             }
+            if( dir.size == 0 ) dir.push_fa( "." );
             sr.asc( dir.fork() );
         }
         break;

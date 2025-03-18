@@ -918,8 +918,8 @@ static er_t string_parse_em_fv( bcore_source_string_s* o, sc_t format, va_list a
             st_s_push_fa( msg_prefix, "At line #<uz_t>, col #<uz_t>", line, col );
         }
 
-        st_s_push_fa( msg_main, "#<sc_t>: error: #<sc_t>\n", msg_prefix->sc, er_arg.msg ? er_arg.msg->sc : "" );
-        st_s_push_fa( msg_main, "#<sc_t>\n", msg_context->sc );
+        st_s_push_fa( msg_main, "\n#<sc_t>: error: #<sc_t>", msg_prefix->sc, er_arg.msg ? er_arg.msg->sc : "" );
+        st_s_push_fa( msg_main, "\n#<sc_t>\n", msg_context->sc );
 
         bcore_error_push_sc( er_arg.er, msg_main->sc );
         BLM_DOWN();

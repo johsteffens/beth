@@ -395,9 +395,9 @@ BCORE_DECLARE_FUNCTION_DISCARD( bcore_hmap_tpaw_s )
 BCORE_DECLARE_FUNCTION_CLONE(   bcore_hmap_tpaw_s )
 
 vd_t* bcore_hmap_tpaw_s_get(     const bcore_hmap_tpaw_s* o, tp_t key ); // returns pointer to value or NULL when key does not exist
-vd_t* bcore_hmap_tpaw_s_set_c(         bcore_hmap_tpaw_s* o, tp_t key, vc_t val ); // sets new key; sets/overwrites value and returns pointer to value location
-vd_t* bcore_hmap_tpaw_s_set_d(         bcore_hmap_tpaw_s* o, tp_t key, vd_t val ); // sets new key; sets/overwrites value and returns pointer to value location
-void  bcore_hmap_tpaw_s_remove(        bcore_hmap_tpaw_s* o, tp_t key ); // removes key, destroys associated object (if present)
+vd_t* bcore_hmap_tpaw_s_set_c(         bcore_hmap_tpaw_s* o, tp_t key, vc_t val ); // discards old object (if any); sets new key; copies object; returns pointer to pointer location
+vd_t* bcore_hmap_tpaw_s_set_d(         bcore_hmap_tpaw_s* o, tp_t key, vd_t val ); // discards old object (if any); sets new key; assigns object pointer; returns pointer to pointer location
+void  bcore_hmap_tpaw_s_remove(        bcore_hmap_tpaw_s* o, tp_t key ); // removes key, discards associated object (if present)
 bl_t  bcore_hmap_tpaw_s_exists(  const bcore_hmap_tpaw_s* o, tp_t key ); // checks if key exists
 void  bcore_hmap_tpaw_s_clear(         bcore_hmap_tpaw_s* o           ); // removes all entries and frees memory
 uz_t  bcore_hmap_tpaw_s_keys(    const bcore_hmap_tpaw_s* o           ); // returns number of registered keys

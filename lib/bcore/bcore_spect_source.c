@@ -46,7 +46,7 @@ BCORE_DEFINE_OBJECT_INST( bcore_inst, bcore_source_context_s )
 void bcore_source_context_s_get_msg_fv( const bcore_source_context_s* o, st_s* msg, sc_t format, va_list args )
 {
     st_s_clear( msg );
-    st_s_push_fa( msg, "#<sc_t>:#<uz_t>:#<uz_t>: ", o->file_path ? o->file_path->sc : "", o->line, o->col );
+    st_s_push_fa( msg, "\n#<sc_t>:#<uz_t>:#<uz_t>: ", o->file_path ? o->file_path->sc : "", o->line, o->col );
     st_s_push_fv( msg, format, args );
     if( o->txt_context )
     {
@@ -69,7 +69,7 @@ void bcore_source_context_s_get_msg_fa( const bcore_source_context_s* o, st_s* m
 void bcore_source_context_s_get_error_msg_fv( const bcore_source_context_s* o, st_s* msg, sc_t format, va_list args )
 {
     st_s_clear( msg );
-    st_s_push_fa( msg, "#<sc_t>:#<uz_t>:#<uz_t>: error: ", o->file_path ? o->file_path->sc : "", o->line, o->col );
+    st_s_push_fa( msg, "\n#<sc_t>:#<uz_t>:#<uz_t>: error: ", o->file_path ? o->file_path->sc : "", o->line, o->col );
     st_s_push_fv( msg, format, args );
     if( o->txt_context )
     {

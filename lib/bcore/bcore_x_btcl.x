@@ -492,7 +492,7 @@ stamp :null_member_s
         if( x_stamp_t_is_static_i( o.base.o_type(), index ) && src.o )
         {
             tp_t dst_type = x_stamp_t_type_i( o.base.o, o.base.o_type(), index );
-            sr_s sr = sr_tsm( dst_type, x_inst_create( dst_type ) );
+            sr_s sr = sr_tsm( dst_type, x_inst_t_create( dst_type ) );
             frame.generic_copy( sp, sr, src );
             x_stamp_t_set_sr( o.base.o, o.base.o_type(), o.tp_name, sr );
         }
@@ -524,7 +524,7 @@ stamp :null_arr_element_s
         if( x_array_t_is_static( o.base.o_type() ) && src.o )
         {
             tp_t dst_type = x_array_t_get_static_type( o.base.o_type() );
-            sr_s sr = sr_tsm( dst_type, x_inst_create( dst_type ) );
+            sr_s sr = sr_tsm( dst_type, x_inst_t_create( dst_type ) );
             frame.generic_copy( sp, sr, src );
             x_array_t_set_sr( o.base.o.cast( m x_stamp* ), o.base.o_type(), o.index, sr );
         }
@@ -825,13 +825,7 @@ func (:function_s) er_t call( m@* o, m x_source_point_s* source_point, m :frame_
         }
         else if( o.external_function )
         {
-            er_t err = o.external_function.execute( source_point, lexical_frame, arg_list, result );
-            if( err )
-            {
-                m $* st = st_s!^;
-                bcore_error_pop_all_to_st( st );
-                = source_point.parse_error_fa( "#<sc_t>", st.sc );
-            }
+            o.external_function.execute( source_point, lexical_frame, arg_list, result );
         }
         else if( o.wrapped_function )
         {
@@ -996,7 +990,7 @@ func(:frame_s) er_t eval_number_literal( m @* o, m x_source* source, m sr_s* sr 
         case 'G': factor = 1E+9;  break; // giga
         case 'T': factor = 1E+12; break; // tera
         case 'P': factor = 1E+15; break; // peta
-        case 'E': factor = 1E+18; break; // exa
+        case 'X': factor = 1E+18; break; // exa
         case 'Z': factor = 1E+21; break; // zetta
         case 'Y': factor = 1E+24; break; // yotta
         case 'R': factor = 1E+27; break; // ronna
@@ -1392,10 +1386,7 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
             {
                 node_name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
             }
-//            else if( node_type != TYPEOF_rack )
-//            {
-//                = source.parse_error_fa( "Node identifier expected.\n" );
-//            }
+
             obj.asm( :net_node_s!.setup( node_type, node_name, sp ) );
         }
     }
