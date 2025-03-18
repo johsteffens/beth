@@ -197,6 +197,14 @@ stamp :player_s
      */
     sz_t idle_zero_frames = 0;
 
+    /** Sets nice level for the audio thread. Range: [-20, 19]
+     *  A negative level is useful for seamless streaming.
+     *  An ineffective nice level will produce a warning message during player setup.
+     *  Note that a regular user must have the permission for negative nice levels.
+     *  Permissions are specified in: /etc/security/limits.conf
+     */
+    s2_t nice_level = 0;
+
     /// ==================================
 
     :s -> audio;
