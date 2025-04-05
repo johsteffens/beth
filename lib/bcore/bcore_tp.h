@@ -39,6 +39,10 @@ static inline tp_t bcore_tp_fold_u0( tp_t o, u0_t v ) { return ( o ^ v ) * FNV_U
 static inline tp_t bcore_tp_fold_u1( tp_t o, u1_t v ) { return bcore_tp_fold_u0( bcore_tp_fold_u0( o, v ), v >>  8 ); }
 static inline tp_t bcore_tp_fold_u2( tp_t o, u2_t v ) { return bcore_tp_fold_u1( bcore_tp_fold_u1( o, v ), v >> 16 ); }
 static inline tp_t bcore_tp_fold_u3( tp_t o, u3_t v ) { return bcore_tp_fold_u2( bcore_tp_fold_u2( o, v ), v >> 32 ); }
+static inline tp_t bcore_tp_fold_s0( tp_t o, s0_t v ) { return bcore_tp_fold_u0( o, v ); }
+static inline tp_t bcore_tp_fold_s1( tp_t o, s1_t v ) { return bcore_tp_fold_u1( o, v ); }
+static inline tp_t bcore_tp_fold_s2( tp_t o, s2_t v ) { return bcore_tp_fold_u2( o, v ); }
+static inline tp_t bcore_tp_fold_s3( tp_t o, s3_t v ) { return bcore_tp_fold_u3( o, v ); }
 static inline tp_t bcore_tp_fold_tp( tp_t o, tp_t v ) { return bcore_tp_fold_u3( o, v ); }
 static inline tp_t bcore_tp_fold_bl( tp_t o, bl_t v ) { return bcore_tp_fold_u0( o, v ? 1 : 0 ); }
 

@@ -598,6 +598,36 @@ uz_t sc_t_fnv( sd_t o, uz_t space, sc_t f, uz_t fsize, va_list* p_args )
                 }
                 ret_size++;
             }
+            else if( ( bcore_strcmp( "name", &f[ i ] ) & 2 ) == 0 )
+            {
+                i += 4;
+                int sres = 0;
+
+                tp_t tp = va_arg( *p_args, tp_t );
+                sc_t sc = bnameof( tp );
+
+                if( sc )
+                {
+                    sres = snprintf( dst, space, "%s", sc );
+                }
+                else
+                {
+                    const char* f = ( hex == 0 ) ? "%"PRItp_t"" : ( hex == 1 ) ? "%"PRIxtp_t"" : "%"PRIXtp_t"";
+                    sres = snprintf( dst, space, f, tp );
+                }
+
+                ret_size += sres;
+                if( sres < space )
+                {
+                    dst += sres;
+                    space -= sres;
+                }
+                else
+                {
+                    dst += space;
+                    space = 0;
+                }
+            }
             else
             {
                 ERR( "Format directive in '%s' not recognized", f );

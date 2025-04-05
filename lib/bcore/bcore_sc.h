@@ -54,9 +54,14 @@
  *      Supported types: u*_t, s*_t, f*_t, uz_t, bl_t.
  *      Examples: "#<u3_t>"; "#X<u3_t>"
  *
- *  "#<char>" or "#<char*>"
+ *  "#char"
+ *      Argument: char
  *      Converts single character.
- *      Argument: char or char*
+ *
+ *  "#name"
+ *      Argument: tp_t
+ *      Converts tp_t to registered name (via bnameof) or to numeric value if not registered.
+ *      Example: "#name"
  *
  *  Truncation:
  *    "#t<num>{<expression>}"

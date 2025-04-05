@@ -211,11 +211,16 @@ identifier bcore_tp_init;
 identifier bcore_tp_fold_tp;
 identifier bcore_tp_fold_bl;
 identifier bcore_tp_fold_sc;
+identifier bcore_tp_fold_uz;
 identifier bcore_tp_fold_sz;
 identifier bcore_tp_fold_u0;
 identifier bcore_tp_fold_u1;
 identifier bcore_tp_fold_u2;
 identifier bcore_tp_fold_u3;
+identifier bcore_tp_fold_s3;
+identifier bcore_tp_fold_s1;
+identifier bcore_tp_fold_s2;
+identifier bcore_tp_fold_s3;
 identifier bcore_tp_is_numeric;
 identifier bcore_tp_is_float;
 
