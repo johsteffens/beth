@@ -185,8 +185,8 @@ The following tables contain available operators:
 
 |Symbol|Description|Arity|Type Name|Exportable|Order|
 |:---|:---|----|----|----|----|
-|```^```|**Arithmetic**: exponentiation; result type is f3_t|binary|pow|yes|LR|
-|```/```|**Arithmetic**: division|binary|div|yes|LR|
+|```^```|**Arithmetic**: exponentiation; result type is `f3_t`|binary|pow|yes|LR|
+|```/```|**Arithmetic**: division; result type is `f3_t`; all operands converted to `f3_t`|binary|div|yes|LR|
 |```%```|**Arithmetic**: modulo division|binary|mod|yes|LR|
 |```**```|**[Function-Function](#function-operators)**: Chains two functions|binary|chain|yes|LR|
 |```*.:```|**[Function-List](#function-operators)**: Applies function to unfolded list elements|binary|mul_dot_colon|no|LR|

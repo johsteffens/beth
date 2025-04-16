@@ -1,4 +1,4 @@
-//  Last update: 2025-03-15T08:39:21Z
+//  Last update: 2025-04-12T11:09:36Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -1388,6 +1388,7 @@
   typedef f3_t (*bcore_prsg_gen_f3)(bcore_prsg* o, f3_t min, f3_t max ); \
   typedef bl_t (*bcore_prsg_gen_bl)(bcore_prsg* o ); \
   typedef bcore_prsg* (*bcore_prsg_set_state_u3)(bcore_prsg* o, u3_t seed ); \
+  typedef bcore_prsg* (*bcore_prsg_set_state_f3)(bcore_prsg* o, f3_t seed ); \
   typedef bcore_prsg* (*bcore_prsg_set_state_mix)(bcore_prsg* o, const bcore_prsg* a, const bcore_prsg* b ); \
   typedef bcore_prsg* (*bcore_prsg_reseed)(bcore_prsg* o, u3_t seed ); \
   XOILA_DECLARE_SPECT( bcore_prsg ) \
@@ -1406,6 +1407,7 @@
       bcore_prsg_gen_f3 gen_f3; \
       bcore_prsg_gen_bl gen_bl; \
       bcore_prsg_set_state_u3 set_state_u3; \
+      bcore_prsg_set_state_f3 set_state_f3; \
       bcore_prsg_set_state_mix set_state_mix; \
       bcore_prsg_reseed reseed; \
   }; \
@@ -1438,6 +1440,9 @@
   static inline bl_t bcore_prsg_gen_bl_default( bcore_prsg* o ){ return  bcore_prsg_a_gen_bits_u3(o,1 ) ? true : false;} \
   static inline bcore_prsg* bcore_prsg_a_set_state_u3( bcore_prsg* o, u3_t seed ){ const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->set_state_u3 ); return p->set_state_u3( o, seed );} \
   static inline bl_t bcore_prsg_defines_set_state_u3( const bcore_prsg* o ){ return  true;} \
+  static inline bcore_prsg* bcore_prsg_a_set_state_f3( bcore_prsg* o, f3_t seed ){ const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->set_state_f3 ); return p->set_state_f3( o, seed );} \
+  static inline bl_t bcore_prsg_defines_set_state_f3( const bcore_prsg* o ){ return  true;} \
+  bcore_prsg* bcore_prsg_set_state_f3_default( bcore_prsg* o, f3_t seed ); \
   static inline bcore_prsg* bcore_prsg_a_set_state_mix( bcore_prsg* o, const bcore_prsg* a, const bcore_prsg* b ){ const bcore_prsg_spect_s* p = bcore_prsg_spect_s_get_aware( o ); assert( p->set_state_mix ); return p->set_state_mix( o, a, b );} \
   static inline bl_t bcore_prsg_defines_set_state_mix( const bcore_prsg* o ){ return  true;} \
   static inline bcore_prsg* bcore_prsg_set_state_mix_default( bcore_prsg* o, const bcore_prsg* a, const bcore_prsg* b ){return  bcore_prsg_a_set_state_u3(o,bcore_prsg_a_state_u3(a) + bcore_prsg_a_state_u3(b) );} \
@@ -4077,5 +4082,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xC6471F9478A2E1AD
-// XOICO_FILE_SIGNATURE 0xFBE36702EEC942D4
+// XOICO_BODY_SIGNATURE 0xF42F6DF4B8D32455
+// XOICO_FILE_SIGNATURE 0x9DE46485C4F9CEAF

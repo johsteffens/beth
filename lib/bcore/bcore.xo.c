@@ -1,4 +1,4 @@
-//  Last update: 2025-03-17T12:37:41Z
+//  Last update: 2025-04-12T11:19:52Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -73,7 +73,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0x983126F02B41408Bull
+// HKEYOF_bcore 0x1360C17673B71138ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -1282,9 +1282,22 @@ XOILA_DEFINE_SPECT( bcore_inst, bcore_prsg )
     "feature strict aware bcore_prsg : gen_f3;"
     "feature aware bcore_prsg : gen_bl = bcore_prsg_gen_bl_default;"
     "feature strict aware bcore_prsg : set_state_u3;"
+    "feature aware bcore_prsg : set_state_f3 = bcore_prsg_set_state_f3_default;"
     "feature aware bcore_prsg : set_state_mix = bcore_prsg_set_state_mix_default;"
     "feature aware bcore_prsg : reseed = bcore_prsg_reseed_default;"
 "}";
+
+bcore_prsg* bcore_prsg_set_state_f3_default( bcore_prsg* o, f3_t seed )
+{
+    // bcore_prsg.h:74:1
+    
+    int exp = 0;
+    s3_t seed_s3 = frexp( seed, (&(exp)) ) * 0x7FFFFFFFFFFFFFFF;
+    seed_s3 *= 27362149; // some mixing
+    if( exp != 0 ) seed_s3 *= exp;  // to make sure seed is not repeated at different exponents
+    bcore_prsg_a_set_state_u3(o,seed_s3 );
+    return o;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_prsg_lcg
@@ -1308,7 +1321,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_00_s )
 
 u3_t bcore_prsg_lcg_u2_00_s_state_bits_u3( const bcore_prsg_lcg_u2_00_s* o, sz_t bits )
 {
-    // bcore_prsg.h:89:5
+    // bcore_prsg.h:99:5
     
     assert( bits >= 0 && bits <= 64 );
     sz_t o_bits = bcore_prsg_lcg_u2_00_s_bits(o);
@@ -1341,7 +1354,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_01_s )
 
 u3_t bcore_prsg_lcg_u2_01_s_state_bits_u3( const bcore_prsg_lcg_u2_01_s* o, sz_t bits )
 {
-    // bcore_prsg.h:89:5
+    // bcore_prsg.h:99:5
     
     assert( bits >= 0 && bits <= 64 );
     sz_t o_bits = bcore_prsg_lcg_u2_01_s_bits(o);
@@ -1374,7 +1387,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_02_s )
 
 u3_t bcore_prsg_lcg_u2_02_s_state_bits_u3( const bcore_prsg_lcg_u2_02_s* o, sz_t bits )
 {
-    // bcore_prsg.h:89:5
+    // bcore_prsg.h:99:5
     
     assert( bits >= 0 && bits <= 64 );
     sz_t o_bits = bcore_prsg_lcg_u2_02_s_bits(o);
@@ -1407,7 +1420,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_03_s )
 
 u3_t bcore_prsg_lcg_u2_03_s_state_bits_u3( const bcore_prsg_lcg_u2_03_s* o, sz_t bits )
 {
-    // bcore_prsg.h:89:5
+    // bcore_prsg.h:99:5
     
     assert( bits >= 0 && bits <= 64 );
     sz_t o_bits = bcore_prsg_lcg_u2_03_s_bits(o);
@@ -1440,7 +1453,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_04_s )
 
 u3_t bcore_prsg_lcg_u2_04_s_state_bits_u3( const bcore_prsg_lcg_u2_04_s* o, sz_t bits )
 {
-    // bcore_prsg.h:89:5
+    // bcore_prsg.h:99:5
     
     assert( bits >= 0 && bits <= 64 );
     sz_t o_bits = bcore_prsg_lcg_u2_04_s_bits(o);
@@ -1473,7 +1486,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_05_s )
 
 u3_t bcore_prsg_lcg_u2_05_s_state_bits_u3( const bcore_prsg_lcg_u2_05_s* o, sz_t bits )
 {
-    // bcore_prsg.h:89:5
+    // bcore_prsg.h:99:5
     
     assert( bits >= 0 && bits <= 64 );
     sz_t o_bits = bcore_prsg_lcg_u2_05_s_bits(o);
@@ -1506,7 +1519,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_00_s )
 
 u3_t bcore_prsg_lcg_u3_00_s_state_bits_u3( const bcore_prsg_lcg_u3_00_s* o, sz_t bits )
 {
-    // bcore_prsg.h:89:5
+    // bcore_prsg.h:99:5
     
     assert( bits >= 0 && bits <= 64 );
     sz_t o_bits = bcore_prsg_lcg_u3_00_s_bits(o);
@@ -1539,7 +1552,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_01_s )
 
 u3_t bcore_prsg_lcg_u3_01_s_state_bits_u3( const bcore_prsg_lcg_u3_01_s* o, sz_t bits )
 {
-    // bcore_prsg.h:89:5
+    // bcore_prsg.h:99:5
     
     assert( bits >= 0 && bits <= 64 );
     sz_t o_bits = bcore_prsg_lcg_u3_01_s_bits(o);
@@ -1572,7 +1585,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_02_s )
 
 u3_t bcore_prsg_lcg_u3_02_s_state_bits_u3( const bcore_prsg_lcg_u3_02_s* o, sz_t bits )
 {
-    // bcore_prsg.h:89:5
+    // bcore_prsg.h:99:5
     
     assert( bits >= 0 && bits <= 64 );
     sz_t o_bits = bcore_prsg_lcg_u3_02_s_bits(o);
@@ -1605,7 +1618,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_03_s )
 
 u3_t bcore_prsg_lcg_u3_03_s_state_bits_u3( const bcore_prsg_lcg_u3_03_s* o, sz_t bits )
 {
-    // bcore_prsg.h:89:5
+    // bcore_prsg.h:99:5
     
     assert( bits >= 0 && bits <= 64 );
     sz_t o_bits = bcore_prsg_lcg_u3_03_s_bits(o);
@@ -1646,7 +1659,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_00_s )
 
 u3_t bcore_prsg_xsg_u2_00_s_state_bits_u3( const bcore_prsg_xsg_u2_00_s* o, sz_t bits )
 {
-    // bcore_prsg.h:89:5
+    // bcore_prsg.h:99:5
     
     assert( bits >= 0 && bits <= 64 );
     sz_t o_bits = bcore_prsg_xsg_u2_00_s_bits(o);
@@ -1679,7 +1692,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_01_s )
 
 u3_t bcore_prsg_xsg_u2_01_s_state_bits_u3( const bcore_prsg_xsg_u2_01_s* o, sz_t bits )
 {
-    // bcore_prsg.h:89:5
+    // bcore_prsg.h:99:5
     
     assert( bits >= 0 && bits <= 64 );
     sz_t o_bits = bcore_prsg_xsg_u2_01_s_bits(o);
@@ -1712,7 +1725,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_02_s )
 
 u3_t bcore_prsg_xsg_u2_02_s_state_bits_u3( const bcore_prsg_xsg_u2_02_s* o, sz_t bits )
 {
-    // bcore_prsg.h:89:5
+    // bcore_prsg.h:99:5
     
     assert( bits >= 0 && bits <= 64 );
     sz_t o_bits = bcore_prsg_xsg_u2_02_s_bits(o);
@@ -1745,7 +1758,7 @@ BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_03_s )
 
 u3_t bcore_prsg_xsg_u2_03_s_state_bits_u3( const bcore_prsg_xsg_u2_03_s* o, sz_t bits )
 {
-    // bcore_prsg.h:89:5
+    // bcore_prsg.h:99:5
     
     assert( bits >= 0 && bits <= 64 );
     sz_t o_bits = bcore_prsg_xsg_u2_03_s_bits(o);
@@ -6830,15 +6843,7 @@ er_t x_btcl_operator_bop_s_solve_exportable_a_b( const x_btcl_operator_bop_s* o,
             if( bcore_tp_is_numeric( sr_s_type(a) ) && bcore_tp_is_numeric( sr_s_type(b) ) )
             {
                 if( sr_s_to_f3(b) == 0 ) return  x_source_point_s_parse_error_fa(&(o->sp),"Division by zero.\n" );
-    
-                if( bcore_tp_is_integer( sr_s_type(a) ) && bcore_tp_is_integer( sr_s_type(b) ) )
-                {
-                    sr_s_const_from_s3(result,sr_s_to_s3(a) / sr_s_to_s3(b) );
-                }
-                else
-                {
-                    sr_s_const_from_f3(result,sr_s_to_f3(a) / sr_s_to_f3(b) );
-                }
+                sr_s_const_from_f3(result,sr_s_to_f3(a) / sr_s_to_f3(b) );
                 return  0;
             }
         }
@@ -7080,7 +7085,7 @@ er_t x_btcl_operator_bop_s_solve_exportable_a_b( const x_btcl_operator_bop_s* o,
 
 er_t x_btcl_operator_bop_s_solve( x_btcl_operator_bop_s* o, x_btcl_frame_s* frame, sr_s* result, bl_t* success )
 {
-    // bcore_x_btcl_operator.x:562:1
+    // bcore_x_btcl_operator.x:554:1
     
     // exportable operations
     BLM_TRY(x_btcl_operator_bop_s_solve_exportable_a_b(o,&(o->a),&( o->b), result, success ))
@@ -7251,7 +7256,7 @@ er_t x_btcl_operator_bop_s_solve( x_btcl_operator_bop_s* o, x_btcl_frame_s* fram
 
 er_t x_btcl_operator_bop_s_execute( const x_btcl_operator_bop_s* o, sr_s* result )
 {
-    // bcore_x_btcl_operator.x:733:1
+    // bcore_x_btcl_operator.x:725:1
     BLM_INIT_LEVEL(0);
     const sr_s* a = NULL;
     const sr_s* b = NULL;
@@ -7301,7 +7306,7 @@ BCORE_DEFINE_OBJECT_INST_P( x_btcl_operator_top_s )
 
 x_btcl_operator_top_s* x_btcl_operator_top_s__( x_btcl_operator_top_s* o, tp_t type, sr_s* a, sr_s* b, sr_s* c, x_source_point_s* source_point )
 {
-    // bcore_x_btcl_operator.x:786:5
+    // bcore_x_btcl_operator.x:778:5
     
     o->type = type;
     sr_s_tsm(&(o->a),sr_s_type(a), ((x_inst*)bcore_fork(a->o)) );
@@ -7313,7 +7318,7 @@ x_btcl_operator_top_s* x_btcl_operator_top_s__( x_btcl_operator_top_s* o, tp_t t
 
 x_btcl_operator_top_s* x_btcl_operator_top_s_signal( x_btcl_operator_top_s* o, tp_t name, x_inst* arg )
 {
-    // bcore_x_btcl_operator.x:798:5
+    // bcore_x_btcl_operator.x:790:5
     
     if( x_btcl_operator_sr_is_operator(&(o->a )) ) x_btcl_operator_a_signal(((x_btcl_operator*)(o->a.o)),name, arg );
     if( x_btcl_operator_sr_is_operator(&(o->b )) ) x_btcl_operator_a_signal(((x_btcl_operator*)(o->b.o)),name, arg );
@@ -7323,7 +7328,7 @@ x_btcl_operator_top_s* x_btcl_operator_top_s_signal( x_btcl_operator_top_s* o, t
 
 er_t x_btcl_operator_top_s_solve_exportable_a_b_c( const x_btcl_operator_top_s* o, const sr_s* a, const sr_s* b, const sr_s* c, sr_s* result, bl_t* success )
 {
-    // bcore_x_btcl_operator.x:830:1
+    // bcore_x_btcl_operator.x:822:1
     
     (*(success)) = true;
     
@@ -7355,7 +7360,7 @@ er_t x_btcl_operator_top_s_solve_exportable_a_b_c( const x_btcl_operator_top_s* 
 
 er_t x_btcl_operator_top_s_solve( x_btcl_operator_top_s* o, x_btcl_frame_s* frame, sr_s* result, bl_t* success )
 {
-    // bcore_x_btcl_operator.x:862:1
+    // bcore_x_btcl_operator.x:854:1
     
     // exportable operations
     BLM_TRY(x_btcl_operator_top_s_solve_exportable_a_b_c(o,&(o->a),&( o->b),&( o->c), result, success ))
@@ -7386,7 +7391,7 @@ er_t x_btcl_operator_top_s_solve( x_btcl_operator_top_s* o, x_btcl_frame_s* fram
 
 er_t x_btcl_operator_top_s_execute( const x_btcl_operator_top_s* o, sr_s* result )
 {
-    // bcore_x_btcl_operator.x:893:1
+    // bcore_x_btcl_operator.x:885:1
     BLM_INIT_LEVEL(0);
     const sr_s* a = NULL;
     const sr_s* b = NULL;
@@ -7518,7 +7523,7 @@ bl_t x_btcl_operator_is_comparable( const sr_s* a, const sr_s* b )
 
 er_t x_btcl_operator_eval_top_type( x_btcl_frame_s* frame, tp_t type, s2_t priority, x_source* source, sr_s* sa, sr_s* result )
 {
-    // bcore_x_btcl_operator.x:808:1
+    // bcore_x_btcl_operator.x:800:1
     BLM_INIT_LEVEL(0);
     x_source_point_s* source_point = x_source_point_s__(((x_source_point_s*)BLM_LEVEL_T_PUSH(0,x_source_point_s,x_source_point_s_create())),source );
     sr_s sb;BLM_T_INIT_SPUSH(sr_s, &sb);; BLM_TRY(x_btcl_frame_s_eval(frame,priority, source,&( sb )))
@@ -9707,6 +9712,8 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FEATURE( bcore_prsg_gen_bl );
             BCORE_REGISTER_FFUNC( bcore_prsg_gen_bl, bcore_prsg_gen_bl_default );
             BCORE_REGISTER_FEATURE( bcore_prsg_set_state_u3 );
+            BCORE_REGISTER_FEATURE( bcore_prsg_set_state_f3 );
+            BCORE_REGISTER_FFUNC( bcore_prsg_set_state_f3, bcore_prsg_set_state_f3_default );
             BCORE_REGISTER_FEATURE( bcore_prsg_set_state_mix );
             BCORE_REGISTER_FFUNC( bcore_prsg_set_state_mix, bcore_prsg_set_state_mix_default );
             BCORE_REGISTER_FEATURE( bcore_prsg_reseed );
@@ -10521,5 +10528,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x2767E879D4C6279A
-// XOICO_FILE_SIGNATURE 0x852C223A84693EDA
+// XOICO_BODY_SIGNATURE 0x226966CE586818C5
+// XOICO_FILE_SIGNATURE 0x62610F1838970425

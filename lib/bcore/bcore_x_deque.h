@@ -65,8 +65,8 @@ signature m (TE) x_inst* m_get_last(  m@* o ); // returns NULL if size is 0
 signature c (TE) x_inst* c_get_last(  c@* o ); // returns NULL if size is 0
 signature m (TE) x_inst* push_last_d ( m@* o, d (TE) x_inst* inst ); // push to end of queue
 signature m (TE) x_inst* push_first_d( m@* o, d (TE) x_inst* inst ); // push to front of queue
-signature d (TE) x_inst* d_pop_last (  m@* o );                      // pop from end of queue
-signature d (TE) x_inst* d_pop_first(  m@* o );                      // pop from front of queue
+signature d (TE) x_inst* d_pop_last (  m@* o );                      // pop from end of queue; NULL if empty
+signature d (TE) x_inst* d_pop_first(  m@* o );                      // pop from front of queue; NULL if empty
 signature o remove_last (   m@* o );   // remove 1 from end of queue if possible
 signature o remove_first(   m@* o );   // remove 1 from front of queue if possible
 signature o remove_last_n ( m@* o, sz_t n ); // remove (maximally) n from end of queue
