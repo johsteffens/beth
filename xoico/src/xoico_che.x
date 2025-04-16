@@ -1171,8 +1171,11 @@ func (:s) er_t trans_type
     tp_t tp_identifier;
     o.trans_identifier( source, result_local, tp_identifier );
     o.trans_whitespace( source, result_local );
-    if( source.parse_bl( "#?'!'" ) )
+
+
+    if( source.parse_bl( "#?([0]=='!'&&[1]!='=')" ) )
     {
+        source.get_char();
         if( o.is_group( tp_identifier ) )
         {
             return source.parse_error_fa( "Operator '!': lvalue is a group." );
