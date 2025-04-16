@@ -308,15 +308,7 @@ func (:bop_s) er_t solve_exportable_a_b( @* o, sr_s* a, sr_s* b, m sr_s* result,
             if( bcore_tp_is_numeric( a.type() ) && bcore_tp_is_numeric( b.type() ) )
             {
                 if( b.to_f3() == 0 ) = o.sp.parse_error_fa( "Division by zero.\n" );
-
-                if( bcore_tp_is_integer( a.type() ) && bcore_tp_is_integer( b.type() ) )
-                {
-                    result.const_from_s3( a.to_s3() / b.to_s3() );
-                }
-                else
-                {
-                    result.const_from_f3( a.to_f3() / b.to_f3() );
-                }
+                result.const_from_f3( a.to_f3() / b.to_f3() );
                 = 0;
             }
         }
