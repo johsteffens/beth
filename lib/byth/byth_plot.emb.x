@@ -105,7 +105,7 @@ stamp :engine_s x_thread
                     refresh = false;
                 }
 
-                rte.run_statement( "plt.pause(0.05)" );
+                rte.run_statement( "plt.pause(0.1)" );
             }
             else
             {

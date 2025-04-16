@@ -23,6 +23,8 @@ stamp :data_s
      $ st_s => label;
      $ bcore_arr_f3_s => arr;
      func o set_label( m@* o, sc_t label ) o.label!.copy_sc( label );
+     func er_t set_size( m@* o, sz_t size ) { EM_ASSERT( size >= 0 ); o.arr!.set_size( size ); = 0; }
+     func er_t set_value( m@* o, sz_t index, f3_t value ) { EM_ASSERT( o.arr && o.arr.size > index && index >= 0 ); o.arr.[ index ] = value; =0; }
      func o push( m@* o, f3_t v ) o.arr!.push( v );
 }
 
@@ -105,7 +107,7 @@ stamp :appearance_s
     st_s textpoint_font_weight = "normal";
 
     /// Only for multiple plots...
-    sz_t cols = 2;          //  ordering of plots (number of columns); rows = ceil( size / cols )
+    sz_t cols = 2;          // ordering of plots (number of columns); rows = ceil( size / cols )
     f3_t ver_spacing = 0.5; // vertical spacing (spacing between plot rows)
     f3_t hor_spacing = 0.3; // horizontal spacing (spacing between plot columns)
     /// --------------------------
