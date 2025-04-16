@@ -92,8 +92,8 @@
  *    "#pn<c>{<expression>}"
  *    "#pln<c>{<expression>}"
  *      Like above #p rule except that size is given by argument.
- *      Argument: uz_t
- *      Example: "#pln10 {#<u3_t>}"
+ *      Argument type for 'n': uz_t
+ *      Example: "#pln {#<u3_t>}"
  *
  *  Repetition:
  *    "#r<num>{<expression>}"
