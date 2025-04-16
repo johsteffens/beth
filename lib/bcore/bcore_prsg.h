@@ -69,6 +69,16 @@ feature        bl_t gen_bl     ( m @* o ) { = o.gen_bits_u3( 1 ) ? true : false;
  */
 feature strict o set_state_u3( m @* o, u3_t seed );
 
+/// Computes a new state derived from a f3_t seed.
+feature o set_state_f3( m @* o, f3_t seed )
+{
+    int exp = 0;
+    s3_t seed_s3 = frexp( seed, exp.1 ) * 0x7FFFFFFFFFFFFFFF;
+    seed_s3 *= 27362149; // some mixing
+    if( exp != 0 ) seed_s3 *= exp;  // to make sure seed is not repeated at different exponents
+    o.set_state_u3( seed_s3 );
+}
+
 /// Computes a new state derived from state of a and b.
 /* Different mixing methods are thinkable:
  * Adding, multiplying or xoring should all be suitable.
