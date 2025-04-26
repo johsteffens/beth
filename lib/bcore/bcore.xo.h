@@ -1,4 +1,4 @@
-//  Last update: 2025-04-12T11:09:36Z
+//  Last update: 2025-04-19T15:18:29Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -859,6 +859,7 @@
   void x_threads_sleep_us( u3_t us ); \
   void x_threads_sleep_ms( u3_t ms ); \
   static inline tp_t x_threads_get_id( void ); \
+  er_t x_threads_set_nice_level( s2_t nice_level ); \
   XOILA_DECLARE_SPECT( x ) \
   { \
       bcore_spect_header_s header; \
@@ -2772,6 +2773,8 @@
 #define TYPEOF_println 0x776357686C3FA546ull
 #define TYPEOF_printx 0x673D641AB90A3B30ull
 #define TYPEOF_assert 0xF89E75BDB43C5A5Bull
+#define TYPEOF_mkdir 0xB8EAA574819A7FF8ull
+#define TYPEOF_rmdir 0x77DFA1348BAE30DFull
 #define TYPEOF_pow 0x779B5F19564F3B35ull
 #define TYPEOF_div 0xCAA83A18F46E5888ull
 #define TYPEOF_mod 0x0808591917670EE3ull
@@ -3028,6 +3031,8 @@
 #define TYPEOF_PRINTLN 0xB722269D563BC8E6ull
 #define TYPEOF_PRINTX 0x4EE30EBB81AB7930ull
 #define TYPEOF_ASSERT 0xD98C44AF4A2B839Bull
+#define TYPEOF_MKDIR 0x0CCC8DE2A8526718ull
+#define TYPEOF_RMDIR 0xCAE889A2B1AE273Full
 #define TYPEOF_true 0x5B5C98EF514DBFA5ull
 #define TYPEOF_false 0xB5FAE2C14238B978ull
 #define TYPEOF_TRUE 0x704E59FAB561C2A5ull
@@ -4082,5 +4087,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xF42F6DF4B8D32455
-// XOICO_FILE_SIGNATURE 0x9DE46485C4F9CEAF
+// XOICO_BODY_SIGNATURE 0xA550941584F9EF4C
+// XOICO_FILE_SIGNATURE 0x5C328F9A7469E5D5

@@ -26,7 +26,7 @@ The language supports C-style comments inside the code.
 // Variable definition and representation of its value '7'.
 x = 7;
 
-// Expression (Evaluates to 14).
+// Expression (This one evaluates to 14).
 1 + 2 * 3 + x;
 
 // Function definition.
@@ -94,6 +94,12 @@ eval_file( "../data/file.btcl" );
 // list of 10 random numbers between -1.0, and 1.0
 <x_btcl_random_s/>( .seed = 1234, .min = -1.0, .max = 1.0 ).list( 10 );
 
+// create a sub-director 'temp' in the directory of the source file; returns success (true|false)
+MKDIR( DIR + "/temp" );
+
+// removes an empty sub-director 'temp' in the directory of the source file; returns success (true|false)
+RMDIR( DIR + "/temp" );
+
 // If the space behind a semicolon contains no expression then that semicolon is ignored.
 
 ```
@@ -134,7 +140,7 @@ More generally: The semicolon operator divides consecutive expressions into
 ```
 
 **Note:**
-A trailing semicolon is allowed for the last expression in a file, block or frame. In that case no continuation is expected; the semicolon is simply ignored.
+A trailing semicolon is allowed for the last expression in a file, block or frame. In that case no continuation is expected; that last semicolon is simply ignored.
 
 ## Chain of Expressions
 
@@ -731,6 +737,8 @@ Built-in functions are available by the names listed in the table below. They ar
 |PRINTLN|Prints object to stdout in compact form; last character is 'newline'; behaves as identity|println|no|
 |PRINTX|Prints object to stdout in detailed form; behaves as identity|printx|no|
 |ASSERT|Creates an error condition in case expression evaluates to FALSE. Returns TRUE otherwise.|assert|no|
+|MKDIR|Creates a file system directory according to (string-)path specified as argument|mkdir|no|
+|RMDIR|Removes an empty file system directory according to (string-)path specified as argument|rmdir|no|
 
 # Built-in Constants
 |Name|Description|
@@ -814,5 +822,5 @@ The features below provide special control and functionality for specific use ca
 
 
 ------
-<sub>&copy; 2024 Johannes B. Steffens</sub>
+<sub>&copy; 2024 (and onwards) Johannes B. Steffens</sub>
 
