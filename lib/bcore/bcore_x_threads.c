@@ -14,6 +14,7 @@
  */
 
 #include "bcore_x_threads.h"
+#include "bcore_error_manager.h"
 #include <errno.h>
 
 /**********************************************************************************************************************/
@@ -201,14 +202,44 @@ void x_threads_sleep_ns( u3_t ns )
     nanosleep( &ts, NULL );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void x_threads_sleep_us( u3_t us )
 {
     bcore_sleep_ns( us * 1000 );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void x_threads_sleep_ms( u3_t ms )
 {
     bcore_sleep_ns( ms * 1000000 );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+er_t x_threads_set_nice_level( s2_t nice_level )
+{
+    int nice(int inc);
+    errno = 0;
+    er_t err = 0;
+    if( nice( nice_level ) == -1 )
+    {
+        if( errno != 0 )
+        {
+            err = EM_ERR_fa
+            (
+                "nice( #<s2_t> ) failed: #<sc_t>\n"
+                "Choose a higher value or change the nice limit for the user as follows.\n"
+                "Open: /etc/security/limits.conf\n"
+                "Add/edit line: <username> soft nice <new limit>\n"
+                "Add/edit line: <username> hard nice <new limit>\n"
+                "<new limit> should be negative; lowest possible value is: -20\n",
+                nice_level, strerror( errno )
+            );
+        }
+    }
+    return err;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

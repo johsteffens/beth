@@ -194,6 +194,18 @@ func tp_t threads_get_id() = gettid();
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/** Sets nice level for this thread and threads spawned by this thread.
+ *  The lower the nice level the more privileged the thread will run.
+ *  nice_level acts additive to the nice level of the calling thread.
+ *  The absolute nice level range is -20 to +19;
+ *  To obtain an absolute nice level below 0, a user must have proper privileges,
+ *  which are defined in /etc/security/limits.conf .
+ *  If the desired nice level could not be obtained, an error is generated.
+ */
+func er_t threads_set_nice_level( s2_t nice_level );
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 #endif // XOILA_SECTION
