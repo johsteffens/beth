@@ -102,6 +102,9 @@ st_s* bcore_file_path_minimized( sc_t path )
         }
     }
 
+    // if path is relative, ensure that s stays relative
+    if( s->sc[ 0 ] == '/' && path[ 0 ] != '/' ) st_s_remove( s, 0, 1 );
+
     return s;
 }
 
