@@ -197,7 +197,12 @@ stamp :player_s
      */
     sz_t idle_zero_frames = 0;
 
-    /** Sets nice level for the audio thread. Range: [-20, 19]
+    /** Changes nice level for the audio thread. Range: [-20, 19]
+     *  Note: Instead of lowering this value here, consider calling function x_threads_set_nice_level
+     *  by the caller thread or even at program start. Spawned threads will inherit that new nice level.
+     *  Rationale: Unless the player's buffers pipeline remains large enough, the feeding thread
+     *  might need a higher priority, too.
+     *
      *  A negative level is useful for seamless streaming.
      *  An ineffective nice level will produce a warning message during player setup.
      *  Note that a regular user must have the permission for negative nice levels.

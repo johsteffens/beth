@@ -377,27 +377,7 @@ func (:player_s) bcore_inst_call.down_e { o.shut_down(); }
 
 func (:player_s) m_thread_func
 {
-    verbatim_C
-    {
-        int nice(int inc);
-        errno = 0;
-        if( nice( o->nice_level ) == -1 )
-        {
-            if( errno != 0 )
-            {
-                bcore_wrn_fa
-                (
-                    "nice( #<s2_t> ) failed: #<sc_t>\n"
-                    "Choose a higher value or change the nice limit for the user as folllows.\n"
-                    "Open: /etc/security/limits.conf\n"
-                    "Add/edit line: <username> soft nice <new limit>\n"
-                    "Add/edit line: <username> hard nice <new limit>\n"
-                    "<new limit> should be negative; lowest possible value is: -20\n",
-                    o->nice_level, strerror( errno )
-                );
-            }
-        }
-    }
+    if( o.nice_level != 0 ) x_threads_set_nice_level( o.nice_level );
 
     o.mutex.lock();
     while( !o.thread_exit_ )
