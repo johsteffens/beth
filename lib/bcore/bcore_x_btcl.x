@@ -27,7 +27,7 @@ name member, frame;
 name exp, log, log2, log10, sin, cos, tan, tanh, sign, sqrt, abs, ceil, floor, max, min, ife, size;
 
 // Group B, unary
-name identity, neg, not, print, println, printx, assert;
+name identity, neg, not, print, println, printx, assert, mkdir, rmdir;
 
 // Group C, unary
 name pow, div, mod, chain, mul_dot_colon, mul_dot, mul_colon;
@@ -73,6 +73,8 @@ func sc_t operator_symbol( tp_t type )
         case println~: = "PRINTLN";
         case printx~:  = "PRINTX";
         case assert~:  = "ASSERT";
+        case mkdir~:   = "MKDIR";
+        case rmdir~:   = "RMDIR";
 
         // Group B, unary
         case identity~: = "+";

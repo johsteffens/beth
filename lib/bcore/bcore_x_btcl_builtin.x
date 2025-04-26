@@ -40,6 +40,8 @@ name PRINT;
 name PRINTLN;
 name PRINTX;
 name ASSERT;
+name MKDIR;
+name RMDIR;
 
 // constants
 name true;
@@ -75,6 +77,8 @@ func (:context_s) set_reserved_funcs
     o.hmap_reserved_func.set_sc( "PRINTLN" );
     o.hmap_reserved_func.set_sc( "PRINTX" );
     o.hmap_reserved_func.set_sc( "ASSERT" );
+    o.hmap_reserved_func.set_sc( "MKDIR" );
+    o.hmap_reserved_func.set_sc( "RMDIR" );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -259,6 +263,24 @@ func (:frame_s) er_t eval_reserved_func( m@* o, tp_t name, m x_source* source, b
             if( !sb.is_numeric() ) = source.parse_error_fa( "Expression does not represent a condition.\n" );
             if( !sb.to_bl()      ) = source.parse_error_fa( "Assertion failed.\n" );
             sr.from_bl( true );
+        }
+        break;
+
+        case MKDIR~:
+        {
+            m$* sb = sr_s!^;
+            o.eval( 0, source, sb );
+            if( sb.type() != st_s~ ) = source.parse_error_fa( "Expression must represent a string.\n" );
+            sr.from_bl( bcore_folder_create( sb.o.cast( st_s* ).sc ) );
+        }
+        break;
+
+        case RMDIR~:
+        {
+            m$* sb = sr_s!^;
+            o.eval( 0, source, sb );
+            if( sb.type() != st_s~ ) = source.parse_error_fa( "Expression must represent a string.\n" );
+            sr.from_bl( bcore_folder_delete( sb.o.cast( st_s* ).sc ) );
         }
         break;
 
