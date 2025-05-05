@@ -1,4 +1,4 @@
-//  Last update: 2025-04-16T12:00:42Z
+//  Last update: 2025-05-05T12:07:49Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -49,7 +49,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_xoico 0xFCEA9227A21836B2ull
+// HKEYOF_xoico 0x12414203F088C384ull
 
 /**********************************************************************************************************************/
 // source: xoico.x
@@ -5206,8 +5206,8 @@ er_t xoico_target_s_expand_heading( const xoico_target_s* o, sz_t indent, x_sink
     // xoico_target.x:253:1
     BLM_INIT_LEVEL(0);
     x_sink_push_fa(sink,"/** This file was generated from xoila source code.\n" );
-    x_sink_push_fa(sink," *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens\n" );
-    x_sink_push_fa(sink," *  Note that any changes of this file can be erased or overwritten by XOICO.\n" );
+    x_sink_push_fa(sink," *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens\n" );
+    x_sink_push_fa(sink," *  Note that any manual changes in this file can be erased or overwritten by XOICO.\n" );
     x_sink_push_fa(sink," *\n" );
     
     if( o->copyright_and_license_terms )
@@ -11459,5 +11459,5 @@ int main( int argc, char** argv )
     BETH_CLOSEV( 0 );
     return retv;
 }
-// XOICO_BODY_SIGNATURE 0x946E47C1448310F5
-// XOICO_FILE_SIGNATURE 0xDE853AF0117955C8
+// XOICO_BODY_SIGNATURE 0x93671131A7D4732E
+// XOICO_FILE_SIGNATURE 0x15A080B08E5FE3D5

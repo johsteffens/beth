@@ -252,8 +252,8 @@ func (:s) er_t expand_update_time( c @* o, sz_t indent, m x_sink* sink )
 func (:s) er_t expand_heading( c @* o, sz_t indent, m x_sink* sink )
 {
     sink.push_fa( "/** This file was generated from xoila source code.\n" );
-    sink.push_fa( " *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens\n" );
-    sink.push_fa( " *  Note that any changes of this file can be erased or overwritten by XOICO.\n" );
+    sink.push_fa( " *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens\n" );
+    sink.push_fa( " *  Note that any manual changes in this file can be erased or overwritten by XOICO.\n" );
     sink.push_fa( " *\n" );
 
     if( o.copyright_and_license_terms )
