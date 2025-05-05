@@ -42,6 +42,7 @@ name PRINTX;
 name ASSERT;
 name MKDIR;
 name RMDIR;
+name FILE_EXISTS;
 
 // constants
 name true;
@@ -79,6 +80,7 @@ func (:context_s) set_reserved_funcs
     o.hmap_reserved_func.set_sc( "ASSERT" );
     o.hmap_reserved_func.set_sc( "MKDIR" );
     o.hmap_reserved_func.set_sc( "RMDIR" );
+    o.hmap_reserved_func.set_sc( "FILE_EXISTS" );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -281,6 +283,15 @@ func (:frame_s) er_t eval_reserved_func( m@* o, tp_t name, m x_source* source, b
             o.eval( 0, source, sb );
             if( sb.type() != st_s~ ) = source.parse_error_fa( "Expression must represent a string.\n" );
             sr.from_bl( bcore_folder_delete( sb.o.cast( st_s* ).sc ) );
+        }
+        break;
+
+        case FILE_EXISTS~:
+        {
+            m$* sb = sr_s!^;
+            o.eval( 0, source, sb );
+            if( sb.type() != st_s~ ) = source.parse_error_fa( "Expression must represent a string.\n" );
+            sr.from_bl( bcore_file_exists( sb.o.cast( st_s* ).sc ) );
         }
         break;
 

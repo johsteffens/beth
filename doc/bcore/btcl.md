@@ -715,30 +715,32 @@ Generic conversion is a btcl-specific type conversion when general stamps are in
 
 Built-in functions are available by the names listed in the table below. They are exportable as operator.
 
-|Name|Description|Type Name|Exportable|
-|:---|:---|----|----|
-|EXP|Exponentiation base ```e```|exp|yes|
-|LOG|Logarithm base ```e```|log|yes|
-|LOG2|Logarithm base ```2```|log2|yes|
-|LOG10|Logarithm base ```10```|log10|yes|
-|SIN|Sine|sin|yes|
-|COS|Cosine|cos|yes|
-|TAN|Tangent|tan|yes|
-|TANH|Hyperbolic Tangent|tanh|yes|
-|SIGN|Sign of value: ```1 or -1```|sign|yes|
-|SQRT|Square root|sqrt|yes|
-|ABS|Absolute value|abs|yes|
-|CEIL|Ceiling function|ceil|yes|
-|FLOOR|Floor function|floor|yes|
-|MAX|maximum of two operands|max|yes|
-|MIN|minimum of two operands|min|yes|
-|IFE|Conditional ternary operator: ```IFE( a, b, c ) == a ? b : c```|conditional|yes|
-|PRINT|Prints object to stdout in compact form; behaves as identity|print|no|
-|PRINTLN|Prints object to stdout in compact form; last character is 'newline'; behaves as identity|println|no|
-|PRINTX|Prints object to stdout in detailed form; behaves as identity|printx|no|
-|ASSERT|Creates an error condition in case expression evaluates to FALSE. Returns TRUE otherwise.|assert|no|
-|MKDIR|Creates a file system directory according to (string-)path specified as argument|mkdir|no|
-|RMDIR|Removes an empty file system directory according to (string-)path specified as argument|rmdir|no|
+|Name|Arity|Description|Type Name|Exportable|
+|:---|:---|----|----|----|
+|SIZE|1|Returns the size of an array or list.|size|yes|
+|EXP|1|Exponentiation base ```e```|exp|yes|
+|LOG|1|Logarithm base ```e```|log|yes|
+|LOG2|1|Logarithm base ```2```|log2|yes|
+|LOG10|1|Logarithm base ```10```|log10|yes|
+|SIN|1|Sine|sin|yes|
+|COS|1|Cosine|cos|yes|
+|TAN|1|Tangent|tan|yes|
+|TANH|1|Hyperbolic Tangent|tanh|yes|
+|SIGN|1|Sign of value: ```1 or -1```|sign|yes|
+|SQRT|1|Square root|sqrt|yes|
+|ABS|1|Absolute value|abs|yes|
+|CEIL|1|Ceiling function|ceil|yes|
+|FLOOR|1|Floor function|floor|yes|
+|MAX|2|maximum of two operands|max|yes|
+|MIN|2|minimum of two operands|min|yes|
+|IFE|3|Conditional ternary operator: ```IFE( a, b, c ) == a ? b : c```|conditional|yes|
+|PRINT|1|Prints object to stdout in compact form; behaves as identity|print|no|
+|PRINTLN|1|Prints object to stdout in compact form; last character is 'newline'; behaves as identity|println|no|
+|PRINTX|1|Prints object to stdout in detailed form; behaves as identity|printx|no|
+|ASSERT|1|Creates an error condition in case expression evaluates to FALSE. Returns TRUE otherwise.|assert|no|
+|MKDIR|1|Creates a file system directory according to (string-)path specified as argument|mkdir|no|
+|RMDIR|1|Removes an empty file system directory according to (string-)path specified as argument|rmdir|no|
+|FILE_EXISTS|1|Checks existence of a file path; returns result as boolean (`bl_t`)|file_exists|no|
 
 # Built-in Constants
 |Name|Description|

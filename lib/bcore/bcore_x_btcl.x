@@ -27,7 +27,7 @@ name member, frame;
 name exp, log, log2, log10, sin, cos, tan, tanh, sign, sqrt, abs, ceil, floor, max, min, ife, size;
 
 // Group B, unary
-name identity, neg, not, print, println, printx, assert, mkdir, rmdir;
+name identity, neg, not, print, println, printx, assert, mkdir, rmdir, file_exists;
 
 // Group C, unary
 name pow, div, mod, chain, mul_dot_colon, mul_dot, mul_colon;
@@ -75,6 +75,7 @@ func sc_t operator_symbol( tp_t type )
         case assert~:  = "ASSERT";
         case mkdir~:   = "MKDIR";
         case rmdir~:   = "RMDIR";
+        case file_exists~: = "FILE_EXISTS";
 
         // Group B, unary
         case identity~: = "+";
@@ -1373,7 +1374,7 @@ func (:frame_s) er_t eval( m@* o, s2_t exit_priority, m x_source* source, m sr_s
             tp_t wire_name = 0;
             if( source.parse_bl( " #?':' " ) )
             {
-                if( !:is_identifier( source ) ) = source.parse_error_fa( "Branch identifier expected.\n" );
+                if( !:is_identifier( source ) ) = source.parse_error_fa( "Socket identifier expected.\n" );
                 wire_name = bcore_name_enroll( o.nameof( o.get_identifier( source, true ) ) );
             }
 

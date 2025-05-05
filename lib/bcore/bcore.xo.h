@@ -1,4 +1,4 @@
-//  Last update: 2025-04-19T15:18:29Z
+//  Last update: 2025-05-04T07:37:48Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
  *  Note that any changes of this file can be erased or overwritten by XOICO.
@@ -2775,6 +2775,7 @@
 #define TYPEOF_assert 0xF89E75BDB43C5A5Bull
 #define TYPEOF_mkdir 0xB8EAA574819A7FF8ull
 #define TYPEOF_rmdir 0x77DFA1348BAE30DFull
+#define TYPEOF_file_exists 0x768CE74BE3F48C84ull
 #define TYPEOF_pow 0x779B5F19564F3B35ull
 #define TYPEOF_div 0xCAA83A18F46E5888ull
 #define TYPEOF_mod 0x0808591917670EE3ull
@@ -3033,6 +3034,7 @@
 #define TYPEOF_ASSERT 0xD98C44AF4A2B839Bull
 #define TYPEOF_MKDIR 0x0CCC8DE2A8526718ull
 #define TYPEOF_RMDIR 0xCAE889A2B1AE273Full
+#define TYPEOF_FILE_EXISTS 0xEDF53AFFC8673DC4ull
 #define TYPEOF_true 0x5B5C98EF514DBFA5ull
 #define TYPEOF_false 0xB5FAE2C14238B978ull
 #define TYPEOF_TRUE 0x704E59FAB561C2A5ull
@@ -4087,5 +4089,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xA550941584F9EF4C
-// XOICO_FILE_SIGNATURE 0x5C328F9A7469E5D5
+// XOICO_BODY_SIGNATURE 0x5E43AB2F0B261277
+// XOICO_FILE_SIGNATURE 0xAD25F1585B1D8716

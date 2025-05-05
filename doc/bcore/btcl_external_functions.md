@@ -1,6 +1,6 @@
 # Standard External Functions
 
-BTCL can execute stamp functionality with stamps implementing the features below.
+BTCL can execute stamp functionality with stamps implementing the features below. These define a set of functions. Each can be used in BTCL source code like a member function call.
 
 ## Features
 
@@ -21,7 +21,7 @@ feature er_t btcl_function( @* o, tp_t name, x_source_point_s* sp, m :frame_s* l
 // Overload for all mutable functions
 feature er_t m_btcl_function( m@* o, tp_t name, x_source_point_s* sp, m :frame_s* lexical_frame, bcore_arr_sr_s* args, m sr_s* result );
 ```
-These define a set of functions. Each can be used in BTCL source code like a member function call.
+
 
 ### Example: Definition (XOILA)
 
