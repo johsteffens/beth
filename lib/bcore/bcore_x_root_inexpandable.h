@@ -290,9 +290,12 @@ group bcore_stamp_funcs = bcore_inst
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// low level features
 group bcore_fp = bcore_inst
 {
-    feature '' er_t copy_typed( m @* o, tp_t type, vc_t src );
+    feature '' er_t copy_typed( m @* o, tp_t type, vc_t src  ); // ( perspectives: x_inst,   bcore_spect_inst   ) copy with type conversion
+    feature '' uz_t flow_snk  ( m @* o, vc_t data, uz_t size ); // ( perspectives: x_sink,   bcore_spect_sink   ) size in bytes; returns number of bytes transferred
+    feature '' uz_t flow_src  ( m @* o, vd_t data, uz_t size ); // ( perspectives: x_source, bcore_spect_source ) size in bytes; returns number of bytes transferred
 };
 
 //----------------------------------------------------------------------------------------------------------------------
