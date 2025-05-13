@@ -13,12 +13,12 @@
  *  limitations under the License.
  */
 
-/** Terminal based GUI (text, keyboard, mouse)
+/** Terminal (Text-based) User Interface (text, keyboard, mouse)
  *  - based on ncurses API
  *  - linker: -lncurses
  *
  *  Usage:
- *    - Instantiate bmedia_console_s;
+ *    - Instantiate bmedia_tconsole_s;
  *       - Calling 'setup' is optional. It is useful to control at which point the terminal is switched into GUI mode.
  *         Use argument 'NULL', if no input is desired.
  *       - Calling 'close' is optional. It is useful to temporarily leave the GUI mode.
@@ -32,17 +32,53 @@
  *       - see group 'event' for more details
  *
  *  Thread safe encapsulation of ncurses interface.
- *  -> Multiple instances of bmedia_console_s in different threads are allowed.
+ *  -> Multiple instances of bmedia_tconsole_s in different threads are allowed.
  *
  *  Issue while bmedia_console_s is active:
- *  In messages send to the terminal via stdout or stderr a newline is not treated as
- *  carriage return. This can lead to unexpected text-indentations.
+ *     In messages send to the terminal via stdout or stderr a newline is not treated as
+ *     carriage return. This can lead to unexpected text-indentations.
  *
- *  Remedies (choose a suitable option)
- *    - bmedia_console_s is also a x_sink perspective with correct newline handling.
- *    - Use member functions msg_fa, err_fa.
- *    - Call function 'close' or destroy the instance (this resets the terminal). If needed, re-open it later.
+ *     Remedies (choose a suitable option)
+ *       - bmedia_console_s is also a x_sink perspective with correct newline handling.
+ *       - Use member functions msg_fa, err_fa.
+ *       - Call function 'close' or destroy the instance (this resets the terminal). If needed, re-open it later.
  *
+ *
+ *  Simple Example
+
+    stamp example_s
+    {
+        bmedia_tconsole_s console;
+        bl_t exit;
+
+        func bmedia_tconsole_event.on_keyboard
+        {
+            if( event.chr == 'q' ) o.exit = true;
+            event.to_sink( o.console );
+            = 0;
+        }
+
+        // displays action type at mouse position
+        func bmedia_tconsole_event.on_mouse
+        {
+            o.console.w_clear();
+            o.console.w_color( yellow~, blue~, 3 );
+            o.console.w_text_fa( event.x, event.y, "#name", event.action );
+            o.console.w_show();
+            = 0;
+        }
+
+        func er_t run( m@* o )
+        {
+            while( !o.exit )
+            {
+                o.console.cycle( o );
+                x_threads_sleep_ms( 10 );
+            }
+            = 0;
+        }
+    }
+
  */
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -159,8 +195,6 @@ group :event
 
 //----------------------------------------------------------------------------------------------------------------------
 
-type WINDOW;
-
 stamp :s
 {
     /// parameters -----------------------------
@@ -176,6 +210,7 @@ stamp :s
     /// ----------------------------------------
 
     hidden WINDOW* window;
+    hidden SCREEN* screen;
     hidden :event* callback;
     hidden x_mutex_s* curses_mutex; // global mutex protecting ncurses interface at concurrent access
 
@@ -212,24 +247,24 @@ stamp :s
      *  Use preferably for text output.
      */
 
-    // obtains window dimensions
+    /// obtains window dimensions
     func er_t w_get_size( m@* o, m sz_t* width, m sz_t* height );
 
-    // sets text attributes (see attributes_s)
+    /// sets text attributes (see attributes_s)
     func er_t w_attr( m@* o, :attributes_s* attr );
 
-    // sets text color and brightness (see attributes_s color names)
+    /// sets text color and brightness (see attributes_s color names)
     func er_t w_color( m@* o, tp_t foreground, tp_t background, u0_t brightness /* [0,3] */ );
 
-    // outputs text at given position (might not be visible until 'w_show' is called)
+    /// outputs text at given position (might not be visible until 'w_show' is called)
     func er_t w_text   ( m@* o, sz_t x, sz_t y, sc_t text );
     func er_t w_text_fv( m@* o, sz_t x, sz_t y, sc_t format, va_list args );
     func er_t w_text_fa( m@* o, sz_t x, sz_t y, sc_t format, ... );
 
-    // clears content
+    /// clears content
     func er_t w_clear( m@* o );
 
-    // displays all changes from above functions
+    /// displays all changes from above functions
     func er_t w_show( m@* o );
 
     /** (Standard) text output at cursor position with specified attributes.
@@ -245,5 +280,5 @@ stamp :s
 
 /**********************************************************************************************************************/
 
-embed "bmedia_console_emb.x";
+embed "bmedia_tconsole.emb.x";
 

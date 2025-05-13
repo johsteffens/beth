@@ -247,7 +247,13 @@ func (:s) setup
     o.curses_mutex.create_lock()^;
 
     // initialize ncurses
-    o.window = initscr();
+
+    o.screen = newterm( getenv("TERM"), stdout, stdin );
+    if( !o.screen ) = GERR_fa( "ncurses: 'newterm' failed." );
+
+    o.window = stdscr;
+
+    //o.window = initscr();
     if( !o.window ) = GERR_fa( "ncurses: 'initscr' failed." );
 
     if( o.callback )
@@ -301,12 +307,15 @@ func (:s) setup
 
 func (:s) close
 {
-    if( o.callback )
+    if( o.window )
     {
 
         o.curses_mutex.create_lock()^;
+
         if( endwin() == ERR ) = GERR_fa( "curses: endwin failed." );
+        if( o.screen ) delscreen( o.screen );
         o.window = NULL;
+        o.screen = NULL;
 
         if( o.callback.defines_on_mouse() )
         {
@@ -458,7 +467,7 @@ func (:event_keyboard_s) er_t from_key_code( m@* o, s2_t key_code )
 
     if( key_code >= 0x00 && key_code <= 0x1A ) = o.setup( TYPEOF_ctrl_chr, key_code + 0x60 );
 
-    = TYPEOF_bmedia_console_unhandled_key_code;
+    = TYPEOF_bmedia_tconsole_unhandled_key_code;
 }
 
 func (:event_keyboard_s) to_sink
@@ -562,7 +571,7 @@ func (:s) er_t single_cycle( m@* o, m bl_t* success )
         {
              o.callback.on_keyboard( o.event_keyboard );
         }
-        else if( err == :unhandled_key_code~ )
+        else if( err == TYPEOF_bmedia_tconsole_unhandled_key_code )
         {
             if( o.report_unhandled_keys_to_stdout )
             {

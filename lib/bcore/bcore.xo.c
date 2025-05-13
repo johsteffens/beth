@@ -1,7 +1,7 @@
-//  Last update: 2025-05-09T19:51:47Z
+//  Last update: 2025-05-12T15:59:03Z
 /** This file was generated from xoila source code.
- *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
- *  Note that any manual changes in this file can be erased or overwritten by XOICO.
+ *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
+ *  Note that any changes of this file can be erased or overwritten by XOICO.
  *
  *  Copyright and License of this File:
  *
@@ -73,7 +73,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0x26C456943B60BD8Aull
+// HKEYOF_bcore 0x6F57AE818A0106F5ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -10568,5 +10568,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x350B1CB9CF0EC7E8
-// XOICO_FILE_SIGNATURE 0xD8C3B44ECCAC68E6
+// XOICO_BODY_SIGNATURE 0xAA88A8CE57F43F4D
+// XOICO_FILE_SIGNATURE 0x83D30BEE43922322
