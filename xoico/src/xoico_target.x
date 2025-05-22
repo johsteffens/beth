@@ -457,7 +457,6 @@ func (:s) er_t expand_c( c @* o, sz_t indent, m x_sink* sink, mutable tp_t* body
         sink_buf.push_fa( "#rn{ }{\n", indent );
         sink_buf.push_fa( "#rn{ }    BETH_USE( #<sc_t> );\n", indent, o.name.sc );
 
-
         if( c_style )
         {
             sink_buf.push_fa( "#rn{ }    int retv = #<sc_t>( argc, argv );\n", indent, o.compiler.nameof( o.main_function.global_name ) );

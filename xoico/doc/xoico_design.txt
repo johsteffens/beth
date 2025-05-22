@@ -683,6 +683,10 @@ FEATURES, BUGS ...
 
 - (done) Bug fix: overload feature transient type definition as if it occurs in traitline
 
+- (done)
+   Feature: allow member functions to be used as function pointer
+   flag waive_function_in_untraced_context is no longer necessary -> remove it
+
 TODO:
 
 - stamp: allow function-style readonly request of a member variable even if the function was not defined

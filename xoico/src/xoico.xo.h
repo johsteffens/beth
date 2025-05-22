@@ -1,7 +1,7 @@
-//  Last update: 2025-01-09T12:09:40Z
+//  Last update: 2025-05-22T11:33:59Z
 /** This file was generated from xoila source code.
- *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
- *  Note that any changes of this file can be erased or overwritten by XOICO.
+ *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
+ *  Note that any manual changes in this file can be erased or overwritten by XOICO.
  *
  *  Copyright and License of this File:
  *
@@ -1412,7 +1412,6 @@
       bl_t for_all_functions_enable_try; \
       bl_t waive_unknown_member_variable; \
       bl_t waive_unknown_member_function; \
-      bl_t waive_function_in_untraced_context; \
       bl_t waive_unknown_type; \
       bl_t waive_unknown_identifier; \
       bl_t waive_local_scope_operator_creates_implicit_block; \
@@ -2072,5 +2071,5 @@ BETH_EXPAND_GROUP_xoico_builder
 BETH_EXPAND_GROUP_xoico_main
 
 #endif // __xoico_xo_H
-// XOICO_BODY_SIGNATURE 0x7BBF1256BE9A2F56
-// XOICO_FILE_SIGNATURE 0x24D9614FF70C5153
+// XOICO_BODY_SIGNATURE 0xEDD3084A3B2B5E7C
+// XOICO_FILE_SIGNATURE 0x620D5FFA56734952

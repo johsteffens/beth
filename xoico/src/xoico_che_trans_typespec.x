@@ -221,13 +221,9 @@ func (:s) er_t trans_typespec_member
 
         if( try_member_object ) // member object
         {
-            if( o.compiler.get_type_member_object_info( in_typespec.type, tp_identifier, info ) ) // traced member object
+            // traced member object
+            if( o.compiler.get_type_member_object_info( in_typespec.type, tp_identifier, info ) )
             {
-                if( info.func )
-                {
-                    return source.parse_error_fa( "'#<sc_t>' is a member function.", o.nameof( tp_identifier ) );
-                }
-
                 if( in_typespec.indirection <= 1 )
                 {
                     result.push_fa( "#<sc_t>", ( in_typespec.indirection == 1 ) ? "->" : "." );
@@ -244,6 +240,21 @@ func (:s) er_t trans_typespec_member
 
                 o.trans_typespec_expression( source, result, info.type_info.typespec, out_typespec );
             }
+
+            // traced member function used as element of type fp_t
+            else if( o.compiler.get_type_member_function_info( in_typespec.type, tp_identifier, info ) )
+            {
+                result.clear();
+                result.push_fa( "#<sc_t>_#<sc_t>", o.nameof( in_typespec.type ), o.nameof( tp_identifier ) );
+
+                m$* typespec = xoico_typespec_s!^;
+                typespec.type = fp_t~;
+                typespec.indirection = 0;
+                typespec.access_class = const~;
+                typespec.flag_addressable = false;
+                o.trans_typespec_expression( source, result, typespec, out_typespec );
+            }
+
             else // untraced member object
             {
                 if( !o.waive_unknown_member_variable )

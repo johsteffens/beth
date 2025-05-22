@@ -220,9 +220,6 @@ stamp :s = aware :
     /// (purity) Condition: identifier specifies an undeclared member function
     bl_t waive_unknown_member_function = false;
 
-    /// (purity) Condition: trans_expression: function identifier is not used in a tractable way (e.g. not as function call).
-    bl_t waive_function_in_untraced_context = false;
-
     /// (purity) Condition: Unknown type was detected in an the arglist of a function
     bl_t waive_unknown_type = false;
 
@@ -267,7 +264,6 @@ stamp :s = aware :
 
         hash = bcore_tp_fold_bl( hash, o.waive_unknown_member_variable );
         hash = bcore_tp_fold_bl( hash, o.waive_unknown_member_function );
-        hash = bcore_tp_fold_bl( hash, o.waive_function_in_untraced_context );
         hash = bcore_tp_fold_bl( hash, o.waive_unknown_type );
         hash = bcore_tp_fold_bl( hash, o.waive_unknown_identifier );
         hash = bcore_tp_fold_bl( hash, o.waive_local_scope_operator_creates_implicit_block );
@@ -1434,12 +1430,17 @@ func (:s) er_t trans_expression
                 o.trans_function( source, false, func, NULL, NULL, result, typespec_ret );
                 o.trans_typespec_expression( source, result, typespec_ret, out_typespec );
             }
-            else // function name used in untraced context
+            else // function name used as fp_t
             {
-                if( !o.waive_function_in_untraced_context ) return source.parse_error_fa( "Function #<sc_t> used in untraced context.\n.", o.nameof( tp_identifier ) );
                 result.push_sc( o.nameof( tp_identifier ) );
                 source.set_index( source_index );
                 o.trans_whitespace( source, result );
+                m$* typespec = xoico_typespec_s!^;
+                typespec.type = fp_t~;
+                typespec.indirection = 0;
+                typespec.access_class = const~;
+                typespec.flag_addressable = false;
+                o.trans_typespec_expression( source, result, typespec, out_typespec );
             }
         }
         else // unknown/unspecified identifier
