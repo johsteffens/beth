@@ -60,15 +60,15 @@ func bl_t exists( tp_t type ) = bcore_flect_exists( type );
 /**********************************************************************************************************************/
 /// create/copy/clone/discard
 
-// t_create below behaves as shown but is defined elsewhere; hence commented out here to avoid xoico compiler errors
+// t_create below behaves as shown below but is defined elsewhere; hence commented out here to avoid xoico compiler errors
 //  func d obliv x_inst* t_create( tp_t type ) = bcore_inst_t_create( type )
     func d aware x_inst*   create( tp_t type ); // only for aware types (checked at runtime)
 
 func o t_copy( m obliv @* o, tp_t t, c@* src ) bcore_inst_t_copy( t, o.cast( m bcore_inst* ), src );
 func o   copy( m aware @* o,         c@* src ) bcore_inst_a_copy(    o.cast( m bcore_inst* ), src );
 
-func er_t t_copy_typed( m obliv @* o, tp_t t, tp_t type, c obliv @* src ) = bcore_inst_t_copy_typed( t,   o.cast( m bcore_inst* ), type, src );
-func er_t   copy_typed( m aware @* o,         tp_t type, c obliv @* src ) = bcore_inst_t_copy_typed( o._, o.cast( m bcore_inst* ), type, src );
+func er_t t_copy_typed( m obliv @* o, tp_t t, tp_t src_type, c obliv @* src ) = bcore_inst_t_copy_typed( t,   o.cast( m bcore_inst* ), src_type, src );
+func er_t   copy_typed( m aware @* o,         tp_t src_type, c obliv @* src ) = bcore_inst_t_copy_typed( o._, o.cast( m bcore_inst* ), src_type, src );
 
 func d (TO) @* t_clone( c obliv (TO) @* o, tp_t t ) = bcore_inst_t_clone( t, o.cast( bcore_inst* ) );
 func d (TO) @*   clone( c aware (TO) @* o         ) = bcore_inst_a_clone(    o.cast( bcore_inst* ) );
