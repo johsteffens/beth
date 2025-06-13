@@ -16,6 +16,10 @@
 /** Name management framework
  *  This framework links names to hash values and vice versa.
  *  Hash value 0 is reserved. Names resulting in hash 0 are rejected.
+ *  Collisions are checked where possible.
+ *
+ *  LIST OF KNOWN COLLISIONS:
+ *    - so far none is known -
  */
 
 #ifndef BCORE_NAME_MANAGER_H
@@ -49,11 +53,25 @@ BCORE_FORWARD_OBJECT( bcore_hmap_name_s );
 typedef struct st_s st_s;
 st_s* st_s_create();
 
-/// enroll name in global manager (thread safe); checks for collisions; returns hash; no effect if name is already enrolled
+/** Enrolls name in global manager (thread safe); returns hash; no effect if name is already enrolled
+ *  Checks for collisions; In case of collision, program aborts with message to stderr.
+ *  For a more controlled collision check, you can use functions 'check_collision' below.
+ *  A collision is extremely rare (none is known so far).
+ */
 tp_t bcore_name_enroll(                     sc_t name );             // enrolls name
 tp_t bcore_name_enroll_n(                   sc_t name, uz_t n );     // enrolls first n characters of name
 tp_t bcore_name_enroll_s(  tp_t name_space, sc_t name );             // enrolls name in a namespace
 tp_t bcore_name_enroll_sn( tp_t name_space, sc_t name, uz_t n );     // enrolls first n characters of name in a namespace
+
+/** Check for collision. Does not change state of name manager.
+ *  Also checks for hashing to '0' or invalid name space.
+ *  Returns 0 in case of no collision. Otherwise sends an error condition to the error manager.
+ *  In case of no collision, enroll functions above can be used safely.
+ */
+er_t bcore_name_check_collision(                     sc_t name );         // checks name
+er_t bcore_name_check_collision_n(                   sc_t name, uz_t n ); // checks first n characters of name
+er_t bcore_name_check_collision_s(  tp_t name_space, sc_t name );         // checks name in a namespace
+er_t bcore_name_check_collision_sn( tp_t name_space, sc_t name, uz_t n ); // checks first n characters of name in a namespace
 
 /// hash --> name; returns NULL when not enrolled (thread safe)
 sc_t bcore_name_try_name( tp_t type );

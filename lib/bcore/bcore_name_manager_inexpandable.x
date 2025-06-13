@@ -31,6 +31,10 @@
  *  However, nameof( type ) would yield different names.
  *  Therefore, trying to enroll both, causes a collision error.
  *  Best practice: Avoid colons inside regular names.
+ *
+ *
+ *  LIST OF KNOWN COLLISIONS:
+ *    - so far none is known -
  */
 
 /**********************************************************************************************************************/
@@ -44,11 +48,23 @@ identifier bnameof;
 
 group bcore_name = x_inst
 {
-    /// enroll name in global manager (thread safe); checks for collisions; returns hash; no effect if name is already enrolled
+    /** Enrolls name in global manager (thread safe); returns hash; no effect if name is already enrolled
+     *  Checks for collisions; In case of collision, program aborts with message to stderr.
+     *  For a more controlled collision check, you can use functions 'check_collision' below.
+     */
     func tp_t enroll(                     sc_t name );             // enrolls name
     func tp_t enroll_n(                   sc_t name, uz_t n );     // enrolls first n characters of name
     func tp_t enroll_s(  tp_t name_space, sc_t name );             // enrolls name in a namespace
     func tp_t enroll_sn( tp_t name_space, sc_t name, uz_t n );     // enrolls first n characters of name in a namespace
+
+    /** Check for collision. Does not change state of name manager.
+     *  Also checks for hashing to '0' or invalid name space.
+     *  Returns 0 in case of no collision. Otherwise sends an error condition to the error manager.
+     */
+    func er_t check_collision(                     sc_t name );         // checks name
+    func er_t check_collision_n(                   sc_t name, uz_t n ); // checks first n characters of name
+    func er_t check_collision_s(  tp_t name_space, sc_t name );         // checks name in a namespace
+    func er_t check_collision_sn( tp_t name_space, sc_t name, uz_t n ); // checks first n characters of name in a namespace
 
     /// hash --> name; returns NULL when not enrolled (thread safe)
     func sc_t try_name( tp_t type );
