@@ -128,9 +128,11 @@ st_s* st_s_push_fa(     st_s* o, sc_t format, ... );
 static inline s2_t st_s_cmp_sc(     const st_s* o, sc_t sc         ) { return bcore_strcmp( o ? o->sc : NULL, sc ); }
 static inline s2_t st_s_cmp_sc_n(   const st_s* o, sc_t sc, uz_t n ) { return bcore_strcmp_n( o ? o->sc : NULL, o ? o->size : 0, sc, n ); }
 static inline s2_t st_s_cmp_st(     const st_s* o, const st_s* st  ) { return bcore_strcmp( o ? o->sc : NULL, st ? st->sc : NULL ); }
+static inline s2_t st_s_cmp   (     const st_s* o, const st_s* st  ) { return bcore_strcmp( o ? o->sc : NULL, st ? st->sc : NULL ); }
 static inline bl_t st_s_equal_sc(   const st_s* o, sc_t sc         ) { return bcore_strcmp( o ? o->sc : NULL, sc ) == 0; }
 static inline bl_t st_s_equal_sc_n( const st_s* o, sc_t sc, uz_t n ) { return bcore_strcmp_n( o ? o->sc : NULL, o ? o->size : 0, sc, n ) == 0; }
 static inline bl_t st_s_equal_st(   const st_s* o, const st_s* st  ) { return bcore_strcmp( o ? o->sc : NULL, st ? st->sc : NULL ) == 0; }
+static inline bl_t st_s_equal   (   const st_s* o, const st_s* st  ) { return bcore_strcmp( o ? o->sc : NULL, st ? st->sc : NULL ) == 0; }
 
 /// true in case the rightbound characters of o are equal to st
 bl_t st_s_ends_in_st( const st_s* o, const st_s* st );

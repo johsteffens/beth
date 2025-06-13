@@ -1,7 +1,7 @@
-//  Last update: 2025-05-12T15:59:03Z
+//  Last update: 2025-06-13T10:45:30Z
 /** This file was generated from xoila source code.
- *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
- *  Note that any changes of this file can be erased or overwritten by XOICO.
+ *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
+ *  Note that any manual changes in this file can be erased or overwritten by XOICO.
  *
  *  Copyright and License of this File:
  *
@@ -73,7 +73,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0x6F57AE818A0106F5ull
+// HKEYOF_bcore 0x31F6F81EDEC1C979ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -102,13 +102,21 @@ XOILA_DEFINE_SPECT( bcore_inst, x_inst )
 
 x_inst* x_inst_create( tp_t type )
 {
-    // bcore_x_inst.h:93:1
+    // bcore_x_inst.h:94:1
     
     if( type != 0 && !x_stamp_t_is_aware(type ) )
     {
         ERR_fa( "Function 'x_inst:create' can only be used for aware types. Use 'x_inst:t_create' instead." );
     }
     return ((x_inst*)( bcore_inst_t_create(type )));
+}
+
+bl_t x_inst_exists( tp_t type )
+{
+    // bcore_x_inst.h:127:1
+    
+    ERR_fa( "'x_stamp_exists' is deprecated: use x_stamp_is_creatable" );
+    return  bcore_flect_exists( type );
 }
 
 /**********************************************************************************************************************/
@@ -542,7 +550,7 @@ BCORE_DEFINE_OBJECT_INST_P( x_stamp_path_s )
 
 void x_stamp_path_s_push_index( x_stamp_path_s* o, sz_t index )
 {
-    // bcore_x_stamp.h:179:5
+    // bcore_x_stamp.h:183:5
     
     x_stamp_path_s_push(o,TYPEOF_x_stamp_path_s_array_index );
     x_stamp_path_s_push(o,index );
@@ -550,7 +558,7 @@ void x_stamp_path_s_push_index( x_stamp_path_s* o, sz_t index )
 
 const x_stamp_path_s* x_stamp_path_s_to_sink( const x_stamp_path_s* o, bcore_sink* sink )
 {
-    // bcore_x_stamp.h:226:1
+    // bcore_x_stamp.h:230:1
     
     for(sz_t i = 0; i < o->size; i++ )
     {
@@ -570,7 +578,7 @@ const x_stamp_path_s* x_stamp_path_s_to_sink( const x_stamp_path_s* o, bcore_sin
 
 x_stamp_path_s* x_stamp_path_s_parse( x_stamp_path_s* o, x_source* source )
 {
-    // bcore_x_stamp.h:246:1
+    // bcore_x_stamp.h:250:1
     BLM_INIT_LEVEL(0);
     x_stamp_path_s_clear(o);
     st_s name;BLM_T_INIT_SPUSH(st_s, &name);;
@@ -598,7 +606,7 @@ x_stamp_path_s* x_stamp_path_s_parse( x_stamp_path_s* o, x_source* source )
 
 sr_s x_stamp_path_s_get_sr_in_t( const x_stamp_path_s* o, tp_t t, const x_inst* inst )
 {
-    // bcore_x_stamp.h:275:1
+    // bcore_x_stamp.h:279:1
     
     sr_s sr0 = sr_twc(t, inst );
     if( !sr0.o ) return  sr_null();
@@ -646,7 +654,7 @@ sr_s x_stamp_path_s_get_sr_in_t( const x_stamp_path_s* o, tp_t t, const x_inst* 
 
 sr_s x_stamp_path_s_set_sr_ret_in_t( const x_stamp_path_s* o, tp_t t, x_inst* inst, sr_s sr_src )
 {
-    // bcore_x_stamp.h:324:1
+    // bcore_x_stamp.h:328:1
     BLM_INIT_LEVEL(0);
     sr_s sr0 = sr_twc(t, inst );
     
@@ -719,7 +727,7 @@ XOILA_DEFINE_SPECT( x_inst, x_stamp )
 
 sr_s x_stamp_t_m_get_sr( x_stamp* o, tp_t t, tp_t name )
 {
-    // bcore_x_stamp.h:390:1
+    // bcore_x_stamp.h:394:1
     
     const bcore_via_s* p = bcore_via_s_get_typed( t );
     sz_t index = bcore_via_p_nget_index( p, ((const bcore_via*)(o)), name );
@@ -729,7 +737,7 @@ sr_s x_stamp_t_m_get_sr( x_stamp* o, tp_t t, tp_t name )
 
 sr_s x_stamp_t_m_get_sr_i( x_stamp* o, tp_t t, sz_t index )
 {
-    // bcore_x_stamp.h:400:1
+    // bcore_x_stamp.h:404:1
     
     const bcore_via_s* p = bcore_via_s_get_typed( t );
     if( index < 0 || index >= bcore_via_p_get_size( p, ((const bcore_via*)(o)) ) ) return  sr_null();
@@ -738,7 +746,7 @@ sr_s x_stamp_t_m_get_sr_i( x_stamp* o, tp_t t, sz_t index )
 
 er_t x_stamp_t_set_sr( x_stamp* o, tp_t t, tp_t name, sr_s sr_src )
 {
-    // bcore_x_stamp.h:413:1
+    // bcore_x_stamp.h:417:1
     
     const bcore_via_s* p = bcore_via_s_get_typed( t );
     sz_t index = bcore_via_p_nget_index( p, ((const bcore_via*)(o)), name );
@@ -752,7 +760,7 @@ er_t x_stamp_t_set_sr( x_stamp* o, tp_t t, tp_t name, sr_s sr_src )
 
 sr_s x_stamp_t_set_sr_ret( x_stamp* o, tp_t t, tp_t name, sr_s sr_src )
 {
-    // bcore_x_stamp.h:431:1
+    // bcore_x_stamp.h:435:1
     
     const bcore_via_s* p = bcore_via_s_get_typed( t );
     sz_t index = bcore_via_p_nget_index( p, ((const bcore_via*)(o)), name );
@@ -769,7 +777,7 @@ sr_s x_stamp_t_set_sr_ret( x_stamp* o, tp_t t, tp_t name, sr_s sr_src )
 
 er_t x_stamp_t_set_sr_i( x_stamp* o, tp_t t, sz_t index, sr_s sr_src )
 {
-    // bcore_x_stamp.h:452:1
+    // bcore_x_stamp.h:456:1
     
     const bcore_via_s* p = bcore_via_s_get_typed( t );
     if( index < 0 || index >= bcore_via_p_get_size( p, ((const bcore_via*)(o)) ) )
@@ -782,7 +790,7 @@ er_t x_stamp_t_set_sr_i( x_stamp* o, tp_t t, sz_t index, sr_s sr_src )
 
 sr_s x_stamp_t_set_sr_ret_i( x_stamp* o, tp_t t, sz_t index, sr_s sr_src )
 {
-    // bcore_x_stamp.h:469:1
+    // bcore_x_stamp.h:473:1
     
     const bcore_via_s* p = bcore_via_s_get_typed( t );
     if( index < 0 || index >= bcore_via_p_get_size( p, ((const bcore_via*)(o)) ) )
@@ -798,7 +806,7 @@ sr_s x_stamp_t_set_sr_ret_i( x_stamp* o, tp_t t, sz_t index, sr_s sr_src )
 
 sr_s x_stamp_t_c_get_sr( const x_stamp* o, tp_t t, tp_t name )
 {
-    // bcore_x_stamp.h:486:1
+    // bcore_x_stamp.h:490:1
     
     sr_s sr = x_stamp_t_m_get_sr(((x_stamp*)(o)),t, name );
     if( sr_s_is_weak(&(sr)) ) sr_s_set_const(&(sr),true );
@@ -807,7 +815,7 @@ sr_s x_stamp_t_c_get_sr( const x_stamp* o, tp_t t, tp_t name )
 
 sr_s x_stamp_t_c_get_sr_i( const x_stamp* o, tp_t t, sz_t index )
 {
-    // bcore_x_stamp.h:496:1
+    // bcore_x_stamp.h:500:1
     
     sr_s sr = x_stamp_t_m_get_sr_i(((x_stamp*)(o)),t, index );
     if( sr_s_is_weak(&(sr)) ) sr_s_set_const(&(sr),true );
@@ -816,7 +824,7 @@ sr_s x_stamp_t_c_get_sr_i( const x_stamp* o, tp_t t, sz_t index )
 
 void x_stamp_selftest( void )
 {
-    // bcore_x_stamp.h:509:1
+    // bcore_x_stamp.h:513:1
     BLM_INIT_LEVEL(0);
     bcore_prsg_lcg_u3_00_s lcg;BLM_T_INIT_SPUSH(bcore_prsg_lcg_u3_00_s, &lcg);;
     
@@ -6486,9 +6494,9 @@ XOILA_DEFINE_SPECT( x_inst, x_btcl )
 "{"
     "bcore_spect_header_s header;"
     "feature aware x_btcl : btcl_function_arity = x_btcl_btcl_function_arity_default;"
-    "feature aware x_btcl : btcl_function_mutable = x_btcl_btcl_function_mutable_default;"
     "feature aware x_btcl : btcl_function;"
     "feature aware x_btcl : m_btcl_function;"
+    "feature aware x_btcl : btcl_function_mutable = x_btcl_btcl_function_mutable_default;"
     "feature aware x_btcl : btcl_external_parse;"
     "feature aware x_btcl : m_btcl_external_parse;"
     "feature aware x_btcl : nullary_f3;"
@@ -9268,7 +9276,8 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             // source: bcore_x_inst.h
 
             // group: x_inst
-            BCORE_REGISTER_FUNC( x_inst_exists );
+            BCORE_REGISTER_FUNC( x_inst_is_creatable );
+            BCORE_REGISTER_FUNC( x_inst_has_reflection );
             BCORE_REGISTER_FUNC( x_inst_t_copy );
             BCORE_REGISTER_FUNC( x_inst_copy );
             BCORE_REGISTER_FUNC( x_inst_t_copy_typed );
@@ -9282,6 +9291,7 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FUNC( x_inst_create );
             BCORE_REGISTER_FUNC( x_inst_attend );
             BCORE_REGISTER_FUNC( x_inst_attn );
+            BCORE_REGISTER_FUNC( x_inst_exists );
             XOILA_REGISTER_SPECT( x_inst );
 
             // --------------------------------------------------------------------
@@ -9485,8 +9495,11 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_NAME( sr_s );
             BCORE_REGISTER_OBJECT( x_stamp_path_s );
             BCORE_REGISTER_OBJECT( x_stamp_path_adl_s );
+            BCORE_REGISTER_FUNC( x_stamp_is_stamp );
+            BCORE_REGISTER_FUNC( x_stamp_t_is_stamp );
             BCORE_REGISTER_FUNC( x_stamp_size );
             BCORE_REGISTER_FUNC( x_stamp_t_size );
+            BCORE_REGISTER_FUNC( x_stamp_is_leaf );
             BCORE_REGISTER_FUNC( x_stamp_t_is_leaf );
             BCORE_REGISTER_FUNC( x_stamp_is_aware );
             BCORE_REGISTER_FUNC( x_stamp_t_is_aware );
@@ -10194,10 +10207,10 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( x_btcl_s );
             BCORE_REGISTER_FEATURE( x_btcl_btcl_function_arity );
             BCORE_REGISTER_FFUNC( x_btcl_btcl_function_arity, x_btcl_btcl_function_arity_default );
-            BCORE_REGISTER_FEATURE( x_btcl_btcl_function_mutable );
-            BCORE_REGISTER_FFUNC( x_btcl_btcl_function_mutable, x_btcl_btcl_function_mutable_default );
             BCORE_REGISTER_FEATURE( x_btcl_btcl_function );
             BCORE_REGISTER_FEATURE( x_btcl_m_btcl_function );
+            BCORE_REGISTER_FEATURE( x_btcl_btcl_function_mutable );
+            BCORE_REGISTER_FFUNC( x_btcl_btcl_function_mutable, x_btcl_btcl_function_mutable_default );
             BCORE_REGISTER_FEATURE( x_btcl_btcl_external_parse );
             BCORE_REGISTER_FEATURE( x_btcl_m_btcl_external_parse );
             BCORE_REGISTER_FEATURE( x_btcl_nullary_f3 );
@@ -10568,5 +10581,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0xAA88A8CE57F43F4D
-// XOICO_FILE_SIGNATURE 0x83D30BEE43922322
+// XOICO_BODY_SIGNATURE 0x25D08D328B14FC25
+// XOICO_FILE_SIGNATURE 0xDFEFFDD0AE378AA2

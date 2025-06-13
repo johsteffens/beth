@@ -1,7 +1,7 @@
-//  Last update: 2025-05-04T07:37:48Z
+//  Last update: 2025-06-13T10:45:30Z
 /** This file was generated from xoila source code.
- *  Compiling Agent : XOICO (C) 2020 ... 2024 J.B.Steffens
- *  Note that any changes of this file can be erased or overwritten by XOICO.
+ *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
+ *  Note that any manual changes in this file can be erased or overwritten by XOICO.
  *
  *  Copyright and License of this File:
  *
@@ -106,11 +106,12 @@
 #define TYPEOF_x_inst_spect_s 0x6B610F4B8E350C20ull
 #define BETH_EXPAND_GROUP_x_inst \
   BCORE_FORWARD_OBJECT( x_inst ); \
-  static inline bl_t x_inst_exists( tp_t type ); \
+  static inline bl_t x_inst_is_creatable( tp_t type ); \
+  static inline bl_t x_inst_has_reflection( tp_t type ); \
   static inline x_inst* x_inst_t_copy( x_inst* o, tp_t t, const x_inst* src ); \
   static inline x_inst* x_inst_copy( x_inst* o, const x_inst* src ); \
-  static inline er_t x_inst_t_copy_typed( x_inst* o, tp_t t, tp_t type, const x_inst* src ); \
-  static inline er_t x_inst_copy_typed( x_inst* o, tp_t type, const x_inst* src ); \
+  static inline er_t x_inst_t_copy_typed( x_inst* o, tp_t t, tp_t src_type, const x_inst* src ); \
+  static inline er_t x_inst_copy_typed( x_inst* o, tp_t src_type, const x_inst* src ); \
   static inline x_inst* x_inst_t_clone( const x_inst* o, tp_t t ); \
   static inline x_inst* x_inst_clone( const x_inst* o ); \
   static inline void x_inst_t_discard( x_inst* o, tp_t t ); \
@@ -120,16 +121,18 @@
   x_inst* x_inst_create( tp_t type ); \
   static inline const x_inst* x_inst_attend( const x_inst* o, const x_inst* a ); \
   static inline const x_inst* x_inst_attn( const x_inst* o, const x_inst* a ); \
+  bl_t x_inst_exists( tp_t type ); \
   XOILA_DECLARE_SPECT( x_inst ) \
   { \
       bcore_spect_header_s header; \
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_inst ) \
-  static inline bl_t x_inst_exists( tp_t type ){return  bcore_flect_exists( type );} \
+  static inline bl_t x_inst_is_creatable( tp_t type ){return  bcore_flect_exists( type );} \
+  static inline bl_t x_inst_has_reflection( tp_t type ){return  bcore_flect_exists( type );} \
   static inline x_inst* x_inst_t_copy( x_inst* o, tp_t t, const x_inst* src ){bcore_inst_t_copy( t, ((bcore_inst*)(o)), src );return o;} \
   static inline x_inst* x_inst_copy( x_inst* o, const x_inst* src ){bcore_inst_a_copy(    ((bcore_inst*)(o)),((const bcore_inst*)(src )));return o;} \
-  static inline er_t x_inst_t_copy_typed( x_inst* o, tp_t t, tp_t type, const x_inst* src ){return  bcore_inst_t_copy_typed( t,   ((bcore_inst*)(o)), type, src );} \
-  static inline er_t x_inst_copy_typed( x_inst* o, tp_t type, const x_inst* src ){return  bcore_inst_t_copy_typed( o->_, ((bcore_inst*)(o)), type, src );} \
+  static inline er_t x_inst_t_copy_typed( x_inst* o, tp_t t, tp_t src_type, const x_inst* src ){return  bcore_inst_t_copy_typed( t,   ((bcore_inst*)(o)), src_type, src );} \
+  static inline er_t x_inst_copy_typed( x_inst* o, tp_t src_type, const x_inst* src ){return  bcore_inst_t_copy_typed( o->_, ((bcore_inst*)(o)), src_type, src );} \
   static inline x_inst* x_inst_t_clone( const x_inst* o, tp_t t ){return  bcore_inst_t_clone( t, ((const bcore_inst*)(o)) );} \
   static inline x_inst* x_inst_clone( const x_inst* o ){return ((x_inst*)( bcore_inst_a_clone(    ((const bcore_inst*)(o)) )));} \
   static inline void x_inst_t_discard( x_inst* o, tp_t t ){bcore_inst_t_discard( t, ((bcore_inst*)(o)) );} \
@@ -632,8 +635,11 @@
   BCORE_FORWARD_OBJECT( x_stamp ); \
   BCORE_FORWARD_OBJECT( x_stamp_path_s ); \
   BCORE_FORWARD_OBJECT( x_stamp_path_adl_s ); \
+  static inline bl_t x_stamp_is_stamp( const x_stamp* o ); \
+  static inline bl_t x_stamp_t_is_stamp( tp_t t ); \
   static inline sz_t x_stamp_size( const x_stamp* o ); \
   static inline sz_t x_stamp_t_size( tp_t t ); \
+  static inline bl_t x_stamp_is_leaf( const x_stamp* o ); \
   static inline bl_t x_stamp_t_is_leaf( tp_t t ); \
   static inline bl_t x_stamp_is_aware( const x_stamp* o ); \
   static inline bl_t x_stamp_t_is_aware( tp_t t ); \
@@ -716,8 +722,11 @@
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_stamp ) \
   BETH_EXPAND_ITEM_x_stamp_path_s \
   BETH_EXPAND_ITEM_x_stamp_path_adl_s \
+  static inline bl_t x_stamp_is_stamp( const x_stamp* o ){return  x_inst_has_reflection(o->_ );} \
+  static inline bl_t x_stamp_t_is_stamp( tp_t t ){return  x_inst_has_reflection(t );} \
   static inline sz_t x_stamp_size( const x_stamp* o ){return  bcore_via_a_get_size( ((const bcore_via*)(o)) );} \
   static inline sz_t x_stamp_t_size( tp_t t ){return  bcore_via_t_get_size( t, NULL );} \
+  static inline bl_t x_stamp_is_leaf( const x_stamp* o ){return  bcore_via_a_is_leaf(((const bcore_via*)( o )));} \
   static inline bl_t x_stamp_t_is_leaf( tp_t t ){return  bcore_via_t_is_leaf( t, NULL );} \
   static inline bl_t x_stamp_is_aware( const x_stamp* o ){return  bcore_via_a_is_aware( ((const bcore_via*)(o)) );} \
   static inline bl_t x_stamp_t_is_aware( tp_t t ){return  bcore_via_t_is_aware( t, NULL );} \
@@ -3100,9 +3109,9 @@
   er_t x_btcl_bop_cat_ab( sr_s* a, sr_s* b, sr_s* sr ); \
   void x_btcl_selftest( sc_t file ); \
   typedef sz_t (*x_btcl_btcl_function_arity)(const x_btcl* o, tp_t name ); \
-  typedef bl_t (*x_btcl_btcl_function_mutable)(const x_btcl* o, tp_t name ); \
   typedef er_t (*x_btcl_btcl_function)(const x_btcl* o, tp_t name, const x_source_point_s* sp, x_btcl_frame_s* lexical_frame, const bcore_arr_sr_s* args, sr_s* result ); \
   typedef er_t (*x_btcl_m_btcl_function)(x_btcl* o, tp_t name, const x_source_point_s* sp, x_btcl_frame_s* lexical_frame, const bcore_arr_sr_s* args, sr_s* result ); \
+  typedef bl_t (*x_btcl_btcl_function_mutable)(const x_btcl* o, tp_t name ); \
   typedef er_t (*x_btcl_btcl_external_parse)(const x_btcl* o, x_source* source, x_btcl_frame_s* lexical_frame, sr_s* result ); \
   typedef er_t (*x_btcl_m_btcl_external_parse)(x_btcl* o, x_source* source, x_btcl_frame_s* lexical_frame, sr_s* result ); \
   typedef f3_t (*x_btcl_nullary_f3)(const x_btcl* o ); \
@@ -3113,9 +3122,9 @@
   { \
       bcore_spect_header_s header; \
       x_btcl_btcl_function_arity btcl_function_arity; \
-      x_btcl_btcl_function_mutable btcl_function_mutable; \
       x_btcl_btcl_function btcl_function; \
       x_btcl_m_btcl_function m_btcl_function; \
+      x_btcl_btcl_function_mutable btcl_function_mutable; \
       x_btcl_btcl_external_parse btcl_external_parse; \
       x_btcl_m_btcl_external_parse m_btcl_external_parse; \
       x_btcl_nullary_f3 nullary_f3; \
@@ -3130,11 +3139,6 @@
   static inline sz_t x_btcl_t_btcl_function_arity( const x_btcl* o, tp_t t, tp_t name ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_typed( t ); assert( p->btcl_function_arity ); return p->btcl_function_arity( o, name );} \
   static inline bl_t x_btcl_t_defines_btcl_function_arity( tp_t t ){ return  true;} \
   static inline sz_t x_btcl_btcl_function_arity_default( const x_btcl* o, tp_t name ){return  -1;} \
-  static inline bl_t x_btcl_a_btcl_function_mutable( const x_btcl* o, tp_t name ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_aware( o ); assert( p->btcl_function_mutable ); return p->btcl_function_mutable( o, name );} \
-  static inline bl_t x_btcl_defines_btcl_function_mutable( const x_btcl* o ){ return  true;} \
-  static inline bl_t x_btcl_t_btcl_function_mutable( const x_btcl* o, tp_t t, tp_t name ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_typed( t ); assert( p->btcl_function_mutable ); return p->btcl_function_mutable( o, name );} \
-  static inline bl_t x_btcl_t_defines_btcl_function_mutable( tp_t t ){ return  true;} \
-  static inline bl_t x_btcl_btcl_function_mutable_default( const x_btcl* o, tp_t name ){return  false;} \
   static inline er_t x_btcl_a_btcl_function( const x_btcl* o, tp_t name, const x_source_point_s* sp, x_btcl_frame_s* lexical_frame, const bcore_arr_sr_s* args, sr_s* result ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_aware( o ); assert( p->btcl_function ); return p->btcl_function( o, name, sp, lexical_frame, args, result );} \
   static inline bl_t x_btcl_defines_btcl_function( const x_btcl* o ){  return x_btcl_spect_s_get_aware( o )->btcl_function != NULL;} \
   static inline er_t x_btcl_t_btcl_function( const x_btcl* o, tp_t t, tp_t name, const x_source_point_s* sp, x_btcl_frame_s* lexical_frame, const bcore_arr_sr_s* args, sr_s* result ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_typed( t ); assert( p->btcl_function ); return p->btcl_function( o, name, sp, lexical_frame, args, result );} \
@@ -3143,6 +3147,11 @@
   static inline bl_t x_btcl_defines_m_btcl_function( const x_btcl* o ){  return x_btcl_spect_s_get_aware( o )->m_btcl_function != NULL;} \
   static inline er_t x_btcl_t_m_btcl_function( x_btcl* o, tp_t t, tp_t name, const x_source_point_s* sp, x_btcl_frame_s* lexical_frame, const bcore_arr_sr_s* args, sr_s* result ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_typed( t ); assert( p->m_btcl_function ); return p->m_btcl_function( o, name, sp, lexical_frame, args, result );} \
   static inline bl_t x_btcl_t_defines_m_btcl_function( tp_t t ){  return x_btcl_spect_s_get_typed( t )->m_btcl_function != NULL;} \
+  static inline bl_t x_btcl_a_btcl_function_mutable( const x_btcl* o, tp_t name ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_aware( o ); assert( p->btcl_function_mutable ); return p->btcl_function_mutable( o, name );} \
+  static inline bl_t x_btcl_defines_btcl_function_mutable( const x_btcl* o ){ return  true;} \
+  static inline bl_t x_btcl_t_btcl_function_mutable( const x_btcl* o, tp_t t, tp_t name ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_typed( t ); assert( p->btcl_function_mutable ); return p->btcl_function_mutable( o, name );} \
+  static inline bl_t x_btcl_t_defines_btcl_function_mutable( tp_t t ){ return  true;} \
+  static inline bl_t x_btcl_btcl_function_mutable_default( const x_btcl* o, tp_t name ){return  x_btcl_defines_m_btcl_function(o);} \
   static inline er_t x_btcl_a_btcl_external_parse( const x_btcl* o, x_source* source, x_btcl_frame_s* lexical_frame, sr_s* result ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_aware( o ); assert( p->btcl_external_parse ); return p->btcl_external_parse( o, source, lexical_frame, result );} \
   static inline bl_t x_btcl_defines_btcl_external_parse( const x_btcl* o ){  return x_btcl_spect_s_get_aware( o )->btcl_external_parse != NULL;} \
   static inline er_t x_btcl_t_btcl_external_parse( const x_btcl* o, tp_t t, x_source* source, x_btcl_frame_s* lexical_frame, sr_s* result ){ const x_btcl_spect_s* p = x_btcl_spect_s_get_typed( t ); assert( p->btcl_external_parse ); return p->btcl_external_parse( o, source, lexical_frame, result );} \
@@ -4089,5 +4098,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x5E43AB2F0B261277
-// XOICO_FILE_SIGNATURE 0xAD25F1585B1D8716
+// XOICO_BODY_SIGNATURE 0x891ECF8B39DBA421
+// XOICO_FILE_SIGNATURE 0x5208C3B9F934EEA7

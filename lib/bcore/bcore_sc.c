@@ -713,6 +713,25 @@ bl_t sc_t_any( char c, sc_t str )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+er_t sc_t_parse_em_fv( sc_t o, uz_t start, uz_t end, uz_t* out_idx, sc_t format, va_list args )
+{
+    st_s st = st_weak_sc( o ); // disposable weak st; no destructor needed
+    return st_s_parse_em_fv( &st, start, end, out_idx, format, args );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+er_t sc_t_parse_em_fa( sc_t o, uz_t start, uz_t end, uz_t* out_idx, sc_t format, ... )
+{
+    va_list args;
+    va_start( args, format );
+    er_t err = sc_t_parse_em_fv( o, start, end, out_idx, format, args );
+    va_end( args );
+    return err;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 vd_t bcore_sc_signal_handler( const bcore_signal_s* o )

@@ -104,6 +104,14 @@ stamp :mutex_s
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/** The condition can be used in periodic polling to improve runtime efficiency.
+ *
+ *  Usage:
+ *   - Instantiate and share across threads.
+ *   - Use functions sleep, wake_one, wake_all as needed from any thread
+ *   - Read usage and precaution for function 'sleep'
+ *
+ */
 stamp :condition_s
 {
     private pthread_cond_t _cond; // do not access directly
@@ -111,11 +119,11 @@ stamp :condition_s
     func bcore_inst_call.down_e;
 
     /** sleep: Suspends calling thread until woken from another thread.
+     *  The function unlocks the mutex upon entering and re-locks upon exiting.
+     *  The mutex passed as argument must be locked.
      *  This function binds the condition to the mutex until return.
      *  The function exits only when receiving a 'wakeup' signal.
      *  A wakeup signal can be triggered by one of the wake functions below.
-     *  The mutex passed as argument must be locked.
-     *  The function unlocks the mutex upon entering and re-locks upon exiting.
      *
      *  Beware of spurious wakeups:
      *     A wakeup signal can also spuriously occur (e.g. on specific system events) without
@@ -139,6 +147,16 @@ stamp :condition_s
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/** Thread framework: Starts and controls a thread-function in an object.
+ *
+ *  Usage:
+ *   - Create an object that has x_thread_s as member.
+ *   - Implement feature x_thread.m_thread_func or x_thread.c_thread_func in that object.
+ *   - Use function x_thread_s_call_* to start the thread function in that object when wanted.
+ *   - Use function x_thread_s_join to wait for the thread function to return.
+ *   - The destructor of x_thread_s joins automatically if not already joined.
+ *
+ */
 group :thread
 {
     group :result {};

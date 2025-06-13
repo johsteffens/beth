@@ -268,6 +268,11 @@ identifier bcore_diff_aware;
 identifier bcore_diff_sr;
 identifier bcore_diff_q_sr;
 
+/// initialization phase
+identifier bcore_set_main_p_args;
+identifier bcore_get_main_p_argc;
+identifier bcore_get_main_p_argv;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 group bcore_inst  = bcore_inst {};

@@ -151,21 +151,21 @@ func er_t parse_create_object( m x_source* source, m sr_s* obj ) = :s!^.parse_cr
  *  See btcl_x_test.x for an example implementation
  */
 
-// (required) return -1 when function 'name' is not defined
+/// (required) return -1 when function 'name' is not defined
 feature 'at' sz_t btcl_function_arity( @* o, tp_t name ) = -1;
 
-// (optional) indicates if calling the btcl function changes the underlying instance;
-// If true, btcl creates a copy before calling.
-feature 'at' bl_t btcl_function_mutable( @* o, tp_t name ) = false;
-
-// Depending on mutability one or both of the following functions must be implemented.
-// All names declared by arity must be handled in one of these functions.
-
-// Overload for all const functions
+/// Overload for all const functions
 feature 'at' er_t btcl_function( @* o, tp_t name, x_source_point_s* sp, m :frame_s* lexical_frame, bcore_arr_sr_s* args, m sr_s* result );
 
-// Overload for all mutable functions
+/// Overload for all mutable functions
 feature 'at' er_t m_btcl_function( m@* o, tp_t name, x_source_point_s* sp, m :frame_s* lexical_frame, bcore_arr_sr_s* args, m sr_s* result );
+
+/** Indicates if calling the btcl function changes the underlying instance;
+ *  Overload required if o defines both mutable and non-mutable btcl functions.
+ *  If not overloaded, btcl simply links mutability with the existence of m_btcl_function.
+ *  in case of mutability, btcl creates a copy before calling.
+ */
+feature 'at' bl_t btcl_function_mutable( @* o, tp_t name ) = o.defines_m_btcl_function();
 
 //----------------------------------------------------------------------------------------------------------------------
 

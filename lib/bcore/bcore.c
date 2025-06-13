@@ -27,9 +27,7 @@
 /**********************************************************************************************************************/
 
 static bcore_arr_fp_s* signal_handler_arr_fp_g = NULL;
-
 static bcore_mutex_s mutex;
-
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -37,10 +35,13 @@ static void init_once()
 {
     /** System wide settings
      *  Locale settings can afffect printf and scanf using a decimal point vs a decimal comma.
-     *  Within beth a decimal point is preferred at all times. It is currently unclear whether
-     *  we should enforce it via setlocale below.
+     *  Within beth a decimal point is preferred at all times.
+     *
+     *  We should enforce it via setlocale below because scanf is used to scan floating point
+     *  data from text sources. E.g. via btml, btcl etc. Variable treatment can make parameter
+     *  files unreadable across platforms.
      */
-//    setlocale( LC_ALL, "C" );
+    setlocale( LC_ALL, "C" );
 
     /// bcore-library initialization
     bcore_signal_s signal_init0 = bcore_signal_init( TYPEOF_all, TYPEOF_init0, NULL );

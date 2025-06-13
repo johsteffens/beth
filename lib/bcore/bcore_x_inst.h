@@ -54,13 +54,14 @@ signature s2_t main( bcore_arr_st_s* args );
 /**********************************************************************************************************************/
 /// existence
 
-// checks existence of type
-func bl_t exists( tp_t type ) = bcore_flect_exists( type );
+// checks if type is instantiable
+func bl_t is_creatable  ( tp_t type ) = bcore_flect_exists( type );
+func bl_t has_reflection( tp_t type ) = bcore_flect_exists( type );
 
 /**********************************************************************************************************************/
 /// create/copy/clone/discard
 
-// t_create below behaves as shown below but is defined elsewhere; hence commented out here to avoid xoico compiler errors
+// t_create below behaves as shown below but is implicity defined by xoico; hence commented out here to avoid xoico compiler errors
 //  func d obliv x_inst* t_create( tp_t type ) = bcore_inst_t_create( type )
     func d aware x_inst*   create( tp_t type ); // only for aware types (checked at runtime)
 
@@ -118,7 +119,19 @@ func a attn  ( @* o, @* a ) = a;
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+/// deprecated
 
+//----------------------------------------------------------------------------------------------------------------------
+
+func bl_t exists( tp_t type )
+{
+    ERR_fa( "'x_stamp_exists' is deprecated: use x_stamp_is_creatable" );
+    = bcore_flect_exists( type );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 #endif // XOILA_SECTION
 
 #endif  // BCORE_X_INST_H

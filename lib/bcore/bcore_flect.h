@@ -481,7 +481,7 @@ void bcore_self_s_struct_to_sink( const bcore_self_s* o, sz_t indent, bcore_sink
 /**********************************************************************************************************************/
 /// Global reflection manager (thread safe)
 
-bl_t  bcore_flect_exists(                 tp_t type );   // checks existence of type  (thread safe)
+bl_t  bcore_flect_exists(                 tp_t type );   // checks if type has a reflection (thread safe)
 const bcore_self_s* bcore_flect_try_self( tp_t type );   // returns NULL when type does not exist  (thread safe)
 const bcore_self_s* bcore_flect_get_self( tp_t type );   // error when type does not exist  (thread safe)
 sz_t  bcore_flect_size();                                // number of registered reflections

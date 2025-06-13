@@ -35,17 +35,21 @@ XOILA_DEFINE_GROUP( x_stamp, x_inst )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// checks if object is a stamp (meaning that it has a reflection and can be created via x_inst_create)
+func bl_t   is_stamp( c aware @* o ) = x_inst_has_reflection( o._ );
+func bl_t t_is_stamp( tp_t t )       = x_inst_has_reflection( t );
+
 /// returns number of elements available
 func sz_t   size( c aware @* o ) = bcore_via_a_get_size( o.cast( c bcore_via* ) );
 func sz_t t_size( tp_t t ) = bcore_via_t_get_size( t, NULL );
 
-/// checks if t is a leaf-type (note that leaf types are not self-aware)
-//func bl_t   is_leaf( c aware @* o ) = bcore_via_a_is_leaf( o );
-func bl_t t_is_leaf( tp_t t ) = bcore_via_t_is_leaf( t, NULL );
+/// checks if object is a leaf-type (note that leaf types are usually not self-aware)
+func bl_t   is_leaf( c aware @* o ) = bcore_via_a_is_leaf( o );
+func bl_t t_is_leaf( tp_t t )       = bcore_via_t_is_leaf( t, NULL );
 
 /// checks if object is aware
 func bl_t   is_aware( c aware @* o ) = bcore_via_a_is_aware( o.cast( c bcore_via* ) );
-func bl_t t_is_aware( tp_t t ) = bcore_via_t_is_aware( t, NULL );
+func bl_t t_is_aware( tp_t t )       = bcore_via_t_is_aware( t, NULL );
 
 /// checks if object is an array
 func bl_t   is_array( c aware @* o ) = bcore_spect_trait_supported( TYPEOF_bcore_array, o._ );
@@ -53,7 +57,7 @@ func bl_t t_is_array( tp_t t )       = bcore_spect_trait_supported( TYPEOF_bcore
 
 /// checks if object is an array without additional elements (pure arrays are not leafs)
 func bl_t   is_pure_array( c aware @* o ) = bcore_via_a_is_pure_array( o.cast( c bcore_via* ) );
-func bl_t t_is_pure_array( tp_t t ) = bcore_via_t_is_pure_array( t, NULL );
+func bl_t t_is_pure_array( tp_t t )       = bcore_via_t_is_pure_array( t, NULL );
 
 /// returns name of indexed element
 func tp_t   name( c aware @* o, sz_t index ) = bcore_via_a_iget_name( o.cast( c bcore_via* ), index );
@@ -69,21 +73,21 @@ func bl_t t_exists( tp_t t,       tp_t name ) = bcore_via_t_nexists( t, NULL, na
 
 /// checks if element is static (type need not be recorded)
 func bl_t   is_static_i( aware @* o, sz_t index ) = bcore_via_a_iis_static( o.cast( c bcore_via* ), index );
-func bl_t t_is_static_i( tp_t t, sz_t index )     = bcore_via_t_iis_static( t, NULL, index );
+func bl_t t_is_static_i( tp_t t,     sz_t index ) = bcore_via_t_iis_static( t, NULL, index );
 func bl_t   is_static  ( aware @* o, tp_t name )  = bcore_via_a_nis_static( o.cast( c bcore_via* ), name );
-func bl_t t_is_static  ( tp_t t, tp_t name )      = bcore_via_t_nis_static( t, NULL, name );
+func bl_t t_is_static  ( tp_t t,     tp_t name )  = bcore_via_t_nis_static( t, NULL, name );
 
 /// checks if element is a link (means that it can be NULL); (Note: An array is a distinct static object -> not a link)
 func bl_t   is_link_i( aware @* o, sz_t index ) = bcore_via_a_iis_link( o.cast( c bcore_via* ), index );
-func bl_t t_is_link_i( tp_t t, sz_t index )     = bcore_via_t_iis_link( t, NULL, index );
+func bl_t t_is_link_i( tp_t t,     sz_t index ) = bcore_via_t_iis_link( t, NULL, index );
 func bl_t   is_link  ( aware @* o, tp_t name )  = bcore_via_a_nis_link( o.cast( c bcore_via* ), name );
-func bl_t t_is_link  ( tp_t t, tp_t name )      = bcore_via_t_nis_link( t, NULL, name );
+func bl_t t_is_link  ( tp_t t,     tp_t name )  = bcore_via_t_nis_link( t, NULL, name );
 
 /// checks if element is an array
 func bl_t   is_array_i( aware @* o, sz_t index ) = bcore_via_a_iis_array( o.cast( c bcore_via* ), index );
-func bl_t t_is_array_i( tp_t t, sz_t index )     = bcore_via_t_iis_array( t, NULL, index );
+func bl_t t_is_array_i( tp_t t,     sz_t index ) = bcore_via_t_iis_array( t, NULL, index );
 func bl_t   is_array_n( aware @* o, tp_t name )  = bcore_via_a_nis_array( o.cast( c bcore_via* ), name );
-func bl_t t_is_array_n( tp_t t, tp_t name )      = bcore_via_t_nis_array( t, NULL, name );
+func bl_t t_is_array_n( tp_t t,     tp_t name )  = bcore_via_t_nis_array( t, NULL, name );
 
 /// returns type of element (note that the type might be defined at runtime, hence the object o is always required)
 func tp_t   type  ( aware @* o,         tp_t name  ) = bcore_via_a_nget_type(    o.cast( c bcore_via* ), name );
@@ -92,8 +96,8 @@ func tp_t   type_i( aware @* o,         sz_t index ) = bcore_via_a_iget_type(   
 func tp_t t_type_i( obliv @* o, tp_t t, sz_t index ) = bcore_via_t_iget_type( t, o.cast( c bcore_via* ), index );
 
 /// returns sr_NULL in case of no match
-func sr_s t_m_get_sr( m obliv @* o, tp_t t, tp_t name );
-func sr_s   m_get_sr( m aware @* o,         tp_t name ) = o.t_m_get_sr( o._, name );
+func sr_s t_m_get_sr( m obliv @* o,   tp_t t, tp_t name );
+func sr_s   m_get_sr( m aware @* o,           tp_t name ) = o.t_m_get_sr( o._, name );
 func sr_s t_m_get_sr_i( m obliv @* o, tp_t t, sz_t index );
 func sr_s   m_get_sr_i( m aware @* o,         sz_t index ) = o.t_m_get_sr_i( o._, index );
 

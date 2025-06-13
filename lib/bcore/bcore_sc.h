@@ -109,7 +109,7 @@
 
 /**********************************************************************************************************************/
 
-/** Inserts space characters including terminating 0.
+/** Creates a formatted string by maximally inserting 'space' characters including terminating 0.
  *  Returns number of characters needed for string completion.
  *  If space is large enough, the return number is the length of the
  *  created string.
@@ -161,6 +161,12 @@ uz_t sc_t_len( sc_t str );
 
 /// returns true iff c occurs in str
 bl_t sc_t_any( char c, sc_t str );
+
+/** Parses string in order to extract data.
+ *  See inline doc on equivalent functions st_s_parse_em_... for details
+ */
+er_t sc_t_parse_em_fv( sc_t o, uz_t start, uz_t end, uz_t* out_idx, sc_t format, va_list args );
+er_t sc_t_parse_em_fa( sc_t o, uz_t start, uz_t end, uz_t* out_idx, sc_t format, ... );
 
 vd_t bcore_sc_signal_handler( const bcore_signal_s* o );
 

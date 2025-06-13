@@ -74,9 +74,11 @@ group bcore_st = x_inst
         func s2_t cmp_sc(     c @* o, sc_t sc         );
         func s2_t cmp_sc_n(   c @* o, sc_t sc, uz_t n );
         func s2_t cmp_st(     c @* o, c st_s* st  );
+        func s2_t cmp   (     c @* o, c st_s* st  ); // same as cmp_st
         func bl_t equal_sc(   c @* o, sc_t sc         );
         func bl_t equal_sc_n( c @* o, sc_t sc, uz_t n );
         func bl_t equal_st(   c @* o, c st_s* st  );
+        func bl_t equal   (   c @* o, c st_s* st  ); // same as equal_st
 
         /// true in case the rightbound characters of o are equal to st
         func bl_t ends_in_st( c @* o, c st_s* st );
