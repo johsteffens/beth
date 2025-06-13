@@ -14,7 +14,7 @@
  */
 
 /** Terminal (Text-based) User Interface (text, keyboard, mouse)
- *  - based on ncurses API
+ *  - uses ncurses API
  *  - linker: -lncurses
  *
  *  Usage:

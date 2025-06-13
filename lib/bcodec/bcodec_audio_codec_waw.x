@@ -234,7 +234,7 @@ group :param
 
     func (:s) bcodec_audio_codec_param.create_page
     {
-        if( !x_inst_exists( o.tp_page ) ) ERR_fa( "'tp_page' does not hold a valid type." );
+        if( !x_inst_is_creatable( o.tp_page ) ) ERR_fa( "'tp_page' does not hold a valid type." );
         = x_inst_create( o.tp_page );
     }
 

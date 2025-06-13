@@ -18,7 +18,15 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 include <ncurses.h>;
-// ncurses-specific types and functions (declared in ncurses.h) are listed below to make them visible to xoico
+
+/** Helpful ncurses documentation I used for this project:
+ *  https://pubs.opengroup.org/onlinepubs/7908799/xcurses/curses.h.html
+ *  https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html
+ *  https://man7.org/linux/man-pages/man3/ncurses.3x.html
+ *  https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/mouse.html
+ *  https://gist.github.com/sylt/93d3f7b77e7f3a881603
+ *  https://github.com/thenamankumar/ncurses-cheatsheet
+ */
 
 //----------------------------------------------------------------------------------------------------------------------
 
