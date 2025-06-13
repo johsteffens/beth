@@ -221,7 +221,7 @@ The following tables contain available operators:
 
 |Symbol|Description|Arity|Type Name|Exportable|
 |:---|:---|----|----|----|
-|```;```|[Continuation](#continuation-operator)|binary|continuation|no|
+|```;```|[Continuation](#continuation-operator)|binary|continuation|implicitly|
 
 # Number
 Numbers are represented as integer ```s3_t``` or floating point ```f3_t```.
