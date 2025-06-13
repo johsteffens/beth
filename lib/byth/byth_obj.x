@@ -257,7 +257,7 @@ func (:s) setup_from_t_inst
     if( o.py_object != Py_None ) o.clear();
     if( !inst ) = 0;
 
-    if( !x_inst_exists( type ) ) ERR_fa( "Type value does not represent an object." );
+    if( !x_inst_is_creatable( type ) ) ERR_fa( "Type value does not represent an object." );
 
     m PyObject* py_object = Py_None;
 
@@ -426,7 +426,7 @@ func (:s) to_t_inst
 {
     if( !inst ) = 0;
 
-    if( !x_inst_exists( type ) ) = EM_ERR_fa( "Type value does not represent an object." );
+    if( !x_inst_is_creatable( type ) ) = EM_ERR_fa( "Type value does not represent an object." );
 
     switch( type )
     {
