@@ -47,8 +47,10 @@ group bcore_global = x_inst
       * Value is only set in case key does not yet exists
       * Returns pointer to global instance.
       * This function ensures that the specified object is only created once on concurrent access.
+      * If function does not set obj != NULL, it discards it.
       */
-    func vd_t get_ifnexists_set( tp_t key, tp_t t );
+    func vd_t get_ifnexists_set  ( tp_t key, tp_t type );
+    func vd_t get_ifnexists_set_d( tp_t key, tp_t type, d x_inst* obj );
 
     /// Removes key if existing. (Use only during init or down cycles)
     func void remove( tp_t key );

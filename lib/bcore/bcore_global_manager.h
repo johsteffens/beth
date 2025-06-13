@@ -46,11 +46,14 @@ void bcore_global_t_set_c( tp_t key, tp_t t, vc_t v ); // clones v
 void bcore_global_a_set_c( tp_t key,         vc_t v ); // clones v
 void bcore_global_x_set_c( tp_t key,         sr_s v ); // clones v
 
-/** Conditional Get/Set function
-  * Value is only set in case key does not yet exists.
+/** Conditional Set function
+  * Value is only set in case key does not yet exists
   * Returns pointer to global instance.
+  * This function ensures that the specified object is only created once on concurrent access.
+  * If function does not set obj != NULL, it discards it.
   */
-vd_t bcore_global_get_ifnexists_set( tp_t key, tp_t t );
+vd_t bcore_global_get_ifnexists_set  ( tp_t key, tp_t type );
+vd_t bcore_global_get_ifnexists_set_d( tp_t key, tp_t type, vd_t obj );
 
 /// Removes key if existing. (Use only during init or down cycles)
 void bcore_global_remove( tp_t key );
