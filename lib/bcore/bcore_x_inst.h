@@ -123,11 +123,11 @@ func a attn  ( @* o, @* a ) = a;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func bl_t exists( tp_t type )
-{
-    ERR_fa( "'x_stamp_exists' is deprecated: use x_stamp_is_creatable" );
-    = bcore_flect_exists( type );
-}
+//func bl_t exists( tp_t type )
+//{
+//    ERR_fa( "'x_inst_exists' is deprecated: use x_inst_is_creatable" );
+//    = bcore_flect_exists( type );
+//}
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -1,4 +1,4 @@
-//  Last update: 2025-06-13T10:45:30Z
+//  Last update: 2025-06-13T23:02:29Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -121,7 +121,6 @@
   x_inst* x_inst_create( tp_t type ); \
   static inline const x_inst* x_inst_attend( const x_inst* o, const x_inst* a ); \
   static inline const x_inst* x_inst_attn( const x_inst* o, const x_inst* a ); \
-  bl_t x_inst_exists( tp_t type ); \
   XOILA_DECLARE_SPECT( x_inst ) \
   { \
       bcore_spect_header_s header; \
@@ -4098,5 +4097,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x891ECF8B39DBA421
-// XOICO_FILE_SIGNATURE 0x5208C3B9F934EEA7
+// XOICO_BODY_SIGNATURE 0x706CA1141D95F095
+// XOICO_FILE_SIGNATURE 0xFA3A22D406438192

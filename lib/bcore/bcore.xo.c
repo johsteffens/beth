@@ -1,4 +1,4 @@
-//  Last update: 2025-06-13T10:45:30Z
+//  Last update: 2025-06-13T23:02:29Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -73,7 +73,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0x31F6F81EDEC1C979ull
+// HKEYOF_bcore 0x64C9DA0DD8152535ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -109,14 +109,6 @@ x_inst* x_inst_create( tp_t type )
         ERR_fa( "Function 'x_inst:create' can only be used for aware types. Use 'x_inst:t_create' instead." );
     }
     return ((x_inst*)( bcore_inst_t_create(type )));
-}
-
-bl_t x_inst_exists( tp_t type )
-{
-    // bcore_x_inst.h:127:1
-    
-    ERR_fa( "'x_stamp_exists' is deprecated: use x_stamp_is_creatable" );
-    return  bcore_flect_exists( type );
 }
 
 /**********************************************************************************************************************/
@@ -9291,7 +9283,6 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FUNC( x_inst_create );
             BCORE_REGISTER_FUNC( x_inst_attend );
             BCORE_REGISTER_FUNC( x_inst_attn );
-            BCORE_REGISTER_FUNC( x_inst_exists );
             XOILA_REGISTER_SPECT( x_inst );
 
             // --------------------------------------------------------------------
@@ -10581,5 +10572,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x25D08D328B14FC25
-// XOICO_FILE_SIGNATURE 0xDFEFFDD0AE378AA2
+// XOICO_BODY_SIGNATURE 0xAF4DD9A5162BC132
+// XOICO_FILE_SIGNATURE 0x4F0177E23DFB62CC
