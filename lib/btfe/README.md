@@ -1,6 +1,6 @@
 # btfe: Beth Terminal Front End
 
-This library represents a terminal-based user interface for beth.
+This library represents a terminal-based user interface for beth. It can be used to capture keyboard and mouse input and do limited text formatting with a standard terminal. This can be useful for terminal-only applications, where a full fletched graphical user interface is not intended.
 
 ## btfe_console_s
 
@@ -22,16 +22,6 @@ Terminal (Text-based) User Interface (text, keyboard, mouse)
 ### Thread safety
 * The ncurers interface is encapsulated.
 * Multiple instances of btfe_console_s in different threads are allowed.
-
-### Issues
-While btfe_console_s is active the terminal's text handling via ```stdout``` or ```stderr``` is changed: In messages send to the terminal via ```stdout``` or ```stderr```, a newline is not treated as carriage return. This can lead to unexpected text-indentations.
-
-#### Remedies (choose a suitable option)
-* btfe_console_s is also a x_sink perspective with correct newline handling.
-* Use member functions msg_fa, err_fa.
-* Call function 'close' or destroy the instance (this resets the terminal). If needed, re-open it later.
-
-
 
 ###  Example
 
@@ -70,6 +60,19 @@ stamp example_s
 }
 
 ```
+
+
+## Issues
+
+### Altered terminal state
+
+While btfe_console_s is active the terminal's text handling via ```stdout``` or ```stderr``` is changed: In messages send to the terminal via ```stdout``` or ```stderr```, a newline is not treated as carriage return. This can lead to unexpected text-indentations.
+
+#### Remedy (choose a suitable option)
+* btfe_console_s is also a x_sink perspective with correct newline handling.
+* Use member functions msg_fa, err_fa.
+* Call function 'close' or destroy the instance (this resets the terminal). If needed, re-open it later.
+
 
 
 

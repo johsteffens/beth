@@ -1,0 +1,15 @@
+/** Author and Copyright 2025 Johannes Bernhard Steffens
+ *  License: Apache License, Version 2.0
+ */
+
+
+#bgfe_frame_s
+{
+    background-color: #F0F0F0;
+    margin: 10px;
+
+    border-style: solid;
+    border-radius: 6px;
+    border-width: 2px;
+    border-color: #A0B080;
+}
