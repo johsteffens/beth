@@ -250,8 +250,13 @@ func (:s) xoico.get_hash
     hash = bcore_tp_fold_tp( hash, o.beta );
     hash = bcore_tp_fold_tp( hash, o.funcs.get_hash() );
     foreach( m $* e in o ) hash = bcore_tp_fold_tp( hash, e.get_hash() );
+
+    hash = bcore_tp_fold_sz( hash, o.includes_in_declaration.size );
     foreach( m $* e in o.includes_in_declaration ) hash = bcore_tp_fold_sc( hash, e.sc );
+
+    hash = bcore_tp_fold_sz( hash, o.includes_in_definition.size );
     foreach( m $* e in o.includes_in_definition  ) hash = bcore_tp_fold_sc( hash, e.sc );
+
     foreach( m $* e in o.explicit_embeddings     ) hash = bcore_tp_fold_sc( hash, e.sc );
     return hash;
 };

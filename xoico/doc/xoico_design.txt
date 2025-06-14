@@ -52,7 +52,7 @@ XOILA_DEFINE_GROUP( <group_name>, <trait_name> )
     group <name> = [<trait>] { ... }; // sub-group; inheriting from parent: 'extending'
 
     embed              "<embed file path>";
-    include [deferred] "<include file path>"; // deferred inclusions are placed in the definition file
+    include ['h'|'c'] "<include file path>"; // inclusion an optional instruction where to place it
 
     ...
 #endif // <xoila-closer>
@@ -666,7 +666,7 @@ FEATURES, BUGS ...
 - (done) allow calling a global function as member function of an object: obj.<global_func_name>( .... )
 - (done) Keywords: 'inline', 'export' preceding the body forces inline or not-inline expansion
 
-- (speculative) introduce a functor:
+- (done in btcl) introduce a functor:
   syntax on group level.
   Example:
   functor sz_t fu_s( sz_t a, sz_t b ).( sz_t c ) { = a + b + c; };
@@ -686,6 +686,8 @@ FEATURES, BUGS ...
 - (done)
    Feature: allow member functions to be used as function pointer
    flag waive_function_in_untraced_context is no longer necessary -> remove it
+
+- (fixed) include: moving include keyword from declaration to definition is not properly hashed
 
 TODO:
 
