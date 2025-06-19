@@ -38,12 +38,16 @@ func (:s) gboolean rtt_signal_delete_event( m GtkWidget* win, m GdkEvent* event,
 stamp :open_args_s
 {
     sc_t sc_title;
+    bl_t keep_above;
     private GtkWidget* child_widget;
+    private :s* nearest_window;
 
     func o _( m@* o, m :s* f )
     {
         o.sc_title = f.title ? f.title.sc : NULL;
         o.child_widget = f.frame ? f.frame.rtt_widget() : NULL;
+        o.keep_above = f.keep_above;
+        o.nearest_window = ( f.frame && f.frame.parent ) ? f.frame.parent.nearest_window() : NULL;
     }
 }
 
@@ -53,7 +57,8 @@ func (:s) open
 
     bgfe_rte_get( &o.rte );
 
-    if( o.frame ) o.frame.open( o );
+    o.frame.window = o;
+    o.frame.open( parent );
 
     o.mutex.lock();
     m$* rts_open_args = :open_args_s!^( o );
@@ -65,6 +70,7 @@ func (:s) open
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+name gtk_window_set_transient_for;
 
 func (:s) er_t rtt_open( m@* o, :open_args_s* rts_open_args )
 {
@@ -79,6 +85,12 @@ func (:s) er_t rtt_open( m@* o, :open_args_s* rts_open_args )
 
     o.mutex.lock();
     if( rts_open_args.sc_title ) gtk_window_set_title( GTK_WINDOW( o.rtt_widget ), rts_open_args.sc_title );
+
+    if( rts_open_args.keep_above && rts_open_args.nearest_window )
+    {
+        gtk_window_set_transient_for( GTK_WINDOW( o.rtt_widget ), GTK_WINDOW( rts_open_args.nearest_window.rtt_widget ) );
+    }
+
     o.mutex.unlock();
 
     gtk_window_set_position( GTK_WINDOW( o->rtt_widget ), GTK_WIN_POS_CENTER );
@@ -124,45 +136,11 @@ func (:s) er_t rtt_close( m@* o, vd_t arg )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) set_client_t
-{
-    if( o.is_open ) = GERR_fa( "Frame is open. Close it first." );
-    o.client      = client;
-    o.client_type = client_type;
-    o.client_name = client_name;
-    = 0;
-
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) bgfe_frame.close_ok
-{
-    if( o.client ) = bgfe_client_t_frame_close_ok( o.client, o.client_type );
-    = true;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) bgfe_frame.close_confirm
-{
-    if( o.client ) bgfe_client_t_frame_close_confirm( o.client, o.client_type );
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) bgfe_frame.downsync_request = o.client.t_frame_downsync_request( o.client_type, initiator, action_type.1 );
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) bgfe_frame.downsync_confirm = o.client.t_frame_downsync_confirm( o.client_type, initiator, action_type.1 );
-
-//----------------------------------------------------------------------------------------------------------------------
-
 func (:s) cycle
 {
     if( !o.is_open ) = 0;
+    if( o.frame ) o.frame.cycle( action_type );
+
     bl_t close_requested = false;
     o.mutex.lock();
     close_requested = o.rts_close_requested;
@@ -170,12 +148,9 @@ func (:s) cycle
 
     if( close_requested )
     {
-        bl_t approved = true;
-        if( approved            ) approved = o.close_ok();
-        if( approved && o.frame ) approved = o.frame.close_ok();
-        if( approved )
+        if( o.close_ok() )
         {
-            = o.close();
+            o.close();
         }
         else
         {
@@ -184,30 +159,6 @@ func (:s) cycle
             o.mutex.unlock();
         }
     }
-
-    if( o.frame ) o.frame.cycle( action_type );
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) upsync
-{
-    if( !o.is_open ) = 0;
-
-    if( o.frame ) o.frame.upsync();
-
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) downsync
-{
-    if( !o.is_open ) = 0;
-
-    if( o.frame ) o.frame.downsync();
-
     = 0;
 }
 

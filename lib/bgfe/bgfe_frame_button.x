@@ -39,6 +39,9 @@ stamp :s bgfe_frame
     func bgfe_frame.client_type = o.client_type;
     func bgfe_frame.client_name = o.client_name;
     func bgfe_frame.parent = o.parent;
+    func bgfe_frame.is_open = o.is_open;
+
+    hidden bl_t rts_clicked; // button was clicked
 
     hidden st_s => rts_tooltip_text;  // tooltip text
     hidden bgfe_rte_s* rte;
@@ -62,6 +65,15 @@ stamp :s bgfe_frame
 //----------------------------------------------------------------------------------------------------------------------
 
 func (:s) void rtt_signal_destroy( m GtkWidget* win, m@* o ) o.rtt_widget = NULL;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) void rtt_signal_clicked( m GtkWidget* win, m@* o )
+{
+    o.mutex.lock();
+    o.rts_clicked = true;
+    o.mutex.unlock();
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -155,6 +167,7 @@ func (:s) er_t rtt_open( m@* o, :open_args_s* args )
     if( o.rts_tooltip_text ) gtk_widget_set_tooltip_text( o.rtt_widget, o.rts_tooltip_text.sc );
     gtk_widget_show( o.rtt_widget );
     g_signal_connect( o.rtt_widget, "destroy", G_CALLBACK( :s_rtt_signal_destroy ), o );
+    g_signal_connect( o.rtt_widget, "clicked", G_CALLBACK( :s_rtt_signal_clicked ), o );
     = 0;
 }
 
@@ -205,6 +218,14 @@ func (:s) bgfe_frame.downsync_confirm = 0;
 func (:s) bgfe_frame.cycle
 {
     if( !o.is_open ) = 0; // no error because frame window could have been closed
+
+    o.mutex.lock();
+    bl_t clicked = o.rts_clicked;
+    o.rts_clicked = false;
+    o.mutex.unlock();
+
+    if( clicked ) o.button_clicked( o, action_type.1 );
+
     = 0;
 }
 

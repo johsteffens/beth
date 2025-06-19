@@ -41,6 +41,7 @@ stamp :s bgfe_frame
     func bgfe_frame.client_type = o.client_type;
     func bgfe_frame.client_name = o.client_name;
     func bgfe_frame.parent = o.parent;
+    func bgfe_frame.is_open = o.is_open;
 
     hidden bl_t rts_value;    // current scale value
     hidden bl_t rts_modified; // scale value was modified by the front end

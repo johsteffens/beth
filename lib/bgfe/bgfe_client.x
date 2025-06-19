@@ -26,9 +26,10 @@ forward bgfe_frame_button_s;
  *  - 'approve'     : The client approves the input. The frame will perform the downsync. A frame_downsync_confirm is sent in afterwards
  *  - 'acknowledge' : The client acknowledges the input. (acknowledge is default, in case the client overloads the request but does not change action_type )
  *  - 'escalate'    : 'acknowledge' with the frame passing the request to the parent. (escalate is default, in case the client does not overload the request)
+ *  - 'escapprove'  : 'acknowledge' with the frame passing the notification to the parent; approve in case of no parent.
  *  - 'reject'      : The client rejects the request. The frame discards the GFE-input and sets the affected control back to the client's value.
  */
-feature 'at' er_t frame_downsync_request( m@* o, m bgfe_frame* initiator, m tp_t* action_type ) { action_type.0 = TYPEOF_escalate; = 0; }
+feature 'at' er_t frame_downsync_request( m@* o, m bgfe_frame* initiator, m tp_t* action_type ) { action_type.0 = escapprove~; = 0; }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -37,16 +38,25 @@ feature 'at' er_t frame_downsync_request( m@* o, m bgfe_frame* initiator, m tp_t
  *  - 'acknowledge' : The client acknowledges the change.
  *  - 'escalate'    : 'acknowledge' with the frame passing the notification to the parent.
  */
-feature 'at' er_t frame_downsync_confirm( m@* o, m bgfe_frame* initiator, m tp_t* action_type ) { action_type.0 = TYPEOF_escalate; = 0; }
+feature 'at' er_t frame_downsync_confirm( m@* o, m bgfe_frame* initiator, m tp_t* action_type ) { action_type.0 = escalate~; = 0; }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/** Button pressed event.
+/** Request by the frame to change a link (pointer) managed by the client (or a child of the client)
+ *  Requires approval to actually perform the change.
+ *  In case of escalation: Auto-approval in case the frame has no parent.
+ */
+feature 'at' er_t frame_link_change_request( m@* o, m bgfe_frame* initiator, m tp_t* action_type ) { action_type.0 = escapprove~; = 0; }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/** Button clicked event.  (clicked = pressed and released in succession)
  *  The client can take action and also respond in one of the following possible ways via action_type:
  *  - 'acknowledge' : The client acknowledges the event.
  *  - 'escalate'    : 'acknowledge' with the frame passing the notification to the parent.
+ *  - 'escapprove'  : 'acknowledge' with the frame passing the notification to the parent; approve in case of no parent.
  */
-feature 'at' er_t frame_button_pressed( m@* o, m bgfe_frame_button_s* initiator, m tp_t* action_type ) { action_type.0 = TYPEOF_escalate; = 0; }
+feature 'at' er_t frame_button_clicked( m@* o, m bgfe_frame_button_s* initiator, m tp_t* action_type ) { action_type.0 = escalate~; = 0; }
 
 //----------------------------------------------------------------------------------------------------------------------
 

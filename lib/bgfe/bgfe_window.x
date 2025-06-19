@@ -30,12 +30,20 @@ stamp :s bgfe_frame
 {
     /// parameters
     st_s => title;
-    bgfe_frame => frame;
+    bl_t keep_above = false; // keeps window above the nearest to-root window
+
+    /** The window wraps bgfe_frame_s
+     *  That frame is always instantiated.
+     */
+    bgfe_frame_s => frame;
+    func bcore_inst_call.init_x { o.frame!; }
 
     /// internals
-    hidden bgfe_client* client; // client
-    hidden tp_t client_type; // to cover obliv clients
-    hidden tp_t client_name; // name of the client (under which the client's owner holds the client)
+    func bgfe_frame.client      = o.frame.client;
+    func bgfe_frame.client_type = o.frame.client_type;
+    func bgfe_frame.client_name = o.frame.client_name;
+    func bgfe_frame.parent      = o.frame.parent;
+
     private GtkWidget* rtt_widget;
     hidden bgfe_rte_s* rte;
     hidden x_mutex_s mutex;
@@ -43,19 +51,30 @@ stamp :s bgfe_frame
     hidden bl_t rts_close_requested;
 
     func bcore_inst_call.down_e o.close();
-    func bgfe_frame.rtt_widget = o.rtt_widget;
 
     /// setup compact function
     func o _( m@* o, sc_t title ) o.title!.push_sc( title );
 
-    /// interface functions ...
-    func er_t open ( m@* o );
-    func er_t close( m@* o );
+    func bgfe_frame.rtt_widget = o.rtt_widget;
+    func bgfe_frame.close_ok = o.frame.close_ok();
+    func bgfe_frame.close_confirm = o.frame.close_confirm();
+    func bgfe_frame.arrangement   = o.frame.arrangement();
 
-    func bgfe_frame.set_client_t;
+    /// interface functions ...
+    func bgfe_frame.open;
+    func bgfe_frame.close;
+
     func bgfe_frame.cycle;
-    func bgfe_frame.upsync;
-    func bgfe_frame.downsync;
+
+    func bgfe_frame.upsync   = o.frame.upsync();
+    func bgfe_frame.downsync = o.frame.downsync();
+
+    func bgfe_frame.set_client_t = o.frame.set_client_t( client, client_type, client_name );
+    func er_t set_client_with_content  ( m@* o, m aware bgfe_client* client, tp_t client_name ) = o.frame.set_client_with_content( client, client_name );
+    func er_t set_client_with_content_t( m@* o, m obliv bgfe_client* client, tp_t client_type, tp_t client_name ) = o.frame.set_client_with_content_t( client, client_type, client_name );
+    func er_t add_content  ( m@* o, m aware bgfe_client* content,                    tp_t content_name ) = o.frame.add_content( content, content_name );
+    func er_t add_content_t( m@* o, m obliv bgfe_client* content, tp_t content_type, tp_t content_name ) = o.frame.add_content_t( content, content_type, content_name );
+    func er_t add_linked_content( m@* o, tp_t content_name ) =  o.frame.add_linked_content( content_name );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
