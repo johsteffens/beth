@@ -68,6 +68,9 @@ func bl_t has_reflection( tp_t type ) = bcore_flect_exists( type );
 func o t_copy( m obliv @* o, tp_t t, c@* src ) bcore_inst_t_copy( t, o.cast( m bcore_inst* ), src );
 func o   copy( m aware @* o,         c@* src ) bcore_inst_a_copy(    o.cast( m bcore_inst* ), src );
 
+/// fork function works on aware and oblivious types and therefore needs no type information
+func o fork( m obliv @* o ) = bcore_fork( o );
+
 func er_t t_copy_typed( m obliv @* o, tp_t t, tp_t src_type, c obliv @* src ) = bcore_inst_t_copy_typed( t,   o.cast( m bcore_inst* ), src_type, src );
 func er_t   copy_typed( m aware @* o,         tp_t src_type, c obliv @* src ) = bcore_inst_t_copy_typed( o._, o.cast( m bcore_inst* ), src_type, src );
 

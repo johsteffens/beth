@@ -1,4 +1,4 @@
-//  Last update: 2025-06-13T23:02:29Z
+//  Last update: 2025-06-18T08:01:01Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -110,6 +110,7 @@
   static inline bl_t x_inst_has_reflection( tp_t type ); \
   static inline x_inst* x_inst_t_copy( x_inst* o, tp_t t, const x_inst* src ); \
   static inline x_inst* x_inst_copy( x_inst* o, const x_inst* src ); \
+  static inline x_inst* x_inst_fork( x_inst* o ); \
   static inline er_t x_inst_t_copy_typed( x_inst* o, tp_t t, tp_t src_type, const x_inst* src ); \
   static inline er_t x_inst_copy_typed( x_inst* o, tp_t src_type, const x_inst* src ); \
   static inline x_inst* x_inst_t_clone( const x_inst* o, tp_t t ); \
@@ -130,6 +131,7 @@
   static inline bl_t x_inst_has_reflection( tp_t type ){return  bcore_flect_exists( type );} \
   static inline x_inst* x_inst_t_copy( x_inst* o, tp_t t, const x_inst* src ){bcore_inst_t_copy( t, ((bcore_inst*)(o)), src );return o;} \
   static inline x_inst* x_inst_copy( x_inst* o, const x_inst* src ){bcore_inst_a_copy(    ((bcore_inst*)(o)),((const bcore_inst*)(src )));return o;} \
+  static inline x_inst* x_inst_fork( x_inst* o ){return  bcore_fork( o );} \
   static inline er_t x_inst_t_copy_typed( x_inst* o, tp_t t, tp_t src_type, const x_inst* src ){return  bcore_inst_t_copy_typed( t,   ((bcore_inst*)(o)), src_type, src );} \
   static inline er_t x_inst_copy_typed( x_inst* o, tp_t src_type, const x_inst* src ){return  bcore_inst_t_copy_typed( o->_, ((bcore_inst*)(o)), src_type, src );} \
   static inline x_inst* x_inst_t_clone( const x_inst* o, tp_t t ){return  bcore_inst_t_clone( t, ((const bcore_inst*)(o)) );} \
@@ -408,12 +410,14 @@
   static inline x_array* x_array_t_sort( x_array* o, tp_t t, s2_t direction ); \
   static inline x_array* x_array_sort( x_array* o, s2_t direction ); \
   static inline bl_t x_array_t_is_array( tp_t t ); \
+  static inline bl_t x_array_t_is_pure_array( tp_t t ); \
   static inline bl_t x_array_t_is_fixed( tp_t t ); \
   static inline bl_t x_array_t_is_static( tp_t t ); \
   static inline bl_t x_array_t_is_of_aware( tp_t t ); \
   static inline bl_t x_array_t_is_of_links( tp_t t ); \
   static inline bl_t x_array_t_is_mono_typed( tp_t t ); \
   static inline bl_t x_array_is_array( const x_array* o ); \
+  static inline bl_t x_array_is_pure_array( const x_array* o ); \
   static inline bl_t x_array_is_fixed( const x_array* o ); \
   static inline bl_t x_array_is_static( const x_array* o ); \
   static inline bl_t x_array_is_of_aware( const x_array* o ); \
@@ -481,12 +485,14 @@
   static inline x_array* x_array_t_sort( x_array* o, tp_t t, s2_t direction ){bcore_array_t_sort( t, ((bcore_array*)(o)), 0, -1, direction );return o;} \
   static inline x_array* x_array_sort( x_array* o, s2_t direction ){return  x_array_t_sort(o,o->_, direction );} \
   static inline bl_t x_array_t_is_array( tp_t t ){return  bcore_spect_trait_supported( TYPEOF_bcore_array, t );} \
+  static inline bl_t x_array_t_is_pure_array( tp_t t ){return  bcore_via_t_is_pure_array( t, NULL );} \
   static inline bl_t x_array_t_is_fixed( tp_t t ){return  bcore_array_s_get_typed( t )->size_fix > 0;} \
   static inline bl_t x_array_t_is_static( tp_t t ){return  bcore_array_s_get_typed( t )->is_static;} \
   static inline bl_t x_array_t_is_of_aware( tp_t t ){return  bcore_array_s_get_typed( t )->is_of_aware;} \
   static inline bl_t x_array_t_is_of_links( tp_t t ){return  bcore_array_s_get_typed( t )->is_of_links;} \
   static inline bl_t x_array_t_is_mono_typed( tp_t t ){return  bcore_array_s_get_typed( t )->is_mono_typed;} \
   static inline bl_t x_array_is_array( const x_array* o ){return  x_array_t_is_array(o->_ );} \
+  static inline bl_t x_array_is_pure_array( const x_array* o ){return  x_array_t_is_pure_array(o->_ );} \
   static inline bl_t x_array_is_fixed( const x_array* o ){return  x_array_t_is_fixed(o->_ );} \
   static inline bl_t x_array_is_static( const x_array* o ){return  x_array_t_is_static(o->_ );} \
   static inline bl_t x_array_is_of_aware( const x_array* o ){return  x_array_t_is_of_aware(o->_ );} \
@@ -4097,5 +4103,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x706CA1141D95F095
-// XOICO_FILE_SIGNATURE 0xFA3A22D406438192
+// XOICO_BODY_SIGNATURE 0x0CCC3FDA194277FD
+// XOICO_FILE_SIGNATURE 0xB822B31B67FDC7E6
