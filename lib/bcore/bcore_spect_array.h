@@ -40,8 +40,8 @@ BCORE_DECLARE_SPECT( bcore_array )
     bcore_spect_header_s header;
 
     tp_t type_caps;
-    uz_t size_fix; // >0 indicating fixed size array
-    uz_t caps_offset;
+    uz_t size_fix;    // >0 indicating fixed size array
+    uz_t caps_offset; // location of low-level array structure in object
 
     const bcore_inst_s* item_p;  // item-perspective; NULL for typed or aware arrays
 
@@ -93,7 +93,7 @@ tp_t bcore_array_fix_link_aware_type_of( uz_t size );
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_array, get_size,  uz_t ) // returns size
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_array, get_space, uz_t ) // returns space
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_array, get, sr_s, uz_t, index ) // returns indexed item; returns sr_null() if index is out of range or the linked item is NULL
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set,    uz_t, index, sr_s, src ) // sets item at indexed position
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set,    uz_t, index, sr_s, src ) // sets (overwrites) item at indexed position; if index position is beyond the last element, the array size is extended
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_s3, uz_t, index, s3_t, val ) // Sets item by converting s3_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_u3, uz_t, index, u3_t, val ) // Sets item by converting u3_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_f3, uz_t, index, f3_t, val ) // Sets item by converting f3_t into target type
@@ -101,6 +101,8 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_sz, uz_t, index, sz_t, 
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_uz, uz_t, index, uz_t, val ) // Sets item by converting uz_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_sc, uz_t, index, sc_t, val ) // Sets item by converting sc_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_bl, uz_t, index, bl_t, val ) // Sets item by converting bl_t into target type
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, insert, uz_t, index, sr_s, src ) // Inserts item at indexed position by moving all items from that position down; behaves like 'set' when index is >= size
+BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, remove, uz_t, index    ) // removes item at indexed position; no effect if index is out of range
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, set_size,  uz_t, size  ) // changes array size (keeping previous data); for linked arrays new items are NULL; otherwise new items are default initialized
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, set_space, uz_t, space ) // changes space (can affect size; set space to zero means clearing the array)
 BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP0( bcore_array, make_strong )            // turns a weak array reference into a strong one; no effect if array is strong

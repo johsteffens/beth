@@ -21,7 +21,12 @@
 
 #define NPX( name ) bcore_array_##name
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 // bcore_array_s
 
 BCORE_DEFINE_SPECT( bcore_inst, bcore_array )
@@ -59,7 +64,11 @@ static const bcore_array_dyn_head_s* dyn_head_vc( const bcore_array_s* p, vc_t o
     return obj_vc( p, o );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static uz_t get_dyn_size( const bcore_array_s* p, vc_t o )
 {
@@ -81,7 +90,11 @@ static uz_t get_space( const bcore_array_s* p, vc_t o )
     return p->size_fix > 0 ? p->size_fix : get_dyn_space( p, o );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_array_default_make_strong( const bcore_array_s* p, bcore_array* o )
 {
@@ -175,6 +188,8 @@ void bcore_array_default_make_strong( const bcore_array_s* p, bcore_array* o )
         default: ERR( "invalid type_caps (%"PRIu32")", ( u2_t )p->type_caps );
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_array_default_set_space( const bcore_array_s* p, bcore_array* o, uz_t space )
 {
@@ -333,7 +348,11 @@ void bcore_array_default_set_space( const bcore_array_s* p, bcore_array* o, uz_t
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_array_default_set_size( const bcore_array_s* p, bcore_array* o, uz_t size )
 {
@@ -525,7 +544,11 @@ void bcore_array_default_set_size( const bcore_array_s* p, bcore_array* o, uz_t 
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static sr_s get_dyn_solid_static( const bcore_array_s* p, vc_t o, uz_t index )
 {
@@ -598,7 +621,12 @@ static sr_s get_fix_link_aware( const bcore_array_s* p, vc_t o, uz_t index )
     return sr_null();
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+/// set functions
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void set_dyn_solid_static( const bcore_array_s* p, vd_t o, uz_t index, sr_s src )
 {
@@ -619,6 +647,8 @@ static void set_dyn_solid_static( const bcore_array_s* p, vd_t o, uz_t index, sr
     }
     sr_down( src );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void set_dyn_solid_typed( const bcore_array_s* p, vd_t o, uz_t index, sr_s src )
 {
@@ -643,6 +673,8 @@ static void set_dyn_solid_typed( const bcore_array_s* p, vd_t o, uz_t index, sr_
     sr_down( src );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void set_dyn_link_static( const bcore_array_s* p, vd_t o, uz_t index, sr_s src )
 {
     bcore_array_dyn_link_static_s* arr = obj_vd( p, o );
@@ -665,6 +697,8 @@ static void set_dyn_link_static( const bcore_array_s* p, vd_t o, uz_t index, sr_
     }
     sr_down( src );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void set_dyn_link_typed( const bcore_array_s* p, vd_t o, uz_t index, sr_s src )
 {
@@ -693,6 +727,8 @@ static void set_dyn_link_typed( const bcore_array_s* p, vd_t o, uz_t index, sr_s
     sr_down( src );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void set_dyn_link_aware( const bcore_array_s* p, vd_t o, uz_t index, sr_s src )
 {
     bcore_array_dyn_link_aware_s* arr = obj_vd( p, o );
@@ -718,6 +754,8 @@ static void set_dyn_link_aware( const bcore_array_s* p, vd_t o, uz_t index, sr_s
     sr_down( src );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 static void set_fix_solid_static( const bcore_array_s* p, vd_t o, uz_t index, sr_s src )
 {
     if( index >= p->size_fix ) ERR_fa( "Index '#<uz_t>' exceeds range of fixed-size-array of size '#<uz_t>'", index, p->size_fix );
@@ -736,6 +774,8 @@ static void set_fix_solid_static( const bcore_array_s* p, vd_t o, uz_t index, sr
     }
     sr_down( src );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void set_fix_link_static( const bcore_array_s* p, vd_t o, uz_t index, sr_s src )
 {
@@ -759,6 +799,8 @@ static void set_fix_link_static( const bcore_array_s* p, vd_t o, uz_t index, sr_
     }
     sr_down( src );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void set_fix_link_aware( const bcore_array_s* p, vd_t o, uz_t index, sr_s src )
 {
@@ -785,7 +827,186 @@ static void set_fix_link_aware( const bcore_array_s* p, vd_t o, uz_t index, sr_s
     sr_down( src );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+/// remove
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_array_default_remove( const bcore_array_s* p, bcore_array* o, uz_t index )
+{
+    uz_t size = get_size( p, o );
+    if( index >= size ) return;
+    if( size > get_space( p, o ) ) bcore_array_p_make_strong( p, o );
+
+    switch( p->type_caps )
+    {
+        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
+        {
+            bcore_array_dyn_solid_static_s* arr = obj_vd( p, o );
+            const bcore_inst_s* inst_p = p->item_p;
+            for( uz_t i = index; i < size - 1; i++ )
+            {
+                vd_t dst = ( u0_t* )arr->data + inst_p->size * i;
+                vd_t src = ( u0_t* )arr->data + inst_p->size * ( i + 1 );
+                bcore_inst_p_copy( inst_p, dst, src );
+            }
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
+        {
+            bcore_array_dyn_solid_typed_s* arr = obj_vd( p, o );
+            const bcore_inst_s* inst_p = bcore_inst_s_get_typed( arr->type );
+            for( uz_t i = index; i < size - 1; i++ )
+            {
+                vd_t dst = ( u0_t* )arr->data + inst_p->size * i;
+                vd_t src = ( u0_t* )arr->data + inst_p->size * ( i + 1 );
+                bcore_inst_p_copy( inst_p, dst, src );
+            }
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
+        {
+            bcore_array_dyn_link_static_s* arr = obj_vd( p, o );
+            vd_t temp = arr->data[ index ];
+            for( uz_t i = index; i < size - 1; i++ ) arr->data[ i ] = arr->data[ i + 1 ];
+            arr->data[ size - 1 ] = temp; // removal of the temp object is handled in set_size below
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
+        {
+            bcore_array_dyn_link_typed_s* arr = obj_vd( p, o );
+            vd_t temp = arr->data[ index ];
+            for( uz_t i = index; i < size - 1; i++ ) arr->data[ i ] = arr->data[ i + 1 ];
+            arr->data[ size - 1 ] = temp; // removal of the temp object is handled in set_size below
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
+        {
+            bcore_array_dyn_link_aware_s* arr = obj_vd( p, o );
+            vd_t temp = arr->data[ index ];
+            for( uz_t i = index; i < size - 1; i++ ) arr->data[ i ] = arr->data[ i + 1 ];
+            arr->data[ size - 1 ] = temp; // removal of the temp object is handled in set_size below
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC:
+        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
+        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
+        {
+            ERR( "cannot remove an element from a fixed-size-array" );
+        }
+        break;
+
+        default:
+        {
+            ERR( "invalid type_caps (%"PRIu32")", ( u2_t )p->type_caps );
+        }
+        break;
+    }
+
+    bcore_array_p_set_size( p, o, size - 1 );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// insert
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_array_default_insert( const bcore_array_s* p, bcore_array* o, uz_t index, sr_s src )
+{
+    uz_t size = get_size( p, o );
+
+    if( index >= size )
+    {
+        bcore_array_p_set( p, o, index, src );
+        return;
+    }
+
+    if( size > get_space( p, o ) ) bcore_array_p_make_strong( p, o );
+    bcore_array_p_set_size( p, o, size + 1 );
+    size++;
+
+    switch( p->type_caps )
+    {
+        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
+        {
+            bcore_array_dyn_solid_static_s* arr = obj_vd( p, o );
+            const bcore_inst_s* inst_p = p->item_p;
+            for( uz_t i = size - 1; i > index; i-- )
+            {
+                vd_t src = ( u0_t* )arr->data + inst_p->size * ( i - 1 );
+                vd_t dst = ( u0_t* )arr->data + inst_p->size * i;
+                bcore_inst_p_copy( inst_p, dst, src );
+            }
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
+        {
+            bcore_array_dyn_solid_typed_s* arr = obj_vd( p, o );
+            const bcore_inst_s* inst_p = bcore_inst_s_get_typed( arr->type );
+            for( uz_t i = size - 1; i > index; i-- )
+            {
+                vd_t src = ( u0_t* )arr->data + inst_p->size * ( i - 1 );
+                vd_t dst = ( u0_t* )arr->data + inst_p->size * i;
+                bcore_inst_p_copy( inst_p, dst, src );
+            }
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
+        {
+            bcore_array_dyn_link_static_s* arr = obj_vd( p, o );
+            for( uz_t i = size - 1; i > index; i-- ) arr->data[ i ] = arr->data[ i - 1 ];
+            arr->data[ index ] = NULL;
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
+        {
+            bcore_array_dyn_link_typed_s* arr = obj_vd( p, o );
+            for( uz_t i = size - 1; i > index; i-- ) arr->data[ i ] = arr->data[ i - 1 ];
+            arr->data[ index ] = NULL;
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
+        {
+            bcore_array_dyn_link_aware_s* arr = obj_vd( p, o );
+            for( uz_t i = size - 1; i > index; i-- ) arr->data[ i ] = arr->data[ i - 1 ];
+            arr->data[ index ] = NULL;
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC:
+        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
+        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
+        {
+            ERR( "cannot insert an element into a fixed-size-array" );
+        }
+        break;
+
+        default:
+        {
+            ERR( "invalid type_caps (%"PRIu32")", ( u2_t )p->type_caps );
+        }
+        break;
+    }
+
+    bcore_array_p_set( p, o, index, src );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static inline uz_t auz( const bcore_array_s* p, vc_t o ) { return bcore_array_p_get_size( p, o ); }
 
@@ -800,7 +1021,11 @@ void NPX(default_push_uz   )( const NPX(s)* p, bcore_array* o, uz_t val ) { NPX(
 void NPX(default_push_sc   )( const NPX(s)* p, bcore_array* o, sc_t val ) { NPX(p_set_sc )( p, o, auz( p, o ), val ); }
 void NPX(default_push_bl   )( const NPX(s)* p, bcore_array* o, bl_t val ) { NPX(p_set_bl )( p, o, auz( p, o ), val ); }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_array_default_push_array( const bcore_array_s* p, bcore_array* o, sr_s src )
 {
@@ -820,7 +1045,11 @@ void bcore_array_default_push_array( const bcore_array_s* p, bcore_array* o, sr_
     sr_down( src );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_array_default_pop( const bcore_array_s* p, bcore_array* o )
 {
@@ -828,7 +1057,11 @@ void bcore_array_default_pop( const bcore_array_s* p, bcore_array* o )
     if( size > 0 ) bcore_array_p_set_size( p, o, size - 1 );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_array_default_set_gtype( const bcore_array_s* p, bcore_array* o, tp_t type )
 {
@@ -890,7 +1123,11 @@ void bcore_array_default_set_gtype( const bcore_array_s* p, bcore_array* o, tp_t
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 vc_t bcore_array_p_get_c_data( const bcore_array_s* p, vc_t o )
 {
@@ -1009,6 +1246,8 @@ vd_t bcore_array_p_get_d_data_size( const bcore_array_s* p, vd_t o, uz_t* p_size
     return NULL;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 vc_t bcore_array_p_get_c_data_size( const bcore_array_s* p, vc_t o, uz_t* p_size )
 {
     vc_t obj = obj_vc( p, o );
@@ -1066,7 +1305,11 @@ vc_t bcore_array_p_get_c_data_size( const bcore_array_s* p, vc_t o, uz_t* p_size
     return NULL;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static bl_t array_s_supports( const bcore_self_s* self, st_s* log )
 {
@@ -1235,7 +1478,11 @@ static bcore_array_s* bcore_array_s_create_from_self( const bcore_self_s* self )
     return o;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 tp_t bcore_array_dyn_solid_static_type_of( tp_t type )
 {
@@ -1262,7 +1509,11 @@ tp_t bcore_array_fix_link_aware_type_of( uz_t size )
     return bcore_flect_type_self_d( bcore_self_s_create_array_fix_link_aware( size ) );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 uz_t bcore_array_default_get_size   ( const bcore_array_s* p, const bcore_array* o )                 { return get_size( p, o ); }
 uz_t bcore_array_default_get_space  ( const bcore_array_s* p, const bcore_array* o )                 { return get_space( p, o ); }
@@ -1275,6 +1526,8 @@ void bcore_array_default_set_sz     ( const bcore_array_s* p, bcore_array* o, uz
 void bcore_array_default_set_uz     ( const bcore_array_s* p, bcore_array* o, uz_t index, uz_t val ) { p->set( p, o, index, sr_twc( TYPEOF_uz_t, &val ) ); }
 void bcore_array_default_set_sc     ( const bcore_array_s* p, bcore_array* o, uz_t index, sc_t val ) { p->set( p, o, index, sr_twc( TYPEOF_sc_t, &val ) ); }
 void bcore_array_default_set_bl     ( const bcore_array_s* p, bcore_array* o, uz_t index, bl_t val ) { p->set( p, o, index, sr_twc( TYPEOF_bl_t, &val ) ); }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bl_t bcore_array_p_is_mutable_mono_typed(  const bcore_array_s* p )
 {
@@ -1403,7 +1656,11 @@ vc_t bcore_array_default_max( const bcore_array_s* p, const bcore_array* o, uz_t
     return bcore_array_p_max_f( p, o, start, end, cmp, direction );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 uz_t bcore_array_default_max_index_f( const bcore_array_s* p, const bcore_array* o, uz_t start, uz_t end, bcore_cmp_f cmp, s2_t direction )
 {
@@ -1440,6 +1697,8 @@ uz_t bcore_array_default_max_index_f( const bcore_array_s* p, const bcore_array*
     return ret;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_array_default_max_index( const bcore_array_s* p, const bcore_array* o, uz_t start, uz_t end, s2_t direction )
 {
     bl_t is_of_aware = bcore_array_p_is_of_aware( p );
@@ -1451,7 +1710,11 @@ uz_t bcore_array_default_max_index( const bcore_array_s* p, const bcore_array* o
     return bcore_array_p_max_index_f( p, o, start, end, cmp, direction );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void buf_sort_link( vc_t* data, uz_t size, vc_t* buf, bcore_cmp_f cmp, s2_t direction )
 {
@@ -1465,6 +1728,8 @@ static void buf_sort_link( vc_t* data, uz_t size, vc_t* buf, bcore_cmp_f cmp, s2
         data[ w++ ] = ( r == size || cmp.f( cmp.o, buf[ i ], data[ r ] ) * direction >= 0 ) ? buf[ i++ ] : data[ r++ ];
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void buf_sort_spect_empl( const bcore_inst_s* p, vd_t data, uz_t size, vd_t buf, bcore_cmp_f cmp, s2_t direction )
 {
@@ -1519,6 +1784,8 @@ static void buf_sort_spect_empl( const bcore_inst_s* p, vd_t data, uz_t size, vd
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_array_default_sort_f( const bcore_array_s* p, bcore_array* o, uz_t start, uz_t end, bcore_cmp_f cmp, s2_t direction )
 {
     uz_t size = get_size( p, o );
@@ -1551,6 +1818,8 @@ void bcore_array_default_sort_f( const bcore_array_s* p, bcore_array* o, uz_t st
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 void bcore_array_default_sort( const bcore_array_s* p, bcore_array* o, uz_t start, uz_t end, s2_t direction )
 {
     bl_t is_of_aware = bcore_array_p_is_of_aware( p );
@@ -1561,6 +1830,8 @@ void bcore_array_default_sort( const bcore_array_s* p, bcore_array* o, uz_t star
     };
     bcore_array_p_sort_f( p, o, start, end, cmp, direction );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_array_default_do( const bcore_array_s* p, bcore_array* o, uz_t start, uz_t end, fp_t func )
 {
@@ -1585,7 +1856,11 @@ void bcore_array_default_do( const bcore_array_s* p, bcore_array* o, uz_t start,
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_array_default_do_arg( const bcore_array_s* p, bcore_array* o, uz_t start, uz_t end, fp_t func, vd_t arg )
 {
@@ -1610,7 +1885,11 @@ void bcore_array_default_do_arg( const bcore_array_s* p, bcore_array* o, uz_t st
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void buf_order_sort( vc_t* data, uz_t* order, uz_t size, uz_t* buf, bcore_cmp_f cmp, s2_t direction )
 {
@@ -1624,6 +1903,8 @@ static void buf_order_sort( vc_t* data, uz_t* order, uz_t size, uz_t* buf, bcore
         order[ w++ ] = ( r == size || cmp.f( cmp.o, data[ buf[ i ] ], data[ order[ r ] ] ) * direction >= 0 ) ? buf[ i++ ] : order[ r++ ];
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 bcore_arr_uz_s* bcore_array_default_create_sorted_order_f( const bcore_array_s* p, const bcore_array* o, uz_t start, uz_t end, bcore_cmp_f cmp, s2_t direction )
 {
@@ -1661,6 +1942,8 @@ bcore_arr_uz_s* bcore_array_default_create_sorted_order_f( const bcore_array_s* 
     return order;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 bcore_arr_uz_s* bcore_array_default_create_sorted_order( const bcore_array_s* p, const bcore_array* o, uz_t start, uz_t end, s2_t direction )
 {
     bl_t is_of_aware = bcore_array_p_is_of_aware( p );
@@ -1672,7 +1955,11 @@ bcore_arr_uz_s* bcore_array_default_create_sorted_order( const bcore_array_s* p,
     return bcore_array_p_create_sorted_order_f( p, o, start, end, cmp, direction );
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void bcore_array_default_reorder( const bcore_array_s* p, bcore_array* o, const bcore_arr_uz_s* order )
 {
@@ -1786,7 +2073,11 @@ void bcore_array_default_reorder( const bcore_array_s* p, bcore_array* o, const 
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static inline const bcore_array_s* atpd( tp_t tp ) { return bcore_array_s_get_typed( tp ); }
 
@@ -1850,8 +2141,12 @@ vc_t NPX(r_get_c_data           )( const sr_s* o                           ) { r
 vd_t NPX(r_get_d_data           )( const sr_s* o                           ) { return   NPX(p_get_d_data           )( w_spect( *o ), o->o             ); }
 uz_t NPX(r_get_unit_size        )( const sr_s* o                           ) { return   NPX(p_get_unit_size        )( r_spect( *o ), o->o             ); }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 // testing, debugging
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static void test_string_array( sc_t type_sc )
 {
@@ -1917,9 +2212,39 @@ static void test_string_array( sc_t type_sc )
         ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 5 ).o, "some nonsense: dspaud" ) == 0 );
     }
 
+    /// testing removal
+    if( is_dynamic )
+    {
+        ASSERT( bcore_array_p_get_size( arr_p, arr ) == 6 );
+        bcore_array_p_remove( arr_p, arr, 4 );
+        bcore_array_p_remove( arr_p, arr, 1 );
+        ASSERT( bcore_array_p_get_size( arr_p, arr ) == 4 );
+        ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 0 ).o, "test line a" ) == 0 );
+        ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 1 ).o, "test line p" ) == 0 );
+        ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 2 ).o, "test line x" ) == 0 );
+        ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 3 ).o, "some nonsense: dspaud" ) == 0 );
+    }
+
+    /// testing insertion
+    if( is_dynamic )
+    {
+        bcore_array_p_insert( arr_p, arr, 2, sr_asm( st_s_createf( "insertion at line 2" ) ) );
+        bcore_array_p_insert( arr_p, arr, 4, sr_asm( st_s_createf( "insertion at line 4" ) ) );
+        ASSERT( bcore_array_p_get_size( arr_p, arr ) == 6 );
+        ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 0 ).o, "test line a" ) == 0 );
+        ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 1 ).o, "test line p" ) == 0 );
+        ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 2 ).o, "insertion at line 2" ) == 0 );
+        ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 3 ).o, "test line x" ) == 0 );
+        ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 4 ).o, "insertion at line 4" ) == 0 );
+        ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 5 ).o, "some nonsense: dspaud" ) == 0 );
+    }
+
     bcore_arr_uz_s_discard( order );
     bcore_inst_a_discard( arr );
+
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 static st_s* spect_array_selftest( void )
 {
@@ -1947,6 +2272,9 @@ static st_s* spect_array_selftest( void )
         bcore_self_s_discard( self );
     }
 
+    // testing predefined low-level array (all bcore_array spect functionality must work, too)
+    test_string_array( "bcore_arr_st_s" );
+
     bcore_inst_a_discard( arr );
 
     // some non-arrays
@@ -1971,8 +2299,12 @@ static st_s* spect_array_selftest( void )
     return NULL;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 // signal
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 vd_t bcore_spect_array_signal_handler( const bcore_signal_s* o )
 {
@@ -1997,6 +2329,8 @@ vd_t bcore_spect_array_signal_handler( const bcore_signal_s* o )
 
     return NULL;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 
