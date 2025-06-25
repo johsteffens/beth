@@ -723,6 +723,12 @@ static void set_dyn_link_typed( const bcore_array_s* p, vd_t o, uz_t index, sr_s
             *dst = bcore_inst_p_create_typed( inst_p, sr_s_type( &src ), src.o );
         }
     }
+    else if( arr->type )
+    {
+        const bcore_inst_s* inst_p = bcore_inst_s_get_typed( arr->type );
+        if( *dst ) bcore_inst_p_discard( inst_p, *dst );
+        *dst = NULL;
+    }
 
     sr_down( src );
 }
@@ -914,6 +920,58 @@ void bcore_array_default_remove( const bcore_array_s* p, bcore_array* o, uz_t in
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void bcore_array_default_remove_null_elements( const bcore_array_s* p, bcore_array* o )
+{
+    switch( p->type_caps )
+    {
+        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
+        case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
+            return; // nothing to do
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
+        case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
+        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
+        {
+            uz_t size = get_size( p, o );
+            if( size > get_space( p, o ) ) bcore_array_p_make_strong( p, o );
+            vd_t* data = ( vd_t* )bcore_array_p_get_d_data( p, o );
+            uz_t new_size = 0;
+            for( uz_t i = 0; i < size; i++ )
+            {
+                if( data[ i ] != NULL )
+                {
+                    if( i > new_size )
+                    {
+                         data[ new_size ] = data[ i ];
+                         data[ i ] = NULL;
+                    }
+                    new_size++;
+                }
+            }
+            bcore_array_p_set_size( p, o, new_size );
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC:
+        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
+        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
+        {
+            ERR( "cannot remove an element from a fixed-size-array" );
+        }
+        break;
+
+        default:
+        {
+            ERR( "invalid type_caps (%"PRIu32")", ( u2_t )p->type_caps );
+        }
+        break;
+    }
+
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 /// insert
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1000,6 +1058,106 @@ void bcore_array_default_insert( const bcore_array_s* p, bcore_array* o, uz_t in
     }
 
     bcore_array_p_set( p, o, index, src );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// swap
+// ---------------------------------------------------------------------------------------------------------------------
+
+void bcore_array_default_swap( const bcore_array_s* p, bcore_array* o, uz_t index1, uz_t index2 )
+{
+    uz_t size = get_size( p, o );
+    if( index1 >= size ) ERR_fa( "index1 (#<uz_t>) >= array size (#<uz_t>)", index1, size );
+    if( index2 >= size ) ERR_fa( "index2 (#<uz_t>) >= array size (#<uz_t>)", index2, size );
+    switch( p->type_caps )
+    {
+        case BCORE_CAPS_ARRAY_DYN_SOLID_STATIC:
+        {
+            bcore_array_dyn_solid_static_s* arr = obj_vd( p, o );
+            const bcore_inst_s* inst_p = p->item_p;
+            vd_t item1 = ( u0_t* )arr->data + inst_p->size * index1;
+            vd_t item2 = ( u0_t* )arr->data + inst_p->size * index2;
+            vd_t tmp = inst_p->create( inst_p );
+            bcore_inst_p_copy( inst_p, tmp, item1 );
+            bcore_inst_p_copy( inst_p, item1, item2 );
+            bcore_inst_p_copy( inst_p, item2, tmp );
+            inst_p->discard( inst_p, tmp );
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_SOLID_TYPED:
+        {
+            bcore_array_dyn_solid_typed_s* arr = obj_vd( p, o );
+            const bcore_inst_s* inst_p = bcore_inst_s_get_typed( arr->type );
+            vd_t item1 = ( u0_t* )arr->data + inst_p->size * index1;
+            vd_t item2 = ( u0_t* )arr->data + inst_p->size * index2;
+            vd_t tmp = inst_p->create( inst_p );
+            bcore_inst_p_copy( inst_p, tmp, item1 );
+            bcore_inst_p_copy( inst_p, item1, item2 );
+            bcore_inst_p_copy( inst_p, item2, tmp );
+            inst_p->discard( inst_p, tmp );
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_FIX_SOLID_STATIC:
+        {
+            vd_t data = obj_vd( p, o );
+            const bcore_inst_s* inst_p = p->item_p;
+            vd_t item1 = ( u0_t* )data + inst_p->size * index1;
+            vd_t item2 = ( u0_t* )data + inst_p->size * index2;
+            vd_t tmp = inst_p->create( inst_p );
+            bcore_inst_p_copy( inst_p, tmp, item1 );
+            bcore_inst_p_copy( inst_p, item1, item2 );
+            bcore_inst_p_copy( inst_p, item2, tmp );
+            inst_p->discard( inst_p, tmp );
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_LINK_STATIC:
+        {
+            bcore_array_dyn_link_static_s* arr = obj_vd( p, o );
+            vd_t temp = arr->data[ index1 ];
+            arr->data[ index1 ] = arr->data[ index2 ];
+            arr->data[ index2 ] = temp;
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_LINK_TYPED:
+        {
+            bcore_array_dyn_link_typed_s* arr = obj_vd( p, o );
+            vd_t temp = arr->data[ index1 ];
+            arr->data[ index1 ] = arr->data[ index2 ];
+            arr->data[ index2 ] = temp;
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_DYN_LINK_AWARE:
+        {
+            bcore_array_dyn_link_aware_s* arr = obj_vd( p, o );
+            vd_t temp = arr->data[ index1 ];
+            arr->data[ index1 ] = arr->data[ index2 ];
+            arr->data[ index2 ] = temp;
+        }
+        break;
+
+        case BCORE_CAPS_ARRAY_FIX_LINK_STATIC:
+        case BCORE_CAPS_ARRAY_FIX_LINK_AWARE:
+        {
+            vd_t* data = obj_vd( p, o );
+            vd_t temp = data[ index1 ];
+            data[ index1 ] = data[ index2 ];
+            data[ index2 ] = temp;
+        }
+        break;
+
+        default:
+        {
+            ERR( "invalid type_caps (%"PRIu32")", ( u2_t )p->type_caps );
+        }
+        break;
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -2154,6 +2312,7 @@ static void test_string_array( sc_t type_sc )
     const bcore_array_s* arr_p = bcore_array_s_get_aware( arr );
 
     bl_t is_dynamic = !bcore_array_p_is_fixed( arr_p );
+    bl_t is_of_links = bcore_array_p_is_of_links( arr_p );
 
     if( is_dynamic ) bcore_array_p_set_gtype( arr_p, arr, typeof( "st_s" ) );
     if( is_dynamic ) bcore_array_p_set_size( arr_p, arr, 5 );
@@ -2188,6 +2347,22 @@ static void test_string_array( sc_t type_sc )
     ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 2 ).o, "test line a" ) == 0 );
     ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 3 ).o, "some nonsense: sakjd" ) == 0 );
     ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 4 ).o, "some nonsense: dspaud" ) == 0 );
+
+    /// testing swap
+    {
+        bcore_msg_fa( "testing #<sc_t>\n", type_sc );
+        uz_t size = get_size( arr_p, arr );
+        bcore_array_p_swap( arr_p, arr, 2, 1 );
+        bcore_array_p_swap( arr_p, arr, 2, 3 );
+        ASSERT( get_size( arr_p, arr ) == size );
+        ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 0 ).o, "test line x" ) == 0 );
+        ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 1 ).o, "test line a" ) == 0 );
+        ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 2 ).o, "some nonsense: sakjd" ) == 0 );
+        ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 3 ).o, "test line p" ) == 0 );
+        ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 4 ).o, "some nonsense: dspaud" ) == 0 );
+        bcore_array_p_swap( arr_p, arr, 2, 3 ); // undo above swap
+        bcore_array_p_swap( arr_p, arr, 2, 1 ); // undo above swap
+    }
 
     if( is_dynamic ) ASSERT( get_size( arr_p, arr ) == 9 );
 
@@ -2237,6 +2412,19 @@ static void test_string_array( sc_t type_sc )
         ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 3 ).o, "test line x" ) == 0 );
         ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 4 ).o, "insertion at line 4" ) == 0 );
         ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 5 ).o, "some nonsense: dspaud" ) == 0 );
+    }
+
+    /// testing remove_null_elements
+    if( is_dynamic && is_of_links )
+    {
+        bcore_array_p_set( arr_p, arr, 2, sr_null() );
+        bcore_array_p_set( arr_p, arr, 4, sr_null() );
+        bcore_array_p_remove_null_elements( arr_p, arr );
+        ASSERT( bcore_array_p_get_size( arr_p, arr ) == 4 );
+        ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 0 ).o, "test line a" ) == 0 );
+        ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 1 ).o, "test line p" ) == 0 );
+        ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 2 ).o, "test line x" ) == 0 );
+        ASSERT( st_s_cmp_sc( ( const st_s* )arr_p->get( arr_p, arr, 3 ).o, "some nonsense: dspaud" ) == 0 );
     }
 
     bcore_arr_uz_s_discard( order );

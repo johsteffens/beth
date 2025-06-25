@@ -145,12 +145,28 @@ signature m (TE) x_inst* t_set_d(  m obliv @* o, tp_t t, sz_t index, d obliv (TE
 signature m (TE) x_inst* t_set_c(  m obliv @* o, tp_t t, sz_t index, c obliv (TE) x_inst* v );
 signature m (TE) x_inst* t_set_t(  m obliv @* o, tp_t t, sz_t index, tp_t val_type );
 
-func m (TE) void t_set_sr( m obliv @* o, tp_t t, sz_t index, sr_s sr ) bcore_array_t_set( t, ( bcore_array* )o, index, sr );
+signature m (TE) x_inst* t_insert_d(  m obliv @* o, tp_t t, sz_t index, d obliv (TE) x_inst* v );
+signature m (TE) x_inst* t_insert_c(  m obliv @* o, tp_t t, sz_t index, c obliv (TE) x_inst* v );
+signature m (TE) x_inst* t_insert_t(  m obliv @* o, tp_t t, sz_t index, tp_t val_type );
+
+func m (TE) void t_set_sr   ( m obliv @* o, tp_t t, sz_t index, sr_s sr ) bcore_array_t_set( t, ( bcore_array* )o, index, sr );
+func m (TE) void t_insert_sr( m obliv @* o, tp_t t, sz_t index, sr_s sr ) bcore_array_t_insert( t, ( bcore_array* )o, index, sr );
+func m (TE) void t_remove   ( m obliv @* o, tp_t t, sz_t index ) bcore_array_t_remove( t, ( bcore_array* )o, index ); // removes indexed element (if existing)
+func m (TE) void t_pop      ( m obliv @* o, tp_t t             ) bcore_array_t_pop   ( t, ( bcore_array* )o        ); // removes last element (if any)
+func m (TE) void t_swap     ( m obliv @* o, tp_t t, sz_t index1, sz_t index2 ) bcore_array_t_swap( t, ( bcore_array* )o, index1, index2 );
 
 func m (TE) x_inst* set_d(  m aware @* o, sz_t index, d obliv (TE) x_inst* v ) = o.t_set_d( o._, index, v );
 func m (TE) x_inst* set_c(  m aware @* o, sz_t index, c obliv (TE) x_inst* v ) = o.t_set_c( o._, index, v );
 func m (TE) x_inst* set_t(  m aware @* o, sz_t index, tp_t val_type ) = o.t_set_t( o._, index, val_type );
 func m (TE) void    set_sr( m aware @* o, sz_t index, sr_s sr ) o.t_set_sr( o._, index, sr );
+func m (TE) void    insert_sr( m aware @* o, sz_t index, sr_s sr ) o.t_insert_sr( o._, index, sr );
+func m (TE) void    remove   ( m aware @* o, sz_t index ) o.t_remove( o._, index );
+func m (TE) void    pop      ( m aware @* o             ) o.t_pop   ( o._        );
+func m (TE) void    swap     ( m aware @* o, sz_t index1, sz_t index2 ) o.t_swap( o._, index1, index2 );
+
+/// linked arrays: removes all elements with NULL ptrs; solid arrays: no effect
+func m (TE) void t_remove_null_elements( m obliv @* o, tp_t t ) bcore_array_t_remove_null_elements( t, ( bcore_array* )o );
+func m (TE) void   remove_null_elements( m aware @* o         ) o.t_remove_null_elements( o._ );
 
 /// returns sr_NULL in case of no match
 func sr_s t_m_get_sr( m obliv @* o, tp_t t, sz_t index ) = bcore_array_t_get( t, o.cast( m bcore_array* ), index );
@@ -383,6 +399,99 @@ func t_set_t
     {
         const bcore_array_s* p = bcore_array_s_get_typed( t );
         bcore_array_p_set( p, ( bcore_array* )o, index, sr_t_create( val_type ) );
+
+        if( p->is_of_links )
+        {
+            x_inst** data = bcore_array_p_get_d_data( p, o );
+            return data[ index ];
+        }
+        else if( p->is_static )
+        {
+            u0_t* data = bcore_array_p_get_d_data( p, o );
+            return ( x_inst* )( data + p->item_p->size * index );
+        }
+        else
+        {
+            return bcore_array_p_get( p, ( bcore_array* )o, index ).o;
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func t_insert_d
+{
+    verbatim_C
+    {
+        const bcore_array_s* p = bcore_array_s_get_typed( t );
+
+        if( p->item_p )
+        {
+            bcore_array_p_insert( p, ( bcore_array* )o, index, sr_psm( p->item_p, v ) );
+        }
+        else
+        {
+            bcore_array_p_insert( p, ( bcore_array* )o, index, sr_asm( v ) );
+        }
+
+        if( p->is_of_links )
+        {
+            return v;
+        }
+        else if( p->is_static )
+        {
+            u0_t* data = bcore_array_p_get_d_data( p, o );
+            return ( x_inst* )( data + p->item_p->size * index );
+        }
+        else
+        {
+            return bcore_array_p_get( p, ( bcore_array* )o, index ).o;
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func t_insert_c
+{
+    verbatim_C
+    {
+        const bcore_array_s* p = bcore_array_s_get_typed( t );
+
+        if( p->item_p )
+        {
+            bcore_array_p_insert( p, ( bcore_array* )o, index, sr_pwc( p->item_p, v ) );
+        }
+        else
+        {
+            bcore_array_p_insert( p, ( bcore_array* )o, index, sr_awc( v ) );
+        }
+
+        if( p->is_of_links )
+        {
+            x_inst** data = bcore_array_p_get_d_data( p, o );
+            return data[ index ];
+        }
+        else if( p->is_static )
+        {
+            u0_t* data = bcore_array_p_get_d_data( p, o );
+            return ( x_inst* )( data + p->item_p->size * index );
+        }
+        else
+        {
+            return bcore_array_p_get( p, ( bcore_array* )o, index ).o;
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func t_insert_t
+{
+    verbatim_C
+    {
+        const bcore_array_s* p = bcore_array_s_get_typed( t );
+        bcore_array_p_insert( p, ( bcore_array* )o, index, sr_t_create( val_type ) );
 
         if( p->is_of_links )
         {

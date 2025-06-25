@@ -1,4 +1,4 @@
-//  Last update: 2025-06-18T08:01:01Z
+//  Last update: 2025-06-25T14:47:55Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -448,10 +448,20 @@
   static inline x_inst* x_array_push( x_array* o ); \
   static inline void x_array_push_sr( x_array* o, sr_s sr ); \
   static inline void x_array_t_set_sr( x_array* o, tp_t t, sz_t index, sr_s sr ); \
+  static inline void x_array_t_insert_sr( x_array* o, tp_t t, sz_t index, sr_s sr ); \
+  static inline void x_array_t_remove( x_array* o, tp_t t, sz_t index ); \
+  static inline void x_array_t_pop( x_array* o, tp_t t ); \
+  static inline void x_array_t_swap( x_array* o, tp_t t, sz_t index1, sz_t index2 ); \
   static inline x_inst* x_array_set_d( x_array* o, sz_t index, x_inst* v ); \
   static inline x_inst* x_array_set_c( x_array* o, sz_t index, const x_inst* v ); \
   static inline x_inst* x_array_set_t( x_array* o, sz_t index, tp_t val_type ); \
   static inline void x_array_set_sr( x_array* o, sz_t index, sr_s sr ); \
+  static inline void x_array_insert_sr( x_array* o, sz_t index, sr_s sr ); \
+  static inline void x_array_remove( x_array* o, sz_t index ); \
+  static inline void x_array_pop( x_array* o ); \
+  static inline void x_array_swap( x_array* o, sz_t index1, sz_t index2 ); \
+  static inline void x_array_t_remove_null_elements( x_array* o, tp_t t ); \
+  static inline void x_array_remove_null_elements( x_array* o ); \
   static inline sr_s x_array_t_m_get_sr( x_array* o, tp_t t, sz_t index ); \
   static inline sr_s x_array_m_get_sr( x_array* o, sz_t index ); \
   static inline sr_s x_array_c_get_sr( const x_array* o, sz_t index ); \
@@ -467,6 +477,9 @@
   x_inst* x_array_t_set_d( x_array* o, tp_t t, sz_t index, x_inst* v ); \
   x_inst* x_array_t_set_c( x_array* o, tp_t t, sz_t index, const x_inst* v ); \
   x_inst* x_array_t_set_t( x_array* o, tp_t t, sz_t index, tp_t val_type ); \
+  x_inst* x_array_t_insert_d( x_array* o, tp_t t, sz_t index, x_inst* v ); \
+  x_inst* x_array_t_insert_c( x_array* o, tp_t t, sz_t index, const x_inst* v ); \
+  x_inst* x_array_t_insert_t( x_array* o, tp_t t, sz_t index, tp_t val_type ); \
   sr_s x_array_t_c_get_sr( const x_array* o, tp_t t, sz_t index ); \
   XOILA_DECLARE_SPECT( x_array ) \
   { \
@@ -523,10 +536,20 @@
   static inline x_inst* x_array_push( x_array* o ){return  x_array_t_push(o,o->_ );} \
   static inline void x_array_push_sr( x_array* o, sr_s sr ){x_array_t_push_sr(o,o->_, sr );} \
   static inline void x_array_t_set_sr( x_array* o, tp_t t, sz_t index, sr_s sr ){bcore_array_t_set( t, ( bcore_array* )o, index, sr );} \
+  static inline void x_array_t_insert_sr( x_array* o, tp_t t, sz_t index, sr_s sr ){bcore_array_t_insert( t, ( bcore_array* )o, index, sr );} \
+  static inline void x_array_t_remove( x_array* o, tp_t t, sz_t index ){bcore_array_t_remove( t, ( bcore_array* )o, index );} \
+  static inline void x_array_t_pop( x_array* o, tp_t t ){bcore_array_t_pop   ( t, ( bcore_array* )o        );} \
+  static inline void x_array_t_swap( x_array* o, tp_t t, sz_t index1, sz_t index2 ){bcore_array_t_swap( t, ( bcore_array* )o, index1, index2 );} \
   static inline x_inst* x_array_set_d( x_array* o, sz_t index, x_inst* v ){return  x_array_t_set_d(o,o->_, index, v );} \
   static inline x_inst* x_array_set_c( x_array* o, sz_t index, const x_inst* v ){return  x_array_t_set_c(o,o->_, index, v );} \
   static inline x_inst* x_array_set_t( x_array* o, sz_t index, tp_t val_type ){return  x_array_t_set_t(o,o->_, index, val_type );} \
   static inline void x_array_set_sr( x_array* o, sz_t index, sr_s sr ){x_array_t_set_sr(o,o->_, index, sr );} \
+  static inline void x_array_insert_sr( x_array* o, sz_t index, sr_s sr ){x_array_t_insert_sr(o,o->_, index, sr );} \
+  static inline void x_array_remove( x_array* o, sz_t index ){x_array_t_remove(o,o->_, index );} \
+  static inline void x_array_pop( x_array* o ){x_array_t_pop(o,o->_        );} \
+  static inline void x_array_swap( x_array* o, sz_t index1, sz_t index2 ){x_array_t_swap(o,o->_, index1, index2 );} \
+  static inline void x_array_t_remove_null_elements( x_array* o, tp_t t ){bcore_array_t_remove_null_elements( t, ( bcore_array* )o );} \
+  static inline void x_array_remove_null_elements( x_array* o ){x_array_t_remove_null_elements(o,o->_ );} \
   static inline sr_s x_array_t_m_get_sr( x_array* o, tp_t t, sz_t index ){return  bcore_array_t_get( t, ((bcore_array*)(o)), index );} \
   static inline sr_s x_array_m_get_sr( x_array* o, sz_t index ){return  x_array_t_m_get_sr(o,o->_, index );} \
   static inline sr_s x_array_c_get_sr( const x_array* o, sz_t index ){return  x_array_t_c_get_sr(o,o->_, index );} \
@@ -4103,5 +4126,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x0CCC3FDA194277FD
-// XOICO_FILE_SIGNATURE 0xB822B31B67FDC7E6
+// XOICO_BODY_SIGNATURE 0xFCE1791320761AB3
+// XOICO_FILE_SIGNATURE 0x580C3BBC8F7ACE64

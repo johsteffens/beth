@@ -102,7 +102,9 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_uz, uz_t, index, uz_t, 
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_sc, uz_t, index, sc_t, val ) // Sets item by converting sc_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, set_bl, uz_t, index, bl_t, val ) // Sets item by converting bl_t into target type
 BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, insert, uz_t, index, sr_s, src ) // Inserts item at indexed position by moving all items from that position down; behaves like 'set' when index is >= size
-BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, remove, uz_t, index    ) // removes item at indexed position; no effect if index is out of range
+BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, remove, uz_t, index  ) // removes item at indexed position; no effect if index is out of range
+BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP0( bcore_array, remove_null_elements ) // removes all element with null reference; no effect on solid arrays; error on fixed arrays
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_array, swap, uz_t, index1, uz_t, index2 ) // swaps two elements; error in case an index is out of range
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, set_size,  uz_t, size  ) // changes array size (keeping previous data); for linked arrays new items are NULL; otherwise new items are default initialized
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, set_space, uz_t, space ) // changes space (can affect size; set space to zero means clearing the array)
 BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP0( bcore_array, make_strong )            // turns a weak array reference into a strong one; no effect if array is strong
