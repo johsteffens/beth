@@ -436,6 +436,57 @@ bl_t bcore_via_default_nis_link( const bcore_via_s* p, const bcore_via* o, tp_t 
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bl_t bcore_via_default_iis_static_link( const bcore_via_s* p, const bcore_via* o, uz_t index )
+{
+    if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
+    if( p->vitem_arr[ index ].caps == BCORE_CAPS_LINK_STATIC ) return true;
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t bcore_via_default_nis_static_link( const bcore_via_s* p, const bcore_via* o, tp_t name )
+{
+    uz_t index = bcore_via_default_nget_index( p, o, name );
+    return bcore_via_default_iis_static_link( p, o, index );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t bcore_via_default_iis_typed_link( const bcore_via_s* p, const bcore_via* o, uz_t index )
+{
+    if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
+    if( p->vitem_arr[ index ].caps == BCORE_CAPS_LINK_TYPED ) return true;
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t bcore_via_default_nis_typed_link( const bcore_via_s* p, const bcore_via* o, tp_t name )
+{
+    uz_t index = bcore_via_default_nget_index( p, o, name );
+    return bcore_via_default_iis_typed_link( p, o, index );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t bcore_via_default_iis_aware_link( const bcore_via_s* p, const bcore_via* o, uz_t index )
+{
+    if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
+    if( p->vitem_arr[ index ].caps == BCORE_CAPS_LINK_AWARE ) return true;
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bl_t bcore_via_default_nis_aware_link( const bcore_via_s* p, const bcore_via* o, tp_t name )
+{
+    uz_t index = bcore_via_default_nget_index( p, o, name );
+    return bcore_via_default_iis_aware_link( p, o, index );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void bcore_via_default_source( const bcore_via_s* p, bcore_via* o, bcore_source* source )
 {
     if( p->via_call_p->source ) p->via_call_p->source( ( bcore_via_call* ) o, source );

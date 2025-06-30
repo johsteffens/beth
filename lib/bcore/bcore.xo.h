@@ -1,4 +1,4 @@
-//  Last update: 2025-06-25T14:47:55Z
+//  Last update: 2025-06-29T13:49:37Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -689,6 +689,18 @@
   static inline bl_t x_stamp_t_is_link_i( tp_t t, sz_t index ); \
   static inline bl_t x_stamp_is_link( const x_stamp* o, tp_t name ); \
   static inline bl_t x_stamp_t_is_link( tp_t t, tp_t name ); \
+  static inline bl_t x_stamp_is_static_link_i( const x_stamp* o, sz_t index ); \
+  static inline bl_t x_stamp_t_is_static_link_i( tp_t t, sz_t index ); \
+  static inline bl_t x_stamp_is_static_link( const x_stamp* o, tp_t name ); \
+  static inline bl_t x_stamp_t_is_static_link( tp_t t, tp_t name ); \
+  static inline bl_t x_stamp_is_typed_link_i( const x_stamp* o, sz_t index ); \
+  static inline bl_t x_stamp_t_is_typed_link_i( tp_t t, sz_t index ); \
+  static inline bl_t x_stamp_is_typed_link( const x_stamp* o, tp_t name ); \
+  static inline bl_t x_stamp_t_is_typed_link( tp_t t, tp_t name ); \
+  static inline bl_t x_stamp_is_aware_link_i( const x_stamp* o, sz_t index ); \
+  static inline bl_t x_stamp_t_is_aware_link_i( tp_t t, sz_t index ); \
+  static inline bl_t x_stamp_is_aware_link( const x_stamp* o, tp_t name ); \
+  static inline bl_t x_stamp_t_is_aware_link( tp_t t, tp_t name ); \
   static inline bl_t x_stamp_is_array_i( const x_stamp* o, sz_t index ); \
   static inline bl_t x_stamp_t_is_array_i( tp_t t, sz_t index ); \
   static inline bl_t x_stamp_is_array_n( const x_stamp* o, tp_t name ); \
@@ -776,6 +788,18 @@
   static inline bl_t x_stamp_t_is_link_i( tp_t t, sz_t index ){return  bcore_via_t_iis_link( t, NULL, index );} \
   static inline bl_t x_stamp_is_link( const x_stamp* o, tp_t name ){return  bcore_via_a_nis_link( ((const bcore_via*)(o)), name );} \
   static inline bl_t x_stamp_t_is_link( tp_t t, tp_t name ){return  bcore_via_t_nis_link( t, NULL, name );} \
+  static inline bl_t x_stamp_is_static_link_i( const x_stamp* o, sz_t index ){return  bcore_via_a_iis_static_link( ((const bcore_via*)(o)), index );} \
+  static inline bl_t x_stamp_t_is_static_link_i( tp_t t, sz_t index ){return  bcore_via_t_iis_static_link( t, NULL, index );} \
+  static inline bl_t x_stamp_is_static_link( const x_stamp* o, tp_t name ){return  bcore_via_a_nis_static_link( ((const bcore_via*)(o)), name );} \
+  static inline bl_t x_stamp_t_is_static_link( tp_t t, tp_t name ){return  bcore_via_t_nis_static_link( t, NULL, name );} \
+  static inline bl_t x_stamp_is_typed_link_i( const x_stamp* o, sz_t index ){return  bcore_via_a_iis_typed_link( ((const bcore_via*)(o)), index );} \
+  static inline bl_t x_stamp_t_is_typed_link_i( tp_t t, sz_t index ){return  bcore_via_t_iis_typed_link( t, NULL, index );} \
+  static inline bl_t x_stamp_is_typed_link( const x_stamp* o, tp_t name ){return  bcore_via_a_nis_typed_link( ((const bcore_via*)(o)), name );} \
+  static inline bl_t x_stamp_t_is_typed_link( tp_t t, tp_t name ){return  bcore_via_t_nis_typed_link( t, NULL, name );} \
+  static inline bl_t x_stamp_is_aware_link_i( const x_stamp* o, sz_t index ){return  bcore_via_a_iis_aware_link( ((const bcore_via*)(o)), index );} \
+  static inline bl_t x_stamp_t_is_aware_link_i( tp_t t, sz_t index ){return  bcore_via_t_iis_aware_link( t, NULL, index );} \
+  static inline bl_t x_stamp_is_aware_link( const x_stamp* o, tp_t name ){return  bcore_via_a_nis_aware_link( ((const bcore_via*)(o)), name );} \
+  static inline bl_t x_stamp_t_is_aware_link( tp_t t, tp_t name ){return  bcore_via_t_nis_aware_link( t, NULL, name );} \
   static inline bl_t x_stamp_is_array_i( const x_stamp* o, sz_t index ){return  bcore_via_a_iis_array( ((const bcore_via*)(o)),index );} \
   static inline bl_t x_stamp_t_is_array_i( tp_t t, sz_t index ){return  bcore_via_t_iis_array( t, NULL, index );} \
   static inline bl_t x_stamp_is_array_n( const x_stamp* o, tp_t name ){return  bcore_via_a_nis_array( ((const bcore_via*)(o)), name );} \
@@ -4126,5 +4150,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xFCE1791320761AB3
-// XOICO_FILE_SIGNATURE 0x580C3BBC8F7ACE64
+// XOICO_BODY_SIGNATURE 0x8812BCE1B06AB953
+// XOICO_FILE_SIGNATURE 0x58272DAC263E3626

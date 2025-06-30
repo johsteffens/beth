@@ -83,6 +83,21 @@ func bl_t t_is_link_i( tp_t t,     sz_t index ) = bcore_via_t_iis_link( t, NULL,
 func bl_t   is_link  ( aware @* o, tp_t name )  = bcore_via_a_nis_link( o.cast( c bcore_via* ), name );
 func bl_t t_is_link  ( tp_t t,     tp_t name )  = bcore_via_t_nis_link( t, NULL, name );
 
+func bl_t   is_static_link_i( aware @* o, sz_t index ) = bcore_via_a_iis_static_link( o.cast( c bcore_via* ), index );
+func bl_t t_is_static_link_i( tp_t t,     sz_t index ) = bcore_via_t_iis_static_link( t, NULL, index );
+func bl_t   is_static_link  ( aware @* o, tp_t name )  = bcore_via_a_nis_static_link( o.cast( c bcore_via* ), name );
+func bl_t t_is_static_link  ( tp_t t,     tp_t name )  = bcore_via_t_nis_static_link( t, NULL, name );
+
+func bl_t   is_typed_link_i( aware @* o, sz_t index ) = bcore_via_a_iis_typed_link( o.cast( c bcore_via* ), index );
+func bl_t t_is_typed_link_i( tp_t t,     sz_t index ) = bcore_via_t_iis_typed_link( t, NULL, index );
+func bl_t   is_typed_link  ( aware @* o, tp_t name )  = bcore_via_a_nis_typed_link( o.cast( c bcore_via* ), name );
+func bl_t t_is_typed_link  ( tp_t t,     tp_t name )  = bcore_via_t_nis_typed_link( t, NULL, name );
+
+func bl_t   is_aware_link_i( aware @* o, sz_t index ) = bcore_via_a_iis_aware_link( o.cast( c bcore_via* ), index );
+func bl_t t_is_aware_link_i( tp_t t,     sz_t index ) = bcore_via_t_iis_aware_link( t, NULL, index );
+func bl_t   is_aware_link  ( aware @* o, tp_t name )  = bcore_via_a_nis_aware_link( o.cast( c bcore_via* ), name );
+func bl_t t_is_aware_link  ( tp_t t,     tp_t name )  = bcore_via_t_nis_aware_link( t, NULL, name );
+
 /// checks if element is an array
 func bl_t   is_array_i( aware @* o, sz_t index ) = bcore_via_a_iis_array( o.cast( c bcore_via* ), index );
 func bl_t t_is_array_i( tp_t t,     sz_t index ) = bcore_via_t_iis_array( t, NULL, index );

@@ -131,16 +131,22 @@ BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nget_via,   const bcore_via_s
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nget_array, const bcore_array_s*, tp_t, name )
 BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAP0( bcore_via, nget_spect,                 vc_t, tp_t, name, tp_t, spect_type )
 
-BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_via, is_leaf,       bl_t )              // Leaf type according to function bcore_type_is_leaf
-BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_via, is_aware,      bl_t )              // Aware type (first element in reflection is aware_t)
-BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_via, is_pure_array, bl_t )              // Checks if object is an array without additional elements (pure arrays are not leafs)
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_array,     bl_t, uz_t, index ) // Checks if element is an array
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_static,    bl_t, uz_t, index ) // Checks if element is static (type need not be recorded)
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_link,      bl_t, uz_t, index ) // Checks if element is a link (means that it can be NULL); (Note: An array is a distinct static object -> not a link)
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_via, is_leaf,         bl_t )              // Leaf type according to function bcore_type_is_leaf
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_via, is_aware,        bl_t )              // Aware type (first element in reflection is aware_t)
+BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_via, is_pure_array,   bl_t )              // Checks if object is an array without additional elements (pure arrays are not leafs)
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_array,       bl_t, uz_t, index ) // Checks if element is an array
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_static,      bl_t, uz_t, index ) // Checks if element is static (type need not be recorded)
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_link,        bl_t, uz_t, index ) // Checks if element is a link (means that it can be NULL); (Note: An array is a distinct static object -> not a link)
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_static_link, bl_t, uz_t, index ) // Checks if element is a static link: link can be NULL but type is fixed
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_typed_link,  bl_t, uz_t, index ) // Checks if element is a typed link: link can be NULL; type can change but object need not be aware
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, iis_aware_link,  bl_t, uz_t, index ) // Checks if element is an aware link: link can be NULL and any object must be aware
 
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nis_array,     bl_t, tp_t, name ) // Checks if element is an array
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nis_static,    bl_t, tp_t, name ) // Checks if element is static (type need not be recorded)
-BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nis_link,      bl_t, tp_t, name ) // Checks if element is a link (means that it can be NULL); (Note: An array is a distinct static object -> not a link)
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nis_array,       bl_t, tp_t, name ) // Checks if element is an array
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nis_static,      bl_t, tp_t, name ) // Checks if element is static (type need not be recorded)
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nis_link,        bl_t, tp_t, name ) // Checks if element is a link (means that it can be NULL); (Note: An array is a distinct static object -> not a link)
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nis_static_link, bl_t, tp_t, name )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nis_typed_link,  bl_t, tp_t, name )
+BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_via, nis_aware_link,  bl_t, tp_t, name )
 
 BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_via, source, bcore_source*, source ) // Sends signal 'bcore_spect_via_call : source' to object
 BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP0( bcore_via, mutated ) // Sends signal 'bcore_spect_via_call : mutated' to object
