@@ -32,6 +32,7 @@ include <gtk/gtk.h>;
 identifier GTK_ORIENTATION_VERTICAL, GTK_ORIENTATION_HORIZONTAL, GTK_CONTAINER, G_CALLBACK;
 identifier g_signal_connect, gtk_container_add, gtk_widget_show, gtk_widget_destroy, g_signal_handlers_disconnect_by_data;
 identifier gtk_widget_set_size_request, gtk_widget_set_hexpand, gtk_widget_set_vexpand, gtk_widget_set_name;
+identifier gdk_threads_add_idle;
 
 type gboolean, GtkWidget;
 
@@ -149,7 +150,10 @@ stamp :run_s
             o.fp_func = fp_func;
             o.obj = obj;
             o.arg = arg;
-            verbatim_C{ g_idle_add( ( gboolean(*)( vd_t ) )bgfe_rte_run_s_rtt_func, o ) };
+            //verbatim_C{ g_idle_add( ( gboolean(*)( vd_t ) )bgfe_rte_run_s_rtt_func, o ) };
+
+            // add_idle_full gives control overpriority; otherwise no apparent advantage over 'g_idle_add'
+            verbatim_C{ gdk_threads_add_idle_full( G_PRIORITY_DEFAULT_IDLE, ( gboolean(*)( vd_t ) )bgfe_rte_run_s_rtt_func, o, NULL ) };
             while( o.busy ) o.condition.sleep( o.mutex );
             ret = o.ret;
             o.obj = NULL;

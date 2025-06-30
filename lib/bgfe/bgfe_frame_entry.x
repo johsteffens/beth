@@ -27,8 +27,16 @@ stamp :s bgfe_frame
 {
     sz_t width;  // optional preset width
     sz_t height; // optional preset height
-
     st_s => text;   // editable text
+    st_s => widget_name;   // optional gtk widget name overrides default widget name
+    bl_t show_tooltip = true;
+
+    func bgfe_frame.set_width { o.width = value; = 0; }
+    func bgfe_frame.set_height{ o.height = value; = 0; }
+    func bgfe_frame.set_text  { o.text!.copy_sc( text ); = 0; }
+    func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
+    func bgfe_frame.set_show_tooltip{ o.show_tooltip = flag; = 0; }
+
     bl_t modified;  // text was modified by the front-end
 
     /// internals
@@ -45,6 +53,7 @@ stamp :s bgfe_frame
 
     hidden st_s => rts_text;  // current entry text
     hidden bl_t rts_modified; // text was modified by the front end
+    hidden bl_t rts_activate; // activate signal (typically enter was pressed)
     hidden st_s => rts_tooltip_text;  // tooltip text
     hidden bgfe_rte_s* rte;
     hidden x_mutex_s mutex;
@@ -85,6 +94,16 @@ func (:s) void rtt_signal_changed( m GtkWidget* win, m@* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:s) void rtt_signal_activate( m GtkWidget* win, m@* o )
+{
+    if( o.rtt_ignore_signal_value_changed ) return;
+    o.mutex.lock();
+    o.rts_activate = true;
+    o.mutex.unlock();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:s) er_t rtt_set_text( m@* o, st_s* rts_text )
 {
     o.rtt_ignore_signal_value_changed = true;
@@ -109,12 +128,12 @@ func (:s) er_t client_to_st( @* o, m st_s* st )
         }
         else
         {
-            bgfe_client_t_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_st_s, st.cast( m x_inst* ) );
+            bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_st_s, st.cast( m x_inst* ) );
         }
     }
     else
     {
-        bgfe_client_t_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_st_s, st.cast( m x_inst* ) );
+        bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_st_s, st.cast( m x_inst* ) );
     }
 
     = 0;
@@ -132,7 +151,7 @@ func (:s) er_t st_to_client( @* o, st_s* st )
     }
     else
     {
-        bgfe_client_t_copy_from_typed( o.client, o.client_type, o.client_type, TYPEOF_st_s, st );
+        bgfe_client_t_bgfe_copy_from_typed( o.client, o.client_type, o.client_type, TYPEOF_st_s, st );
     }
 
     = 0;
@@ -197,16 +216,17 @@ func (:s) er_t rtt_open( m@* o, :open_args_s* args )
     if( !o.rtt_widget ) = GERR_fa( "'gtk_entry_new' failed\n" );
     if( G_IS_INITIALLY_UNOWNED( o.rtt_widget ) ) o.rtt_widget = g_object_ref_sink( o.rtt_widget );
 
-    gtk_widget_set_name( o.rtt_widget, ifnameof( o._ ) );
+    gtk_widget_set_name( o.rtt_widget, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
     gtk_widget_set_size_request( o.rtt_widget, args.width, args.height );
     if( args.text ) gtk_entry_set_text( GTK_ENTRY( o.rtt_widget ), args.text ? args.text.sc : "" );
 
-    if( o.rts_tooltip_text ) gtk_widget_set_tooltip_text( o.rtt_widget, o.rts_tooltip_text.sc );
+    if( o.show_tooltip && o.rts_tooltip_text ) gtk_widget_set_tooltip_text( o.rtt_widget, o.rts_tooltip_text.sc );
 
     gtk_widget_show( o.rtt_widget );
 
     g_signal_connect( o.rtt_widget, "destroy", G_CALLBACK( :s_rtt_signal_destroy ), o );
     g_signal_connect( o.rtt_widget, "changed", G_CALLBACK( :s_rtt_signal_changed ), o );
+    g_signal_connect( o.rtt_widget, "activate", G_CALLBACK( :s_rtt_signal_activate ), o );
 
     = 0;
 }
@@ -218,7 +238,7 @@ func (:s) close
     if( !o.is_open ) = 0;
     o.rte.run( o.rtt_close.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.is_open = false;
-    o.close_confirm();
+    o.client_close_confirm();
     = 0;
 }
 
@@ -239,7 +259,7 @@ func (:s) er_t rtt_close( m@* o, vd_t arg )
 
 func (:s) set_client_t
 {
-    if( o.is_open ) = GERR_fa( "Frame is open. Close it first." );
+    if( o.is_open ) = GERR_fa( "Frame is open." );
 
     o.client      = client;
     o.client_type = client_type;
@@ -261,15 +281,24 @@ func (:s) bgfe_frame.cycle
         o.text =< o.rts_text.clone();
         o.rts_modified = false;
     }
+
+    bl_t activate = o.rts_activate;
+    o.rts_activate = false;
     o.mutex.unlock();
 
     if( o.modified )
     {
         if( action_type == approve~ ) = o.downsync();
         if( action_type == reject~  ) = o.upsync();
-        o.downsync_request( o, action_type.1 );
+        o.client_change_request( o, action_type.1 );
         if( action_type == approve~ ) = o.downsync();
         if( action_type == reject~  ) = o.upsync();
+    }
+
+    if( activate )
+    {
+        tp_t action_type = escalate~;
+        o.client_enter_pressed( o, action_type.1 );
     }
 
     = 0;
@@ -287,7 +316,7 @@ func (:s) bgfe_frame.downsync
 
         o.modified = false;
         tp_t action_type = TYPEOF_escalate;
-        o.downsync_confirm( o, action_type.1 );
+        o.client_change_confirm( o, action_type.1 );
     }
 
     = 0;

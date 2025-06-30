@@ -55,6 +55,10 @@ func (:s) open
 {
     if( o.is_open ) = 0;
 
+    tp_t action_type = escapprove~;
+
+    if( o.frame.client ) o.frame.client_edit_frame( o.frame.client, o.frame.client_type, o.frame.client_name, action_type.1, o.frame );
+
     bgfe_rte_get( &o.rte );
 
     o.frame.window = o;
@@ -116,7 +120,7 @@ func (:s) close
     o.rts_close_requested = false;
     o.mutex.unlock();
     o.is_open = false;
-    o.close_confirm();
+    o.client_close_confirm();
     = 0;
 }
 
@@ -148,7 +152,8 @@ func (:s) cycle
 
     if( close_requested )
     {
-        if( o.close_ok() )
+        bcore_msg_fa( "#name: close_requested\n", o._ );
+        if( o.client_close_ok() )
         {
             o.close();
         }
@@ -159,8 +164,22 @@ func (:s) cycle
             o.mutex.unlock();
         }
     }
+
     = 0;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) present
+{
+    if( !o.is_open ) = 0;
+    = o.rte.run( o.rtt_present.cast( bgfe_rte_fp_rtt ), o, NULL );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+identifier gtk_window_present;
+func (:s) er_t rtt_present( m@* o, vd_t unused ) { gtk_window_present( GTK_WINDOW( o.rtt_widget ) ); = 0; }
 
 //----------------------------------------------------------------------------------------------------------------------
 

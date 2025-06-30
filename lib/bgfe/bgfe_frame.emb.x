@@ -32,7 +32,7 @@ stamp :open_args_s
     {
         o.width  = f.width;
         o.height = f.height;
-        o.label_name = ( !f.hide_client_name && f.client_name && bnameof( f.client_name ) ) ? f.client_name : 0;
+        o.label_name = ( f.show_client_name && f.client_name && bnameof( f.client_name ) ) ? f.client_name : 0;
         o.content_list = f.content_list;
     }
 }
@@ -73,7 +73,7 @@ func (:s) er_t rtt_open( m@* o, :open_args_s* args )
 
     bl_t vertical = arrangement == TYPEOF_vertical;
 
-    o.rtt_gtk_box = gtk_box_new( vertical ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, 0 );
+    o.rtt_gtk_box = gtk_box_new( vertical ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, o.spacing );
     if( !o.rtt_gtk_box ) = GERR_fa( "'gtk_box_new' failed\n" );
     if( G_IS_INITIALLY_UNOWNED( o.rtt_gtk_box ) ) o.rtt_gtk_box = g_object_ref_sink( o.rtt_gtk_box );
     gtk_widget_show( o.rtt_gtk_box );
@@ -88,14 +88,21 @@ func (:s) er_t rtt_open( m@* o, :open_args_s* args )
         gtk_widget_show( label );
     }
 
-    gtk_widget_set_name( o.rtt_gtk_box, ifnameof( o._ ) );
+    gtk_widget_set_name( o.rtt_gtk_box, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
     gtk_widget_set_size_request( o.rtt_gtk_box, args.width, args.height );
 
     g_signal_connect( o.rtt_gtk_box, "destroy", G_CALLBACK( :s_rtt_signal_destroy_gtk_box ), o );
 
     foreach( m$* e in args.content_list )
     {
-        gtk_box_pack_start( GTK_BOX( o.rtt_gtk_box ), e.rtt_widget(), false, false, 0 );
+        if( o.end_bound )
+        {
+            gtk_box_pack_end( GTK_BOX( o.rtt_gtk_box ), e.rtt_widget(), o.center, o.stretch, 0 );
+        }
+        else
+        {
+            gtk_box_pack_start( GTK_BOX( o.rtt_gtk_box ), e.rtt_widget(), o.center, o.stretch, 0 );
+        }
     }
 
     o.rtt_widget = o.rtt_gtk_box;
@@ -160,16 +167,16 @@ func (:s) upsync
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) close_ok
+func (:s) client_close_ok
 {
     if( o.client )
     {
-        if( !o.client.t_frame_close_ok( o.client_type ) ) = false;
+        if( !o.client.t_bgfe_close_ok( o.client_type ) ) = false;
     }
 
     foreach( m$* e in o.content_list )
     {
-        if( !e.close_ok() ) = false;
+        if( !e.client_close_ok() ) = false;
     }
 
     = true;
@@ -177,10 +184,10 @@ func (:s) close_ok
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) close_confirm
+func (:s) client_close_confirm
 {
-    if( o.client ) o.client.t_frame_close_confirm( o.client_type );
-    foreach( m$* e in o.content_list ) e.close_confirm();
+    if( o.client ) o.client.t_bgfe_close_confirm( o.client_type );
+    foreach( m$* e in o.content_list ) e.client_close_confirm();
     = 0;
 }
 
@@ -211,7 +218,9 @@ func (:s) arrangement
 
 func (:s) set_client_t
 {
-    if( o.is_open ) = GERR_fa( "Frame is open. Close it first." );
+    if( o.is_open ) = GERR_fa( "Frame is open." );
+
+    o.content_list =< NULL;
 
     if( !client ) // reset
     {
@@ -287,20 +296,29 @@ func (:s) add_content
 func (:s) add_content_t
 {
     if( o.is_open ) = GERR_fa( "Frame is open. Close it first." );
+    if( !o.client ) = GERR_fa( "No client defined." );
 
     if( x_stamp_t_is_pure_array( content_type ) )
     {
         m$* frame_array = :array_s!^;
         frame_array.set_client_t( content, content_type, content_name );
+        tp_t action_type = escapprove~;
+        o.client_edit_frame( content, content_type, content_name, action_type, frame_array );
         o.content_list!.push_d( frame_array.fork() );
     }
     else
     {
-        d :* d_frame = NULL;
-        :create_default_frame_t( content, content_type, content_name, d_frame.2 );
-
-        m$* frame = d_frame.1^;
-        if( frame ) o.content_list!.push_d( frame.fork() );
+        tp_t frame_type = bgfe_frame_default_frame_type( content_type );
+        tp_t action_type = escapprove~;
+        o.client_edit_frame_type( content, content_type, content_name, action_type.1, frame_type );
+        m bgfe_frame* frame = x_inst_create( frame_type ).cast( d bgfe_frame* )^;
+        action_type = escapprove~;
+        o.client_edit_frame( content, content_type, content_name, action_type.1, frame );
+        if( frame )
+        {
+            frame.set_client_with_content_t( content, content_type, content_name );
+            o.content_list!.push_d( frame.fork() );
+        }
     }
     = 0;
 }
@@ -309,7 +327,7 @@ func (:s) add_content_t
 
 func (:s) add_linked_content
 {
-    m$* frame_link = :link_s!^;
+    m$* frame_link = :link_window_s!^;
 
     m$* content_sr = sr_s!^;
     content_sr.0 = x_stamp_t_m_get_sr( o.client, o.client_type, content_name );
@@ -324,6 +342,8 @@ func (:s) add_linked_content
         frame_link.set_client_t( NULL, content_type, content_name );
     }
 
+    frame_link.set_holder_t( o.client, o.client_type, o.client_name, false, 0 );
+
     o.content_list!.push_d( frame_link.fork() );
     = 0;
 }
@@ -331,86 +351,3 @@ func (:s) add_linked_content
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/// creates a default frame for the specified client
-func er_t create_default_frame_t( m obliv bgfe_client* client, tp_t client_type, tp_t client_name, d bgfe_frame** arg_frame )
-{
-    arg_frame.1 = NULL;
-    m bgfe_frame* frame = NULL;
-
-    switch( client_type )
-    {
-        case f3_t~:
-        case f2_t~:
-        {
-            frame = bgfe_frame_scale_s!^^;
-        }
-        break;
-
-        case s3_t~:
-        case s2_t~:
-        case s1_t~:
-        case s0_t~:
-        case u3_t~:
-        case u2_t~:
-        case u1_t~:
-        case u0_t~:
-        case sz_t~:
-        case uz_t~:
-        {
-            frame = bgfe_frame_entry_s!^^;
-        }
-        break;
-
-        case tp_t~:
-        case er_t~:
-        case aware_t~:
-        {
-            frame = bgfe_frame_entry_s!^^;
-        }
-        break;
-
-        case st_s~:
-        case sd_t~:
-        {
-            frame = bgfe_frame_entry_s!^^;
-        }
-        break;
-
-        case sc_t~:
-        {
-            frame = bgfe_frame_label_s!^^;
-        }
-        break;
-
-        case bl_t~:
-        {
-            frame = bgfe_frame_check_button_s!^^;
-        }
-        break;
-
-        default: break;
-    }
-
-    if( frame )
-    {
-        frame.set_client_t( client, client_type, client_name );
-    }
-    else
-    {
-        m$* frame_s = bgfe_frame_s!^;
-        frame_s.set_client_with_content_t( client, client_type, client_name );
-        if( !frame_s.is_empty() ) frame = frame_s.fork()^^;
-    }
-
-    arg_frame.1 = frame.fork();
-
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/**********************************************************************************************************************/
-

@@ -26,22 +26,16 @@
 
 /**********************************************************************************************************************/
 
-/** Action types delegate certain type of standard actions actions
- *  - 'approve'     : The client approves by requesting an automatic downsync in case of front-end-modifcation. The frame will perform the downsync and sends a downsync_confirm where changes occurred.
- *  - 'acknowledge' : The client acknowledges the input but no further action is requested. The client may perform a downsync itself.
- *  - 'escalate'    : The client acknowledges (as above) and asks the frame to escalate the event to the parent (if existing).
- *  - 'escapprove'  : The client acknowledges (as above) and asks the frame to escalate the event to the parent or approve if no escalation is possible.
- *  - 'reject'      : The client rejects the request and asks the frame to restore the front-end to the state before the event was triggered.
- */
-name approve;
-name escapprove;
-name escalate;
-name acknowledge;
-name reject;
+//----------------------------------------------------------------------------------------------------------------------
+
+embed "bgfe_frame_features_property.emb.x"; // property features
+embed "bgfe_frame_features_client.emb.x";   // client <-> frame communication
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Arrange type
 name horizontal;
-name vertiocal;
+name vertical;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -55,72 +49,6 @@ feature er_t cycle   ( m@* o, tp_t action_type     ) = GERR_fa( "Not implemented
 feature er_t upsync  ( m@* o                       ) = GERR_fa( "Not implemented in '#name'", o._ ); // client -> frame sync
 feature er_t downsync( m@* o                       ) = GERR_fa( "Not implemented in '#name'", o._ ); // frame -> client sync
 
-/// downsync request to client
-feature er_t downsync_request( m@* o, m bgfe_frame* initiator, m tp_t* action_type )
-{
-    if( o.client() ) o.client().t_frame_downsync_request( o.client_type(), initiator, action_type.1 );
-    if( action_type.0 == escalate~ || action_type.0 == escapprove~ )
-    {
-        if( o.parent() )
-        {
-            o.parent().downsync_request( initiator, action_type.1 );
-        }
-        else if( action_type.0 == escapprove~ )
-        {
-            action_type.0 = approve~;
-        }
-    }
-    = 0;
-}
-
-/// downsync confirmation to client
-feature er_t downsync_confirm( m@* o, m bgfe_frame* initiator, m tp_t* action_type )
-{
-    if( o.client() ) o.client().t_frame_downsync_confirm( o.client_type(), initiator, action_type.1 );
-    if( action_type.0 == escalate~ ) if( o.parent() ) o.parent().downsync_confirm( initiator, action_type.1 );
-    = 0;
-}
-
-/** Request by the frame to change a link (pointer) managed by the client (or a child of the client)
- *  Requires approval to actually perform the change.
- */
-feature er_t link_change_request( m@* o, m bgfe_frame* initiator, m tp_t* action_type )
-{
-    if( o.client() ) o.client().t_frame_link_change_request( o.client_type(), initiator, action_type.1 );
-    if( action_type.0 == escalate~ || action_type.0 == escapprove~ )
-    {
-        if( o.parent() )
-        {
-            o.parent().link_change_request( initiator, action_type.1 );
-        }
-        else if( action_type.0 == escapprove~ )
-        {
-            action_type.0 = TYPEOF_approve;
-        }
-    }
-    = 0;
-}
-
-/// button was pressed
-feature er_t button_clicked( m@* o, m bgfe_frame_button_s* initiator, m tp_t* action_type )
-{
-    if( o.client() ) o.client().t_frame_button_clicked( o.client_type(), initiator, action_type.1 );
-    if( action_type.0 == escalate~ ) if( o.parent() ) o.parent().button_clicked( initiator, action_type.1 );
-    = 0;
-}
-
-/// close query to client
-feature bl_t close_ok( m@* o )
-{
-    = o.client() ? o.client().t_frame_close_ok( o.client_type() ) : true;
-}
-
-/// close confirmation to client
-feature er_t close_confirm( m@* o )
-{
-    = o.client() ? o.client().t_frame_close_confirm( o.client_type() ) : 0;
-}
-
 /** Setup client:
  *  This function defines a client to the frame.
  *  The client is only weakly referenced by the frame.
@@ -132,6 +60,13 @@ feature er_t close_confirm( m@* o )
 feature er_t set_client_t( m@* o, m obliv bgfe_client* client, tp_t client_type, tp_t client_name );
 feature er_t set_client  ( m@* o, m aware bgfe_client* client,                   tp_t client_name ) = o.set_client_t( client, client ? client._ : 0, client_name );
 
+/** Like Setup client above, plus all the client's content is added as frame-content.
+ *  Note that only elements resulting in a non-empty frame are actually added.
+ *  This function defaults to set_client on leaf frames.
+ */
+feature er_t set_client_with_content  ( m@* o, m aware bgfe_client* client,                   tp_t client_name ) = o.set_client  ( client,              client_name );
+feature er_t set_client_with_content_t( m@* o, m obliv bgfe_client* client, tp_t client_type, tp_t client_name ) = o.set_client_t( client, client_type, client_name );
+
 //----------------------------------------------------------------------------------------------------------------------
 
 /// retrieve client and parent info from frame
@@ -140,6 +75,9 @@ feature tp_t client_type( @* o );
 feature m bgfe_client* client( @* o );
 feature m :*           parent( @* o );
 feature bl_t           is_open( @* o );
+
+/// when the client is a link, embed the frame rather than displaying it in a dedicated window.
+feature bl_t embed_link( @* o ) { = false; }
 
 /// preferred arrangement
 feature tp_t arrangement( @* o ) = TYPEOF_horizontal;
@@ -159,6 +97,36 @@ stamp :list_s x_array { : => []; }
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// creates a default frame for the specified client
+func tp_t default_frame_type( tp_t client_type )
+{
+    switch( client_type )
+    {
+        case f3_t~: = bgfe_frame_scale_s~;
+        case f2_t~: = bgfe_frame_scale_s~;
+        case s3_t~: = bgfe_frame_entry_s~;
+        case s2_t~: = bgfe_frame_entry_s~;
+        case s1_t~: = bgfe_frame_entry_s~;
+        case s0_t~: = bgfe_frame_entry_s~;
+        case u3_t~: = bgfe_frame_entry_s~;
+        case u2_t~: = bgfe_frame_entry_s~;
+        case u1_t~: = bgfe_frame_entry_s~;
+        case u0_t~: = bgfe_frame_entry_s~;
+        case sz_t~: = bgfe_frame_entry_s~;
+        case uz_t~: = bgfe_frame_entry_s~;
+        case tp_t~: = bgfe_frame_entry_s~;
+        case er_t~: = bgfe_frame_entry_s~;
+        case aware_t~: = bgfe_frame_entry_s~;
+        case st_s~: = bgfe_frame_entry_s~;
+        case sd_t~: = bgfe_frame_entry_s~;
+        case sc_t~: = bgfe_frame_label_s~;
+        case bl_t~: = bgfe_frame_check_button_s~;
+        default   : = bgfe_frame_s~;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -172,8 +140,23 @@ stamp :s
     /// parameters
     sz_t width;  // optional preset width
     sz_t height; // optional preset height
-    bl_t hide_client_name; // true: does not display client name
+    bl_t show_client_name = true; // true: does not display client name
     tp_t arrange;          // (0 == auto) | vertical | horizontal
+    st_s => widget_name;   // optional gtk widget name overrides default widget name
+    sz_t spacing;   // spacing between elements
+    bl_t end_bound; // packs elements with reference to the end of the box (false: reference to the start)
+    bl_t center;    // centers widgets in an expanded space
+    bl_t stretch;   // stretches elements to fill expanded space
+
+    func bgfe_frame.set_width   { o.width   = value; = 0; }
+    func bgfe_frame.set_height  { o.height  = value; = 0; }
+    func bgfe_frame.set_arrange { o.arrange = arrange; = 0; }
+    func bgfe_frame.set_show_client_name { o.show_client_name = flag; = 0; }
+    func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
+    func bgfe_frame.set_spacing  { o.spacing   = value; = 0; }
+    func bgfe_frame.set_end_bound{ o.end_bound = flag; = 0; }
+    func bgfe_frame.set_center   { o.center    = flag; = 0; }
+    func bgfe_frame.set_stretch  { o.stretch   = flag; = 0; }
 
     /// internals
     hidden bgfe_client* client; // client
@@ -200,9 +183,16 @@ stamp :s
     func :.open;
     func :.close;
     func :.cycle;
-    func :.close_ok;
-    func :.close_confirm;
     func :.arrangement;
+    func :.client_close_ok;
+    func :.client_close_confirm;
+
+    /// Notifications ...
+    bgfe_notify_ligand_pool_s => ligand_pool;
+    func bgfe_notify_sender.ligand_pool = o.ligand_pool!;
+    func er_t notify_send( m@* o, tp_t type ) { if( o.ligand_pool ) o.ligand_pool.send( type, o ); = 0; }
+    func :.client_change_confirm    { o.notify_send( change_confirm~    ); = o.client_change_confirm_default   ( initiator, action_type ); }
+//    func :.client_link_change_confirm { o.notify_send( link_change_confirm~ ); = o.client_link_change_confirm_default( initiator, action_type ); }
 
     /// Interface functions ...
 
@@ -219,8 +209,8 @@ stamp :s
     /** Like Setup client above, plus all the client's content is added as frame-content.
      *  Note that only elements resulting in a non-empty frame are actually added.
      */
-    func er_t set_client_with_content  ( m@* o, m aware bgfe_client* client,                   tp_t client_name );
-    func er_t set_client_with_content_t( m@* o, m obliv bgfe_client* client, tp_t client_type, tp_t client_name );
+    func :.set_client_with_content;
+    func :.set_client_with_content_t;
 
     /** Adding content:
      *  This function attempts to add a content-frame to which 'content' is the full client.

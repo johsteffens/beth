@@ -28,6 +28,14 @@ stamp :s bgfe_frame
     sz_t width;  // optional preferred width of button  (actual size is calculated from the ext)
     sz_t height; // optional preferred height of button (actual size is calculated from the ext)
     st_s => text;   // text on button
+    st_s => widget_name;   // optional gtk widget name overrides default widget name
+    bl_t show_tooltip = true;
+
+    func bgfe_frame.set_width { o.width = value; = 0; }
+    func bgfe_frame.set_height{ o.height = value; = 0; }
+    func bgfe_frame.set_text  { o.text!.copy_sc( text ); = 0; }
+    func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
+    func bgfe_frame.set_show_tooltip{ o.show_tooltip = flag; = 0; }
 
     /// internals
 
@@ -117,7 +125,7 @@ func (:s) er_t client_to_st( @* o, m st_s* st )
         }
     }
 
-    bgfe_client_t_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_st_s, st.cast( m x_inst* ) );
+    bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_st_s, st.cast( m x_inst* ) );
     = 0;
 }
 
@@ -162,9 +170,9 @@ func (:s) er_t rtt_open( m@* o, :open_args_s* args )
     if( !o.rtt_widget ) = GERR_fa( "'gtk_button_new_with_label' failed\n" );
     if( G_IS_INITIALLY_UNOWNED( o.rtt_widget ) ) o.rtt_widget = g_object_ref_sink( o.rtt_widget );
     gtk_button_set_relief( GTK_BUTTON( o.rtt_widget ), GTK_RELIEF_NORMAL );
-    gtk_widget_set_name( o.rtt_widget, ifnameof( o._ ) );
+    gtk_widget_set_name( o.rtt_widget, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
     if( args.width > 0 || args.height > 0 ) gtk_widget_set_size_request( o.rtt_widget, args.width, args.height );
-    if( o.rts_tooltip_text ) gtk_widget_set_tooltip_text( o.rtt_widget, o.rts_tooltip_text.sc );
+    if( o.show_tooltip && o.rts_tooltip_text ) gtk_widget_set_tooltip_text( o.rtt_widget, o.rts_tooltip_text.sc );
     gtk_widget_show( o.rtt_widget );
     g_signal_connect( o.rtt_widget, "destroy", G_CALLBACK( :s_rtt_signal_destroy ), o );
     g_signal_connect( o.rtt_widget, "clicked", G_CALLBACK( :s_rtt_signal_clicked ), o );
@@ -178,7 +186,7 @@ func (:s) close
     if( !o.is_open ) = 0;
     o.rte.run( o.rtt_close.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.is_open = false;
-    o.close_confirm();
+    o.client_close_confirm();
     = 0;
 }
 
@@ -199,7 +207,7 @@ func (:s) er_t rtt_close( m@* o, vd_t arg )
 
 func (:s) set_client_t
 {
-    if( o.is_open ) = GERR_fa( "Frame is open. Close it first." );
+    if( o.is_open ) = GERR_fa( "Frame is open." );
 
     o.client      = client;
     o.client_type = client_type;
@@ -210,8 +218,8 @@ func (:s) set_client_t
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) bgfe_frame.downsync_request = 0;
-func (:s) bgfe_frame.downsync_confirm = 0;
+func (:s) bgfe_frame.client_change_request = 0;
+func (:s) bgfe_frame.client_change_confirm = 0;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -224,7 +232,7 @@ func (:s) bgfe_frame.cycle
     o.rts_clicked = false;
     o.mutex.unlock();
 
-    if( clicked ) o.button_clicked( o, action_type.1 );
+    if( clicked ) o.client_button_clicked( o, action_type.1 );
 
     = 0;
 }

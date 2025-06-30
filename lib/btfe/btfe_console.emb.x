@@ -172,7 +172,7 @@ func sc_t ncurses_key_name( s2_t key )
         case KEY_SELECT:    = "KEY_SELECT";
         case KEY_SEND:      = "KEY_SEND";
         case KEY_SEOL:      = "KEY_SEOL";
-        case KEY_SEXIT:     = "KEY_SEXIT";
+        case KEY_SEXIT:     = "KEY_SEXIT"; // shift + exit
         case KEY_SFIND:     = "KEY_SFIND";
         case KEY_SHELP:     = "KEY_SHELP";
         case KEY_SHOME:     = "KEY_SHOME";

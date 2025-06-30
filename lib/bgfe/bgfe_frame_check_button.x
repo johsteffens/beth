@@ -25,11 +25,18 @@ stamp :s bgfe_frame
 {
     sz_t width;  // optional preset width
     sz_t height; // optional preset height
+    bl_t show_client_name = true;
+    bl_t show_tooltip = true;
+    st_s => widget_name;   // optional gtk widget name overrides default widget name
+
+    func bgfe_frame.set_width   { o.width   = value; = 0; }
+    func bgfe_frame.set_height  { o.height  = value; = 0; }
+    func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
+    func bgfe_frame.set_show_client_name { o.show_client_name = flag; = 0; }
+    func bgfe_frame.set_show_tooltip{ o.show_tooltip = flag; = 0; }
 
     bl_t value;        // check value
     bl_t modified;     // value was modified by the front-end
-
-    bl_t hide_client_name; // true: does not display client name
 
     /// internals
 
@@ -123,7 +130,7 @@ func (:s) open
     ASSERT( parent );
     o.parent = parent;
 
-    bgfe_client_t_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_bl_t, o.value.1.cast( m x_inst* ) );
+    bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_bl_t, o.value.1.cast( m x_inst* ) );
 
     o.mutex.lock();
     o.rts_value = o.value;
@@ -153,7 +160,7 @@ func (:s) er_t rtt_open( m@* o, :open_args_s* args )
         }
         if( !o.rtt_widget ) = GERR_fa( "'gtk_check_button_new' failed\n" );
         if( G_IS_INITIALLY_UNOWNED( o.rtt_widget ) ) o.rtt_widget = g_object_ref_sink( o.rtt_widget );
-        gtk_widget_set_name( o.rtt_widget, ifnameof( o._ ) );
+        gtk_widget_set_name( o.rtt_widget, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
         gtk_widget_set_size_request( o.rtt_widget, args.width, args.height );
         gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( o.rtt_widget ), args.value );
         gtk_widget_show( o.rtt_widget );
@@ -172,7 +179,7 @@ func (:s) close
     if( !o.is_open ) = 0;
     o.rte.run( o.rtt_close.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.is_open = false;
-    o.close_confirm();
+    o.client_close_confirm();
     = 0;
 }
 
@@ -193,7 +200,7 @@ func (:s) er_t rtt_close( m@* o, vd_t arg )
 
 func (:s) set_client_t
 {
-    if( o.is_open ) = GERR_fa( "Frame is open. Close it first." );
+    if( o.is_open ) = GERR_fa( "Frame is open." );
 
     o.client      = client;
     o.client_type = client_type;
@@ -221,7 +228,7 @@ func (:s) bgfe_frame.cycle
     {
         if( action_type == approve~ ) = o.downsync();
         if( action_type == reject~  ) = o.upsync();
-        o.downsync_request( o, action_type.1 );
+        o.client_change_request( o, action_type.1 );
         if( action_type == approve~ ) = o.downsync();
         if( action_type == reject~  ) = o.upsync();
     }
@@ -237,11 +244,11 @@ func (:s) bgfe_frame.downsync
 
     if( o.modified )
     {
-        bgfe_client_t_copy_from_typed( o.client, o.client_type, o.client_type, TYPEOF_bl_t, o.value.1.cast( x_inst* ) );
+        bgfe_client_t_bgfe_copy_from_typed( o.client, o.client_type, o.client_type, TYPEOF_bl_t, o.value.1.cast( x_inst* ) );
 
         o.modified = false;
         tp_t action_type = TYPEOF_escalate;
-        o.downsync_confirm( o, action_type.1 );
+        o.client_change_confirm( o, action_type.1 );
     }
 
     = 0;
@@ -254,7 +261,7 @@ func (:s) bgfe_frame.upsync
     if( !o.is_open ) = 0; // no error because frame window could have been closed
 
     bl_t client_value = 0;
-    bgfe_client_t_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_bl_t, client_value.1.cast( m x_inst* ) );
+    bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_bl_t, client_value.1.cast( m x_inst* ) );
 
     if( client_value != o.value )
     {

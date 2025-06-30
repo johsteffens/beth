@@ -15,35 +15,29 @@
 
 /**********************************************************************************************************************/
 
-/** Slider based on GTK 'Scale'
- *  Associated types: f3_t and convertible types
+/** boolean only-switch-on toggle based on 'GtkButton'
+ *  Associated types: bl_t and all convertible leaf types
  */
 
 //----------------------------------------------------------------------------------------------------------------------
 
 stamp :s bgfe_frame
 {
-    /// slider is horizontal if width >= height; otherwise it is vertical
-    sz_t width  = 100;
-    sz_t height = 40;
-    f3_t min   = 0.0;  // minimum value
-    f3_t max   = 1.0;  // maximum value
-    f3_t step  = 0.01; // value stepping
-    bl_t show_value = true;  // displays the scale value along with the scale
+    sz_t width;  // optional preset width
+    sz_t height; // optional preset height
+    st_s => text;   // text on button; NULL: use client name as text
     st_s => widget_name;   // optional gtk widget name overrides default widget name
     bl_t show_tooltip = true;
-    func bgfe_frame.set_show_tooltip{ o.show_tooltip = flag; = 0; }
 
     func bgfe_frame.set_width { o.width = value; = 0; }
     func bgfe_frame.set_height{ o.height = value; = 0; }
-    func bgfe_frame.set_min { o.min = value; = 0; }
-    func bgfe_frame.set_max { o.max = value; = 0; }
-    func bgfe_frame.set_step{ o.step = value; = 0; }
-    func bgfe_frame.set_show_value{ o.show_value = flag; = 0; }
+    func bgfe_frame.set_text  { o.text!.copy_sc( text ); = 0; }
     func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
+    func bgfe_frame.set_show_tooltip{ o.show_tooltip = flag; = 0; }
 
-    hidden f3_t value;        // current scale value
-    hidden bl_t modified;     // value was modified by the front-end
+    bl_t value;     // flag value
+    bl_t modified;  // value was modified by the front-end
+
 
     /// internals
 
@@ -57,10 +51,8 @@ stamp :s bgfe_frame
     func bgfe_frame.parent = o.parent;
     func bgfe_frame.is_open = o.is_open;
 
-    hidden f3_t rts_value;    // current scale value
-    hidden bl_t rts_modified; // scale value was modified by the front end
+    hidden bl_t rts_clicked; // button was clicked
 
-    hidden st_s => rts_tooltip_text;  // tooltip text
     hidden bgfe_rte_s* rte;
     hidden x_mutex_s mutex;
     hidden GtkWidget*  rtt_widget;
@@ -86,53 +78,27 @@ func (:s) void rtt_signal_destroy( m GtkWidget* win, m@* o ) o.rtt_widget = NULL
 
 //----------------------------------------------------------------------------------------------------------------------
 
-identifier gtk_range_get_value;
-identifier GTK_RANGE;
+identifier gtk_button_set_label;
+identifier GTK_BUTTON;
 
-func (:s) void rtt_signal_value_changed( m GtkWidget* win, m@* o )
+func (:s) void rtt_signal_clicked( m GtkWidget* win, m@* o )
 {
-    if( o.rtt_ignore_signal_value_changed ) return;
     o.mutex.lock();
-    o.rts_value = gtk_range_get_value( GTK_RANGE( o.rtt_widget ) );
-    o.rts_modified = true;
+    o.rts_clicked = true;
     o.mutex.unlock();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) er_t rtt_set_value( m@* o, f3_t* rts_value )
+func (:s) er_t rtt_set_text( m@* o, st_s* rts_text )
 {
-    o.rtt_ignore_signal_value_changed = true;
     o.mutex.lock();
-    gtk_range_set_value( GTK_RANGE( o.rtt_widget ), rts_value.0 );
+    gtk_button_set_label( GTK_BUTTON( o.rtt_widget ), rts_text ? rts_text.sc : "" );
     o.mutex.unlock();
-    o.rtt_ignore_signal_value_changed = false;
     = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-
-stamp :open_args_s
-{
-    sz_t width;
-    sz_t height;
-    f3_t min;         // minimum value
-    f3_t max;         // maximum value
-    f3_t step;        // value stepping
-    f3_t value;       // scale value
-    bl_t show_value;  // displays the scale value along with the scale
-
-    func o _( m@* o, m :s* f )
-    {
-        o.width         = f.width;
-        o.height        = f.height;
-        o.min           = f.min;
-        o.max           = f.max;
-        o.step          = f.step;
-        o.value         = f.value;
-        o.show_value    = f.show_value;
-    }
-}
 
 func (:s) open
 {
@@ -143,54 +109,42 @@ func (:s) open
     ASSERT( parent );
     o.parent = parent;
 
-    bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_f3_t, o.value.1.cast( m x_inst* ) );
+    bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_bl_t, o.value.1.cast( m x_inst* ) );
 
-    o.mutex.lock();
-    if( bnameof( o.client_name ) ) o.rts_tooltip_text!.push_fa( "#<sc_t>", bnameof( o.client_name ) );
-    if( bnameof( o.client_type ) )
-    {
-        if( o.rts_tooltip_text ) o.rts_tooltip_text!.push_fa( " " );
-        o.rts_tooltip_text!.push_fa( "<#<sc_t>>", bnameof( o.client_type ) );
-    }
-    o.rts_value = o.value;
-    m$* rts_open_args = :open_args_s!^( o );
-    o.mutex.unlock();
-
-    o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, rts_open_args );
+    o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.is_open = true;
     = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-identifier gtk_scale_new_with_range;
-identifier gtk_scale_set_draw_value;
-identifier gtk_range_set_value, gtk_range_set_inverted;
-identifier GTK_SCALE, GTK_RANGE;
+identifier gtk_button_new, gtk_button_new_with_label, gtk_button_set_relief;
+type GTK_RELIEF_NORMAL;
 
-func (:s) er_t rtt_open( m@* o, :open_args_s* args )
+func (:s) er_t rtt_open( m@* o, vd_t unused )
 {
-    o.mutex.create_lock()^;
-    bl_t vertical = ( args.height > args.width );
-    o.rtt_widget = gtk_scale_new_with_range
-    (
-        vertical ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL,
-        args.min,
-        args.max,
-        args.step
-    );
-    if( !o.rtt_widget ) = GERR_fa( "'gtk_scale_new_with_range' failed\n" );
-    if( G_IS_INITIALLY_UNOWNED( o.rtt_widget ) ) o.rtt_widget = g_object_ref_sink( o.rtt_widget );
+    {
+        o.mutex.create_lock()^;
+        sc_t sc_label = bnameof( o.client_name );
+        if( o.text ) sc_label = o.text.sc;
 
-    gtk_widget_set_name( o.rtt_widget, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
-    gtk_range_set_inverted( GTK_RANGE( o.rtt_widget ), vertical );
-    gtk_scale_set_draw_value( GTK_SCALE( o.rtt_widget ), args.show_value );
-    gtk_widget_set_size_request( o.rtt_widget, args.width, args.height );
-    gtk_range_set_value( GTK_RANGE( o.rtt_widget ), args.value );
-    if( o.show_tooltip && o.rts_tooltip_text ) gtk_widget_set_tooltip_text( o.rtt_widget, o.rts_tooltip_text.sc );
-    gtk_widget_show( o.rtt_widget );
-    g_signal_connect( o.rtt_widget, "destroy",       G_CALLBACK( :s_rtt_signal_destroy ),       o );
-    g_signal_connect( o.rtt_widget, "value-changed", G_CALLBACK( :s_rtt_signal_value_changed ), o );
+        if( sc_label )
+        {
+            o.rtt_widget = gtk_button_new_with_label( sc_label );
+        }
+        else
+        {
+            o.rtt_widget = gtk_button_new();
+        }
+
+        if( !o.rtt_widget ) = GERR_fa( "'gtk_button_new' failed\n" );
+        if( G_IS_INITIALLY_UNOWNED( o.rtt_widget ) ) o.rtt_widget = g_object_ref_sink( o.rtt_widget );
+        gtk_widget_set_name( o.rtt_widget, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
+        gtk_widget_set_size_request( o.rtt_widget, o.width, o.height );
+        gtk_widget_show( o.rtt_widget );
+    }
+
+    g_signal_connect( o.rtt_widget, "clicked", G_CALLBACK( :s_rtt_signal_clicked ), o );
 
     = 0;
 }
@@ -239,11 +193,10 @@ func (:s) bgfe_frame.cycle
     if( !o.is_open ) = 0; // no error because frame window could have been closed
 
     o.mutex.lock();
-    o.modified = o.rts_modified;
-    if( o.modified )
+    if( !o.value && o.rts_clicked )
     {
-        o.value = o.rts_value;
-        o.rts_modified = false;
+        o.value = true;
+        o.modified = true;
     }
     o.mutex.unlock();
 
@@ -267,7 +220,7 @@ func (:s) bgfe_frame.downsync
 
     if( o.modified )
     {
-        bgfe_client_t_bgfe_copy_from_typed( o.client, o.client_type, o.client_type, TYPEOF_f3_t, o.value.1.cast( x_inst* ) );
+        bgfe_client_t_bgfe_copy_from_typed( o.client, o.client_type, o.client_type, TYPEOF_bl_t, o.value.1.cast( x_inst* ) );
 
         o.modified = false;
         tp_t action_type = TYPEOF_escalate;
@@ -283,17 +236,12 @@ func (:s) bgfe_frame.upsync
 {
     if( !o.is_open ) = 0; // no error because frame window could have been closed
 
-    f3_t client_value = 0;
-    bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_f3_t, client_value.1.cast( m x_inst* ) );
+    bl_t client_value = 0;
+    bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_bl_t, client_value.1.cast( m x_inst* ) );
 
     if( client_value != o.value )
     {
         o.value = client_value;
-        o.mutex.lock();
-        f3_t rts_value = o.value;
-        o.mutex.unlock();
-
-        o.rte.run( o.rtt_set_value.cast( bgfe_rte_fp_rtt ), o, rts_value.1 );
         o.modified = false;
     }
 
