@@ -142,27 +142,32 @@ All routines have been redesigned/redeveloped from scratch (no adaption of pre-e
 Library bclos contains a closure framework useful for for functional programming and interpreter design. It is used by the Interpreter of the [Actinon Programming Language](https://github.com/johsteffens/actinon).
 
 ### badapt
-**Purpose: Adaptive Systems**
+**Purpose: Neural Networks**
 
-This library represents a newly designed generic infrastructure for machine-learning. It utilizes the meta-language [xoila](#xoila). High computationial efficiency is achieved by using the [bmath](#bmath) linar subsystem. With this this concept, specific popular feed-forward and recurrent networks have (so far) been implemented:
+This library was an early approach to a designed generic infrastructure for artificial neural network based machine-learning. With this this concept, I implemented specific some early generation of feed-forward and recurrent networks:
 
    * Multi Layer Perceptron (MLP)
    * 1 Dimensional Convolutional Neural Network. (1D-CNN)
    * Elman Recurrent Network (ERN)
    * Long-Short-Term Memory Recurrent Network (LSTM)
 
+I discontinued this library in favor of [bhpt](#bhpt)
+
 ### bhvm
 **Purpose: Holor Virtual Machine**
 
-A holor is a generic data type. It can be understood as generalization of a Tensor. This library implements a virtual machine where operands are holors.
-A virtual machine is a generalization of a von Neumann architecture. It can run virtual machine code. Code for a HVM is compiled from a computational graph on holors.
+A holor is a generic data type. It can be understood as generalization of a Tensor. This library represents the mathematical groundwork for holor operations. As part of the library I designed a a virtual machine where operands are holors. A virtual machine is a generalization of a von Neumann architecture. It can run virtual machine code. Code for a HVM is compiled from a computational graph on holors.
+
+Most of it is written in the meta-language [xoila](#xoila). High computational efficiency is achieved by using the [bmath](#bmath) linar subsystem. 
 
 [More details ...](lib/bhvm/README.md)
 
 ### bhpt
 **Purpose: Holor Based Adaptive System**
 
-Redesigned machine learning framework based on holors. This library eventually replaces badapt.
+Redesigned framework based on [bhvm](#bhvm). It is mostly implemented in the language [Xoila](#xoila). It can be  used to construct a machine learning system.
+
+*Note: To the best of my legal understanding, code in this repository does not represent an AI system in a regulatory sense. Towards a functional AI system there are additional developmental, network design and training stages required. If you intend to develop and/or employ an AI system, take regulatory efforts into consideration: For example: [EU AI Act](https://artificialintelligenceact.eu).*
 
 ### bmedia
 **Purpose: Audio and Video Interfaces**
