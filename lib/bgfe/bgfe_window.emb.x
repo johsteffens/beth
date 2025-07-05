@@ -26,7 +26,6 @@ func (:s) void rtt_signal_destroy( m GtkWidget* win, m@* o ) o.rtt_widget = NULL
 // user destroy request
 func (:s) gboolean rtt_signal_delete_event( m GtkWidget* win, m GdkEvent* event, m@* o )
 {
-    bcore_msg_fa( "rtt_signal_delete_event\n" );
     o.mutex.lock();
     o.rts_close_requested = true;
     o.mutex.unlock();
@@ -47,21 +46,18 @@ stamp :open_args_s
         o.sc_title = f.title ? f.title.sc : NULL;
         o.child_widget = f.frame ? f.frame.rtt_widget() : NULL;
         o.keep_above = f.keep_above;
-        o.nearest_window = ( f.frame && f.frame.parent ) ? f.frame.parent.nearest_window() : NULL;
+        o.nearest_window = ( f.frame && f.frame.parent() ) ? f.frame.parent().nearest_window() : NULL;
     }
 }
 
 func (:s) open
 {
     if( o.is_open ) = 0;
-
-    tp_t action_type = escapprove~;
-
-    if( o.frame.client ) o.frame.client_edit_frame( o.frame.client, o.frame.client_type, o.frame.client_name, action_type.1, o.frame );
+    if( !o.frame ) = GERR_fa( "No frame defined." );
 
     bgfe_rte_get( &o.rte );
 
-    o.frame.window = o;
+    if( o.frame._ == bgfe_frame_s~ ) o.frame.cast( m bgfe_frame_s* ).window = o;
     o.frame.open( parent );
 
     o.mutex.lock();
@@ -152,7 +148,6 @@ func (:s) cycle
 
     if( close_requested )
     {
-        bcore_msg_fa( "#name: close_requested\n", o._ );
         if( o.client_close_ok() )
         {
             o.close();
@@ -180,6 +175,61 @@ func (:s) present
 
 identifier gtk_window_present;
 func (:s) er_t rtt_present( m@* o, vd_t unused ) { gtk_window_present( GTK_WINDOW( o.rtt_widget ) ); = 0; }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) set_frame
+{
+    o.frame =< frame.fork();
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) set_frame_from_client_t
+{
+    if( !client ) = 0;
+
+    tp_t frame_type = bgfe_frame_default_frame_type( client_type );
+    tp_t action_type = escapprove~;
+
+    o.client_edit_frame_type( client, client_type, client_name, action_type.1, frame_type );
+
+    m bgfe_frame* frame = x_inst_create( frame_type ).cast( d bgfe_frame* )^;
+
+    action_type = escapprove~;
+    o.client_edit_frame( client, client_type, client_name, action_type.1, frame );
+
+    o.set_frame( frame );
+
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) set_client_t
+{
+    if( !o.frame ) o.set_frame_from_client_t( client, client_type, client_name );
+    if(  o.frame ) = o.frame.set_client_t( client, client_type, client_name );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) set_client_with_content_t
+{
+    if( !o.frame ) o.set_frame_from_client_t( client, client_type, client_name );
+    if(  o.frame ) = o.frame.set_client_with_content_t( client, client_type, client_name );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) add_content_t
+{
+    if( !o.frame ) o.frame =< bgfe_frame_s!;
+    = o.frame.add_content_t( content, content_type, content_name );
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

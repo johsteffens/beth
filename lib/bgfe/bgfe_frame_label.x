@@ -49,6 +49,9 @@ stamp :s bgfe_frame
     func bgfe_frame.client_name = o.client_name;
     func bgfe_frame.parent = o.parent;
     func bgfe_frame.is_open = o.is_open;
+    func bgfe_frame.h_complexity = 2;
+    func bgfe_frame.v_complexity = 0.5;
+    func bgfe_frame.is_compact = true;
 
     hidden st_s => rts_tooltip_text;  // tooltip text
     hidden bgfe_rte_s* rte;
@@ -71,10 +74,6 @@ stamp :s bgfe_frame
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) void rtt_signal_destroy( m GtkWidget* win, m@* o ) o.rtt_widget = NULL;
-
-//----------------------------------------------------------------------------------------------------------------------
-
 identifier gtk_label_set_text;
 identifier GTK_LABEL;
 func (:s) er_t rtt_set_text( m@* o, st_s* rts_text )
@@ -83,22 +82,6 @@ func (:s) er_t rtt_set_text( m@* o, st_s* rts_text )
     gtk_label_set_text( GTK_LABEL( o.rtt_widget ), rts_text ? rts_text.sc : "" );
     o.mutex.unlock();
     = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-stamp :open_args_s
-{
-    sz_t width;
-    sz_t height;
-    st_s => text;
-
-    func o _( m@* o, m :s* f )
-    {
-        o.width  = f.width;
-        o.height = f.height;
-        o.text   =< f.text.clone();
-    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -132,17 +115,13 @@ func (:s) open
 
     o.client_to_st( o.text! );
 
-    o.mutex.lock();
     if( bnameof( o.client_name ) ) o.rts_tooltip_text!.push_fa( "#<sc_t>", bnameof( o.client_name ) );
     if( bnameof( o.client_type ) )
     {
         if( o.rts_tooltip_text ) o.rts_tooltip_text!.push_fa( " " );
         o.rts_tooltip_text!.push_fa( "<#<sc_t>>", bnameof( o.client_type ) );
     }
-    m$* rts_open_args = :open_args_s!^( o );
-    o.mutex.unlock();
-
-    o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, rts_open_args );
+    o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.is_open = true;
     = 0;
 }
@@ -151,17 +130,13 @@ func (:s) open
 
 identifier gtk_label_new;
 
-func (:s) er_t rtt_open( m@* o, :open_args_s* args )
+func (:s) er_t rtt_open( m@* o, vd_t unused )
 {
-    o.mutex.create_lock()^;
-    o.rtt_widget = gtk_label_new( args.text ? args.text.sc : "" );
-    if( !o.rtt_widget ) = GERR_fa( "'gtk_label_new' failed\n" );
-    if( G_IS_INITIALLY_UNOWNED( o.rtt_widget ) ) o.rtt_widget = g_object_ref_sink( o.rtt_widget );
+    o.rtt_attach_widget( gtk_label_new( o.text ? o.text.sc : "" ), o.rtt_widget );
     gtk_widget_set_name( o.rtt_widget, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
-    if( args.width > 0 || args.height > 0 ) gtk_widget_set_size_request( o.rtt_widget, args.width, args.height );
+    if( o.width > 0 || o.height > 0 ) gtk_widget_set_size_request( o.rtt_widget, o.width, o.height );
     if( o.show_tooltip && o.rts_tooltip_text ) gtk_widget_set_tooltip_text( o.rtt_widget, o.rts_tooltip_text.sc );
     gtk_widget_show( o.rtt_widget );
-    g_signal_connect( o.rtt_widget, "destroy", G_CALLBACK( :s_rtt_signal_destroy ), o );
     = 0;
 }
 
@@ -180,12 +155,7 @@ func (:s) close
 
 func (:s) er_t rtt_close( m@* o, vd_t arg )
 {
-    if( o.rtt_widget )
-    {
-        g_signal_handlers_disconnect_by_data( o.rtt_widget, o );
-        g_object_unref( o.rtt_widget );
-        o.rtt_widget = NULL;
-    }
+    o.rtt_detach_widget( o.rtt_widget );
     = 0;
 }
 

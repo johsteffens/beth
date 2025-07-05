@@ -50,6 +50,9 @@ stamp :s bgfe_frame
     func bgfe_frame.client_name = o.client_name;
     func bgfe_frame.parent = o.parent;
     func bgfe_frame.is_open = o.is_open;
+    func bgfe_frame.h_complexity = 2;
+    func bgfe_frame.v_complexity = 1;
+    func bgfe_frame.is_compact = true;
 
     hidden bl_t rts_clicked; // button was clicked
 
@@ -123,27 +126,13 @@ type GTK_RELIEF_NORMAL;
 
 func (:s) er_t rtt_open( m@* o, vd_t unused )
 {
-    {
-        o.mutex.create_lock()^;
-        sc_t sc_label = bnameof( o.client_name );
-        if( o.text ) sc_label = o.text.sc;
+    sc_t sc_label = bnameof( o.client_name );
+    if( o.text ) sc_label = o.text.sc;
 
-        if( sc_label )
-        {
-            o.rtt_widget = gtk_button_new_with_label( sc_label );
-        }
-        else
-        {
-            o.rtt_widget = gtk_button_new();
-        }
-
-        if( !o.rtt_widget ) = GERR_fa( "'gtk_button_new' failed\n" );
-        if( G_IS_INITIALLY_UNOWNED( o.rtt_widget ) ) o.rtt_widget = g_object_ref_sink( o.rtt_widget );
-        gtk_widget_set_name( o.rtt_widget, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
-        gtk_widget_set_size_request( o.rtt_widget, o.width, o.height );
-        gtk_widget_show( o.rtt_widget );
-    }
-
+    o.rtt_attach_widget( sc_label ? gtk_button_new_with_label( sc_label ) : gtk_button_new(), o.rtt_widget );
+    gtk_widget_set_name( o.rtt_widget, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
+    gtk_widget_set_size_request( o.rtt_widget, o.width, o.height );
+    gtk_widget_show( o.rtt_widget );
     g_signal_connect( o.rtt_widget, "clicked", G_CALLBACK( :s_rtt_signal_clicked ), o );
 
     = 0;
@@ -164,12 +153,7 @@ func (:s) close
 
 func (:s) er_t rtt_close( m@* o, vd_t arg )
 {
-    if( o.rtt_widget )
-    {
-        g_signal_handlers_disconnect_by_data( o.rtt_widget, o );
-        g_object_unref( o.rtt_widget );
-        o.rtt_widget = NULL;
-    }
+    o.rtt_detach_widget( o.rtt_widget );
     = 0;
 }
 

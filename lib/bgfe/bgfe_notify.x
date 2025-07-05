@@ -59,8 +59,8 @@ group :receiver
 group :sender
 {
     forward ::ligand_pool_s;
-    feature m ::ligand_pool_s* ligand_pool( m@* o ) { ERR_fa( "Not implemented in '#name'.", o._ ); = NULL; }
-
+    feature bl_t supports_notify( @* o ) { = false; }
+    feature m ::ligand_pool_s* ligand_pool( m@* o ) { ERR_fa( "Not implemented in '#name'. Consider calling feature 'supports_notify' to check beforehand.", o._ ); = NULL; }
     func er_t set_notify       ( m@* o, m ::receiver* receiver, tp_t notify_type ) export = o.ligand_pool().set_notify( receiver, notify_type );
     func er_t set_notify_ligand( m@* o, c ::ligand* ligand                       ) export = o.ligand_pool().set_notify_ligand( ligand );
     func er_t remove_notify_receiver( m@* o, ::receiver* receiver ) export = o.ligand_pool().remove_notify_receiver( receiver );

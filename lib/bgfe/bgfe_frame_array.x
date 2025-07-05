@@ -26,8 +26,8 @@ stamp :s bgfe_frame
     sz_t width;   // optional preset width
     sz_t height;  // optional preset height
     tp_t arrange = 0; // (0 == auto) | vertical | horizontal
-    sz_t min_content_width  = 80; // applies for horizontal orientation
-    sz_t min_content_height = 80; // applies for vertical orientation
+    sz_t min_content_width  = 100; // applies for horizontal orientation
+    sz_t min_content_height = 100; // applies for vertical orientation
     sz_t max_content_width  = 200; // applies for horizontal orientation
     sz_t max_content_height = 200; // applies for vertical orientation
     bl_t show_client_name = true;
@@ -59,11 +59,14 @@ stamp :s bgfe_frame
     hidden vd_t array_base_address; // address of first array element used to determine if the array has been relocated between cycles
     hidden bl_t is_vertical; // array elements are ordered verically (vs. horizontally)
 
+    func bgfe_frame.h_complexity = o.min_content_width  / bgfe_frame_complexity_unit_size();
+    func bgfe_frame.v_complexity = o.min_content_height / bgfe_frame_complexity_unit_size();
     func bgfe_frame.client = o.client;
     func bgfe_frame.client_type = o.client_type;
     func bgfe_frame.client_name = o.client_name;
     func bgfe_frame.parent = o.parent;
     func bgfe_frame.is_open = o.is_open;
+    func bgfe_frame.is_compact = false;
 
     hidden bgfe_frame_list_s => content_list;
     hidden bgfe_rte_s* rte;
@@ -98,7 +101,7 @@ stamp :s bgfe_frame
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) bl_t rebuild_array_is_necessary( @* o )
+func (:s) bl_t rebuild_is_necessary( @* o )
 {
     m x_array* array = o.client.cast( m x_array* );
     if( array.t_size( o.client_type ) != o.content_list.size ) = true;
@@ -113,7 +116,7 @@ func (:s) er_t append_element( m@* o )
 {
     m x_array* array = o.client.cast( m x_array* );
     array.t_push( o.client_type );
-    o.rebuild_array();
+    o.rebuild();
     o.rte.run( o.focus_to_end.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.rte.run( o.rtt_scroll_to_end.cast( bgfe_rte_fp_rtt ), o, NULL );
     = false;
@@ -121,7 +124,7 @@ func (:s) er_t append_element( m@* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) er_t rebuild_array( m@* o )
+func (:s) er_t rebuild( m@* o )
 {
     o.content_list!.clear();
 
@@ -129,11 +132,32 @@ func (:s) er_t rebuild_array( m@* o )
     sz_t size = array.t_size( o.client_type );
     o.array_base_address = array.t_get_data_m( o.client_type );
 
-//    if( array.t_is_of_links( o.client_type ) )
-//    {
-//    }
-//    else
-//    {
+    if( array.t_is_of_links( o.client_type ) )
+    {
+        for( sz_t i = 0; i < size; i++ )
+        {
+            m$* sr_content = sr_s!^;
+            sr_content.0 = array.t_m_get_sr( o.client_type, i );
+
+            m$* frame_link = bgfe_frame_link_s!^;
+
+            if( sr_content.o )
+            {
+                frame_link.set_client_t( sr_content.o, sr_content.type(), 0 );
+            }
+            else
+            {
+                tp_t content_type = x_array_t_get_type( o.client, o.client_type, i );
+                frame_link.set_client_t( NULL, content_type, 0 );
+            }
+
+            frame_link.set_holder_t( o.client, o.client_type, o.client_name, true, i );
+            o.content_list!.push_d( frame_link.fork() );
+            frame_link.open( o );
+        }
+    }
+    else
+    {
         for( sz_t i = 0; i < size; i++ )
         {
             m$* sr_content = sr_s!^;
@@ -154,10 +178,10 @@ func (:s) er_t rebuild_array( m@* o )
                 }
             }
         }
-//    }
+    }
 
 
-    o.rte.run( o.rtt_rebuild_array.cast( bgfe_rte_fp_rtt ), o, NULL );
+    o.rte.run( o.rtt_rebuild.cast( bgfe_rte_fp_rtt ), o, NULL );
 
     = 0;
 }
@@ -165,23 +189,13 @@ func (:s) er_t rebuild_array( m@* o )
 //----------------------------------------------------------------------------------------------------------------------
 
 name gtk_container_remove;
-func (:s) er_t rtt_rebuild_array( m@* o, vd_t unused )
+func (:s) er_t rtt_rebuild( m@* o, vd_t unused )
 {
-    if( o.rtt_gtk_list_box != NULL )
-    {
-        gtk_container_remove( GTK_CONTAINER( o.rtt_gtk_scrolled_window ), o.rtt_gtk_list_box );
-        g_signal_handlers_disconnect_by_data( o.rtt_gtk_list_box, o );
-        g_object_unref( o.rtt_gtk_list_box );
-        o.rtt_gtk_list_box = NULL;
-    }
-
-    {
-        o.rtt_gtk_list_box = gtk_box_new( o.is_vertical ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, o.spacing );
-        if( !o.rtt_gtk_list_box ) = GERR_fa( "'gtk_box_new' failed\n" );
-        if( G_IS_INITIALLY_UNOWNED( o.rtt_gtk_list_box ) ) o.rtt_gtk_list_box = g_object_ref_sink( o.rtt_gtk_list_box );
-        gtk_widget_show( o.rtt_gtk_list_box );
-        gtk_container_add( GTK_CONTAINER( o.rtt_gtk_scrolled_window ), o.rtt_gtk_list_box );
-    }
+    o.rtt_remove_widget_from_container( o.rtt_gtk_list_box, o.rtt_gtk_scrolled_window );
+    o.rtt_detach_widget( o.rtt_gtk_list_box );
+    o.rtt_attach_widget( gtk_box_new( o.is_vertical ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, o.spacing ), o.rtt_gtk_list_box );
+    gtk_widget_show( o.rtt_gtk_list_box );
+    gtk_container_add( GTK_CONTAINER( o.rtt_gtk_scrolled_window ), o.rtt_gtk_list_box );
 
     for( sz_t i = 0; i < o.content_list.size; i++ )
     {
@@ -248,32 +262,6 @@ func (:s) er_t focus_to_end( m@* o, vd_t unused )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp :open_args_s
-{
-    hidden bgfe_frame_list_s* content_list;
-    sz_t width;
-    sz_t height;
-    sz_t min_content_width;
-    sz_t min_content_height;
-    sz_t max_content_width;
-    sz_t max_content_height;
-    tp_t label_name;
-    bl_t fixed_size;
-
-    func o _( m@* o, m :s* f )
-    {
-        o.width  = f.width;
-        o.height = f.height;
-        o.min_content_width  = f.min_content_width;
-        o.min_content_height = f.min_content_height;
-        o.max_content_width  = f.max_content_width;
-        o.max_content_height = f.max_content_height;
-        o.label_name = ( f.show_client_name && f.client_name && bnameof( f.client_name ) ) ? f.client_name : 0;
-        o.content_list = f.content_list;
-        o.fixed_size = x_array_t_is_fixed( f.client_type );
-    }
-}
-
 func (:s) open
 {
     if( o.is_open ) = 0;
@@ -284,17 +272,10 @@ func (:s) open
     o.parent = parent;
 
     tp_t arrangement = o.arrangement();
-
-    o.mutex.lock();
-
-    m$* rts_open_args = :open_args_s!^( o );
     o.is_vertical = ( arrangement == TYPEOF_vertical );
+    o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, NULL );
 
-    o.mutex.unlock();
-
-    o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, rts_open_args );
-
-    o.rebuild_array();
+    o.rebuild();
     o.is_open = true;
     = 0;
 }
@@ -318,18 +299,18 @@ func (:s) void rtt_signal_append_button_clicked( m GtkWidget* win, m@* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) er_t rtt_open( m@* o, :open_args_s* args )
+func (:s) er_t rtt_open( m@* o, vd_t unused )
 {
     o.mutex.create_lock()^;
 
-    o.rtt_gtk_box = gtk_box_new( o.is_vertical ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, 0 );
-    if( !o.rtt_gtk_box ) = GERR_fa( "'gtk_box_new' failed\n" );
-    if( G_IS_INITIALLY_UNOWNED( o.rtt_gtk_box ) ) o.rtt_gtk_box = g_object_ref_sink( o.rtt_gtk_box );
+    o.rtt_attach_widget( gtk_box_new( o.is_vertical ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, 0 ), o.rtt_gtk_box );
     gtk_widget_show( o.rtt_gtk_box );
 
-    if( args.label_name )
+    tp_t label_name = ( o.show_client_name && o.client_name && bnameof( o.client_name ) ) ? o.client_name : 0;
+
+    if( label_name )
     {
-        m GtkWidget* label = gtk_label_new( bnameof( args.label_name ) );
+        m GtkWidget* label = gtk_label_new( bnameof( label_name ) );
         if( !label ) = GERR_fa( "'gtk_label_new' failed\n" );
         gtk_widget_set_name( label, "client_name" );
         gtk_label_set_angle( GTK_LABEL( label ), o.is_vertical ? 0 : 90 );
@@ -337,9 +318,7 @@ func (:s) er_t rtt_open( m@* o, :open_args_s* args )
         gtk_widget_show( label );
     }
 
-    o.rtt_gtk_scrolled_window = gtk_scrolled_window_new( NULL, NULL );
-    if( !o.rtt_gtk_scrolled_window ) = GERR_fa( "'gtk_scrolled_window_new' failed\n" );
-    if( G_IS_INITIALLY_UNOWNED( o.rtt_gtk_scrolled_window ) ) o.rtt_gtk_scrolled_window = g_object_ref_sink( o.rtt_gtk_scrolled_window );
+    o.rtt_attach_widget( gtk_scrolled_window_new( NULL, NULL ), o.rtt_gtk_scrolled_window );
 
     gtk_scrolled_window_set_propagate_natural_width( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), o.is_vertical ? true : false );
     gtk_scrolled_window_set_propagate_natural_height( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), o.is_vertical ? false : true );
@@ -350,27 +329,25 @@ func (:s) er_t rtt_open( m@* o, :open_args_s* args )
 
     if( o.is_vertical )
     {
-        gtk_scrolled_window_set_min_content_height( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), args.min_content_height );
-        gtk_scrolled_window_set_max_content_height( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), args.max_content_height );
+        gtk_scrolled_window_set_min_content_height( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), o.min_content_height );
+        gtk_scrolled_window_set_max_content_height( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), o.max_content_height );
     }
     else
     {
-        gtk_scrolled_window_set_min_content_width( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), args.min_content_width );
-        gtk_scrolled_window_set_max_content_width( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), args.max_content_width );
+        gtk_scrolled_window_set_min_content_width( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), o.min_content_width );
+        gtk_scrolled_window_set_max_content_width( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), o.max_content_width );
     }
 
     gtk_widget_show( o.rtt_gtk_scrolled_window );
 
     gtk_widget_set_name( o.rtt_gtk_box, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
-    gtk_widget_set_size_request( o.rtt_gtk_box, args.width, args.height );
+    gtk_widget_set_size_request( o.rtt_gtk_box, o.width, o.height );
 
     gtk_box_pack_start( GTK_BOX( o.rtt_gtk_box ), o.rtt_gtk_scrolled_window, true, true, 0 );
 
-    if( !args.fixed_size )
+    if( !x_array_t_is_fixed( o.client_type ) )
     {
-        o.rtt_gtk_append_button = gtk_button_new_with_label( "+" );
-        if( !o.rtt_gtk_append_button ) = GERR_fa( "'gtk_button_new_with_label' failed\n" );
-        if( G_IS_INITIALLY_UNOWNED( o.rtt_gtk_append_button ) ) o.rtt_gtk_append_button = g_object_ref_sink( o.rtt_gtk_append_button );
+        o.rtt_attach_widget( gtk_button_new_with_label( "+" ), o.rtt_gtk_append_button );
         g_signal_connect( o.rtt_gtk_append_button, "clicked", G_CALLBACK( :s_rtt_signal_append_button_clicked ), o );
         gtk_widget_show( o.rtt_gtk_append_button );
     }
@@ -399,36 +376,11 @@ func (:s) close
 
 func (:s) er_t rtt_close( m@* o, vd_t arg )
 {
-    if( o.rtt_gtk_box )
-    {
-        g_signal_handlers_disconnect_by_data( o.rtt_gtk_box, o );
-        g_object_unref( o.rtt_gtk_box );
-        o.rtt_gtk_box = NULL;
-    }
-
-    if( o.rtt_gtk_list_box )
-    {
-        g_signal_handlers_disconnect_by_data( o.rtt_gtk_list_box, o );
-        g_object_unref( o.rtt_gtk_list_box );
-        o.rtt_gtk_list_box = NULL;
-    }
-
-    if( o.rtt_gtk_scrolled_window )
-    {
-        g_signal_handlers_disconnect_by_data( o.rtt_gtk_scrolled_window, o );
-        g_object_unref( o.rtt_gtk_scrolled_window );
-        o.rtt_gtk_scrolled_window = NULL;
-    }
-
-    if( o.rtt_gtk_append_button )
-    {
-        g_signal_handlers_disconnect_by_data( o.rtt_gtk_append_button, o );
-        g_object_unref( o.rtt_gtk_append_button );
-        o.rtt_gtk_append_button = NULL;
-    }
-
+    o.rtt_detach_widget( o.rtt_gtk_box );
+    o.rtt_detach_widget( o.rtt_gtk_list_box );
+    o.rtt_detach_widget( o.rtt_gtk_scrolled_window );
+    o.rtt_detach_widget( o.rtt_gtk_append_button );
     o.rtt_widget = 0;
-
     = 0;
 }
 
@@ -442,7 +394,7 @@ func (:s) cycle
      *  between cycles. This is necessary to avoid temporary memory inconsistencies of client references
      *  in content frames
      */
-    if( o.rebuild_array_is_necessary() ) o.rebuild_array();
+    if( o.rebuild_is_necessary() ) o.rebuild();
 
     o.mutex.lock();
     bl_t append_button_clicked = o.rts_append_button_clicked;
@@ -470,9 +422,9 @@ func (:s) upsync
 {
     if( !o.is_open ) = 0; // no error because frame window could have been closed
 
-    if( o.rebuild_array_is_necessary() )
+    if( o.rebuild_is_necessary() )
     {
-        o.rebuild_array(); // this includes upsyncing the array
+        o.rebuild(); // this includes upsyncing the array
     }
     else
     {

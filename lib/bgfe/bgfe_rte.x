@@ -152,7 +152,7 @@ stamp :run_s
             o.arg = arg;
             //verbatim_C{ g_idle_add( ( gboolean(*)( vd_t ) )bgfe_rte_run_s_rtt_func, o ) };
 
-            // add_idle_full gives control overpriority; otherwise no apparent advantage over 'g_idle_add'
+            // add_idle_full gives control over priority; otherwise no apparent advantage over 'g_idle_add'
             verbatim_C{ gdk_threads_add_idle_full( G_PRIORITY_DEFAULT_IDLE, ( gboolean(*)( vd_t ) )bgfe_rte_run_s_rtt_func, o, NULL ) };
             while( o.busy ) o.condition.sleep( o.mutex );
             ret = o.ret;
@@ -179,7 +179,7 @@ type GtkCssProvider, GError, GTK_STYLE_PROVIDER_PRIORITY_FALLBACK, GTK_STYLE_PRO
 
 stamp :s
 {
-    sz_t verbosity = 10;
+    sz_t verbosity = 0;
     :run_s run;
     er_t m_thread_func_err; // m_thread function terminated with error
 

@@ -21,40 +21,104 @@ func (:s) void rtt_signal_destroy_gtk_box( m GtkWidget* win, m@* o ) o.rtt_gtk_b
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp :open_args_s
-{
-    hidden :list_s* content_list;
-    sz_t width;
-    sz_t height;
-    tp_t label_name;
-
-    func o _( m@* o, m :s* f )
-    {
-        o.width  = f.width;
-        o.height = f.height;
-        o.label_name = ( f.show_client_name && f.client_name && bnameof( f.client_name ) ) ? f.client_name : 0;
-        o.content_list = f.content_list;
-    }
-}
-
 func (:s) open
 {
     if( o.is_open ) = 0;
-    if( !o.client ) = GERR_fa( "No client defined. Call 'set_client' first." );
 
     bgfe_rte_get( &o.rte );
 
     o.parent = parent;
 
-    o.mutex.lock();
+    f3_t max_h_complexity = 0;
+    f3_t max_v_complexity = 0;
+    f3_t sum_h_complexity = 0;
+    f3_t sum_v_complexity = 0;
+    f3_t overhead_h_complexity = 0.5;
+    f3_t overhead_v_complexity = 0.5;
 
-    m$* rts_open_args = :open_args_s!^( o );
+    /// tendency of clients >0 horizontal; < 0 vertical
+    sz_t h_tendency = 0;
 
-    o.mutex.unlock();
+    foreach( m$* e in o.content_list )
+    {
+        e.open( o );
+        f3_t h_complexity = e.h_complexity();
+        f3_t v_complexity = e.v_complexity();
+        max_h_complexity = f3_max( max_h_complexity, h_complexity );
+        max_v_complexity = f3_max( max_v_complexity, v_complexity );
+        sum_h_complexity += h_complexity;
+        sum_v_complexity += v_complexity;
+        switch( e.arrangement() )
+        {
+            case TYPEOF_horizontal: h_tendency++; break;
+            case TYPEOF_vertical  : h_tendency--; break;
+            default: break;
+        }
+    }
 
-    foreach( m$* e in o.content_list ) e.open( o );
+    // complexity on vertical orientation
+    f3_t ver_h_complexity = max_h_complexity + overhead_h_complexity * 1;
+    f3_t ver_v_complexity = sum_v_complexity + overhead_v_complexity * 2;
 
-    o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, rts_open_args );
+    // complexity on horizontal orientation
+    f3_t hor_h_complexity = sum_h_complexity + overhead_h_complexity * 2;
+    f3_t hor_v_complexity = max_v_complexity + overhead_v_complexity * 1;
+
+    if( o.arrange == TYPEOF_vertical )
+    {
+        o.vertical = true;
+    }
+    else if( o.arrange == TYPEOF_horizontal )
+    {
+        o.vertical = false;
+    }
+    else if( o.arrange == TYPEOF_square )
+    {
+        f3_t ver_ratio = f3_min( ver_h_complexity, ver_v_complexity ) / f3_max( ver_h_complexity, ver_v_complexity );
+        f3_t hor_ratio = f3_min( hor_h_complexity, hor_v_complexity ) / f3_max( hor_h_complexity, hor_v_complexity );
+        o.vertical = ( ver_ratio > hor_ratio );
+        bcore_msg_fa( "#name: hor_ratio: #<f3_t>, ver_ratio: #<f3_t>\n", o.client_name, hor_ratio, ver_ratio );
+    }
+    else if( o.arrange == TYPEOF_hor_golden_ratio )
+    {
+        f3_t ver_log_ratio = f3_log( ver_h_complexity ) - f3_log( ver_v_complexity );
+        f3_t hor_log_ratio = f3_log( hor_h_complexity ) - f3_log( hor_v_complexity );
+        o.vertical = ( f3_sqr( ver_log_ratio - f3_log( 1.618 ) ) < f3_sqr( hor_log_ratio - f3_log( 1.618 ) ) );
+        bcore_msg_fa( "#name: ver_log_ratio: #<f3_t>, hor_log_ratio: #<f3_t>\n", o.client_name, ver_log_ratio, hor_log_ratio );
+    }
+    else if( o.arrange == TYPEOF_ver_golden_ratio )
+    {
+        f3_t ver_log_ratio = f3_log( ver_v_complexity ) - f3_log( ver_h_complexity );
+        f3_t hor_log_ratio = f3_log( hor_v_complexity ) - f3_log( hor_h_complexity );
+        o.vertical = ( f3_sqr( ver_log_ratio - f3_log( 1.618 ) ) < f3_sqr( hor_log_ratio - f3_log( 1.618 ) ) );
+        bcore_msg_fa( "#name: ver_log_ratio: #<f3_t>, hor_log_ratio: #<f3_t>\n", o.client_name, ver_log_ratio, hor_log_ratio );
+    }
+    else if( o.arrange == TYPEOF_min_volume )
+    {
+        f3_t ver_volume = ver_v_complexity * ver_h_complexity;
+        f3_t hor_volume = hor_v_complexity * hor_h_complexity;
+        o.vertical = ( ver_volume < hor_volume );
+        bcore_msg_fa( "#name: ver_volume: #<f3_t>, hor_volume: #<f3_t>\n", o.client_name, ver_volume, hor_volume );
+    }
+    else
+    {
+        o.vertical = ( h_tendency >= 0 );
+    }
+
+    if( o.vertical )
+    {
+        o.h_complexity = ver_h_complexity;
+        o.v_complexity = ver_v_complexity;
+    }
+    else
+    {
+        o.h_complexity = hor_h_complexity;
+        o.v_complexity = hor_v_complexity;
+    }
+
+    bcore_msg_fa( "#name: h_complexity: #<f3_t>, v_complexity: #<f3_t>\n", o.client_name, o.h_complexity, o.v_complexity );
+
+    o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, NULL );
 
     o.is_open = true;
     = 0;
@@ -65,22 +129,18 @@ func (:s) open
 identifier gtk_box_new, gtk_flow_box_new, gtk_widget_modify_bg, gtk_label_set_angle, gtk_box_pack_end, gtk_box_pack_start;
 type GdkColor, GtkBox, GTK_BOX;
 
-func (:s) er_t rtt_open( m@* o, :open_args_s* args )
+func (:s) er_t rtt_open( m@* o, vd_t unused )
 {
-    o.mutex.create_lock()^;
+    bl_t vertical = o.vertical;
 
-    tp_t arrangement = o.arrangement();
-
-    bl_t vertical = arrangement == TYPEOF_vertical;
-
-    o.rtt_gtk_box = gtk_box_new( vertical ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, o.spacing );
-    if( !o.rtt_gtk_box ) = GERR_fa( "'gtk_box_new' failed\n" );
-    if( G_IS_INITIALLY_UNOWNED( o.rtt_gtk_box ) ) o.rtt_gtk_box = g_object_ref_sink( o.rtt_gtk_box );
+    o.rtt_attach_widget( gtk_box_new( vertical ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, o.spacing ), o.rtt_gtk_box );
     gtk_widget_show( o.rtt_gtk_box );
 
-    if( args.label_name )
+    tp_t label_name = ( o.show_client_name && o.client_name && bnameof( o.client_name ) ) ? o.client_name : 0;
+
+    if( label_name )
     {
-        m GtkWidget* label = gtk_label_new( bnameof( args.label_name ) );
+        m GtkWidget* label = gtk_label_new( bnameof( label_name ) );
         if( !label ) = GERR_fa( "'gtk_label_new' failed\n" );
         gtk_widget_set_name( label, "client_name" );
         gtk_label_set_angle( GTK_LABEL( label ), vertical ? 0 : 90 );
@@ -89,11 +149,11 @@ func (:s) er_t rtt_open( m@* o, :open_args_s* args )
     }
 
     gtk_widget_set_name( o.rtt_gtk_box, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
-    gtk_widget_set_size_request( o.rtt_gtk_box, args.width, args.height );
+    gtk_widget_set_size_request( o.rtt_gtk_box, o.width, o.height );
 
     g_signal_connect( o.rtt_gtk_box, "destroy", G_CALLBACK( :s_rtt_signal_destroy_gtk_box ), o );
 
-    foreach( m$* e in args.content_list )
+    foreach( m$* e in o.content_list )
     {
         if( o.end_bound )
         {
@@ -127,13 +187,7 @@ func (:s) close
 
 func (:s) er_t rtt_close( m@* o, vd_t arg )
 {
-    if( o.rtt_gtk_box )
-    {
-        g_signal_handlers_disconnect_by_data( o.rtt_gtk_box, o );
-        g_object_unref( o.rtt_gtk_box );
-        o.rtt_gtk_box = NULL;
-    }
-
+    o.rtt_detach_widget( o.rtt_gtk_box );
     o.rtt_widget = NULL;
     = 0;
 }
@@ -193,29 +247,6 @@ func (:s) client_close_confirm
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) arrangement
-{
-    if( o.arrange ) = o.arrange;
-
-    /// >0 horizontal; < 0 vertical
-    sz_t clients_tendency = 0;
-
-    foreach( m$* e in o.content_list )
-    {
-        switch( e.arrangement() )
-        {
-            case TYPEOF_horizontal: clients_tendency++; break;
-            case TYPEOF_vertical  : clients_tendency--; break;
-            default: break;
-        }
-    }
-
-    // the chosen arrangement is the opposite of the clients tendency;
-    = ( clients_tendency >= 0 ) ? TYPEOF_vertical : TYPEOF_horizontal;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 func (:s) set_client_t
 {
     if( o.is_open ) = GERR_fa( "Frame is open." );
@@ -254,9 +285,9 @@ func (:s) set_client_with_content
 
 func (:s) set_client_with_content_t
 {
-    if( !client ) = 0;
-
     o.set_client_t( client, client_type, client_name );
+
+    if( !client ) = 0;
 
     sz_t size = x_stamp_t_size( client_type );
     for( sz_t i = 0; i < size; i++ )
@@ -296,7 +327,6 @@ func (:s) add_content
 func (:s) add_content_t
 {
     if( o.is_open ) = GERR_fa( "Frame is open. Close it first." );
-    if( !o.client ) = GERR_fa( "No client defined." );
 
     if( x_stamp_t_is_pure_array( content_type ) )
     {
@@ -327,7 +357,9 @@ func (:s) add_content_t
 
 func (:s) add_linked_content
 {
-    m$* frame_link = :link_window_s!^;
+    if( !o.client ) = 0;
+
+    m$* frame_link = :link_s!^;
 
     m$* content_sr = sr_s!^;
     content_sr.0 = x_stamp_t_m_get_sr( o.client, o.client_type, content_name );
@@ -345,6 +377,14 @@ func (:s) add_linked_content
     frame_link.set_holder_t( o.client, o.client_type, o.client_name, false, 0 );
 
     o.content_list!.push_d( frame_link.fork() );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) add_frame
+{
+    o.content_list!.push_d( frame.fork() );
     = 0;
 }
 

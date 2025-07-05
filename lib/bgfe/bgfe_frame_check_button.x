@@ -49,6 +49,9 @@ stamp :s bgfe_frame
     func bgfe_frame.client_name = o.client_name;
     func bgfe_frame.parent = o.parent;
     func bgfe_frame.is_open = o.is_open;
+    func bgfe_frame.h_complexity = 1;
+    func bgfe_frame.v_complexity = 1;
+    func bgfe_frame.is_compact = true;
 
     hidden bl_t rts_value;    // current scale value
     hidden bl_t rts_modified; // scale value was modified by the front end
@@ -74,10 +77,6 @@ stamp :s bgfe_frame
 
 
 }
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) void rtt_signal_destroy( m GtkWidget* win, m@* o ) o.rtt_widget = NULL;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -107,20 +106,6 @@ func (:s) er_t rtt_set_value( m@* o, f3_t* rts_value )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp :open_args_s
-{
-    sz_t width;
-    sz_t height;
-    bl_t value;
-
-    func o _( m@* o, m :s* f )
-    {
-        o.width  = f.width;
-        o.height = f.height;
-        o.value  = f.value;
-    }
-}
-
 func (:s) open
 {
     if( o.is_open ) = 0;
@@ -134,10 +119,9 @@ func (:s) open
 
     o.mutex.lock();
     o.rts_value = o.value;
-    m$* rts_open_args = :open_args_s!^( o );
     o.mutex.unlock();
 
-    o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, rts_open_args );
+    o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.is_open = true;
     = 0;
 }
@@ -145,30 +129,15 @@ func (:s) open
 //----------------------------------------------------------------------------------------------------------------------
 
 identifier gtk_check_button_new, gtk_check_button_new_with_label;
-func (:s) er_t rtt_open( m@* o, :open_args_s* args )
+func (:s) er_t rtt_open( m@* o, vd_t unused )
 {
-    {
-        o.mutex.create_lock()^;
-        sc_t sc_client_name = bnameof( o.client_name );
-        if( sc_client_name )
-        {
-            o.rtt_widget = gtk_check_button_new_with_label( sc_client_name );
-        }
-        else
-        {
-            o.rtt_widget = gtk_check_button_new();
-        }
-        if( !o.rtt_widget ) = GERR_fa( "'gtk_check_button_new' failed\n" );
-        if( G_IS_INITIALLY_UNOWNED( o.rtt_widget ) ) o.rtt_widget = g_object_ref_sink( o.rtt_widget );
-        gtk_widget_set_name( o.rtt_widget, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
-        gtk_widget_set_size_request( o.rtt_widget, args.width, args.height );
-        gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( o.rtt_widget ), args.value );
-        gtk_widget_show( o.rtt_widget );
-    }
-
-    g_signal_connect( o.rtt_widget, "destroy", G_CALLBACK( :s_rtt_signal_destroy ),       o );
+    sc_t sc_client_name = bnameof( o.client_name );
+    o.rtt_attach_widget( sc_client_name ? gtk_check_button_new_with_label( sc_client_name ) : gtk_check_button_new(), o.rtt_widget );
+    gtk_widget_set_name( o.rtt_widget, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
+    gtk_widget_set_size_request( o.rtt_widget, o.width, o.height );
+    gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( o.rtt_widget ), o.value );
+    gtk_widget_show( o.rtt_widget );
     g_signal_connect( o.rtt_widget, "toggled", G_CALLBACK( :s_rtt_signal_value_changed ), o );
-
     = 0;
 }
 
@@ -187,12 +156,7 @@ func (:s) close
 
 func (:s) er_t rtt_close( m@* o, vd_t arg )
 {
-    if( o.rtt_widget )
-    {
-        g_signal_handlers_disconnect_by_data( o.rtt_widget, o );
-        g_object_unref( o.rtt_widget );
-        o.rtt_widget = NULL;
-    }
+    o.rtt_detach_widget( o.rtt_widget );
     = 0;
 }
 

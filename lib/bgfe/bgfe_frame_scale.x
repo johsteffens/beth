@@ -56,6 +56,9 @@ stamp :s bgfe_frame
     func bgfe_frame.client_name = o.client_name;
     func bgfe_frame.parent = o.parent;
     func bgfe_frame.is_open = o.is_open;
+    func bgfe_frame.h_complexity = o.width / bgfe_frame_complexity_unit_size();
+    func bgfe_frame.v_complexity = o.height / bgfe_frame_complexity_unit_size();
+    func bgfe_frame.is_compact = true;
 
     hidden f3_t rts_value;    // current scale value
     hidden bl_t rts_modified; // scale value was modified by the front end
@@ -79,10 +82,6 @@ stamp :s bgfe_frame
     func bgfe_frame.upsync;
     func bgfe_frame.downsync;
 }
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) void rtt_signal_destroy( m GtkWidget* win, m@* o ) o.rtt_widget = NULL;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -112,28 +111,6 @@ func (:s) er_t rtt_set_value( m@* o, f3_t* rts_value )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp :open_args_s
-{
-    sz_t width;
-    sz_t height;
-    f3_t min;         // minimum value
-    f3_t max;         // maximum value
-    f3_t step;        // value stepping
-    f3_t value;       // scale value
-    bl_t show_value;  // displays the scale value along with the scale
-
-    func o _( m@* o, m :s* f )
-    {
-        o.width         = f.width;
-        o.height        = f.height;
-        o.min           = f.min;
-        o.max           = f.max;
-        o.step          = f.step;
-        o.value         = f.value;
-        o.show_value    = f.show_value;
-    }
-}
-
 func (:s) open
 {
     if( o.is_open ) = 0;
@@ -145,7 +122,6 @@ func (:s) open
 
     bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_f3_t, o.value.1.cast( m x_inst* ) );
 
-    o.mutex.lock();
     if( bnameof( o.client_name ) ) o.rts_tooltip_text!.push_fa( "#<sc_t>", bnameof( o.client_name ) );
     if( bnameof( o.client_type ) )
     {
@@ -153,10 +129,8 @@ func (:s) open
         o.rts_tooltip_text!.push_fa( "<#<sc_t>>", bnameof( o.client_type ) );
     }
     o.rts_value = o.value;
-    m$* rts_open_args = :open_args_s!^( o );
-    o.mutex.unlock();
 
-    o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, rts_open_args );
+    o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.is_open = true;
     = 0;
 }
@@ -168,28 +142,28 @@ identifier gtk_scale_set_draw_value;
 identifier gtk_range_set_value, gtk_range_set_inverted;
 identifier GTK_SCALE, GTK_RANGE;
 
-func (:s) er_t rtt_open( m@* o, :open_args_s* args )
+func (:s) er_t rtt_open( m@* o, vd_t unused )
 {
-    o.mutex.create_lock()^;
-    bl_t vertical = ( args.height > args.width );
-    o.rtt_widget = gtk_scale_new_with_range
+    bl_t vertical = ( o.height > o.width );
+    o.rtt_attach_widget
     (
-        vertical ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL,
-        args.min,
-        args.max,
-        args.step
+        gtk_scale_new_with_range
+        (
+            vertical ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL,
+            o.min,
+            o.max,
+            o.step
+        ),
+        o.rtt_widget
     );
-    if( !o.rtt_widget ) = GERR_fa( "'gtk_scale_new_with_range' failed\n" );
-    if( G_IS_INITIALLY_UNOWNED( o.rtt_widget ) ) o.rtt_widget = g_object_ref_sink( o.rtt_widget );
 
     gtk_widget_set_name( o.rtt_widget, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
     gtk_range_set_inverted( GTK_RANGE( o.rtt_widget ), vertical );
-    gtk_scale_set_draw_value( GTK_SCALE( o.rtt_widget ), args.show_value );
-    gtk_widget_set_size_request( o.rtt_widget, args.width, args.height );
-    gtk_range_set_value( GTK_RANGE( o.rtt_widget ), args.value );
+    gtk_scale_set_draw_value( GTK_SCALE( o.rtt_widget ), o.show_value );
+    gtk_widget_set_size_request( o.rtt_widget, o.width, o.height );
+    gtk_range_set_value( GTK_RANGE( o.rtt_widget ), o.value );
     if( o.show_tooltip && o.rts_tooltip_text ) gtk_widget_set_tooltip_text( o.rtt_widget, o.rts_tooltip_text.sc );
     gtk_widget_show( o.rtt_widget );
-    g_signal_connect( o.rtt_widget, "destroy",       G_CALLBACK( :s_rtt_signal_destroy ),       o );
     g_signal_connect( o.rtt_widget, "value-changed", G_CALLBACK( :s_rtt_signal_value_changed ), o );
 
     = 0;
@@ -210,12 +184,7 @@ func (:s) close
 
 func (:s) er_t rtt_close( m@* o, vd_t arg )
 {
-    if( o.rtt_widget )
-    {
-        g_signal_handlers_disconnect_by_data( o.rtt_widget, o );
-        g_object_unref( o.rtt_widget );
-        o.rtt_widget = NULL;
-    }
+    o.rtt_detach_widget( o.rtt_widget );
     = 0;
 }
 
