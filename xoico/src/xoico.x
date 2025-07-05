@@ -68,7 +68,7 @@ feature 'ap' er_t expand_setup              ( m @* o, c :host* host ) { return 0
 feature 'ap' er_t expand_forward            ( c @* o, c :host* host, sz_t indent, m x_sink* sink ) { return 0; };
 feature 'ap' er_t expand_indef_typedef      ( c @* o, c :host* host, sz_t indent, m x_sink* sink ) { return 0; };
 feature 'ap' er_t expand_spect_declaration  ( c @* o, c :host* host, sz_t indent, m x_sink* sink ) { return 0; };
-feature 'ap' er_t expand_spect_definition   ( c @* o, c :host* host, sz_t indent, m x_sink* sink ) { return 0; };
+feature 'ap' er_t expand_spect_definition   ( c @* o, c :host* host, sz_t indent, bl_t append_comma, bl_t append_nl, m x_sink* sink ) { return 0; };
 feature 'ap' er_t expand_declaration        ( c @* o, c :host* host, sz_t indent, m x_sink* sink ) { return 0; };
 feature 'ap' er_t expand_indef_declaration  ( c @* o, c :host* host, sz_t indent, m x_sink* sink ) { return 0; };
 feature 'ap' er_t expand_definition         ( c @* o, c :host* host, sz_t indent, m x_sink* sink ) { return 0; };

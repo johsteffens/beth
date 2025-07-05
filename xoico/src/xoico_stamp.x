@@ -294,6 +294,80 @@ func d st_s* create_structured_multiline_string( c sc_t s, sz_t indent )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/** Creates a structured multiline string for direct nasc-code embedding
+ *  from an embedded string
+ */
+func d st_s* create_structured_multiline_string_nasc( c sc_t s, sz_t indent )
+{
+    d st_s* out = st_s!;
+    sz_t ind = indent;
+    bl_t newline = true;
+    for( sz_t i = 0; s[ i ] != 0; i++ )
+    {
+        char c = s[ i ];
+        if( c == ';' )
+        {
+            if( newline ) out.push_fa( "#rn{ }\"", ind );
+            out.push_char( c );
+            out.push_fa( "\",\n" );
+            newline = true;
+        }
+        else if( c == '{' )
+        {
+            if( newline )
+            {
+                out.push_fa( "#rn{ }\"{\"", ind );
+            }
+            else
+            {
+                out.push_fa( "\",\n#rn{ }\"{\"", ind );
+            }
+            if( s[ i + 1 ] != 0 ) out.push_sc( ",\n" );
+            ind += 4;
+            newline = true;
+
+        }
+        else if( c == '}' )
+        {
+            ind -= 4;
+            if( newline )
+            {
+                out.push_fa( "#rn{ }\"}\"", ind );
+            }
+            else
+            {
+                out.push_fa( "\",\n#rn{ }\"}\"", ind );
+            }
+            if( s[ i + 1 ] != 0 ) out.push_sc( ",\n" );
+            newline = true;
+        }
+        else if( c == ' ' )
+        {
+            if( !newline )
+            {
+                if( s[ i + 1 ] != ';' && s[ i + 1 ] != '{' && s[ i + 1 ] != '}' && s[ i + 1 ] != 0 )
+                {
+                    out.push_char( c );
+                }
+            }
+        }
+        else
+        {
+            if( newline )
+            {
+                out.push_fa( "#rn{ }\"", ind );
+                newline = false;
+            }
+            out.push_char( c );
+        }
+    }
+
+    if( !newline ) out.push_sc( "\"" );
+    return out;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:s) sc_t get_rel_name_sc( c @* o )
 {
     sc_t group_name = o.group.st_name.sc;
@@ -894,16 +968,17 @@ func (:s) xoico.expand_definition
 {
     m st_s* embedded_string = o.create_embedded_string( o.self_source )^^;
 
+    // Issue below was mitigated by using nasc strings; error check can be removed
     // 4095 is the C99-limit for string literals
-    if( embedded_string.size > 4095 )
-    {
-        return o.source_point.parse_error_fa
-        (
-            "Reflection embedding failed. (Stamp is too large)\n"
-            "The embedded code would require a string literal larger than 4095 characters.\n"
-            "This exceeds the limit defined in C99.\n"
-        );
-    }
+//    if( embedded_string.size > 4095 )
+//    {
+//        return o.source_point.parse_error_fa
+//        (
+//            "Reflection embedding failed. (Stamp is too large)\n"
+//            "The embedded code would require a string literal larger than 4095 characters.\n"
+//            "This exceeds the limit defined in C99.\n"
+//        );
+//    }
 
     sz_t idx = embedded_string.find_char( 0, -1, '=' );
     sc_t self_def = "";
@@ -913,10 +988,16 @@ func (:s) xoico.expand_definition
     }
 
     sink.push_fa( "\n" );
-    sink.push_fa( "#rn{ }BCORE_DEFINE_OBJECT_INST_P( #<sc_t> )\n", indent, o.st_name.sc );
 
-    m st_s* multiline_string = xoico_stamp_create_structured_multiline_string( self_def, indent )^^;
-    sink.push_fa( "#<sc_t>;\n", multiline_string.sc );
+//   old code before nasc strings
+//    sink.push_fa( "#rn{ }BCORE_DEFINE_OBJECT_INST_P( #<sc_t> )\n", indent, o.st_name.sc );
+//    m st_s* multiline_string = xoico_stamp_create_structured_multiline_string( self_def, indent )^;
+//    sink.push_fa( "#<sc_t>;\n", multiline_string.sc );
+
+    sink.push_fa( "#rn{ }BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( #<sc_t> )\n", indent, o.st_name.sc );
+    m st_s* multiline_nasc_string = xoico_stamp_create_structured_multiline_string_nasc( self_def, indent )^;
+    sink.push_fa( "#<sc_t>,\n", multiline_nasc_string.sc );
+    sink.push_fa( "#rn{ }BCORE_DEFINE_OBJECT_INST_P_NASC_END( #<sc_t> )\n", indent, o.st_name.sc );
 
     foreach( m $* func in o.funcs ) func.expand_definition( o, indent, sink );
 

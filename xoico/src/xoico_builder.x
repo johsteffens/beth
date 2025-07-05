@@ -65,6 +65,12 @@ stamp :target_s = aware :
     /// Optional cengine that is to be used in all bodies of this target
     aware xoico_cengine => cengine = xoico_che_s;
 
+    /** Beta level (normally 0)
+     *  New features in a testing phase can e activated at a beta-level > 0.
+     *  Any beta level > 0 is considered to be transient and should only exist while development work on xoico is performed.
+     */
+    sz_t beta_level = 0;
+
     private xoico_compiler_s* compiler;
 
     // Runtime data
@@ -295,6 +301,8 @@ func (:target_s) :.build
     o.target_index_ = -1;
 
     bcore_msg_fa( "XOICO: compiling #<sc_t>\n", o.full_path_.sc );
+    if( o.beta_level > 0 ) bcore_wrn_fa( "WARNING! XOICO: Builder runs at beta-level #<sz_t>. Turn level back to zero when beta testing is finished.\n", o.beta_level );
+    o.compiler.beta_level = o.beta_level;
 
     foreach( $* e in o.sources )
     {

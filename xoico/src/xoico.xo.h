@@ -1,4 +1,4 @@
-//  Last update: 2025-05-22T11:33:59Z
+//  Last update: 2025-07-05T14:52:56Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -123,7 +123,7 @@
   typedef er_t (*xoico_expand_forward)(const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   typedef er_t (*xoico_expand_indef_typedef)(const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   typedef er_t (*xoico_expand_spect_declaration)(const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
-  typedef er_t (*xoico_expand_spect_definition)(const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
+  typedef er_t (*xoico_expand_spect_definition)(const xoico* o, const xoico_host* host, sz_t indent, bl_t append_comma, bl_t append_nl, x_sink* sink ); \
   typedef er_t (*xoico_expand_declaration)(const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   typedef er_t (*xoico_expand_indef_declaration)(const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   typedef er_t (*xoico_expand_definition)(const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
@@ -194,11 +194,11 @@
   static inline er_t xoico_p_expand_spect_declaration( const xoico_spect_s* p, const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ){ assert( p->expand_spect_declaration ); return p->expand_spect_declaration( o, host, indent, sink );} \
   static inline bl_t xoico_p_defines_expand_spect_declaration( const xoico_spect_s* p ){ return  true;} \
   static inline er_t xoico_expand_spect_declaration_default( const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ){ return  0;} \
-  static inline er_t xoico_a_expand_spect_definition( const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ){ const xoico_spect_s* p = xoico_spect_s_get_aware( o ); assert( p->expand_spect_definition ); return p->expand_spect_definition( o, host, indent, sink );} \
+  static inline er_t xoico_a_expand_spect_definition( const xoico* o, const xoico_host* host, sz_t indent, bl_t append_comma, bl_t append_nl, x_sink* sink ){ const xoico_spect_s* p = xoico_spect_s_get_aware( o ); assert( p->expand_spect_definition ); return p->expand_spect_definition( o, host, indent, append_comma, append_nl, sink );} \
   static inline bl_t xoico_defines_expand_spect_definition( const xoico* o ){ return  true;} \
-  static inline er_t xoico_p_expand_spect_definition( const xoico_spect_s* p, const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ){ assert( p->expand_spect_definition ); return p->expand_spect_definition( o, host, indent, sink );} \
+  static inline er_t xoico_p_expand_spect_definition( const xoico_spect_s* p, const xoico* o, const xoico_host* host, sz_t indent, bl_t append_comma, bl_t append_nl, x_sink* sink ){ assert( p->expand_spect_definition ); return p->expand_spect_definition( o, host, indent, append_comma, append_nl, sink );} \
   static inline bl_t xoico_p_defines_expand_spect_definition( const xoico_spect_s* p ){ return  true;} \
-  static inline er_t xoico_expand_spect_definition_default( const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ){ return  0;} \
+  static inline er_t xoico_expand_spect_definition_default( const xoico* o, const xoico_host* host, sz_t indent, bl_t append_comma, bl_t append_nl, x_sink* sink ){ return  0;} \
   static inline er_t xoico_a_expand_declaration( const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ){ const xoico_spect_s* p = xoico_spect_s_get_aware( o ); assert( p->expand_declaration ); return p->expand_declaration( o, host, indent, sink );} \
   static inline bl_t xoico_defines_expand_declaration( const xoico* o ){ return  true;} \
   static inline er_t xoico_p_expand_declaration( const xoico_spect_s* p, const xoico* o, const xoico_host* host, sz_t indent, x_sink* sink ){ assert( p->expand_declaration ); return p->expand_declaration( o, host, indent, sink );} \
@@ -772,7 +772,7 @@
   er_t xoico_feature_s_expand_forward( const xoico_feature_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   er_t xoico_feature_s_expand_indef_typedef( const xoico_feature_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   er_t xoico_feature_s_expand_spect_declaration( const xoico_feature_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
-  er_t xoico_feature_s_expand_spect_definition( const xoico_feature_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
+  er_t xoico_feature_s_expand_spect_definition( const xoico_feature_s* o, const xoico_host* host, sz_t indent, bl_t append_comma, bl_t append_nl, x_sink* sink ); \
   er_t xoico_feature_s_expand_indef_declaration( const xoico_feature_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   er_t xoico_feature_s_expand_definition( const xoico_feature_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   er_t xoico_feature_s_expand_init1( const xoico_feature_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
@@ -1100,6 +1100,7 @@
   BCORE_FORWARD_OBJECT( xoico_stamp_arr_self_item_s ); \
   st_s* xoico_stamp_create_embedded_string( const st_s* s ); \
   st_s* xoico_stamp_create_structured_multiline_string( const sc_t s, sz_t indent ); \
+  st_s* xoico_stamp_create_structured_multiline_string_nasc( const sc_t s, sz_t indent ); \
   XOILA_DECLARE_SPECT( xoico_stamp ) \
   { \
       bcore_spect_header_s header; \
@@ -1272,6 +1273,7 @@
       bl_t always_expand; \
       bl_t dry_run; \
       sz_t verbosity; \
+      sz_t beta_level; \
   }; \
   static inline er_t xoico_compiler_s_register_external_type( xoico_compiler_s* o, tp_t type ); \
   static inline er_t xoico_compiler_s_register_external_identifier( xoico_compiler_s* o, tp_t name ); \
@@ -1971,6 +1973,7 @@
       st_s* signal_handler; \
       bl_t define_signal_handler; \
       xoico_cengine* cengine; \
+      sz_t beta_level; \
       xoico_compiler_s* compiler; \
       xoico_builder_target_s* parent_; \
       xoico_builder_target_s* root_; \
@@ -2071,5 +2074,5 @@ BETH_EXPAND_GROUP_xoico_builder
 BETH_EXPAND_GROUP_xoico_main
 
 #endif // __xoico_xo_H
-// XOICO_BODY_SIGNATURE 0xEDD3084A3B2B5E7C
-// XOICO_FILE_SIGNATURE 0x620D5FFA56734952
+// XOICO_BODY_SIGNATURE 0x66ADB2831E898770
+// XOICO_FILE_SIGNATURE 0x82FC60FA7AEDD5E3

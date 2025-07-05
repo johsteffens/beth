@@ -983,16 +983,24 @@ func (:s) er_t expand_spect_definition( c @* o, sz_t indent, m x_sink* sink )
     if( o.short_spect_name )
     {
         sink.push_fa( "#rn{ }BCORE_DEFINE_SPECT( #<sc_t>, #<sc_t> )\n", indent, compiler.nameof( o.trait_name ), o.st_name.sc );
+        sink.push_fa( "#rn{ }\"{\"\n", indent );
+        sink.push_fa( "#rn{ }    \"bcore_spect_header_s header;\"\n", indent );
+        foreach( m $* e in o ) e.expand_spect_definition( o, indent + 4, false, true, sink );
+        sink.push_fa( "#rn{ }\"}\";\n", indent );
     }
     else
     {
-        sink.push_fa( "#rn{ }XOILA_DEFINE_SPECT( #<sc_t>, #<sc_t> )\n", indent, compiler.nameof( o.trait_name ), o.st_name.sc );
+        sink.push_fa( "#rn{ }XOILA_DEFINE_SPECT_NASC_BEGIN( #<sc_t>, #<sc_t> )\n", indent, compiler.nameof( o.trait_name ), o.st_name.sc );
+
+        sink.push_fa( "#rn{ }\"{\",\n", indent );
+        sink.push_fa( "#rn{ }    \"bcore_spect_header_s header;\",\n", indent );
+        foreach( m $* e in o ) e.expand_spect_definition( o, indent + 4, true, true, sink );
+        sink.push_fa( "#rn{ }\"}\",\n", indent );
+
+        sink.push_fa( "#rn{ }XOILA_DEFINE_SPECT_NASC_END( #<sc_t>, #<sc_t> )\n", indent, compiler.nameof( o.trait_name ), o.st_name.sc );
+
     }
 
-    sink.push_fa( "#rn{ }\"{\"\n", indent );
-    sink.push_fa( "#rn{ }    \"bcore_spect_header_s header;\"\n", indent );
-    foreach( m $* e in o ) e.expand_spect_definition( o, indent + 4, sink );
-    sink.push_fa( "#rn{ }\"}\";\n", indent );
     return 0;
 };
 

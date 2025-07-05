@@ -446,7 +446,9 @@ func (:s) xoico.expand_spect_definition
     {
         sink.push_fa( " = #<sc_t>_#<sc_t>", compiler.nameof( host.obj_type() ), o.st_default_func_name.sc );
     }
-    sink.push_fa( ";\"\n" );
+    sink.push_fa( ";\"" );
+    if( append_comma ) sink.push_fa( "," );
+    if( append_nl    ) sink.push_fa( "\n" );
     return 0;
 };
 

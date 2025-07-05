@@ -688,14 +688,12 @@ FEATURES, BUGS ...
    flag waive_function_in_untraced_context is no longer necessary -> remove it
 
 - (fixed) include: moving include keyword from declaration to definition is not properly hashed
+- (done) (solved via nasc strings) spect  definition (macro XOILA_DEFINE_SPECT): restructure to avoid long string constants (see ISO C99 4095 bytes limit)
+- (done) (solved via nasc strings) object definition (macro BCORE_DEFINE_OBJECT_INST_P): restructure to avoid long string constants (see ISO C99 4095 bytes limit)
 
 TODO:
 
 - stamp: allow function-style readonly request of a member variable even if the function was not defined
-
-- introduce builtin ternary operator 'iff' as builtin function (might be solved by a transient function in x_inst)
-- make traitline of all groups end in x_inst
-- make 'fork' a transient function in x_inst rather than a builtin function
 
 - cast: introduce aware_cast( <typespec> ) as cast-variation on object indirection > 0 with runtime type-check
      - assumes that all objects involved are aware
@@ -708,8 +706,6 @@ TODO:
      - Simplifies handling of of sr_s
      - Potential for unintended destructive cases is low as long as automatic indirection adjustment is prevented.
 
-- target.cfg file: source: listing a *.x file without group specification automatically adds it to a common group
-  of name 'target-name' instead of creating a dedicated group.
 
 ===================================================================
 

@@ -134,6 +134,12 @@ stamp :s = aware :
     bl_t dry_run                         = false; // dry_run: performs target computation but does not update target files
     sz_t verbosity                       = 1;
 
+    /** Beta level (normally 0)
+     *  New features in a testing phase can e activated at a beta-level > 0.
+     *  Any beta level > 0 is considered to be transient and should only exist while development work on xoico is performed.
+     */
+    sz_t beta_level = 0;
+
     // functions
     func xoico.finalize;
     func xoico.expand_setup;
