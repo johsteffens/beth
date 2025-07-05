@@ -1866,6 +1866,16 @@ bcore_self_s* bcore_self_s_build_parse_sc( sc_t text, uz_t size_of, uz_t align_o
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bcore_self_s* bcore_self_s_build_parse_nasc( const sc_t* nasc, uz_t size_of, uz_t align_of )
+{
+    st_s* st = st_s_create_nasc( nasc );
+    bcore_self_s* ret = bcore_self_s_build_parse_sc( st->sc, size_of, align_of );
+    st_s_discard( st );
+    return ret;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 tp_t bcore_self_s_fold_tp( const bcore_self_s* o, tp_t tp )
 {
     tp = bcore_tp_fold_tp( tp, o->type );
@@ -2360,7 +2370,7 @@ tp_t bcore_flect_define_self_d( bcore_self_s* self )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static tp_t flect_define_self_rentrant_d( bcore_self_s* self )
+static tp_t flect_define_self_reentrant_d( bcore_self_s* self )
 {
     assert( self_map_s_g != NULL );
     bcore_self_s_check_integrity( self );
@@ -2395,6 +2405,16 @@ tp_t bcore_flect_define_parse_sc( sc_t sc )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+tp_t bcore_flect_define_parse_nasc( const sc_t* nasc )
+{
+    st_s* st = st_s_create_nasc( nasc );
+    tp_t ret = bcore_flect_define_parse_sc( st->sc );
+    st_s_discard( st );
+    return ret;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 tp_t bcore_flect_define_parse_fa( sc_t format, ... )
 {
     va_list args;
@@ -2425,7 +2445,7 @@ tp_t bcore_flect_type_self_d( bcore_self_s* self )
     }
     else
     {
-        flect_define_self_rentrant_d( self );
+        flect_define_self_reentrant_d( self );
         return self->type;
     }
 }
@@ -2449,6 +2469,16 @@ tp_t bcore_flect_type_parse_src( sr_s src )
 tp_t bcore_flect_type_parse_sc( sc_t sc )
 {
     return bcore_flect_type_parse_src( sr_asm( st_s_create_weak_sc( sc ) ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+tp_t bcore_flect_type_parse_nasc( const sc_t* nasc )
+{
+    st_s* st = st_s_create_nasc( nasc );
+    tp_t ret = bcore_flect_type_parse_sc( st->sc );
+    st_s_discard( st );
+    return ret;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2652,6 +2682,38 @@ void flect_test_create_struct()
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void flect_test_create_struct_nasc()
+{
+
+    const sc_t def[] =
+    {
+        "bcore_my_struct_nasc_s = bcore_inst",
+        "{",
+            "aware_t _;",
+
+            "sz_t slos;",   // values per xon
+            "sz_t xons;",   // xons  per row
+            "sz_t rows;",   // number of rows
+            "sz_t stride;", // stride of splicing
+
+            "sz_t [] i_arr;", // index data
+            "f3_t [] d_arr;", // value data
+        "}",
+        NULL /// don't forget the NULL !
+    };
+
+
+    bcore_flect_define_parse_nasc( def );
+
+    const bcore_self_s* self = bcore_flect_get_self( typeof( "bcore_my_struct_nasc_s" ) );
+
+//    bcore_txt_ml_a_to_stdout( self );
+
+    bcore_self_s_struct_to_sink( self, 0, BCORE_STDOUT );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 // signal
 
@@ -2709,6 +2771,7 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o )
         case TYPEOF_selftest:
         {
             flect_test_create_struct();
+            flect_test_create_struct_nasc();
             return flect_selftest();
         }
         break;

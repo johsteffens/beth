@@ -33,6 +33,7 @@ group bcore_st = x_inst
         func o copy_fa(  m @* o, sc_t format, ...  );
         func o copy_sc_n( m @* o, sc_t sc, uz_t n );
         func o copy_sc(   m @* o, sc_t sc );
+        func o copy_nasc( m @* o, c sc_t* nasc );
         func er_t copy_typed( m @* o, tp_t type, vc_t src ); // copy with type conversion
         func o copy_aware( m @* o,            vc_t src ); // copy with type conversion
 
@@ -64,6 +65,7 @@ group bcore_st = x_inst
         func o push_st_d(   m @* o, d st_s* src ); // discards src
         func o push_sc_n(   m @* o, sc_t sc, uz_t n );
         func o push_sc(     m @* o, sc_t sc );
+        func o push_nasc(   m @* o, c sc_t* nasc );
         func o push_typed(  m @* o, tp_t type, vc_t src ); // push with type conversion
         func o pushvf(      m @* o, sc_t format, va_list args );
         func o pushf(       m @* o, sc_t format, ... );

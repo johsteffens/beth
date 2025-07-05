@@ -1,4 +1,4 @@
-//  Last update: 2025-06-29T13:49:37Z
+//  Last update: 2025-07-05T15:00:19Z
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -73,7 +73,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0x1FD459940A2BB6E4ull
+// HKEYOF_bcore 0x39C450B85AA6A1C5ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -82,10 +82,11 @@
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_x_root_expandable
 
-XOILA_DEFINE_SPECT( bcore_inst, bcore_x_root_expandable )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( bcore_inst, bcore_x_root_expandable )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( bcore_inst, bcore_x_root_expandable )
 
 /**********************************************************************************************************************/
 // source: bcore_x_inst.h
@@ -95,10 +96,11 @@ XOILA_DEFINE_SPECT( bcore_inst, bcore_x_root_expandable )
 // group: x_inst
 #include "bcore_file.h"
 
-XOILA_DEFINE_SPECT( bcore_inst, x_inst )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( bcore_inst, x_inst )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( bcore_inst, x_inst )
 
 x_inst* x_inst_create( tp_t type )
 {
@@ -118,10 +120,11 @@ x_inst* x_inst_create( tp_t type )
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_compare
 
-XOILA_DEFINE_SPECT( bcore_inst, x_compare )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( bcore_inst, x_compare )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( bcore_inst, x_compare )
 
 /**********************************************************************************************************************/
 // source: bcore_x_source.h
@@ -131,12 +134,13 @@ XOILA_DEFINE_SPECT( bcore_inst, x_compare )
 // group: x_source
 #include "bcore_x_sink.h"
 
-BCORE_DEFINE_OBJECT_INST_P( x_source_point_s )
-"aware x_inst"
-"{"
-    "aware x_source -> source;"
-    "s3_t index;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_source_point_s )
+"aware x_inst",
+"{",
+    "aware x_source -> source;",
+    "s3_t index;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_source_point_s )
 
 void x_source_point_s_parse_msg_fv( const x_source_point_s* o, sc_t format, va_list args )
 {
@@ -213,10 +217,11 @@ void x_source_point_s_source_reference_to_sink( const x_source_point_s* o, bl_t 
     BLM_DOWN();
 }
 
-XOILA_DEFINE_SPECT( x_inst, x_source )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_inst, x_source )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_inst, x_source )
 
 x_source* x_source_check_create_from_file( sc_t path )
 {
@@ -249,10 +254,11 @@ st_s* x_source_get_d_dir( const x_source* o )
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_sink
 
-XOILA_DEFINE_SPECT( x_inst, x_sink )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_inst, x_sink )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_inst, x_sink )
 
 x_sink* x_sink_check_create_from_file( sc_t path )
 {
@@ -270,10 +276,11 @@ x_sink* x_sink_check_create_from_file( sc_t path )
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_array
 
-XOILA_DEFINE_SPECT( x_inst, x_array )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_inst, x_array )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_inst, x_array )
 
 x_inst* x_array_t_push_d( x_array* o, tp_t t, x_inst* v )
 {
@@ -595,12 +602,13 @@ sr_s x_array_t_c_get_sr( const x_array* o, tp_t t, sz_t index )
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_array_feature
 
-XOILA_DEFINE_SPECT( x_array, x_array_feature )
-"{"
-    "bcore_spect_header_s header;"
-    "feature aware x_array_feature : c_get_wrapped_array = x_array_feature_c_get_wrapped_array_default;"
-    "feature aware x_array_feature : m_get_wrapped_array = x_array_feature_m_get_wrapped_array_default;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_array, x_array_feature )
+"{",
+    "bcore_spect_header_s header;",
+    "feature aware x_array_feature : c_get_wrapped_array = x_array_feature_c_get_wrapped_array_default;",
+    "feature aware x_array_feature : m_get_wrapped_array = x_array_feature_m_get_wrapped_array_default;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_array, x_array_feature )
 
 /**********************************************************************************************************************/
 // source: bcore_x_group.h
@@ -609,10 +617,11 @@ XOILA_DEFINE_SPECT( x_array, x_array_feature )
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_group
 
-XOILA_DEFINE_SPECT( x_inst, x_group )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_inst, x_group )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_inst, x_group )
 
 /**********************************************************************************************************************/
 // source: bcore_x_stamp.h
@@ -621,11 +630,12 @@ XOILA_DEFINE_SPECT( x_inst, x_group )
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_stamp
 
-BCORE_DEFINE_OBJECT_INST_P( x_stamp_path_s )
-"aware x_inst"
-"{"
-    "tp_t [];"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_stamp_path_s )
+"aware x_inst",
+"{",
+    "tp_t [];",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_stamp_path_s )
 
 void x_stamp_path_s_push_index( x_stamp_path_s* o, sz_t index )
 {
@@ -793,16 +803,18 @@ sr_s x_stamp_path_s_set_sr_ret_in_t( const x_stamp_path_s* o, tp_t t, x_inst* in
     BLM_RETURNV(sr_s, sr0)
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_stamp_path_adl_s )
-"aware x_array"
-"{"
-    "x_stamp_path_s => [];"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_stamp_path_adl_s )
+"aware x_array",
+"{",
+    "x_stamp_path_s => [];",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_stamp_path_adl_s )
 
-XOILA_DEFINE_SPECT( x_inst, x_stamp )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_inst, x_stamp )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_inst, x_stamp )
 
 sr_s x_stamp_t_m_get_sr( x_stamp* o, tp_t t, tp_t name )
 {
@@ -941,12 +953,13 @@ void x_stamp_selftest( void )
 //----------------------------------------------------------------------------------------------------------------------
 // group: x
 
-BCORE_DEFINE_OBJECT_INST_P( x_lock_s )
-"aware x"
-"{"
-    "private x_mutex_s * mutex;"
-    "func bcore_inst_call:down_e;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_lock_s )
+"aware x",
+"{",
+    "private x_mutex_s * mutex;",
+    "func bcore_inst_call:down_e;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_lock_s )
 
 x_lock_s* x_lock_s_set( x_lock_s* o, x_mutex_s* mutex )
 {
@@ -967,12 +980,13 @@ x_lock_s* x_lock_s_release( x_lock_s* o )
     return o;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_unlock_s )
-"aware x"
-"{"
-    "private x_mutex_s * mutex;"
-    "func bcore_inst_call:down_e;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_unlock_s )
+"aware x",
+"{",
+    "private x_mutex_s * mutex;",
+    "func bcore_inst_call:down_e;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_unlock_s )
 
 x_unlock_s* x_unlock_s_set( x_unlock_s* o, x_mutex_s* mutex )
 {
@@ -993,52 +1007,58 @@ x_unlock_s* x_unlock_s_release( x_unlock_s* o )
     return o;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_mutex_s )
-"aware x"
-"{"
-    "private pthread_mutex_t _mutex;"
-    "func bcore_inst_call:init_x;"
-    "func bcore_inst_call:down_e;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_mutex_s )
+"aware x",
+"{",
+    "private pthread_mutex_t _mutex;",
+    "func bcore_inst_call:init_x;",
+    "func bcore_inst_call:down_e;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_mutex_s )
 
-BCORE_DEFINE_OBJECT_INST_P( x_condition_s )
-"aware x"
-"{"
-    "private pthread_cond_t _cond;"
-    "func bcore_inst_call:init_x;"
-    "func bcore_inst_call:down_e;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_condition_s )
+"aware x",
+"{",
+    "private pthread_cond_t _cond;",
+    "func bcore_inst_call:init_x;",
+    "func bcore_inst_call:down_e;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_condition_s )
 
-XOILA_DEFINE_SPECT( x_inst, x )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_inst, x )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_inst, x )
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_thread
 
-BCORE_DEFINE_OBJECT_INST_P( x_thread_s )
-"aware x_thread"
-"{"
-    "private pthread_t _thread;"
-    "bl_t _join;"
-    "func bcore_inst_call:down_e;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_thread_s )
+"aware x_thread",
+"{",
+    "private pthread_t _thread;",
+    "bl_t _join;",
+    "func bcore_inst_call:down_e;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_thread_s )
 
-XOILA_DEFINE_SPECT( x, x_thread )
-"{"
-    "bcore_spect_header_s header;"
-    "feature aware x_thread : m_thread_func;"
-    "feature aware x_thread : c_thread_func;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x, x_thread )
+"{",
+    "bcore_spect_header_s header;",
+    "feature aware x_thread : m_thread_func;",
+    "feature aware x_thread : c_thread_func;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x, x_thread )
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_thread_result
 
-XOILA_DEFINE_SPECT( x_thread, x_thread_result )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_thread, x_thread_result )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_thread, x_thread_result )
 
 /**********************************************************************************************************************/
 // source: bcore_file.h
@@ -1047,15 +1067,16 @@ XOILA_DEFINE_SPECT( x_thread, x_thread_result )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_file
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_file_path_s )
-"aware bcore_inst"
-"{"
-    "st_s name;"
-    "hidden st_s => root;"
-    "hidden st_s => full;"
-    "func bcore_via_call:source;"
-    "func bcore_fp:copy_typed;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_file_path_s )
+"aware bcore_inst",
+"{",
+    "st_s name;",
+    "hidden st_s => root;",
+    "hidden st_s => full;",
+    "func bcore_via_call:source;",
+    "func bcore_fp:copy_typed;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_file_path_s )
 
 bcore_file_path_s* bcore_file_path_s_set_sc( bcore_file_path_s* o, sc_t name )
 {
@@ -1085,10 +1106,11 @@ er_t bcore_file_path_s_copy_typed( bcore_file_path_s* o, tp_t type, vc_t src )
     return  0;
 }
 
-XOILA_DEFINE_SPECT( bcore_inst, bcore_file )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( bcore_inst, bcore_file )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( bcore_inst, bcore_file )
 
 /**********************************************************************************************************************/
 // source: bcore_spect_inst_call.h
@@ -1097,15 +1119,16 @@ XOILA_DEFINE_SPECT( bcore_inst, bcore_file )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_inst_call
 
-XOILA_DEFINE_SPECT( bcore_inst, bcore_inst_call )
-"{"
-    "bcore_spect_header_s header;"
-    "feature bcore_inst_call : init_x;"
-    "feature bcore_inst_call : down_e;"
-    "feature bcore_inst_call : copy_e;"
-    "feature bcore_inst_call : copy_x;"
-    "feature bcore_inst_call : discard_e;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( bcore_inst, bcore_inst_call )
+"{",
+    "bcore_spect_header_s header;",
+    "feature bcore_inst_call : init_x;",
+    "feature bcore_inst_call : down_e;",
+    "feature bcore_inst_call : copy_e;",
+    "feature bcore_inst_call : copy_x;",
+    "feature bcore_inst_call : discard_e;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( bcore_inst, bcore_inst_call )
 
 /**********************************************************************************************************************/
 // source: bcore_spect_via_call.h
@@ -1114,13 +1137,14 @@ XOILA_DEFINE_SPECT( bcore_inst, bcore_inst_call )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_via_call
 
-XOILA_DEFINE_SPECT( bcore_inst, bcore_via_call )
-"{"
-    "bcore_spect_header_s header;"
-    "feature aware bcore_via_call : source;"
-    "feature aware bcore_via_call : mutated;"
-    "feature aware bcore_via_call : shelve;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( bcore_inst, bcore_via_call )
+"{",
+    "bcore_spect_header_s header;",
+    "feature aware bcore_via_call : source;",
+    "feature aware bcore_via_call : mutated;",
+    "feature aware bcore_via_call : shelve;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( bcore_inst, bcore_via_call )
 
 /**********************************************************************************************************************/
 // source: bcore_main.h
@@ -1129,47 +1153,50 @@ XOILA_DEFINE_SPECT( bcore_inst, bcore_via_call )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_main
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_main_frame_s )
-"aware bcore_inst"
-"{"
-    "bl_t first_argument_is_path_to_object = true;"
-    "bl_t next_argument_is_path_to_script = true;"
-    "bl_t create_log_file = false;"
-    "st_s log_file_extension = \"log\";"
-    "st_s local_path = \"beth.config\";"
-    "bl_t local_path_descend = false;"
-    "st_s global_path;"
-    "tp_t object_default_type = 0;"
-    "sc_t object_interpreter = \"x_btcl\";"
-    "bcore_arr_st_s args;"
-    "hidden bcore_mutex_s mutex;"
-    "hidden aware bcore_source -> source;"
-    "hidden aware bcore_sink -> sink;"
-    "hidden aware bcore_sink -> log;"
-    "sr_s object_sr;"
-    "st_s object_path;"
-    "st_s script_path;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_main_frame_s )
+"aware bcore_inst",
+"{",
+    "bl_t first_argument_is_path_to_object = true;",
+    "bl_t next_argument_is_path_to_script = true;",
+    "bl_t create_log_file = false;",
+    "st_s log_file_extension = \"log\";",
+    "st_s local_path = \"beth.config\";",
+    "bl_t local_path_descend = false;",
+    "st_s global_path;",
+    "tp_t object_default_type = 0;",
+    "sc_t object_interpreter = \"x_btcl\";",
+    "bcore_arr_st_s args;",
+    "hidden bcore_mutex_s mutex;",
+    "hidden aware bcore_source -> source;",
+    "hidden aware bcore_sink -> sink;",
+    "hidden aware bcore_sink -> log;",
+    "sr_s object_sr;",
+    "st_s object_path;",
+    "st_s script_path;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_main_frame_s )
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_main_arr_s )
-"aware x_array"
-"{"
-    "aware bcore_main => [];"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_main_arr_s )
+"aware x_array",
+"{",
+    "aware bcore_main => [];",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_main_arr_s )
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_main_set_s )
-"aware bcore_main"
-"{"
-    "bcore_main_arr_s arr;"
-    "private obliv bcore_main* current_object;"
-    "bcore_mutex_s mutex_current_object;"
-    "func x_array_feature:c_get_wrapped_array;"
-    "func x_array_feature:m_get_wrapped_array;"
-    "func ^:main;"
-    "func ^:on_termination;"
-    "func ^:on_interrupt;"
-    "func ^:on_suspend;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_main_set_s )
+"aware bcore_main",
+"{",
+    "bcore_main_arr_s arr;",
+    "private obliv bcore_main* current_object;",
+    "bcore_mutex_s mutex_current_object;",
+    "func x_array_feature:c_get_wrapped_array;",
+    "func x_array_feature:m_get_wrapped_array;",
+    "func ^:main;",
+    "func ^:on_termination;",
+    "func ^:on_interrupt;",
+    "func ^:on_suspend;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_main_set_s )
 
 er_t bcore_main_set_s_main( bcore_main_set_s* o, bcore_main_frame_s* frame )
 {
@@ -1212,14 +1239,15 @@ bl_t bcore_main_set_s_on_suspend( bcore_main_set_s* o, const bcore_main_frame_s*
     BLM_RETURNV(bl_t, o->current_object ? bcore_main_a_on_suspend(o->current_object,frame ) : false)
 }
 
-XOILA_DEFINE_SPECT( bcore_inst, bcore_main )
-"{"
-    "bcore_spect_header_s header;"
-    "feature aware bcore_main : main;"
-    "feature aware bcore_main : on_termination = bcore_main_on_termination_default;"
-    "feature aware bcore_main : on_interrupt = bcore_main_on_interrupt_default;"
-    "feature aware bcore_main : on_suspend = bcore_main_on_suspend_default;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( bcore_inst, bcore_main )
+"{",
+    "bcore_spect_header_s header;",
+    "feature aware bcore_main : main;",
+    "feature aware bcore_main : on_termination = bcore_main_on_termination_default;",
+    "feature aware bcore_main : on_interrupt = bcore_main_on_interrupt_default;",
+    "feature aware bcore_main : on_suspend = bcore_main_on_suspend_default;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( bcore_inst, bcore_main )
 
 /**********************************************************************************************************************/
 // source: bcore_hmap_name.h
@@ -1228,16 +1256,18 @@ XOILA_DEFINE_SPECT( bcore_inst, bcore_main )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_hmap_name
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_hmap_name_s )
-"aware bcore_inst"
-"{"
-    "bcore_hmap_tp_sr_s map;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_hmap_name_s )
+"aware bcore_inst",
+"{",
+    "bcore_hmap_tp_sr_s map;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_hmap_name_s )
 
-XOILA_DEFINE_SPECT( bcore_inst, bcore_hmap_name )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( bcore_inst, bcore_hmap_name )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( bcore_inst, bcore_hmap_name )
 
 /**********************************************************************************************************************/
 // source: bcore_hmap_tp_st.h
@@ -1246,16 +1276,18 @@ XOILA_DEFINE_SPECT( bcore_inst, bcore_hmap_name )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_hmap_tp_st
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_hmap_tp_st_s )
-"aware bcore_inst"
-"{"
-    "bcore_hmap_tpaw_s map;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_hmap_tp_st_s )
+"aware bcore_inst",
+"{",
+    "bcore_hmap_tpaw_s map;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_hmap_tp_st_s )
 
-XOILA_DEFINE_SPECT( x_inst, bcore_hmap_tp_st )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_inst, bcore_hmap_tp_st )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_inst, bcore_hmap_tp_st )
 
 /**********************************************************************************************************************/
 // source: bcore_cday.h
@@ -1264,25 +1296,28 @@ XOILA_DEFINE_SPECT( x_inst, bcore_hmap_tp_st )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_cday
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_cday_ymd_s )
-"aware bcore_cday"
-"{"
-    "s2_t y;"
-    "s2_t m;"
-    "s2_t d;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_cday_ymd_s )
+"aware bcore_cday",
+"{",
+    "s2_t y;",
+    "s2_t m;",
+    "s2_t d;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_cday_ymd_s )
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_cday_utc_s )
-"aware bcore_cday"
-"{"
-    "s2_t cday;"
-    "s2_t ms;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_cday_utc_s )
+"aware bcore_cday",
+"{",
+    "s2_t cday;",
+    "s2_t ms;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_cday_utc_s )
 
-XOILA_DEFINE_SPECT( bcore_inst, bcore_cday )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( bcore_inst, bcore_cday )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( bcore_inst, bcore_cday )
 
 /**********************************************************************************************************************/
 // source: bcore_error_manager.h
@@ -1292,26 +1327,29 @@ XOILA_DEFINE_SPECT( bcore_inst, bcore_cday )
 // group: bcore_error
 #include "bcore_x_array.h"
 
-XOILA_DEFINE_SPECT( bcore_inst, bcore_error )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( bcore_inst, bcore_error )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( bcore_inst, bcore_error )
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_error_manager
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_error_manager_error_s )
-"aware bcore_error_manager"
-"{"
-    "er_t id;"
-    "st_s msg;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_error_manager_error_s )
+"aware bcore_error_manager",
+"{",
+    "er_t id;",
+    "st_s msg;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_error_manager_error_s )
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_error_manager_error_adl_s )
-"aware x_array"
-"{"
-    "bcore_error_manager_error_s => [];"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_error_manager_error_adl_s )
+"aware x_array",
+"{",
+    "bcore_error_manager_error_s => [];",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_error_manager_error_adl_s )
 
 bcore_error_manager_error_adl_s* bcore_error_manager_error_adl_s_set_size( bcore_error_manager_error_adl_s* o, sz_t size )
 {
@@ -1334,17 +1372,19 @@ bcore_error_manager_error_s* bcore_error_manager_error_adl_s_push_d( bcore_error
     return  ((bcore_error_manager_error_s*)(x_array_push_d(((x_array*)( o)),((x_inst*)(v )))));
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_error_manager_context_s )
-"aware bcore_error_manager"
-"{"
-    "bcore_error_manager_error_adl_s adl;"
-    "bcore_mutex_s mutex;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_error_manager_context_s )
+"aware bcore_error_manager",
+"{",
+    "bcore_error_manager_error_adl_s adl;",
+    "bcore_mutex_s mutex;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_error_manager_context_s )
 
-XOILA_DEFINE_SPECT( bcore_error, bcore_error_manager )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( bcore_error, bcore_error_manager )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( bcore_error, bcore_error_manager )
 
 /**********************************************************************************************************************/
 // source: bcore_prsg.h
@@ -1353,26 +1393,27 @@ XOILA_DEFINE_SPECT( bcore_error, bcore_error_manager )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_prsg
 
-XOILA_DEFINE_SPECT( bcore_inst, bcore_prsg )
-"{"
-    "bcore_spect_header_s header;"
-    "feature strict aware bcore_prsg : bits;"
-    "feature strict aware bcore_prsg : max_u3;"
-    "feature strict aware bcore_prsg : min_u3;"
-    "feature strict aware bcore_prsg : state_u3;"
-    "feature strict aware bcore_prsg : state_bits_u3;"
-    "feature strict aware bcore_prsg : state_f3;"
-    "feature aware bcore_prsg : state_bl = bcore_prsg_state_bl_default;"
-    "feature strict aware bcore_prsg : gen;"
-    "feature strict aware bcore_prsg : gen_bits_u3;"
-    "feature strict aware bcore_prsg : gen_u3;"
-    "feature strict aware bcore_prsg : gen_f3;"
-    "feature aware bcore_prsg : gen_bl = bcore_prsg_gen_bl_default;"
-    "feature strict aware bcore_prsg : set_state_u3;"
-    "feature aware bcore_prsg : set_state_f3 = bcore_prsg_set_state_f3_default;"
-    "feature aware bcore_prsg : set_state_mix = bcore_prsg_set_state_mix_default;"
-    "feature aware bcore_prsg : reseed = bcore_prsg_reseed_default;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( bcore_inst, bcore_prsg )
+"{",
+    "bcore_spect_header_s header;",
+    "feature strict aware bcore_prsg : bits;",
+    "feature strict aware bcore_prsg : max_u3;",
+    "feature strict aware bcore_prsg : min_u3;",
+    "feature strict aware bcore_prsg : state_u3;",
+    "feature strict aware bcore_prsg : state_bits_u3;",
+    "feature strict aware bcore_prsg : state_f3;",
+    "feature aware bcore_prsg : state_bl = bcore_prsg_state_bl_default;",
+    "feature strict aware bcore_prsg : gen;",
+    "feature strict aware bcore_prsg : gen_bits_u3;",
+    "feature strict aware bcore_prsg : gen_u3;",
+    "feature strict aware bcore_prsg : gen_f3;",
+    "feature aware bcore_prsg : gen_bl = bcore_prsg_gen_bl_default;",
+    "feature strict aware bcore_prsg : set_state_u3;",
+    "feature aware bcore_prsg : set_state_f3 = bcore_prsg_set_state_f3_default;",
+    "feature aware bcore_prsg : set_state_mix = bcore_prsg_set_state_mix_default;",
+    "feature aware bcore_prsg : reseed = bcore_prsg_reseed_default;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( bcore_inst, bcore_prsg )
 
 bcore_prsg* bcore_prsg_set_state_f3_default( bcore_prsg* o, f3_t seed )
 {
@@ -1389,22 +1430,23 @@ bcore_prsg* bcore_prsg_set_state_f3_default( bcore_prsg* o, f3_t seed )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_prsg_lcg
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_00_s )
-"aware bcore_prsg"
-"{"
-    "u2_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_prsg_lcg_u2_00_s )
+"aware bcore_prsg",
+"{",
+    "u2_t state = 16437;",
+    "func ^:gen_u3;",
+    "func ^:state_bits_u3;",
+    "func ^:gen_bits_u3;",
+    "func ^:state_f3;",
+    "func ^:gen_f3;",
+    "func ^:bits;",
+    "func ^:max_u3;",
+    "func ^:min_u3;",
+    "func ^:state_u3;",
+    "func ^:set_state_u3;",
+    "func ^:gen;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_prsg_lcg_u2_00_s )
 
 u3_t bcore_prsg_lcg_u2_00_s_state_bits_u3( const bcore_prsg_lcg_u2_00_s* o, sz_t bits )
 {
@@ -1422,22 +1464,23 @@ u3_t bcore_prsg_lcg_u2_00_s_state_bits_u3( const bcore_prsg_lcg_u2_00_s* o, sz_t
     }
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_01_s )
-"aware bcore_prsg"
-"{"
-    "u2_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_prsg_lcg_u2_01_s )
+"aware bcore_prsg",
+"{",
+    "u2_t state = 16437;",
+    "func ^:gen_u3;",
+    "func ^:state_bits_u3;",
+    "func ^:gen_bits_u3;",
+    "func ^:state_f3;",
+    "func ^:gen_f3;",
+    "func ^:bits;",
+    "func ^:max_u3;",
+    "func ^:min_u3;",
+    "func ^:state_u3;",
+    "func ^:set_state_u3;",
+    "func ^:gen;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_prsg_lcg_u2_01_s )
 
 u3_t bcore_prsg_lcg_u2_01_s_state_bits_u3( const bcore_prsg_lcg_u2_01_s* o, sz_t bits )
 {
@@ -1455,22 +1498,23 @@ u3_t bcore_prsg_lcg_u2_01_s_state_bits_u3( const bcore_prsg_lcg_u2_01_s* o, sz_t
     }
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_02_s )
-"aware bcore_prsg"
-"{"
-    "u2_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_prsg_lcg_u2_02_s )
+"aware bcore_prsg",
+"{",
+    "u2_t state = 16437;",
+    "func ^:gen_u3;",
+    "func ^:state_bits_u3;",
+    "func ^:gen_bits_u3;",
+    "func ^:state_f3;",
+    "func ^:gen_f3;",
+    "func ^:bits;",
+    "func ^:max_u3;",
+    "func ^:min_u3;",
+    "func ^:state_u3;",
+    "func ^:set_state_u3;",
+    "func ^:gen;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_prsg_lcg_u2_02_s )
 
 u3_t bcore_prsg_lcg_u2_02_s_state_bits_u3( const bcore_prsg_lcg_u2_02_s* o, sz_t bits )
 {
@@ -1488,22 +1532,23 @@ u3_t bcore_prsg_lcg_u2_02_s_state_bits_u3( const bcore_prsg_lcg_u2_02_s* o, sz_t
     }
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_03_s )
-"aware bcore_prsg"
-"{"
-    "u2_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_prsg_lcg_u2_03_s )
+"aware bcore_prsg",
+"{",
+    "u2_t state = 16437;",
+    "func ^:gen_u3;",
+    "func ^:state_bits_u3;",
+    "func ^:gen_bits_u3;",
+    "func ^:state_f3;",
+    "func ^:gen_f3;",
+    "func ^:bits;",
+    "func ^:max_u3;",
+    "func ^:min_u3;",
+    "func ^:state_u3;",
+    "func ^:set_state_u3;",
+    "func ^:gen;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_prsg_lcg_u2_03_s )
 
 u3_t bcore_prsg_lcg_u2_03_s_state_bits_u3( const bcore_prsg_lcg_u2_03_s* o, sz_t bits )
 {
@@ -1521,22 +1566,23 @@ u3_t bcore_prsg_lcg_u2_03_s_state_bits_u3( const bcore_prsg_lcg_u2_03_s* o, sz_t
     }
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_04_s )
-"aware bcore_prsg"
-"{"
-    "u2_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_prsg_lcg_u2_04_s )
+"aware bcore_prsg",
+"{",
+    "u2_t state = 16437;",
+    "func ^:gen_u3;",
+    "func ^:state_bits_u3;",
+    "func ^:gen_bits_u3;",
+    "func ^:state_f3;",
+    "func ^:gen_f3;",
+    "func ^:bits;",
+    "func ^:max_u3;",
+    "func ^:min_u3;",
+    "func ^:state_u3;",
+    "func ^:set_state_u3;",
+    "func ^:gen;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_prsg_lcg_u2_04_s )
 
 u3_t bcore_prsg_lcg_u2_04_s_state_bits_u3( const bcore_prsg_lcg_u2_04_s* o, sz_t bits )
 {
@@ -1554,22 +1600,23 @@ u3_t bcore_prsg_lcg_u2_04_s_state_bits_u3( const bcore_prsg_lcg_u2_04_s* o, sz_t
     }
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u2_05_s )
-"aware bcore_prsg"
-"{"
-    "u2_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_prsg_lcg_u2_05_s )
+"aware bcore_prsg",
+"{",
+    "u2_t state = 16437;",
+    "func ^:gen_u3;",
+    "func ^:state_bits_u3;",
+    "func ^:gen_bits_u3;",
+    "func ^:state_f3;",
+    "func ^:gen_f3;",
+    "func ^:bits;",
+    "func ^:max_u3;",
+    "func ^:min_u3;",
+    "func ^:state_u3;",
+    "func ^:set_state_u3;",
+    "func ^:gen;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_prsg_lcg_u2_05_s )
 
 u3_t bcore_prsg_lcg_u2_05_s_state_bits_u3( const bcore_prsg_lcg_u2_05_s* o, sz_t bits )
 {
@@ -1587,22 +1634,23 @@ u3_t bcore_prsg_lcg_u2_05_s_state_bits_u3( const bcore_prsg_lcg_u2_05_s* o, sz_t
     }
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_00_s )
-"aware bcore_prsg"
-"{"
-    "u3_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_prsg_lcg_u3_00_s )
+"aware bcore_prsg",
+"{",
+    "u3_t state = 16437;",
+    "func ^:gen_u3;",
+    "func ^:state_bits_u3;",
+    "func ^:gen_bits_u3;",
+    "func ^:state_f3;",
+    "func ^:gen_f3;",
+    "func ^:bits;",
+    "func ^:max_u3;",
+    "func ^:min_u3;",
+    "func ^:state_u3;",
+    "func ^:set_state_u3;",
+    "func ^:gen;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_prsg_lcg_u3_00_s )
 
 u3_t bcore_prsg_lcg_u3_00_s_state_bits_u3( const bcore_prsg_lcg_u3_00_s* o, sz_t bits )
 {
@@ -1620,22 +1668,23 @@ u3_t bcore_prsg_lcg_u3_00_s_state_bits_u3( const bcore_prsg_lcg_u3_00_s* o, sz_t
     }
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_01_s )
-"aware bcore_prsg"
-"{"
-    "u3_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_prsg_lcg_u3_01_s )
+"aware bcore_prsg",
+"{",
+    "u3_t state = 16437;",
+    "func ^:gen_u3;",
+    "func ^:state_bits_u3;",
+    "func ^:gen_bits_u3;",
+    "func ^:state_f3;",
+    "func ^:gen_f3;",
+    "func ^:bits;",
+    "func ^:max_u3;",
+    "func ^:min_u3;",
+    "func ^:state_u3;",
+    "func ^:set_state_u3;",
+    "func ^:gen;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_prsg_lcg_u3_01_s )
 
 u3_t bcore_prsg_lcg_u3_01_s_state_bits_u3( const bcore_prsg_lcg_u3_01_s* o, sz_t bits )
 {
@@ -1653,22 +1702,23 @@ u3_t bcore_prsg_lcg_u3_01_s_state_bits_u3( const bcore_prsg_lcg_u3_01_s* o, sz_t
     }
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_02_s )
-"aware bcore_prsg"
-"{"
-    "u3_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_prsg_lcg_u3_02_s )
+"aware bcore_prsg",
+"{",
+    "u3_t state = 16437;",
+    "func ^:gen_u3;",
+    "func ^:state_bits_u3;",
+    "func ^:gen_bits_u3;",
+    "func ^:state_f3;",
+    "func ^:gen_f3;",
+    "func ^:bits;",
+    "func ^:max_u3;",
+    "func ^:min_u3;",
+    "func ^:state_u3;",
+    "func ^:set_state_u3;",
+    "func ^:gen;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_prsg_lcg_u3_02_s )
 
 u3_t bcore_prsg_lcg_u3_02_s_state_bits_u3( const bcore_prsg_lcg_u3_02_s* o, sz_t bits )
 {
@@ -1686,22 +1736,23 @@ u3_t bcore_prsg_lcg_u3_02_s_state_bits_u3( const bcore_prsg_lcg_u3_02_s* o, sz_t
     }
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_lcg_u3_03_s )
-"aware bcore_prsg"
-"{"
-    "u3_t state = 16437;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_prsg_lcg_u3_03_s )
+"aware bcore_prsg",
+"{",
+    "u3_t state = 16437;",
+    "func ^:gen_u3;",
+    "func ^:state_bits_u3;",
+    "func ^:gen_bits_u3;",
+    "func ^:state_f3;",
+    "func ^:gen_f3;",
+    "func ^:bits;",
+    "func ^:max_u3;",
+    "func ^:min_u3;",
+    "func ^:state_u3;",
+    "func ^:set_state_u3;",
+    "func ^:gen;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_prsg_lcg_u3_03_s )
 
 u3_t bcore_prsg_lcg_u3_03_s_state_bits_u3( const bcore_prsg_lcg_u3_03_s* o, sz_t bits )
 {
@@ -1719,30 +1770,32 @@ u3_t bcore_prsg_lcg_u3_03_s_state_bits_u3( const bcore_prsg_lcg_u3_03_s* o, sz_t
     }
 }
 
-XOILA_DEFINE_SPECT( bcore_prsg, bcore_prsg_lcg )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( bcore_prsg, bcore_prsg_lcg )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( bcore_prsg, bcore_prsg_lcg )
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_prsg_xsg
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_00_s )
-"aware bcore_prsg"
-"{"
-    "u2_t state = 16432;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_prsg_xsg_u2_00_s )
+"aware bcore_prsg",
+"{",
+    "u2_t state = 16432;",
+    "func ^:gen_u3;",
+    "func ^:state_bits_u3;",
+    "func ^:gen_bits_u3;",
+    "func ^:state_f3;",
+    "func ^:gen_f3;",
+    "func ^:bits;",
+    "func ^:max_u3;",
+    "func ^:min_u3;",
+    "func ^:state_u3;",
+    "func ^:set_state_u3;",
+    "func ^:gen;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_prsg_xsg_u2_00_s )
 
 u3_t bcore_prsg_xsg_u2_00_s_state_bits_u3( const bcore_prsg_xsg_u2_00_s* o, sz_t bits )
 {
@@ -1760,22 +1813,23 @@ u3_t bcore_prsg_xsg_u2_00_s_state_bits_u3( const bcore_prsg_xsg_u2_00_s* o, sz_t
     }
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_01_s )
-"aware bcore_prsg"
-"{"
-    "u2_t state = 16432;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_prsg_xsg_u2_01_s )
+"aware bcore_prsg",
+"{",
+    "u2_t state = 16432;",
+    "func ^:gen_u3;",
+    "func ^:state_bits_u3;",
+    "func ^:gen_bits_u3;",
+    "func ^:state_f3;",
+    "func ^:gen_f3;",
+    "func ^:bits;",
+    "func ^:max_u3;",
+    "func ^:min_u3;",
+    "func ^:state_u3;",
+    "func ^:set_state_u3;",
+    "func ^:gen;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_prsg_xsg_u2_01_s )
 
 u3_t bcore_prsg_xsg_u2_01_s_state_bits_u3( const bcore_prsg_xsg_u2_01_s* o, sz_t bits )
 {
@@ -1793,22 +1847,23 @@ u3_t bcore_prsg_xsg_u2_01_s_state_bits_u3( const bcore_prsg_xsg_u2_01_s* o, sz_t
     }
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_02_s )
-"aware bcore_prsg"
-"{"
-    "u2_t state = 16432;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_prsg_xsg_u2_02_s )
+"aware bcore_prsg",
+"{",
+    "u2_t state = 16432;",
+    "func ^:gen_u3;",
+    "func ^:state_bits_u3;",
+    "func ^:gen_bits_u3;",
+    "func ^:state_f3;",
+    "func ^:gen_f3;",
+    "func ^:bits;",
+    "func ^:max_u3;",
+    "func ^:min_u3;",
+    "func ^:state_u3;",
+    "func ^:set_state_u3;",
+    "func ^:gen;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_prsg_xsg_u2_02_s )
 
 u3_t bcore_prsg_xsg_u2_02_s_state_bits_u3( const bcore_prsg_xsg_u2_02_s* o, sz_t bits )
 {
@@ -1826,22 +1881,23 @@ u3_t bcore_prsg_xsg_u2_02_s_state_bits_u3( const bcore_prsg_xsg_u2_02_s* o, sz_t
     }
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_prsg_xsg_u2_03_s )
-"aware bcore_prsg"
-"{"
-    "u2_t state = 16432;"
-    "func ^:gen_u3;"
-    "func ^:state_bits_u3;"
-    "func ^:gen_bits_u3;"
-    "func ^:state_f3;"
-    "func ^:gen_f3;"
-    "func ^:bits;"
-    "func ^:max_u3;"
-    "func ^:min_u3;"
-    "func ^:state_u3;"
-    "func ^:set_state_u3;"
-    "func ^:gen;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_prsg_xsg_u2_03_s )
+"aware bcore_prsg",
+"{",
+    "u2_t state = 16432;",
+    "func ^:gen_u3;",
+    "func ^:state_bits_u3;",
+    "func ^:gen_bits_u3;",
+    "func ^:state_f3;",
+    "func ^:gen_f3;",
+    "func ^:bits;",
+    "func ^:max_u3;",
+    "func ^:min_u3;",
+    "func ^:state_u3;",
+    "func ^:set_state_u3;",
+    "func ^:gen;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_prsg_xsg_u2_03_s )
 
 u3_t bcore_prsg_xsg_u2_03_s_state_bits_u3( const bcore_prsg_xsg_u2_03_s* o, sz_t bits )
 {
@@ -1859,10 +1915,11 @@ u3_t bcore_prsg_xsg_u2_03_s_state_bits_u3( const bcore_prsg_xsg_u2_03_s* o, sz_t
     }
 }
 
-XOILA_DEFINE_SPECT( bcore_prsg, bcore_prsg_xsg )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( bcore_prsg, bcore_prsg_xsg )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( bcore_prsg, bcore_prsg_xsg )
 
 /**********************************************************************************************************************/
 // source: bcore_shell.h
@@ -1871,13 +1928,14 @@ XOILA_DEFINE_SPECT( bcore_prsg, bcore_prsg_xsg )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_shell
 
-XOILA_DEFINE_SPECT( x_inst, bcore_shell )
-"{"
-    "bcore_spect_header_s header;"
-    "feature aware bcore_shell : loop_callback = bcore_shell_loop_callback_default;"
-    "feature aware bcore_shell : op_group = bcore_shell_op_group_default;"
-    "feature aware bcore_shell : push_op_groups = bcore_shell_push_op_groups_default;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_inst, bcore_shell )
+"{",
+    "bcore_spect_header_s header;",
+    "feature aware bcore_shell : loop_callback = bcore_shell_loop_callback_default;",
+    "feature aware bcore_shell : op_group = bcore_shell_op_group_default;",
+    "feature aware bcore_shell : push_op_groups = bcore_shell_push_op_groups_default;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_inst, bcore_shell )
 
 void bcore_shell_push_op_groups_default( const bcore_shell* o, bcore_arr_tp_s* list )
 {
@@ -2021,15 +2079,16 @@ er_t bcore_shell_loop( bcore_shell* o, const bcore_main_frame_s* frame, bcore_sh
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_shell_op
 
-XOILA_DEFINE_SPECT( bcore_shell, bcore_shell_op )
-"{"
-    "bcore_spect_header_s header;"
-    "feature aware bcore_shell_op : key;"
-    "feature aware bcore_shell_op : get_key = bcore_shell_op_get_key_default;"
-    "feature aware bcore_shell_op : info;"
-    "feature aware bcore_shell_op : get_info = bcore_shell_op_get_info_default;"
-    "feature aware bcore_shell_op : run;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( bcore_shell, bcore_shell_op )
+"{",
+    "bcore_spect_header_s header;",
+    "feature aware bcore_shell_op : key;",
+    "feature aware bcore_shell_op : get_key = bcore_shell_op_get_key_default;",
+    "feature aware bcore_shell_op : info;",
+    "feature aware bcore_shell_op : get_info = bcore_shell_op_get_info_default;",
+    "feature aware bcore_shell_op : run;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( bcore_shell, bcore_shell_op )
 
 bl_t bcore_shell_op_key_match( const bcore_shell_op* o, sc_t key )
 {
@@ -2209,43 +2268,47 @@ void bcore_shell_op_arg_signature_to_sink( bcore_shell_op* o, bcore_sink* sink )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_shell_control
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_shell_control_s )
-"aware bcore_shell_control"
-"{"
-    "hidden bcore_shell_control_s* parent;"
-    "aware x_sink -> sink;"
-    "aware x_source -> source;"
-    "bcore_hmap_name_s hmap_name;"
-    "x_hmap_tp_st_s hmap_alias;"
-    "bl_t exit_loop;"
-    "st_s path;"
-    "st_s prompt;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_shell_control_s )
+"aware bcore_shell_control",
+"{",
+    "hidden bcore_shell_control_s* parent;",
+    "aware x_sink -> sink;",
+    "aware x_source -> source;",
+    "bcore_hmap_name_s hmap_name;",
+    "x_hmap_tp_st_s hmap_alias;",
+    "bl_t exit_loop;",
+    "st_s path;",
+    "st_s prompt;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_shell_control_s )
 
-XOILA_DEFINE_SPECT( bcore_shell, bcore_shell_control )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( bcore_shell, bcore_shell_control )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( bcore_shell, bcore_shell_control )
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_shell_op_default
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_shell_op_default_help_s )
-"aware bcore_shell_op_default"
-"{"
-    "func bcore_shell_op:key;"
-    "func bcore_shell_op:info;"
-    "func bcore_shell_op:run;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_shell_op_default_help_s )
+"aware bcore_shell_op_default",
+"{",
+    "func bcore_shell_op:key;",
+    "func bcore_shell_op:info;",
+    "func bcore_shell_op:run;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_shell_op_default_help_s )
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_shell_op_default_ls_s )
-"aware bcore_shell_op_default"
-"{"
-    "st_s path;"
-    "func bcore_shell_op:get_key;"
-    "func bcore_shell_op:get_info;"
-    "func bcore_shell_op:run;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_shell_op_default_ls_s )
+"aware bcore_shell_op_default",
+"{",
+    "st_s path;",
+    "func bcore_shell_op:get_key;",
+    "func bcore_shell_op:get_info;",
+    "func bcore_shell_op:run;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_shell_op_default_ls_s )
 
 void bcore_shell_op_default_ls_s_run( bcore_shell_op_default_ls_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, x_source* source, bcore_sink* sink, bcore_shell_control_s* control )
 {
@@ -2297,14 +2360,15 @@ void bcore_shell_op_default_ls_s_run( bcore_shell_op_default_ls_s* o, bcore_shel
     BLM_DOWN();
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_shell_op_default_enter_s )
-"aware bcore_shell_op_default"
-"{"
-    "st_s path;"
-    "func bcore_shell_op:key;"
-    "func bcore_shell_op:info;"
-    "func bcore_shell_op:run;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_shell_op_default_enter_s )
+"aware bcore_shell_op_default",
+"{",
+    "st_s path;",
+    "func bcore_shell_op:key;",
+    "func bcore_shell_op:info;",
+    "func bcore_shell_op:run;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_shell_op_default_enter_s )
 
 void bcore_shell_op_default_enter_s_run( bcore_shell_op_default_enter_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, x_source* source, bcore_sink* sink, bcore_shell_control_s* control )
 {
@@ -2343,23 +2407,25 @@ void bcore_shell_op_default_enter_s_run( bcore_shell_op_default_enter_s* o, bcor
     BLM_DOWN();
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_shell_op_default_exit_s )
-"aware bcore_shell_op_default"
-"{"
-    "bl_t a = false;"
-    "func bcore_shell_op:key;"
-    "func bcore_shell_op:info;"
-    "func bcore_shell_op:run;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_shell_op_default_exit_s )
+"aware bcore_shell_op_default",
+"{",
+    "bl_t a = false;",
+    "func bcore_shell_op:key;",
+    "func bcore_shell_op:info;",
+    "func bcore_shell_op:run;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_shell_op_default_exit_s )
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_shell_op_default_get_s )
-"aware bcore_shell_op_default"
-"{"
-    "st_s path;"
-    "func bcore_shell_op:key;"
-    "func bcore_shell_op:info;"
-    "func bcore_shell_op:run;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_shell_op_default_get_s )
+"aware bcore_shell_op_default",
+"{",
+    "st_s path;",
+    "func bcore_shell_op:key;",
+    "func bcore_shell_op:info;",
+    "func bcore_shell_op:run;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_shell_op_default_get_s )
 
 void bcore_shell_op_default_get_s_run( bcore_shell_op_default_get_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, x_source* source, bcore_sink* sink, bcore_shell_control_s* control )
 {
@@ -2377,15 +2443,16 @@ void bcore_shell_op_default_get_s_run( bcore_shell_op_default_get_s* o, bcore_sh
     BLM_DOWN();
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_shell_op_default_set_s )
-"aware bcore_shell_op_default"
-"{"
-    "st_s path;"
-    "st_s source;"
-    "func bcore_shell_op:key;"
-    "func bcore_shell_op:info;"
-    "func bcore_shell_op:run;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_shell_op_default_set_s )
+"aware bcore_shell_op_default",
+"{",
+    "st_s path;",
+    "st_s source;",
+    "func bcore_shell_op:key;",
+    "func bcore_shell_op:info;",
+    "func bcore_shell_op:run;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_shell_op_default_set_s )
 
 void bcore_shell_op_default_set_s_run( bcore_shell_op_default_set_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, x_source* source, bcore_sink* sink, bcore_shell_control_s* control )
 {
@@ -2418,15 +2485,16 @@ void bcore_shell_op_default_set_s_run( bcore_shell_op_default_set_s* o, bcore_sh
     BLM_DOWN();
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_shell_op_default_alias_s )
-"aware bcore_shell_op_default"
-"{"
-    "st_s key;"
-    "st_s expression;"
-    "func bcore_shell_op:key;"
-    "func bcore_shell_op:info;"
-    "func bcore_shell_op:run;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_shell_op_default_alias_s )
+"aware bcore_shell_op_default",
+"{",
+    "st_s key;",
+    "st_s expression;",
+    "func bcore_shell_op:key;",
+    "func bcore_shell_op:info;",
+    "func bcore_shell_op:run;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_shell_op_default_alias_s )
 
 void bcore_shell_op_default_alias_s_run( bcore_shell_op_default_alias_s* o, bcore_shell* obj, const bcore_main_frame_s* main_frame, x_source* source, bcore_sink* sink, bcore_shell_control_s* control )
 {
@@ -2448,26 +2516,29 @@ void bcore_shell_op_default_alias_s_run( bcore_shell_op_default_alias_s* o, bcor
     }
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_shell_op_default_stdin_s )
-"aware bcore_shell_op_default"
-"{"
-    "func bcore_shell_op:key;"
-    "func bcore_shell_op:info;"
-    "func bcore_shell_op:run;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_shell_op_default_stdin_s )
+"aware bcore_shell_op_default",
+"{",
+    "func bcore_shell_op:key;",
+    "func bcore_shell_op:info;",
+    "func bcore_shell_op:run;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_shell_op_default_stdin_s )
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_shell_op_default_stdout_s )
-"aware bcore_shell_op_default"
-"{"
-    "func bcore_shell_op:key;"
-    "func bcore_shell_op:info;"
-    "func bcore_shell_op:run;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_shell_op_default_stdout_s )
+"aware bcore_shell_op_default",
+"{",
+    "func bcore_shell_op:key;",
+    "func bcore_shell_op:info;",
+    "func bcore_shell_op:run;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_shell_op_default_stdout_s )
 
-XOILA_DEFINE_SPECT( bcore_shell, bcore_shell_op_default )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( bcore_shell, bcore_shell_op_default )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( bcore_shell, bcore_shell_op_default )
 
 /**********************************************************************************************************************/
 // source: bcore_huffman.h
@@ -2476,14 +2547,15 @@ XOILA_DEFINE_SPECT( bcore_shell, bcore_shell_op_default )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_huffman; embeds: bcore_huffman.x
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_codec_s )
-"aware bcore_huffman"
-"{"
-    "bcore_huffman_hist_s => hist;"
-    "bcore_huffman_count_map_s => count_map;"
-    "bcore_huffman_tree_s => tree;"
-    "bcore_huffman_index_s => leaf_index;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_huffman_codec_s )
+"aware bcore_huffman",
+"{",
+    "bcore_huffman_hist_s => hist;",
+    "bcore_huffman_count_map_s => count_map;",
+    "bcore_huffman_tree_s => tree;",
+    "bcore_huffman_index_s => leaf_index;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_huffman_codec_s )
 
 bcore_huffman_codec_s* bcore_huffman_codec_s_clear( bcore_huffman_codec_s* o )
 {
@@ -2621,16 +2693,17 @@ bcore_huffman_codec_s* bcore_huffman_codec_s_decode( bcore_huffman_codec_s* o, b
     return  o;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_bit_buffer_s )
-"aware x_array"
-"{"
-    "u3_t bits;"
-    "u0_t [];"
-    "func x_bbml:bbml_body_to_sink;"
-    "func x_bbml:bbml_body_from_source;"
-    "func x_bcml:bcml_body_to_sink;"
-    "func x_bcml:bcml_body_from_source;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_huffman_bit_buffer_s )
+"aware x_array",
+"{",
+    "u3_t bits;",
+    "u0_t [];",
+    "func x_bbml:bbml_body_to_sink;",
+    "func x_bbml:bbml_body_from_source;",
+    "func x_bcml:bcml_body_to_sink;",
+    "func x_bcml:bcml_body_from_source;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_huffman_bit_buffer_s )
 
 bcore_huffman_bit_buffer_s* bcore_huffman_bit_buffer_s_clear( bcore_huffman_bit_buffer_s* o )
 {
@@ -2747,12 +2820,13 @@ er_t bcore_huffman_bit_buffer_s_bcml_body_from_source( bcore_huffman_bit_buffer_
     return  0;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_bit_buffer_iterator_s )
-"aware bcore_huffman"
-"{"
-    "hidden bcore_huffman_bit_buffer_s* bit_buffer;"
-    "sz_t bit_index;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_huffman_bit_buffer_iterator_s )
+"aware bcore_huffman",
+"{",
+    "hidden bcore_huffman_bit_buffer_s* bit_buffer;",
+    "sz_t bit_index;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_huffman_bit_buffer_iterator_s )
 
 bl_t bcore_huffman_bit_buffer_iterator_s_read_bl( bcore_huffman_bit_buffer_iterator_s* o )
 {
@@ -2813,40 +2887,45 @@ f3_t bcore_huffman_bit_buffer_iterator_s_read_f3( bcore_huffman_bit_buffer_itera
     return  ( 1.0 / ( ( 1ull << bits ) - 1 ) ) * man * pow( 2.0, exp );
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_hist_s )
-"aware bcore_huffman"
-"{"
-    "bcore_hmap_tpuz_s hmap_tpuz;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_huffman_hist_s )
+"aware bcore_huffman",
+"{",
+    "bcore_hmap_tpuz_s hmap_tpuz;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_huffman_hist_s )
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_index_s )
-"aware bcore_huffman"
-"{"
-    "bcore_hmap_tpuz_s hmap_tpuz;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_huffman_index_s )
+"aware bcore_huffman",
+"{",
+    "bcore_hmap_tpuz_s hmap_tpuz;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_huffman_index_s )
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_node_s )
-"bcore_huffman"
-"{"
-    "u3_t c;"
-    "uz_t p;"
-    "uz_t b0;"
-    "uz_t b1;"
-    "u2_t v;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_huffman_node_s )
+"bcore_huffman",
+"{",
+    "u3_t c;",
+    "uz_t p;",
+    "uz_t b0;",
+    "uz_t b1;",
+    "u2_t v;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_huffman_node_s )
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_count_node_s )
-"bcore_huffman"
-"{"
-    "u3_t c;"
-    "u2_t v;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_huffman_count_node_s )
+"bcore_huffman",
+"{",
+    "u3_t c;",
+    "u2_t v;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_huffman_count_node_s )
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_count_map_s )
-"aware x_array"
-"{"
-    "bcore_huffman_count_node_s [];"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_huffman_count_map_s )
+"aware x_array",
+"{",
+    "bcore_huffman_count_node_s [];",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_huffman_count_map_s )
 
 bcore_huffman_count_map_s* bcore_huffman_count_map_s_from_hist( bcore_huffman_count_map_s* o, const bcore_huffman_hist_s* hist )
 {
@@ -2950,11 +3029,12 @@ bcore_huffman_count_map_s* bcore_huffman_count_map_s_decode( bcore_huffman_count
     return  o;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_huffman_tree_s )
-"aware x_array"
-"{"
-    "bcore_huffman_node_s [];"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_huffman_tree_s )
+"aware x_array",
+"{",
+    "bcore_huffman_node_s [];",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_huffman_tree_s )
 
 bcore_huffman_tree_s* bcore_huffman_tree_s_build( bcore_huffman_tree_s* o, const bcore_huffman_count_map_s* count_map, bcore_huffman_index_s* leaf_index )
 {
@@ -2986,10 +3066,11 @@ bcore_huffman_tree_s* bcore_huffman_tree_s_build( bcore_huffman_tree_s* o, const
     return  o;
 }
 
-XOILA_DEFINE_SPECT( x_inst, bcore_huffman )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_inst, bcore_huffman )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_inst, bcore_huffman )
 
 sz_t bcore_huffman_min_bits( u3_t v, sz_t n )
 {
@@ -3060,40 +3141,45 @@ void bcore_huffman_selftest( void )
 //----------------------------------------------------------------------------------------------------------------------
 // group: bcore_indexer
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_indexer_io_s )
-"bcore_indexer"
-"{"
-    "s3_t i;"
-    "s3_t o;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_indexer_io_s )
+"bcore_indexer",
+"{",
+    "s3_t i;",
+    "s3_t o;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_indexer_io_s )
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_indexer_io_arr_s )
-"aware x_array"
-"{"
-    "bcore_indexer_io_s [];"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_indexer_io_arr_s )
+"aware x_array",
+"{",
+    "bcore_indexer_io_s [];",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_indexer_io_arr_s )
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_indexer_cs_s )
-"bcore_indexer"
-"{"
-    "s3_t c;"
-    "s3_t s;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_indexer_cs_s )
+"bcore_indexer",
+"{",
+    "s3_t c;",
+    "s3_t s;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_indexer_cs_s )
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_indexer_cs_arr_s )
-"aware x_array"
-"{"
-    "bcore_indexer_cs_s [];"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_indexer_cs_arr_s )
+"aware x_array",
+"{",
+    "bcore_indexer_cs_s [];",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_indexer_cs_arr_s )
 
-BCORE_DEFINE_OBJECT_INST_P( bcore_indexer_s )
-"aware bcore_indexer"
-"{"
-    "bcore_indexer_io_arr_s io_arr;"
-    "bcore_indexer_cs_arr_s cs_arr;"
-    "s0_t mask_bits;"
-    "s3_t size;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( bcore_indexer_s )
+"aware bcore_indexer",
+"{",
+    "bcore_indexer_io_arr_s io_arr;",
+    "bcore_indexer_cs_arr_s cs_arr;",
+    "s0_t mask_bits;",
+    "s3_t size;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( bcore_indexer_s )
 
 bcore_indexer_s* bcore_indexer_s_setup( bcore_indexer_s* o, const bcore_arr_s3_s* size_arr )
 {
@@ -3146,10 +3232,11 @@ bl_t bcore_indexer_s_get_io( const bcore_indexer_s* o, s3_t index, bcore_indexer
     return  true;
 }
 
-XOILA_DEFINE_SPECT( x_inst, bcore_indexer )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_inst, bcore_indexer )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_inst, bcore_indexer )
 
 void bcore_indexer_selftest( void )
 {
@@ -3213,12 +3300,13 @@ void bcore_indexer_selftest( void )
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_btml
 
-XOILA_DEFINE_SPECT( x_inst, x_btml )
-"{"
-    "bcore_spect_header_s header;"
-    "feature aware x_btml : btml_body_from_source;"
-    "feature aware x_btml : btml_body_to_sink;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_inst, x_btml )
+"{",
+    "bcore_spect_header_s header;",
+    "feature aware x_btml : btml_body_from_source;",
+    "feature aware x_btml : btml_body_to_sink;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_inst, x_btml )
 
 er_t x_btml_t_from_source( x_btml* o, tp_t t, x_source* source )
 {
@@ -3835,12 +3923,13 @@ void x_btml_selftest( void )
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_bbml
 
-XOILA_DEFINE_SPECT( x_inst, x_bbml )
-"{"
-    "bcore_spect_header_s header;"
-    "feature aware x_bbml : bbml_body_from_source;"
-    "feature aware x_bbml : bbml_body_to_sink;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_inst, x_bbml )
+"{",
+    "bcore_spect_header_s header;",
+    "feature aware x_bbml : bbml_body_from_source;",
+    "feature aware x_bbml : bbml_body_to_sink;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_inst, x_bbml )
 
 er_t x_bbml_t_from_source( x_bbml* o, tp_t t, x_source* source )
 {
@@ -4193,12 +4282,13 @@ void x_bbml_selftest( void )
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_bcml
 
-XOILA_DEFINE_SPECT( x_inst, x_bcml )
-"{"
-    "bcore_spect_header_s header;"
-    "feature aware x_bcml : bcml_body_from_source;"
-    "feature aware x_bcml : bcml_body_to_sink;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_inst, x_bcml )
+"{",
+    "bcore_spect_header_s header;",
+    "feature aware x_bcml : bcml_body_from_source;",
+    "feature aware x_bcml : bcml_body_to_sink;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_inst, x_bcml )
 
 er_t x_bcml_t_from_source( x_bcml* o, tp_t t, x_source* source )
 {
@@ -4596,11 +4686,12 @@ void x_bcml_selftest( void )
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_btcl; embeds: bcore_x_btcl.x bcore_x_btcl_builtin.x bcore_x_btcl_op.x
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_s )
-"aware x_btcl"
-"{"
-    "bcore_arr_st_s => eval_path_arr;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_s )
+"aware x_btcl",
+"{",
+    "bcore_arr_st_s => eval_path_arr;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_s )
 
 er_t x_btcl_s_t_from_source( const x_btcl_s* o, x_btcl* obj, tp_t t, x_source* source )
 {
@@ -4659,14 +4750,15 @@ er_t x_btcl_s_parse_create_object( const x_btcl_s* o, x_source* source, sr_s* ob
     BLM_RETURNV(er_t, x_btcl_frame_s_parse_create_final_object(frame,source, obj ))
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_context_s )
-"aware x_btcl"
-"{"
-    "bcore_arr_st_s => eval_path_arr;"
-    "bcore_hmap_name_s hmap_reserved_key;"
-    "bcore_hmap_name_s hmap_reserved_func;"
-    "bcore_hmap_name_s hmap_reserved_const;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_context_s )
+"aware x_btcl",
+"{",
+    "bcore_arr_st_s => eval_path_arr;",
+    "bcore_hmap_name_s hmap_reserved_key;",
+    "bcore_hmap_name_s hmap_reserved_func;",
+    "bcore_hmap_name_s hmap_reserved_const;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_context_s )
 
 x_btcl_context_s* x_btcl_context_s_setup( x_btcl_context_s* o )
 {
@@ -4806,17 +4898,18 @@ x_btcl_context_s* x_btcl_context_s_set_reserved_consts( x_btcl_context_s* o )
     return o;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_frame_s )
-"aware x_btcl"
-"{"
-    "private x_btcl_frame_s* parent;"
-    "x_btcl_context_s -> context;"
-    "sz_t depth;"
-    "sz_t eval_depth;"
-    "hidden bcore_arr_sr_s obj_pool;"
-    "bcore_hmap_name_s hmap_name;"
-    "hidden bcore_hmap_tp_sr_s var_map;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_frame_s )
+"aware x_btcl",
+"{",
+    "private x_btcl_frame_s* parent;",
+    "x_btcl_context_s -> context;",
+    "sz_t depth;",
+    "sz_t eval_depth;",
+    "hidden bcore_arr_sr_s obj_pool;",
+    "bcore_hmap_name_s hmap_name;",
+    "hidden bcore_hmap_tp_sr_s var_map;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_frame_s )
 
 x_btcl_frame_s* x_btcl_frame_s_setup_as_root( x_btcl_frame_s* o, x_btcl_context_s* context )
 {
@@ -6163,11 +6256,12 @@ er_t x_btcl_frame_s_eval_op( x_btcl_frame_s* o, s2_t exit_priority, x_source* so
     return  0;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_null_variable_s )
-"aware x_btcl"
-"{"
-    "tp_t tp_name;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_null_variable_s )
+"aware x_btcl",
+"{",
+    "tp_t tp_name;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_null_variable_s )
 
 x_btcl_null_variable_s* x_btcl_null_variable_s__( x_btcl_null_variable_s* o, tp_t tp_name )
 {
@@ -6177,12 +6271,13 @@ x_btcl_null_variable_s* x_btcl_null_variable_s__( x_btcl_null_variable_s* o, tp_
     return  o;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_null_member_s )
-"aware x_btcl"
-"{"
-    "sr_s base;"
-    "tp_t tp_name;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_null_member_s )
+"aware x_btcl",
+"{",
+    "sr_s base;",
+    "tp_t tp_name;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_null_member_s )
 
 x_btcl_null_member_s* x_btcl_null_member_s_setup( x_btcl_null_member_s* o, sr_s* base, tp_t tp_name )
 {
@@ -6214,12 +6309,13 @@ sr_s x_btcl_null_member_s_set_sr( x_btcl_null_member_s* o, x_btcl_frame_s* frame
     return  x_stamp_t_m_get_sr(((x_stamp*)( o->base.o)),sr_s_o_type(&(o->base)), o->tp_name );
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_null_arr_element_s )
-"aware x_btcl"
-"{"
-    "sr_s base;"
-    "s3_t index;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_null_arr_element_s )
+"aware x_btcl",
+"{",
+    "sr_s base;",
+    "s3_t index;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_null_arr_element_s )
 
 x_btcl_null_arr_element_s* x_btcl_null_arr_element_s_setup( x_btcl_null_arr_element_s* o, sr_s* base, tp_t index )
 {
@@ -6249,11 +6345,12 @@ sr_s x_btcl_null_arr_element_s_set_sr( x_btcl_null_arr_element_s* o, x_btcl_fram
     return  x_array_t_m_get_sr(((x_array*)( ((x_stamp*)(o->base.o)))),sr_s_o_type(&(o->base)), o->index );
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_list_s )
-"aware x_btcl"
-"{"
-    "bcore_arr_sr_s arr;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_list_s )
+"aware x_btcl",
+"{",
+    "bcore_arr_sr_s arr;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_list_s )
 
 er_t x_btcl_list_s_to_sink( const x_btcl_list_s* o, bl_t detailed, x_sink* sink )
 {
@@ -6275,11 +6372,12 @@ er_t x_btcl_list_s_to_sink( const x_btcl_list_s* o, bl_t detailed, x_sink* sink 
     return  0;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_block_s )
-"aware x_btcl"
-"{"
-    "hidden x_source_point_s source_point;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_block_s )
+"aware x_btcl",
+"{",
+    "hidden x_source_point_s source_point;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_block_s )
 
 er_t x_btcl_block_s_parse( x_btcl_block_s* o, x_btcl_frame_s* frame, x_source* source )
 {
@@ -6336,12 +6434,13 @@ er_t x_btcl_block_s_eval( const x_btcl_block_s* o, const x_btcl_frame_s* parent_
     return  0;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_signature_s )
-"aware x_btcl"
-"{"
-    "hidden x_source_point_s source_point;"
-    "bcore_arr_tp_s arg_list;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_signature_s )
+"aware x_btcl",
+"{",
+    "hidden x_source_point_s source_point;",
+    "bcore_arr_tp_s arg_list;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_signature_s )
 
 er_t x_btcl_signature_s_parse( x_btcl_signature_s* o, x_btcl_frame_s* frame, x_source* source )
 {
@@ -6373,13 +6472,14 @@ er_t x_btcl_signature_s_parse( x_btcl_signature_s* o, x_btcl_frame_s* frame, x_s
     return  0;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_external_function_s )
-"aware x_btcl"
-"{"
-    "tp_t name;"
-    "bl_t is_mutable;"
-    "aware x_btcl -> object;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_external_function_s )
+"aware x_btcl",
+"{",
+    "tp_t name;",
+    "bl_t is_mutable;",
+    "aware x_btcl -> object;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_external_function_s )
 
 x_btcl_external_function_s* x_btcl_external_function_s_setup( x_btcl_external_function_s* o, tp_t name, bl_t is_mutable, const x_btcl* object )
 {
@@ -6407,16 +6507,17 @@ er_t x_btcl_external_function_s_execute( x_btcl_external_function_s* o, const x_
     return  0;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_function_s )
-"aware x_btcl"
-"{"
-    "x_btcl_signature_s -> signature;"
-    "x_btcl_block_s -> block;"
-    "x_btcl_external_function_s -> external_function;"
-    "x_btcl_function_s -> wrapped_function;"
-    "bcore_arr_sr_s -> wrapped_arg_list;"
-    "x_btcl_function_s => tail;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_function_s )
+"aware x_btcl",
+"{",
+    "x_btcl_signature_s -> signature;",
+    "x_btcl_block_s -> block;",
+    "x_btcl_external_function_s -> external_function;",
+    "x_btcl_function_s -> wrapped_function;",
+    "bcore_arr_sr_s -> wrapped_arg_list;",
+    "x_btcl_function_s => tail;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_function_s )
 
 x_btcl_function_s* x_btcl_function_s_setup( x_btcl_function_s* o, x_btcl_signature_s* signature, x_btcl_block_s* block, const x_btcl_function_s* tail )
 {
@@ -6569,20 +6670,21 @@ er_t x_btcl_function_s_call_via_evaluation( x_btcl_function_s* o, x_source* sour
     BLM_RETURNV(er_t, x_btcl_function_s_call(o,x_source_point_s__(((x_source_point_s*)BLM_LEVEL_T_PUSH(0,x_source_point_s,x_source_point_s_create())),source ), lexical_frame, arg_list, sr ))
 }
 
-XOILA_DEFINE_SPECT( x_inst, x_btcl )
-"{"
-    "bcore_spect_header_s header;"
-    "feature aware x_btcl : btcl_function_arity = x_btcl_btcl_function_arity_default;"
-    "feature aware x_btcl : btcl_function;"
-    "feature aware x_btcl : m_btcl_function;"
-    "feature aware x_btcl : btcl_function_mutable = x_btcl_btcl_function_mutable_default;"
-    "feature aware x_btcl : btcl_external_parse;"
-    "feature aware x_btcl : m_btcl_external_parse;"
-    "feature aware x_btcl : nullary_f3;"
-    "feature aware x_btcl : unary_f3;"
-    "feature aware x_btcl : binary_f3;"
-    "feature aware x_btcl : ternary_f3;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_inst, x_btcl )
+"{",
+    "bcore_spect_header_s header;",
+    "feature aware x_btcl : btcl_function_arity = x_btcl_btcl_function_arity_default;",
+    "feature aware x_btcl : btcl_function;",
+    "feature aware x_btcl : m_btcl_function;",
+    "feature aware x_btcl : btcl_function_mutable = x_btcl_btcl_function_mutable_default;",
+    "feature aware x_btcl : btcl_external_parse;",
+    "feature aware x_btcl : m_btcl_external_parse;",
+    "feature aware x_btcl : nullary_f3;",
+    "feature aware x_btcl : unary_f3;",
+    "feature aware x_btcl : binary_f3;",
+    "feature aware x_btcl : ternary_f3;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_inst, x_btcl )
 
 sc_t x_btcl_operator_symbol( tp_t type )
 {
@@ -6783,18 +6885,19 @@ void x_btcl_selftest( sc_t file )
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_btcl_operator; embeds: bcore_x_btcl_operator.x
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_operator_uop_s )
-"aware x_btcl_operator"
-"{"
-    "tp_t type;"
-    "sr_s a;"
-    "hidden x_source_point_s sp;"
-    "func ^:is_operator;"
-    "func ^:is_exportable_operand;"
-    "func ^:signal;"
-    "func ^:solve;"
-    "func ^:execute;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_operator_uop_s )
+"aware x_btcl_operator",
+"{",
+    "tp_t type;",
+    "sr_s a;",
+    "hidden x_source_point_s sp;",
+    "func ^:is_operator;",
+    "func ^:is_exportable_operand;",
+    "func ^:signal;",
+    "func ^:solve;",
+    "func ^:execute;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_operator_uop_s )
 
 x_btcl_operator_uop_s* x_btcl_operator_uop_s__( x_btcl_operator_uop_s* o, tp_t type, sr_s* a, x_source_point_s* source_point )
 {
@@ -6906,19 +7009,20 @@ er_t x_btcl_operator_uop_s_execute( const x_btcl_operator_uop_s* o, sr_s* result
     BLM_RETURNV(er_t, x_source_point_s_parse_error_fa(&(o->sp),"Operator #<sc_t> #<sc_t> is not executable.\n", x_btcl_operator_symbol(o->type ), bnameof( sr_s_type(a) ) ))
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_operator_bop_s )
-"aware x_btcl_operator"
-"{"
-    "tp_t type;"
-    "sr_s a;"
-    "sr_s b;"
-    "hidden x_source_point_s sp;"
-    "func ^:is_operator;"
-    "func ^:is_exportable_operand;"
-    "func ^:signal;"
-    "func ^:solve;"
-    "func ^:execute;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_operator_bop_s )
+"aware x_btcl_operator",
+"{",
+    "tp_t type;",
+    "sr_s a;",
+    "sr_s b;",
+    "hidden x_source_point_s sp;",
+    "func ^:is_operator;",
+    "func ^:is_exportable_operand;",
+    "func ^:signal;",
+    "func ^:solve;",
+    "func ^:execute;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_operator_bop_s )
 
 x_btcl_operator_bop_s* x_btcl_operator_bop_s__( x_btcl_operator_bop_s* o, tp_t type, sr_s* a, sr_s* b, x_source_point_s* source_point )
 {
@@ -7409,20 +7513,21 @@ er_t x_btcl_operator_bop_s_execute( const x_btcl_operator_bop_s* o, sr_s* result
     BLM_RETURNV(er_t, x_source_point_s_parse_error_fa(&(o->sp),"Operator #<sc_t> #<sc_t> #<sc_t> is not executable.\n", bnameof( sr_s_type(a) ), x_btcl_operator_symbol(o->type ), bnameof( sr_s_type(b) ) ))
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_operator_top_s )
-"aware x_btcl_operator"
-"{"
-    "tp_t type;"
-    "sr_s a;"
-    "sr_s b;"
-    "sr_s c;"
-    "hidden x_source_point_s sp;"
-    "func ^:is_operator;"
-    "func ^:is_exportable_operand;"
-    "func ^:signal;"
-    "func ^:solve;"
-    "func ^:execute;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_operator_top_s )
+"aware x_btcl_operator",
+"{",
+    "tp_t type;",
+    "sr_s a;",
+    "sr_s b;",
+    "sr_s c;",
+    "hidden x_source_point_s sp;",
+    "func ^:is_operator;",
+    "func ^:is_exportable_operand;",
+    "func ^:signal;",
+    "func ^:solve;",
+    "func ^:execute;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_operator_top_s )
 
 x_btcl_operator_top_s* x_btcl_operator_top_s__( x_btcl_operator_top_s* o, tp_t type, sr_s* a, sr_s* b, sr_s* c, x_source_point_s* source_point )
 {
@@ -7556,15 +7661,16 @@ er_t x_btcl_operator_top_s_execute( const x_btcl_operator_top_s* o, sr_s* result
     BLM_RETURNV(er_t, x_source_point_s_parse_error_fa(&(o->sp),"Operator '#<sc_t> #<sc_t> #<sc_t> '<div-operator>' #<sc_t>' is not executable.\n", bnameof( sr_s_type(a) ), x_btcl_operator_symbol(o->type ), bnameof( sr_s_type(b) ), bnameof( sr_s_type(c) ) ))
 }
 
-XOILA_DEFINE_SPECT( x_btcl, x_btcl_operator )
-"{"
-    "bcore_spect_header_s header;"
-    "feature aware x_btcl_operator : is_operator = x_btcl_operator_is_operator_default;"
-    "feature aware x_btcl_operator : is_exportable_operand = x_btcl_operator_is_exportable_operand_default;"
-    "feature aware x_btcl_operator : solve = x_btcl_operator_solve_default;"
-    "feature aware x_btcl_operator : signal = x_btcl_operator_signal_default;"
-    "feature aware x_btcl_operator : execute = x_btcl_operator_execute_default;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_btcl, x_btcl_operator )
+"{",
+    "bcore_spect_header_s header;",
+    "feature aware x_btcl_operator : is_operator = x_btcl_operator_is_operator_default;",
+    "feature aware x_btcl_operator : is_exportable_operand = x_btcl_operator_is_exportable_operand_default;",
+    "feature aware x_btcl_operator : solve = x_btcl_operator_solve_default;",
+    "feature aware x_btcl_operator : signal = x_btcl_operator_signal_default;",
+    "feature aware x_btcl_operator : execute = x_btcl_operator_execute_default;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_btcl, x_btcl_operator )
 
 er_t x_btcl_operator_solve_default( x_btcl_operator* o, x_btcl_frame_s* frame, sr_s* result, bl_t* success )
 {
@@ -7665,30 +7771,33 @@ er_t x_btcl_operator_eval_top_type( x_btcl_frame_s* frame, tp_t type, s2_t prior
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_btcl_operator_f3; embeds: bcore_x_btcl_operator_f3.x
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_operator_f3_arg_s )
-"aware x_btcl_operator_f3"
-"{"
-    "f3_t val;"
-    "tp_t name;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_operator_f3_arg_s )
+"aware x_btcl_operator_f3",
+"{",
+    "f3_t val;",
+    "tp_t name;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_operator_f3_arg_s )
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_operator_f3_arg_arr_s )
-"aware x_array"
-"{"
-    "x_btcl_operator_f3_arg_s [];"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_operator_f3_arg_arr_s )
+"aware x_array",
+"{",
+    "x_btcl_operator_f3_arg_s [];",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_operator_f3_arg_arr_s )
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_operator_f3_arg_nop_s )
-"aware x_btcl_operator_f3"
-"{"
-    "sz_t index = -1;"
-    "tp_t name;"
-    "private f3_t* val;"
-    "hidden x_source_point_s sp;"
-    "func ^:set_args;"
-    "func ^:get;"
-    "func ^:check_consistency;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_operator_f3_arg_nop_s )
+"aware x_btcl_operator_f3",
+"{",
+    "sz_t index = -1;",
+    "tp_t name;",
+    "private f3_t* val;",
+    "hidden x_source_point_s sp;",
+    "func ^:set_args;",
+    "func ^:get;",
+    "func ^:check_consistency;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_operator_f3_arg_nop_s )
 
 er_t x_btcl_operator_f3_arg_nop_s_set_args( x_btcl_operator_f3_arg_nop_s* o, x_btcl_operator_f3_arg_arr_s* arg_arr )
 {
@@ -7702,13 +7811,14 @@ er_t x_btcl_operator_f3_arg_nop_s_set_args( x_btcl_operator_f3_arg_nop_s* o, x_b
     return  0;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_operator_f3_const_nop_s )
-"aware x_btcl_operator_f3"
-"{"
-    "f3_t val;"
-    "func ^:get;"
-    "func ^:check_consistency;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_operator_f3_const_nop_s )
+"aware x_btcl_operator_f3",
+"{",
+    "f3_t val;",
+    "func ^:get;",
+    "func ^:check_consistency;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_operator_f3_const_nop_s )
 
 x_btcl_operator_f3_const_nop_s* x_btcl_operator_f3_const_nop_s__( x_btcl_operator_f3_const_nop_s* o, f3_t val )
 {
@@ -7718,19 +7828,20 @@ x_btcl_operator_f3_const_nop_s* x_btcl_operator_f3_const_nop_s__( x_btcl_operato
     return  o;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_operator_f3_uop_s )
-"aware x_btcl_operator_f3"
-"{"
-    "tp_t type;"
-    "aware x_btcl_operator_f3 => a;"
-    "hidden x_btcl_operator_f3_spect_s* sa;"
-    "hidden x_btcl_operator_f3_fp_f3_ar1 fp_get;"
-    "hidden x_source_point_s sp;"
-    "func ^:setup;"
-    "func ^:set_args;"
-    "func ^:get;"
-    "func ^:check_consistency;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_operator_f3_uop_s )
+"aware x_btcl_operator_f3",
+"{",
+    "tp_t type;",
+    "aware x_btcl_operator_f3 => a;",
+    "hidden x_btcl_operator_f3_spect_s* sa;",
+    "hidden x_btcl_operator_f3_fp_f3_ar1 fp_get;",
+    "hidden x_source_point_s sp;",
+    "func ^:setup;",
+    "func ^:set_args;",
+    "func ^:get;",
+    "func ^:check_consistency;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_operator_f3_uop_s )
 
 er_t x_btcl_operator_f3_uop_s_setup( x_btcl_operator_f3_uop_s* o )
 {
@@ -7779,21 +7890,22 @@ er_t x_btcl_operator_f3_uop_s_check_consistency( const x_btcl_operator_f3_uop_s*
     return  0;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_operator_f3_bop_s )
-"aware x_btcl_operator_f3"
-"{"
-    "tp_t type;"
-    "aware x_btcl_operator_f3 => a;"
-    "aware x_btcl_operator_f3 => b;"
-    "hidden x_btcl_operator_f3_spect_s* sa;"
-    "hidden x_btcl_operator_f3_spect_s* sb;"
-    "hidden x_btcl_operator_f3_fp_f3_ar2 fp_get;"
-    "hidden x_source_point_s sp;"
-    "func ^:setup;"
-    "func ^:set_args;"
-    "func ^:get;"
-    "func ^:check_consistency;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_operator_f3_bop_s )
+"aware x_btcl_operator_f3",
+"{",
+    "tp_t type;",
+    "aware x_btcl_operator_f3 => a;",
+    "aware x_btcl_operator_f3 => b;",
+    "hidden x_btcl_operator_f3_spect_s* sa;",
+    "hidden x_btcl_operator_f3_spect_s* sb;",
+    "hidden x_btcl_operator_f3_fp_f3_ar2 fp_get;",
+    "hidden x_source_point_s sp;",
+    "func ^:setup;",
+    "func ^:set_args;",
+    "func ^:get;",
+    "func ^:check_consistency;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_operator_f3_bop_s )
 
 er_t x_btcl_operator_f3_bop_s_setup( x_btcl_operator_f3_bop_s* o )
 {
@@ -7846,23 +7958,24 @@ er_t x_btcl_operator_f3_bop_s_check_consistency( const x_btcl_operator_f3_bop_s*
     return  0;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_operator_f3_top_s )
-"aware x_btcl_operator_f3"
-"{"
-    "tp_t type;"
-    "aware x_btcl_operator_f3 => a;"
-    "aware x_btcl_operator_f3 => b;"
-    "aware x_btcl_operator_f3 => c;"
-    "hidden x_btcl_operator_f3_spect_s* sa;"
-    "hidden x_btcl_operator_f3_spect_s* sb;"
-    "hidden x_btcl_operator_f3_spect_s* sc;"
-    "hidden x_btcl_operator_f3_fp_f3_ar3 fp_get;"
-    "hidden x_source_point_s sp;"
-    "func ^:setup;"
-    "func ^:set_args;"
-    "func ^:get;"
-    "func ^:check_consistency;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_operator_f3_top_s )
+"aware x_btcl_operator_f3",
+"{",
+    "tp_t type;",
+    "aware x_btcl_operator_f3 => a;",
+    "aware x_btcl_operator_f3 => b;",
+    "aware x_btcl_operator_f3 => c;",
+    "hidden x_btcl_operator_f3_spect_s* sa;",
+    "hidden x_btcl_operator_f3_spect_s* sb;",
+    "hidden x_btcl_operator_f3_spect_s* sc;",
+    "hidden x_btcl_operator_f3_fp_f3_ar3 fp_get;",
+    "hidden x_source_point_s sp;",
+    "func ^:setup;",
+    "func ^:set_args;",
+    "func ^:get;",
+    "func ^:check_consistency;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_operator_f3_top_s )
 
 er_t x_btcl_operator_f3_top_s_setup( x_btcl_operator_f3_top_s* o )
 {
@@ -7909,14 +8022,15 @@ er_t x_btcl_operator_f3_top_s_check_consistency( const x_btcl_operator_f3_top_s*
     return  0;
 }
 
-XOILA_DEFINE_SPECT( x_btcl, x_btcl_operator_f3 )
-"{"
-    "bcore_spect_header_s header;"
-    "feature aware x_btcl_operator_f3 : setup = x_btcl_operator_f3_setup_default;"
-    "feature aware x_btcl_operator_f3 : get = x_btcl_operator_f3_get_default;"
-    "feature aware x_btcl_operator_f3 : set_args = x_btcl_operator_f3_set_args_default;"
-    "feature aware x_btcl_operator_f3 : check_consistency = x_btcl_operator_f3_check_consistency_default;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_btcl, x_btcl_operator_f3 )
+"{",
+    "bcore_spect_header_s header;",
+    "feature aware x_btcl_operator_f3 : setup = x_btcl_operator_f3_setup_default;",
+    "feature aware x_btcl_operator_f3 : get = x_btcl_operator_f3_get_default;",
+    "feature aware x_btcl_operator_f3 : set_args = x_btcl_operator_f3_set_args_default;",
+    "feature aware x_btcl_operator_f3 : check_consistency = x_btcl_operator_f3_check_consistency_default;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_btcl, x_btcl_operator_f3 )
 
 void x_btcl_operator_f3_group_signal_init1( void )
 {
@@ -7994,13 +8108,14 @@ x_btcl_operator_f3* x_btcl_operator_f3_create_op( const sr_s* sr )
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_btcl_net; embeds: bcore_x_btcl_net.x
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_net_plain_branch_s )
-"aware x_btcl_net"
-"{"
-    "tp_t name;"
-    "sr_s sr;"
-    "hidden x_source_point_s => sp;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_net_plain_branch_s )
+"aware x_btcl_net",
+"{",
+    "tp_t name;",
+    "sr_s sr;",
+    "hidden x_source_point_s => sp;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_net_plain_branch_s )
 
 x_btcl_net_plain_branch_s* x_btcl_net_plain_branch_s_setup( x_btcl_net_plain_branch_s* o, tp_t name, const x_source_point_s* sp, sr_s* sr )
 {
@@ -8013,19 +8128,21 @@ x_btcl_net_plain_branch_s* x_btcl_net_plain_branch_s_setup( x_btcl_net_plain_bra
     return o;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_net_plain_branch_arr_s )
-"aware x_array"
-"{"
-    "x_btcl_net_plain_branch_s [];"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_net_plain_branch_arr_s )
+"aware x_array",
+"{",
+    "x_btcl_net_plain_branch_s [];",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_net_plain_branch_arr_s )
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_net_socket_branch_s )
-"aware x_btcl_net"
-"{"
-    "tp_t name;"
-    "sr_s sr;"
-    "hidden x_source_point_s => sp;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_net_socket_branch_s )
+"aware x_btcl_net",
+"{",
+    "tp_t name;",
+    "sr_s sr;",
+    "hidden x_source_point_s => sp;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_net_socket_branch_s )
 
 x_btcl_net_socket_branch_s* x_btcl_net_socket_branch_s_setup( x_btcl_net_socket_branch_s* o, tp_t name, const x_source_point_s* sp, sr_s* sr )
 {
@@ -8038,23 +8155,25 @@ x_btcl_net_socket_branch_s* x_btcl_net_socket_branch_s_setup( x_btcl_net_socket_
     return o;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_net_socket_branch_arr_s )
-"aware x_array"
-"{"
-    "x_btcl_net_socket_branch_s [];"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_net_socket_branch_arr_s )
+"aware x_array",
+"{",
+    "x_btcl_net_socket_branch_s [];",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_net_socket_branch_arr_s )
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_net_node_s )
-"aware x_btcl_net"
-"{"
-    "tp_t type;"
-    "tp_t name;"
-    "tp_t sub_name;"
-    "x_btcl_net_plain_branch_arr_s => plain_branch_arr;"
-    "x_btcl_net_socket_branch_arr_s => socket_branch_arr;"
-    "hidden x_source_point_s => sp;"
-    "func x_btcl_operator:is_exportable_operand;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_net_node_s )
+"aware x_btcl_net",
+"{",
+    "tp_t type;",
+    "tp_t name;",
+    "tp_t sub_name;",
+    "x_btcl_net_plain_branch_arr_s => plain_branch_arr;",
+    "x_btcl_net_socket_branch_arr_s => socket_branch_arr;",
+    "hidden x_source_point_s => sp;",
+    "func x_btcl_operator:is_exportable_operand;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_net_node_s )
 
 x_btcl_net_node_s* x_btcl_net_node_s_setup( x_btcl_net_node_s* o, tp_t type, tp_t name, const x_source_point_s* sp )
 {
@@ -8115,10 +8234,11 @@ x_btcl_net_node_s* x_btcl_net_node_s_push_socket_branch( x_btcl_net_node_s* o, t
     return  o;
 }
 
-XOILA_DEFINE_SPECT( x_btcl, x_btcl_net )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_btcl, x_btcl_net )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_btcl, x_btcl_net )
 
 er_t x_btcl_net_eval_node_modifier( x_btcl_frame_s* frame, x_source* source, sr_s* node_sr )
 {
@@ -8214,11 +8334,12 @@ er_t x_btcl_net_eval_node_member( x_btcl_frame_s* frame, x_source* source, sr_s*
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_btcl_functor; embeds: bcore_x_btcl_functor.x
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_functor_arg_val_s )
-"aware x_btcl_functor"
-"{"
-    "sr_s sr;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_functor_arg_val_s )
+"aware x_btcl_functor",
+"{",
+    "sr_s sr;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_functor_arg_val_s )
 
 f3_t* x_btcl_functor_arg_val_s_get_f3_ptr( x_btcl_functor_arg_val_s* o, f3_t v_init )
 {
@@ -8228,17 +8349,18 @@ f3_t* x_btcl_functor_arg_val_s_get_f3_ptr( x_btcl_functor_arg_val_s* o, f3_t v_i
     return  ((f3_t*)(o->sr.o));
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_functor_arg_uop_s )
-"aware x_btcl_functor"
-"{"
-    "sz_t index;"
-    "x_btcl_functor_arg_val_s -> val;"
-    "func x_btcl_operator:is_operator;"
-    "func x_btcl_operator:is_exportable_operand;"
-    "func x_btcl_operator:solve;"
-    "func x_btcl_operator:execute;"
-    "func x_btcl_operator:signal;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_functor_arg_uop_s )
+"aware x_btcl_functor",
+"{",
+    "sz_t index;",
+    "x_btcl_functor_arg_val_s -> val;",
+    "func x_btcl_operator:is_operator;",
+    "func x_btcl_operator:is_exportable_operand;",
+    "func x_btcl_operator:solve;",
+    "func x_btcl_operator:execute;",
+    "func x_btcl_operator:signal;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_functor_arg_uop_s )
 
 er_t x_btcl_functor_arg_uop_s_solve( x_btcl_functor_arg_uop_s* o, x_btcl_frame_s* frame, sr_s* result, bl_t* success )
 {
@@ -8277,13 +8399,14 @@ x_btcl_functor_arg_uop_s* x_btcl_functor_arg_uop_s_signal( x_btcl_functor_arg_uo
     return o;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_functor_arg_s )
-"aware x_btcl_functor"
-"{"
-    "tp_t name;"
-    "x_btcl_functor_arg_val_s => val;"
-    "x_btcl_functor_arg_uop_s => uop;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_functor_arg_s )
+"aware x_btcl_functor",
+"{",
+    "tp_t name;",
+    "x_btcl_functor_arg_val_s => val;",
+    "x_btcl_functor_arg_uop_s => uop;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_functor_arg_s )
 
 x_btcl_functor_arg_uop_s* x_btcl_functor_arg_s_get_uop( x_btcl_functor_arg_s* o )
 {
@@ -8293,11 +8416,12 @@ x_btcl_functor_arg_uop_s* x_btcl_functor_arg_s_get_uop( x_btcl_functor_arg_s* o 
     return  o->uop;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_functor_arg_arr_s )
-"aware x_array"
-"{"
-    "x_btcl_functor_arg_s [];"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_functor_arg_arr_s )
+"aware x_array",
+"{",
+    "x_btcl_functor_arg_s [];",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_functor_arg_arr_s )
 
 x_btcl_functor_arg_arr_s* x_btcl_functor_arg_arr_s_set_size( x_btcl_functor_arg_arr_s* o, sz_t size )
 {
@@ -8312,21 +8436,22 @@ x_btcl_functor_arg_arr_s* x_btcl_functor_arg_arr_s_set_size( x_btcl_functor_arg_
     return o;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_functor_s )
-"aware x_btcl_functor"
-"{"
-    "x_btcl_functor_arg_arr_s arg_arr;"
-    "sr_s => op_tree;"
-    "hidden x_source_point_s sp;"
-    "func bcore_inst_call:copy_x;"
-    "func bcore_via_call:mutated;"
-    "func x_btcl:btcl_function_arity;"
-    "func x_btcl:btcl_function;"
-    "func x_btcl:nullary_f3;"
-    "func x_btcl:unary_f3;"
-    "func x_btcl:binary_f3;"
-    "func x_btcl:ternary_f3;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_functor_s )
+"aware x_btcl_functor",
+"{",
+    "x_btcl_functor_arg_arr_s arg_arr;",
+    "sr_s => op_tree;",
+    "hidden x_source_point_s sp;",
+    "func bcore_inst_call:copy_x;",
+    "func bcore_via_call:mutated;",
+    "func x_btcl:btcl_function_arity;",
+    "func x_btcl:btcl_function;",
+    "func x_btcl:nullary_f3;",
+    "func x_btcl:unary_f3;",
+    "func x_btcl:binary_f3;",
+    "func x_btcl:ternary_f3;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_functor_s )
 
 x_btcl_functor_s* x_btcl_functor_s_signal( x_btcl_functor_s* o, tp_t name, x_inst* arg )
 {
@@ -8520,10 +8645,11 @@ f3_t x_btcl_functor_s_ternary_f3( const x_btcl_functor_s* o, f3_t x, f3_t y, f3_
     return  x_btcl_functor_s_call_to_f3(o);
 }
 
-XOILA_DEFINE_SPECT( x_btcl, x_btcl_functor )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_btcl, x_btcl_functor )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_btcl, x_btcl_functor )
 
 er_t x_btcl_functor_eval_modifier( x_btcl_frame_s* frame, x_source* source, sr_s* functor_sr )
 {
@@ -8550,22 +8676,23 @@ er_t x_btcl_functor_eval_modifier( x_btcl_frame_s* frame, x_source* source, sr_s
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_btcl_functor_f3; embeds: bcore_x_btcl_functor_f3.x
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_functor_f3_s )
-"aware x_btcl_functor_f3"
-"{"
-    "x_btcl_operator_f3_arg_arr_s arg_arr;"
-    "aware x_btcl_operator_f3 => op_tree;"
-    "hidden x_source_point_s sp;"
-    "func bcore_inst_call:copy_x;"
-    "func bcore_fp:copy_typed;"
-    "func bcore_via_call:mutated;"
-    "func x_btcl:btcl_function_arity;"
-    "func x_btcl:btcl_function;"
-    "func x_btcl:nullary_f3;"
-    "func x_btcl:unary_f3;"
-    "func x_btcl:binary_f3;"
-    "func x_btcl:ternary_f3;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_functor_f3_s )
+"aware x_btcl_functor_f3",
+"{",
+    "x_btcl_operator_f3_arg_arr_s arg_arr;",
+    "aware x_btcl_operator_f3 => op_tree;",
+    "hidden x_source_point_s sp;",
+    "func bcore_inst_call:copy_x;",
+    "func bcore_fp:copy_typed;",
+    "func bcore_via_call:mutated;",
+    "func x_btcl:btcl_function_arity;",
+    "func x_btcl:btcl_function;",
+    "func x_btcl:nullary_f3;",
+    "func x_btcl:unary_f3;",
+    "func x_btcl:binary_f3;",
+    "func x_btcl:ternary_f3;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_functor_f3_s )
 
 void x_btcl_functor_f3_s_copy_x( x_btcl_functor_f3_s* o, const x_btcl_functor_f3_s* src )
 {
@@ -8764,24 +8891,26 @@ f3_t x_btcl_functor_f3_s_ternary_f3( const x_btcl_functor_f3_s* o, f3_t x, f3_t 
     return  x_btcl_functor_f3_s_call(o);
 }
 
-XOILA_DEFINE_SPECT( x_btcl, x_btcl_functor_f3 )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_btcl, x_btcl_functor_f3 )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_btcl, x_btcl_functor_f3 )
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_btcl_random; embeds: bcore_x_btcl_random.x
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_random_s )
-"aware x_btcl_random"
-"{"
-    "aware bcore_prsg => prsg;"
-    "u3_t seed = 1234;"
-    "f3_t min = 0.0;"
-    "f3_t max = 1.0;"
-    "func x_btcl:btcl_function_arity;"
-    "func x_btcl:btcl_function;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_random_s )
+"aware x_btcl_random",
+"{",
+    "aware bcore_prsg => prsg;",
+    "u3_t seed = 1234;",
+    "f3_t min = 0.0;",
+    "f3_t max = 1.0;",
+    "func x_btcl:btcl_function_arity;",
+    "func x_btcl:btcl_function;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_random_s )
 
 const x_btcl_random_s* x_btcl_random_s_fill_list( const x_btcl_random_s* o, sz_t size, x_btcl_list_s* list )
 {
@@ -8831,21 +8960,23 @@ er_t x_btcl_random_s_btcl_function( const x_btcl_random_s* o, tp_t name, const x
     return  0;
 }
 
-XOILA_DEFINE_SPECT( x_btcl, x_btcl_random )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_btcl, x_btcl_random )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_btcl, x_btcl_random )
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_btcl_test; embeds: bcore_x_btcl_test.x
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_test_adder_s )
-"aware x_btcl_test"
-"{"
-    "f3_t additive;"
-    "func x_btcl:btcl_function_arity;"
-    "func x_btcl:btcl_function;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_test_adder_s )
+"aware x_btcl_test",
+"{",
+    "f3_t additive;",
+    "func x_btcl:btcl_function_arity;",
+    "func x_btcl:btcl_function;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_test_adder_s )
 
 sz_t x_btcl_test_adder_s_btcl_function_arity( const x_btcl_test_adder_s* o, tp_t name )
 {
@@ -8873,11 +9004,12 @@ er_t x_btcl_test_adder_s_btcl_function( const x_btcl_test_adder_s* o, tp_t name,
     return  0;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_btcl_test_parser_s )
-"aware x_btcl_test"
-"{"
-    "func x_btcl:btcl_external_parse;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_btcl_test_parser_s )
+"aware x_btcl_test",
+"{",
+    "func x_btcl:btcl_external_parse;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_btcl_test_parser_s )
 
 er_t x_btcl_test_parser_s_btcl_external_parse( const x_btcl_test_parser_s* o, x_source* source, x_btcl_frame_s* lexical_frame, sr_s* result )
 {
@@ -8892,10 +9024,11 @@ er_t x_btcl_test_parser_s_btcl_external_parse( const x_btcl_test_parser_s* o, x_
     BLM_RETURNV(er_t, 0)
 }
 
-XOILA_DEFINE_SPECT( x_btcl, x_btcl_test )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_btcl, x_btcl_test )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_btcl, x_btcl_test )
 
 /**********************************************************************************************************************/
 // source: bcore_x_hmap.h
@@ -8904,19 +9037,21 @@ XOILA_DEFINE_SPECT( x_btcl, x_btcl_test )
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_hmap; embeds: bcore_x_hmap.x
 
-XOILA_DEFINE_SPECT( x_inst, x_hmap )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_inst, x_hmap )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_inst, x_hmap )
 
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_hmap_tp
 
-BCORE_DEFINE_OBJECT_INST_P( x_hmap_tp_s )
-"aware x_hmap_tp"
-"{"
-    "bcore_hmap_tpaw_s map;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_hmap_tp_s )
+"aware x_hmap_tp",
+"{",
+    "bcore_hmap_tpaw_s map;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_hmap_tp_s )
 
 bcore_arr_tp_s* x_hmap_tp_s_get_key_arr( const x_hmap_tp_s* o, bcore_arr_tp_s* key_arr )
 {
@@ -8949,12 +9084,13 @@ x_array* x_hmap_tp_s_c_get_val_arr( const x_hmap_tp_s* o, x_array* val_arr )
     return  val_arr;
 }
 
-BCORE_DEFINE_OBJECT_INST_P( x_hmap_tp_st_s )
-"aware x_hmap_tp"
-"{"
-    "x_hmap_tp_s map;"
-    "func ^:TE;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_hmap_tp_st_s )
+"aware x_hmap_tp",
+"{",
+    "x_hmap_tp_s map;",
+    "func ^:TE;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_hmap_tp_st_s )
 
 st_s* x_hmap_tp_st_s_create_st_status( const x_hmap_tp_st_s* o )
 {
@@ -8967,11 +9103,12 @@ st_s* x_hmap_tp_st_s_create_st_status( const x_hmap_tp_st_s* o )
     return  string;
 }
 
-XOILA_DEFINE_SPECT( x_hmap, x_hmap_tp )
-"{"
-    "bcore_spect_header_s header;"
-    "feature aware x_hmap_tp : TE = x_hmap_tp_TE_default;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_hmap, x_hmap_tp )
+"{",
+    "bcore_spect_header_s header;",
+    "feature aware x_hmap_tp : TE = x_hmap_tp_TE_default;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_hmap, x_hmap_tp )
 
 x_hmap_tp_s* x_hmap_tp_m_map_( x_hmap_tp* o )
 {
@@ -9006,31 +9143,35 @@ x_inst* x_hmap_tp_m_getf( x_hmap_tp* o, tp_t key )
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_hmap_tp_test
 
-BCORE_DEFINE_OBJECT_INST_P( x_hmap_tp_test_kv_s )
-"x_hmap_tp_test"
-"{"
-    "tp_t key;"
-    "u3_t val;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_hmap_tp_test_kv_s )
+"x_hmap_tp_test",
+"{",
+    "tp_t key;",
+    "u3_t val;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_hmap_tp_test_kv_s )
 
-BCORE_DEFINE_OBJECT_INST_P( x_hmap_tp_test_kv_arr_s )
-"aware x_array"
-"{"
-    "x_hmap_tp_test_kv_s [];"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_hmap_tp_test_kv_arr_s )
+"aware x_array",
+"{",
+    "x_hmap_tp_test_kv_s [];",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_hmap_tp_test_kv_arr_s )
 
-BCORE_DEFINE_OBJECT_INST_P( x_hmap_tp_test_val_s )
-"aware x_hmap_tp_test"
-"{"
-    "u3_t val;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_hmap_tp_test_val_s )
+"aware x_hmap_tp_test",
+"{",
+    "u3_t val;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_hmap_tp_test_val_s )
 
-BCORE_DEFINE_OBJECT_INST_P( x_hmap_tp_test_map_s )
-"aware x_hmap_tp"
-"{"
-    "x_hmap_tp_s map;"
-    "func ^:TE;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_hmap_tp_test_map_s )
+"aware x_hmap_tp",
+"{",
+    "x_hmap_tp_s map;",
+    "func ^:TE;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_hmap_tp_test_map_s )
 
 st_s* x_hmap_tp_test_map_s_create_st_status( const x_hmap_tp_test_map_s* o )
 {
@@ -9043,10 +9184,11 @@ st_s* x_hmap_tp_test_map_s_create_st_status( const x_hmap_tp_test_map_s* o )
     return  string;
 }
 
-XOILA_DEFINE_SPECT( x_hmap, x_hmap_tp_test )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_hmap, x_hmap_tp_test )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_hmap, x_hmap_tp_test )
 
 void x_hmap_tp_test_selftest( void )
 {
@@ -9203,19 +9345,21 @@ void x_hmap_tp_test_selftest( void )
 //----------------------------------------------------------------------------------------------------------------------
 // group: x_deque
 
-BCORE_DEFINE_OBJECT_INST_P( x_deque_inst_adl_s )
-"aware x_array"
-"{"
-    "aware x_inst => [];"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_deque_inst_adl_s )
+"aware x_array",
+"{",
+    "aware x_inst => [];",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_deque_inst_adl_s )
 
-BCORE_DEFINE_OBJECT_INST_P( x_deque_inst_s )
-"aware x_deque"
-"{"
-    "x_deque_inst_adl_s adl;"
-    "sz_t size;"
-    "sz_t first;"
-"}";
+BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_deque_inst_s )
+"aware x_deque",
+"{",
+    "x_deque_inst_adl_s adl;",
+    "sz_t size;",
+    "sz_t first;",
+"}",
+BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_deque_inst_s )
 
 x_deque_inst_s* x_deque_inst_s_set_space( x_deque_inst_s* o, sz_t space )
 {
@@ -9309,10 +9453,11 @@ x_deque_inst_s* x_deque_inst_s_remove_last_n( x_deque_inst_s* o, sz_t n )
     return o;
 }
 
-XOILA_DEFINE_SPECT( x_inst, x_deque )
-"{"
-    "bcore_spect_header_s header;"
-"}";
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_inst, x_deque )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_inst, x_deque )
 
 x_deque_inst_s* x_deque_m_inst_( x_deque* o )
 {
@@ -10687,5 +10832,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0xDEF9CFFF3B6AD07C
-// XOICO_FILE_SIGNATURE 0x95A264A19EAA1BCD
+// XOICO_BODY_SIGNATURE 0xD5F36D97CC255199
+// XOICO_FILE_SIGNATURE 0x30F45C6AC615FBAD

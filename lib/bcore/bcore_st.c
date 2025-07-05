@@ -215,6 +215,14 @@ st_s* st_s_copy_sc( st_s* o, sc_t sc )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+st_s* st_s_copy_nasc( st_s* o, const sc_t* nasc )
+{
+    st_s_set_size( o, 0, 0 );
+    return st_s_push_nasc( o, nasc );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 st_s* st_s_assign_sc( st_s* o, sc_t sc )
 {
     uz_t src_size = bcore_strlen( sc );
@@ -401,6 +409,13 @@ st_s* st_s_create_sd_d( sd_t sd )
 st_s* st_s_create_sc( sc_t sc )
 {
     return st_s_create_sc_n( sc, bcore_strlen( sc ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+st_s* st_s_create_nasc( const sc_t* nasc )
+{
+    return st_s_copy_nasc( st_s_create(), nasc );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -667,6 +682,15 @@ st_s* st_s_push_sc_n( st_s* o, sc_t sc, uz_t sc_size )
 st_s* st_s_push_sc( st_s* o, sc_t sc )
 {
     return st_s_push_sc_n( o, sc, bcore_strlen( sc ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+st_s* st_s_push_nasc( st_s* o, const sc_t* nasc )
+{
+    if( !nasc ) return o;
+    for( sz_t i = 0; nasc[ i ] != NULL; i++ ) st_s_push_sc( o, nasc[ i ] );
+    return o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

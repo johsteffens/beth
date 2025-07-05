@@ -360,12 +360,23 @@ name* name##_clone( const name* o ) \
     BCORE_DEFINE_CREATE_SELF( name, name##_def_g ) \
     static sc_t name##_def_g = #name " =" #trait
 
-/// preferably used by beth-plant
+/// preferably used by xoila
 #define BCORE_DEFINE_OBJECT_INST_P( name ) \
     static sc_t name##_def_g; \
     BCORE_DEFINE_FUNCTIONS_OBJ_INST( name ) \
     BCORE_DEFINE_CREATE_SELF( name, name##_def_g ) \
     static sc_t name##_def_g = #name " ="
+
+/// preferably used by xoila
+#define BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( name ) \
+    static sc_t name##_def_nasc_g[] = { #name " =",
+
+/// preferably used by xoila
+#define BCORE_DEFINE_OBJECT_INST_P_NASC_END( name ) \
+    NULL }; \
+    BCORE_DEFINE_FUNCTIONS_OBJ_INST( name ) \
+    BCORE_DEFINE_CREATE_SELF_NASC( name, name##_def_nasc_g )
+
 
 /**********************************************************************************************************************/
 // virtual aware object

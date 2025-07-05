@@ -86,6 +86,14 @@ void bcore_xoila_set_arr_traitline_stamps_d( tp_t group, bcore_arr_tp_s* arr );
     BCORE_DEFINE_CREATE_SELF( group_name##_spect_s, group_name##_spect_s_def_g ) \
     static sc_t group_name##_spect_s_def_g = #group_name "_spect_s = spect " #parent_type
 
+#define XOILA_DEFINE_SPECT_NASC_BEGIN( parent_type, group_name ) \
+    static sc_t group_name##_spect_s_def_nasc_g[] = { #group_name "_spect_s = spect " #parent_type\
+
+#define XOILA_DEFINE_SPECT_NASC_END( parent_type, group_name ) \
+    NULL }; \
+    BCORE_DEFINE_SPECT_CACHE( group_name##_spect_s ); \
+    BCORE_DEFINE_CREATE_SELF_NASC( group_name##_spect_s, group_name##_spect_s_def_nasc_g ) \
+
 #define XOILA_REGISTER_SPECT( group_name )\
     bcore_spect_setup_cache( &group_name##_spect_s_cache_g ); \
     bcore_spect_define_creator( bentypeof( #group_name "_spect_s" ), bentypeof( #group_name ), group_name##_spect_s_create_self );

@@ -429,6 +429,7 @@ bcore_self_s* bcore_self_s_parse_source(       bcore_source* source, uz_t size_o
 bcore_self_s* bcore_self_s_build_parse_src(    sr_s src,             uz_t size_of, uz_t align_of ); // with advanced checks
 bcore_self_s* bcore_self_s_build_parse_source( bcore_source* source, uz_t size_of, uz_t align_of ); // with advanced checks
 bcore_self_s* bcore_self_s_build_parse_sc(     sc_t text,            uz_t size_of, uz_t align_of ); // with advanced checks
+bcore_self_s* bcore_self_s_build_parse_nasc(   const sc_t* nasc,     uz_t size_of, uz_t align_of ); // with advanced checks
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -496,6 +497,7 @@ tp_t bcore_flect_define_self_d(       bcore_self_s* self ); // takes over contro
 tp_t bcore_flect_define_self_c( const bcore_self_s* self ); // stores a copy of self
 tp_t bcore_flect_define_parse_src( sr_s src );
 tp_t bcore_flect_define_parse_sc( sc_t sc );
+tp_t bcore_flect_define_parse_nasc( const sc_t* nasc );
 tp_t bcore_flect_define_parse_fa( sc_t sc, ... );
 
 /** Type functions:
@@ -508,6 +510,7 @@ tp_t bcore_flect_type_self_d(       bcore_self_s* self ); // takes over control 
 tp_t bcore_flect_type_self_c( const bcore_self_s* self ); // stores a copy of self
 tp_t bcore_flect_type_parse_src( sr_s src );
 tp_t bcore_flect_type_parse_sc(  sc_t sc );
+tp_t bcore_flect_type_parse_nasc( const sc_t* nasc );
 tp_t bcore_flect_type_parse_fa(  sc_t format, ... );
 
 /** Defining reflection via creation function
@@ -561,11 +564,18 @@ vd_t bcore_flect_signal_handler( const bcore_signal_s* o );
 
 // Macros
 #define BCORE_SELF_S_BUILD_PARSE_SC( text, type ) bcore_self_s_build_parse_sc( text, sizeof( type ), alignof( type ) )
+#define BCORE_SELF_S_BUILD_PARSE_NASC( text_nasc, type ) bcore_self_s_build_parse_nasc( text_nasc, sizeof( type ), alignof( type ) )
 
 #define BCORE_DEFINE_CREATE_SELF( name, def )\
     static bcore_self_s* name##_create_self( void ) \
     {\
         return BCORE_SELF_S_BUILD_PARSE_SC( def, name ); \
+    }
+
+#define BCORE_DEFINE_CREATE_SELF_NASC( name, def_nasc )\
+    static bcore_self_s* name##_create_self( void ) \
+    {\
+        return BCORE_SELF_S_BUILD_PARSE_NASC( def_nasc, name ); \
     }
 
 #define BCORE_REGISTER_TYPE( trait, name )\

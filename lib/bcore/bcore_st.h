@@ -30,6 +30,11 @@
  *  Strings used as bcore_spect_source must be weak. (Strong strings produce a runtime error)
  *
  *  Strings do not support perspective bcore_spect_array.
+ *
+ *  Null-terminated C-string arrays (nasc)
+ *  The term 'nasc' is used to specify a low-level C-string array: const st_s*
+ *  The last element of that array must be NULL (!). Functions accepting a 'nasc'
+ *  treat the string array as a single long string by concatenating the individual strings.
  */
 
 #include <stdarg.h>
@@ -68,6 +73,7 @@ st_s* st_s_copyf(        st_s* o, sc_t format, ...  );
 st_s* st_s_copy_fv(      st_s* o, sc_t format, va_list args  );
 st_s* st_s_copy_fa(      st_s* o, sc_t format, ...  );
 st_s* st_s_copy_sc_n(    st_s* o, sc_t sc, uz_t n );
+st_s* st_s_copy_nasc(    st_s* o, const sc_t* nasc );
 st_s* st_s_copy_sc(      st_s* o, sc_t sc );
 st_s* st_s_assign_sc(    st_s* o, sc_t sc ); // assignment producing a weak string
 er_t  st_s_copy_typed(   st_s* o, tp_t type, vc_t src ); // copy with type conversion
@@ -82,6 +88,7 @@ st_s* st_s_create_fa(    sc_t format, ... );          // beth-style formatting
 st_s* st_s_create_sc_n(  sc_t sc, uz_t n );
 st_s* st_s_create_sd_d(  sd_t sd );
 st_s* st_s_create_sc(    sc_t sc );
+st_s* st_s_create_nasc( const sc_t* nasc );
 st_s* st_s_create_weak_sc( sc_t sc );
 st_s* st_s_create_typed( tp_t type, vc_t src );
 st_s* st_s_create_aware(            vc_t src );
@@ -118,6 +125,7 @@ st_s* st_s_push_st(     st_s* o, const st_s* src );
 st_s* st_s_push_st_d(   st_s* o, st_s* src ); // discards src
 st_s* st_s_push_sc_n(   st_s* o, sc_t sc, uz_t n );
 st_s* st_s_push_sc(     st_s* o, sc_t sc );
+st_s* st_s_push_nasc(   st_s* o, const sc_t* nasc );
 st_s* st_s_push_typed(  st_s* o, tp_t type, vc_t src ); // push with type conversion
 st_s* st_s_pushvf(      st_s* o, sc_t format, va_list args );
 st_s* st_s_pushf(       st_s* o, sc_t format, ... );
