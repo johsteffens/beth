@@ -20,26 +20,92 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
+forward :s;
+forward bgfe_popup_choice_s;
+
+/// frame for an array element
+stamp :item_s bgfe_frame
+{
+    /// parameters
+    sz_t width;  // optional preset width
+    sz_t height; // optional preset height
+    sz_t index = -1;  // array index (call setup to set index)
+    bl_t has_select_button;
+    bl_t show_index = true;
+
+    func bgfe_frame.set_width   { o.width   = value; = 0; }
+    func bgfe_frame.set_height  { o.height  = value; = 0; }
+
+    /// selected status
+    hidden bl_t selected;
+
+    /// sets selected status; updates display
+    func er_t set_selected( m@* o, bl_t flag );
+
+    hidden bgfe_rte_s* rte;
+    hidden x_mutex_s mutex;
+    hidden GtkWidget* rtt_widget;
+    hidden GtkWidget* rtt_index_label;
+    hidden GtkWidget* rtt_select_button;
+    hidden :s* parent;
+    hidden bgfe_frame => client_frame;
+    hidden bl_t is_vertical;
+    hidden bl_t is_open;
+    hidden bl_t rts_selected;
+    hidden bl_t rtt_ignore_select_button_toggled;
+
+    func bgfe_frame.parent = o.parent;
+    func bgfe_frame.rtt_widget = o.rtt_widget;
+    func bgfe_frame.open;
+    func bgfe_frame.close;
+    func bgfe_frame.arrangement = o.is_vertical ? vertical~ : horizontal~;
+    func bgfe_frame.client_close_ok;
+    func bgfe_frame.client_close_confirm;
+
+    /// Interface functions ...
+
+    func er_t setup( m@* o, m :s* parent, sz_t index );
+    func bgfe_frame.cycle;
+    func bgfe_frame.downsync;
+    func bgfe_frame.upsync;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+stamp :item_arr_s x_array { :item_s => []; }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
 stamp :s bgfe_frame
 {
     /// parameters
     sz_t width;   // optional preset width
     sz_t height;  // optional preset height
-    tp_t arrange = 0; // (0 == auto) | vertical | horizontal
-    sz_t min_content_width  = 100; // applies for horizontal orientation
-    sz_t min_content_height = 100; // applies for vertical orientation
-    sz_t max_content_width  = 200; // applies for horizontal orientation
-    sz_t max_content_height = 200; // applies for vertical orientation
+    tp_t arrange = vertical; // vertical | horizontal // avoid 0 == auto
+    bl_t arr_editable = true;  // indicates if array itself is editable (adding, removing, reordering); does not apply to editability of array elements
+    bl_t show_border = true;
+    bl_t show_index = true;
+    sz_t min_content_width  = 0; // applies for horizontal orientation
+    sz_t min_content_height = 0; // applies for vertical orientation
+    sz_t max_content_width  = 480; // applies for horizontal orientation
+    sz_t max_content_height = 480; // applies for vertical orientation
     bl_t show_client_name = true;
     st_s => widget_name;   // optional gtk widget name overrides default widget name
     sz_t spacing;   // spacing between elements
     bl_t end_bound; // packs elements with reference to the end of the box (false: reference to the start)
-    bl_t center;    // centers widgets in an expanded space
-    bl_t stretch;   // stretches elements to fill expanded space
+    bl_t center = true;    // centers widgets in an expanded space
+    bl_t stretch = true;   // stretches elements to fill expanded space
 
     func bgfe_frame.set_width   { o.width   = value; = 0; }
     func bgfe_frame.set_height  { o.height  = value; = 0; }
     func bgfe_frame.set_arrange { o.arrange = arrange; = 0; }
+    func bgfe_frame.set_arr_editable { o.arr_editable  = flag; = 0; }
+    func bgfe_frame.set_show_border { o.show_border = flag; = 0; }
+    func bgfe_frame.set_show_index  { o.show_index = flag; = 0; }
     func bgfe_frame.set_min_content_width { o.min_content_width  = value; = 0; }
     func bgfe_frame.set_min_content_height{ o.min_content_height = value; = 0; }
     func bgfe_frame.set_max_content_width { o.max_content_width  = value; = 0; }
@@ -58,9 +124,12 @@ stamp :s bgfe_frame
     hidden bgfe_frame* parent;
     hidden vd_t array_base_address; // address of first array element used to determine if the array has been relocated between cycles
     hidden bl_t is_vertical; // array elements are ordered verically (vs. horizontally)
+    hidden bcore_arr_sr_s => copied_elements; // for copy, cut, paste
+    hidden bgfe_popup_choice_s => popup_choice;
 
     func bgfe_frame.h_complexity = o.min_content_width  / bgfe_frame_complexity_unit_size();
     func bgfe_frame.v_complexity = o.min_content_height / bgfe_frame_complexity_unit_size();
+    func bgfe_frame.wrap_level   = 1;
     func bgfe_frame.client = o.client;
     func bgfe_frame.client_type = o.client_type;
     func bgfe_frame.client_name = o.client_name;
@@ -68,16 +137,24 @@ stamp :s bgfe_frame
     func bgfe_frame.is_open = o.is_open;
     func bgfe_frame.is_compact = false;
 
-    hidden bgfe_frame_list_s => content_list;
+    hidden :item_arr_s => item_arr;
+
     hidden bgfe_rte_s* rte;
     hidden x_mutex_s mutex;
     hidden GtkWidget* rtt_widget;
     hidden GtkWidget* rtt_gtk_box;
     hidden GtkWidget* rtt_gtk_list_box;
     hidden GtkWidget* rtt_gtk_scrolled_window;
+    hidden GtkWidget* rtt_gtk_edit_bar;
     hidden GtkWidget* rtt_gtk_append_button;
+    hidden GtkWidget* rtt_gtk_remove_button;
+    hidden GtkWidget* rtt_gtk_menu_button;
     hidden bl_t rts_append_button_clicked;
+    hidden bl_t rts_remove_button_clicked;
+    hidden bl_t rts_menu_button_clicked;
     hidden bl_t is_open;
+
+    func m x_array* client_array( c@* o ) = o.client.cast( m x_array* );
 
     func bcore_inst_call.down_e o.close();
     func bgfe_frame.rtt_widget = o.rtt_widget;
@@ -101,414 +178,28 @@ stamp :s bgfe_frame
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) bl_t rebuild_is_necessary( @* o )
-{
-    m x_array* array = o.client.cast( m x_array* );
-    if( array.t_size( o.client_type ) != o.content_list.size ) = true;
-    if( array.t_get_data_m( o.client_type ) != o.array_base_address ) = true;
-    = false;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-// appends an element to the array
-func (:s) er_t append_element( m@* o )
-{
-    m x_array* array = o.client.cast( m x_array* );
-    array.t_push( o.client_type );
-    o.rebuild();
-    o.rte.run( o.focus_to_end.cast( bgfe_rte_fp_rtt ), o, NULL );
-    o.rte.run( o.rtt_scroll_to_end.cast( bgfe_rte_fp_rtt ), o, NULL );
-    = false;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) er_t rebuild( m@* o )
-{
-    o.content_list!.clear();
-
-    m x_array* array = o.client.cast( m x_array* );
-    sz_t size = array.t_size( o.client_type );
-    o.array_base_address = array.t_get_data_m( o.client_type );
-
-    if( array.t_is_of_links( o.client_type ) )
-    {
-        for( sz_t i = 0; i < size; i++ )
-        {
-            m$* sr_content = sr_s!^;
-            sr_content.0 = array.t_m_get_sr( o.client_type, i );
-
-            m$* frame_link = bgfe_frame_link_s!^;
-
-            if( sr_content.o )
-            {
-                frame_link.set_client_t( sr_content.o, sr_content.type(), 0 );
-            }
-            else
-            {
-                tp_t content_type = x_array_t_get_type( o.client, o.client_type, i );
-                frame_link.set_client_t( NULL, content_type, 0 );
-            }
-
-            frame_link.set_holder_t( o.client, o.client_type, o.client_name, true, i );
-            o.content_list!.push_d( frame_link.fork() );
-            frame_link.open( o );
-        }
-    }
-    else
-    {
-        for( sz_t i = 0; i < size; i++ )
-        {
-            m$* sr_content = sr_s!^;
-            sr_content.0 = array.t_m_get_sr( o.client_type, i );
-            if( sr_content.o && sr_content.is_weak() )
-            {
-                tp_t frame_type = bgfe_frame_default_frame_type( sr_content.type() );
-                tp_t action_type = escapprove~;
-
-                o.client_edit_frame_type( sr_content.o, sr_content.type(), 0, action_type, frame_type );
-
-                m bgfe_frame* frame = x_inst_create( frame_type ).cast( d bgfe_frame* )^;
-                if( frame )
-                {
-                    frame.set_client_with_content_t( sr_content.o, sr_content.type(), 0 );
-                    o.content_list!.push_d( frame.fork() );
-                    frame.open( o );
-                }
-            }
-        }
-    }
-
-
-    o.rte.run( o.rtt_rebuild.cast( bgfe_rte_fp_rtt ), o, NULL );
-
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-name gtk_container_remove;
-func (:s) er_t rtt_rebuild( m@* o, vd_t unused )
-{
-    o.rtt_remove_widget_from_container( o.rtt_gtk_list_box, o.rtt_gtk_scrolled_window );
-    o.rtt_detach_widget( o.rtt_gtk_list_box );
-    o.rtt_attach_widget( gtk_box_new( o.is_vertical ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, o.spacing ), o.rtt_gtk_list_box );
-    gtk_widget_show( o.rtt_gtk_list_box );
-    gtk_container_add( GTK_CONTAINER( o.rtt_gtk_scrolled_window ), o.rtt_gtk_list_box );
-
-    for( sz_t i = 0; i < o.content_list.size; i++ )
-    {
-        m$* frame = o.content_list.[ i ];
-        if( frame )
-        {
-            if( o.end_bound )
-            {
-                gtk_box_pack_end( GTK_BOX( o.rtt_gtk_list_box ), frame.rtt_widget(), o.center, o.stretch, 0 );
-            }
-            else
-            {
-                gtk_box_pack_start( GTK_BOX( o.rtt_gtk_list_box ), frame.rtt_widget(), o.center, o.stretch, 0 );
-            }
-        }
-    }
-
-    // immediately updates the adjustment of scrolled window to the most recent size  (the automatic update seems to be delayed)
-    gtk_scrolled_window_set_vadjustment( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), NULL /*NULL creates a new adjustment*/ );
-    gtk_scrolled_window_set_hadjustment( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), NULL /*NULL creates a new adjustment*/ );
-
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-type GtkAdjustment;
-identifier gtk_scrolled_window_get_vadjustment, gtk_adjustment_set_value, gtk_adjustment_get_upper, gtk_adjustment_get_lower, gtk_adjustment_get_page_size;
-identifier gtk_scrolled_window_get_hadjustment, gtk_scrolled_window_set_vadjustment, gtk_scrolled_window_set_hadjustment;
-identifier gtk_widget_grab_focus;
-
-func (:s) er_t rtt_scroll_to_end( m@* o, vd_t unused )
-{
-    if( o.is_vertical )
-    {
-        m GtkAdjustment* adjustment = gtk_scrolled_window_get_vadjustment( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ) );
-        gtk_adjustment_set_value( adjustment, gtk_adjustment_get_upper( adjustment ) - gtk_adjustment_get_page_size( adjustment ) );
-    }
-    else
-    {
-        m GtkAdjustment* adjustment = gtk_scrolled_window_get_hadjustment( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ) );
-        gtk_adjustment_set_value( adjustment, gtk_adjustment_get_upper( adjustment ) - gtk_adjustment_get_page_size( adjustment ) );
-    }
-
-    = 0;
-
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) er_t focus_to_end( m@* o, vd_t unused )
-{
-    if( o.content_list.size > 0 )
-    {
-        m bgfe_frame* frame  = o.content_list.[ o.content_list.size - 1 ];
-        if( frame )
-        {
-            m GtkWidget* widget = frame.rtt_widget();
-            gtk_widget_grab_focus( widget );
-        }
-    }
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) open
-{
-    if( o.is_open ) = 0;
-    if( !o.client ) = GERR_fa( "No client defined. Call 'set_client' first." );
-
-    bgfe_rte_get( &o.rte );
-
-    o.parent = parent;
-
-    tp_t arrangement = o.arrangement();
-    o.is_vertical = ( arrangement == TYPEOF_vertical );
-    o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, NULL );
-
-    o.rebuild();
-    o.is_open = true;
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 identifier gtk_box_new, gtk_flow_box_new, gtk_widget_modify_bg, gtk_label_set_angle, gtk_box_pack_end, gtk_box_pack_start, gtk_scrolled_window_new;
 identifier gtk_scrolled_window_set_propagate_natural_width, gtk_scrolled_window_set_propagate_natural_height;
 identifier gtk_scrolled_window_set_max_content_width, gtk_scrolled_window_set_max_content_height;
 identifier gtk_scrolled_window_set_min_content_width, gtk_scrolled_window_set_min_content_height;
 identifier gtk_scrolled_window_set_policy, gtk_scrolled_window_set_overlay_scrolling;
 identifier gtk_scrolled_window_set_kinetic_scrolling;
-type GdkColor, GtkBox, GtkScrolledWindow, GTK_BOX, GTK_SCROLLED_WINDOW, GTK_POLICY_ALWAYS, GTK_POLICY_AUTOMATIC;
+identifier gtk_container_remove;
+identifier gtk_scrolled_window_get_vadjustment, gtk_adjustment_set_value, gtk_adjustment_get_upper, gtk_adjustment_get_lower, gtk_adjustment_get_page_size;
+identifier gtk_scrolled_window_get_hadjustment, gtk_scrolled_window_set_vadjustment, gtk_scrolled_window_set_hadjustment;
+identifier gtk_widget_grab_focus;
+identifier gtk_toggle_button_get_active, gtk_toggle_button_set_active;
+identifier GTK_CHECK_BUTTON, GTK_TOGGLE_BUTTON;
+identifier gtk_check_button_new, gtk_check_button_new_with_label;
 
-func (:s) void rtt_signal_append_button_clicked( m GtkWidget* win, m@* o )
-{
-    o.mutex.lock();
-    o.rts_append_button_clicked = true;
-    o.mutex.unlock();
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) er_t rtt_open( m@* o, vd_t unused )
-{
-    o.mutex.create_lock()^;
-
-    o.rtt_attach_widget( gtk_box_new( o.is_vertical ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, 0 ), o.rtt_gtk_box );
-    gtk_widget_show( o.rtt_gtk_box );
-
-    tp_t label_name = ( o.show_client_name && o.client_name && bnameof( o.client_name ) ) ? o.client_name : 0;
-
-    if( label_name )
-    {
-        m GtkWidget* label = gtk_label_new( bnameof( label_name ) );
-        if( !label ) = GERR_fa( "'gtk_label_new' failed\n" );
-        gtk_widget_set_name( label, "client_name" );
-        gtk_label_set_angle( GTK_LABEL( label ), o.is_vertical ? 0 : 90 );
-        gtk_box_pack_start( GTK_BOX( o.rtt_gtk_box ), label, false, false, 0 );
-        gtk_widget_show( label );
-    }
-
-    o.rtt_attach_widget( gtk_scrolled_window_new( NULL, NULL ), o.rtt_gtk_scrolled_window );
-
-    gtk_scrolled_window_set_propagate_natural_width( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), o.is_vertical ? true : false );
-    gtk_scrolled_window_set_propagate_natural_height( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), o.is_vertical ? false : true );
-
-    // overlay scrolling does not seem to work reliably in this context
-    gtk_scrolled_window_set_overlay_scrolling( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), false );
-    gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
-
-    if( o.is_vertical )
-    {
-        gtk_scrolled_window_set_min_content_height( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), o.min_content_height );
-        gtk_scrolled_window_set_max_content_height( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), o.max_content_height );
-    }
-    else
-    {
-        gtk_scrolled_window_set_min_content_width( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), o.min_content_width );
-        gtk_scrolled_window_set_max_content_width( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), o.max_content_width );
-    }
-
-    gtk_widget_show( o.rtt_gtk_scrolled_window );
-
-    gtk_widget_set_name( o.rtt_gtk_box, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
-    gtk_widget_set_size_request( o.rtt_gtk_box, o.width, o.height );
-
-    gtk_box_pack_start( GTK_BOX( o.rtt_gtk_box ), o.rtt_gtk_scrolled_window, true, true, 0 );
-
-    if( !x_array_t_is_fixed( o.client_type ) )
-    {
-        o.rtt_attach_widget( gtk_button_new_with_label( "+" ), o.rtt_gtk_append_button );
-        g_signal_connect( o.rtt_gtk_append_button, "clicked", G_CALLBACK( :s_rtt_signal_append_button_clicked ), o );
-        gtk_widget_show( o.rtt_gtk_append_button );
-    }
-
-    gtk_box_pack_start( GTK_BOX( o.rtt_gtk_box ), o.rtt_gtk_append_button, false, false, 0 );
-
-    o.rtt_widget = o.rtt_gtk_box;
-
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) close
-{
-    if( !o.is_open ) = 0;
-
-    foreach( m$* e in o.content_list ) e.close();
-
-    o.rte.run( o.rtt_close.cast( bgfe_rte_fp_rtt ), o, NULL );
-    o.is_open = false;
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) er_t rtt_close( m@* o, vd_t arg )
-{
-    o.rtt_detach_widget( o.rtt_gtk_box );
-    o.rtt_detach_widget( o.rtt_gtk_list_box );
-    o.rtt_detach_widget( o.rtt_gtk_scrolled_window );
-    o.rtt_detach_widget( o.rtt_gtk_append_button );
-    o.rtt_widget = 0;
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) cycle
-{
-    if( !o.is_open ) = 0; // no error because frame window could have been closed
-
-    /** The array is automatically fully resynchronized when its size or memory location has changed
-     *  between cycles. This is necessary to avoid temporary memory inconsistencies of client references
-     *  in content frames
-     */
-    if( o.rebuild_is_necessary() ) o.rebuild();
-
-    o.mutex.lock();
-    bl_t append_button_clicked = o.rts_append_button_clicked;
-    o.rts_append_button_clicked = false;
-    o.mutex.unlock();
-
-    if( append_button_clicked ) o.append_element(); // resyncs automatically
-
-    foreach( m$* e in o.content_list ) e.cycle( action_type );
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) downsync
-{
-    if( !o.is_open ) = 0; // no error because frame window could have been closed
-    foreach( m$* e in o.content_list ) e.downsync();
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) upsync
-{
-    if( !o.is_open ) = 0; // no error because frame window could have been closed
-
-    if( o.rebuild_is_necessary() )
-    {
-        o.rebuild(); // this includes upsyncing the array
-    }
-    else
-    {
-        foreach( m$* e in o.content_list ) e.upsync(); // upsync only elements
-    }
-
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) client_close_ok
-{
-    if( o.client )
-    {
-        if( !o.client.t_bgfe_close_ok( o.client_type ) ) = false;
-    }
-
-    foreach( m$* e in o.content_list )
-    {
-        if( !e.client_close_ok() ) = false;
-    }
-
-    = true;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) client_close_confirm
-{
-    if( o.client ) o.client.t_bgfe_close_confirm( o.client_type );
-    foreach( m$* e in o.content_list ) e.client_close_confirm();
-    = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) arrangement
-{
-    if( o.arrange ) = o.arrange;
-
-    /// >0 horizontal; < 0 vertical
-    sz_t clients_tendency = 0;
-
-    foreach( m$* e in o.content_list )
-    {
-        switch( e.arrangement() )
-        {
-            case TYPEOF_horizontal: clients_tendency++; break;
-            case TYPEOF_vertical  : clients_tendency--; break;
-            default: break;
-        }
-    }
-
-    // the chosen arrangement is the opposite of the clients tendency;
-    = ( clients_tendency >= 0 ) ? TYPEOF_vertical : TYPEOF_horizontal;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) set_client_t
-{
-    if( o.is_open ) = GERR_fa( "Frame is open." );
-
-    o.content_list =< NULL;
-
-    if( !client ) // reset
-    {
-        o.client = NULL;
-        o.client_type = 0;
-        o.client_name = 0;
-        = 0;
-    }
-
-    o.client      = client;
-    o.client_type = client_type;
-    o.client_name = client_name;
-
-    // the array content is added when the frame is opened
-
-    = 0;
-}
+type GdkColor, GtkBox, GtkScrolledWindow, GTK_BOX, GTK_SCROLLED_WINDOW, GTK_POLICY_ALWAYS, GTK_POLICY_AUTOMATIC, GtkAdjustment;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+embed "bgfe_frame_array_item.emb.x";
+embed "bgfe_frame_array.emb.x";
 

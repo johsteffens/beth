@@ -30,20 +30,22 @@ stamp :s bgfe_frame
 {
     /// parameters
     st_s => title;
-    bl_t keep_above = false; // keeps window above the nearest to-root window
-    st_s => widget_name;   // optional gtk widget name overrides default widget name
+    bl_t keep_above = false;  // keeps window above the nearest to-root window
+    bl_t decorated = true;    // decorated: with border; close and minimize button; moveable
+    bl_t close_on_lost_focus; // closes the window when focus is lost
+    st_s => widget_name;      // optional gtk widget name overrides default widget name
 
     func bgfe_frame.set_text       { o.title!.copy_sc( text ); = 0; }
     func bgfe_frame.set_keep_above { o.keep_above = flag; = 0; }
+    func bgfe_frame.set_decorated  { o.decorated = flag; = 0; }
+    func bgfe_frame.set_close_on_lost_focus { o.close_on_lost_focus = flag; = 0; }
     func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
 
-    bgfe_frame => frame;
+    hidden bgfe_frame => frame;
+    hidden bgfe_frame* parent;
 
     /// internals
-    func bgfe_frame.client      = o.frame ? o.frame.client() : 0;
-    func bgfe_frame.client_type = o.frame ? o.frame.client_type() : 0;
-    func bgfe_frame.client_name = o.frame ? o.frame.client_name() : 0;
-    func bgfe_frame.parent      = o.frame ? o.frame.parent() : 0;
+    func bgfe_frame.parent      = o.parent;
     func bgfe_frame.h_complexity = o.frame ? o.frame.h_complexity() : 1;
     func bgfe_frame.v_complexity = o.frame ? o.frame.v_complexity() : 1;
 
@@ -62,6 +64,7 @@ stamp :s bgfe_frame
     func bgfe_frame.client_close_ok      = o.frame ? o.frame.client_close_ok() : true;
     func bgfe_frame.client_close_confirm = o.frame ? o.frame.client_close_confirm() : 0;
     func bgfe_frame.arrangement          = o.frame ? o.frame.arrangement() : 0;
+    func bgfe_frame.is_open              = o.is_open;
 
     func bgfe_notify_sender.supports_notify = o.frame ? o.frame.cast( m bgfe_notify_sender* ).supports_notify() : false;
     func bgfe_notify_sender.ligand_pool  = o.frame ? o.frame.cast( m bgfe_notify_sender* ).ligand_pool() : NULL;

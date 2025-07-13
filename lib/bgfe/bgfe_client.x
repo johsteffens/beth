@@ -88,7 +88,7 @@ feature 'at' er_t bgfe_copy_from_typed( m @* o, tp_t o_type, tp_t src_type, x_in
 /** A glimpse is a short one-line text summarizing or describing the client's content
  *  It is typically displayed on a button opening the client in a dedicated window.
  */
-feature 'at' er_t bgfe_get_glimpse( @* o, m st_s* text );
+feature 'at' er_t bgfe_get_glimpse( @* o, m st_s* text ); // no overload here because overload state is actively tested in frames
 
 //----------------------------------------------------------------------------------------------------------------------
 

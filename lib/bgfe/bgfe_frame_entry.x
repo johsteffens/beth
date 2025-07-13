@@ -29,12 +29,14 @@ stamp :s bgfe_frame
     sz_t height; // optional preset height
     st_s => text;   // editable text
     st_s => widget_name;   // optional gtk widget name overrides default widget name
+    st_s => tooltip;     // external tooltip (if NULL an internal tooltip is used)
     bl_t show_tooltip = true;
 
     func bgfe_frame.set_width { o.width = value; = 0; }
     func bgfe_frame.set_height{ o.height = value; = 0; }
     func bgfe_frame.set_text  { o.text!.copy_sc( text ); = 0; }
     func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
+    func bgfe_frame.set_tooltip{ o.tooltip!.copy_sc( text ); = 0; }
     func bgfe_frame.set_show_tooltip{ o.show_tooltip = flag; = 0; }
 
     bl_t modified;  // text was modified by the front-end
@@ -173,8 +175,7 @@ func (:s) open
     o.rts_text =< o.text.clone();
     o.mutex.unlock();
 
-    o.rts_tooltip_text =< NULL;
-
+    if( o.tooltip ) o.rts_tooltip_text!.push_st( o.tooltip );
     if( bnameof( o.client_name ) ) o.rts_tooltip_text!.push_fa( "#<sc_t>", bnameof( o.client_name ) );
     if( bnameof( o.client_type ) )
     {
@@ -217,6 +218,7 @@ func (:s) close
     o.rte.run( o.rtt_close.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.is_open = false;
     o.client_close_confirm();
+    o.rts_tooltip_text =< NULL;
     = 0;
 }
 

@@ -3,24 +3,103 @@
  */
 
 
-#bgfe_frame_s
+#client_name
 {
-    background-color: #F0F0F0;
-    margin: 10px;
+    background-color: transparent;
+}
+
+#bgfe_frame
+{
+    background-color: rgb(80%,83%,85%);
+}
+
+#bgfe_frame_border_w1
+{
+    margin: 5px;
+
+    border-style: solid;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color:     transparent;
+    background-color: rgb(90%,90%,95%);
+}
+
+#bgfe_frame_border_w2
+{
+    margin: 5px;
 
     border-style: solid;
     border-radius: 6px;
     border-width: 2px;
-    border-color: #A0B080;
+    border-color:     transparent;
+    background-color: rgb(85%,85%,90%);
 }
 
-#bgfe_frame_array_s
+#bgfe_frame_border_w3
 {
-    background-color: #F0F0F0;
-    margin: 10px;
+    margin: 5px;
+
+    border-radius: 8px;
+    border-style: solid;
+    border-width: 4px;
+    border-color:     transparent;
+    background-color: rgb(80%,80%,80%);
+}
+
+#bgfe_frame_border_w4
+{
+    margin: 5px;
+
+    border-radius: 20px;
+    border-style: solid;
+    border-width: 6px;
+    border-color:     transparent;
+    background-color: rgb(70%,70%,75%);
+}
+
+#bgfe_frame_array
+{
+    background-color: rgb(85%,85%,85%);
+}
+
+#bgfe_frame_array_border
+{
+    margin: 5px;
 
     border-style: solid;
     border-radius: 6px;
     border-width: 2px;
-    border-color: #A0B080;
+    border-color:     transparent;
+    background-color: rgb(85%,85%,85%);
 }
+
+window.backgound
+{
+    background-color: rgb(100%,100%,100%);
+}
+
+button
+{
+    background-color: rgba(100%,100%,100%,0.6);
+}
+
+button:hover
+{
+    background-color: rgba(100%,100%,80%,0.9);
+}
+
+button:active
+{
+    background-color: rgba(100%,80%,80%,0.9);
+}
+
+scrollbar
+{
+    background-color: transparent;
+}
+
+scrollbar:hover
+{
+    background-color: rgba(100%,100%,100%,0.8);
+}
+

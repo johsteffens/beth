@@ -26,13 +26,15 @@ stamp :s bgfe_frame
     sz_t width;  // optional preset width
     sz_t height; // optional preset height
     bl_t show_client_name = true;
-    bl_t show_tooltip = true;
     st_s => widget_name;   // optional gtk widget name overrides default widget name
+    st_s => tooltip;     // external tooltip (if NULL an internal tooltip is used)
+    bl_t show_tooltip = true;
 
     func bgfe_frame.set_width   { o.width   = value; = 0; }
     func bgfe_frame.set_height  { o.height  = value; = 0; }
-    func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
     func bgfe_frame.set_show_client_name { o.show_client_name = flag; = 0; }
+    func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
+    func bgfe_frame.set_tooltip{ o.tooltip!.copy_sc( text ); = 0; }
     func bgfe_frame.set_show_tooltip{ o.show_tooltip = flag; = 0; }
 
     bl_t value;        // check value

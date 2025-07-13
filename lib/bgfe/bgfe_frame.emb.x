@@ -17,10 +17,6 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) void rtt_signal_destroy_gtk_box( m GtkWidget* win, m@* o ) o.rtt_gtk_box = NULL;
-
-//----------------------------------------------------------------------------------------------------------------------
-
 func (:s) open
 {
     if( o.is_open ) = 0;
@@ -35,6 +31,7 @@ func (:s) open
     f3_t sum_v_complexity = 0;
     f3_t overhead_h_complexity = 0.5;
     f3_t overhead_v_complexity = 0.5;
+    o.wrap_level = 1;
 
     /// tendency of clients >0 horizontal; < 0 vertical
     sz_t h_tendency = 0;
@@ -42,8 +39,12 @@ func (:s) open
     foreach( m$* e in o.content_list )
     {
         e.open( o );
+        o.wrap_level = sz_max( o.wrap_level, e.wrap_level() + 1 );
+
         f3_t h_complexity = e.h_complexity();
         f3_t v_complexity = e.v_complexity();
+
+
         max_h_complexity = f3_max( max_h_complexity, h_complexity );
         max_v_complexity = f3_max( max_v_complexity, v_complexity );
         sum_h_complexity += h_complexity;
@@ -55,6 +56,8 @@ func (:s) open
             default: break;
         }
     }
+
+    o.wrap_level = sz_min( 4, o.wrap_level );
 
     // complexity on vertical orientation
     f3_t ver_h_complexity = max_h_complexity + overhead_h_complexity * 1;
@@ -77,28 +80,24 @@ func (:s) open
         f3_t ver_ratio = f3_min( ver_h_complexity, ver_v_complexity ) / f3_max( ver_h_complexity, ver_v_complexity );
         f3_t hor_ratio = f3_min( hor_h_complexity, hor_v_complexity ) / f3_max( hor_h_complexity, hor_v_complexity );
         o.vertical = ( ver_ratio > hor_ratio );
-        bcore_msg_fa( "#name: hor_ratio: #<f3_t>, ver_ratio: #<f3_t>\n", o.client_name, hor_ratio, ver_ratio );
     }
     else if( o.arrange == TYPEOF_hor_golden_ratio )
     {
         f3_t ver_log_ratio = f3_log( ver_h_complexity ) - f3_log( ver_v_complexity );
         f3_t hor_log_ratio = f3_log( hor_h_complexity ) - f3_log( hor_v_complexity );
         o.vertical = ( f3_sqr( ver_log_ratio - f3_log( 1.618 ) ) < f3_sqr( hor_log_ratio - f3_log( 1.618 ) ) );
-        bcore_msg_fa( "#name: ver_log_ratio: #<f3_t>, hor_log_ratio: #<f3_t>\n", o.client_name, ver_log_ratio, hor_log_ratio );
     }
     else if( o.arrange == TYPEOF_ver_golden_ratio )
     {
         f3_t ver_log_ratio = f3_log( ver_v_complexity ) - f3_log( ver_h_complexity );
         f3_t hor_log_ratio = f3_log( hor_v_complexity ) - f3_log( hor_h_complexity );
         o.vertical = ( f3_sqr( ver_log_ratio - f3_log( 1.618 ) ) < f3_sqr( hor_log_ratio - f3_log( 1.618 ) ) );
-        bcore_msg_fa( "#name: ver_log_ratio: #<f3_t>, hor_log_ratio: #<f3_t>\n", o.client_name, ver_log_ratio, hor_log_ratio );
     }
     else if( o.arrange == TYPEOF_min_volume )
     {
         f3_t ver_volume = ver_v_complexity * ver_h_complexity;
         f3_t hor_volume = hor_v_complexity * hor_h_complexity;
         o.vertical = ( ver_volume < hor_volume );
-        bcore_msg_fa( "#name: ver_volume: #<f3_t>, hor_volume: #<f3_t>\n", o.client_name, ver_volume, hor_volume );
     }
     else
     {
@@ -115,8 +114,6 @@ func (:s) open
         o.h_complexity = hor_h_complexity;
         o.v_complexity = hor_v_complexity;
     }
-
-    bcore_msg_fa( "#name: h_complexity: #<f3_t>, v_complexity: #<f3_t>\n", o.client_name, o.h_complexity, o.v_complexity );
 
     o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, NULL );
 
@@ -148,10 +145,13 @@ func (:s) er_t rtt_open( m@* o, vd_t unused )
         gtk_widget_show( label );
     }
 
-    gtk_widget_set_name( o.rtt_gtk_box, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
-    gtk_widget_set_size_request( o.rtt_gtk_box, o.width, o.height );
+    m$* box_name = st_s!^;
+    box_name.push_sc( o.widget_name ? o.widget_name.sc : "bgfe_frame" );
 
-    g_signal_connect( o.rtt_gtk_box, "destroy", G_CALLBACK( :s_rtt_signal_destroy_gtk_box ), o );
+    if( o.show_border ) box_name.push_fa( "_border_w#<sz_t>", o.wrap_level );
+
+    gtk_widget_set_name( o.rtt_gtk_box, box_name.sc );
+    gtk_widget_set_size_request( o.rtt_gtk_box, o.width, o.height );
 
     foreach( m$* e in o.content_list )
     {

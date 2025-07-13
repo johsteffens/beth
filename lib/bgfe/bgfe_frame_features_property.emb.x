@@ -21,11 +21,15 @@
 feature er_t set_width             ( m@* o, sz_t value   ) = 0;
 feature er_t set_height            ( m@* o, sz_t value   ) = 0;
 feature er_t set_arrange           ( m@* o, tp_t arrange ) = 0; // 0, horizontal~, vertical~
+feature er_t set_arr_editable      ( m@* o, bl_t flag    ) = 0; // allows/inhibits adding, removing and reordering on arrays
 feature er_t set_min_content_width ( m@* o, sz_t value   ) = 0; // applies for horizontal orientation
 feature er_t set_min_content_height( m@* o, sz_t value   ) = 0; // applies for vertical orientation
 feature er_t set_max_content_width ( m@* o, sz_t value   ) = 0; // applies for horizontal orientation
 feature er_t set_max_content_height( m@* o, sz_t value   ) = 0; // applies for vertical orientation
 feature er_t set_show_client_name  ( m@* o, bl_t flag    ) = 0; // true: displays client name (e.g. as label)
+feature er_t set_show_border       ( m@* o, bl_t flag    ) = 0; // true: displays a border around composite frames
+feature er_t set_show_index        ( m@* o, bl_t flag    ) = 0; // true: displays an index (arrays/lists)
+feature er_t set_tooltip           ( m@* o, sc_t text    ) = 0; // defines external tooltip text (internal text might be appended)
 feature er_t set_show_tooltip      ( m@* o, bl_t flag    ) = 0; // shows tooltip (if any offered)
 feature er_t set_show_value        ( m@* o, bl_t flag    ) = 0; // where showing the current value is optional (e.g. scale)
 feature er_t set_show_glimpse      ( m@* o, bl_t flag    ) = 0; // shows a glimpse where it is supported
@@ -33,13 +37,17 @@ feature er_t set_text              ( m@* o, sc_t text    ) = 0; // for frames wi
 feature er_t set_min               ( m@* o, f3_t value   ) = 0; // for value clamping (e.g. scale)
 feature er_t set_max               ( m@* o, f3_t value   ) = 0; // for value clamping (e.g. scale)
 feature er_t set_step              ( m@* o, f3_t value   ) = 0; // for value stepping (e.g. scale)
-feature er_t set_keep_above        ( m@* o, bl_t flag    ) = 0; // for floating frames (e.g. window)
 feature er_t set_widget_name       ( m@* o, sc_t text    ) = 0; // optional gtk widget name overrides default widget name
 feature er_t set_spacing           ( m@* o, sz_t value   ) = 0; // spacing between elements
 feature er_t set_end_bound         ( m@* o, bl_t flag    ) = 0; // packs elements with reference to the end of the box (false: reference to the start)
 feature er_t set_center            ( m@* o, bl_t flag    ) = 0; // centers widgets in an expanded space
 feature er_t set_stretch           ( m@* o, bl_t flag    ) = 0; // stretches elements to fill expanded space
 feature er_t set_embed_link        ( m@* o, bl_t flag    ) = 0; // when the client is a link, embed the frame rather than displaying it in a dedicated window.
+
+// window related properties
+feature er_t set_keep_above         ( m@* o, bl_t flag    ) = 0; // for floating frames (e.g. window)
+feature er_t set_decorated          ( m@* o, bl_t flag    ) = 0; // adds decoration, make window movable and resizable
+feature er_t set_close_on_lost_focus( m@* o, bl_t flag    ) = 0; // closes window when focus is lost
 
 //----------------------------------------------------------------------------------------------------------------------
 

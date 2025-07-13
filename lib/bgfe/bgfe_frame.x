@@ -87,7 +87,6 @@ feature er_t add_content_t( m@* o, m obliv bgfe_client* content, tp_t content_ty
  */
 feature er_t add_frame( m@* o, m bgfe_frame* frame ) = 0;
 
-
 /** Vertical and horizontal complexity.
  *  The complexity indicates how much space the widget of a frame tends to occupy in horizontal and vertical direction.
  *  It can be used to decide about arrangements and embedding of composite frames.
@@ -97,6 +96,13 @@ feature er_t add_frame( m@* o, m bgfe_frame* frame ) = 0;
  */
 feature f3_t h_complexity( @* o ) = 1;
 feature f3_t v_complexity( @* o ) = 1;
+
+
+/** Wrapping level used to determine border and color styling.
+ *  bgfe_frame_s tends to have a wrap level by one higher than the highest wrap level of its elements.
+ */
+feature sz_t wrap_level( @* o ) = 0;
+
 
 /// where a feature size is defined by width and height
 func f3_t complexity_unit_size() = 24;
@@ -110,11 +116,11 @@ feature 'at' bl_t is_compact( @* o ) = false;
 //----------------------------------------------------------------------------------------------------------------------
 
 /// retrieve client and parent info from frame
-feature tp_t client_name( @* o );
-feature tp_t client_type( @* o );
-feature m bgfe_client* client( @* o );
-feature m :*           parent( @* o );
-feature bl_t           is_open( @* o );
+feature tp_t client_name( @* o ) = 0;
+feature tp_t client_type( @* o ) = 0;
+feature m bgfe_client* client( @* o ) = NULL;
+feature m :*           parent( @* o ) = NULL;
+feature bl_t           is_open( @* o ) = false;
 
 /// preferred arrangement
 feature tp_t arrangement( @* o ) = TYPEOF_horizontal;
@@ -178,18 +184,19 @@ stamp :s
     sz_t width;  // optional preset width
     sz_t height; // optional preset height
     bl_t show_client_name = true; // true: does not display client name
+    bl_t show_border      = true;
     tp_t arrange = square;
-    //tp_t arrange = min_volume;
     st_s => widget_name;   // optional gtk widget name overrides default widget name
     sz_t spacing;   // spacing between elements
     bl_t end_bound; // packs elements with reference to the end of the box (false: reference to the start)
-    bl_t center;    // centers widgets in an expanded space
-    bl_t stretch;   // stretches elements to fill expanded space
+    bl_t center = true;    // centers widgets in an expanded space
+    bl_t stretch = true;   // stretches elements to fill expanded space
 
     func bgfe_frame.set_width   { o.width   = value; = 0; }
     func bgfe_frame.set_height  { o.height  = value; = 0; }
     func bgfe_frame.set_arrange { o.arrange = arrange; = 0; }
     func bgfe_frame.set_show_client_name { o.show_client_name = flag; = 0; }
+    func bgfe_frame.set_show_border { o.show_border = flag; = 0; }
     func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
     func bgfe_frame.set_spacing  { o.spacing   = value; = 0; }
     func bgfe_frame.set_end_bound{ o.end_bound = flag; = 0; }
@@ -205,6 +212,7 @@ stamp :s
 
     hidden f3_t h_complexity; // computed during opening
     hidden f3_t v_complexity; // computed during opening
+    hidden sz_t wrap_level;   // computed during opening
     hidden bl_t vertical; // vertical arrangement (computed during opening)
 
     func bgfe_frame.client = o.client;
@@ -214,11 +222,11 @@ stamp :s
     func bgfe_frame.is_open = o.is_open;
     func bgfe_frame.h_complexity { if( o.is_open ) = o.h_complexity; ERR_fa( "Frame is not open." ); = 1; }
     func bgfe_frame.v_complexity { if( o.is_open ) = o.v_complexity; ERR_fa( "Frame is not open." ); = 1; }
+    func bgfe_frame.wrap_level   { if( o.is_open ) = o.wrap_level; ERR_fa( "Frame is not open." ); = 0; }
     func bgfe_frame.is_compact = false;
 
     hidden :list_s => content_list;
     hidden bgfe_rte_s* rte;
-    hidden x_mutex_s mutex;
     hidden GtkWidget* rtt_widget;
     hidden GtkWidget* rtt_gtk_box;
     hidden bl_t is_open;

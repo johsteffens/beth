@@ -18,7 +18,9 @@
 /// small text frame based on gtk label
 
 /** Text frame (const) based on GTK 'Label'
- *  Associated types: st_s and convertible types
+ *  If Client feature bgfe_get_glimpse is overloaded it will be used for text generation.
+ *  Text can also be set manually 'set_text' which disables changes via upsync.
+ *  Otherwise associated types: st_s and convertible types
  */
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -31,11 +33,12 @@ stamp :s bgfe_frame
     st_s => text;   // label text
     st_s => widget_name;   // optional gtk widget name overrides default widget name
     bl_t show_tooltip = true;
-    func bgfe_frame.set_show_tooltip{ o.show_tooltip = flag; = 0; }
+    bl_t no_upsync;
 
+    func bgfe_frame.set_show_tooltip{ o.show_tooltip = flag; = 0; }
     func bgfe_frame.set_width { o.width = value; = 0; }
     func bgfe_frame.set_height{ o.height = value; = 0; }
-    func bgfe_frame.set_text  { o.text!.copy_sc( text ); = 0; }
+    func bgfe_frame.set_text  { o.text!.copy_sc( text ); o.no_upsync = true; = 0; }
     func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
 
     /// internals
@@ -88,6 +91,7 @@ func (:s) er_t rtt_set_text( m@* o, st_s* rts_text )
 
 func (:s) er_t client_to_st( @* o, m st_s* st )
 {
+    if( !o.client ) = 0;
     if( o.client_type == tp_t~ || o.client_type == aware_t~ || o.client_type == er_t~ )
     {
         sc_t name = bnameof( o.client.cast( tp_t* ).0 );
@@ -98,7 +102,18 @@ func (:s) er_t client_to_st( @* o, m st_s* st )
         }
     }
 
-    bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_st_s, st.cast( m x_inst* ) );
+    // no else
+
+    if( bgfe_client_t_defines_bgfe_get_glimpse( o.client_type ) )
+    {
+        st.clear();
+        o.client.t_bgfe_get_glimpse( o.client_type, st );
+    }
+    else
+    {
+        bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_st_s, st.cast( m x_inst* ) );
+    }
+
     = 0;
 }
 
@@ -113,7 +128,7 @@ func (:s) open
     ASSERT( parent );
     o.parent = parent;
 
-    o.client_to_st( o.text! );
+    if( !o.text ) o.client_to_st( o.text! );
 
     if( bnameof( o.client_name ) ) o.rts_tooltip_text!.push_fa( "#<sc_t>", bnameof( o.client_name ) );
     if( bnameof( o.client_type ) )
@@ -198,6 +213,7 @@ func (:s) bgfe_frame.downsync
 func (:s) bgfe_frame.upsync
 {
     if( !o.is_open ) = 0; // no error because frame window could have been closed
+    if( o.no_upsync ) = 0;
 
     m$* client_text = st_s!^;
     o.client_to_st( client_text );

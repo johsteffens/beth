@@ -31,6 +31,7 @@ stamp :s bgfe_frame
     f3_t step  = 0.01; // value stepping
     bl_t show_value = true;  // displays the scale value along with the scale
     st_s => widget_name;   // optional gtk widget name overrides default widget name
+    st_s => tooltip;     // external tooltip (if NULL an internal tooltip is used)
     bl_t show_tooltip = true;
     func bgfe_frame.set_show_tooltip{ o.show_tooltip = flag; = 0; }
 
@@ -40,6 +41,7 @@ stamp :s bgfe_frame
     func bgfe_frame.set_max { o.max = value; = 0; }
     func bgfe_frame.set_step{ o.step = value; = 0; }
     func bgfe_frame.set_show_value{ o.show_value = flag; = 0; }
+    func bgfe_frame.set_tooltip{ o.tooltip!.copy_sc( text ); = 0; }
     func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
 
     hidden f3_t value;        // current scale value
@@ -122,12 +124,14 @@ func (:s) open
 
     bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_f3_t, o.value.1.cast( m x_inst* ) );
 
+    if( o.tooltip ) o.rts_tooltip_text!.push_st( o.tooltip );
     if( bnameof( o.client_name ) ) o.rts_tooltip_text!.push_fa( "#<sc_t>", bnameof( o.client_name ) );
     if( bnameof( o.client_type ) )
     {
         if( o.rts_tooltip_text ) o.rts_tooltip_text!.push_fa( " " );
         o.rts_tooltip_text!.push_fa( "<#<sc_t>>", bnameof( o.client_type ) );
     }
+
     o.rts_value = o.value;
 
     o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, NULL );
@@ -177,6 +181,7 @@ func (:s) close
     o.rte.run( o.rtt_close.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.is_open = false;
     o.client_close_confirm();
+    o.rts_tooltip_text =< NULL;
     = 0;
 }
 

@@ -33,6 +33,7 @@ stamp :s bgfe_frame
     bl_t show_client_name = true; // client name on button
     bl_t show_tooltip     = true; // tooltip with client name
     bl_t show_glimpse     = true; // shows glimpse on button if available
+    bl_t clearable        = true; // displays clear button
     func bgfe_frame.set_show_tooltip{ o.show_tooltip = flag; = 0; }
     func bgfe_frame.set_show_client_name{ o.show_client_name = flag; = 0; }
     func bgfe_frame.set_show_glimpse{ o.show_glimpse = flag; = 0; }
@@ -62,6 +63,7 @@ stamp :s bgfe_frame
     func bgfe_frame.h_complexity = 3;
     func bgfe_frame.v_complexity = 1;
     func bgfe_frame.is_compact = true;
+    func bgfe_frame.grab_focus;
 
     hidden bgfe_frame    => embedded_frame;
     hidden bgfe_window_s => window;
@@ -178,13 +180,6 @@ func (:s) open
     if( !parent ) = GERR_fa( "Parent is NULL." );
     o.parent = parent;
 
-    if( o.client_name && bnameof( o.client_name ) ) o.rts_tooltip_text!.push_fa( "#<sc_t>", bnameof( o.client_name ) );
-    if( bnameof( o.client.type() ) )
-    {
-        if( o.rts_tooltip_text ) o.rts_tooltip_text!.push_fa( " " );
-        o.rts_tooltip_text!.push_fa( "<#<sc_t>>", bnameof( o.client.type() ) );
-    }
-
     o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, NULL );
 
     o.rebuild();
@@ -223,6 +218,23 @@ func (:s) er_t rebuild( m@* o )
         o.embedded_frame =< NULL;
     }
 
+    o.rts_tooltip_text =< NULL;
+
+    if( o.holder_is_array )
+    {
+        o.rts_tooltip_text!.push_fa( "[#<sz_t>]", o.client_index );
+    }
+    else
+    {
+        if( o.client_name && bnameof( o.client_name ) ) o.rts_tooltip_text!.push_fa( "#<sc_t>", bnameof( o.client_name ) );
+    }
+
+    if( bnameof( o.client.type() ) )
+    {
+        if( o.rts_tooltip_text ) o.rts_tooltip_text!.push_fa( " " );
+        o.rts_tooltip_text!.push_fa( "<#<sc_t>>", bnameof( o.client.type() ) );
+    }
+
     if( o.client.o )
     {
         tp_t frame_type = bgfe_frame_default_frame_type( o.client.type() );
@@ -237,6 +249,9 @@ func (:s) er_t rebuild( m@* o )
             {
                 o.embedded_frame =< frame.fork();
                 o.embedded_frame.set_client_with_content_t( o.client.o, o.client.type(), o.client_name );
+
+                if( o.holder_is_array ) { o.embedded_frame.set_tooltip( st_s!^.copy_fa( "[#<sz_t>]", o.client_index ).sc ); }
+
                 o.embedded_frame.open( o.parent );
             }
         }
@@ -283,14 +298,40 @@ func (:s) er_t rtt_rebuild( m@* o, vd_t unused )
 
 
     /// rtt_button_clear
-    o.rtt_attach_widget( gtk_button_new_with_label( "X" ), o.rtt_button_clear );
-    g_signal_connect( o.rtt_button_clear, "clicked", G_CALLBACK( :s_rtt_button_clear_signal_clicked ), o );
-    gtk_button_set_relief( GTK_BUTTON( o.rtt_button_clear ), GTK_RELIEF_NORMAL );
-    gtk_widget_set_name( o.rtt_button_clear, ifnameof( o._ ) );
-    gtk_widget_set_tooltip_text( o.rtt_button_clear, "clear" );
-    gtk_widget_show( o.rtt_button_clear );
-    gtk_box_pack_start( GTK_BOX( o.rtt_widget ), o.rtt_button_clear, false, false, 0 );
+    if( o.clearable )
+    {
+        o.rtt_attach_widget( gtk_button_new_with_label( "X" ), o.rtt_button_clear );
+        g_signal_connect( o.rtt_button_clear, "clicked", G_CALLBACK( :s_rtt_button_clear_signal_clicked ), o );
+        gtk_button_set_relief( GTK_BUTTON( o.rtt_button_clear ), GTK_RELIEF_NORMAL );
+        gtk_widget_set_name( o.rtt_button_clear, ifnameof( o._ ) );
+        gtk_widget_set_tooltip_text( o.rtt_button_clear, "clear" );
+        gtk_widget_show( o.rtt_button_clear );
+        gtk_box_pack_start( GTK_BOX( o.rtt_widget ), o.rtt_button_clear, false, false, 0 );
+    }
 
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) er_t rtt_grab_focus( m@* o, vd_t unused )
+{
+    if( o.rtt_button_main ) gtk_widget_grab_focus( o.rtt_button_main );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) grab_focus
+{
+    if( o.embedded_frame )
+    {
+        o.embedded_frame.grab_focus();
+    }
+    else
+    {
+        o.rte.run( o.rtt_grab_focus.cast( bgfe_rte_fp_rtt ), o, NULL );
+    }
     = 0;
 }
 
@@ -344,11 +385,6 @@ func (:s) set_holder_t
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) bgfe_frame.client_change_request = 0;
-func (:s) bgfe_frame.client_change_confirm = 0;
-
-//----------------------------------------------------------------------------------------------------------------------
-
 func (:s) bgfe_notify_receiver.notify_receive
 {
     if( o.is_open )
@@ -378,7 +414,7 @@ func (:s) bgfe_frame.cycle
         {
             if( !x_inst_is_creatable( o.client.type() ) )
             {
-                o.type_dialog!.run();
+                o.type_dialog!.run( o );
                 if( o.type_dialog.apply() )
                 {
                     tp_t type = btypeof( o.type_dialog.text.sc );
@@ -396,7 +432,11 @@ func (:s) bgfe_frame.cycle
 
         if( o.client.o )
         {
-            if( !o.embedded_frame )
+            if( o.embedded_frame )
+            {
+                o.embedded_frame.grab_focus();
+            }
+            else
             {
                 if( !o.window )
                 {
@@ -471,8 +511,6 @@ func (:s) bgfe_frame.cycle
 func (:s) bgfe_frame.downsync
 {
     if( !o.is_open ) = 0; // no error because frame window could have been closed
-
-    bcore_msg_fa( "#name: downsync\n", o._ );
 
     if( o.link_changed && o.link_holder )
     {
@@ -554,7 +592,6 @@ group :type_dialog
 
         func bgfe_client.bgfe_edit_frame_type
         {
-            bcore_msg_fa( "#name: bgfe_edit_frame_type for #name\n", o._, content_type );
             if( content_type == bl_t~ )
             {
                 frame_type.0 =  bgfe_frame_flag_button_s~;
@@ -596,7 +633,7 @@ group :type_dialog
 
         hidden bgfe_window_s => window;
 
-        func bgfe_client.bgfe_enter_pressed { o.buttons.Apply = true; action_type.0 = 0; = 0; }
+        func bgfe_client.bgfe_enter_pressed { o.buttons.Apply = true; action_type.0 = approve~; = 0; }
 
         func bgfe_client.bgfe_change_confirm
         {
@@ -607,7 +644,7 @@ group :type_dialog
                 o.status = is_aware ? "VALID" : "invalid";
                 o.window.upsync();
             }
-            action_type.0 = 0;
+            action_type.0 = approve~;
             = 0;
         }
 
@@ -616,6 +653,7 @@ group :type_dialog
             if( content == (vd_t)o )
             {
                 frame.set_show_client_name( false );
+                frame.set_show_border( true );
                 frame.set_spacing( 5 );
                 action_type.0 = approve~;
             }
@@ -628,12 +666,16 @@ group :type_dialog
             = 0;
         }
 
-        func er_t run( m@* o )
+        func er_t run( m@* o, m bgfe_frame* parent )
         {
             o.reset();
             o.window!.set_client_with_content( o, 0 );
-            o.window.open( NULL );
-            while( o.window.is_open && !o.exit() ) o.window.cycle_sleep_ms( escapprove~, 10 );
+            o.window.set_keep_above( true );
+            o.window.set_decorated( false );
+            o.window.set_close_on_lost_focus( true );
+
+            o.window.open( parent );
+            while( o.window.is_open && !o.exit() ) o.window.cycle_sleep_ms( approve~, 10 );
             o.window.close();
             = 0;
         }
