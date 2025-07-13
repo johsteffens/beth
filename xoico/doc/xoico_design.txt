@@ -1,4 +1,4 @@
-Author and Copyright 2020...2024 Johannes Bernhard Steffens
+Author and Copyright 2020...2025 Johannes Bernhard Steffens
 
 XOICO Framework Design
 
