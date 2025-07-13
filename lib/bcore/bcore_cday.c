@@ -48,7 +48,7 @@ void bcore_cday_ymd_s_check_plausibility( const bcore_cday_ymd_s* o )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bcore_cday_ymd_s_from_cday( bcore_cday_ymd_s* o, s2_t cday )
+bcore_cday_ymd_s* bcore_cday_ymd_s_from_cday( bcore_cday_ymd_s* o, s2_t cday )
 {
     s2_t lyr = cday / ( 365 * 4 + 1 );
     s2_t ldy = cday - lyr * ( 365 * 4 + 1 );
@@ -70,11 +70,13 @@ void bcore_cday_ymd_s_from_cday( bcore_cday_ymd_s* o, s2_t cday )
     o->d   = dy + 1;
     o->m = ( mt <= 12 ) ? mt : mt - 12;
     o->y  = 1900 + yr + ( ( mt <= 12 ) ? 0 : 1 );
+
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bcore_cday_ymd_s_from_source( bcore_cday_ymd_s* o, bcore_source* source )
+bcore_cday_ymd_s* bcore_cday_ymd_s_from_source( bcore_cday_ymd_s* o, bcore_source* source )
 {
     char y[4] = { 0 };
     char m[2] = { 0 };
@@ -92,22 +94,18 @@ void bcore_cday_ymd_s_from_source( bcore_cday_ymd_s* o, bcore_source* source )
     o->d = ( d[0] - '0' ) * 10   + ( d[1] - '0' );
 
     bcore_cday_ymd_s_check_plausibility( o );
+
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bcore_cday_ymd_s_from_sc( bcore_cday_ymd_s* o, sc_t sc )
+bcore_cday_ymd_s* bcore_cday_ymd_s_from_sc( bcore_cday_ymd_s* o, sc_t sc )
 {
     st_s st;
     st_s_init_weak_sc( &st, sc );
     bcore_cday_ymd_s_from_source( o, ( bcore_source* )&st );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bcore_cday_ymd_s_from_string( bcore_cday_ymd_s* o, const st_s* st )
-{
-    bcore_cday_ymd_s_from_sc( o, st->sc );
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -145,37 +143,6 @@ s2_t bcore_cday_ymd_s_to_cday( const bcore_cday_ymd_s* o )
     sum -= 60;
 
     return sum;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bcore_cday_ymd_s_to_sink( const bcore_cday_ymd_s* o, bcore_sink* sink )
-{
-    bcore_sink_a_push_fa( sink, "#<s2_t>-#pl2'0'{#<s2_t>}-#pl2'0'{#<s2_t>}", o->y, o->m, o->d );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bcore_cday_ymd_s_push_to_string( const bcore_cday_ymd_s* o, st_s* st )
-{
-    bcore_cday_ymd_s_to_sink( o, (bcore_sink*)st );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bcore_cday_ymd_s_to_string( const bcore_cday_ymd_s* o, st_s* st )
-{
-    st_s_clear( st );
-    bcore_cday_ymd_s_push_to_string( o, st );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-bcore_cday_ymd_s* bcore_cday_ymd_s_create_from_cday( s2_t cday )
-{
-    bcore_cday_ymd_s* o = bcore_cday_ymd_s_create();
-    bcore_cday_ymd_s_from_cday( o, cday );
-    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -296,13 +263,6 @@ s2_t bcore_cday_from_sc( sc_t sc )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-s2_t bcore_cday_from_string( const st_s* st )
-{
-    return bcore_cday_from_sc( st->sc );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
 s2_t bcore_cday_from_source( bcore_source* source )
 {
     bcore_cday_ymd_s* ymd = bcore_cday_ymd_s_create();
@@ -319,27 +279,29 @@ s2_t bcore_cday_from_source( bcore_source* source )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bcore_cday_utc_s_from_system( bcore_cday_utc_s* o )
+bcore_cday_utc_s* bcore_cday_utc_s_from_system( bcore_cday_utc_s* o )
 {
     u3_t stime = ( u3_t )time( NULL );
     s2_t epoch_days = stime / ( 24 * 3600 );
     s2_t seconds    = stime % ( 24 * 3600 );
     o->cday = bcore_cday_of_epoch() + epoch_days;
     o->ms = seconds * 1000;
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bcore_cday_utc_s_normalize( bcore_cday_utc_s* o )
+bcore_cday_utc_s* bcore_cday_utc_s_normalize( bcore_cday_utc_s* o )
 {
     s2_t range = 24 * 3600 * 1000;
     while( o->ms <      0 ) { o->cday--; o->ms += range; }
     while( o->ms >= range ) { o->cday++; o->ms -= range; }
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bcore_cday_utc_s_to_sink( const bcore_cday_utc_s* o, bcore_sink* sink )
+const bcore_cday_utc_s* bcore_cday_utc_s_to_sink( const bcore_cday_utc_s* o, bcore_sink* sink )
 {
     bcore_cday_to_sink( o->cday, sink );
     s2_t secs = o->ms / 1000;
@@ -349,26 +311,12 @@ void bcore_cday_utc_s_to_sink( const bcore_cday_utc_s* o, bcore_sink* sink )
     secs = secs % 60;
     s2_t ss = secs;
     bcore_sink_a_push_fa( sink, "T#pl2'0'{#<s2_t>}:#pl2'0'{#<s2_t>}:#pl2'0'{#<s2_t>}Z", hh, mm, ss );
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bcore_cday_utc_s_push_to_string( const bcore_cday_utc_s* o, st_s* st )
-{
-    bcore_cday_utc_s_to_sink( o, ( bcore_sink* )st );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bcore_cday_utc_s_to_string( const bcore_cday_utc_s* o, st_s* st )
-{
-    st_s_clear( st );
-    bcore_cday_utc_s_push_to_string( o, st );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bcore_cday_utc_s_from_source( bcore_cday_utc_s* o, bcore_source* source )
+bcore_cday_utc_s* bcore_cday_utc_s_from_source( bcore_cday_utc_s* o, bcore_source* source )
 {
     o->cday = bcore_cday_from_source( source );
     s2_t hh = 0;
@@ -376,22 +324,16 @@ void bcore_cday_utc_s_from_source( bcore_cday_utc_s* o, bcore_source* source )
     s2_t ss = 0;
     bcore_source_a_parse_fa( source, "T#-?'0'#<s2_t*>:#-?'0'#<s2_t*>:#-?'0'#<s2_t*>Z", &hh, &mm, &ss );
     o->ms = ( hh * 3600 + mm * 60 + ss ) * 1000;
+    return o;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bcore_cday_utc_s_from_sc( bcore_cday_utc_s* o, sc_t sc )
+bcore_cday_utc_s* bcore_cday_utc_s_from_sc( bcore_cday_utc_s* o, sc_t sc )
 {
     st_s st;
     st_s_init_weak_sc( &st, sc );
-    bcore_cday_utc_s_from_source( o, ( bcore_source* )&st );
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-void bcore_cday_utc_s_from_string( bcore_cday_utc_s* o, const st_s* string )
-{
-    bcore_cday_utc_s_from_sc( o, string->sc );
+    return bcore_cday_utc_s_from_source( o, ( bcore_source* )&st );
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

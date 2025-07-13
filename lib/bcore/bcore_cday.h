@@ -47,92 +47,103 @@
 XOILA_DEFINE_GROUP( bcore_cday, bcore_inst )
 #ifdef XOILA_SECTION
 
-stamp :ymd_s = aware : { s2_t y; s2_t m; s2_t d; }; // year - month - day
-stamp :utc_s = aware : { s2_t cday; s2_t ms; };     // utc-time stamp: cday, milliseconds from 0:00 into the day
+/**********************************************************************************************************************/
+/// plain cday functions
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// cday of posix epoch (1970-01-01)
+func s2_t of_epoch() = 25508;
+
+/// wnum == weeknumber of the year according to ISO 8601
+func s2_t to_wnum( s2_t cday );
+
+/// wday == weekday: 0 = monday, ..., 6 = sunday
+func s2_t to_wday( s2_t cday );
+
+/// 0 -> "mo", 1 -> "tu", ... , 6 -> "su"
+func sc_t wday_to_sc( s2_t wday );
+
+/// converts cday to format "YYYY-MM-DD"
+func void to_sink(        s2_t cday, m bcore_sink* sink );
+func void to_string(      s2_t cday, m st_s* st );
+func void push_to_string( s2_t cday, m st_s* st );
+
+/// computes cday from format "YYYY-MM-DD"
+func s2_t from_source( m bcore_source* source );
+func s2_t from_sc( sc_t sc );
+func s2_t from_string( c st_s* st ) = :from_sc( st.sc );
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// year-month-day representation of cday
+stamp :ymd_s :
+{
+    s2_t y; // year
+    s2_t m; // month
+    s2_t d; // day
+
+    /// conversion from cday
+    func o from_cday( m@* o, s2_t cday );
+
+    /// copies from text source in the format "YYYY-MM-DD"
+    func o from_source( m@* o, m bcore_source* source );
+    func o from_sc(     m@* o, sc_t sc );
+    func o from_string( m@* o, c st_s* st ) = o.from_sc( st.sc );
+
+    func d @* create_from_cday( s2_t cday ) = @!.from_cday( cday );
+
+    /// pushes ymd to sink in the format "YYYY-MM-DD"
+    func o to_sink(        c@* o, m bcore_sink* sink ) sink.push_fa( "#<s2_t>-#pl2'0'{#<s2_t>}-#pl2'0'{#<s2_t>}", o.y, o.m, o.d );
+    func o to_string(      c@* o, m st_s* st ) { st.clear(); = o.to_sink( st ); }
+    func o push_to_string( c@* o, m st_s* st ) = o.to_sink( st );
+
+    /// conversion ymd to cday
+    func s2_t to_cday( c@* o );
+
+    /// wnum == weeknumber of the year according to ISO 8601
+    func s2_t to_wnum( c@* o );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// utc-time stamp: cday, milliseconds from 0:00 into the day
+stamp :utc_s bcore_cday
+{
+    s2_t cday;
+    s2_t ms;
+
+    /// obtains the current UTC time from the system
+    func o from_system( m@* o );
+
+    /// adjusts values in case ms exceeds the range of the specified cday
+    func o normalize( m@* o );
+
+    /// converts time into ISO 8601 time format YYYY-MM-DDThh:mm:ssZ
+    func o to_sink(        c@* o, m bcore_sink* sink );
+    func o to_string(      c@* o, m st_s* st ) { st.clear(); = o.to_sink( st ); }
+    func o push_to_string( c@* o, m st_s* st ) = o.to_sink( st );
+
+    /// converts time from ISO 8601 time format YYYY-MM-DDThh:mm:ssZ
+    func o from_source( m@* o, m bcore_source* source );
+    func o from_sc(     m@* o, sc_t sc );
+    func o from_string( m@* o, c st_s* st ) = o.from_sc( st.sc );
+
+    /// returns time in ms from cday-epoch (1900-03-01T00:00:00Z)
+    func s3_t to_ms( c@* o );
+
+    /// returns the time difference (o-b) in milliseconds
+    func s3_t diff_ms( c@* o, c@* b );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 #endif // XOILA_SECTION
 #endif // TYPEOF_bcore_cday
-
-// ---------------------------------------------------------------------------------------------------------------------
-// ymd
-
-/// conversion from cday
-void bcore_cday_ymd_s_from_cday( bcore_cday_ymd_s* o, s2_t cday );
-
-/// conversion from cday
-bcore_cday_ymd_s* bcore_cday_ymd_s_create_from_cday( s2_t cday );
-
-/// copies from text source in the format "YYYY-MM-DD"
-void bcore_cday_ymd_s_from_source( bcore_cday_ymd_s* o, bcore_source* source );
-void bcore_cday_ymd_s_from_string( bcore_cday_ymd_s* o, const st_s* st );
-void bcore_cday_ymd_s_from_sc(     bcore_cday_ymd_s* o, sc_t sc );
-
-/// pushes ymd to sink in the format "YYYY-MM-DD"
-void bcore_cday_ymd_s_to_sink(        const bcore_cday_ymd_s* o, bcore_sink* sink );
-void bcore_cday_ymd_s_to_string(      const bcore_cday_ymd_s* o, st_s* st );
-void bcore_cday_ymd_s_push_to_string( const bcore_cday_ymd_s* o, st_s* st );
-
-/// pushes ymd to sink in the format "YYYY-MM-DD"
-void bcore_cday_ymd_s_to_sink( const bcore_cday_ymd_s* o, bcore_sink* sink );
-
-/// conversion ymd to cday
-s2_t bcore_cday_ymd_s_to_cday( const bcore_cday_ymd_s* o );
-
-/// wnum == weeknumber of the year according to ISO 8601
-s2_t bcore_cday_ymd_s_to_wnum( const bcore_cday_ymd_s* o );
-
-/// cday of posix epoch (1970-01-01)
-static inline s2_t bcore_cday_of_epoch( void ) { return 25508; }
-
-// ---------------------------------------------------------------------------------------------------------------------
-// cday
-
-/// wnum == weeknumber of the year according to ISO 8601
-s2_t bcore_cday_to_wnum( s2_t cday );
-
-/// wday == weekday: 0 = monday, ..., 6 = sunday
-s2_t bcore_cday_to_wday( s2_t cday );
-
-/// 0 -> "mo", 1 -> "tu", ... , 6 -> "su"
-sc_t bcore_wday_to_sc( s2_t wday );
-
-/// converts cday to format "YYYY-MM-DD"
-void bcore_cday_to_sink(        s2_t cday, bcore_sink* sink );
-void bcore_cday_to_string(      s2_t cday, st_s* st );
-void bcore_cday_push_to_string( s2_t cday, st_s* st );
-
-/// pushes cday to text-sink with format "YYYY-MM-DD"
-void bcore_cday_to_sink( s2_t cday, bcore_sink* sink );
-
-/// computes cday from format "YYYY-MM-DD"
-s2_t bcore_cday_from_source( bcore_source* source );
-s2_t bcore_cday_from_string( const st_s* st );
-s2_t bcore_cday_from_sc( sc_t sc );
-
-// ---------------------------------------------------------------------------------------------------------------------
-// time
-
-/// obtains the current UTC time from the system
-void bcore_cday_utc_s_from_system( bcore_cday_utc_s* o );
-
-/// adjusts values in case ms exceeds the range of the specified cday
-void bcore_cday_utc_s_normalize( bcore_cday_utc_s* o );
-
-/// converts time into ISO 8601 time format YYYY-MM-DDThh:mm:ssZ
-void bcore_cday_utc_s_to_sink(        const bcore_cday_utc_s* o, bcore_sink* sink );
-void bcore_cday_utc_s_to_string(      const bcore_cday_utc_s* o, st_s* st );
-void bcore_cday_utc_s_push_to_string( const bcore_cday_utc_s* o, st_s* st );
-
-/// converts time from ISO 8601 time format YYYY-MM-DDThh:mm:ssZ
-void bcore_cday_utc_s_from_source( bcore_cday_utc_s* o, bcore_source* source );
-void bcore_cday_utc_s_from_string( bcore_cday_utc_s* o, const st_s* st );
-void bcore_cday_utc_s_from_sc(     bcore_cday_utc_s* o, sc_t sc );
-
-/// returns time in ms from cday-epoch (1900-03-01T00:00:00Z)
-s3_t bcore_cday_utc_s_to_ms( const bcore_cday_utc_s* o );
-
-/// returns the time difference (o-b) in milliseconds
-s3_t bcore_cday_utc_s_diff_ms( const bcore_cday_utc_s* o, const bcore_cday_utc_s* b );
 
 // ---------------------------------------------------------------------------------------------------------------------
 
