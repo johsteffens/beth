@@ -2119,14 +2119,14 @@ bcore_arr_uz_s* bcore_array_default_create_sorted_order( const bcore_array_s* p,
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void bcore_array_default_reorder( const bcore_array_s* p, bcore_array* o, const bcore_arr_uz_s* order )
+void bcore_array_default_reorder( const bcore_array_s* p, bcore_array* o, const bcore_arr_uz_s* index_arr )
 {
     uz_t arr_size = bcore_array_p_get_size( p, o );
     bl_t is_fixed = bcore_array_p_is_fixed( p );
 
     if( is_fixed )
     {
-        if( arr_size != order->size ) ERR( "Cannot reorder a fixed-size-array to a different order size." );
+        if( arr_size != index_arr->size ) ERR( "Cannot reorder a fixed-size-array to a different index_arr size." );
     }
 
     if( arr_size > get_space( p, o ) ) bcore_array_p_make_strong( p, o );
@@ -2135,12 +2135,12 @@ void bcore_array_default_reorder( const bcore_array_s* p, bcore_array* o, const 
     {
         vd_t* data = bcore_array_p_get_d_data( p, o );
         uz_t buf_space = 0;
-        vd_t* buf = bcore_un_alloc( sizeof( vd_t ), NULL, 0, order->size, &buf_space );
+        vd_t* buf = bcore_un_alloc( sizeof( vd_t ), NULL, 0, index_arr->size, &buf_space );
 
-        for( uz_t i = 0; i < order->size; i++ )
+        for( uz_t i = 0; i < index_arr->size; i++ )
         {
-            assert( order->data[ i ] < arr_size );
-            buf[ i ] = bcore_fork( data[ order->data[ i ] ] );
+            ASSERT( index_arr->data[ i ] < arr_size );
+            buf[ i ] = bcore_fork( data[ index_arr->data[ i ] ] );
         }
 
         if( bcore_array_p_is_mono_typed( p ) )
@@ -2167,9 +2167,9 @@ void bcore_array_default_reorder( const bcore_array_s* p, bcore_array* o, const 
             ERR( "Unhandled array architecture" );
         }
 
-        bcore_array_p_set_size( p, o, order->size );
+        bcore_array_p_set_size( p, o, index_arr->size );
         data = bcore_array_p_get_d_data( p, o );
-        for( uz_t i = 0; i < order->size; i++ ) data[ i ] = buf[ i ];
+        for( uz_t i = 0; i < index_arr->size; i++ ) data[ i ] = buf[ i ];
 
         bcore_un_alloc( sizeof( vd_t ), buf, buf_space, 0, NULL );
     }
@@ -2181,35 +2181,35 @@ void bcore_array_default_reorder( const bcore_array_s* p, bcore_array* o, const 
         if( inst->init_flat && inst->copy_flat && inst->down_flat ) // all flat
         {
             uz_t buf_space = 0;
-            vd_t buf = bcore_u_alloc( inst->size, NULL, order->size, &buf_space );
+            vd_t buf = bcore_u_alloc( inst->size, NULL, index_arr->size, &buf_space );
             vd_t data = bcore_array_p_get_d_data( p, o );
             vd_t dst = buf;
-            for( uz_t i = 0; i < order->size; i++ )
+            for( uz_t i = 0; i < index_arr->size; i++ )
             {
-                assert( order->data[ i ] < arr_size );
-                bcore_memcpy( dst, ( u0_t* )data + order->data[ i ] * inst->size, inst->size );
+                ASSERT( index_arr->data[ i ] < arr_size );
+                bcore_memcpy( dst, ( u0_t* )data + index_arr->data[ i ] * inst->size, inst->size );
                 dst = ( u0_t* )dst + inst->size;
             }
-            bcore_array_p_set_size( p, o, order->size );
-            bcore_u_memcpy( inst->size, bcore_array_p_get_d_data( p, o ), buf, order->size );
+            bcore_array_p_set_size( p, o, index_arr->size );
+            bcore_u_memcpy( inst->size, bcore_array_p_get_d_data( p, o ), buf, index_arr->size );
             bcore_un_alloc( inst->size, buf, buf_space, 0, NULL );
         }
         else
         {
             uz_t buf_space = 0;
-            vd_t buf = bcore_u_alloc( inst->size, NULL, order->size, &buf_space );
+            vd_t buf = bcore_u_alloc( inst->size, NULL, index_arr->size, &buf_space );
             vd_t data = bcore_array_p_get_d_data( p, o );
-            for( uz_t i = 0; i < order->size; i++ )
+            for( uz_t i = 0; i < index_arr->size; i++ )
             {
-                assert( order->data[ i ] < arr_size );
+                ASSERT( index_arr->data[ i ] < arr_size );
                 vd_t dst = ( u0_t* )buf  + i * inst->size;
-                vc_t src = ( u0_t* )data + order->data[ i ] * inst->size;
+                vc_t src = ( u0_t* )data + index_arr->data[ i ] * inst->size;
                 bcore_inst_p_init( inst, dst );
                 bcore_inst_p_copy( inst, dst, src );
             }
             if( is_fixed )
             {
-                for( uz_t i = 0; i < order->size; i++ )
+                for( uz_t i = 0; i < index_arr->size; i++ )
                 {
                     vd_t src = ( u0_t* )buf + i * inst->size;
                     bcore_array_p_set( p, o, i, sr_pwc( inst, src ) );
@@ -2219,7 +2219,7 @@ void bcore_array_default_reorder( const bcore_array_s* p, bcore_array* o, const 
             else
             {
                 bcore_array_p_set_size( p, o, 0 );
-                for( uz_t i = 0; i < order->size; i++ )
+                for( uz_t i = 0; i < index_arr->size; i++ )
                 {
                     vd_t src = ( u0_t* )buf + i * inst->size;
                     bcore_array_p_push( p, o, sr_pwc( inst, src ) );

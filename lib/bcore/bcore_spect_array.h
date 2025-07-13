@@ -179,7 +179,15 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG4_MAP0( bcore_array, do_arg,          uz_t, star
  */
 BCORE_FUNC_SPECT_CONST1_RET1_ARG4_MAP0( bcore_array, create_sorted_order_f, bcore_arr_uz_s*, uz_t, start, uz_t, end, bcore_cmp_f, cmp, s2_t, direction )
 BCORE_FUNC_SPECT_CONST1_RET1_ARG3_MAP0( bcore_array, create_sorted_order,   bcore_arr_uz_s*, uz_t, start, uz_t, end,                   s2_t, direction )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, reorder, const bcore_arr_uz_s*, order )
+
+/** Reorders array according to the specified index array.
+ *  After ordering the array has the length of index_array and
+ *  each entry is the indexed element before reordering.
+ *  Not-indexed elements will be removed; multiply-indexed elements will be duplicated.
+ *  In case of links, duplicated elements are being forked (not cloned).
+ *  Each index must represent a valid entry of the array before re-ordering. (Error in case any index is out of range)
+ */
+BCORE_FUNC_SPECT_CONST0_RET0_ARG1_MAP0( bcore_array, reorder, const bcore_arr_uz_s*, index_array )
 
 bl_t bcore_array_t_is_fixed             ( tp_t tp );
 bl_t bcore_array_t_is_static            ( tp_t tp );

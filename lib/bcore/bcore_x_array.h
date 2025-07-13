@@ -51,6 +51,11 @@ group :feature
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/**********************************************************************************************************************/
+/// Interface
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func sz_t t_size ( c obliv (TO) @* o, tp_t t ) = bcore_array_t_get_size ( t, o.cast( m bcore_array* ) );
 func sz_t   size ( c aware (TO) @* o         ) = o.t_size( o._ );
 
@@ -181,6 +186,23 @@ func u3_t c_get_u3( c aware @* o, sz_t index ) = o.t_c_get_sr( o._, index ).sr_t
 func s3_t c_get_s3( c aware @* o, sz_t index ) = o.t_c_get_sr( o._, index ).sr_to_s3();
 func bl_t c_get_bl( c aware @* o, sz_t index ) = o.t_c_get_sr( o._, index ).sr_to_bl();
 func tp_t c_get_tp( c aware @* o, sz_t index ) = o.t_c_get_sr( o._, index ).sr_to_tp();
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/** Reorders array according to the specified index array.
+ *  After ordering the array has the length of index_array and
+ *  each entry is the indexed element before reordering.
+ *  Not-indexed elements will be removed; multiply-indexed elements will be duplicated.
+ *  In case of links, duplicated elements are being forked (not cloned).
+ *  Each index must represent a valid entry of the array before re-ordering. (Error in case any index is out of range)
+ */
+func o t_reorder( m obliv (TO) @* o, tp_t t, bcore_arr_uz_s* index_array ) bcore_array_t_reorder( t, o.cast( m bcore_array* ), index_array );
+func o reorder(   m aware (TO) @* o,         bcore_arr_uz_s* index_array ) = o.t_reorder( o._, index_array );
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+/// Implementations
 
 //----------------------------------------------------------------------------------------------------------------------
 
