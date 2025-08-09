@@ -27,18 +27,24 @@ stamp :s bgfe_frame
     /// parameters
     sz_t width;  // optional preferred width of button  (actual size is calculated from the ext)
     sz_t height; // optional preferred height of button (actual size is calculated from the ext)
+    bl_t insensitive; // insensitive: does not react to user actions
     st_s => text;   // text on button
     st_s => widget_name; // optional gtk widget name overrides default widget name
     st_s => tooltip;     // external tooltip (if NULL an internal tooltip is used)
     bl_t show_tooltip = true;
     bl_t no_upsync;
+    f3_t text_xalign = 0.5; // gradual text alignment: 0: left, 0.5: center, 1.0 right
+    f3_t text_yalign = 0.5; // gradual text alignment: 0: top, 0.5: center, 1.0 bottom
 
     func bgfe_frame.set_width { o.width = value; = 0; }
     func bgfe_frame.set_height{ o.height = value; = 0; }
+    func bgfe_frame.set_insensitive { o.insensitive = flag; = 0; }
     func bgfe_frame.set_text  { o.text!.copy_sc( text ); o.no_upsync = true; = 0; }
     func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
     func bgfe_frame.set_tooltip{ o.tooltip!.copy_sc( text ); = 0; }
     func bgfe_frame.set_show_tooltip{ o.show_tooltip = flag; = 0; }
+    func bgfe_frame.set_text_xalign { o.text_xalign = f3_max( 0, f3_min( 1, value ) ); = 0; }
+    func bgfe_frame.set_text_yalign { o.text_yalign = f3_max( 0, f3_min( 1, value ) ); = 0; }
 
     /// internals
 
@@ -56,11 +62,13 @@ stamp :s bgfe_frame
     func bgfe_frame.is_compact = true;
 
     hidden bl_t rts_clicked; // button was clicked
+    hidden bl_t rts_pressed; // button was pressed
 
-    hidden st_s => rts_tooltip_text;  // tooltip text
+    hidden st_s => tooltip_text;  // tooltip text
     hidden bgfe_rte_s* rte;
     hidden x_mutex_s mutex;
-    hidden GtkWidget*  rtt_widget;
+    hidden GtkWidget* rtt_widget; // button widget
+    hidden GtkWidget* rtt_label; // label widget
     hidden bl_t is_open;
 
     func bcore_inst_call.down_e o.close();
@@ -91,12 +99,25 @@ func (:s) void rtt_signal_clicked( m GtkWidget* win, m@* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-identifier gtk_button_set_label;
+func (:s) gboolean rtt_signal_button_press_event( m GtkWidget* drw, GdkEventButton* event, m@* o )
+{
+    if( verbatim_C{ event->button == 1 } )
+    {
+        o.mutex.lock();
+        o.rts_pressed = true;
+        o.mutex.unlock();
+    }
+    = FALSE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+identifier gtk_label_set_text;
 identifier GTK_BUTTON;
 func (:s) er_t rtt_set_text( m@* o, st_s* rts_text )
 {
     o.mutex.lock();
-    gtk_button_set_label( GTK_BUTTON( o.rtt_widget ), rts_text ? rts_text.sc : "" );
+    gtk_label_set_text( GTK_LABEL( o.rtt_label ), rts_text ? rts_text.sc : "" );
     o.mutex.unlock();
     = 0;
 }
@@ -144,12 +165,18 @@ func (:s) open
 
     if( !o.text ) o.client_to_st( o.text! );
 
-    if( o.tooltip ) o.rts_tooltip_text!.push_st( o.tooltip );
-    if( bnameof( o.client_name ) ) o.rts_tooltip_text!.push_fa( "#<sc_t>", bnameof( o.client_name ) );
-    if( bnameof( o.client_type ) )
+    if( o.tooltip )
     {
-        if( o.rts_tooltip_text ) o.rts_tooltip_text!.push_fa( " " );
-        o.rts_tooltip_text!.push_fa( "<#<sc_t>>", bnameof( o.client_type ) );
+        o.tooltip_text!.push_st( o.tooltip );
+    }
+    else
+    {
+        if( bnameof( o.client_name ) ) o.tooltip_text!.push_fa( "#<sc_t>", bnameof( o.client_name ) );
+        if( bnameof( o.client_type ) )
+        {
+            if( o.tooltip_text ) o.tooltip_text!.push_fa( " " );
+            o.tooltip_text!.push_fa( "<#<sc_t>>", bnameof( o.client_type ) );
+        }
     }
 
     o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, NULL );
@@ -159,20 +186,33 @@ func (:s) open
 
 //----------------------------------------------------------------------------------------------------------------------
 
-identifier gtk_button_new, gtk_button_new_with_label, gtk_button_set_relief;
-type GTK_RELIEF_NORMAL;
+identifier gtk_button_new, gtk_button_new_with_label, gtk_button_set_relief, gtk_label_set_xalign, gtk_label_set_yalign;
+type GTK_RELIEF_NORMAL, GTK_LABEL;
 
 func (:s) er_t rtt_open( m@* o, vd_t unused )
 {
     o.mutex.create_lock()^;
-    o.rtt_attach_widget( gtk_button_new_with_label( o.text ? o.text.sc : "" ), o.rtt_widget );
+    o.rtt_attach_widget( gtk_button_new(), o.rtt_widget );
+    o.rtt_attach_widget( gtk_label_new( o.text ? o.text.sc : "" ), o.rtt_label );
+
+    gtk_label_set_xalign( GTK_LABEL( o.rtt_label ), o.text_xalign );
+    gtk_label_set_yalign( GTK_LABEL( o.rtt_label ), o.text_yalign );
+
+    gtk_container_add( GTK_CONTAINER( o.rtt_widget ), o.rtt_label );
+    gtk_widget_show( o.rtt_widget );
+    gtk_widget_show( o.rtt_label );
+
+    if( o.insensitive ) gtk_widget_set_state_flags( o.rtt_widget, GTK_STATE_FLAG_INSENSITIVE, false );
     gtk_button_set_relief( GTK_BUTTON( o.rtt_widget ), GTK_RELIEF_NORMAL );
     gtk_widget_set_name( o.rtt_widget, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
     if( o.width > 0 || o.height > 0 ) gtk_widget_set_size_request( o.rtt_widget, o.width, o.height );
-    if( o.show_tooltip && o.rts_tooltip_text ) gtk_widget_set_tooltip_text( o.rtt_widget, o.rts_tooltip_text.sc );
-    gtk_widget_show( o.rtt_widget );
+    if( o.show_tooltip && o.tooltip_text ) gtk_widget_set_tooltip_text( o.rtt_widget, o.tooltip_text.sc );
     g_signal_connect( o.rtt_widget, "destroy", G_CALLBACK( :s_rtt_signal_destroy ), o );
     g_signal_connect( o.rtt_widget, "clicked", G_CALLBACK( :s_rtt_signal_clicked ), o );
+
+    g_signal_connect( o.rtt_widget, "button-press-event",   G_CALLBACK( o.rtt_signal_button_press_event   ), o );
+    gtk_widget_add_events( o.rtt_widget, GDK_BUTTON_PRESS_MASK );
+
     = 0;
 }
 
@@ -183,8 +223,7 @@ func (:s) close
     if( !o.is_open ) = 0;
     o.rte.run( o.rtt_close.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.is_open = false;
-    o.client_close_confirm();
-    o.rts_tooltip_text =< NULL;
+    o.tooltip_text =< NULL;
     = 0;
 }
 
@@ -192,6 +231,7 @@ func (:s) close
 
 func (:s) er_t rtt_close( m@* o, vd_t arg )
 {
+    o.rtt_detach_widget( o.rtt_label );
     o.rtt_detach_widget( o.rtt_widget );
     = 0;
 }
@@ -221,10 +261,13 @@ func (:s) bgfe_frame.cycle
     if( !o.is_open ) = 0; // no error because frame window could have been closed
 
     o.mutex.lock();
+    bl_t pressed = o.rts_pressed;
     bl_t clicked = o.rts_clicked;
+    o.rts_pressed = false;
     o.rts_clicked = false;
     o.mutex.unlock();
 
+    if( pressed ) o.client_button_pressed( o, action_type.1 );
     if( clicked ) o.client_button_clicked( o, action_type.1 );
 
     = 0;

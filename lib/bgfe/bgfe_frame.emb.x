@@ -31,7 +31,6 @@ func (:s) open
     f3_t sum_v_complexity = 0;
     f3_t overhead_h_complexity = 0.5;
     f3_t overhead_v_complexity = 0.5;
-    o.wrap_level = 1;
 
     /// tendency of clients >0 horizontal; < 0 vertical
     sz_t h_tendency = 0;
@@ -39,7 +38,6 @@ func (:s) open
     foreach( m$* e in o.content_list )
     {
         e.open( o );
-        o.wrap_level = sz_max( o.wrap_level, e.wrap_level() + 1 );
 
         f3_t h_complexity = e.h_complexity();
         f3_t v_complexity = e.v_complexity();
@@ -56,8 +54,6 @@ func (:s) open
             default: break;
         }
     }
-
-    o.wrap_level = sz_min( 4, o.wrap_level );
 
     // complexity on vertical orientation
     f3_t ver_h_complexity = max_h_complexity + overhead_h_complexity * 1;
@@ -124,48 +120,62 @@ func (:s) open
 //----------------------------------------------------------------------------------------------------------------------
 
 identifier gtk_box_new, gtk_flow_box_new, gtk_widget_modify_bg, gtk_label_set_angle, gtk_box_pack_end, gtk_box_pack_start;
+identifier gtk_widget_set_state_flags, GTK_STATE_FLAG_INSENSITIVE;
 type GdkColor, GtkBox, GTK_BOX;
 
 func (:s) er_t rtt_open( m@* o, vd_t unused )
 {
     bl_t vertical = o.vertical;
 
-    o.rtt_attach_widget( gtk_box_new( vertical ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, o.spacing ), o.rtt_gtk_box );
-    gtk_widget_show( o.rtt_gtk_box );
-
-    tp_t label_name = ( o.show_client_name && o.client_name && bnameof( o.client_name ) ) ? o.client_name : 0;
-
-    if( label_name )
-    {
-        m GtkWidget* label = gtk_label_new( bnameof( label_name ) );
-        if( !label ) = GERR_fa( "'gtk_label_new' failed\n" );
-        gtk_widget_set_name( label, "client_name" );
-        gtk_label_set_angle( GTK_LABEL( label ), vertical ? 0 : 90 );
-        gtk_box_pack_start( GTK_BOX( o.rtt_gtk_box ), label, false, false, 0 );
-        gtk_widget_show( label );
-    }
+    o.rtt_attach_widget( gtk_box_new( GTK_ORIENTATION_VERTICAL, 0 ), o.rtt_main_box );
+    gtk_widget_show( o.rtt_main_box );
 
     m$* box_name = st_s!^;
     box_name.push_sc( o.widget_name ? o.widget_name.sc : "bgfe_frame" );
 
-    if( o.show_border ) box_name.push_fa( "_border_w#<sz_t>", o.wrap_level );
+    if( o.show_border ) box_name.push_fa( "_border_style#<sz_t>", ( sz_t )( o.nesting_level % 5 ) );
 
-    gtk_widget_set_name( o.rtt_gtk_box, box_name.sc );
-    gtk_widget_set_size_request( o.rtt_gtk_box, o.width, o.height );
+    gtk_widget_set_name( o.rtt_main_box, box_name.sc );
+    gtk_widget_set_size_request( o.rtt_main_box, o.width, o.height );
+    o.rtt_widget = o.rtt_main_box;
+
+    sc_t label_name = NULL;
+
+    if( o.title )
+    {
+        label_name = o.title.sc;
+    }
+    else if( o.show_client_name && o.client_name )
+    {
+        label_name = bnameof( o.client_name );
+    }
+
+    if( label_name )
+    {
+        m GtkWidget* label = gtk_label_new( label_name );
+        if( !label ) = GERR_fa( "'gtk_label_new' failed\n" );
+        gtk_widget_set_name( label, "client_name" );
+        gtk_box_pack_start( GTK_BOX( o.rtt_main_box ), label, false, false, 0 );
+        gtk_widget_show( label );
+    }
+
+    o.rtt_attach_widget( gtk_box_new( vertical ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, o.spacing ), o.rtt_content_box );
+    if( o.insensitive ) gtk_widget_set_state_flags( o.rtt_content_box, GTK_STATE_FLAG_INSENSITIVE, false );
+    gtk_widget_show( o.rtt_content_box );
+    gtk_box_pack_start( GTK_BOX( o.rtt_main_box ), o.rtt_content_box, true, true, 0 );
+
 
     foreach( m$* e in o.content_list )
     {
         if( o.end_bound )
         {
-            gtk_box_pack_end( GTK_BOX( o.rtt_gtk_box ), e.rtt_widget(), o.center, o.stretch, 0 );
+            gtk_box_pack_end( GTK_BOX( o.rtt_content_box ), e.rtt_widget(), o.center, o.stretch, 0 );
         }
         else
         {
-            gtk_box_pack_start( GTK_BOX( o.rtt_gtk_box ), e.rtt_widget(), o.center, o.stretch, 0 );
+            gtk_box_pack_start( GTK_BOX( o.rtt_content_box ), e.rtt_widget(), o.center, o.stretch, 0 );
         }
     }
-
-    o.rtt_widget = o.rtt_gtk_box;
 
     = 0;
 }
@@ -187,7 +197,8 @@ func (:s) close
 
 func (:s) er_t rtt_close( m@* o, vd_t arg )
 {
-    o.rtt_detach_widget( o.rtt_gtk_box );
+    o.rtt_detach_widget( o.rtt_content_box );
+    o.rtt_detach_widget( o.rtt_main_box );
     o.rtt_widget = NULL;
     = 0;
 }
@@ -221,27 +232,66 @@ func (:s) upsync
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) client_close_ok
+func (:s) client_close_request
 {
-    if( o.client )
-    {
-        if( !o.client.t_bgfe_close_ok( o.client_type ) ) = false;
-    }
+    if( action_type.0 == approve~ || action_type.0 == reject~ ) = 0;
+    if( o.client ) o.client.t_bgfe_close_request( o.client_type, initiator, action_type );
 
     foreach( m$* e in o.content_list )
     {
-        if( !e.client_close_ok() ) = false;
+        if( action_type.0 == approve~ || action_type.0 == reject~ ) = 0;
+        e.client_close_request( initiator, action_type );
     }
 
-    = true;
+    = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 func (:s) client_close_confirm
 {
-    if( o.client ) o.client.t_bgfe_close_confirm( o.client_type );
-    foreach( m$* e in o.content_list ) e.client_close_confirm();
+    if( action_type.0 == approve~ ) = 0;
+    if( o.client ) o.client.t_bgfe_close_confirm( o.client_type, initiator, action_type );
+    foreach( m$* e in o.content_list )
+    {
+        if( action_type.0 == approve~ ) = 0;
+        e.client_close_confirm( initiator, action_type );
+    }
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) client_distraction
+{
+    if( action_type.0 == approve~ ) = 0;
+    if( o.client ) o.client.t_bgfe_distraction( o.client_type, initiator, action_type );
+    foreach( m$* e in o.content_list )
+    {
+        if( action_type.0 == approve~ ) = 0;
+        e.client_distraction( initiator, action_type );
+    }
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) :.open_window_request
+{
+    switch( o.window_policy )
+    {
+        case any~ : action_type.0 = approve~; break;
+        case zero~: action_type.0 = reject~;  break;
+        case one~:
+        {
+            foreach( m$* e in o.content_list ) e.close_window_request();
+            action_type.0 = approve~;
+            break;
+        }
+        break;
+
+        default: break;
+    }
     = 0;
 }
 
@@ -331,6 +381,7 @@ func (:s) add_content_t
     if( x_stamp_t_is_pure_array( content_type ) )
     {
         m$* frame_array = :array_s!^;
+        frame_array.set_nesting_level( o.nesting_level + 1 );
         frame_array.set_client_t( content, content_type, content_name );
         tp_t action_type = escapprove~;
         o.client_edit_frame( content, content_type, content_name, action_type, frame_array );
@@ -342,6 +393,7 @@ func (:s) add_content_t
         tp_t action_type = escapprove~;
         o.client_edit_frame_type( content, content_type, content_name, action_type.1, frame_type );
         m bgfe_frame* frame = x_inst_create( frame_type ).cast( d bgfe_frame* )^;
+        frame.set_nesting_level( o.nesting_level + 1 );
         action_type = escapprove~;
         o.client_edit_frame( content, content_type, content_name, action_type.1, frame );
         if( frame )
@@ -360,6 +412,7 @@ func (:s) add_linked_content
     if( !o.client ) = 0;
 
     m$* frame_link = :link_s!^;
+    frame_link.set_nesting_level( o.nesting_level + 1 );
 
     m$* content_sr = sr_s!^;
     content_sr.0 = x_stamp_t_m_get_sr( o.client, o.client_type, content_name );
@@ -375,6 +428,9 @@ func (:s) add_linked_content
     }
 
     frame_link.set_holder_t( o.client, o.client_type, o.client_name, false, 0 );
+
+    tp_t action_type = escapprove~;
+    o.client_edit_frame( content_sr.o, content_sr.type(), content_name, action_type.1, frame_link );
 
     o.content_list!.push_d( frame_link.fork() );
     = 0;

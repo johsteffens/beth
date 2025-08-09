@@ -26,17 +26,19 @@ stamp :s bgfe_frame
     /// slider is horizontal if width >= height; otherwise it is vertical
     sz_t width  = 100;
     sz_t height = 40;
+    bl_t insensitive; // insensitive: does not react to user actions
     f3_t min   = 0.0;  // minimum value
     f3_t max   = 1.0;  // maximum value
     f3_t step  = 0.01; // value stepping
     bl_t show_value = true;  // displays the scale value along with the scale
     st_s => widget_name;   // optional gtk widget name overrides default widget name
     st_s => tooltip;     // external tooltip (if NULL an internal tooltip is used)
-    bl_t show_tooltip = true;
+    bl_t show_tooltip = false;
     func bgfe_frame.set_show_tooltip{ o.show_tooltip = flag; = 0; }
 
     func bgfe_frame.set_width { o.width = value; = 0; }
     func bgfe_frame.set_height{ o.height = value; = 0; }
+    func bgfe_frame.set_insensitive { o.insensitive = flag; = 0; }
     func bgfe_frame.set_min { o.min = value; = 0; }
     func bgfe_frame.set_max { o.max = value; = 0; }
     func bgfe_frame.set_step{ o.step = value; = 0; }
@@ -65,7 +67,7 @@ stamp :s bgfe_frame
     hidden f3_t rts_value;    // current scale value
     hidden bl_t rts_modified; // scale value was modified by the front end
 
-    hidden st_s => rts_tooltip_text;  // tooltip text
+    hidden st_s => tooltip_text;  // tooltip text
     hidden bgfe_rte_s* rte;
     hidden x_mutex_s mutex;
     hidden GtkWidget*  rtt_widget;
@@ -124,12 +126,18 @@ func (:s) open
 
     bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_f3_t, o.value.1.cast( m x_inst* ) );
 
-    if( o.tooltip ) o.rts_tooltip_text!.push_st( o.tooltip );
-    if( bnameof( o.client_name ) ) o.rts_tooltip_text!.push_fa( "#<sc_t>", bnameof( o.client_name ) );
-    if( bnameof( o.client_type ) )
+    if( o.tooltip )
     {
-        if( o.rts_tooltip_text ) o.rts_tooltip_text!.push_fa( " " );
-        o.rts_tooltip_text!.push_fa( "<#<sc_t>>", bnameof( o.client_type ) );
+        o.tooltip_text!.push_st( o.tooltip );
+    }
+    else
+    {
+        if( bnameof( o.client_name ) ) o.tooltip_text!.push_fa( "#<sc_t>", bnameof( o.client_name ) );
+        if( bnameof( o.client_type ) )
+        {
+            if( o.tooltip_text ) o.tooltip_text!.push_fa( " " );
+            o.tooltip_text!.push_fa( "<#<sc_t>>", bnameof( o.client_type ) );
+        }
     }
 
     o.rts_value = o.value;
@@ -161,12 +169,13 @@ func (:s) er_t rtt_open( m@* o, vd_t unused )
         o.rtt_widget
     );
 
+    if( o.insensitive ) gtk_widget_set_state_flags( o.rtt_widget, GTK_STATE_FLAG_INSENSITIVE, false );
     gtk_widget_set_name( o.rtt_widget, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
     gtk_range_set_inverted( GTK_RANGE( o.rtt_widget ), vertical );
     gtk_scale_set_draw_value( GTK_SCALE( o.rtt_widget ), o.show_value );
     gtk_widget_set_size_request( o.rtt_widget, o.width, o.height );
     gtk_range_set_value( GTK_RANGE( o.rtt_widget ), o.value );
-    if( o.show_tooltip && o.rts_tooltip_text ) gtk_widget_set_tooltip_text( o.rtt_widget, o.rts_tooltip_text.sc );
+    if( o.show_tooltip && o.tooltip_text ) gtk_widget_set_tooltip_text( o.rtt_widget, o.tooltip_text.sc );
     gtk_widget_show( o.rtt_widget );
     g_signal_connect( o.rtt_widget, "value-changed", G_CALLBACK( :s_rtt_signal_value_changed ), o );
 
@@ -180,8 +189,7 @@ func (:s) close
     if( !o.is_open ) = 0;
     o.rte.run( o.rtt_close.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.is_open = false;
-    o.client_close_confirm();
-    o.rts_tooltip_text =< NULL;
+    o.tooltip_text =< NULL;
     = 0;
 }
 

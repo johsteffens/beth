@@ -21,7 +21,9 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 forward :s;
-forward bgfe_popup_choice_s;
+forward bgfe_choice_s;
+forward bgfe_choice_item_s;
+forward bgfe_choice_client;
 
 /// frame for an array element
 stamp :item_s bgfe_frame
@@ -59,8 +61,9 @@ stamp :item_s bgfe_frame
     func bgfe_frame.open;
     func bgfe_frame.close;
     func bgfe_frame.arrangement = o.is_vertical ? vertical~ : horizontal~;
-    func bgfe_frame.client_close_ok;
+    func bgfe_frame.client_close_request;
     func bgfe_frame.client_close_confirm;
+    func bgfe_frame.client_distraction;
 
     /// Interface functions ...
 
@@ -85,6 +88,7 @@ stamp :s bgfe_frame
     /// parameters
     sz_t width;   // optional preset width
     sz_t height;  // optional preset height
+    bl_t insensitive; // insensitive: does not react to user actions
     tp_t arrange = vertical; // vertical | horizontal // avoid 0 == auto
     bl_t arr_editable = true;  // indicates if array itself is editable (adding, removing, reordering); does not apply to editability of array elements
     bl_t show_border = true;
@@ -94,15 +98,20 @@ stamp :s bgfe_frame
     sz_t max_content_width  = 480; // applies for horizontal orientation
     sz_t max_content_height = 480; // applies for vertical orientation
     bl_t show_client_name = true;
+    st_s => title;       // optional title (overrides client name)
     st_s => widget_name;   // optional gtk widget name overrides default widget name
     sz_t spacing;   // spacing between elements
     bl_t end_bound; // packs elements with reference to the end of the box (false: reference to the start)
     bl_t center = true;    // centers widgets in an expanded space
     bl_t stretch = true;   // stretches elements to fill expanded space
+    sz_t nesting_level;    // nesting level (embedded nesting)
+    tp_t window_policy = one; // window-policy: any~ | one~ | none~;
+    bl_t scrollable = true;
 
     func bgfe_frame.set_width   { o.width   = value; = 0; }
     func bgfe_frame.set_height  { o.height  = value; = 0; }
-    func bgfe_frame.set_arrange { o.arrange = arrange; = 0; }
+    func bgfe_frame.set_insensitive { o.insensitive = flag; = 0; }
+    func bgfe_frame.set_arrange { o.arrange = name; = 0; }
     func bgfe_frame.set_arr_editable { o.arr_editable  = flag; = 0; }
     func bgfe_frame.set_show_border { o.show_border = flag; = 0; }
     func bgfe_frame.set_show_index  { o.show_index = flag; = 0; }
@@ -111,11 +120,15 @@ stamp :s bgfe_frame
     func bgfe_frame.set_max_content_width { o.max_content_width  = value; = 0; }
     func bgfe_frame.set_max_content_height{ o.max_content_height = value; = 0; }
     func bgfe_frame.set_show_client_name { o.show_client_name = flag; = 0; }
-    func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
+    func bgfe_frame.set_title       { o.title!.copy_sc( text ); = 0; }
+    func bgfe_frame.set_widget_name { o.widget_name!.copy_sc( text ); = 0; }
     func bgfe_frame.set_spacing  { o.spacing   = value; = 0; }
     func bgfe_frame.set_end_bound{ o.end_bound = flag; = 0; }
     func bgfe_frame.set_center   { o.center    = flag; = 0; }
     func bgfe_frame.set_stretch  { o.stretch   = flag; = 0; }
+    func bgfe_frame.set_nesting_level { o.nesting_level = value; = 0; }
+    func bgfe_frame.set_window_policy { o.window_policy = name; = 0; }
+    func bgfe_frame.set_scrollable    { o.scrollable = flag; = 0; }
 
     /// internals
     hidden bgfe_client* client; // client
@@ -125,11 +138,11 @@ stamp :s bgfe_frame
     hidden vd_t array_base_address; // address of first array element used to determine if the array has been relocated between cycles
     hidden bl_t is_vertical; // array elements are ordered verically (vs. horizontally)
     hidden bcore_arr_sr_s => copied_elements; // for copy, cut, paste
-    hidden bgfe_popup_choice_s => popup_choice;
+    hidden bgfe_choice_s => menu;
+    hidden bgfe_frame_s => menu_frame;
 
     func bgfe_frame.h_complexity = o.min_content_width  / bgfe_frame_complexity_unit_size();
     func bgfe_frame.v_complexity = o.min_content_height / bgfe_frame_complexity_unit_size();
-    func bgfe_frame.wrap_level   = 1;
     func bgfe_frame.client = o.client;
     func bgfe_frame.client_type = o.client_type;
     func bgfe_frame.client_name = o.client_name;
@@ -142,16 +155,12 @@ stamp :s bgfe_frame
     hidden bgfe_rte_s* rte;
     hidden x_mutex_s mutex;
     hidden GtkWidget* rtt_widget;
-    hidden GtkWidget* rtt_gtk_box;
-    hidden GtkWidget* rtt_gtk_list_box;
-    hidden GtkWidget* rtt_gtk_scrolled_window;
-    hidden GtkWidget* rtt_gtk_edit_bar;
-    hidden GtkWidget* rtt_gtk_append_button;
-    hidden GtkWidget* rtt_gtk_remove_button;
-    hidden GtkWidget* rtt_gtk_menu_button;
-    hidden bl_t rts_append_button_clicked;
-    hidden bl_t rts_remove_button_clicked;
-    hidden bl_t rts_menu_button_clicked;
+    hidden GtkWidget* rtt_main_box;
+    hidden GtkWidget* rtt_top_bar;
+    hidden GtkWidget* rtt_content_box;
+    hidden GtkWidget* rtt_list_box;
+    hidden GtkWidget* rtt_scrolled_container; // container used when scrollable == true
+    hidden GtkWidget* rtt_fixed_container;    // container used when scrollable == false
     hidden bl_t is_open;
 
     func m x_array* client_array( c@* o ) = o.client.cast( m x_array* );
@@ -161,8 +170,9 @@ stamp :s bgfe_frame
     func bgfe_frame.open;
     func bgfe_frame.close;
     func bgfe_frame.arrangement;
-    func bgfe_frame.client_close_ok;
+    func bgfe_frame.client_close_request;
     func bgfe_frame.client_close_confirm;
+    func bgfe_frame.client_distraction;
 
     /// Interface functions ...
 
@@ -170,6 +180,7 @@ stamp :s bgfe_frame
     func bgfe_frame.cycle;
     func bgfe_frame.downsync;
     func bgfe_frame.upsync;
+    func er_t close_all_item_windows( m@* o ); // sends a close request to client windows (only effective if any window is open)
 }
 
 //----------------------------------------------------------------------------------------------------------------------

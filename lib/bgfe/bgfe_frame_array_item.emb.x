@@ -70,7 +70,13 @@ func (:item_s) open
         sr_content.0 = array.t_m_get_sr( array_type, o.index );
 
         m$* frame_link = bgfe_frame_link_s!^;
-        frame_link.clearable = !array.t_is_static( array_type );
+        frame_link.set_nesting_level( o.parent.nesting_level + 1 );
+        frame_link.clearable = o.parent.arr_editable;
+        frame_link.clearable = frame_link.clearable && !array.t_is_static( array_type );
+        frame_link.window_position = ( o.parent.arrange == horizontal~ ) ? lower_left~ : upper_right~;
+
+        tp_t action_type = escapprove~;
+        o.client_edit_frame( sr_content.o, sr_content.type(), 0, action_type, frame_link );
 
         if( sr_content.o )
         {
@@ -84,6 +90,7 @@ func (:item_s) open
 
         frame_link.set_holder_t( o.parent.client, o.parent.client_type, o.parent.client_name, true, o.index );
         o.client_frame =< frame_link.fork();
+
         frame_link.open( o );
     }
     else
@@ -97,6 +104,7 @@ func (:item_s) open
 
             o.client_edit_frame_type( sr_content.o, sr_content.type(), 0, action_type, frame_type );
             m bgfe_frame* frame = x_inst_create( frame_type ).cast( d bgfe_frame* )^;
+            frame.set_nesting_level( o.parent.nesting_level + 1 );
 
             action_type = escapprove~;
             o.client_edit_frame( sr_content.o, sr_content.type(), 0, action_type, frame );
@@ -223,18 +231,44 @@ func (:item_s) upsync
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:item_s) client_close_ok
+func (:item_s) client_close_request
 {
-    bl_t ok = true;
-    if( o.client_frame ) ok = o.client_frame.client_close_ok();
-    = ok;
+    if( action_type.0 == approve~ || action_type.0 == reject~ ) = 0;
+    if( o.client_frame ) o.client_frame.client_close_request( initiator, action_type );
+    = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 func (:item_s) client_close_confirm
 {
-    if( o.client_frame ) o.client_frame.client_close_confirm();
+    if( action_type.0 == approve~ ) = 0;
+    if( o.client_frame ) o.client_frame.client_close_confirm( initiator, action_type );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:item_s) client_distraction
+{
+    if( action_type.0 == approve~ ) = 0;
+    if( o.client_frame ) o.client_frame.client_distraction( initiator, action_type );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:item_s) bgfe_frame.open_window_request
+{
+    if( o.parent ) = o.parent.open_window_request( action_type );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:item_s) bgfe_frame.close_window_request
+{
+    if( o.client_frame ) = o.client_frame.close_window_request();
     = 0;
 }
 

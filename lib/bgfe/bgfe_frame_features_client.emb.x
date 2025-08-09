@@ -63,7 +63,27 @@ feature er_t client_change_confirm( m@* o, m bgfe_frame* initiator, m tp_t* acti
 //----------------------------------------------------------------------------------------------------------------------
 
 /// button was pressed
-feature er_t client_button_clicked( m@* o, m bgfe_frame_button_s* initiator, m tp_t* action_type )
+feature er_t client_button_pressed( m@* o, m bgfe_frame* initiator, m tp_t* action_type )
+{
+    if( o.client() ) o.client().t_bgfe_button_pressed( o.client_type(), initiator, action_type.1 );
+    if( action_type.0 == escalate~ || action_type.0 == escapprove~ )
+    {
+        if( o.parent() )
+        {
+            o.parent().client_button_pressed( initiator, action_type.1 );
+        }
+        else if( action_type.0 == escapprove~ )
+        {
+            action_type.0 = TYPEOF_approve;
+        }
+    }
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// button was clicked
+feature er_t client_button_clicked( m@* o, m bgfe_frame* initiator, m tp_t* action_type )
 {
     if( o.client() ) o.client().t_bgfe_button_clicked( o.client_type(), initiator, action_type.1 );
     if( action_type.0 == escalate~ || action_type.0 == escapprove~ )
@@ -82,15 +102,55 @@ feature er_t client_button_clicked( m@* o, m bgfe_frame_button_s* initiator, m t
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// enter was pressed
-feature er_t client_enter_pressed( m@* o, m bgfe_frame_entry_s* initiator, m tp_t* action_type )
+/// activation signal
+feature er_t client_activate( m@* o, m bgfe_frame* initiator, m tp_t* action_type )
 {
-    if( o.client() ) o.client().t_bgfe_enter_pressed( o.client_type(), initiator, action_type.1 );
+    if( o.client() ) o.client().t_bgfe_activate( o.client_type(), initiator, action_type.1 );
     if( action_type.0 == escalate~ || action_type.0 == escapprove~ )
     {
         if( o.parent() )
         {
-            o.parent().client_enter_pressed( initiator, action_type.1 );
+            o.parent().client_activate( initiator, action_type.1 );
+        }
+        else if( action_type.0 == escapprove~ )
+        {
+            action_type.0 = TYPEOF_approve;
+        }
+    }
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// widget's placement changed
+feature er_t client_placement_changed( m@* o, m bgfe_frame* initiator, bgfe_placement_s* placement, m tp_t* action_type )
+{
+    if( o.client() ) o.client().t_bgfe_placement_changed( o.client_type(), initiator, placement, action_type.1 );
+    if( action_type.0 == escalate~ || action_type.0 == escapprove~ )
+    {
+        if( o.parent() )
+        {
+            o.parent().client_placement_changed( initiator, placement, action_type.1 );
+        }
+        else if( action_type.0 == escapprove~ )
+        {
+            action_type.0 = TYPEOF_approve;
+        }
+    }
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// widget's mouse status changed
+feature er_t client_mouse_changed( m@* o, m bgfe_frame* initiator, bgfe_mouse_s* mouse, tp_t modified_type, m tp_t* action_type )
+{
+    if( o.client() ) o.client().t_bgfe_mouse_changed( o.client_type(), initiator, mouse, modified_type, action_type.1 );
+    if( action_type.0 == escalate~ || action_type.0 == escapprove~ )
+    {
+        if( o.parent() )
+        {
+            o.parent().client_mouse_changed( initiator, mouse, modified_type, action_type.1 );
         }
         else if( action_type.0 == escapprove~ )
         {
@@ -103,17 +163,28 @@ feature er_t client_enter_pressed( m@* o, m bgfe_frame_entry_s* initiator, m tp_
 //----------------------------------------------------------------------------------------------------------------------
 
 /// close query to client
-feature bl_t client_close_ok( m@* o )
+feature er_t client_close_request( m@* o, m bgfe_frame* initiator, m tp_t* action_type )
 {
-    = o.client() ? o.client().t_bgfe_close_ok( o.client_type() ) : true;
+    if( action_type.0 == approve~ || action_type.0 == reject~ ) = 0;
+    = o.client() ? o.client().t_bgfe_close_request( o.client_type(), initiator, action_type ) : 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// close confirmation to client
-feature er_t client_close_confirm( m@* o )
+feature er_t client_close_confirm( m@* o, m bgfe_frame* initiator, m tp_t* action_type )
 {
-    = o.client() ? o.client().t_bgfe_close_confirm( o.client_type() ) : 0;
+    if( action_type.0 == approve~ ) = 0;
+    = o.client() ? o.client().t_bgfe_close_confirm( o.client_type(), initiator, action_type ) : 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// distraction to client
+feature er_t client_distraction( m@* o, m bgfe_frame* initiator, m tp_t* action_type )
+{
+    if( action_type.0 == approve~ ) = 0;
+    = o.client() ? o.client().t_bgfe_close_confirm( o.client_type(), initiator, action_type ) : 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

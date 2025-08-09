@@ -32,14 +32,20 @@ stamp :s bgfe_frame
     sz_t height; // optional preferred height of label (actual size is calculated from the ext)
     st_s => text;   // label text
     st_s => widget_name;   // optional gtk widget name overrides default widget name
-    bl_t show_tooltip = true;
+    st_s => tooltip;     // external tooltip (if NULL an internal tooltip is used)
+    bl_t show_tooltip = false;
     bl_t no_upsync;
+    f3_t text_xalign = 0.5; // gradual text alignment: 0: left, 0.5: center, 1.0 right
+    f3_t text_yalign = 0.5; // gradual text alignment: 0: top, 0.5: center, 1.0 bottom
 
+    func bgfe_frame.set_tooltip{ o.tooltip!.copy_sc( text ); = 0; }
     func bgfe_frame.set_show_tooltip{ o.show_tooltip = flag; = 0; }
     func bgfe_frame.set_width { o.width = value; = 0; }
     func bgfe_frame.set_height{ o.height = value; = 0; }
     func bgfe_frame.set_text  { o.text!.copy_sc( text ); o.no_upsync = true; = 0; }
     func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
+    func bgfe_frame.set_text_xalign { o.text_xalign = f3_max( 0, f3_min( 1, value ) ); = 0; }
+    func bgfe_frame.set_text_yalign { o.text_yalign = f3_max( 0, f3_min( 1, value ) ); = 0; }
 
     /// internals
 
@@ -56,7 +62,7 @@ stamp :s bgfe_frame
     func bgfe_frame.v_complexity = 0.5;
     func bgfe_frame.is_compact = true;
 
-    hidden st_s => rts_tooltip_text;  // tooltip text
+    hidden st_s => tooltip_text;  // tooltip text
     hidden bgfe_rte_s* rte;
     hidden x_mutex_s mutex;
     hidden GtkWidget*  rtt_widget;
@@ -130,12 +136,20 @@ func (:s) open
 
     if( !o.text ) o.client_to_st( o.text! );
 
-    if( bnameof( o.client_name ) ) o.rts_tooltip_text!.push_fa( "#<sc_t>", bnameof( o.client_name ) );
-    if( bnameof( o.client_type ) )
+    if( o.tooltip )
     {
-        if( o.rts_tooltip_text ) o.rts_tooltip_text!.push_fa( " " );
-        o.rts_tooltip_text!.push_fa( "<#<sc_t>>", bnameof( o.client_type ) );
+        o.tooltip_text!.push_st( o.tooltip );
     }
+    else
+    {
+        if( bnameof( o.client_name ) ) o.tooltip_text!.push_fa( "#<sc_t>", bnameof( o.client_name ) );
+        if( bnameof( o.client_type ) )
+        {
+            if( o.tooltip_text ) o.tooltip_text!.push_fa( " " );
+            o.tooltip_text!.push_fa( "<#<sc_t>>", bnameof( o.client_type ) );
+        }
+    }
+
     o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.is_open = true;
     = 0;
@@ -143,14 +157,16 @@ func (:s) open
 
 //----------------------------------------------------------------------------------------------------------------------
 
-identifier gtk_label_new;
+identifier gtk_label_new, gtk_label_set_xalign, gtk_label_set_yalign;
 
 func (:s) er_t rtt_open( m@* o, vd_t unused )
 {
     o.rtt_attach_widget( gtk_label_new( o.text ? o.text.sc : "" ), o.rtt_widget );
+    gtk_label_set_xalign( GTK_LABEL( o.rtt_widget ), o.text_xalign );
+    gtk_label_set_yalign( GTK_LABEL( o.rtt_widget ), o.text_yalign );
     gtk_widget_set_name( o.rtt_widget, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
     if( o.width > 0 || o.height > 0 ) gtk_widget_set_size_request( o.rtt_widget, o.width, o.height );
-    if( o.show_tooltip && o.rts_tooltip_text ) gtk_widget_set_tooltip_text( o.rtt_widget, o.rts_tooltip_text.sc );
+    if( o.show_tooltip && o.tooltip_text ) gtk_widget_set_tooltip_text( o.rtt_widget, o.tooltip_text.sc );
     gtk_widget_show( o.rtt_widget );
     = 0;
 }
@@ -162,7 +178,6 @@ func (:s) close
     if( !o.is_open ) = 0;
     o.rte.run( o.rtt_close.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.is_open = false;
-    o.client_close_confirm();
     = 0;
 }
 

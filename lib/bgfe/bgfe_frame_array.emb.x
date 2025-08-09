@@ -38,9 +38,8 @@ func (:s) er_t select_none( m@* o ) { foreach( m$* e in o.item_arr ) e.set_selec
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) er_t copy_selected( m@* o, tp_t action_type )
+func (:s) er_t copy_selected( m@* o )
 {
-    if( action_type == reject~ ) = 0;
     m$* array = o.client_array();
 
     o.copied_elements!.clear();
@@ -57,17 +56,18 @@ func (:s) er_t copy_selected( m@* o, tp_t action_type )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) er_t cut_selected( m@* o, tp_t action_type )
+func (:s) er_t cut_selected( m@* o )
 {
-    o.copy_selected( action_type );
-    o.remove_selected( action_type );
+    o.copy_selected();
+    o.remove_selected();
     = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) er_t paste_to_end( m@* o, tp_t action_type )
+func (:s) er_t paste_to_end( m@* o )
 {
+    tp_t action_type = escapprove~;
     if( !o.copied_elements || o.copied_elements.size == 0 ) = 0;
 
     o.client_change_request( o, action_type.1 );
@@ -92,8 +92,9 @@ func (:s) er_t paste_to_end( m@* o, tp_t action_type )
 //----------------------------------------------------------------------------------------------------------------------
 
 // appends an element to the array
-func (:s) er_t append_element( m@* o, tp_t action_type )
+func (:s) er_t append_element( m@* o )
 {
+    tp_t action_type = escapprove~;
     o.client_change_request( o, action_type.1 );
     if( action_type == reject~  ) = 0;
 
@@ -111,9 +112,29 @@ func (:s) er_t append_element( m@* o, tp_t action_type )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-// removes selected elements
-func (:s) er_t remove_selected( m@* o, tp_t action_type )
+// removes last element (if eny)
+func (:s) er_t remove_last( m@* o )
 {
+    tp_t action_type = escapprove~;
+    o.client_change_request( o, action_type.1 );
+    if( action_type == reject~  ) = 0;
+
+    m$* array = o.client_array();
+    array.t_pop( o.client_type );
+    o.rebuild();
+
+    tp_t confirm_action_type = TYPEOF_escalate;
+    o.client_change_confirm( o, confirm_action_type.1 );
+
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+// removes selected elements
+func (:s) er_t remove_selected( m@* o )
+{
+    tp_t action_type = escapprove~;
     o.client_change_request( o, action_type.1 );
     if( action_type == reject~  ) = 0;
 
@@ -173,10 +194,18 @@ func (:s) er_t rebuild( m@* o )
 
 func (:s) er_t rtt_rebuild( m@* o, vd_t unused )
 {
-    o.rtt_remove_widget_from_container( o.rtt_gtk_list_box, o.rtt_gtk_scrolled_window );
-    o.rtt_detach_widget( o.rtt_gtk_list_box );
-    o.rtt_attach_widget( gtk_box_new( o.is_vertical ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, o.spacing ), o.rtt_gtk_list_box );
-    gtk_widget_show( o.rtt_gtk_list_box );
+    if( o.rtt_scrolled_container )
+    {
+        o.rtt_remove_widget_from_container( o.rtt_list_box, o.rtt_scrolled_container );
+    }
+    else if( o.rtt_fixed_container )
+    {
+        o.rtt_remove_widget_from_container( o.rtt_list_box, o.rtt_fixed_container );
+    }
+
+    o.rtt_detach_widget( o.rtt_list_box );
+    o.rtt_attach_widget( gtk_box_new( o.is_vertical ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, o.spacing ), o.rtt_list_box );
+    gtk_widget_show( o.rtt_list_box );
 
     for( sz_t i = 0; i < o.item_arr.size; i++ )
     {
@@ -185,20 +214,27 @@ func (:s) er_t rtt_rebuild( m@* o, vd_t unused )
         {
             if( o.end_bound )
             {
-                gtk_box_pack_end( GTK_BOX( o.rtt_gtk_list_box ), frame.rtt_widget(), o.center, o.stretch, 0 );
+                gtk_box_pack_end( GTK_BOX( o.rtt_list_box ), frame.rtt_widget(), o.center, o.stretch, 0 );
             }
             else
             {
-                gtk_box_pack_start( GTK_BOX( o.rtt_gtk_list_box ), frame.rtt_widget(), o.center, o.stretch, 0 );
+                gtk_box_pack_start( GTK_BOX( o.rtt_list_box ), frame.rtt_widget(), o.center, o.stretch, 0 );
             }
         }
     }
 
-    gtk_container_add( GTK_CONTAINER( o.rtt_gtk_scrolled_window ), o.rtt_gtk_list_box );
+    if( o.rtt_scrolled_container )
+    {
+        gtk_container_add( GTK_CONTAINER( o.rtt_scrolled_container ), o.rtt_list_box );
 
-    // immediately updates the adjustment of scrolled window to the most recent size  (the automatic update seems to be delayed)
-    gtk_scrolled_window_set_vadjustment( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), NULL /*NULL creates a new adjustment*/ );
-    gtk_scrolled_window_set_hadjustment( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), NULL /*NULL creates a new adjustment*/ );
+        // immediately updates the adjustment of scrolled window to the most recent size  (the automatic update seems to be delayed)
+        gtk_scrolled_window_set_vadjustment( GTK_SCROLLED_WINDOW( o.rtt_scrolled_container ), NULL /*NULL creates a new adjustment*/ );
+        gtk_scrolled_window_set_hadjustment( GTK_SCROLLED_WINDOW( o.rtt_scrolled_container ), NULL /*NULL creates a new adjustment*/ );
+    }
+    else if( o.rtt_fixed_container )
+    {
+        gtk_container_add( GTK_CONTAINER( o.rtt_fixed_container ), o.rtt_list_box );
+    }
 
     = 0;
 }
@@ -207,15 +243,18 @@ func (:s) er_t rtt_rebuild( m@* o, vd_t unused )
 
 func (:s) er_t rtt_scroll_to_end( m@* o, vd_t unused )
 {
-    if( o.is_vertical )
+    if( o.rtt_scrolled_container )
     {
-        m GtkAdjustment* adjustment = gtk_scrolled_window_get_vadjustment( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ) );
-        gtk_adjustment_set_value( adjustment, gtk_adjustment_get_upper( adjustment ) - gtk_adjustment_get_page_size( adjustment ) );
-    }
-    else
-    {
-        m GtkAdjustment* adjustment = gtk_scrolled_window_get_hadjustment( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ) );
-        gtk_adjustment_set_value( adjustment, gtk_adjustment_get_upper( adjustment ) - gtk_adjustment_get_page_size( adjustment ) );
+        if( o.is_vertical )
+        {
+            m GtkAdjustment* adjustment = gtk_scrolled_window_get_vadjustment( GTK_SCROLLED_WINDOW( o.rtt_scrolled_container ) );
+            gtk_adjustment_set_value( adjustment, gtk_adjustment_get_upper( adjustment ) - gtk_adjustment_get_page_size( adjustment ) );
+        }
+        else
+        {
+            m GtkAdjustment* adjustment = gtk_scrolled_window_get_hadjustment( GTK_SCROLLED_WINDOW( o.rtt_scrolled_container ) );
+            gtk_adjustment_set_value( adjustment, gtk_adjustment_get_upper( adjustment ) - gtk_adjustment_get_page_size( adjustment ) );
+        }
     }
 
     = 0;
@@ -236,6 +275,8 @@ func (:s) er_t focus_to_end( m@* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+name append, remove_last, remove_selected, select_all, select_none, copy_selected, cut_selected, paste_to_end;
+
 func (:s) open
 {
     if( o.is_open ) = 0;
@@ -247,6 +288,31 @@ func (:s) open
 
     tp_t arrangement = o.arrangement();
     o.is_vertical = ( arrangement == TYPEOF_vertical );
+
+
+    if( o.arr_editable && !x_array_t_is_fixed( o.client_type ) )
+    {
+        o.menu!;
+        o.menu.set_client( o );
+        o.menu.set_arrange( horizontal~ );
+        o.menu.push( append~         , "+" , "Append new element" );
+        o.menu.push( remove_last~    , "⌫" , "Remove last element" );
+        o.menu.push( remove_selected~, "🗑", "Remove selected elements" );
+        m$* choice = o.menu.push_choice( "" );
+
+        choice.push( select_all~   , "All ☑", NULL );
+        choice.push( select_none~  , "All ☐", NULL );
+        choice.push( copy_selected~, "Copy 📋" , "Copy selected elements" );
+        choice.push( cut_selected~ , "Cut ✂ ️"  , "Copy and remove selected elements" );
+        choice.push( paste_to_end~ , "Paste"   , "Append copied elements" );
+
+        o.menu_frame!;
+        o.menu_frame.set_show_border( false );
+        o.menu_frame.set_client_with_content( o.menu, 0 );
+        o.menu_frame.open( o );
+    }
+
+
     o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, NULL );
 
     o.rebuild();
@@ -256,106 +322,85 @@ func (:s) open
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) void rtt_signal_append_button_clicked( m GtkWidget* win, m@* o )
-{
-    o.mutex.lock();
-    o.rts_append_button_clicked = true;
-    o.mutex.unlock();
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) void rtt_signal_remove_button_clicked( m GtkWidget* win, m@* o )
-{
-    o.mutex.lock();
-    o.rts_remove_button_clicked = true;
-    o.mutex.unlock();
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-func (:s) void rtt_signal_menu_button_clicked( m GtkWidget* win, m@* o )
-{
-    o.mutex.lock();
-    o.rts_menu_button_clicked = true;
-    o.mutex.unlock();
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 func (:s) er_t rtt_open( m@* o, vd_t unused )
 {
-    o.rtt_attach_widget( gtk_box_new( o.is_vertical ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, 0 ), o.rtt_gtk_box );
-    gtk_widget_show( o.rtt_gtk_box );
+    o.rtt_attach_widget( gtk_box_new( GTK_ORIENTATION_VERTICAL, 0 ), o.rtt_main_box );
+    gtk_widget_show( o.rtt_main_box );
 
-    tp_t label_name = ( o.show_client_name && o.client_name && bnameof( o.client_name ) ) ? o.client_name : 0;
+    o.rtt_attach_widget( gtk_box_new( GTK_ORIENTATION_HORIZONTAL, 0 ), o.rtt_top_bar );
+    gtk_box_pack_start( GTK_BOX( o.rtt_main_box ), o.rtt_top_bar, true, true, 5 );
+
+    m$* box_name = st_s!^;
+    box_name.push_sc( o.widget_name ? o.widget_name.sc : "bgfe_frame" );
+    if( o.show_border ) box_name.push_fa( "_border_style#<sz_t>", ( sz_t )( o.nesting_level % 5 ) );
+    gtk_widget_set_name( o.rtt_main_box, box_name.sc );
+    gtk_widget_set_size_request( o.rtt_main_box, o.width, o.height );
+
+    sc_t label_name = NULL;
+
+    if( o.title )
+    {
+        label_name = o.title.sc;
+    }
+    else if( o.show_client_name && o.client_name )
+    {
+        label_name = bnameof( o.client_name );
+    }
+    else if( o.menu_frame )
+    {
+        label_name = "[...]";
+    }
 
     if( label_name )
     {
-        m GtkWidget* label = gtk_label_new( bnameof( label_name ) );
+        m GtkWidget* label = gtk_label_new( label_name );
         if( !label ) = GERR_fa( "'gtk_label_new' failed\n" );
         gtk_widget_set_name( label, "client_name" );
-        gtk_label_set_angle( GTK_LABEL( label ), o.is_vertical ? 0 : 90 );
-        gtk_box_pack_start( GTK_BOX( o.rtt_gtk_box ), label, false, false, 0 );
+        gtk_box_pack_start( GTK_BOX( o.rtt_top_bar ), label, true, false, 0 );
         gtk_widget_show( label );
+        gtk_widget_show( o.rtt_top_bar );
     }
 
-    o.rtt_attach_widget( gtk_scrolled_window_new( NULL, NULL ), o.rtt_gtk_scrolled_window );
-
-    gtk_scrolled_window_set_propagate_natural_width( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), true );
-    gtk_scrolled_window_set_propagate_natural_height( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), true );
-
-    if( o.is_vertical )
+    if( o.menu_frame )
     {
-        gtk_scrolled_window_set_min_content_height( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), o.min_content_height );
-        gtk_scrolled_window_set_max_content_height( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), o.max_content_height );
+        gtk_box_pack_start( GTK_BOX( o.rtt_top_bar ), o.menu_frame.rtt_widget(), false, false, 5 );
+        gtk_widget_show( o.rtt_top_bar );
     }
-    else
+
+    o.rtt_attach_widget( gtk_box_new( o.is_vertical ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, 0 ), o.rtt_content_box );
+    if( o.insensitive ) gtk_widget_set_state_flags( o.rtt_content_box, GTK_STATE_FLAG_INSENSITIVE, false );
+    gtk_widget_show( o.rtt_content_box );
+    gtk_box_pack_start( GTK_BOX( o.rtt_main_box ), o.rtt_content_box, true, true, 0 );
+
+    if( o.scrollable )
     {
-        gtk_scrolled_window_set_min_content_width( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), o.min_content_width );
-        gtk_scrolled_window_set_max_content_width( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), o.max_content_width );
+        o.rtt_attach_widget( gtk_scrolled_window_new( NULL, NULL ), o.rtt_scrolled_container );
+
+        gtk_scrolled_window_set_propagate_natural_width( GTK_SCROLLED_WINDOW( o.rtt_scrolled_container ), true );
+        gtk_scrolled_window_set_propagate_natural_height( GTK_SCROLLED_WINDOW( o.rtt_scrolled_container ), true );
+
+        gtk_scrolled_window_set_min_content_height( GTK_SCROLLED_WINDOW( o.rtt_scrolled_container ), o.min_content_height );
+        gtk_scrolled_window_set_max_content_height( GTK_SCROLLED_WINDOW( o.rtt_scrolled_container ), o.max_content_height );
+        gtk_scrolled_window_set_min_content_width( GTK_SCROLLED_WINDOW( o.rtt_scrolled_container ), o.min_content_width );
+        gtk_scrolled_window_set_max_content_width( GTK_SCROLLED_WINDOW( o.rtt_scrolled_container ), o.max_content_width );
+
+        // overlay scrolling does not seem to work reliably in this context
+        gtk_scrolled_window_set_overlay_scrolling( GTK_SCROLLED_WINDOW( o.rtt_scrolled_container ), false );
+        gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW( o.rtt_scrolled_container ), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+
+        gtk_widget_show( o.rtt_scrolled_container );
+
+        gtk_box_pack_start( GTK_BOX( o.rtt_content_box ), o.rtt_scrolled_container, true, true, 0 );
     }
-
-    // overlay scrolling does not seem to work reliably in this context
-    gtk_scrolled_window_set_overlay_scrolling( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), false );
-    gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW( o.rtt_gtk_scrolled_window ), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
-
-    gtk_widget_show( o.rtt_gtk_scrolled_window );
-
-    m$* box_name = st_s!^;
-    box_name.push_sc( o.widget_name ? o.widget_name.sc : "bgfe_frame_array" );
-    if( o.show_border ) box_name.push_sc( "_border" );
-
-    gtk_widget_set_name( o.rtt_gtk_box, box_name.sc );
-    gtk_widget_set_size_request( o.rtt_gtk_box, o.width, o.height );
-
-    gtk_box_pack_start( GTK_BOX( o.rtt_gtk_box ), o.rtt_gtk_scrolled_window, true, true, 0 );
-
-    if( o.arr_editable && !x_array_t_is_fixed( o.client_type ) )
+    else // not scrollable
     {
-        o.rtt_attach_widget( gtk_box_new( o.is_vertical ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL, 0 ), o.rtt_gtk_edit_bar );
-        gtk_widget_show( o.rtt_gtk_edit_bar );
-
-        o.rtt_attach_widget( gtk_button_new_with_label( "+" ), o.rtt_gtk_append_button );
-        o.rtt_attach_widget( gtk_button_new_with_label( "-" ), o.rtt_gtk_remove_button );
-        o.rtt_attach_widget( gtk_button_new_with_label( "..." ), o.rtt_gtk_menu_button );
-        g_signal_connect( o.rtt_gtk_append_button, "clicked", G_CALLBACK( o.rtt_signal_append_button_clicked ), o );
-        g_signal_connect( o.rtt_gtk_remove_button, "clicked", G_CALLBACK( o.rtt_signal_remove_button_clicked ), o );
-        g_signal_connect( o.rtt_gtk_menu_button,   "clicked", G_CALLBACK( o.rtt_signal_menu_button_clicked   ), o );
-        gtk_widget_set_tooltip_text( o.rtt_gtk_append_button, "Append new element" );
-        gtk_widget_set_tooltip_text( o.rtt_gtk_remove_button, "Remove all selected elements" );
-        gtk_widget_set_tooltip_text( o.rtt_gtk_menu_button, "More edit options ..." );
-        gtk_widget_show( o.rtt_gtk_append_button );
-        gtk_widget_show( o.rtt_gtk_remove_button );
-        gtk_widget_show( o.rtt_gtk_menu_button );
-        gtk_box_pack_start( GTK_BOX( o.rtt_gtk_edit_bar ), o.rtt_gtk_remove_button, false, false, 0 );
-        gtk_box_pack_start( GTK_BOX( o.rtt_gtk_edit_bar ), o.rtt_gtk_append_button, true, true, 0 );
-        gtk_box_pack_start( GTK_BOX( o.rtt_gtk_edit_bar ), o.rtt_gtk_menu_button, false, false, 0 );
-        gtk_box_pack_start( GTK_BOX( o.rtt_gtk_box ), o.rtt_gtk_edit_bar, false, false, 0 );
+        o.rtt_attach_widget( gtk_box_new( GTK_ORIENTATION_VERTICAL, 0 ), o.rtt_fixed_container );
+        gtk_widget_set_size_request( o.rtt_fixed_container, o.min_content_width, o.min_content_height );
+        gtk_widget_show( o.rtt_fixed_container );
+        gtk_box_pack_start( GTK_BOX( o.rtt_content_box ), o.rtt_fixed_container, true, true, 0 );
     }
 
-
-    o.rtt_widget = o.rtt_gtk_box;
+    o.rtt_widget = o.rtt_main_box;
 
     = 0;
 }
@@ -365,12 +410,16 @@ func (:s) er_t rtt_open( m@* o, vd_t unused )
 func (:s) close
 {
     if( !o.is_open ) = 0;
+    if( o.menu_frame ) o.menu_frame.close();
 
     foreach( m$* e in o.item_arr ) e.close();
 
     o.rte.run( o.rtt_close.cast( bgfe_rte_fp_rtt ), o, NULL );
 
     o.item_arr =< NULL;
+
+    o.menu_frame =< NULL;
+    o.menu =< NULL;
 
     o.is_open = false;
     = 0;
@@ -380,36 +429,46 @@ func (:s) close
 
 func (:s) er_t rtt_close( m@* o, vd_t arg )
 {
-    o.rtt_detach_widget( o.rtt_gtk_box );
-    o.rtt_detach_widget( o.rtt_gtk_list_box );
-    o.rtt_detach_widget( o.rtt_gtk_scrolled_window );
-    o.rtt_detach_widget( o.rtt_gtk_append_button );
-    o.rtt_detach_widget( o.rtt_gtk_remove_button );
-    o.rtt_detach_widget( o.rtt_gtk_menu_button );
-    o.rtt_detach_widget( o.rtt_gtk_edit_bar );
+    o.rtt_detach_widget( o.rtt_main_box );
+    o.rtt_detach_widget( o.rtt_top_bar );
+    o.rtt_detach_widget( o.rtt_content_box );
+    o.rtt_detach_widget( o.rtt_list_box );
+    o.rtt_detach_widget( o.rtt_scrolled_container );
+    o.rtt_detach_widget( o.rtt_fixed_container );
     o.rtt_widget = 0;
     = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-name select_all, select_none, copy_selected, cut_selected, paste_to_end;
-func (:s) er_t run_menu( m@* o, tp_t action_type  )
+func (:s) bgfe_choice_client.choice_item_is_active
 {
-    m$* menu = bgfe_popup_choice_s!^;
-    menu.push( select_all~ , "Select All" );
-    menu.push( select_none~, "Select None" );
-    if( o.any_selected() ) menu.push( copy_selected~, "Copy" );
-    if( o.any_selected() ) menu.push( cut_selected~ , "Cut" );
-    if( o.any_copied()   ) menu.push( paste_to_end~ , "Paste to End" );
-    menu.run( o );
-    switch( menu.selected() )
+    switch( item.case_tp  )
     {
-        case select_all~:    o.select_all(); break;
-        case select_none~:   o.select_none(); break;
-        case copy_selected~: o.copy_selected( action_type ); break;
-        case cut_selected~:  o.cut_selected( action_type ); break;
-        case paste_to_end~:  o.paste_to_end( action_type ); break;
+        case select_all~: =o.item_arr.size > 0;
+        case select_none~: =o.item_arr.size > 0;
+        case copy_selected~: = o.any_selected();
+        case cut_selected~: = o.any_selected();
+        case paste_to_end~: = o.any_copied();
+        default: break;
+    }
+    = true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) bgfe_choice_client.choice_item_selection
+{
+    switch( item.case_tp )
+    {
+        case select_all~:      o.select_all(); break;
+        case select_none~:     o.select_none(); break;
+        case copy_selected~:   o.copy_selected(); break;
+        case cut_selected~:    o.cut_selected(); break;
+        case paste_to_end~:    o.paste_to_end(); break;
+        case append~:          o.append_element(); break;
+        case remove_selected~: o.remove_selected(); break;
+        case remove_last~:     o.remove_last(); break;
         default: break;
     }
     = 0;
@@ -427,19 +486,7 @@ func (:s) cycle
      */
     if( o.rebuild_is_necessary() ) o.rebuild();
 
-    o.mutex.lock();
-    bl_t append_button_clicked = o.rts_append_button_clicked;
-    bl_t remove_button_clicked = o.rts_remove_button_clicked;
-    bl_t menu_button_clicked   = o.rts_menu_button_clicked;
-    o.rts_append_button_clicked = false;
-    o.rts_remove_button_clicked = false;
-    o.rts_menu_button_clicked   = false;
-    o.mutex.unlock();
-
-    if( append_button_clicked ) o.append_element( action_type ); // resyncs automatically
-    if( remove_button_clicked ) o.remove_selected( action_type ); // resyncs automatically
-
-    if( menu_button_clicked ) o.run_menu( action_type );
+    if( o.menu_frame ) o.menu_frame.cycle( approve~ );
 
     foreach( m$* e in o.item_arr ) e.cycle( action_type );
     = 0;
@@ -474,27 +521,39 @@ func (:s) upsync
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) client_close_ok
+func (:s) client_close_request
 {
-    if( o.client )
-    {
-        if( !o.client.t_bgfe_close_ok( o.client_type ) ) = false;
-    }
+    if( action_type.0 == approve~ || action_type.0 == reject~ ) = 0;
+    if( o.client ) o.client.t_bgfe_close_request( o.client_type, initiator, action_type );
 
     foreach( m$* e in o.item_arr )
     {
-        if( !e.client_close_ok() ) = false;
+        if( action_type.0 == approve~ || action_type.0 == reject~ ) = 0;
+        e.client_close_request( initiator, action_type );
     }
 
-    = true;
+    = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 func (:s) client_close_confirm
 {
-    if( o.client ) o.client.t_bgfe_close_confirm( o.client_type );
-    foreach( m$* e in o.item_arr ) e.client_close_confirm();
+    if( action_type.0 == approve~ ) = 0;
+    if( o.client ) o.client.t_bgfe_close_confirm( o.client_type, initiator, action_type );
+    if( action_type.0 == approve~ ) = 0;
+    foreach( m$* e in o.item_arr ) e.client_close_confirm( initiator, action_type );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) client_distraction
+{
+    if( action_type.0 == approve~ ) = 0;
+    if( o.menu_frame ) o.menu_frame.client_distraction( initiator, action_type );
+    if( o.client ) o.client.t_bgfe_distraction( o.client_type, initiator, action_type );
+    foreach( m$* e in o.item_arr ) e.client_distraction( initiator, action_type );
     = 0;
 }
 
@@ -523,6 +582,20 @@ func (:s) arrangement
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:s) bgfe_frame.open_window_request
+{
+    switch( o.window_policy )
+    {
+        case any~ : action_type.0 = approve~; break;
+        case zero~: action_type.0 = reject~;  break;
+        case one~: o.close_all_item_windows(); action_type.0 = approve~; break;
+        default: break;
+    }
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:s) set_client_t
 {
     if( o.is_open ) = GERR_fa( "Frame is open." );
@@ -541,6 +614,14 @@ func (:s) set_client_t
 
     // the array content is added when the frame is opened
 
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) close_all_item_windows
+{
+    foreach( m$* e in o.item_arr ) e.close_window_request();
     = 0;
 }
 

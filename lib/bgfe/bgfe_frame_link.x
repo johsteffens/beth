@@ -30,16 +30,20 @@ stamp :s bgfe_frame
     /// parameters
     sz_t width;  // optional preferred width of button  (actual size is calculated from the text)
     sz_t height; // optional preferred height of button (actual size is calculated from the text)
+    bl_t insensitive; // insensitive: does not react to user actions
     bl_t show_client_name = true; // client name on button
-    bl_t show_tooltip     = true; // tooltip with client name
     bl_t show_glimpse     = true; // shows glimpse on button if available
     bl_t clearable        = true; // displays clear button
-    func bgfe_frame.set_show_tooltip{ o.show_tooltip = flag; = 0; }
+    f3_t text_xalign = 0.5; // gradual text alignment: 0: left, 0.5: center, 1.0 right
+    f3_t text_yalign = 0.5; // gradual text alignment: 0: top, 0.5: center, 1.0 bottom
+
     func bgfe_frame.set_show_client_name{ o.show_client_name = flag; = 0; }
     func bgfe_frame.set_show_glimpse{ o.show_glimpse = flag; = 0; }
-
     func bgfe_frame.set_width { o.width = value; = 0; }
     func bgfe_frame.set_height{ o.height = value; = 0; }
+    func bgfe_frame.set_insensitive { o.insensitive = flag; = 0; }
+    func bgfe_frame.set_text_xalign { o.text_xalign = f3_max( 0, f3_min( 1, value ) ); = 0; }
+    func bgfe_frame.set_text_yalign { o.text_yalign = f3_max( 0, f3_min( 1, value ) ); = 0; }
 
     /// internals
     hidden sr_s client; // client (as strong smart reference)
@@ -52,6 +56,7 @@ stamp :s bgfe_frame
     // link_holder: client that holds the link
     hidden bgfe_client* link_holder;
     hidden tp_t link_holder_type;
+    hidden tp_t link_holder_name;
 
     hidden bl_t holder_is_array; // true in case the link is an element of an array
 
@@ -68,17 +73,20 @@ stamp :s bgfe_frame
     hidden bgfe_frame    => embedded_frame;
     hidden bgfe_window_s => window;
 
+    hidden bgfe_frame* window_locator; // != NULL: window is placed next to this frame
+    hidden tp_t window_position = upper_right; // window position relative to reference frame (see func: place_at_position)
+
     hidden :type_dialog_s => type_dialog;
 
     hidden bl_t rts_main_clicked; // main button was clicked
     hidden bl_t rts_clear_clicked; // clear button was clicked
 
     hidden st_s button_main_text;  // button text
-    hidden st_s => rts_tooltip_text;  // tooltip text
     hidden bgfe_rte_s* rte;
     hidden x_mutex_s mutex;
     hidden GtkWidget* rtt_widget;
     hidden GtkWidget* rtt_button_main;
+    hidden GtkWidget* rtt_label;
     hidden GtkWidget* rtt_button_clear;
     hidden bl_t is_open;
 
@@ -87,6 +95,9 @@ stamp :s bgfe_frame
     func bgfe_frame.rtt_widget = o.rtt_widget;
     func bgfe_frame.open;
     func bgfe_frame.close;
+    func bgfe_frame.client_close_request;
+    func bgfe_frame.client_close_confirm;
+    func bgfe_frame.client_distraction;
 
     /// interface functions ...
     func bgfe_frame.set_client_t;
@@ -118,13 +129,13 @@ func (:s) void rtt_button_clear_signal_clicked( m GtkWidget* win, m@* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-identifier gtk_button_set_label;
-identifier GTK_BUTTON;
+identifier gtk_label_set_text;
+identifier GTK_LABEL;
 func (:s) er_t rtt_set_text( m@* o, st_s* rts_text )
 {
-    if( !o.rtt_button_main ) = 0;
+    if( !o.rtt_label ) = 0;
     o.mutex.lock();
-    gtk_button_set_label( GTK_BUTTON( o.rtt_button_main ), rts_text.sc );
+    gtk_label_set_text( GTK_LABEL( o.rtt_label ), rts_text.sc );
     o.mutex.unlock();
     = 0;
 }
@@ -163,7 +174,7 @@ func (:s) er_t set_text_from_client_status( m@* o )
     }
     else
     {
-        text.push_fa( "<NULL>" );
+        text.push_fa( "∅" );
     }
     o.set_text( text.sc );
     = 0;
@@ -196,6 +207,7 @@ type GTK_RELIEF_NORMAL;
 func (:s) er_t rtt_open( m@* o, vd_t unused )
 {
     o.rtt_attach_widget( gtk_box_new( GTK_ORIENTATION_HORIZONTAL, 0 ), o.rtt_widget );
+    if( o.insensitive ) gtk_widget_set_state_flags( o.rtt_widget, GTK_STATE_FLAG_INSENSITIVE, false );
     gtk_widget_set_name( o.rtt_widget, ifnameof( o._ ) );
     if( o.width > 0 || o.height > 0 ) gtk_widget_set_size_request( o.rtt_widget, o.width, o.height );
     gtk_widget_show( o.rtt_widget );
@@ -218,23 +230,6 @@ func (:s) er_t rebuild( m@* o )
         o.embedded_frame =< NULL;
     }
 
-    o.rts_tooltip_text =< NULL;
-
-    if( o.holder_is_array )
-    {
-        o.rts_tooltip_text!.push_fa( "[#<sz_t>]", o.client_index );
-    }
-    else
-    {
-        if( o.client_name && bnameof( o.client_name ) ) o.rts_tooltip_text!.push_fa( "#<sc_t>", bnameof( o.client_name ) );
-    }
-
-    if( bnameof( o.client.type() ) )
-    {
-        if( o.rts_tooltip_text ) o.rts_tooltip_text!.push_fa( " " );
-        o.rts_tooltip_text!.push_fa( "<#<sc_t>>", bnameof( o.client.type() ) );
-    }
-
     if( o.client.o )
     {
         tp_t frame_type = bgfe_frame_default_frame_type( o.client.type() );
@@ -245,13 +240,11 @@ func (:s) er_t rebuild( m@* o )
             m bgfe_frame* frame = x_inst_t_create( frame_type ).cast( d bgfe_frame* )^;
             action_type = escapprove~;
             o.client_edit_frame( o.client.o, o.client.type(), o.client_name, action_type.1, frame );
+
             if( frame )
             {
                 o.embedded_frame =< frame.fork();
                 o.embedded_frame.set_client_with_content_t( o.client.o, o.client.type(), o.client_name );
-
-                if( o.holder_is_array ) { o.embedded_frame.set_tooltip( st_s!^.copy_fa( "[#<sz_t>]", o.client_index ).sc ); }
-
                 o.embedded_frame.open( o.parent );
             }
         }
@@ -277,6 +270,7 @@ func (:s) er_t rtt_rebuild( m@* o, vd_t unused )
 {
     o.rtt_remove_all_widgets_from_container( o.rtt_widget );
 
+    o.rtt_detach_widget( o.rtt_label );
     o.rtt_detach_widget( o.rtt_button_main );
     o.rtt_detach_widget( o.rtt_button_clear );
 
@@ -289,18 +283,23 @@ func (:s) er_t rtt_rebuild( m@* o, vd_t unused )
         /// rtt_button_main
         o.rtt_attach_widget( gtk_button_new(), o.rtt_button_main );
         g_signal_connect( o.rtt_button_main, "clicked", G_CALLBACK( :s_rtt_button_main_signal_clicked ), o );
+        gtk_widget_set_name( o.rtt_button_main, "bgfe_frame_link" );
         gtk_button_set_relief( GTK_BUTTON( o.rtt_button_main ), GTK_RELIEF_NORMAL );
-        gtk_widget_set_name( o.rtt_button_main,  ifnameof( o._ ) );
-        if( o.show_tooltip && o.rts_tooltip_text ) gtk_widget_set_tooltip_text( o.rtt_button_main, o.rts_tooltip_text.sc );
+
+        o.rtt_attach_widget( gtk_label_new( "" ), o.rtt_label );
+        gtk_label_set_xalign( GTK_LABEL( o.rtt_label ), o.text_xalign );
+        gtk_label_set_yalign( GTK_LABEL( o.rtt_label ), o.text_yalign );
+        gtk_container_add( GTK_CONTAINER( o.rtt_button_main ), o.rtt_label );
+        gtk_widget_show( o.rtt_label );
+
         gtk_widget_show( o.rtt_button_main );
         gtk_box_pack_start( GTK_BOX( o.rtt_widget ), o.rtt_button_main,  true,  true,  0 );
     }
 
-
     /// rtt_button_clear
     if( o.clearable )
     {
-        o.rtt_attach_widget( gtk_button_new_with_label( "X" ), o.rtt_button_clear );
+        o.rtt_attach_widget( gtk_button_new_with_label( "⌫" ), o.rtt_button_clear );
         g_signal_connect( o.rtt_button_clear, "clicked", G_CALLBACK( :s_rtt_button_clear_signal_clicked ), o );
         gtk_button_set_relief( GTK_BUTTON( o.rtt_button_clear ), GTK_RELIEF_NORMAL );
         gtk_widget_set_name( o.rtt_button_clear, ifnameof( o._ ) );
@@ -337,13 +336,32 @@ func (:s) grab_focus
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:s) er_t rtt_button_main_set_name( m@* o, sc_t text )
+{
+    gtk_widget_set_name( o.rtt_button_main, text );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) er_t button_main_set_name( m@* o, sc_t text )
+{
+    if( o.rtt_button_main ) o.rte.run( o.rtt_button_main_set_name.cast( bgfe_rte_fp_rtt ), o, (vd_t)text );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:s) close
 {
     if( !o.is_open ) = 0;
-    if( o.window ) o.window =< NULL;
+    if( o.window )
+    {
+        o.window.close();
+        o.window =< NULL;
+    }
     o.rte.run( o.rtt_close.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.is_open = false;
-    o.client_close_confirm();
     = 0;
 }
 
@@ -351,9 +369,41 @@ func (:s) close
 
 func (:s) er_t rtt_close( m@* o, vd_t arg )
 {
+    o.rtt_detach_widget( o.rtt_label );
     o.rtt_detach_widget( o.rtt_button_main );
     o.rtt_detach_widget( o.rtt_button_clear );
     o.rtt_detach_widget( o.rtt_widget );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) client_close_request
+{
+    if( action_type.0 == approve~ || action_type.0 == reject~ ) = 0;
+    if( o.embedded_frame ) o.embedded_frame.client_close_request( initiator, action_type );
+    else if( o.window    ) o.window        .client_close_request( initiator, action_type );
+
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) client_close_confirm
+{
+    if( action_type.0 == approve~ ) = 0;
+    if( o.embedded_frame ) o.embedded_frame.client_close_confirm( initiator, action_type );
+    else if( o.window    ) o.window        .client_close_confirm( initiator, action_type );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) client_distraction
+{
+    if( action_type.0 == approve~ ) = 0;
+    if( o.embedded_frame ) o.embedded_frame.client_distraction( initiator, action_type );
+    else if( o.window    ) o.window        .client_distraction( initiator, action_type );
     = 0;
 }
 
@@ -377,6 +427,7 @@ func (:s) set_holder_t
 
     o.link_holder = holder;
     o.link_holder_type = holder_type;
+    o.link_holder_name = holder_name;
     o.holder_is_array = holder_is_array;
     o.client_index = client_index;
 
@@ -390,6 +441,31 @@ func (:s) bgfe_notify_receiver.notify_receive
     if( o.is_open )
     {
         if( notify_type == change_confirm~ ) o.set_text_from_client_status();
+    }
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) bgfe_frame.close_window_request
+{
+    if( o.window ) o.window.close();
+    o.window =< NULL;
+    o.button_main_set_name( "bgfe_frame_link" );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) er_t place_window( m@* o, m bgfe_window_s* window )
+{
+    if( o.window_locator )
+    {
+        o.window_locator.place_at_position( window, o.window_position );
+    }
+    else
+    {
+        o.place_at_position( window, o.window_position );
     }
     = 0;
 }
@@ -440,14 +516,30 @@ func (:s) bgfe_frame.cycle
             {
                 if( !o.window )
                 {
-                    o.window!.keep_above = true;
-                    o.window.set_client_with_content_t( o.client.o, o.client.type(), o.client_name );
-                    o.window.open( o.parent );
-                    if( o.window.supports_notify() ) o.window.cast( m bgfe_notify_sender* ).set_notify( o, change_confirm~ );
+                    tp_t action_type = approve~;
+                    o.parent.open_window_request( action_type );
+                    if( action_type == approve~ )
+                    {
+                        o.window!;
+                        o.window.keep_above = true;
+                        o.place_window( o.window );
+
+                        o.window.set_client_with_content_t( o.client.o, o.client.type(), o.client_name );
+                        if( o.holder_is_array ) { o.window.set_title( st_s!^.copy_fa( "#name [#<sz_t>]", o.link_holder_name, o.client_index ).sc ); }
+                        if( o.window.supports_notify() ) o.window.cast( m bgfe_notify_sender* ).set_notify( o, change_confirm~ );
+                        o.button_main_set_name( "bgfe_frame_link_active" );
+
+                        tp_t action_type = escapprove~;
+                        o.client_edit_frame( o.client.o, o.client.type(), o.client_name, action_type.1, o.window );
+
+                        o.window.open( o.parent );
+                    }
                 }
                 else
                 {
-                    o.window.present();
+                    o.window.close();
+                    o.window =< NULL;
+                    o.button_main_set_name( "bgfe_frame_link" );
                 }
             }
         }
@@ -499,6 +591,7 @@ func (:s) bgfe_frame.cycle
         if( !o.window.is_open )
         {
             o.window =< NULL;
+            o.button_main_set_name( "bgfe_frame_link" );
             o.set_text_from_client_status();
         }
     }
@@ -633,7 +726,7 @@ group :type_dialog
 
         hidden bgfe_window_s => window;
 
-        func bgfe_client.bgfe_enter_pressed { o.buttons.Apply = true; action_type.0 = approve~; = 0; }
+        func bgfe_client.bgfe_activate { o.buttons.Apply = true; action_type.0 = approve~; = 0; }
 
         func bgfe_client.bgfe_change_confirm
         {
@@ -666,10 +759,11 @@ group :type_dialog
             = 0;
         }
 
-        func er_t run( m@* o, m bgfe_frame* parent )
+        func er_t run( m@* o, m bgfe_frame_link_s* parent )
         {
             o.reset();
             o.window!.set_client_with_content( o, 0 );
+            parent.place_window( o.window );
             o.window.set_keep_above( true );
             o.window.set_decorated( false );
             o.window.set_close_on_lost_focus( true );
@@ -680,7 +774,6 @@ group :type_dialog
             = 0;
         }
     }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------

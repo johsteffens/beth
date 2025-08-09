@@ -98,12 +98,6 @@ feature f3_t h_complexity( @* o ) = 1;
 feature f3_t v_complexity( @* o ) = 1;
 
 
-/** Wrapping level used to determine border and color styling.
- *  bgfe_frame_s tends to have a wrap level by one higher than the highest wrap level of its elements.
- */
-feature sz_t wrap_level( @* o ) = 0;
-
-
 /// where a feature size is defined by width and height
 func f3_t complexity_unit_size() = 24;
 
@@ -112,6 +106,19 @@ func f3_t complexity_unit_size() = 24;
  *  Implementation should take into account that o can be NULL.
  */
 feature 'at' bl_t is_compact( @* o ) = false;
+
+/** Request sent from an immediate child to open a new window.
+ *  This is typically generated from a link-frame.
+ *  The parent frame may respond and take action according to its window policy.
+ *  'action_type' response should be approve~ or reject~.
+ *  This event has no escalation.
+ */
+feature er_t open_window_request( m@* o, m tp_t* action_type ) { action_type.0 = approve~; = 0; }
+
+/** Request sent from a parent to close a window if any is open.
+ *  This is typically generated from a holder of a link-frame based on its window policy.
+ */
+feature er_t close_window_request( m@* o ) = 0;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -129,6 +136,7 @@ feature tp_t arrangement( @* o ) = TYPEOF_horizontal;
 forward bgfe_window_s;
 func m bgfe_window_s* nearest_window( m @* o )
 {
+    if( o._ == bgfe_window_s~ )  = o.cast( m bgfe_window_s* );
     if( o._ == bgfe_frame_s~ && o.cast( m bgfe_frame_s* ).window != NULL )  = o.cast( m bgfe_frame_s* ).window;
     if( !o.parent() ) = NULL;
     = o.parent().nearest_window();
@@ -164,6 +172,12 @@ func tp_t default_frame_type( tp_t client_type )
         case sd_t~: = bgfe_frame_entry_s~;
         case sc_t~: = bgfe_frame_label_s~;
         case bl_t~: = bgfe_frame_check_button_s~;
+        case bcore_img_u2_s~: = bgfe_frame_canvas_s~;
+        case bcodec_image_bgra_s~: = bgfe_frame_canvas_s~;
+        case bcodec_image_yuyv_s~: = bgfe_frame_canvas_s~;
+        case bmath_mf2_s~: = bgfe_frame_canvas_s~;
+        case bmath_mf3_s~: = bgfe_frame_canvas_s~;
+
         default   : = bgfe_frame_s~;
     }
 }
@@ -178,30 +192,43 @@ func tp_t default_frame_type( tp_t client_type )
 name horizontal;
 name vertical;
 
+/// window policy types
+name any;  // any child-window may be opened
+name one;  // maximally one child-window (child-window may a have sub-windows)
+name zero; // no child window
+
 stamp :s
 {
     /// parameters
     sz_t width;  // optional preset width
     sz_t height; // optional preset height
-    bl_t show_client_name = true; // true: does not display client name
+    bl_t insensitive; // insensitive: does not react to user actions
+    bl_t show_client_name = true; // true: displays client name;
     bl_t show_border      = true;
     tp_t arrange = square;
-    st_s => widget_name;   // optional gtk widget name overrides default widget name
+    st_s => title;       // optional title (overrides client name)
+    st_s => widget_name; // optional gtk widget name overrides default widget name
     sz_t spacing;   // spacing between elements
     bl_t end_bound; // packs elements with reference to the end of the box (false: reference to the start)
     bl_t center = true;    // centers widgets in an expanded space
     bl_t stretch = true;   // stretches elements to fill expanded space
+    sz_t nesting_level;    // nesting level (embedded nesting)
+    tp_t window_policy = any; // window-policy: any~ | one~ | zero~;
 
     func bgfe_frame.set_width   { o.width   = value; = 0; }
     func bgfe_frame.set_height  { o.height  = value; = 0; }
-    func bgfe_frame.set_arrange { o.arrange = arrange; = 0; }
+    func bgfe_frame.set_insensitive { o.insensitive = flag; = 0; }
+    func bgfe_frame.set_arrange { o.arrange = name; = 0; }
     func bgfe_frame.set_show_client_name { o.show_client_name = flag; = 0; }
     func bgfe_frame.set_show_border { o.show_border = flag; = 0; }
-    func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
-    func bgfe_frame.set_spacing  { o.spacing   = value; = 0; }
-    func bgfe_frame.set_end_bound{ o.end_bound = flag; = 0; }
-    func bgfe_frame.set_center   { o.center    = flag; = 0; }
-    func bgfe_frame.set_stretch  { o.stretch   = flag; = 0; }
+    func bgfe_frame.set_widget_name { o.widget_name!.copy_sc( text ); = 0; }
+    func bgfe_frame.set_title       { o.title!.copy_sc( text ); = 0; }
+    func bgfe_frame.set_spacing     { o.spacing   = value; = 0; }
+    func bgfe_frame.set_end_bound   { o.end_bound = flag; = 0; }
+    func bgfe_frame.set_center      { o.center    = flag; = 0; }
+    func bgfe_frame.set_stretch     { o.stretch   = flag; = 0; }
+    func bgfe_frame.set_nesting_level { o.nesting_level = value; = 0; }
+    func bgfe_frame.set_window_policy { o.window_policy = name; = 0; }
 
     /// internals (client can be NULL; when client is != NULL, client_type != 0 is also provided)
     hidden bgfe_client* client; // client
@@ -212,7 +239,6 @@ stamp :s
 
     hidden f3_t h_complexity; // computed during opening
     hidden f3_t v_complexity; // computed during opening
-    hidden sz_t wrap_level;   // computed during opening
     hidden bl_t vertical; // vertical arrangement (computed during opening)
 
     func bgfe_frame.client = o.client;
@@ -222,13 +248,13 @@ stamp :s
     func bgfe_frame.is_open = o.is_open;
     func bgfe_frame.h_complexity { if( o.is_open ) = o.h_complexity; ERR_fa( "Frame is not open." ); = 1; }
     func bgfe_frame.v_complexity { if( o.is_open ) = o.v_complexity; ERR_fa( "Frame is not open." ); = 1; }
-    func bgfe_frame.wrap_level   { if( o.is_open ) = o.wrap_level; ERR_fa( "Frame is not open." ); = 0; }
     func bgfe_frame.is_compact = false;
 
     hidden :list_s => content_list;
     hidden bgfe_rte_s* rte;
     hidden GtkWidget* rtt_widget;
-    hidden GtkWidget* rtt_gtk_box;
+    hidden GtkWidget* rtt_main_box;
+    hidden GtkWidget* rtt_content_box;
     hidden bl_t is_open;
 
     func bl_t is_empty( @* o ) = ( !o.content_list || o.content_list.size == 0 );
@@ -238,8 +264,9 @@ stamp :s
     func :.close;
     func :.cycle;
     func :.arrangement = o.vertical ? TYPEOF_vertical : TYPEOF_horizontal;
-    func :.client_close_ok;
+    func :.client_close_request;
     func :.client_close_confirm;
+    func :.client_distraction;
 
     /// Notifications ...
     bgfe_notify_ligand_pool_s => ligand_pool;
@@ -298,29 +325,60 @@ stamp :s
 /**********************************************************************************************************************/
 /// utilities
 
-//----------------------------------------------------------------------------------------------------------------------
-
-/// attach widget of o
-func er_t rtt_attach_widget( m@* o, m GtkWidget* new_widget, m GtkWidget** attched_widget )
+func er_t ancestry_to_sink( @* o, m x_sink* sink  )
 {
-    if( attched_widget.1 != NULL ) o.rtt_detach_widget( attched_widget );
-    if( new_widget.1 == NULL ) = GERR_fa( "#name: new_widget is NULL (widget creation failed)\n", o._ );
-    if( G_IS_INITIALLY_UNOWNED( new_widget ) ) new_widget = g_object_ref_sink( new_widget );
-    attched_widget.1 = new_widget;
+    if( !o ) = 0;
+    sink.push_fa( "#name(#name)", o._, o.client_name() );
+    if( o.parent() )
+    {
+        sink.push_fa( "<-" );
+        o.parent().ancestry_to_sink( sink  );
+    }
     = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// detaches a member widget of o
-func er_t rtt_detach_widget( m@* o, m GtkWidget** widget )
+func er_t ancestry_to_stdout( @* o )
 {
-    if( widget.1 == NULL ) = 0;
-    g_signal_handlers_disconnect_by_data( widget.1, o );
-    g_object_unref( widget.1 );
-    widget.1 = NULL;
+    o.ancestry_to_sink( x_sink_stdout() );
+    bcore_msg_fa( "\n" );
     = 0;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+identifier GTK_WIDGET, G_IS_INITIALLY_UNOWNED;
+identifier g_object_ref_sink, g_signal_handlers_disconnect_by_data, g_object_unref, gtk_container_remove;
+identifier gtk_container_foreach, gtk_widget_grab_focus, G_OBJECT;
+type GObject;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func er_t rtt_attach_object( m@* o, m GObject* new_object, m GObject** attched_object )
+{
+    if( attched_object.1 != NULL ) o.rtt_detach_object( attched_object );
+    if( new_object.1 == NULL ) = GERR_fa( "#name: new_object is NULL (object creation failed)\n", o._ );
+    if( G_IS_INITIALLY_UNOWNED( new_object ) ) new_object = g_object_ref_sink( new_object );
+    attched_object.1 = new_object;
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func er_t rtt_detach_object( m@* o, m GObject** object )
+{
+    if( object.1 == NULL ) = 0;
+    g_signal_handlers_disconnect_by_data( object.1, o );
+    g_object_unref( object.1 );
+    object.1 = NULL;
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func er_t rtt_attach_widget( m@* o, m GtkWidget* new_widget, m GtkWidget** attched_widget ) = o.rtt_attach_object( new_widget.cast( m GObject* ), attched_widget.cast( m GObject** ) );
+func er_t rtt_detach_widget( m@* o, m GtkWidget** widget ) = o.rtt_detach_object( widget.cast( m GObject** ) );
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -336,6 +394,7 @@ func er_t rtt_remove_widget_from_container( m@* o, m GtkWidget* widget, m GtkWid
 
 func void rtt_callback_remove_all_widgets_from_container( m GtkWidget* widget, vd_t container )
 {
+    if( container == NULL ) return;
     gtk_container_remove( GTK_CONTAINER( container ), widget );
 }
 
@@ -343,17 +402,16 @@ func void rtt_callback_remove_all_widgets_from_container( m GtkWidget* widget, v
 
 func er_t rtt_remove_all_widgets_from_container( m@* o, m GtkWidget* container )
 {
+    if( container == NULL ) = 0;
     gtk_container_foreach( GTK_CONTAINER( container ), bgfe_frame_rtt_callback_remove_all_widgets_from_container, container );
     = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-identifier gtk_widget_grab_focus;
-identifier GTK_WIDGET;
-
 func er_t rtt_grab_focus( m@* o, vd_t widget )
 {
+    if( widget == NULL ) = 0;
     gtk_widget_grab_focus( GTK_WIDGET( widget ) );
     = 0;
 }
@@ -366,6 +424,48 @@ feature er_t grab_focus( m@* o )
     bgfe_rte_get( rte.2 );
 
     if( rte.1 ) rte.1.run( o.rtt_grab_focus.cast( bgfe_rte_fp_rtt ), o, o.rtt_widget() );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/** Places frame at the upper right position relative to o
+ */
+func er_t place_at_upper_right( m@* o, m bgfe_frame* frame )
+{
+    m$* shell = bgfe_location_shell_s!^;
+    shell.setup( o );
+    shell.place_frame_at_upper_right( o.rtt_widget(), frame );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/** Places frame at the upper right position relative to o
+ */
+func er_t place_at_lower_left( m@* o, m bgfe_frame* frame )
+{
+    m$* shell = bgfe_location_shell_s!^;
+    shell.setup( o );
+    shell.place_frame_at_lower_left( o.rtt_widget(), frame );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Places frame at one of the listed positions
+name upper_right;
+name lower_left;
+func er_t place_at_position( m@* o, m bgfe_frame* frame, tp_t position )
+{
+    m$* shell = bgfe_location_shell_s!^;
+    shell.setup( o );
+    switch( position )
+    {
+        case upper_right~: shell.place_frame_at_upper_right( o.rtt_widget(), frame ); break;
+        case lower_left~ : shell.place_frame_at_lower_left ( o.rtt_widget(), frame ); break;
+        default: break;
+    }
     = 0;
 }
 

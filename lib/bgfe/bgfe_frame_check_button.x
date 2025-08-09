@@ -25,6 +25,7 @@ stamp :s bgfe_frame
 {
     sz_t width;  // optional preset width
     sz_t height; // optional preset height
+    bl_t insensitive; // insensitive: does not react to user actions
     bl_t show_client_name = true;
     st_s => widget_name;   // optional gtk widget name overrides default widget name
     st_s => tooltip;     // external tooltip (if NULL an internal tooltip is used)
@@ -32,6 +33,7 @@ stamp :s bgfe_frame
 
     func bgfe_frame.set_width   { o.width   = value; = 0; }
     func bgfe_frame.set_height  { o.height  = value; = 0; }
+    func bgfe_frame.set_insensitive { o.insensitive = flag; = 0; }
     func bgfe_frame.set_show_client_name { o.show_client_name = flag; = 0; }
     func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
     func bgfe_frame.set_tooltip{ o.tooltip!.copy_sc( text ); = 0; }
@@ -58,6 +60,7 @@ stamp :s bgfe_frame
     hidden bl_t rts_value;    // current scale value
     hidden bl_t rts_modified; // scale value was modified by the front end
 
+    hidden st_s => tooltip_text;  // tooltip text
     hidden bgfe_rte_s* rte;
     hidden x_mutex_s mutex;
     hidden GtkWidget*  rtt_widget;
@@ -117,6 +120,20 @@ func (:s) open
     ASSERT( parent );
     o.parent = parent;
 
+    if( o.tooltip )
+    {
+        o.tooltip_text!.push_st( o.tooltip );
+    }
+    else
+    {
+        if( bnameof( o.client_name ) ) o.tooltip_text!.push_fa( "#<sc_t>", bnameof( o.client_name ) );
+        if( bnameof( o.client_type ) )
+        {
+            if( o.tooltip_text ) o.tooltip_text!.push_fa( " " );
+            o.tooltip_text!.push_fa( "<#<sc_t>>", bnameof( o.client_type ) );
+        }
+    }
+
     bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_bl_t, o.value.1.cast( m x_inst* ) );
 
     o.mutex.lock();
@@ -135,9 +152,11 @@ func (:s) er_t rtt_open( m@* o, vd_t unused )
 {
     sc_t sc_client_name = bnameof( o.client_name );
     o.rtt_attach_widget( sc_client_name ? gtk_check_button_new_with_label( sc_client_name ) : gtk_check_button_new(), o.rtt_widget );
+    if( o.insensitive ) gtk_widget_set_state_flags( o.rtt_widget, GTK_STATE_FLAG_INSENSITIVE, false );
     gtk_widget_set_name( o.rtt_widget, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
     gtk_widget_set_size_request( o.rtt_widget, o.width, o.height );
     gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( o.rtt_widget ), o.value );
+    if( o.show_tooltip && o.tooltip_text ) gtk_widget_set_tooltip_text( o.rtt_widget, o.tooltip_text.sc );
     gtk_widget_show( o.rtt_widget );
     g_signal_connect( o.rtt_widget, "toggled", G_CALLBACK( :s_rtt_signal_value_changed ), o );
     = 0;
@@ -150,7 +169,6 @@ func (:s) close
     if( !o.is_open ) = 0;
     o.rte.run( o.rtt_close.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.is_open = false;
-    o.client_close_confirm();
     = 0;
 }
 

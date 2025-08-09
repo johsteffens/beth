@@ -1,18 +1,16 @@
 # bgfe: Beth Graphical Front End
 
-This library represents a graphical user interface for beth.
+This library represents a generic graphical user interface for beth. It automates the actual framework widgets for any beth object.
 
-The principal idea is displaying and controlling elements of an arbitrary object via its reflection in a generic way. This provides a generic graphical user interface for any object.
-
-Rendering and controller interfacing us done using GTK3. For mode details about GTK3, see: https://docs.gtk.org/gtk3/
+Widgets are taken from GTK3. (See also: https://docs.gtk.org/gtk3/)
 
 ## Frame
-The frame represents the virtaul user interface controller. Specific implementations control specific aspects of a user interface, such as text editor, scales, sliders, switches. Other implementations (specifcally `bfge_frame_s, bgfe_window_s`) represents a list of sub-frames. Thus a tree of frames can be constructed analog to the way a regular beth-object represents a tree of sub-objects.
+The frame represents the virtual user interface controller. Specific implementations control specific aspects of a user interface, such as text editor, scales, sliders, switches. Other implementations (specifcally `bfge_frame_s, bgfe_window_s`) represents a list of sub-frames. Thus a tree of frames can be constructed analog to the way a regular beth-object represents a tree of sub-objects.
 
-The frame can be seen as server for the user-interagtive needs of an object. The object seved by a frame is called **Client**.
+The frame can be seen as server for the user-interactive needs of an object. The object served by a frame is called **Client**.
 
 ## Client
-The client is an object served by the graphical front-end. Any beth-object with a reflection can be client. The BGFE uses the reflection for automatic construction and interfacing with the object. In an ideal world the client defines the entire user interface simply by having a refletion. Thus the full frame can be generated from just one function (e.g. `set_client_with_content`). 
+The client is an object monitored and served by the graphical front-end. Any beth-object with a reflection can be client. The BGFE uses the reflection for automatic construction and interfacing with the object. In an ideal world the client defines the entire user interface simply by having a refletion. Thus the full frame can be generated from just one function (e.g. `set_client_with_content`). 
 
 In practice, though, the intended use case may vary even in the case of identical reflections, thus calling for some form adaptability. BGFE provides a simple framework for adaptations via features in `bgfe_client.x`,
 
@@ -32,18 +30,18 @@ A client-frame combination can be used in any thread without additional protecti
     
   - `pkg-config --libs gtk+-3.0` for linker flags
 
-## Issues
+### Issues
 
-### Code::Blocks: pkg-config
+#### Code::Blocks: pkg-config
 `pgk-config` computes the library list on the fly. It is normally placed under `Other linker options`. These options are executed in order but precede `Link libraries` in the target options. For gcc, if lib `a` depends on lib `b` , `a` must precede `b`. Hence, `libbeth.a` must precede `pgk-config` -libraries. 
 
-### Remedy
+#### Remedy
 Manually place the path to `libbeth.a` as first element into `Other linker options` instead into the `Link libraries` field.
 
-### Code::Blocks: Dependency awareness
+#### Code::Blocks: Dependency awareness
 Above remedy makes Code::Blocks unaware of the targets dependency to `libbeth.a`. 
 
-### Remedy
+#### Remedy
 Add the dependency `libbeth.a` in the project settings: `Properties/Build tragets/Dependencies/External dependency files`.
 
 

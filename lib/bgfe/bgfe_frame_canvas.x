@@ -15,35 +15,38 @@
 
 /**********************************************************************************************************************/
 
-/** boolean only-switch-on toggle based on 'GtkButton'
- *  Associated types: bl_t and all convertible leaf types
+/// small text frame based on gtk label
+
+/** Canvas frame associated with a drawable area and an image-like client
  */
 
 //----------------------------------------------------------------------------------------------------------------------
 
 stamp :s bgfe_frame
 {
-    sz_t width;  // optional preset width
-    sz_t height; // optional preset height
+    /// parameters
+    sz_t width;  // optional preferred width of label  (actual size is calculated from the ext)
+    sz_t height; // optional preferred height of label (actual size is calculated from the ext)
     bl_t insensitive; // insensitive: does not react to user actions
-    st_s => text;   // text on button; NULL: use client name as text
     st_s => widget_name;   // optional gtk widget name overrides default widget name
-    st_s => tooltip;     // external tooltip (if NULL an internal tooltip is used)
-    bl_t show_tooltip = false;
+    bl_t apply_alpha;
+    bl_t track_placement = true; // traces placement (positioning, size; creates associated client-events)
+    bl_t track_mouse;            // traces mouse     (buttons,movement; creates associated client-events)
 
     func bgfe_frame.set_width { o.width = value; = 0; }
     func bgfe_frame.set_height{ o.height = value; = 0; }
     func bgfe_frame.set_insensitive { o.insensitive = flag; = 0; }
-    func bgfe_frame.set_text  { o.text!.copy_sc( text ); = 0; }
     func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
-    func bgfe_frame.set_tooltip{ o.tooltip!.copy_sc( text ); = 0; }
-    func bgfe_frame.set_show_tooltip{ o.show_tooltip = flag; = 0; }
-
-    bl_t value;     // flag value
-    bl_t modified;  // value was modified by the front-end
-
+    func bgfe_frame.set_track_placement{ o.track_placement = flag; = 0; }
+    func bgfe_frame.set_track_mouse    { o.track_mouse = flag; = 0; }
 
     /// internals
+    bcodec_image_bgra_s => rts_image_bgra;
+
+    bl_t rts_attention; // attention in cycle required
+
+    bgfe_placement_shell_s => placement_shell;
+    bgfe_mouse_shell_s     => mouse_shell;
 
     hidden bgfe_client* client; // client
     hidden tp_t client_type; // to cover obliv clients
@@ -55,17 +58,16 @@ stamp :s bgfe_frame
     func bgfe_frame.parent = o.parent;
     func bgfe_frame.is_open = o.is_open;
     func bgfe_frame.h_complexity = 2;
-    func bgfe_frame.v_complexity = 1;
+    func bgfe_frame.v_complexity = 0.5;
     func bgfe_frame.is_compact = true;
-
-    hidden bl_t rts_clicked; // button was clicked
 
     hidden st_s => tooltip_text;  // tooltip text
     hidden bgfe_rte_s* rte;
     hidden x_mutex_s mutex;
     hidden GtkWidget*  rtt_widget;
+    hidden GtkWidget*  rtt_drawing_area;
+
     hidden bl_t is_open;
-    hidden bl_t rtt_ignore_signal_value_changed;
 
     func bcore_inst_call.down_e o.close();
 
@@ -82,28 +84,41 @@ stamp :s bgfe_frame
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) void rtt_signal_destroy( m GtkWidget* win, m@* o ) o.rtt_widget = NULL;
-
-//----------------------------------------------------------------------------------------------------------------------
-
-identifier gtk_button_set_label;
-identifier GTK_BUTTON;
-
-func (:s) void rtt_signal_clicked( m GtkWidget* win, m@* o )
+identifier gtk_widget_queue_draw;
+func (:s) int rtt_redraw( m @* o )
 {
-    o.mutex.lock();
-    o.rts_clicked = true;
-    o.mutex.unlock();
+    if( o.rtt_drawing_area ) verbatim_C { gtk_widget_queue_draw( o->rtt_drawing_area ); };
+    = 0;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+identifier cairo_image_surface_create_for_data, cairo_set_source_surface, cairo_paint, cairo_surface_destroy;
+identifier CAIRO_FORMAT_ARGB32, CAIRO_FORMAT_RGB24;
+type cairo_t, cairo_surface_t, cairo_format_t;
 
-func (:s) er_t rtt_set_text( m@* o, st_s* rts_text )
+func (:s) gboolean rtt_signal_draw( m GtkWidget* drw, m cairo_t* cairo, m@* o )
 {
-    o.mutex.lock();
-    gtk_button_set_label( GTK_BUTTON( o.rtt_widget ), rts_text ? rts_text.sc : "" );
-    o.mutex.unlock();
-    = 0;
+    o.mutex.create_lock()^;
+    if( !o.rts_image_bgra ) = FALSE;
+
+    cairo_format_t cairo_format = o.apply_alpha ? CAIRO_FORMAT_ARGB32 : CAIRO_FORMAT_RGB24;
+
+    /// this function only references image->data but does not copy or modify it
+    m cairo_surface_t* surface = cairo_image_surface_create_for_data
+    (
+        ( u0_t* )o.rts_image_bgra->data,
+        cairo_format,
+        o.rts_image_bgra.cols,
+        o.rts_image_bgra.rows,
+        o.rts_image_bgra.bytes_per_row
+    );
+
+    if( surface )
+    {
+        cairo_set_source_surface( cairo, surface, 0, 0 );
+        cairo_paint( cairo );
+    }
+    cairo_surface_destroy( surface );
+    = FALSE;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -117,45 +132,49 @@ func (:s) open
     ASSERT( parent );
     o.parent = parent;
 
-    if( o.tooltip )
-    {
-        o.tooltip_text!.push_st( o.tooltip );
-    }
-    else
-    {
-        if( bnameof( o.client_name ) ) o.tooltip_text!.push_fa( "#<sc_t>", bnameof( o.client_name ) );
-        if( bnameof( o.client_type ) )
-        {
-            if( o.tooltip_text ) o.tooltip_text!.push_fa( " " );
-            o.tooltip_text!.push_fa( "<#<sc_t>>", bnameof( o.client_type ) );
-        }
-    }
+    if( o.track_placement ) o.placement_shell!.setup( o );
+    if( o.track_mouse     ) o.mouse_shell!.setup( o );
 
-    bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_bl_t, o.value.1.cast( m x_inst* ) );
-
+    if( o.client ) o.upsync();
     o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.is_open = true;
+
     = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-identifier gtk_button_new, gtk_button_new_with_label, gtk_button_set_relief;
-type GTK_RELIEF_NORMAL;
+type GtkGesture, GtkEventController;
+identifier gtk_gesture_drag_new, gtk_gesture_single_set_button, gtk_event_controller_motion_new, gtk_event_controller_scroll_new;
+identifier gtk_widget_add_events, gtk_drawing_area_new;
+identifier GTK_GESTURE_SINGLE, GDK_BUTTON_PRIMARY, GTK_EVENT_CONTROLLER_SCROLL_VERTICAL, GDK_POINTER_MOTION_MASK, GDK_SCROLL_MASK;
+identifier GDK_BUTTON_PRIMARY, GTK_EVENT_CONTROLLER_SCROLL_VERTICAL, GDK_POINTER_MOTION_MASK, GDK_SCROLL_MASK, GDK_BUTTON_PRESS_MASK, GDK_BUTTON_RELEASE_MASK;
+identifier GDK_ENTER_NOTIFY_MASK, GDK_LEAVE_NOTIFY_MASK;
 
 func (:s) er_t rtt_open( m@* o, vd_t unused )
 {
-    sc_t sc_label = bnameof( o.client_name );
-    if( o.text ) sc_label = o.text.sc;
+    o.rtt_attach_widget( gtk_drawing_area_new(), o.rtt_drawing_area );
+    if( o.insensitive ) gtk_widget_set_state_flags( o.rtt_drawing_area, GTK_STATE_FLAG_INSENSITIVE, false );
 
-    o.rtt_attach_widget( sc_label ? gtk_button_new_with_label( sc_label ) : gtk_button_new(), o.rtt_widget );
-    if( o.insensitive ) gtk_widget_set_state_flags( o.rtt_widget, GTK_STATE_FLAG_INSENSITIVE, false );
-    gtk_widget_set_name( o.rtt_widget, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
-    gtk_widget_set_size_request( o.rtt_widget, o.width, o.height );
-    if( o.show_tooltip && o.tooltip_text ) gtk_widget_set_tooltip_text( o.rtt_widget, o.tooltip_text.sc );
-    gtk_widget_show( o.rtt_widget );
-    g_signal_connect( o.rtt_widget, "clicked", G_CALLBACK( :s_rtt_signal_clicked ), o );
+    sz_t width = o.width;
+    sz_t height = o.height;
 
+    if( o.rts_image_bgra )
+    {
+        width = sz_max( width, o.rts_image_bgra.cols );
+        height = sz_max( height, o.rts_image_bgra.rows );
+    }
+
+    gtk_widget_set_size_request( o.rtt_drawing_area, width, height );
+    gtk_widget_show( o.rtt_drawing_area );
+    gtk_widget_set_name( o.rtt_drawing_area, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
+
+    g_signal_connect( o.rtt_drawing_area, "draw", G_CALLBACK( o.rtt_signal_draw ), o );
+
+    if( o.placement_shell ) o.placement_shell.rtt_open( o.rtt_drawing_area );
+    if( o.mouse_shell     ) o.mouse_shell    .rtt_open( o.rtt_drawing_area );
+
+    o.rtt_widget = o.rtt_drawing_area;
     = 0;
 }
 
@@ -166,6 +185,8 @@ func (:s) close
     if( !o.is_open ) = 0;
     o.rte.run( o.rtt_close.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.is_open = false;
+    o.placement_shell =< NULL;
+    o.mouse_shell =< NULL;
     = 0;
 }
 
@@ -173,7 +194,10 @@ func (:s) close
 
 func (:s) er_t rtt_close( m@* o, vd_t arg )
 {
-    o.rtt_detach_widget( o.rtt_widget );
+    if( o.placement_shell ) o.placement_shell.rtt_close();
+    if( o.mouse_shell     ) o.mouse_shell    .rtt_close();
+    o.rtt_detach_widget( o.rtt_drawing_area );
+    o.rtt_widget = NULL;
     = 0;
 }
 
@@ -192,26 +216,17 @@ func (:s) set_client_t
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:s) bgfe_frame.client_change_request = 0;
+func (:s) bgfe_frame.client_change_confirm = 0;
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:s) bgfe_frame.cycle
 {
     if( !o.is_open ) = 0; // no error because frame window could have been closed
 
-    o.mutex.lock();
-    if( !o.value && o.rts_clicked )
-    {
-        o.value = true;
-        o.modified = true;
-    }
-    o.mutex.unlock();
-
-    if( o.modified )
-    {
-        if( action_type == approve~ ) = o.downsync();
-        if( action_type == reject~  ) = o.upsync();
-        o.client_change_request( o, action_type.1 );
-        if( action_type == approve~ ) = o.downsync();
-        if( action_type == reject~  ) = o.upsync();
-    }
+    if( o.placement_shell ) o.placement_shell.cycle( o );
+    if( o.mouse_shell     ) o.mouse_shell    .cycle( o );
 
     = 0;
 }
@@ -221,16 +236,6 @@ func (:s) bgfe_frame.cycle
 func (:s) bgfe_frame.downsync
 {
     if( !o.is_open ) = 0; // no error because frame window could have been closed
-
-    if( o.modified )
-    {
-        bgfe_client_t_bgfe_copy_from_typed( o.client, o.client_type, o.client_type, TYPEOF_bl_t, o.value.1.cast( x_inst* ) );
-
-        o.modified = false;
-        tp_t action_type = TYPEOF_escalate;
-        o.client_change_confirm( o, action_type.1 );
-    }
-
     = 0;
 }
 
@@ -238,15 +243,18 @@ func (:s) bgfe_frame.downsync
 
 func (:s) bgfe_frame.upsync
 {
-    if( !o.is_open ) = 0; // no error because frame window could have been closed
 
-    bl_t client_value = 0;
-    bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_bl_t, client_value.1.cast( m x_inst* ) );
-
-    if( client_value != o.value )
+    if( o.client )
     {
-        o.value = client_value;
-        o.modified = false;
+        o.mutex.create_lock()^;
+        o.rts_image_bgra!;
+
+        bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, bcodec_image_bgra_s~, o.rts_image_bgra.cast( m x_inst* ) );
+    }
+
+    if( o.is_open )
+    {
+        verbatim_C { g_idle_add( (int(*)(vd_t))bgfe_frame_canvas_s_rtt_redraw, o ) }; // g_idle_add is supposed to be thread safe
     }
 
     = 0;
