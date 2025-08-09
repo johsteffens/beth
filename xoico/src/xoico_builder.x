@@ -323,18 +323,6 @@ func (:target_s) :.build
             if( trait_name.size == 0 ) return source.parse_error_fa( "Trait name expected in source declaration." );
         }
 
-        if( source.parse_bl( "#?w'embed' " ) )
-        {
-            if( source.parse_bl( "#?w'as string' " ) )
-            {
-                embed_method = TYPEOF_as_string;
-            }
-            else
-            {
-                return source.parse_error_fa( "Specify embedding method before file path (e.g. 'as string')" );
-            }
-        }
-
         while( !source.eos() )
         {
             char c = source.get_char();
@@ -347,6 +335,10 @@ func (:target_s) :.build
             if( source.parse_bl( " #?w'as_string'" ) )
             {
                 embed_method = TYPEOF_as_string;
+            }
+            else if( source.parse_bl( " #?w'as_string_without_comments'" ) )
+            {
+                embed_method = TYPEOF_as_string_without_comments;
             }
             else
             {

@@ -1,4 +1,4 @@
-//  Last update: 2025-07-05T14:52:56Z
+//  Last update: 2025-07-14T14:19:47Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -1250,6 +1250,7 @@
   };
 #define TYPEOF_as_header 0xF646F01E7CF98A97ull
 #define TYPEOF_as_string 0xBAEC3F9151E62207ull
+#define TYPEOF_as_string_without_comments 0x29F0BB6CBDAF87E3ull
 #define TYPEOF_as_group 0x056176620137FF69ull
 #define TYPEOF_xoico_compiler_s 0xA7C0906C33CBFB69ull
 #define BETH_EXPAND_ITEM_xoico_compiler_s \
@@ -2074,5 +2075,5 @@ BETH_EXPAND_GROUP_xoico_builder
 BETH_EXPAND_GROUP_xoico_main
 
 #endif // __xoico_xo_H
-// XOICO_BODY_SIGNATURE 0x66ADB2831E898770
-// XOICO_FILE_SIGNATURE 0x82FC60FA7AEDD5E3
+// XOICO_BODY_SIGNATURE 0x86EE60DEA1E4CD69
+// XOICO_FILE_SIGNATURE 0x401D85EA9046363D

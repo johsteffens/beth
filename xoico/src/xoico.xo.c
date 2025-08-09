@@ -1,4 +1,4 @@
-//  Last update: 2025-07-05T15:09:07Z
+//  Last update: 2025-07-14T14:26:50Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -49,7 +49,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_xoico 0x10694A3FD3DB25D0ull
+// HKEYOF_xoico 0x94C100A9E9D481D6ull
 
 /**********************************************************************************************************************/
 // source: xoico.x
@@ -2603,13 +2603,45 @@ er_t xoico_embedded_data_s_parse( xoico_embedded_data_s* o, const xoico_host* ho
     // xoico_embedded_data.x:30:5
     
     bcore_arr_u0_s_attach( &(o->arr ),  bcore_arr_u0_s_create());
-    while( !x_source_eos(source) ) bcore_arr_u0_s_push(o->arr,x_source_get_u0(source) );
+    
+    if( o->embed_method == TYPEOF_as_string_without_comments )
+    {
+        char last_char = 0;
+        while( !x_source_eos(source) )
+        {
+            char c = x_source_get_u0(source);
+            if( c == '/' && x_source_inspect_u0(source) == '*' )
+            {
+                x_source_get_u0(source);
+                while( !x_source_eos(source) ) { if( x_source_get_u0(source) == '*' ) if( x_source_get_u0(source) == '/' ) break; }
+            }
+            else if( c == '/' && x_source_inspect_u0(source) == '/' )
+            {
+                x_source_get_u0(source);
+                while( !x_source_eos(source) )
+                {
+                    if( x_source_inspect_u0(source) == '\n' ) break;
+                    x_source_get_u0(source);
+                }
+            }
+            else if( !( c == '\n' && last_char == '\n' ) ) // do not push repeated newlines
+            {
+                bcore_arr_u0_s_push(o->arr,c );
+                last_char = c;
+            }
+        }
+    }
+    else
+    {
+        while( !x_source_eos(source) ) bcore_arr_u0_s_push(o->arr,x_source_get_u0(source) );
+    }
+    
     return  0;
 }
 
 tp_t xoico_embedded_data_s_get_hash( const xoico_embedded_data_s* o )
 {
-    // xoico_embedded_data.x:37:5
+    // xoico_embedded_data.x:69:5
     
     tp_t hash = bcore_tp_fold_tp( bcore_tp_init(), o->_ );
     hash = bcore_tp_fold_tp( hash, o->embed_method );
@@ -2620,21 +2652,16 @@ tp_t xoico_embedded_data_s_get_hash( const xoico_embedded_data_s* o )
 
 er_t xoico_embedded_data_s_expand_declaration( const xoico_embedded_data_s* o, const xoico_host* host, sz_t indent, x_sink* sink )
 {
-    // xoico_embedded_data.x:46:5
+    // xoico_embedded_data.x:78:5
     
-    if( o->embed_method == TYPEOF_as_string )
-    {
-    //            sink.push_fa( " \\\n#rn{ }", indent );
-    //            sink.push_fa( "st_s* #<sc_t>( void );", host.nameof( o.function_name ) );
-    }
     return  0;
 }
 
 er_t xoico_embedded_data_s_expand_definition( const xoico_embedded_data_s* o, const xoico_host* host, sz_t indent, x_sink* sink )
 {
-    // xoico_embedded_data.x:56:5
+    // xoico_embedded_data.x:83:5
     
-    if( o->embed_method == TYPEOF_as_string )
+    if( o->embed_method == TYPEOF_as_string || o->embed_method == TYPEOF_as_string_without_comments )
     {
         x_sink_push_fa(sink,"#rn{ }st_s* #<sc_t>( void )\n", indent, xoico_host_a_nameof(host,o->function_name ) );
         x_sink_push_fa(sink,"#rn{ }{\n"                            , indent );
@@ -3430,7 +3457,7 @@ er_t xoico_group_s_parse_embed( xoico_group_s* o, const xoico_host* host, x_sour
 {
     // xoico_group.x:843:1
     
-    if( embed_method == TYPEOF_as_string )
+    if( embed_method == TYPEOF_as_string || embed_method == TYPEOF_as_string_without_comments )
     {BLM_INIT_LEVEL(1);
         xoico_embedded_data_s* embedded_data = ((xoico_embedded_data_s*)BLM_LEVEL_T_PUSH(1,xoico_embedded_data_s,xoico_embedded_data_s_create()));
     
@@ -5336,7 +5363,7 @@ er_t xoico_target_s_expand_update_time( const xoico_target_s* o, sz_t indent, x_
     BLM_INIT_LEVEL(0);
     bcore_cday_utc_s* time = ((bcore_cday_utc_s*)BLM_LEVEL_T_PUSH(0,bcore_cday_utc_s,bcore_cday_utc_s_create()));
     bcore_cday_utc_s_from_system( time );
-    x_sink_push_fa(sink,"//  Last update: " ); bcore_cday_utc_s_to_sink( time, ( bcore_sink* )sink ); x_sink_push_fa(sink,"\n" );
+    x_sink_push_fa(sink,"//  Last update: " ); bcore_cday_utc_s_to_sink( time,( bcore_sink* )sink ); x_sink_push_fa(sink," (UTC)\n" );
     BLM_RETURNV(er_t, 0)
 }
 
@@ -5789,7 +5816,7 @@ BCORE_DEFINE_OBJECT_INST_P_NASC_END( xoico_compiler_s )
 
 bl_t xoico_compiler_s_is_type( const xoico_compiler_s* o, tp_t name )
 {
-    // xoico_compiler.x:158:5
+    // xoico_compiler.x:159:5
     
     if( xoico_compiler_s_is_group(o,name ) ) return  true;
     if( xoico_compiler_s_is_stamp(o,name ) ) return  true;
@@ -5799,7 +5826,7 @@ bl_t xoico_compiler_s_is_type( const xoico_compiler_s* o, tp_t name )
 
 bl_t xoico_compiler_s_is_identifier( const xoico_compiler_s* o, tp_t name )
 {
-    // xoico_compiler.x:166:5
+    // xoico_compiler.x:167:5
     
     if( xoico_compiler_s_is_type(o,name ) ) return  true;
     if( bcore_hmap_tp_s_exists(&(o->hmap_declared_name),name ) ) return  true;
@@ -5809,7 +5836,7 @@ bl_t xoico_compiler_s_is_identifier( const xoico_compiler_s* o, tp_t name )
 
 bl_t xoico_compiler_s_is_name( const xoico_compiler_s* o, tp_t name )
 {
-    // xoico_compiler.x:174:5
+    // xoico_compiler.x:175:5
     
     if( bcore_hmap_tp_s_exists(&(o->hmap_declared_name),name ) ) return  true;
     return  false;
@@ -5817,7 +5844,7 @@ bl_t xoico_compiler_s_is_name( const xoico_compiler_s* o, tp_t name )
 
 bl_t xoico_compiler_s_is_stamp( const xoico_compiler_s* o, tp_t name )
 {
-    // xoico_compiler.x:180:5
+    // xoico_compiler.x:181:5
     
     const xoico* item = xoico_compiler_s_get_const_item(o,name );
     if( item && ( item->_ == ((tp_t)(TYPEOF_xoico_stamp_s)) ) ) return  true;
@@ -5826,7 +5853,7 @@ bl_t xoico_compiler_s_is_stamp( const xoico_compiler_s* o, tp_t name )
 
 bl_t xoico_compiler_s_is_body( const xoico_compiler_s* o, tp_t name )
 {
-    // xoico_compiler.x:187:5
+    // xoico_compiler.x:188:5
     
     const xoico* item = xoico_compiler_s_get_const_item(o,name );
     if( item && ( item->_ == ((tp_t)(TYPEOF_xoico_body_s)) ) ) return  true;
@@ -5835,7 +5862,7 @@ bl_t xoico_compiler_s_is_body( const xoico_compiler_s* o, tp_t name )
 
 bl_t xoico_compiler_s_is_signature( const xoico_compiler_s* o, tp_t name )
 {
-    // xoico_compiler.x:194:5
+    // xoico_compiler.x:195:5
     
     const xoico* item = xoico_compiler_s_get_const_item(o,name );
     if( item && ( item->_ == ((tp_t)(TYPEOF_xoico_signature_s)) ) ) return  true;
@@ -5844,7 +5871,7 @@ bl_t xoico_compiler_s_is_signature( const xoico_compiler_s* o, tp_t name )
 
 bl_t xoico_compiler_s_is_signature_or_feature( const xoico_compiler_s* o, tp_t name )
 {
-    // xoico_compiler.x:201:5
+    // xoico_compiler.x:202:5
     
     const xoico* item = xoico_compiler_s_get_const_item(o,name );
     if( !item ) return  NULL;
@@ -5854,7 +5881,7 @@ bl_t xoico_compiler_s_is_signature_or_feature( const xoico_compiler_s* o, tp_t n
 
 bl_t xoico_compiler_s_is_feature( const xoico_compiler_s* o, tp_t name )
 {
-    // xoico_compiler.x:209:5
+    // xoico_compiler.x:210:5
     
     const xoico* item = xoico_compiler_s_get_const_item(o,name );
     if( item && ( item->_ == ((tp_t)(TYPEOF_xoico_feature_s)) ) ) return  true;
@@ -5863,7 +5890,7 @@ bl_t xoico_compiler_s_is_feature( const xoico_compiler_s* o, tp_t name )
 
 const xoico* xoico_compiler_s_get_const_item( const xoico_compiler_s* o, tp_t name )
 {
-    // xoico_compiler.x:216:5
+    // xoico_compiler.x:217:5
     
     const vd_t* ptr = bcore_hmap_tpvd_s_get(&(o->hmap_item),name );
     return  ptr ? ( const xoico* )*ptr : NULL;
@@ -5871,7 +5898,7 @@ const xoico* xoico_compiler_s_get_const_item( const xoico_compiler_s* o, tp_t na
 
 xoico* xoico_compiler_s_get_item( xoico_compiler_s* o, tp_t name )
 {
-    // xoico_compiler.x:222:5
+    // xoico_compiler.x:223:5
     
     const vd_t* ptr = bcore_hmap_tpvd_s_get(&(o->hmap_item),name );
     return  ptr ? ( xoico* )*ptr : NULL;
@@ -5879,7 +5906,7 @@ xoico* xoico_compiler_s_get_item( xoico_compiler_s* o, tp_t name )
 
 xoico_stamp_s* xoico_compiler_s_get_stamp( xoico_compiler_s* o, tp_t name )
 {
-    // xoico_compiler.x:228:5
+    // xoico_compiler.x:229:5
     
     const xoico* item = xoico_compiler_s_get_const_item(o,name );
     return  ( item ) ? ( item->_ == ((tp_t)(TYPEOF_xoico_stamp_s)) ) ? ((xoico_stamp_s*)(item)) : NULL : NULL;
@@ -5887,7 +5914,7 @@ xoico_stamp_s* xoico_compiler_s_get_stamp( xoico_compiler_s* o, tp_t name )
 
 xoico_body_s* xoico_compiler_s_get_body( xoico_compiler_s* o, tp_t name )
 {
-    // xoico_compiler.x:234:5
+    // xoico_compiler.x:235:5
     
     const xoico* item = xoico_compiler_s_get_const_item(o,name );
     return  ( item ) ? ( item->_ == ((tp_t)(TYPEOF_xoico_body_s)) ) ? ((xoico_body_s*)(item)) : NULL : NULL;
@@ -5895,7 +5922,7 @@ xoico_body_s* xoico_compiler_s_get_body( xoico_compiler_s* o, tp_t name )
 
 const xoico_feature_s* xoico_compiler_s_get_feature( const xoico_compiler_s* o, tp_t name )
 {
-    // xoico_compiler.x:240:5
+    // xoico_compiler.x:241:5
     
     const xoico* item = xoico_compiler_s_get_const_item(o,name );
     return  ( item ) ? ( item->_ == ((tp_t)(TYPEOF_xoico_feature_s)) ) ? ((xoico_feature_s*)(item)) : NULL : NULL;
@@ -5903,7 +5930,7 @@ const xoico_feature_s* xoico_compiler_s_get_feature( const xoico_compiler_s* o, 
 
 const xoico_signature_s* xoico_compiler_s_get_signature( const xoico_compiler_s* o, tp_t name )
 {
-    // xoico_compiler.x:246:5
+    // xoico_compiler.x:247:5
     
     const xoico* item = xoico_compiler_s_get_const_item(o,name );
     if( !item ) return  NULL;
@@ -5914,7 +5941,7 @@ const xoico_signature_s* xoico_compiler_s_get_signature( const xoico_compiler_s*
 
 xoico_group_s* xoico_compiler_s_get_group( xoico_compiler_s* o, tp_t name )
 {
-    // xoico_compiler.x:255:5
+    // xoico_compiler.x:256:5
     
     const vd_t* ptr = bcore_hmap_tpvd_s_get(&(o->hmap_group),name );
     return  ptr ? ( xoico_group_s* )*ptr : NULL;
@@ -5922,7 +5949,7 @@ xoico_group_s* xoico_compiler_s_get_group( xoico_compiler_s* o, tp_t name )
 
 xoico_transient_map_s* xoico_compiler_s_get_transient_map( xoico_compiler_s* o, tp_t type )
 {
-    // xoico_compiler.x:261:5
+    // xoico_compiler.x:262:5
     
     xoico_stamp_s* stamp = xoico_compiler_s_get_stamp(o,type );
     return  stamp ? (&(stamp->transient_map)) : NULL;
@@ -5930,7 +5957,7 @@ xoico_transient_map_s* xoico_compiler_s_get_transient_map( xoico_compiler_s* o, 
 
 xoico_func_s* xoico_compiler_s_get_func( xoico_compiler_s* o, tp_t name )
 {
-    // xoico_compiler.x:267:5
+    // xoico_compiler.x:268:5
     
     const vd_t* ptr = bcore_hmap_tpvd_s_get(&(o->hmap_func),name );
     return  ptr ? ( xoico_func_s* )*ptr : NULL;
@@ -5938,7 +5965,7 @@ xoico_func_s* xoico_compiler_s_get_func( xoico_compiler_s* o, tp_t name )
 
 er_t xoico_compiler_s_life_a_push( xoico_compiler_s* o, bcore_inst* object )
 {
-    // xoico_compiler.x:273:5
+    // xoico_compiler.x:274:5
     
     bcore_life_s_push_aware( (&(o->life)), object );
     return  0;
@@ -5946,7 +5973,7 @@ er_t xoico_compiler_s_life_a_push( xoico_compiler_s* o, bcore_inst* object )
 
 sc_t xoico_compiler_s_nameof( const xoico_compiler_s* o, tp_t type )
 {
-    // xoico_compiler.x:294:5
+    // xoico_compiler.x:295:5
     
     sc_t name = bcore_hmap_name_s_get_sc(&(o->name_map),type );
     if( !name ) name = ifnameof( type );
@@ -5955,7 +5982,7 @@ sc_t xoico_compiler_s_nameof( const xoico_compiler_s* o, tp_t type )
 
 void xoico_compiler_s_init_x( xoico_compiler_s* o )
 {
-    // xoico_compiler.x:301:5
+    // xoico_compiler.x:302:5
     
     if( o->work_build_time_into_pre_hash )
     {
@@ -5966,14 +5993,14 @@ void xoico_compiler_s_init_x( xoico_compiler_s* o )
 
 void xoico_compiler_s_push_d( xoico_compiler_s* o, xoico_target_s* target )
 {
-    // xoico_compiler.x:310:5
+    // xoico_compiler.x:311:5
     
     x_array_push_d(((x_array*)(o)),((x_inst*)(target )));
 }
 
 er_t xoico_compiler_s_register_group( xoico_compiler_s* o, const xoico_group_s* group )
 {
-    // xoico_compiler.x:325:1
+    // xoico_compiler.x:326:1
     
     if( bcore_hmap_tpvd_s_exists(&(o->hmap_group),group->tp_name ) ) return  0;
     bcore_hmap_tpvd_s_set(&(o->hmap_group),group->tp_name, ( vd_t )group );
@@ -5982,7 +6009,7 @@ er_t xoico_compiler_s_register_group( xoico_compiler_s* o, const xoico_group_s* 
 
 er_t xoico_compiler_s_register_item( xoico_compiler_s* o, const xoico* item )
 {
-    // xoico_compiler.x:334:1
+    // xoico_compiler.x:335:1
     
     tp_t global_id = xoico_a_get_global_name_tp(item);
     if( bcore_hmap_tpvd_s_exists(&(o->hmap_item),global_id ) )
@@ -5995,7 +6022,7 @@ er_t xoico_compiler_s_register_item( xoico_compiler_s* o, const xoico* item )
 
 er_t xoico_compiler_s_register_func( xoico_compiler_s* o, const xoico_func_s* func )
 {
-    // xoico_compiler.x:347:1
+    // xoico_compiler.x:348:1
     
     if( bcore_hmap_tpvd_s_exists(&(o->hmap_func),func->global_name ) )
     {
@@ -6026,7 +6053,7 @@ er_t xoico_compiler_s_register_func( xoico_compiler_s* o, const xoico_func_s* fu
 
 er_t xoico_compiler_s_check_overwrite( const xoico_compiler_s* o, sc_t file, tp_t body_signature, bl_t* clear_to_overwrite )
 {
-    // xoico_compiler.x:422:1
+    // xoico_compiler.x:423:1
     BLM_INIT_LEVEL(0);
     if( clear_to_overwrite ) (*(clear_to_overwrite)) = true;
     if( !bcore_file_exists(file ) ) BLM_RETURNV(er_t, 0)
@@ -6067,7 +6094,7 @@ er_t xoico_compiler_s_check_overwrite( const xoico_compiler_s* o, sc_t file, tp_
 
 er_t xoico_compiler_s_parse( xoico_compiler_s* o, sc_t target_name, sc_t target_ext, const st_s* target_output_folder, sc_t source_path, sc_t group_name, sc_t trait_name, tp_t embed_method, sz_t* p_target_index )
 {
-    // xoico_compiler.x:463:1
+    // xoico_compiler.x:464:1
     BLM_INIT_LEVEL(0);
     const st_s* source_folder = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,bcore_file_folder_path(source_path )));
     const st_s* output_folder = target_output_folder ? target_output_folder : source_folder;
@@ -6115,7 +6142,7 @@ er_t xoico_compiler_s_parse( xoico_compiler_s* o, sc_t target_name, sc_t target_
 
 er_t xoico_compiler_s_finalize( xoico_compiler_s* o, const xoico_host* host )
 {
-    // xoico_compiler.x:511:1
+    // xoico_compiler.x:512:1
     
     {const xoico_compiler_s* __a=o ;if(__a)for(sz_t __i=0;__i<__a->size;__i++){xoico_target_s* e=__a->data[__i]; BLM_TRY(xoico_target_s_finalize(e,((const xoico_host*)(o ))))
     }}return  0;
@@ -6123,7 +6150,7 @@ er_t xoico_compiler_s_finalize( xoico_compiler_s* o, const xoico_host* host )
 
 er_t xoico_compiler_s_expand_setup( xoico_compiler_s* o, const xoico_host* host )
 {
-    // xoico_compiler.x:519:1
+    // xoico_compiler.x:520:1
     
     for(sz_t i = 0; i < o->size; i++ ) BLM_TRY(xoico_target_s_expand_setup(o->data[ i ],((const xoico_host*)(o ))))
     
@@ -6138,7 +6165,7 @@ er_t xoico_compiler_s_expand_setup( xoico_compiler_s* o, const xoico_host* host 
 
 bl_t xoico_compiler_s_to_be_modified( const xoico_compiler_s* o )
 {
-    // xoico_compiler.x:535:1
+    // xoico_compiler.x:536:1
     
     for(sz_t i = 0; i < o->size; i++ )
     {
@@ -6149,7 +6176,7 @@ bl_t xoico_compiler_s_to_be_modified( const xoico_compiler_s* o )
 
 er_t xoico_compiler_s_expand( xoico_compiler_s* o, bl_t* p_modified )
 {
-    // xoico_compiler.x:547:1
+    // xoico_compiler.x:548:1
     
     bl_t modified = false;
     
@@ -6163,7 +6190,7 @@ er_t xoico_compiler_s_expand( xoico_compiler_s* o, bl_t* p_modified )
 
 bl_t xoico_compiler_s_get_self( const xoico_compiler_s* o, tp_t type, const bcore_self_s** self )
 {
-    // xoico_compiler.x:561:1
+    // xoico_compiler.x:562:1
     
     const xoico* item = xoico_compiler_s_get_const_item(o,type );
     if( !item ) return  false;
@@ -6180,7 +6207,7 @@ bl_t xoico_compiler_s_get_self( const xoico_compiler_s* o, tp_t type, const bcor
 
 bl_t xoico_compiler_s_get_type_info( const xoico_compiler_s* o, tp_t type, xoico_compiler_type_info_s* info )
 {
-    // xoico_compiler.x:578:1
+    // xoico_compiler.x:579:1
     
     const xoico* item = xoico_compiler_s_get_const_item(o,type );
     if( !item ) return  false;
@@ -6197,7 +6224,7 @@ bl_t xoico_compiler_s_get_type_info( const xoico_compiler_s* o, tp_t type, xoico
 
 bl_t xoico_compiler_s_get_type_member_function_info( const xoico_compiler_s* o, tp_t type, tp_t name, xoico_compiler_element_info_s* info )
 {
-    // xoico_compiler.x:595:1
+    // xoico_compiler.x:596:1
     
     const xoico* xoico_item = xoico_compiler_s_get_const_item(o,type );
     if( !xoico_item )
@@ -6251,7 +6278,7 @@ bl_t xoico_compiler_s_get_type_member_function_info( const xoico_compiler_s* o, 
 
 bl_t xoico_compiler_s_get_type_member_object_info( const xoico_compiler_s* o, tp_t type, tp_t name, xoico_compiler_element_info_s* info )
 {
-    // xoico_compiler.x:649:1
+    // xoico_compiler.x:650:1
     
     const xoico* xoico_item = xoico_compiler_s_get_const_item(o,type );
     if( !xoico_item )
@@ -6338,7 +6365,7 @@ bl_t xoico_compiler_s_get_type_member_object_info( const xoico_compiler_s* o, tp
 
 bl_t xoico_compiler_s_get_type_array_element_info( const xoico_compiler_s* o, tp_t type, xoico_compiler_element_info_s* info )
 {
-    // xoico_compiler.x:736:1
+    // xoico_compiler.x:737:1
     
     ASSERT( info );
     
@@ -6364,7 +6391,7 @@ bl_t xoico_compiler_s_get_type_array_element_info( const xoico_compiler_s* o, tp
 
 er_t xoico_compiler_s_update_target_files( xoico_compiler_s* o, bl_t* p_modified )
 {
-    // xoico_compiler.x:767:1
+    // xoico_compiler.x:768:1
     
     bl_t modified = false;
     bl_t verbosity = o->verbosity;
@@ -6393,7 +6420,7 @@ XOILA_DEFINE_SPECT_NASC_END( xoico, xoico_compiler )
 
 bl_t xoico_compiler_is_correctly_signed( const st_s* data )
 {
-    // xoico_compiler.x:383:1
+    // xoico_compiler.x:384:1
     
     if( data->size < bcore_strlen( "// XOICO_FILE_SIGNATURE" ) ) return  false;
     
@@ -6417,7 +6444,7 @@ bl_t xoico_compiler_is_correctly_signed( const st_s* data )
 
 tp_t xoico_compiler_body_signature( const st_s* data )
 {
-    // xoico_compiler.x:408:1
+    // xoico_compiler.x:409:1
     
     // search from bottom upwards ...
     sz_t idx = 0;
@@ -10794,18 +10821,6 @@ er_t xoico_builder_target_s_build( xoico_builder_target_s* o )
             if( trait_name.size == 0 ) BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Trait name expected in source declaration." ))
         }
     
-        if( x_source_parse_bl(source,"#?w'embed' " ) )
-        {
-            if( x_source_parse_bl(source,"#?w'as string' " ) )
-            {
-                embed_method = TYPEOF_as_string;
-            }
-            else
-            {
-                BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Specify embedding method before file path (e.g. 'as string')" ))
-            }
-        }
-    
         while( !x_source_eos(source) )
         {
             char c = x_source_get_char(source);
@@ -10818,6 +10833,10 @@ er_t xoico_builder_target_s_build( xoico_builder_target_s* o )
             if( x_source_parse_bl(source," #?w'as_string'" ) )
             {
                 embed_method = TYPEOF_as_string;
+            }
+            else if( x_source_parse_bl(source," #?w'as_string_without_comments'" ) )
+            {
+                embed_method = TYPEOF_as_string_without_comments;
             }
             else
             {
@@ -10956,7 +10975,7 @@ bl_t xoico_builder_main_s_get_overwrite_unsigned_target_files( const xoico_build
 
 er_t xoico_builder_main_s_build_from_file( xoico_builder_main_s* o, sc_t path )
 {
-    // xoico_builder.x:441:1
+    // xoico_builder.x:433:1
     
     xoico_builder_target_s_attach( &(o->target ),  xoico_builder_target_s_create());
     BLM_TRY(xoico_builder_target_s_load(o->target,false, path ))
@@ -10969,7 +10988,7 @@ er_t xoico_builder_main_s_build_from_file( xoico_builder_main_s* o, sc_t path )
 
 er_t xoico_builder_main_s_update( const xoico_builder_main_s* o )
 {
-    // xoico_builder.x:454:1
+    // xoico_builder.x:446:1
     
     if( bcore_error_stack_size() > 0 ) return  ((tp_t)(TYPEOF_error_stack));
     BLM_TRY(xoico_compiler_s_update_target_files(o->compiler,NULL ) )
@@ -11449,6 +11468,7 @@ vd_t xoico_xo_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_OBJECT( xoico_compiler_element_info_s );
             BCORE_REGISTER_NAME( as_header );
             BCORE_REGISTER_NAME( as_string );
+            BCORE_REGISTER_NAME( as_string_without_comments );
             BCORE_REGISTER_NAME( as_group );
             BCORE_REGISTER_FFUNC( bcore_inst_call_init_x, xoico_compiler_s_init_x );
             BCORE_REGISTER_FFUNC( xoico_finalize, xoico_compiler_s_finalize );
@@ -11649,5 +11669,5 @@ int main( int argc, char** argv )
     BETH_CLOSEV( 0 );
     return retv;
 }
-// XOICO_BODY_SIGNATURE 0x8898DFEA291CCECA
-// XOICO_FILE_SIGNATURE 0xF946B9E1D762A91D
+// XOICO_BODY_SIGNATURE 0x6BB1FC802660CC2D
+// XOICO_FILE_SIGNATURE 0x683058E49956ED47

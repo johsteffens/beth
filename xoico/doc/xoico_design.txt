@@ -303,8 +303,9 @@ Embedding of other files:
 The default assumption is that the source file is a text file in UTF8 encoding.
 It is translated into the builtin function 'd st_s* as_string();' returning the file's content as string.
 Optionally, the embedding method is selectable using the 'embed' specifier after the file name:
-Example:
+Examples:
     "group byth_plot = x_inst byth_plot.py: embed as_string"
+    "group byth_plot = x_inst byth_plot.py: embed as_string_without_comments" // low level strip of c-style comments before embedding
 
 ----------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------

@@ -841,7 +841,7 @@ func (:s) :.parse
 
 func (:s) :.parse_embed
 {
-    if( embed_method == TYPEOF_as_string )
+    if( embed_method == TYPEOF_as_string || embed_method == TYPEOF_as_string_without_comments )
     {
         m $* embedded_data = xoico_embedded_data_s!^;
 

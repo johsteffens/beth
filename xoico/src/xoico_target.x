@@ -243,7 +243,7 @@ func (:s) er_t expand_update_time( c @* o, sz_t indent, m x_sink* sink )
 {
     m bcore_cday_utc_s* time = bcore_cday_utc_s!^^;
     bcore_cday_utc_s_from_system( time );
-    sink.push_fa( "//  Last update: " ); bcore_cday_utc_s_to_sink( time, ( bcore_sink* )sink ); sink.push_fa( "\n" );
+    sink.push_fa( "//  Last update: " ); bcore_cday_utc_s_to_sink( time, ( bcore_sink* )sink ); sink.push_fa( " (UTC)\n" );
     return 0;
 };
 

@@ -81,6 +81,7 @@ signature bl_t get_type_array_element_info( c @* o, tp_t type,            m :ele
 /// parse methods (see embed_method)
 name as_header;
 name as_string;
+name as_string_without_comments;
 name as_group;
 
 // external interface ...

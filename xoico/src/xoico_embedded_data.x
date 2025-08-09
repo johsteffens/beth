@@ -29,7 +29,39 @@ stamp :s = aware :
     func xoico.parse
     {
         o.arr =< bcore_arr_u0_s!;
-        while( !source.eos() ) o.arr.push( source.get_u0() );
+
+        if( o.embed_method == TYPEOF_as_string_without_comments )
+        {
+            char last_char = 0;
+            while( !source.eos() )
+            {
+                char c = source.get_u0();
+                if( c == '/' && source.inspect_u0() == '*' )
+                {
+                    source.get_u0();
+                    while( !source.eos() ) { if( source.get_u0() == '*' ) if( source.get_u0() == '/' ) break; }
+                }
+                else if( c == '/' && source.inspect_u0() == '/' )
+                {
+                    source.get_u0();
+                    while( !source.eos() )
+                    {
+                        if( source.inspect_u0() == '\n' ) break;
+                        source.get_u0();
+                    }
+                }
+                else if( !( c == '\n' && last_char == '\n' ) ) // do not push repeated newlines
+                {
+                    o.arr.push( c );
+                    last_char = c;
+                }
+            }
+        }
+        else
+        {
+            while( !source.eos() ) o.arr.push( source.get_u0() );
+        }
+
         return 0;
     };
 
@@ -44,17 +76,12 @@ stamp :s = aware :
 
     func xoico.expand_declaration
     {
-        if( o.embed_method == TYPEOF_as_string )
-        {
-//            sink.push_fa( " \\\n#rn{ }", indent );
-//            sink.push_fa( "st_s* #<sc_t>( void );", host.nameof( o.function_name ) );
-        }
         = 0;
     }
 
     func xoico.expand_definition
     {
-        if( o.embed_method == TYPEOF_as_string )
+        if( o.embed_method == TYPEOF_as_string || o.embed_method == TYPEOF_as_string_without_comments )
         {
             sink.push_fa( "#rn{ }st_s* #<sc_t>( void )\n", indent, host.nameof( o.function_name ) );
             sink.push_fa( "#rn{ }{\n"                            , indent );
