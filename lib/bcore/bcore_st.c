@@ -1541,9 +1541,9 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                 {
                     case TYPEOF_char:
                     {
-                        u0_t v;
+                        u0_t v = 0;
                         sres = sscanf( o->sc + idx, "%c%n", &v, &size );
-                        if( set_arg )
+                        if( sres > 0 && set_arg )
                         {
                             char* target = va_arg( args, char* );
                             if( target ) *target = v;
@@ -1553,10 +1553,10 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
 
                     case TYPEOF_u0_t:
                     {
-                        u0_t v;
+                        u0_t v = 0;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, is_hex( sc ) ? "%"SCNx8"%n" : "%"SCNu8"%n", &v, &size );
-                        if( set_arg )
+                        if( sres > 0 && set_arg )
                         {
                             u0_t* target = va_arg( args, u0_t* );
                             if( target ) *target = v;
@@ -1566,10 +1566,10 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
 
                     case TYPEOF_u1_t:
                     {
-                        u1_t v;
+                        u1_t v = 0;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, is_hex( sc ) ? "%"SCNx16"%n" : "%"SCNu16"%n", &v, &size );
-                        if( set_arg )
+                        if( sres > 0 && set_arg )
                         {
                             u1_t* target = va_arg( args, u1_t* );
                             if( target ) *target = v;
@@ -1579,10 +1579,10 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
 
                     case TYPEOF_u2_t:
                     {
-                        u2_t v;
+                        u2_t v = 0;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, is_hex( sc ) ? "%"SCNx32"%n" : "%"SCNu32"%n", &v, &size );
-                        if( set_arg )
+                        if( sres > 0 && set_arg )
                         {
                             u2_t* target = va_arg( args, u2_t* );
                             if( target ) *target = v;
@@ -1592,10 +1592,10 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
 
                     case TYPEOF_u3_t:
                     {
-                        u3_t v;
+                        u3_t v = 0;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, is_hex( sc ) ? "%"SCNx64"%n" : "%"SCNu64"%n", &v, &size );
-                        if( set_arg )
+                        if( sres > 0 && set_arg )
                         {
                             u3_t* target = va_arg( args, u3_t* );
                             if( target ) *target = v;
@@ -1605,10 +1605,10 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
 
                     case TYPEOF_umax_t:
                     {
-                        umax_t v;
+                        umax_t v = 0;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, is_hex( sc ) ? "%"SCNxMAX"%n" : "%"SCNuMAX"%n", &v, &size );
-                        if( set_arg )
+                        if( sres > 0 && set_arg )
                         {
                             umax_t* target = va_arg( args, umax_t* );
                             if( target ) *target = v;
@@ -1618,10 +1618,10 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
 
                     case TYPEOF_s0_t:
                     {
-                        s0_t v;
+                        s0_t v = 0;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, "%"SCNs0_t"%n", &v, &size );
-                        if( set_arg )
+                        if( sres > 0 && set_arg )
                         {
                             s0_t* target = va_arg( args, s0_t* );
                             if( target ) *target = v;
@@ -1631,10 +1631,10 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
 
                     case TYPEOF_s1_t:
                     {
-                        s1_t v;
+                        s1_t v = 0;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, "%"SCNs1_t"%n", &v, &size );
-                        if( set_arg )
+                        if( sres > 0 && set_arg )
                         {
                             s1_t* target = va_arg( args, s1_t* );
                             if( target ) *target = v;
@@ -1644,10 +1644,10 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
 
                     case TYPEOF_s2_t:
                     {
-                        s2_t v;
+                        s2_t v = 0;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, "%"SCNs2_t"%n", &v, &size );
-                        if( set_arg )
+                        if( sres > 0 && set_arg )
                         {
                             s2_t* target = va_arg( args, s2_t* );
                             if( target ) *target = v;
@@ -1657,10 +1657,10 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
 
                     case TYPEOF_s3_t:
                     {
-                        s3_t v;
+                        s3_t v = 0;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, "%"SCNs3_t"%n", &v, &size );
-                        if( set_arg )
+                        if( sres > 0 && set_arg )
                         {
                             s3_t* target = va_arg( args, s3_t* );
                             if( target ) *target = v;
@@ -1670,10 +1670,10 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
 
                     case TYPEOF_smax_t:
                     {
-                        smax_t v;
+                        smax_t v = 0;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, "%"SCNsmax_t"%n", &v, &size );
-                        if( set_arg )
+                        if( sres > 0 && set_arg )
                         {
                             smax_t* target = va_arg( args, smax_t* );
                             if( target ) *target = v;
@@ -1683,10 +1683,10 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
 
                     case TYPEOF_sz_t:
                     {
-                        sz_t v;
+                        sz_t v = 0;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, "%"SCNsz_t"%n", &v, &size );
-                        if( set_arg )
+                        if( sres > 0 && set_arg )
                         {
                             sz_t* target = va_arg( args, sz_t* );
                             if( target ) *target = v;
@@ -1696,10 +1696,10 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
 
                     case TYPEOF_uz_t:
                     {
-                        umax_t v;
+                        umax_t v = 0;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, is_hex( sc ) ? "%"SCNxMAX"%n" : "%"SCNuMAX"%n", &v, &size );
-                        if( set_arg )
+                        if( sres > 0 && set_arg )
                         {
                             uz_t* target = va_arg( args, uz_t* );
                             if( target ) *target = v;
@@ -1709,10 +1709,10 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
 
                     case TYPEOF_offset_t:
                     {
-                        umax_t v;
+                        umax_t v = 0;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, is_hex( sc ) ? "%"SCNxMAX"%n" : "%"SCNuMAX"%n", &v, &size );
-                        if( set_arg )
+                        if( sres > 0 && set_arg )
                         {
                             offset_t* target = va_arg( args, offset_t* );
                             if( target ) *target = v;
@@ -1722,9 +1722,9 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
 
                     case TYPEOF_f2_t:
                     {
-                        f2_t v;
+                        f2_t v = 0;
                         sres = sscanf( o->sc + idx, "%g%n", &v, &size );
-                        if( set_arg )
+                        if( sres > 0 && set_arg )
                         {
                             f2_t* target = va_arg( args, f2_t* );
                             if( target ) *target = v;
@@ -1734,9 +1734,9 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
 
                     case TYPEOF_f3_t:
                     {
-                        f3_t v;
+                        f3_t v = 0;
                         sres = sscanf( o->sc + idx, "%lg%n", &v, &size );
-                        if( set_arg )
+                        if( sres > 0 && set_arg )
                         {
                             f3_t* target = va_arg( args, f3_t* );
                             if( target ) *target = v;
@@ -1749,7 +1749,7 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
                         uintmax_t v = 0;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, is_hex( sc ) ? "%"SCNxMAX"%n" : "%"SCNuMAX"%n", &v, &size );
-                        if( set_arg )
+                        if( sres > 0 && set_arg )
                         {
                             tp_t* target = va_arg( args, tp_t* );
                             if( target ) *target = v;
@@ -1759,10 +1759,10 @@ uz_t st_s_parse_efv( const st_s* o, uz_t start, uz_t end, fp_st_s_parse_err errf
 
                     case TYPEOF_er_t:
                     {
-                        er_t v;
+                        er_t v = 0;
                         sc_t sc = o->sc + idx;
                         sres = sscanf( sc, "%"SCNer_t"%n", &v, &size );
-                        if( set_arg )
+                        if( sres > 0 && set_arg )
                         {
                             er_t* target = va_arg( args, er_t* );
                             if( target ) *target = v;
