@@ -74,6 +74,7 @@ stamp :bgra_s x_array
     func o set_size_bytes_per_row( m@* o, sz_t rows, sz_t cols, sz_t bytes_per_row );
     func o set_size( m@* o, sz_t rows, sz_t cols ) = o.set_size_bytes_per_row( rows, cols, -1 );
     func o zro( m@* o ) { bcore_memset( o.data, 0, o.size ); }
+    func o clear( m@* o ) { x_array_clear( o ); o.rows = o.cols = o.bytes_per_row  = 0; }
 
     func m u0_t* m_get_pixel( m@* o, sz_t row, sz_t col )
     {
@@ -102,6 +103,9 @@ stamp :bgra_s x_array
     func o copy_a( m@* o,     c  x_inst* src ) = o.copy_t( src, src._ );
     func o from_image( m@* o, c :*       img ) = o.copy_a( img );
     func o from_yuyv(  m@* o, c :yuyv_s* img );
+
+    func img to_img_u2( c@* o, m bcore_img_u2_s* img );
+    func o from_img_u2( m@* o, c bcore_img_u2_s* img );
 
     ///------------------------------------------------------------------------------------------------------------------
     // Note: Default deviations below can include the alpha channel.
@@ -141,6 +145,7 @@ stamp :bgra_s x_array
     /// converts all values to/from matrix (mat.cols == o.cols * 4 )
     func mat to_mf2( c @* o, m bmath_mf2_s* mat );
     func o from_mf2( m @* o, c bmath_mf2_s* mat );
+    func o from_mf3( m @* o, c bmath_mf3_s* mat );
 
     /// converts bgr values to/from matrix (mat.cols == o.cols * 3 )
     func mat to_bgr_mf2( c @* o, m bmath_mf2_s* mat );
@@ -152,7 +157,9 @@ stamp :bgra_s x_array
 
     /// offs of {0,1,2,3} maps to {b,g,r,a}
     func mat offs_to_mf2( c @* o, sz_t offs, m bmath_mf2_s* mat );
+    func mat offs_to_mf3( c @* o, sz_t offs, m bmath_mf3_s* mat );
     func o offs_from_mf2( m @* o, sz_t offs, c bmath_mf2_s* mat );
+    func o offs_from_mf3( m @* o, sz_t offs, c bmath_mf3_s* mat );
 
     func mat b_to_mf2( c @* o, m bmath_mf2_s* mat ) = o.offs_to_mf2( 0, mat );
     func mat g_to_mf2( c @* o, m bmath_mf2_s* mat ) = o.offs_to_mf2( 1, mat );

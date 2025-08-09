@@ -116,11 +116,61 @@ func (:bgra_s) copy_typed
 {
     switch( type )
     {
-        case     :yuyv_s~: o.from_yuyv( src.cast( :yuyv_s* ) );
-        case bmath_mf2_s~: o.from_mf2( src.cast( bmath_mf2_s* ) );
+        case @~:              o.copy( src.cast( @* ) ); break;
+        case :yuyv_s~:        o.from_yuyv( src.cast( :yuyv_s* ) ); break;
+        case bcore_img_u2_s~: o.from_img_u2( src.cast( bcore_img_u2_s* ) ); break;
+        case bmath_mf2_s~:    o.from_mf2( src.cast( bmath_mf2_s* ) ); break;
+        case bmath_mf3_s~:    o.from_mf3( src.cast( bmath_mf3_s* ) ); break;
         default: return bcore_error_push_fa( TYPEOF_conversion_error, "Cannot convert from '#<sc_t>'\n", bnameof( type ) );
     }
     return 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bgra_s) to_img_u2
+{
+    img.set_size( o.rows, o.cols );
+
+    for( sz_t i = 0; i < o.rows; i++ )
+    {
+        c u0_t* src = o.data + i * o.bytes_per_row;
+        m u2_t* dst = img.data + i * img.stride;
+        for( sz_t j = 0; j < o.cols; j++ )
+        {
+            dst[ j ] =
+
+              ( ( u2_t )src[ j * 4 + 0 ] )
+            + ( ( u2_t )src[ j * 4 + 0 ] << 8 )
+            + ( ( u2_t )src[ j * 4 + 0 ] << 16 )
+            + ( ( u2_t )src[ j * 4 + 0 ] << 24 );
+        }
+    }
+
+    = img;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bgra_s) from_img_u2
+{
+    if( img.cols == 0 || img.rows == 0 ) = o.clear();
+    if( img.format != TYPEOF_bcore_img_u2_argb ) = o.clear();
+    o.set_size( img.rows, img.cols );
+
+    for( sz_t i = 0; i < img.rows; i++ )
+    {
+        m u0_t* dst = o.data + i * o.bytes_per_row;
+        c u2_t* src = img.data + i * img.stride;
+        for( sz_t j = 0; j < img.cols; j++ )
+        {
+            dst[ j * 4 + 0 ] = src[ j ] >>  0; // b
+            dst[ j * 4 + 1 ] = src[ j ] >>  8; // g
+            dst[ j * 4 + 2 ] = src[ j ] >> 16; // r
+            dst[ j * 4 + 3 ] = src[ j ] >> 24; // a
+        }
+    }
+    = o;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -193,6 +243,26 @@ func (:bgra_s) from_mf2
             o_row[ j * 4 + 1 ] = f2_rs2( f2_max( 0, f2_min( 255, m_row[ j * 4 + 1 ] ) ) );
             o_row[ j * 4 + 2 ] = f2_rs2( f2_max( 0, f2_min( 255, m_row[ j * 4 + 2 ] ) ) );
             o_row[ j * 4 + 3 ] = f2_rs2( f2_max( 0, f2_min( 255, m_row[ j * 4 + 3 ] ) ) );
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bgra_s) from_mf3
+{
+    ASSERT( mat.cols % 4 == 0 );
+    o.set_size( mat.rows, mat.cols / 4 );
+    for( sz_t i = 0; i < o.rows; i++ )
+    {
+        c f3_t* m_row = mat.[ i * mat.stride ];
+        m u0_t* o_row = o  .[ i * o.bytes_per_row ];
+        for( sz_t j = 0; j < o.cols; j++ )
+        {
+            o_row[ j * 4 + 0 ] = f3_rs2( f3_max( 0, f3_min( 255, m_row[ j * 4 + 0 ] ) ) );
+            o_row[ j * 4 + 1 ] = f3_rs2( f3_max( 0, f3_min( 255, m_row[ j * 4 + 1 ] ) ) );
+            o_row[ j * 4 + 2 ] = f3_rs2( f3_max( 0, f3_min( 255, m_row[ j * 4 + 2 ] ) ) );
+            o_row[ j * 4 + 3 ] = f3_rs2( f3_max( 0, f3_min( 255, m_row[ j * 4 + 3 ] ) ) );
         }
     }
 }
@@ -297,6 +367,21 @@ func (:bgra_s) offs_to_mf2
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:bgra_s) offs_to_mf3
+{
+    ASSERT( offs >= 0 && offs < 4 );
+    mat.set_size( o.rows, o.cols );
+    for( sz_t i = 0; i < o.rows; i++ )
+    {
+        for( sz_t j = 0; j < o.cols; j++ )
+        {
+            mat.[ i * mat.stride + j ] = o.[ i * o.bytes_per_row + j * 4 + offs ];
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:bgra_s) offs_from_mf2
 {
     ASSERT( offs >= 0 && offs < 4 );
@@ -306,6 +391,21 @@ func (:bgra_s) offs_from_mf2
         for( sz_t j = 0; j < o.cols; j++ )
         {
             o.[ i * o.bytes_per_row + j * 4 + offs ] = f2_rs2( f2_max( 0, f2_min( 255, mat.[ i * mat.stride + j ] ) ) );
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:bgra_s) offs_from_mf3
+{
+    ASSERT( offs >= 0 && offs < 4 );
+    o.set_size( mat.rows, mat.cols );
+    for( sz_t i = 0; i < o.rows; i++ )
+    {
+        for( sz_t j = 0; j < o.cols; j++ )
+        {
+            o.[ i * o.bytes_per_row + j * 4 + offs ] = f3_rs2( f3_max( 0, f3_min( 255, mat.[ i * mat.stride + j ] ) ) );
         }
     }
 }
@@ -483,9 +583,9 @@ func (:bgra_s) gen_striped
         for( sz_t j = 0; j < o.cols; j++ )
         {
             o.set_bgr( i, j,
-                ( i       % p >= h ) ? 200 : 0,
-                ( j       % p >= h ) ? 200 : 0,
-              ( ( i + j ) % p >= h ) ? 200 : 0 );
+                ( i       % p >= h ) ? 255 : 0,
+                ( j       % p >= h ) ? 255 : 0,
+              ( ( i + j ) % p >= h ) ? 255 : 0 );
         }
     }
 }
