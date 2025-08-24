@@ -56,6 +56,7 @@ stamp :s bgfe_frame
     func bgfe_frame.client_type = o.client_type;
     func bgfe_frame.client_name = o.client_name;
     func bgfe_frame.parent = o.parent;
+    func bgfe_frame.set_parent o.parent = parent;
     func bgfe_frame.is_open = o.is_open;
     func bgfe_frame.h_complexity = 4;
     func bgfe_frame.v_complexity = 1;

@@ -1,4 +1,4 @@
-//  Last update: 2025-07-13T14:21:58Z
+//  Last update: 2025-08-19T08:45:27Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -1320,8 +1320,14 @@
       s2_t m; \
       s2_t d; \
   }; \
+  void bcore_cday_ymd_s_check_plausibility( const bcore_cday_ymd_s* o ); \
+  er_t bcore_cday_ymd_s_em_check_plausibility( const bcore_cday_ymd_s* o ); \
+  er_t bcore_cday_ymd_s_em_from_cday( bcore_cday_ymd_s* o, s2_t cday ); \
+  er_t bcore_cday_ymd_s_em_from_source( bcore_cday_ymd_s* o, x_source* source ); \
+  er_t bcore_cday_ymd_s_em_from_sc( bcore_cday_ymd_s* o, sc_t sc ); \
+  static inline er_t bcore_cday_ymd_s_em_from_string( bcore_cday_ymd_s* o, const st_s* st ); \
   bcore_cday_ymd_s* bcore_cday_ymd_s_from_cday( bcore_cday_ymd_s* o, s2_t cday ); \
-  bcore_cday_ymd_s* bcore_cday_ymd_s_from_source( bcore_cday_ymd_s* o, bcore_source* source ); \
+  bcore_cday_ymd_s* bcore_cday_ymd_s_from_source( bcore_cday_ymd_s* o, x_source* source ); \
   bcore_cday_ymd_s* bcore_cday_ymd_s_from_sc( bcore_cday_ymd_s* o, sc_t sc ); \
   static inline bcore_cday_ymd_s* bcore_cday_ymd_s_from_string( bcore_cday_ymd_s* o, const st_s* st ); \
   static inline bcore_cday_ymd_s* bcore_cday_ymd_s_create_from_cday( s2_t cday ); \
@@ -1330,9 +1336,10 @@
   static inline const bcore_cday_ymd_s* bcore_cday_ymd_s_push_to_string( const bcore_cday_ymd_s* o, st_s* st ); \
   s2_t bcore_cday_ymd_s_to_cday( const bcore_cday_ymd_s* o ); \
   s2_t bcore_cday_ymd_s_to_wnum( const bcore_cday_ymd_s* o ); \
+  static inline er_t bcore_cday_ymd_s_em_from_string( bcore_cday_ymd_s* o, const st_s* st ){return  bcore_cday_ymd_s_em_from_sc(o,st->sc );} \
   static inline bcore_cday_ymd_s* bcore_cday_ymd_s_from_string( bcore_cday_ymd_s* o, const st_s* st ){return  bcore_cday_ymd_s_from_sc(o,st->sc );} \
   static inline bcore_cday_ymd_s* bcore_cday_ymd_s_create_from_cday( s2_t cday ){return  bcore_cday_ymd_s_from_cday(bcore_cday_ymd_s_create(),cday );} \
-  static inline const bcore_cday_ymd_s* bcore_cday_ymd_s_to_sink( const bcore_cday_ymd_s* o, bcore_sink* sink ){bcore_sink_a_push_fa(sink,"#<s2_t>-#pl2'0'{#<s2_t>}-#pl2'0'{#<s2_t>}", o->y, o->m, o->d );return o;} \
+  static inline const bcore_cday_ymd_s* bcore_cday_ymd_s_to_sink( const bcore_cday_ymd_s* o, bcore_sink* sink ){bcore_sink_a_push_fa(sink,"#pl4'0'{#<s2_t>}-#pl2'0'{#<s2_t>}-#pl2'0'{#<s2_t>}", o->y, o->m, o->d );return o;} \
   static inline const bcore_cday_ymd_s* bcore_cday_ymd_s_to_string( const bcore_cday_ymd_s* o, st_s* st ){ st_s_clear(st); return  bcore_cday_ymd_s_to_sink(o,((bcore_sink*)(st )));} \
   static inline const bcore_cday_ymd_s* bcore_cday_ymd_s_push_to_string( const bcore_cday_ymd_s* o, st_s* st ){return  bcore_cday_ymd_s_to_sink(o,((bcore_sink*)(st )));}
 #define TYPEOF_bcore_cday_utc_s 0xB3FF29791CCF8201ull
@@ -1348,7 +1355,7 @@
   const bcore_cday_utc_s* bcore_cday_utc_s_to_sink( const bcore_cday_utc_s* o, bcore_sink* sink ); \
   static inline const bcore_cday_utc_s* bcore_cday_utc_s_to_string( const bcore_cday_utc_s* o, st_s* st ); \
   static inline const bcore_cday_utc_s* bcore_cday_utc_s_push_to_string( const bcore_cday_utc_s* o, st_s* st ); \
-  bcore_cday_utc_s* bcore_cday_utc_s_from_source( bcore_cday_utc_s* o, bcore_source* source ); \
+  bcore_cday_utc_s* bcore_cday_utc_s_from_source( bcore_cday_utc_s* o, x_source* source ); \
   bcore_cday_utc_s* bcore_cday_utc_s_from_sc( bcore_cday_utc_s* o, sc_t sc ); \
   static inline bcore_cday_utc_s* bcore_cday_utc_s_from_string( bcore_cday_utc_s* o, const st_s* st ); \
   s3_t bcore_cday_utc_s_to_ms( const bcore_cday_utc_s* o ); \
@@ -1367,7 +1374,7 @@
   void bcore_cday_to_sink( s2_t cday, bcore_sink* sink ); \
   void bcore_cday_to_string( s2_t cday, st_s* st ); \
   void bcore_cday_push_to_string( s2_t cday, st_s* st ); \
-  s2_t bcore_cday_from_source( bcore_source* source ); \
+  s2_t bcore_cday_from_source( x_source* source ); \
   s2_t bcore_cday_from_sc( sc_t sc ); \
   static inline s2_t bcore_cday_from_string( const st_s* st ); \
   XOILA_DECLARE_SPECT( bcore_cday ) \
@@ -2566,8 +2573,8 @@
   static inline x_btml* x_btml_create_from_sc( sc_t sc ); \
   static inline x_btml* x_btml_create_from_file( sc_t file ); \
   static inline x_sink* x_btml_to_sink( const x_btml* o, x_sink* sink ); \
-  static inline void x_btml_t_to_file( const x_btml* o, tp_t t, sc_t file ); \
-  static inline void x_btml_to_file( const x_btml* o, sc_t file ); \
+  er_t x_btml_t_to_file( const x_btml* o, tp_t t, sc_t file ); \
+  static inline er_t x_btml_to_file( const x_btml* o, sc_t file ); \
   static inline void x_btml_t_to_stdout( const x_btml* o, tp_t t ); \
   static inline void x_btml_to_stdout( const x_btml* o ); \
   static inline sz_t x_btml_test_transfer( const x_btml* o ); \
@@ -2625,8 +2632,7 @@
   static inline x_btml* x_btml_create_from_sc( sc_t sc ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btml*, x_btml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))} \
   static inline x_btml* x_btml_create_from_file( sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btml*, x_btml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))) ))} \
   static inline x_sink* x_btml_to_sink( const x_btml* o, x_sink* sink ){return  x_btml_t_to_sink(o,o->_, sink );} \
-  static inline void x_btml_t_to_file( const x_btml* o, tp_t t, sc_t file ){BLM_INIT_LEVEL(0);x_btml_t_to_sink(o,t,((x_sink*)( ((bcore_sink*)BLM_LEVEL_A_PUSH(0,bcore_file_open_sink(file ))) )));BLM_DOWN();} \
-  static inline void x_btml_to_file( const x_btml* o, sc_t file ){x_btml_t_to_file(o,o->_, file );} \
+  static inline er_t x_btml_to_file( const x_btml* o, sc_t file ){return  x_btml_t_to_file(o,o->_, file );} \
   static inline void x_btml_t_to_stdout( const x_btml* o, tp_t t ){x_btml_t_to_sink(o,t, x_sink_stdout() );} \
   static inline void x_btml_to_stdout( const x_btml* o ){x_btml_t_to_stdout(o,o->_ );} \
   static inline sz_t x_btml_test_transfer( const x_btml* o ){return  x_btml_t_test_transfer(o,o->_ );} \
@@ -4194,5 +4200,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x9FE1E64FCF5DF770
-// XOICO_FILE_SIGNATURE 0x3795E18B8926B88F
+// XOICO_BODY_SIGNATURE 0xB5E14DCC09922F5F
+// XOICO_FILE_SIGNATURE 0x136CA9EC58A4E819

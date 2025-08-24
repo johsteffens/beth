@@ -66,7 +66,7 @@ func (:s) client_distraction
     }
 
     // a fleeting window closes only if it is not the initiator of the distraction
-    else if( o.fleeting )
+    else if( o.is_fleeting )
     {
         o.mutex.lock();
         o.rts_close_requested = true;
@@ -196,7 +196,13 @@ func (:s) er_t rtt_close( m@* o, vd_t arg )
 func (:s) cycle
 {
     if( !o.is_open ) = 0;
-    if( o.frame ) o.frame.cycle( action_type );
+    if( o.frame )
+    {
+        if( o.frame.cycle( action_type ) )
+        {
+            bgfe_popup_message_s!^.run_error_if_any( o );
+        }
+    }
 
     o.mutex.lock();
     bl_t close_requested = o.rts_close_requested;
@@ -242,6 +248,7 @@ func (:s) er_t rtt_present( m@* o, vd_t unused ) { gtk_window_present( GTK_WINDO
 func (:s) set_frame
 {
     o.frame =< frame.fork();
+    o.frame.set_parent( o );
     = 0;
 }
 
@@ -254,14 +261,13 @@ func (:s) set_frame_from_client_t
     tp_t frame_type = bgfe_frame_default_frame_type( client_type );
     tp_t action_type = escapprove~;
 
-    o.client_edit_frame_type( client, client_type, client_name, action_type.1, frame_type );
-
+    o.client_edit_frame_type( client, client_type, client_name, action_type.1, frame_type.1 );
     m bgfe_frame* frame = x_inst_create( frame_type ).cast( d bgfe_frame* )^;
     frame.set_show_border( false );
     frame.set_show_client_name( false );
+    frame.set_manual_content( o.manual_content );
 
     action_type = escapprove~;
-    o.client_edit_frame( client, client_type, client_name, action_type.1, frame );
 
     o.set_frame( frame );
 
@@ -270,10 +276,25 @@ func (:s) set_frame_from_client_t
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:s) set_default_frame
+{
+    o.set_frame( bgfe_frame_s!^ );
+    o.frame.set_show_border( false );
+    o.frame.set_show_client_name( false );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:s) set_client_t
 {
     if( !o.frame ) o.set_frame_from_client_t( client, client_type, client_name );
-    if(  o.frame ) = o.frame.set_client_t( client, client_type, client_name );
+    if(  o.frame )
+    {
+        o.frame.set_client_t( client, client_type, client_name );
+        tp_t action_type = escapprove~;
+        o.client_edit_frame( client, client_type, client_name, action_type.1, o.frame );
+    }
     = 0;
 }
 
@@ -282,18 +303,38 @@ func (:s) set_client_t
 func (:s) set_client_with_content_t
 {
     if( !o.frame ) o.set_frame_from_client_t( client, client_type, client_name );
-    if(  o.frame ) = o.frame.set_client_with_content_t( client, client_type, client_name );
+    if(  o.frame )
+    {
+        o.frame.set_client_t( client, client_type, client_name );
+        tp_t action_type = escapprove~;
+        o.client_edit_frame( client, client_type, client_name, action_type.1, o.frame );
+        o.frame.set_client_with_content_t( client, client_type, client_name );
+    }
     = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) add_frame
+{
+    if( !o.frame ) o.set_default_frame();
+    = o.frame.add_frame( frame );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 func (:s) add_content_t
 {
-    if( !o.frame ) o.frame =< bgfe_frame_s!;
-    o.frame.set_show_border( false );
-    o.frame.set_show_client_name( false );
+    if( !o.frame ) o.set_default_frame();
     = o.frame.add_content_t( content, content_type, content_name );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) add_linked_content
+{
+    if( !o.frame ) o.set_default_frame();
+    = o.frame.add_linked_content( content_name );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

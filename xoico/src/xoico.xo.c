@@ -1,4 +1,4 @@
-//  Last update: 2025-07-14T14:26:50Z (UTC)
+//  Last update: 2025-08-15T22:40:14Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -49,7 +49,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_xoico 0x94C100A9E9D481D6ull
+// HKEYOF_xoico 0xB799C2B3CB3F6E19ull
 
 /**********************************************************************************************************************/
 // source: xoico.x
@@ -476,14 +476,18 @@ tp_t xoico_typespec_s_get_hash( const xoico_typespec_s* o )
     hash = bcore_tp_fold_bl( hash, o->flag_static );
     hash = bcore_tp_fold_bl( hash, o->flag_volatile );
     hash = bcore_tp_fold_bl( hash, o->flag_restrict );
+    hash = bcore_tp_fold_bl( hash, o->flag_aware );
+    hash = bcore_tp_fold_bl( hash, o->flag_obliv );
     hash = bcore_tp_fold_bl( hash, o->flag_scope );
+    hash = bcore_tp_fold_bl( hash, o->flag_addressable );
+    hash = bcore_tp_fold_bl( hash, o->flag_variadic );
     hash = bcore_tp_fold_u3( hash, o->indirection );
     return  hash;
 }
 
 er_t xoico_typespec_s_expand( const xoico_typespec_s* o, const xoico_host* host, x_sink* sink )
 {
-    // xoico_typespec.x:216:1
+    // xoico_typespec.x:220:1
     BLM_INIT_LEVEL(0);
     if( o->flag_variadic )
     {
@@ -521,7 +525,7 @@ er_t xoico_typespec_s_expand( const xoico_typespec_s* o, const xoico_host* host,
 
 er_t xoico_typespec_s_expand_x( const xoico_typespec_s* o, const xoico_host* host, x_sink* sink )
 {
-    // xoico_typespec.x:254:1
+    // xoico_typespec.x:258:1
     BLM_INIT_LEVEL(0);
     if( o->flag_variadic )
     {
@@ -571,7 +575,7 @@ er_t xoico_typespec_s_expand_x( const xoico_typespec_s* o, const xoico_host* hos
 
 bl_t xoico_typespec_s_converts_to( const xoico_typespec_s* o, const xoico_typespec_s* b )
 {
-    // xoico_typespec.x:336:1
+    // xoico_typespec.x:340:1
     
     if( o->type == b->type )
     {
@@ -658,7 +662,7 @@ bl_t xoico_typespec_s_converts_to( const xoico_typespec_s* o, const xoico_typesp
 
 bl_t xoico_typespec_s_is_ptr_type( const xoico_typespec_s* o )
 {
-    // xoico_typespec.x:423:1
+    // xoico_typespec.x:427:1
     
     return  o->type == TYPEOF_vd_t ||
            o->type == TYPEOF_vc_t ||
@@ -674,7 +678,7 @@ XOILA_DEFINE_SPECT_NASC_END( xoico, xoico_typespec )
 
 bl_t xoico_typespec_is_numeric( tp_t type )
 {
-    // xoico_typespec.x:304:1
+    // xoico_typespec.x:308:1
     
     switch( type )
     {
@@ -11669,5 +11673,5 @@ int main( int argc, char** argv )
     BETH_CLOSEV( 0 );
     return retv;
 }
-// XOICO_BODY_SIGNATURE 0x6BB1FC802660CC2D
-// XOICO_FILE_SIGNATURE 0x683058E49956ED47
+// XOICO_BODY_SIGNATURE 0x5823B5E0FB3EE522
+// XOICO_FILE_SIGNATURE 0xE3F2969FCF4277D3

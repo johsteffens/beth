@@ -27,9 +27,9 @@ stamp :s bgfe_frame
     sz_t height; // optional preset height
     bl_t insensitive; // insensitive: does not react to user actions
     bl_t show_client_name = true;
-    st_s => widget_name;   // optional gtk widget name overrides default widget name
+    st_s => widget_name; // optional gtk widget name overrides default widget name
     st_s => tooltip;     // external tooltip (if NULL an internal tooltip is used)
-    bl_t show_tooltip = true;
+    bl_t show_tooltip = false;
 
     func bgfe_frame.set_width   { o.width   = value; = 0; }
     func bgfe_frame.set_height  { o.height  = value; = 0; }
@@ -52,6 +52,7 @@ stamp :s bgfe_frame
     func bgfe_frame.client_type = o.client_type;
     func bgfe_frame.client_name = o.client_name;
     func bgfe_frame.parent = o.parent;
+    func bgfe_frame.set_parent o.parent = parent;
     func bgfe_frame.is_open = o.is_open;
     func bgfe_frame.h_complexity = 1;
     func bgfe_frame.v_complexity = 1;
@@ -78,9 +79,6 @@ stamp :s bgfe_frame
     func bgfe_frame.cycle;
     func bgfe_frame.upsync;
     func bgfe_frame.downsync;
-
-
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -35,6 +35,9 @@
 embed "bgfe_frame_features_property.emb.x"; // property features
 embed "bgfe_frame_features_client.emb.x";   // client <-> frame communication
 
+forward bgfe_window_s;
+forward bgfe_window_list_s;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Arrange type
@@ -68,7 +71,7 @@ feature er_t downsync( m@* o                       ) = GERR_fa( "Not implemented
 feature er_t set_client_t( m@* o, m obliv bgfe_client* client, tp_t client_type, tp_t client_name );
 feature er_t set_client  ( m@* o, m aware bgfe_client* client,                   tp_t client_name ) = o.set_client_t( client, client ? client._ : 0, client_name );
 
-/** Like Setup client above, plus all the client's content is added as frame-content.
+/** Like Setup client above, plus the client's content is added as frame-content.
  *  Note that only elements resulting in a non-empty frame are actually added.
  *  This function defaults to set_client on leaf frames.
  */
@@ -81,11 +84,42 @@ feature er_t set_client_with_content_t( m@* o, m obliv bgfe_client* client, tp_t
 feature er_t add_content  ( m@* o, m aware bgfe_client* content,                    tp_t content_name ) = 0;
 feature er_t add_content_t( m@* o, m obliv bgfe_client* content, tp_t content_type, tp_t content_name ) = 0;
 
+/** Adding linked content:
+ *  Linked content is content dynamically owned by this frame's client (typically a declared link).
+ *  It is represented by a button which opens a window with the respective content object.
+ *  Unlike add_content above, the added content object may be NULL, which means that opening the
+ *  content window will create the content object at the same time.
+ */
+feature er_t add_linked_content( m@* o, tp_t content_name ) = 0;
+
 /** Adds a frame to the content list.
  *  The client of that frame and the client of o need not be related or even exist.
  *  No effect if frame does not support content.
+ *  This function forks the frame reference.
  */
 feature er_t add_frame( m@* o, m bgfe_frame* frame ) = 0;
+
+/** Adds a new bgfe_frame_s to the content list and returns its reference.
+ *  The client of that frame and the client of o need not be related or even exist.
+ */
+feature m bgfe_frame_s* add_sub_frame( m@* o )
+{
+    m$* frame = bgfe_frame_s!^;
+
+    o.add_frame( frame ); // frame stays alive by adding it
+    frame.set_client_t( o.client(), o.client_type(), 0 );
+    = frame;
+}
+
+/// Adds a label frame with text
+feature er_t add_label( m@* o, sc_t text, sz_t label_width )
+{
+    m$* label = bgfe_frame_label_s!^;
+    label.set_width( label_width );
+    label.set_text_xalign( 0 );
+    label.text!.copy_sc( text );
+     = o.add_frame( label );
+}
 
 /** Vertical and horizontal complexity.
  *  The complexity indicates how much space the widget of a frame tends to occupy in horizontal and vertical direction.
@@ -120,6 +154,33 @@ feature er_t open_window_request( m@* o, m tp_t* action_type ) { action_type.0 =
  */
 feature er_t close_window_request( m@* o ) = 0;
 
+feature er_t client_get_glimpse( @* o, m st_s* glimpse )
+{
+    if( !o.client() ) = 0;
+    glimpse.clear();
+    if( o.client_type() == st_s~ )
+    {
+        st_s* src = o.client().cast( st_s* );
+        if( src.size <= 16 )
+        {
+            glimpse.copy( src );
+        }
+        else
+        {
+            glimpse.push_fa( "... #<sc_t>", src.crop( src.size - 12, -1 )^.sc );
+        }
+    }
+    else if( bgfe_client_t_defines_bgfe_get_glimpse( o.client_type() ) )
+    {
+        o.client().t_bgfe_get_glimpse( o.client_type(), glimpse );
+    }
+//    else
+//    {
+//        bgfe_client_t_bgfe_copy_to_typed( o.client(), o.client_type(), o.client_type(), TYPEOF_st_s, glimpse.cast( m x_inst* ) );
+//    }
+    = 0;
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 /// retrieve client and parent info from frame
@@ -129,11 +190,12 @@ feature m bgfe_client* client( @* o ) = NULL;
 feature m :*           parent( @* o ) = NULL;
 feature bl_t           is_open( @* o ) = false;
 
+feature void set_parent( m@* o, m :* parent ) {};
+
 /// preferred arrangement
 feature tp_t arrangement( @* o ) = TYPEOF_horizontal;
 
 /// Returns the nearest (towards root) window or NULL if none is present.
-forward bgfe_window_s;
 func m bgfe_window_s* nearest_window( m @* o )
 {
     if( o._ == bgfe_window_s~ )  = o.cast( m bgfe_window_s* );
@@ -210,10 +272,11 @@ stamp :s
     st_s => widget_name; // optional gtk widget name overrides default widget name
     sz_t spacing;   // spacing between elements
     bl_t end_bound; // packs elements with reference to the end of the box (false: reference to the start)
-    bl_t center = true;    // centers widgets in an expanded space
-    bl_t stretch = true;   // stretches elements to fill expanded space
-    sz_t nesting_level;    // nesting level (embedded nesting)
+    bl_t center = true;  // centers widgets in an expanded space
+    bl_t stretch = true; // stretches elements to fill expanded space
+    sz_t nesting_level;  // nesting level (embedded nesting)
     tp_t window_policy = any; // window-policy: any~ | one~ | zero~;
+    bl_t manual_content; // true: ignores content in function set_client_with_content (content is intended to be added manually via function add_content)
 
     func bgfe_frame.set_width   { o.width   = value; = 0; }
     func bgfe_frame.set_height  { o.height  = value; = 0; }
@@ -227,8 +290,9 @@ stamp :s
     func bgfe_frame.set_end_bound   { o.end_bound = flag; = 0; }
     func bgfe_frame.set_center      { o.center    = flag; = 0; }
     func bgfe_frame.set_stretch     { o.stretch   = flag; = 0; }
-    func bgfe_frame.set_nesting_level { o.nesting_level = value; = 0; }
-    func bgfe_frame.set_window_policy { o.window_policy = name; = 0; }
+    func bgfe_frame.set_nesting_level  { o.nesting_level = value; = 0; }
+    func bgfe_frame.set_window_policy  { o.window_policy = name; = 0; }
+    func bgfe_frame.set_manual_content { o.manual_content = flag; = 0; }
 
     /// internals (client can be NULL; when client is != NULL, client_type != 0 is also provided)
     hidden bgfe_client* client; // client
@@ -245,12 +309,15 @@ stamp :s
     func bgfe_frame.client_type = o.client_type;
     func bgfe_frame.client_name = o.client_name;
     func bgfe_frame.parent = o.parent;
+    func bgfe_frame.set_parent o.parent = parent;
     func bgfe_frame.is_open = o.is_open;
     func bgfe_frame.h_complexity { if( o.is_open ) = o.h_complexity; ERR_fa( "Frame is not open." ); = 1; }
     func bgfe_frame.v_complexity { if( o.is_open ) = o.v_complexity; ERR_fa( "Frame is not open." ); = 1; }
     func bgfe_frame.is_compact = false;
 
-    hidden :list_s => content_list;
+    hidden :list_s            => content_list;
+    hidden bgfe_window_list_s => window_list; // windows are part of cycling
+
     hidden bgfe_rte_s* rte;
     hidden GtkWidget* rtt_widget;
     hidden GtkWidget* rtt_main_box;
@@ -309,10 +376,19 @@ stamp :s
      *  Unlike add_content above, the added content object may be NULL, which means that opening the
      *  content window will create the content object at the same time.
      */
-    func er_t add_linked_content( m@* o, tp_t content_name );
+    func :.add_linked_content;
 
-    /** Adds a frame to the content list.
+    /** Adding frames:
+     *  A frame is added to the content-list or a window to the window-list.
      *  The client of that frame and the client of o need not be related or even exist.
+     *  If frame is a window (bgfe_window_s):
+     *    - If o is open the window is opened immediately, otherwise it is opened when o is opened.
+     *    - The window is cycled by o.
+     *    - When the window closes while o is open, the window is removed from the window-list
+     *    - When o closes, all windows are closed as well.
+     *  If frame is not a window:
+     *    - The frame is added to the content-list and displayed accordingly.
+     *    - The frame must not be open. It can not be added while o is open (warning to stderr).
      */
     func :.add_frame;
 
@@ -454,8 +530,6 @@ func er_t place_at_lower_left( m@* o, m bgfe_frame* frame )
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Places frame at one of the listed positions
-name upper_right;
-name lower_left;
 func er_t place_at_position( m@* o, m bgfe_frame* frame, tp_t position )
 {
     m$* shell = bgfe_location_shell_s!^;

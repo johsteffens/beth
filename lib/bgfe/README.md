@@ -2,7 +2,9 @@
 
 This library represents a generic graphical user interface for beth. It automates the actual framework widgets for any beth object.
 
-Widgets are taken from GTK3. (See also: https://docs.gtk.org/gtk3/)
+Detailed Documentation: [bgfe.md](../../doc/bgfe/bgfe.md)
+
+BGFE uses GTK3 as GUI back-end. (See also: https://www.gtk.org/ )
 
 ## Frame
 The frame represents the virtual user interface controller. Specific implementations control specific aspects of a user interface, such as text editor, scales, sliders, switches. Other implementations (specifcally `bfge_frame_s, bgfe_window_s`) represents a list of sub-frames. Thus a tree of frames can be constructed analog to the way a regular beth-object represents a tree of sub-objects.
@@ -23,9 +25,9 @@ The `BGFE` user should not directly access the `RTE`. Instead `BGFE` sets up a t
 A client-frame combination can be used in any thread without additional protection as long as the instance is only used in the thread where it was created. In this manner, multiple instances can be used in multiple threads. This is safe even for GTK because the RTE ensures that all GTK functionality runs in one dedicated single thread.
 
 ## Prerequisites
-- Install python packages:
+- Install gtk3 packages:
   - `sudo apt install libgtk-3-dev`
-- One can use `python3-config` for release settings in the makefile:
+- One can use `pkg-config` for release settings in the makefile:
   - `pkg-config --cflags gtk+-3.0`  for compiler flags
     
   - `pkg-config --libs gtk+-3.0` for linker flags
@@ -46,6 +48,6 @@ Add the dependency `libbeth.a` in the project settings: `Properties/Build traget
 
 
 
-
+---------------
 
 <sub>&copy; 2025 Johannes B. Steffens</sub>

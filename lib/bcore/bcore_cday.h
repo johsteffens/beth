@@ -38,6 +38,7 @@
 #include "bcore_st.h"
 #include "bcore_spect_source.h"
 #include "bcore_spect_sink.h"
+#include "bcore_x_source.h"
 
 /**********************************************************************************************************************/
 
@@ -70,7 +71,7 @@ func void to_string(      s2_t cday, m st_s* st );
 func void push_to_string( s2_t cday, m st_s* st );
 
 /// computes cday from format "YYYY-MM-DD"
-func s2_t from_source( m bcore_source* source );
+func s2_t from_source( m x_source* source );
 func s2_t from_sc( sc_t sc );
 func s2_t from_string( c st_s* st ) = :from_sc( st.sc );
 
@@ -83,18 +84,32 @@ stamp :ymd_s :
     s2_t m; // month
     s2_t d; // day
 
-    /// conversion from cday
+    /// plausibility check with abort
+    func void check_plausibility( @* o );
+
+    /// plausibility check using bcore error manager
+    func er_t em_check_plausibility( @* o );
+
+    /// conversion from cday (em plausibility check)
+    func er_t em_from_cday( m@* o, s2_t cday );
+
+    /// copies from text source in the format "YYYY-MM-DD" (em plausibility check)
+    func er_t em_from_source( m@* o, m x_source* source );
+    func er_t em_from_sc(     m@* o, sc_t sc );
+    func er_t em_from_string( m@* o, c st_s* st ) = o.em_from_sc( st.sc );
+
+    /// conversion from cday (low level plausibility check)
     func o from_cday( m@* o, s2_t cday );
 
-    /// copies from text source in the format "YYYY-MM-DD"
-    func o from_source( m@* o, m bcore_source* source );
+    /// copies from text source in the format "YYYY-MM-DD"  (plausibility check with abort)
+    func o from_source( m@* o, m x_source* source );
     func o from_sc(     m@* o, sc_t sc );
     func o from_string( m@* o, c st_s* st ) = o.from_sc( st.sc );
 
     func d @* create_from_cday( s2_t cday ) = @!.from_cday( cday );
 
     /// pushes ymd to sink in the format "YYYY-MM-DD"
-    func o to_sink(        c@* o, m bcore_sink* sink ) sink.push_fa( "#<s2_t>-#pl2'0'{#<s2_t>}-#pl2'0'{#<s2_t>}", o.y, o.m, o.d );
+    func o to_sink(        c@* o, m bcore_sink* sink ) sink.push_fa( "#pl4'0'{#<s2_t>}-#pl2'0'{#<s2_t>}-#pl2'0'{#<s2_t>}", o.y, o.m, o.d );
     func o to_string(      c@* o, m st_s* st ) { st.clear(); = o.to_sink( st ); }
     func o push_to_string( c@* o, m st_s* st ) = o.to_sink( st );
 
@@ -129,7 +144,7 @@ stamp :utc_s bcore_cday
     func o push_to_string( c@* o, m st_s* st ) = o.to_sink( st );
 
     /// converts time from ISO 8601 time format YYYY-MM-DDThh:mm:ssZ
-    func o from_source( m@* o, m bcore_source* source );
+    func o from_source( m@* o, m x_source* source );
     func o from_sc(     m@* o, sc_t sc );
     func o from_string( m@* o, c st_s* st ) = o.from_sc( st.sc );
 

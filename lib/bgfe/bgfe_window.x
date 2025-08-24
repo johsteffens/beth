@@ -35,10 +35,11 @@ stamp :s bgfe_frame
     bl_t keep_above = false;  // keeps window above the nearest to-root window
     bl_t decorated = true;    // decorated: with border; close and minimize button; moveable
     bl_t close_on_lost_focus; // closes the window when focus is lost
-    bl_t fleeting;            // closes the window on distraction form an ancestor (see client distraction event)
+    bl_t is_fleeting;         // closes the window on distraction form an ancestor (see client distraction event)
     st_s => widget_name;      // optional gtk widget name overrides default widget name
     sz_t => x; // desired x position (screen coordinates)
     sz_t => y; // desired y position (screen coordinates)
+    bl_t manual_content; // true: ignores content in function set_client_with_content (content is intended to be added manually via function add_content)
 
     func bgfe_frame.set_width      { o.width   = value; = 0; }
     func bgfe_frame.set_height     { o.height  = value; = 0; }
@@ -46,17 +47,19 @@ stamp :s bgfe_frame
     func bgfe_frame.set_keep_above { o.keep_above = flag; = 0; }
     func bgfe_frame.set_decorated  { o.decorated = flag; = 0; }
     func bgfe_frame.set_close_on_lost_focus { o.close_on_lost_focus = flag; = 0; }
-    func bgfe_frame.set_fleeting   { o.fleeting = flag; = 0; }
+    func bgfe_frame.set_is_fleeting   { o.is_fleeting = flag; = 0; }
     func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
     func bgfe_frame.set_title{ o.title!.copy_sc( text ); = 0; }
     func bgfe_frame.set_x{ o.x!.0 = value; = 0; }
     func bgfe_frame.set_y{ o.y!.0 = value; = 0; }
+    func bgfe_frame.set_manual_content { o.manual_content = flag; = 0; }
 
     hidden bgfe_frame => frame;
     hidden bgfe_frame* parent;
 
     /// internals
     func bgfe_frame.parent       = o.parent;
+    func bgfe_frame.set_parent o.parent = parent;
     func bgfe_frame.h_complexity = o.frame ? o.frame.h_complexity() : 1;
     func bgfe_frame.v_complexity = o.frame ? o.frame.v_complexity() : 1;
 
@@ -120,6 +123,7 @@ stamp :s bgfe_frame
     func er_t present( m@* o );
 
     func er_t set_frame( m@* o, m bgfe_frame* frame );
+    func er_t set_default_frame( m@* o );
 
     func er_t set_frame_from_client_t( m@* o, m obliv bgfe_client* client, tp_t client_type, tp_t client_name );
     func er_t set_frame_from_client( m@* o, m aware bgfe_client* client, tp_t client_name ) = o.set_frame_from_client_t( client, client ? client._ : 0, client_name );
@@ -130,11 +134,18 @@ stamp :s bgfe_frame
     func bgfe_frame.set_client_with_content_t;
     func bgfe_frame.set_client_with_content = o.set_client_with_content_t( client, client ? client._ : 0, client_name );
 
+    func bgfe_frame.add_frame;
     func bgfe_frame.add_content_t;
     func bgfe_frame.add_content = o.add_content_t( content, content ? content._ : 0, content_name );
+    func bgfe_frame.add_linked_content;
+
 
     func er_t broadcast_distraction( m@* o );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+stamp :list_s x_array { :s => []; }
 
 //----------------------------------------------------------------------------------------------------------------------
 

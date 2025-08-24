@@ -205,7 +205,11 @@ func (:s) xoico.get_hash
     hash = bcore_tp_fold_bl( hash, o.flag_static );
     hash = bcore_tp_fold_bl( hash, o.flag_volatile );
     hash = bcore_tp_fold_bl( hash, o.flag_restrict );
+    hash = bcore_tp_fold_bl( hash, o.flag_aware );
+    hash = bcore_tp_fold_bl( hash, o.flag_obliv );
     hash = bcore_tp_fold_bl( hash, o.flag_scope );
+    hash = bcore_tp_fold_bl( hash, o.flag_addressable );
+    hash = bcore_tp_fold_bl( hash, o.flag_variadic );
     hash = bcore_tp_fold_u3( hash, o.indirection );
     return hash;
 };

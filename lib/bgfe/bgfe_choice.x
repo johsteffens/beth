@@ -16,7 +16,7 @@
 /** Choice as a list of buttons.
  *
  *  Usage
- *    - push choice options  (type, display-text)
+ *    - push choice options  (type, display-text, tooltip-text or "" )
  *       * the option can be a type and/or a string;
  *       * if either is missing (value 0), it is generated on the fly from the other value via global name manager
  *       * argument active: (normally true) false: displays button but renders it insensitive
@@ -26,14 +26,17 @@
  *    - After closing:
  *    - use function selected() to determine which case was selected
  *       * returns '0' if choice was cancelled
+ *    - alternatively: overload
  *
  *
  *  Usage example (popup):
  *
  *  m$* choice = bgfe_choice_s!^;
- *  choice.push( select_all~, "Select All" )
- *        .push( remove_all~, "Remove All" )
- *        .push( reset~, "Reset" );
+ *  choice.push( select_all~, "Select All", "Selects all elements." )
+ *        .push( remove_all~, "Remove All", "" )
+ *        .push( reset~, "Reset", "" );
+ *
+ *  choice.set_client( client ); // obtional: client receives choice evenets
  *
  *  choice.popup_run( NULL ); // instead of NULL: pass parent frame if available
  *
@@ -47,6 +50,13 @@
  *
  *  // choice.selected() returns 0 in case the choice was canceled
  *
+ *  Embedded Usage:
+ *  1. Push items (see above)
+ *  2. Set client (see above)
+ *  3. Add choice as content (it is typically the content of the client)
+ *  4. Overload in the client as needed ...
+ *     bgfe_choice_client.choice_item_selection   to receive selection events
+ *     bgfe_choice.choice_item_is_active          to control if a choice element should be rendered active/inactive
  */
 
 /**********************************************************************************************************************/
@@ -124,6 +134,9 @@ stamp :item_s
         action_type.0 = approve~;
         = 0;
     }
+
+    func tp_t selection( @* o ) = o.case_tp;
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -145,15 +158,21 @@ stamp :s
     hidden sz_t max_content_height = 300; // if popup is larger, a scrollbar appears
     hidden tp_t arrange = vertical;
     hidden bl_t scrollable = false;
+    hidden tp_t window_position = 0; // window position for sub-choices (0: automatic)
+    hidden sz_t spacing = 0; // spacing between buttons
+    hidden bl_t show_border = false; // border around button array
 
     func bgfe_frame.set_arrange            { o.arrange = name; = 0; }
     func bgfe_frame.set_scrollable         { o.scrollable = flag; = 0; }
     func bgfe_frame.set_max_content_width  { o.max_content_width = value; = 0; }
     func bgfe_frame.set_max_content_height { o.max_content_height = value; = 0; }
+    func bgfe_frame.set_window_position    { o.window_position = name; = 0; }
+    func bgfe_frame.set_spacing            { o.spacing = value; = 0; }
+    func bgfe_frame.set_show_border        { o.show_border = flag; = 0; }
 
     /// internals
     :item_arr_s item_arr;
-    hidden tp_t selected;  // selected case
+    hidden tp_t selection; // selected case
     hidden bl_t in_window; // choice is open in a dedicated (popup) window
 
     hidden bgfe_window_s -> window;
@@ -204,7 +223,7 @@ stamp :s
         = choice;
     }
 
-    func tp_t selected( @* o ) = o.selected;
+    func tp_t selection( @* o ) = o.selection;
 
     func bgfe_client.bgfe_edit_frame
     {
@@ -217,15 +236,23 @@ stamp :s
                 window.set_height( 0 );
                 window.set_keep_above( true );
                 window.set_decorated( false );
-                window.set_fleeting( true );
+                window.set_is_fleeting( true );
                 o.in_window = true;
                 if( o.window != window ) o.window =< frame.cast( m bgfe_window_s* ).fork();
                 if( o.parent_choice && o.parent_choice.window ) o.parent_choice.window.set_close_on_lost_focus( false );
-                frame.set_widget_name( o.in_window ? "bgfe_choice_in_window" : "bgfe_choice" );
+            }
+            else if( frame._ == bgfe_frame_s~ )
+            {
+                frame.set_show_border( false );
+                frame.set_widget_name( "bgfe_choice" );
             }
             else if( frame._ == bgfe_frame_link_s~ )
             {
-                if( o.parent_choice && ( o.parent_choice.arrange == vertical~ ) ) frame.set_text_xalign( 0 );
+                if( o.parent_choice )
+                {
+                    if( o.parent_choice.arrange == vertical~ ) frame.set_text_xalign( 0 );
+                    if( o.parent_choice.window_position != 0 ) frame.set_window_position( o.parent_choice.window_position );
+                }
             }
         }
         else if( content == (vd_t)o.item_arr.1 )
@@ -240,10 +267,12 @@ stamp :s
                 frame.set_min_content_height( 0 );
                 frame.set_max_content_width( o.max_content_width );
                 frame.set_max_content_height( o.max_content_height );
-                frame.set_show_border( false );
+                frame.set_show_border( o.show_border );
                 frame.set_show_index( false );
                 frame.set_center( false );
                 frame.set_stretch( false );
+                frame.set_spacing( o.spacing );
+
                 o.frame_array = frame.cast( m bgfe_frame_array_s* );
                 foreach( m$* e in o.item_arr ) e.set_parent_choice( o );
             }
@@ -266,7 +295,7 @@ stamp :s
 
     func er_t apply_item( m@* o, :item_s* item )
     {
-        o.selected = item.case_tp;
+        o.selection = item.case_tp;
         if( o.window ) o.window.requesting_close();
         if( o.client ) o.client.choice_item_selection( item );
         if( o.parent_choice ) o.parent_choice.apply_item( item );
@@ -334,7 +363,10 @@ stamp :s
 
 group :client
 {
+    /// Choice event callback when an item was selected (clicked).
     feature er_t choice_item_selection( m@* o, ::item_s* item ) { = 0; }
+
+    /// Choice callback to determine if the choice item is active (cklickable) or not.
     feature bl_t choice_item_is_active( m@* o, ::item_s* item ) { = true; }
 }
 

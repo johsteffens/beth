@@ -113,6 +113,8 @@ func (:s) open
 
     o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, NULL );
 
+    foreach( m$* e in o.window_list ) if( !e.is_open() ) e.open( o );
+
     o.is_open = true;
     = 0;
 }
@@ -186,6 +188,7 @@ func (:s) close
 {
     if( !o.is_open ) = 0;
 
+    foreach( m$* e in o.window_list  ) e.close();
     foreach( m$* e in o.content_list ) e.close();
 
     o.rte.run( o.rtt_close.cast( bgfe_rte_fp_rtt ), o, NULL );
@@ -209,6 +212,22 @@ func (:s) cycle
 {
     if( !o.is_open ) = 0; // no error because frame window could have been closed
     foreach( m$* e in o.content_list ) e.cycle( action_type );
+
+    if( o.window_list )
+    {
+        bl_t any_closed = false;
+        for( sz_t i = 0; i < o.window_list.size; i++ )
+        {
+            o.window_list.[ i ].cycle( action_type );
+            if( !o.window_list.[ i ].is_open() )
+            {
+                o.window_list.[ i ] =< NULL;
+                any_closed = true;
+            }
+        }
+        if( any_closed ) o.window_list.remove_null_elements();
+    }
+
     = 0;
 }
 
@@ -301,8 +320,6 @@ func (:s) set_client_t
 {
     if( o.is_open ) = GERR_fa( "Frame is open." );
 
-    o.content_list =< NULL;
-
     if( !client ) // reset
     {
         o.client = NULL;
@@ -338,6 +355,7 @@ func (:s) set_client_with_content_t
     o.set_client_t( client, client_type, client_name );
 
     if( !client ) = 0;
+    if( o.manual_content ) = 0;
 
     sz_t size = x_stamp_t_size( client_type );
     for( sz_t i = 0; i < size; i++ )
@@ -381,9 +399,10 @@ func (:s) add_content_t
     if( x_stamp_t_is_pure_array( content_type ) )
     {
         m$* frame_array = :array_s!^;
-        frame_array.set_nesting_level( o.nesting_level + 1 );
+        frame_array.set_nesting_level( o.nesting_level + o.show_border );
         frame_array.set_client_t( content, content_type, content_name );
         tp_t action_type = escapprove~;
+        frame_array.set_parent( o );
         o.client_edit_frame( content, content_type, content_name, action_type, frame_array );
         o.content_list!.push_d( frame_array.fork() );
     }
@@ -393,11 +412,13 @@ func (:s) add_content_t
         tp_t action_type = escapprove~;
         o.client_edit_frame_type( content, content_type, content_name, action_type.1, frame_type );
         m bgfe_frame* frame = x_inst_create( frame_type ).cast( d bgfe_frame* )^;
-        frame.set_nesting_level( o.nesting_level + 1 );
+        frame.set_nesting_level( o.nesting_level + o.show_border );
         action_type = escapprove~;
-        o.client_edit_frame( content, content_type, content_name, action_type.1, frame );
         if( frame )
         {
+            frame.set_parent( o );
+            frame.set_client_t( content, content_type, content_name );
+            o.client_edit_frame( content, content_type, content_name, action_type.1, frame );
             frame.set_client_with_content_t( content, content_type, content_name );
             o.content_list!.push_d( frame.fork() );
         }
@@ -412,7 +433,7 @@ func (:s) add_linked_content
     if( !o.client ) = 0;
 
     m$* frame_link = :link_s!^;
-    frame_link.set_nesting_level( o.nesting_level + 1 );
+    frame_link.set_nesting_level( o.nesting_level + o.show_border );
 
     m$* content_sr = sr_s!^;
     content_sr.0 = x_stamp_t_m_get_sr( o.client, o.client_type, content_name );
@@ -430,6 +451,7 @@ func (:s) add_linked_content
     frame_link.set_holder_t( o.client, o.client_type, o.client_name, false, 0 );
 
     tp_t action_type = escapprove~;
+    frame_link.set_parent( o );
     o.client_edit_frame( content_sr.o, content_sr.type(), content_name, action_type.1, frame_link );
 
     o.content_list!.push_d( frame_link.fork() );
@@ -440,7 +462,24 @@ func (:s) add_linked_content
 
 func (:s) add_frame
 {
-    o.content_list!.push_d( frame.fork() );
+    if( frame._ == bgfe_window_s~ )
+    {
+        m$* window = frame.cast( m bgfe_window_s* );
+        window.set_parent( o );
+        if( o.is_open ) window.open( o );
+        o.window_list!.push_d( window.fork() );
+    }
+    else if( o.is_open )
+    {
+        bcore_wrn_fa( "Adding a non-window frame: o is open." );
+    }
+    else
+    {
+        frame.set_parent( o );
+        frame.set_nesting_level( o.nesting_level + o.show_border );
+        o.content_list!.push_d( frame.fork() );
+    }
+
     = 0;
 }
 

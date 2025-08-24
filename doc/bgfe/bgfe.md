@@ -2,9 +2,11 @@
 
 The Graphical Front End (GFE) is an automatic generated and complete graphic user interface for all public elements in a beth-object. It provides ergonomic display, navigation and editing functionality for all elements. 
 
+BGFE uses GTK3 as GUI back-end. (See also: https://www.gtk.org/ )
+
 ## Frame
 
-The frame is a GFE-unit associated to a beth-object.  The frame is also a beth object, of course, but going forward, we want to discuss it as distinct from other beth objects. All frames belong to the group `bgfe_frame`.
+The frame is a GFE-unit associated to another beth-object. All frames belong to the group `bgfe_frame`.
 
 A frame consists of sub-frames associated to sub-objects. Like leaf-object there exists an associated leaf-frame that cannot further be subdivided. In GUI terminology a leaf frame is typically called *Widget*.
 
@@ -70,6 +72,8 @@ The GUI actually runs in its own dedicated thread to allow seamless GUI-user-act
 
 The GUI-thread is shielded from the client. The client cannot access it and it cannot directly influence the client. Any syncing happens only in the client's thread. Therefore the client need not protect its data from the GUI thread. Any cross-talk, data protection and synchronization between the client and the GUI-thread is handled inside BGFE. A developer need not worry about or even be aware of the GUI-thread.
 
+BGFE maintains two event loops. One is controlled by BGFE and runs in the client's thread the other runs in the GUI's dedicated thread.
+
 ### Action Type
 
 The `tp_t` action type is a function-argument used in [`cycle`](#cycling) and [client-features](../../lib/bgfe/bgfe_client.x) to determine how frame-client interaction is to be executed.
@@ -115,3 +119,6 @@ A client-event instructing the client that a change has just been made. The even
 
 
 
+-----------------------------------
+
+<sub>&copy; 2025 Johannes B. Steffens</sub>

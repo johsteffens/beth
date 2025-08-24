@@ -73,10 +73,9 @@ func (:item_s) open
         frame_link.set_nesting_level( o.parent.nesting_level + 1 );
         frame_link.clearable = o.parent.arr_editable;
         frame_link.clearable = frame_link.clearable && !array.t_is_static( array_type );
-        frame_link.window_position = ( o.parent.arrange == horizontal~ ) ? lower_left~ : upper_right~;
+        frame_link.set_window_position( ( o.parent.arrange == horizontal~ ) ? lower_left~ : upper_right~ );
 
         tp_t action_type = escapprove~;
-        o.client_edit_frame( sr_content.o, sr_content.type(), 0, action_type, frame_link );
 
         if( sr_content.o )
         {
@@ -87,6 +86,9 @@ func (:item_s) open
             tp_t content_type = x_array_t_get_type( array, array_type, o.index );
             frame_link.set_client_t( NULL, content_type, 0 );
         }
+
+        frame_link.set_parent( o );
+        o.client_edit_frame( sr_content.o, sr_content.type(), 0, action_type, frame_link );
 
         frame_link.set_holder_t( o.parent.client, o.parent.client_type, o.parent.client_name, true, o.index );
         o.client_frame =< frame_link.fork();
@@ -107,9 +109,11 @@ func (:item_s) open
             frame.set_nesting_level( o.parent.nesting_level + 1 );
 
             action_type = escapprove~;
-            o.client_edit_frame( sr_content.o, sr_content.type(), 0, action_type, frame );
             if( frame )
             {
+                frame.set_client_t( sr_content.o, sr_content.type(), 0 );
+                frame.set_parent( o );
+                o.client_edit_frame( sr_content.o, sr_content.type(), 0, action_type, frame );
                 frame.set_client_with_content_t( sr_content.o, sr_content.type(), 0 );
                 frame.open( o );
             }
@@ -118,6 +122,32 @@ func (:item_s) open
     }
 
     o.is_vertical = o.client_frame ? ( o.client_frame.arrangement() == vertical~ ) : false;
+
+
+    if( o.parent.arr_editable && !x_array_t_is_fixed( o.parent.client_type ) )
+    {
+        o.menu!;
+        o.menu.set_client( o );
+        o.menu.set_arrange( horizontal~ );
+        o.menu.set_window_position( upper_right~ );
+        m$* choice = o.menu.push_choice( "" );
+        choice.arrange = horizontal~;
+
+        //choice.push( remove~       , "⌧", "Remove this element" );
+        choice.push( cut~          , "✂", "Cut (to clipboard)" );
+        choice.push( move_to_prev~ , "↑", "Move to previous position" );
+        choice.push( move_to_next~ , "↓", "Move to next position" );
+        choice.push( move_to_first~, "⇑", "Move to first position" );
+        choice.push( move_to_last~ , "⇓", "Move to last position" );
+        choice.push( copy~         , "📋", "Copy" );
+        choice.push( duplicate~    , "📑", "Duplicate to this position" );
+
+        o.menu_frame!;
+        o.menu_frame.set_show_border( false );
+        o.menu_frame.set_client_with_content( o.menu, 0 );
+        o.menu_frame.open( o );
+    }
+
 
     o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, NULL );
 
@@ -162,6 +192,11 @@ func (:item_s) er_t rtt_open( m@* o, vd_t unused )
         gtk_box_pack_start( GTK_BOX( o.rtt_widget ), o.client_frame.rtt_widget(), true, true, 0 );
     }
 
+    if( o.menu_frame )
+    {
+        gtk_box_pack_start( GTK_BOX( o.rtt_widget ), o.menu_frame.rtt_widget(), false, true, 0 );
+    }
+
     = 0;
 }
 
@@ -201,6 +236,51 @@ func (:item_s) setup
 
 //----------------------------------------------------------------------------------------------------------------------
 
+name remove, move_to_prev, move_to_next, move_to_first, move_to_last, copy, duplicate;
+func (:item_s) bgfe_choice_client.choice_item_is_active
+{
+    if( !o.parent ) = false;
+    m$* array = o.parent.client_array();
+    tp_t array_type = o.parent.client_type;
+    if( !array ) = false;
+
+    switch( item.case_tp  )
+    {
+        case remove~: = true;
+        case cut~:    = true;
+        case move_to_prev~:  = ( o.index > 0 );
+        case move_to_next~:  = ( o.index < array.t_size( array_type ) - 1 );
+        case move_to_first~: = ( o.index > 0 );
+        case move_to_last~:  = ( o.index < array.t_size( array_type ) - 1 );
+        case copy~:      = true;
+        case duplicate~: = true;
+        default: break;
+    }
+    = true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:item_s) bgfe_choice_client.choice_item_selection
+{
+    if( !o.parent ) = 0;
+    switch( item.case_tp )
+    {
+        case remove~:        = o.parent.indexed_remove       ( o.index );
+        case cut~:           = o.parent.indexed_cut          ( o.index );
+        case move_to_prev~:  = o.parent.indexed_move_to_prev ( o.index );
+        case move_to_next~:  = o.parent.indexed_move_to_next ( o.index );
+        case move_to_first~: = o.parent.indexed_move_to_first( o.index );
+        case move_to_last~:  = o.parent.indexed_move_to_last ( o.index );
+        case copy~:          = o.parent.indexed_copy         ( o.index );
+        case duplicate~:     = o.parent.indexed_duplicate    ( o.index );
+        default: break;
+    }
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:item_s) cycle
 {
     if( !o.is_open ) = 0; // no error because frame window could have been closed
@@ -208,6 +288,12 @@ func (:item_s) cycle
     o.selected = o.rts_selected;
     o.mutex.unlock();
     if( o.client_frame ) o.client_frame.cycle( action_type );
+    if( o.menu_frame )
+    {
+        o.fork()^; // we keep a temporary fork at this point because menu actions can lead to removal of this item.
+        tp_t action_type = escapprove~;
+        o.menu_frame.cycle( action_type );
+    }
     = 0;
 }
 
@@ -253,6 +339,7 @@ func (:item_s) client_distraction
 {
     if( action_type.0 == approve~ ) = 0;
     if( o.client_frame ) o.client_frame.client_distraction( initiator, action_type );
+    if( o.menu_frame ) o.menu_frame.client_distraction( initiator, action_type );
     = 0;
 }
 

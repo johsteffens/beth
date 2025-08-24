@@ -59,11 +59,16 @@ feature er_t set_center            ( m@* o, bl_t flag  ) = 0; // centers widgets
 feature er_t set_stretch           ( m@* o, bl_t flag  ) = 0; // stretches elements to fill expanded space
 feature er_t set_embed_link        ( m@* o, bl_t flag  ) = 0; // when the client is a link, embed the frame rather than displaying it in a dedicated window.
 feature er_t set_apply_alpha       ( m@* o, bl_t flag  ) = 0; // used for frames that can decode an alpha value from the client (e.g. canvas)
+feature er_t set_close_window      ( m@* o, bl_t flag  ) = 0; // closes nearest ancestor window on a widget-specific condition that normally is associated with closing a dialog (e.g. selecting a file)
 
 feature er_t set_window_policy     ( m@* o, tp_t name  ) = 0; // window policy applies to immediate children. type: any|one|zero
 name any; // all clients may open a window
 name one; // all clients may open a window; maximally one window is open at a time (prior windows are being closed)
 name zero; // no client can open a window;
+
+feature er_t set_window_position ( m@* o, tp_t name ) = 0; // window positioning (for child windows e.g. on links)
+name upper_right;
+name lower_left;
 
 feature er_t set_track_placement( m@* o, bl_t flag ) = 0; // tracks placement (positioning, size; creates associated client-events)
 feature er_t set_track_mouse    ( m@* o, bl_t flag ) = 0; // tracks mouse     (buttons,movement; creates associated client-events)
@@ -72,12 +77,19 @@ feature er_t set_track_mouse    ( m@* o, bl_t flag ) = 0; // tracks mouse     (b
 feature er_t set_keep_above         ( m@* o, bl_t flag ) = 0; // for floating frames (e.g. window)
 feature er_t set_decorated          ( m@* o, bl_t flag ) = 0; // adds decoration, make window movable and resizable
 feature er_t set_close_on_lost_focus( m@* o, bl_t flag ) = 0; // closes window when focus is lost
-feature er_t set_fleeting           ( m@* o, bl_t flag ) = 0; // closes window on distraction
+feature er_t set_is_fleeting        ( m@* o, bl_t flag ) = 0; // closes window on distraction
 
 // Specifies the case under which the client is informed and/or modified about a change. (used by entry)
 feature er_t set_take_action_on( m@* o, tp_t name ) = 0;
 name modified; // front end detected a modification
 name activate; // front received a signal to communicate a modification (e.g. editor: enter-pressed)
+
+feature er_t set_manual_content( m@* o, bl_t flag ) = 0; // bgfe_frame_s: adds content for sub-clients
+
+// file chooser related properties
+// chooser action types
+name open, save, select_folder, create_folder;
+feature er_t set_chooser_action( m@* o, tp_t name ) = 0;
 
 //----------------------------------------------------------------------------------------------------------------------
 

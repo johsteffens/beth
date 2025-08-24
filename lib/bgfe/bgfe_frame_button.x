@@ -56,6 +56,7 @@ stamp :s bgfe_frame
     func bgfe_frame.client_type = o.client_type;
     func bgfe_frame.client_name = o.client_name;
     func bgfe_frame.parent = o.parent;
+    func bgfe_frame.set_parent o.parent = parent;
     func bgfe_frame.is_open = o.is_open;
     func bgfe_frame.h_complexity = 2;
     func bgfe_frame.v_complexity = 1;
@@ -204,7 +205,7 @@ func (:s) er_t rtt_open( m@* o, vd_t unused )
 
     if( o.insensitive ) gtk_widget_set_state_flags( o.rtt_widget, GTK_STATE_FLAG_INSENSITIVE, false );
     gtk_button_set_relief( GTK_BUTTON( o.rtt_widget ), GTK_RELIEF_NORMAL );
-    gtk_widget_set_name( o.rtt_widget, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
+    gtk_widget_set_name( o.rtt_widget, "bgfe_button_compact" );
     if( o.width > 0 || o.height > 0 ) gtk_widget_set_size_request( o.rtt_widget, o.width, o.height );
     if( o.show_tooltip && o.tooltip_text ) gtk_widget_set_tooltip_text( o.rtt_widget, o.tooltip_text.sc );
     g_signal_connect( o.rtt_widget, "destroy", G_CALLBACK( :s_rtt_signal_destroy ), o );

@@ -32,7 +32,6 @@ func (:s) bl_t rebuild_is_necessary( @* o )
 
 func (:s) bl_t any_selected( m@* o ) { foreach( m$* e in o.item_arr ) if( e.selected ) = true; = false; }
 func (:s) bl_t any_copied  ( m@* o ) = ( o.copied_elements != NULL ) && ( o.copied_elements.size > 0 );
-
 func (:s) er_t select_all ( m@* o ) { foreach( m$* e in o.item_arr ) e.set_selected( true  ); = 0; }
 func (:s) er_t select_none( m@* o ) { foreach( m$* e in o.item_arr ) e.set_selected( false ); = 0; }
 
@@ -167,6 +166,162 @@ func (:s) er_t remove_selected( m@* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+func (:s) er_t indexed_remove( m@* o, sz_t index )
+{
+    m$* array = o.client_array();
+    if( index < 0 || index >= array.t_size( o.client_type ) ) = 0;
+
+    tp_t action_type = escapprove~;
+    o.client_change_request( o, action_type.1 );
+    if( action_type == reject~  ) = 0;
+
+    array.t_remove( o.client_type, index );
+    o.rebuild();
+
+    tp_t confirm_action_type = TYPEOF_escalate;
+    o.client_change_confirm( o, confirm_action_type.1 );
+
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) er_t indexed_cut( m@* o, sz_t index )
+{
+    m$* array = o.client_array();
+    if( index < 0 || index >= array.t_size( o.client_type ) ) = 0;
+
+    tp_t action_type = escapprove~;
+    o.client_change_request( o, action_type.1 );
+    if( action_type == reject~  ) = 0;
+
+    o.copied_elements!.clear();
+    o.copied_elements.push_sr( sr_clone( array.t_c_get_sr( o.client_type, index ) ) );
+    array.t_remove( o.client_type, index );
+    o.rebuild();
+
+    tp_t confirm_action_type = TYPEOF_escalate;
+    o.client_change_confirm( o, confirm_action_type.1 );
+
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) er_t indexed_move_to_prev( m@* o, sz_t index )
+{
+    m$* array = o.client_array();
+    if( index <= 0 || index >= array.t_size( o.client_type ) ) = 0;
+
+    tp_t action_type = escapprove~;
+    o.client_change_request( o, action_type.1 );
+    if( action_type == reject~  ) = 0;
+
+    array.t_swap( o.client_type, index, index - 1 );
+    o.rebuild();
+
+    tp_t confirm_action_type = TYPEOF_escalate;
+    o.client_change_confirm( o, confirm_action_type.1 );
+
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) er_t indexed_move_to_next( m@* o, sz_t index )
+{
+    m$* array = o.client_array();
+    if( index < 0 || index >= array.t_size( o.client_type ) - 1 ) = 0;
+
+    tp_t action_type = escapprove~;
+    o.client_change_request( o, action_type.1 );
+    if( action_type == reject~  ) = 0;
+
+    array.t_swap( o.client_type, index, index + 1 );
+    o.rebuild();
+
+    tp_t confirm_action_type = TYPEOF_escalate;
+    o.client_change_confirm( o, confirm_action_type.1 );
+
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) er_t indexed_move_to_first( m@* o, sz_t index )
+{
+    m$* array = o.client_array();
+    if( index <= 0 || index >= array.t_size( o.client_type ) ) = 0;
+
+    tp_t action_type = escapprove~;
+    o.client_change_request( o, action_type.1 );
+    if( action_type == reject~  ) = 0;
+
+    array.t_swap( o.client_type, index, 0 );
+    o.rebuild();
+
+    tp_t confirm_action_type = TYPEOF_escalate;
+    o.client_change_confirm( o, confirm_action_type.1 );
+
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) er_t indexed_move_to_last( m@* o, sz_t index )
+{
+    m$* array = o.client_array();
+    if( index < 0 || index >= array.t_size( o.client_type ) - 1 ) = 0;
+
+    tp_t action_type = escapprove~;
+    o.client_change_request( o, action_type.1 );
+    if( action_type == reject~  ) = 0;
+
+    array.t_swap( o.client_type, index, array.t_size( o.client_type ) - 1 );
+    o.rebuild();
+
+    tp_t confirm_action_type = TYPEOF_escalate;
+    o.client_change_confirm( o, confirm_action_type.1 );
+
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) er_t indexed_copy( m@* o, sz_t index )
+{
+    m$* array = o.client_array();
+    if( index < 0 || index >= array.t_size( o.client_type ) ) = 0;
+
+    o.copied_elements!.clear();
+    o.copied_elements.push_sr( sr_clone( array.t_c_get_sr( o.client_type, index ) ) );
+
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) er_t indexed_duplicate( m@* o, sz_t index )
+{
+    m$* array = o.client_array();
+    if( index < 0 || index >= array.t_size( o.client_type ) ) = 0;
+
+    tp_t action_type = escapprove~;
+    o.client_change_request( o, action_type.1 );
+    if( action_type == reject~ ) = 0;
+
+
+    array.t_insert_sr( o.client_type, index, sr_clone( array.t_c_get_sr( o.client_type, index ) ) );
+    o.rebuild();
+
+    tp_t confirm_action_type = TYPEOF_escalate;
+    o.client_change_confirm( o, confirm_action_type.1 );
+
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:s) er_t rebuild( m@* o )
 {
     o.item_arr!.clear();
@@ -275,8 +430,6 @@ func (:s) er_t focus_to_end( m@* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-name append, remove_last, remove_selected, select_all, select_none, copy_selected, cut_selected, paste_to_end;
-
 func (:s) open
 {
     if( o.is_open ) = 0;
@@ -295,15 +448,14 @@ func (:s) open
         o.menu!;
         o.menu.set_client( o );
         o.menu.set_arrange( horizontal~ );
-        o.menu.push( append~         , "+" , "Append new element" );
-        o.menu.push( remove_last~    , "⌫" , "Remove last element" );
-        o.menu.push( remove_selected~, "🗑", "Remove selected elements" );
+        o.menu.push( append~      , "+", "Append new element" );
+        o.menu.push( remove_last~ , "⌫", "Remove last element" );
+        o.menu.push( cut_selected~, "✂", "Cut selected elements to clipboard" );
         m$* choice = o.menu.push_choice( "" );
 
         choice.push( select_all~   , "All ☑", NULL );
         choice.push( select_none~  , "All ☐", NULL );
-        choice.push( copy_selected~, "Copy 📋" , "Copy selected elements" );
-        choice.push( cut_selected~ , "Cut ✂ ️"  , "Copy and remove selected elements" );
+        choice.push( copy_selected~, "Copy 📋" , "Copy selected elements to clipboard" );
         choice.push( paste_to_end~ , "Paste"   , "Append copied elements" );
 
         o.menu_frame!;
@@ -448,7 +600,7 @@ func (:s) bgfe_choice_client.choice_item_is_active
         case select_all~: =o.item_arr.size > 0;
         case select_none~: =o.item_arr.size > 0;
         case copy_selected~: = o.any_selected();
-        case cut_selected~: = o.any_selected();
+        case cut_selected~: = true;
         case paste_to_end~: = o.any_copied();
         default: break;
     }

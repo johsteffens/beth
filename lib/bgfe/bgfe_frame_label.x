@@ -28,9 +28,9 @@
 stamp :s bgfe_frame
 {
     /// parameters
+    $ st_s => text;   // label text
     sz_t width;  // optional preferred width of label  (actual size is calculated from the ext)
     sz_t height; // optional preferred height of label (actual size is calculated from the ext)
-    st_s => text;   // label text
     st_s => widget_name;   // optional gtk widget name overrides default widget name
     st_s => tooltip;     // external tooltip (if NULL an internal tooltip is used)
     bl_t show_tooltip = false;
@@ -57,6 +57,7 @@ stamp :s bgfe_frame
     func bgfe_frame.client_type = o.client_type;
     func bgfe_frame.client_name = o.client_name;
     func bgfe_frame.parent = o.parent;
+    func bgfe_frame.set_parent o.parent = parent;
     func bgfe_frame.is_open = o.is_open;
     func bgfe_frame.h_complexity = 2;
     func bgfe_frame.v_complexity = 0.5;
@@ -108,17 +109,20 @@ func (:s) er_t client_to_st( @* o, m st_s* st )
         }
     }
 
-    // no else
 
-    if( bgfe_client_t_defines_bgfe_get_glimpse( o.client_type ) )
+    if( o.client_type == st_s~ )
     {
-        st.clear();
-        o.client.t_bgfe_get_glimpse( o.client_type, st );
+        st.copy( o.client.cast( st_s* ) );
+    }
+    else if( o.client_type == sc_t~ )
+    {
+        st.copy_sc( o.client.cast( sc_t* ).0 );
     }
     else
     {
-        bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_st_s, st.cast( m x_inst* ) );
+        o.client_get_glimpse( st );
     }
+
 
     = 0;
 }
@@ -128,7 +132,6 @@ func (:s) er_t client_to_st( @* o, m st_s* st )
 func (:s) open
 {
     if( o.is_open ) = 0;
-    if( !o.client ) = GERR_fa( "No client defined. Call set_client or set_client_t first." );
     bgfe_rte_get( &o.rte );
 
     ASSERT( parent );
@@ -228,7 +231,9 @@ func (:s) bgfe_frame.downsync
 func (:s) bgfe_frame.upsync
 {
     if( !o.is_open ) = 0; // no error because frame window could have been closed
+    if( !o.client ) = 0;
     if( o.no_upsync ) = 0;
+
 
     m$* client_text = st_s!^;
     o.client_to_st( client_text );

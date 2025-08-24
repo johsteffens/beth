@@ -18,6 +18,13 @@
 
 /**********************************************************************************************************************/
 
+/// menu items for the array
+name append, remove_last, remove_selected, select_all, select_none, copy_selected, cut_selected, paste_to_end;
+
+/// menu items for array elements
+name remove, cut, move_to_prev, move_to_next, move_to_first, move_to_last, copy, duplicate;
+
+
 //----------------------------------------------------------------------------------------------------------------------
 
 forward :s;
@@ -50,6 +57,8 @@ stamp :item_s bgfe_frame
     hidden GtkWidget* rtt_index_label;
     hidden GtkWidget* rtt_select_button;
     hidden :s* parent;
+    hidden bgfe_choice_s => menu;
+    hidden bgfe_frame_s => menu_frame;
     hidden bgfe_frame => client_frame;
     hidden bl_t is_vertical;
     hidden bl_t is_open;
@@ -57,6 +66,11 @@ stamp :item_s bgfe_frame
     hidden bl_t rtt_ignore_select_button_toggled;
 
     func bgfe_frame.parent = o.parent;
+    func bgfe_frame.set_parent
+    {
+        ASSERT( !parent || parent._ == :s~ );
+        o.parent = parent.cast( m :s* );
+    }
     func bgfe_frame.rtt_widget = o.rtt_widget;
     func bgfe_frame.open;
     func bgfe_frame.close;
@@ -103,7 +117,7 @@ stamp :s bgfe_frame
     sz_t spacing;   // spacing between elements
     bl_t end_bound; // packs elements with reference to the end of the box (false: reference to the start)
     bl_t center = true;    // centers widgets in an expanded space
-    bl_t stretch = true;   // stretches elements to fill expanded space
+    bl_t stretch = false;   // stretches elements to fill expanded space
     sz_t nesting_level;    // nesting level (embedded nesting)
     tp_t window_policy = one; // window-policy: any~ | one~ | none~;
     bl_t scrollable = true;
@@ -147,6 +161,7 @@ stamp :s bgfe_frame
     func bgfe_frame.client_type = o.client_type;
     func bgfe_frame.client_name = o.client_name;
     func bgfe_frame.parent = o.parent;
+    func bgfe_frame.set_parent o.parent = parent;
     func bgfe_frame.is_open = o.is_open;
     func bgfe_frame.is_compact = false;
 
