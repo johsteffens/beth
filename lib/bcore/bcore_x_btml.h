@@ -73,8 +73,10 @@ func er_t   body_from_sc    ( m@* o,           sc_t  sc  ) = o.t_body_from_sc( o
  *  If type is != NULL Sets type.0 to object's type.
  */
 func d obliv @* create_from_source_t( m x_source* source, m tp_t* type );
-func d obliv @* create_from_st_t( c st_s* st, m tp_t* type ) = :create_from_source_t( x_source_create_from_st( st )^, type );
-func d obliv @* create_from_sc_t(   sc_t  sc, m tp_t* type ) = :create_from_source_t( x_source_create_from_sc( sc )^, type );
+func d obliv @* create_from_st_t  ( c st_s* st,  m tp_t* type ) = :create_from_source_t( x_source_create_from_st( st )^, type );
+func d obliv @* create_from_sc_t  (   sc_t  sc,  m tp_t* type ) = :create_from_source_t( x_source_create_from_sc( sc )^, type );
+func d obliv @* create_from_file_t(   sc_t file, m tp_t* type ) = :create_from_source_t( x_source_create_from_file( file )^, type );
+
 func d aware @* create_from_source( m x_source* source );
 func d aware @* create_from_st( c st_s* st )  = :create_from_source( x_source_create_from_st( st )^ );
 func d aware @* create_from_sc(   sc_t  sc )  = :create_from_source( x_source_create_from_sc( sc )^ );
@@ -98,7 +100,7 @@ func er_t t_to_file( c@* o, tp_t t, sc_t file )
     = 0;
 }
 
-func er_t   to_file( c@* o,         sc_t file ) = o.t_to_file( o._, file );
+func er_t   to_file  ( c@* o, sc_t file ) = o.t_to_file( o._, file );
 func void t_to_stdout( c@* o, tp_t t ) o.t_to_sink( t, x_sink_stdout() );
 func void   to_stdout( c@* o,        ) o.t_to_stdout( o._ );
 

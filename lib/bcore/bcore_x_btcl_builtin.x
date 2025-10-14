@@ -43,6 +43,14 @@ name ASSERT;
 name MKDIR;
 name RMDIR;
 name FILE_EXISTS;
+name TO_FILE;
+name TO_FILE_BTML;
+name TO_FILE_BBML;
+name TO_FILE_BCML;
+name FROM_FILE;
+name FROM_FILE_BTML;
+name FROM_FILE_BBML;
+name FROM_FILE_BCML;
 
 // constants
 name true;
@@ -81,6 +89,14 @@ func (:context_s) set_reserved_funcs
     o.hmap_reserved_func.set_sc( "MKDIR" );
     o.hmap_reserved_func.set_sc( "RMDIR" );
     o.hmap_reserved_func.set_sc( "FILE_EXISTS" );
+    o.hmap_reserved_func.set_sc( "TO_FILE" );
+    o.hmap_reserved_func.set_sc( "TO_FILE_BTML" );
+    o.hmap_reserved_func.set_sc( "TO_FILE_BBML" );
+    o.hmap_reserved_func.set_sc( "TO_FILE_BCML" );
+    o.hmap_reserved_func.set_sc( "FROM_FILE" );
+    o.hmap_reserved_func.set_sc( "FROM_FILE_BTML" );
+    o.hmap_reserved_func.set_sc( "FROM_FILE_BBML" );
+    o.hmap_reserved_func.set_sc( "FROM_FILE_BCML" );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -292,6 +308,141 @@ func (:frame_s) er_t eval_reserved_func( m@* o, tp_t name, m x_source* source, b
             o.eval( 0, source, sb );
             if( sb.type() != st_s~ ) = source.parse_error_fa( "Expression must represent a string.\n" );
             sr.from_bl( bcore_file_exists( sb.o.cast( st_s* ).sc ) );
+        }
+        break;
+
+        case TO_FILE~:
+        case TO_FILE_BTML~:
+        {
+            m$* sa = sr_s!^;
+            o.eval( 0, source, sa );
+            if( sa.type() != st_s~ ) = source.parse_error_fa( "First argument must represent a string.\n" );
+
+            source.parse_fa( " , " );
+
+            m$* sb = sr_s!^;
+            o.eval( 0, source, sb );
+            bl_t success = false;
+
+            if( sb.o )
+            {
+                x_btml_t_to_file( sb.o.cast( x_btml* ), sb.type(), sa.o.cast( st_s* ).sc );
+                success = true;
+            }
+
+            sr.from_bl( success );
+        }
+        break;
+
+        case TO_FILE_BBML~:
+        {
+            m$* sa = sr_s!^;
+            o.eval( 0, source, sa );
+            if( sa.type() != st_s~ ) = source.parse_error_fa( "First argument must represent a string.\n" );
+
+            source.parse_fa( " , " );
+
+            m$* sb = sr_s!^;
+            o.eval( 0, source, sb );
+            bl_t success = false;
+
+            if( sb.o )
+            {
+                x_bbml_t_to_file( sb.o.cast( x_btml* ), sb.type(), sa.o.cast( st_s* ).sc );
+                success = true;
+            }
+
+            sr.from_bl( success );
+        }
+        break;
+
+        case TO_FILE_BCML~:
+        {
+            m$* sa = sr_s!^;
+            o.eval( 0, source, sa );
+            if( sa.type() != st_s~ ) = source.parse_error_fa( "First argument must represent a string.\n" );
+
+            source.parse_fa( " , " );
+
+            m$* sb = sr_s!^;
+            o.eval( 0, source, sb );
+            bl_t success = false;
+
+            if( sb.o )
+            {
+                x_bcml_t_to_file( sb.o.cast( x_btml* ), sb.type(), sa.o.cast( st_s* ).sc );
+                success = true;
+            }
+
+            sr.from_bl( success );
+        }
+        break;
+
+        case FROM_FILE~:
+        {
+            m$* sa = sr_s!^;
+            o.eval( 0, source, sa );
+            if( sa.type() != st_s~ ) = source.parse_error_fa( "First argument must represent a string.\n" );
+
+            m$* file_source = x_source_create_from_file( sa.o.cast( st_s* ).sc )^;
+            if( !file_source ) = general_error~;
+
+            tp_t type = 0;
+            m x_inst* obj = x_btcl_create_from_source_t( file_source, type ).cast( d x_inst* )^;
+            if( !obj ) = general_error~;
+
+            sr.tsm( type, obj.fork() );
+        }
+        break;
+
+        case FROM_FILE_BTML~:
+        {
+            m$* sa = sr_s!^;
+            o.eval( 0, source, sa );
+            if( sa.type() != st_s~ ) = source.parse_error_fa( "First argument must represent a string.\n" );
+
+            m$* file_source = x_source_create_from_file( sa.o.cast( st_s* ).sc )^;
+            if( !file_source ) = general_error~;
+
+            tp_t type = 0;
+            m x_inst* obj = x_btml_create_from_source_t( file_source, type ).cast( d x_inst* )^;
+            if( !obj ) = general_error~;
+
+            sr.tsm( type, obj.fork() );
+        }
+        break;
+
+        case FROM_FILE_BBML~:
+        {
+            m$* sa = sr_s!^;
+            o.eval( 0, source, sa );
+            if( sa.type() != st_s~ ) = source.parse_error_fa( "First argument must represent a string.\n" );
+
+            m$* file_source = x_source_create_from_file( sa.o.cast( st_s* ).sc )^;
+            if( !file_source ) = general_error~;
+
+            tp_t type = 0;
+            m x_inst* obj = x_bbml_create_from_source_t( file_source, type ).cast( d x_inst* )^;
+            if( !obj ) = general_error~;
+
+            sr.tsm( type, obj.fork() );
+        }
+        break;
+
+        case FROM_FILE_BCML~:
+        {
+            m$* sa = sr_s!^;
+            o.eval( 0, source, sa );
+            if( sa.type() != st_s~ ) = source.parse_error_fa( "First argument must represent a string.\n" );
+
+            m$* file_source = x_source_create_from_file( sa.o.cast( st_s* ).sc )^;
+            if( !file_source ) = general_error~;
+
+            tp_t type = 0;
+            m x_inst* obj = x_bcml_create_from_source_t( file_source, type ).cast( d x_inst* )^;
+            if( !obj ) = general_error~;
+
+            sr.tsm( type, obj.fork() );
         }
         break;
 

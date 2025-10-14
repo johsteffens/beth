@@ -8,22 +8,35 @@ BTCL can execute stamp functionality with stamps implementing the features below
 // (required) return -1 when function 'name' is not defined
 feature sz_t btcl_function_arity( @* o, tp_t name ) = -1;
 
-// (optional) indicates whether the function given by 'name' is mutable
-// default behavior: mutable if m_btcl_function is overloaded, otherwise not mutable
-feature bl_t btcl_function_mutable( @* o, tp_t name );
-
 // Overload one or both of the features below depending on whether 'name' is mutable for o or not.
+// If result is not explicitly set, it defaults to 0 (<f3_t> 0 </>)
 feature er_t btcl_function( @* o, tp_t name, x_source_point_s* sp, m :frame_s* lexical_frame, bcore_arr_sr_s* args, m sr_s* result );
 
 feature er_t m_btcl_function( m@* o, tp_t name, x_source_point_s* sp, m :frame_s* lexical_frame, bcore_arr_sr_s* args, m sr_s* result );
+
+// (optional) indicates whether the function given by 'name' is mutable
+// Only needed when both btcl_function and m_btcl_function are overloaded
+feature bl_t btcl_function_mutable( @* o, tp_t name );
 ```
 
-
 ### Example: Definition (XOILA)
+
+
+``` C
+/// Minimal implementation: Simply calls a function of name run(), returns default value 0 (<f3_t>)
+name run;
+stamp my_minimal_s
+{
+    func er_t run( m@* o ) { bcore_msg_fa( "BTCL (#name): 'run' called\n", o._ ); = 0; }
+    func x_btcl.btcl_function_arity = ( name == run~ ) ? 0 : -1;
+    func x_btcl.m_btcl_function     = ( name == run~ ) ? o.run() : 0;
+}
+```
 
 ``` C
 name add_a;
 
+/// Advanced implementation for multiple functions and custom return value
 stamp my_stamp_s
 {
     f3_t additive = 0;
@@ -58,7 +71,10 @@ stamp my_stamp_s
 
 ``` C
 obj = <my_stamp_s/>( .additive = 10 );
-? obj.add_a( 1 ) // outputs '11'
+? obj.add_a( 1 ); // outputs '11'
+    
+? <my_minimal_s/>.run(); // executes 'my_minimal_s.run'; outputs '0'
+
 ```
 
 

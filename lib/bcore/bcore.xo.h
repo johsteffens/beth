@@ -1,4 +1,4 @@
-//  Last update: 2025-08-19T08:45:27Z (UTC)
+//  Last update: 2025-10-14T09:43:51Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -2569,6 +2569,7 @@
   static inline er_t x_btml_body_from_sc( x_btml* o, sc_t sc ); \
   static inline x_btml* x_btml_create_from_st_t( const st_s* st, tp_t* type ); \
   static inline x_btml* x_btml_create_from_sc_t( sc_t sc, tp_t* type ); \
+  static inline x_btml* x_btml_create_from_file_t( sc_t file, tp_t* type ); \
   static inline x_btml* x_btml_create_from_st( const st_s* st ); \
   static inline x_btml* x_btml_create_from_sc( sc_t sc ); \
   static inline x_btml* x_btml_create_from_file( sc_t file ); \
@@ -2628,6 +2629,7 @@
   static inline er_t x_btml_body_from_sc( x_btml* o, sc_t sc ){return  x_btml_t_body_from_sc(o,o->_, sc );} \
   static inline x_btml* x_btml_create_from_st_t( const st_s* st, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btml*, x_btml_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))), type ))} \
   static inline x_btml* x_btml_create_from_sc_t( sc_t sc, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btml*, x_btml_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))), type ))} \
+  static inline x_btml* x_btml_create_from_file_t( sc_t file, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btml*, x_btml_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))), type ))} \
   static inline x_btml* x_btml_create_from_st( const st_s* st ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btml*, x_btml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))) ))} \
   static inline x_btml* x_btml_create_from_sc( sc_t sc ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btml*, x_btml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))} \
   static inline x_btml* x_btml_create_from_file( sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btml*, x_btml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))) ))} \
@@ -2657,6 +2659,7 @@
   static inline er_t x_bbml_from_sc( x_bbml* o, sc_t sc ); \
   static inline x_bbml* x_bbml_create_from_st_t( const st_s* st, tp_t* type ); \
   static inline x_bbml* x_bbml_create_from_sc_t( sc_t sc, tp_t* type ); \
+  static inline x_bbml* x_bbml_create_from_file_t( sc_t file, tp_t* type ); \
   static inline x_bbml* x_bbml_create_from_st( const st_s* st ); \
   static inline x_bbml* x_bbml_create_from_sc( sc_t sc ); \
   static inline x_bbml* x_bbml_create_from_file( sc_t file ); \
@@ -2708,6 +2711,7 @@
   static inline er_t x_bbml_from_sc( x_bbml* o, sc_t sc ){return  x_bbml_t_from_sc(o,o->_, sc );} \
   static inline x_bbml* x_bbml_create_from_st_t( const st_s* st, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bbml*, x_bbml_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))), type ))} \
   static inline x_bbml* x_bbml_create_from_sc_t( sc_t sc, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bbml*, x_bbml_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))), type ))} \
+  static inline x_bbml* x_bbml_create_from_file_t( sc_t file, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bbml*, x_bbml_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))), type ))} \
   static inline x_bbml* x_bbml_create_from_st( const st_s* st ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bbml*, x_bbml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))) ))} \
   static inline x_bbml* x_bbml_create_from_sc( sc_t sc ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bbml*, x_bbml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))} \
   static inline x_bbml* x_bbml_create_from_file( sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bbml*, x_bbml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))) ))} \
@@ -2741,6 +2745,7 @@
   static inline er_t x_bcml_from_sc( x_bcml* o, sc_t sc ); \
   static inline x_bcml* x_bcml_create_from_st_t( const st_s* st, tp_t* type ); \
   static inline x_bcml* x_bcml_create_from_sc_t( sc_t sc, tp_t* type ); \
+  static inline x_bcml* x_bcml_create_from_file_t( sc_t file, tp_t* type ); \
   static inline x_bcml* x_bcml_create_from_st( const st_s* st ); \
   static inline x_bcml* x_bcml_create_from_sc( sc_t sc ); \
   static inline x_bcml* x_bcml_create_from_file( sc_t file ); \
@@ -2794,6 +2799,7 @@
   static inline er_t x_bcml_from_sc( x_bcml* o, sc_t sc ){return  x_bcml_t_from_sc(o,o->_, sc );} \
   static inline x_bcml* x_bcml_create_from_st_t( const st_s* st, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bcml*, x_bcml_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))), type ))} \
   static inline x_bcml* x_bcml_create_from_sc_t( sc_t sc, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bcml*, x_bcml_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))), type ))} \
+  static inline x_bcml* x_bcml_create_from_file_t( sc_t file, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bcml*, x_bcml_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))), type ))} \
   static inline x_bcml* x_bcml_create_from_st( const st_s* st ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bcml*, x_bcml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))) ))} \
   static inline x_bcml* x_bcml_create_from_sc( sc_t sc ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bcml*, x_bcml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))} \
   static inline x_bcml* x_bcml_create_from_file( sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_bcml*, x_bcml_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))) ))} \
@@ -2832,6 +2838,7 @@
   static inline er_t x_btcl_s_from_sc( const x_btcl_s* o, x_btcl* obj, sc_t sc ); \
   static inline x_btcl* x_btcl_s_create_from_st_t( const x_btcl_s* o, const st_s* st, tp_t* type ); \
   static inline x_btcl* x_btcl_s_create_from_sc_t( const x_btcl_s* o, sc_t sc, tp_t* type ); \
+  static inline x_btcl* x_btcl_s_create_from_file_t( const x_btcl_s* o, sc_t file, tp_t* type ); \
   static inline x_btcl* x_btcl_s_create_from_st( const x_btcl_s* o, const st_s* st ); \
   static inline x_btcl* x_btcl_s_create_from_sc( const x_btcl_s* o, sc_t sc ); \
   static inline x_btcl* x_btcl_s_create_from_file( const x_btcl_s* o, sc_t file ); \
@@ -2852,6 +2859,7 @@
   static inline er_t x_btcl_s_from_sc( const x_btcl_s* o, x_btcl* obj, sc_t sc ){return  x_btcl_s_t_from_sc(o,obj, obj->_, sc );} \
   static inline x_btcl* x_btcl_s_create_from_st_t( const x_btcl_s* o, const st_s* st, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_s_create_from_source_t(o,((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))), type ))} \
   static inline x_btcl* x_btcl_s_create_from_sc_t( const x_btcl_s* o, sc_t sc, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_s_create_from_source_t(o,((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))), type ))} \
+  static inline x_btcl* x_btcl_s_create_from_file_t( const x_btcl_s* o, sc_t file, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_s_create_from_source_t(o,((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))), type ))} \
   static inline x_btcl* x_btcl_s_create_from_st( const x_btcl_s* o, const st_s* st ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_s_create_from_source(o,((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))) ))} \
   static inline x_btcl* x_btcl_s_create_from_sc( const x_btcl_s* o, sc_t sc ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_s_create_from_source(o,((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))} \
   static inline x_btcl* x_btcl_s_create_from_file( const x_btcl_s* o, sc_t file ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_s_create_from_source(o,((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))) ))} \
@@ -2887,6 +2895,14 @@
 #define TYPEOF_mkdir 0xB8EAA574819A7FF8ull
 #define TYPEOF_rmdir 0x77DFA1348BAE30DFull
 #define TYPEOF_file_exists 0x768CE74BE3F48C84ull
+#define TYPEOF_to_file 0x40A29AC7CC872287ull
+#define TYPEOF_to_file_btml 0xA7C6C84DBBBE767Full
+#define TYPEOF_to_file_bbml 0x430ECE4E1384A055ull
+#define TYPEOF_to_file_bcml 0x49FDF54E16F45D16ull
+#define TYPEOF_from_file 0x24E5E8AF273BB218ull
+#define TYPEOF_from_file_btml 0x67977335DE4FEC52ull
+#define TYPEOF_from_file_bbml 0x10DCF535AD2806DCull
+#define TYPEOF_from_file_bcml 0x06A2AE35A6EBB273ull
 #define TYPEOF_pow 0x779B5F19564F3B35ull
 #define TYPEOF_div 0xCAA83A18F46E5888ull
 #define TYPEOF_mod 0x0808591917670EE3ull
@@ -3146,6 +3162,14 @@
 #define TYPEOF_MKDIR 0x0CCC8DE2A8526718ull
 #define TYPEOF_RMDIR 0xCAE889A2B1AE273Full
 #define TYPEOF_FILE_EXISTS 0xEDF53AFFC8673DC4ull
+#define TYPEOF_TO_FILE 0x68CC91646125D547ull
+#define TYPEOF_TO_FILE_BTML 0xF7E14FAE38491C7Full
+#define TYPEOF_TO_FILE_BBML 0x940255AE90C73715ull
+#define TYPEOF_TO_FILE_BCML 0x9E587CAE971BCFD6ull
+#define TYPEOF_FROM_FILE 0xC02E870A0CE7F918ull
+#define TYPEOF_FROM_FILE_BTML 0x8E99F95652681E12ull
+#define TYPEOF_FROM_FILE_BBML 0x37E07B562141EB9Cull
+#define TYPEOF_FROM_FILE_BCML 0x2DA5F4561B052A73ull
 #define TYPEOF_true 0x5B5C98EF514DBFA5ull
 #define TYPEOF_false 0xB5FAE2C14238B978ull
 #define TYPEOF_TRUE 0x704E59FAB561C2A5ull
@@ -3186,6 +3210,7 @@
   static inline x_btcl* x_btcl_create_from_source_t( x_source* source, tp_t* type ); \
   static inline x_btcl* x_btcl_create_from_st_t( const st_s* st, tp_t* type ); \
   static inline x_btcl* x_btcl_create_from_sc_t( sc_t sc, tp_t* type ); \
+  static inline x_btcl* x_btcl_create_from_file_t( sc_t file, tp_t* type ); \
   static inline x_btcl* x_btcl_create_from_source( x_source* source ); \
   static inline x_btcl* x_btcl_create_from_st( const st_s* st ); \
   static inline x_btcl* x_btcl_create_from_sc( sc_t sc ); \
@@ -3306,6 +3331,7 @@
   static inline x_btcl* x_btcl_create_from_source_t( x_source* source, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_s_create_from_source_t(((x_btcl_s*)BLM_LEVEL_T_PUSH(0,x_btcl_s,x_btcl_s_create())),source, type ))} \
   static inline x_btcl* x_btcl_create_from_st_t( const st_s* st, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))), type ))} \
   static inline x_btcl* x_btcl_create_from_sc_t( sc_t sc, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))), type ))} \
+  static inline x_btcl* x_btcl_create_from_file_t( sc_t file, tp_t* type ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_create_from_source_t(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_file(file ))), type ))} \
   static inline x_btcl* x_btcl_create_from_source( x_source* source ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_s_create_from_source(((x_btcl_s*)BLM_LEVEL_T_PUSH(0,x_btcl_s,x_btcl_s_create())),source ))} \
   static inline x_btcl* x_btcl_create_from_st( const st_s* st ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(st ))) ))} \
   static inline x_btcl* x_btcl_create_from_sc( sc_t sc ){BLM_INIT_LEVEL(0);BLM_RETURNV(x_btcl*, x_btcl_create_from_source(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_sc(sc ))) ))} \
@@ -3897,6 +3923,19 @@
   }; \
   sz_t x_btcl_test_adder_s_btcl_function_arity( const x_btcl_test_adder_s* o, tp_t name ); \
   er_t x_btcl_test_adder_s_btcl_function( const x_btcl_test_adder_s* o, tp_t name, const x_source_point_s* sp, x_btcl_frame_s* lexical_frame, const bcore_arr_sr_s* args, sr_s* result );
+#define TYPEOF_run 0x89B2A81960C55A4Aull
+#define TYPEOF_x_btcl_test_minimal_s 0x8E11E5E44C304334ull
+#define BETH_EXPAND_ITEM_x_btcl_test_minimal_s \
+  BCORE_DECLARE_OBJECT( x_btcl_test_minimal_s ) \
+  { \
+      aware_t _; \
+  }; \
+  static inline er_t x_btcl_test_minimal_s_run( const x_btcl_test_minimal_s* o ); \
+  static inline sz_t x_btcl_test_minimal_s_btcl_function_arity( const x_btcl_test_minimal_s* o, tp_t name ); \
+  static inline er_t x_btcl_test_minimal_s_btcl_function( const x_btcl_test_minimal_s* o, tp_t name, const x_source_point_s* sp, x_btcl_frame_s* lexical_frame, const bcore_arr_sr_s* args, sr_s* result ); \
+  static inline er_t x_btcl_test_minimal_s_run( const x_btcl_test_minimal_s* o ){ bcore_msg_fa( "BTCL (#name): 'run' called\n", o->_ ); return  0;} \
+  static inline sz_t x_btcl_test_minimal_s_btcl_function_arity( const x_btcl_test_minimal_s* o, tp_t name ){return  ( name == ((tp_t)(TYPEOF_run)) ) ? 0 : -1;} \
+  static inline er_t x_btcl_test_minimal_s_btcl_function( const x_btcl_test_minimal_s* o, tp_t name, const x_source_point_s* sp, x_btcl_frame_s* lexical_frame, const bcore_arr_sr_s* args, sr_s* result ){return  ( name == ((tp_t)(TYPEOF_run)) ) ? x_btcl_test_minimal_s_run(o) : 0;}
 #define TYPEOF_x_btcl_test_parser_s 0xC1EEDC4594DDCCFAull
 #define BETH_EXPAND_ITEM_x_btcl_test_parser_s \
   BCORE_DECLARE_OBJECT( x_btcl_test_parser_s ) \
@@ -3907,6 +3946,7 @@
 #define BETH_EXPAND_GROUP_x_btcl_test \
   BCORE_FORWARD_OBJECT( x_btcl_test ); \
   BCORE_FORWARD_OBJECT( x_btcl_test_adder_s ); \
+  BCORE_FORWARD_OBJECT( x_btcl_test_minimal_s ); \
   BCORE_FORWARD_OBJECT( x_btcl_test_parser_s ); \
   XOILA_DECLARE_SPECT( x_btcl_test ) \
   { \
@@ -3914,6 +3954,7 @@
   }; \
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( x_btcl_test ) \
   BETH_EXPAND_ITEM_x_btcl_test_adder_s \
+  BETH_EXPAND_ITEM_x_btcl_test_minimal_s \
   BETH_EXPAND_ITEM_x_btcl_test_parser_s
 
 /**********************************************************************************************************************/
@@ -4200,5 +4241,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0xB5E14DCC09922F5F
-// XOICO_FILE_SIGNATURE 0x136CA9EC58A4E819
+// XOICO_BODY_SIGNATURE 0x0F88467840A422FE
+// XOICO_FILE_SIGNATURE 0x15B3BFF857CBB831

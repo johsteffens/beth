@@ -100,7 +100,8 @@ sr_s bcore_via_default_iget( const bcore_via_s* p, const bcore_via* o, uz_t inde
 
 tp_t bcore_via_default_iget_type( const bcore_via_s* p, const bcore_via* o, uz_t index )
 {
-    if( index >= p->size ) ERR( "index (%zu) out of range (%zu)", index, p->size );
+    if( ( sz_t )index < 0 ) ERR_fa( "invalid index #<sz_t>", ( sz_t )index );
+    if( index >= p->size ) ERR_fa( "index #<uz_t> out of range #<uz_t>", index, p->size );
     const bcore_vitem_s* vitem = &p->vitem_arr[ index ];
     switch( vitem->caps )
     {
@@ -125,7 +126,14 @@ er_t bcore_via_default_iset( const bcore_via_s* p, bcore_via* o, uz_t index, sr_
     if( index >= p->size )
     {
         sr_down( src );
-        return EM_ERR_fa( "index #<uz_t> out of range #<uz_t>", index, p->size );
+        if( ( sz_t )index < 0 )
+        {
+            return EM_ERR_fa( "invalid index #<sz_t>", ( sz_t )index );
+        }
+        else
+        {
+            return EM_ERR_fa( "index #<uz_t> out of range #<uz_t>", index, p->size );
+        }
     }
 
     const bcore_vitem_s* vitem  = &p->vitem_arr[ index ];
@@ -310,6 +318,7 @@ static inline bl_t v_test_idx( const bcore_via_s* p, tp_t name )
 static inline uz_t vidx( const bcore_via_s* p, tp_t name )
 {
     for( uz_t i = 0; i < p->size; i++ ) if( p->vitem_arr[ i ].name == name ) return i;
+    WRN_fa( "'#name' not found in '#name'\n", name, p->header.o_type );
     return ( uz_t )-1;
 }
 

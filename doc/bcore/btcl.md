@@ -100,6 +100,18 @@ MKDIR( DIR + "/temp" );
 // removes an empty sub-director 'temp' in the directory of the source file; returns success (true|false)
 RMDIR( DIR + "/temp" );
 
+// writes an object 'obj' to a file in specified format; target directory must exist; returns success (true|false)
+TO_FILE     ( DIR + "/app_data/object.btml", obj ); // always btml format
+TO_FILE_BTML( DIR + "/app_data/object.btml", obj ); // btml format
+TO_FILE_BBML( DIR + "/app_data/object.bbml", obj ); // bbml format
+TO_FILE_BCML( DIR + "/app_data/object.bcml", obj ); // bcml format
+
+// reads an object from a file in specified format
+obj = FROM_FILE     ( DIR + "/app_data/object.btml" ); // btml or btcl format
+obj = FROM_FILE_BTML( DIR + "/app_data/object.btml" ); // btml format
+obj = FROM_FILE_BBML( DIR + "/app_data/object.bbml" ); // bbml format
+obj = FROM_FILE_BCML( DIR + "/app_data/object.bcml" ); // bcml format
+
 // If the space behind a semicolon contains no expression then that semicolon is ignored.
 
 ```
@@ -734,13 +746,39 @@ Built-in functions are available by the names listed in the table below. They ar
 |MAX|2|maximum of two operands|max|yes|
 |MIN|2|minimum of two operands|min|yes|
 |IFE|3|Conditional ternary operator: ```IFE( a, b, c ) == a ? b : c```|conditional|yes|
+|ASSERT|1|Creates an error condition in case expression evaluates to FALSE. Returns TRUE otherwise.|assert|no|
 |PRINT|1|Prints object to stdout in compact form; behaves as identity|print|no|
 |PRINTLN|1|Prints object to stdout in compact form; last character is 'newline'; behaves as identity|println|no|
 |PRINTX|1|Prints object to stdout in detailed form; behaves as identity|printx|no|
-|ASSERT|1|Creates an error condition in case expression evaluates to FALSE. Returns TRUE otherwise.|assert|no|
 |MKDIR|1|Creates a file system directory according to (string-)path specified as argument|mkdir|no|
 |RMDIR|1|Removes an empty file system directory according to (string-)path specified as argument|rmdir|no|
 |FILE_EXISTS|1|Checks existence of a file path; returns result as boolean (`bl_t`)|file_exists|no|
+
+### Writing to a file
+First argument: Path expression (string)
+
+Second argument: Object expression
+
+Return: Success flag (boolean)
+
+|Name|Arity|Description|Type Name|Exportable|
+|:---|:---|----|----|----|
+|TO_FILE|2|Writes object to file (btml format)|to_file|no|
+|TO_FILE_BTML|2|Writes object to file (btml format)|to_file_btml|no|
+|TO_FILE_BBML|2|Writes object to file (bbml format)|to_file_bbml|no|
+|TO_FILE_BCML|2|Writes object to file (bcml format)|to_file_bcml|no|
+
+### Reading from a file
+First argument: Path expression (string)
+
+Return: Object represents by the file
+
+|Name|Arity|Description|Type Name|Exportable|
+|:---|:---|----|----|----|
+|FROM_FILE|1|Reads object from file (btml or btcl format)|from_file|no|
+|FROM_FILE_BTML|1|Reads object from file (btml format)|from_file_btml|no|
+|FROM_FILE_BBML|1|Reads object from file (bbml format)|from_file_bbml|no|
+|FROM_FILE_BCML|1|Reads object from file (bcml format)|from_file_bcml|no|
 
 # Built-in Constants
 |Name|Description|

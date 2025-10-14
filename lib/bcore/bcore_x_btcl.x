@@ -29,6 +29,9 @@ name exp, log, log2, log10, sin, cos, tan, tanh, sign, sqrt, abs, ceil, floor, m
 // Group B, unary
 name identity, neg, not, print, println, printx, assert, mkdir, rmdir, file_exists;
 
+name to_file, to_file_btml, to_file_bbml, to_file_bcml;
+name from_file, from_file_btml, from_file_bbml, from_file_bcml;
+
 // Group C, unary
 name pow, div, mod, chain, mul_dot_colon, mul_dot, mul_colon;
 name mul, sub, add;
@@ -75,7 +78,15 @@ func sc_t operator_symbol( tp_t type )
         case assert~:  = "ASSERT";
         case mkdir~:   = "MKDIR";
         case rmdir~:   = "RMDIR";
-        case file_exists~: = "FILE_EXISTS";
+        case file_exists~:  = "FILE_EXISTS";
+        case to_file~:      = "TO_FILE";
+        case to_file_btml~: = "TO_FILE_BTML";
+        case to_file_bbml~: = "TO_FILE_BBML";
+        case to_file_bcml~: = "TO_FILE_BCML";
+        case from_file~:      = "FROM_FILE";
+        case from_file_btml~: = "FROM_FILE_BTML";
+        case from_file_bbml~: = "FROM_FILE_BBML";
+        case from_file_bcml~: = "FROM_FILE_BCML";
 
         // Group B, unary
         case identity~: = "+";
@@ -713,7 +724,7 @@ stamp :external_function_s
 
     func er_t execute( m@* o, x_source_point_s* sp, m :frame_s* lexical_frame, bcore_arr_sr_s* args, m sr_s* sr )
     {
-        sr.clear();
+        sr.from_f3( 0 );
         if( o.is_mutable )
         {
             o.object.clone()^.m_btcl_function( o.name, sp, lexical_frame, args, sr );

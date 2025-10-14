@@ -83,8 +83,9 @@ func er_t   from_sc    ( m@* o,           sc_t  sc  ) = o.t_from_sc( o._, sc );
  *  If type is != NULL Sets type.0 to object's type.
  */
 func d obliv @* create_from_source_t( m x_source* source, m tp_t* type );
-func d obliv @* create_from_st_t( c st_s* st, m tp_t* type ) = :create_from_source_t( x_source_create_from_st( st )^, type );
-func d obliv @* create_from_sc_t(   sc_t  sc, m tp_t* type ) = :create_from_source_t( x_source_create_from_sc( sc )^, type );
+func d obliv @* create_from_st_t(  c st_s* st, m tp_t* type ) = :create_from_source_t( x_source_create_from_st( st )^, type );
+func d obliv @* create_from_sc_t(    sc_t  sc, m tp_t* type ) = :create_from_source_t( x_source_create_from_sc( sc )^, type );
+func d obliv @* create_from_file_t( sc_t file, m tp_t* type ) = :create_from_source_t( x_source_create_from_file( file )^, type );
 func d aware @* create_from_source( m x_source* source );
 func d aware @* create_from_st( c st_s* st )  = :create_from_source( x_source_create_from_st( st )^ );
 func d aware @* create_from_sc(   sc_t  sc )  = :create_from_source( x_source_create_from_sc( sc )^ );
