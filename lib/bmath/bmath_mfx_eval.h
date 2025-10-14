@@ -80,7 +80,7 @@ stamp :s = aware bcore_inst
     bl_t thin_decomposition = true; // thin (default) vs. full decomposition (in decomposition tests where applicable)
     f3_t near_limit_f2 = 1E-3; // limit for near-assertions (f2_t)
     f3_t near_limit_f3 = 1E-6; // limit for near-assertions (f3_t)
-    f3_t eps           = 1E-6;  // for function requiring an epsilon
+    f3_t eps           = 1E-6; // for functions requiring an epsilon
 
     bl_t create_a_log = false; // log matrix a after conversion
     bl_t create_u_log = false; // log matrix u after conversion
