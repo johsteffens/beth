@@ -2,7 +2,13 @@
 
 This library represents a terminal-based user interface for beth. It can be used to capture keyboard and mouse input and do limited text formatting with a standard terminal. This can be useful for terminal-only applications, where a full fletched graphical user interface is not intended.
 
+## Prerequisites
+
+Ncurses package: `sudo apt install libncurses5-dev`
+
 ## btfe_console_s
+
+
 
 Terminal (Text-based) User Interface (text, keyboard, mouse)
 * Uses the ncurses API

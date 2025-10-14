@@ -14,7 +14,7 @@
  */
 
 /** Terminal (Text-based) User Interface (text, keyboard, mouse)
- *  - uses ncurses API
+ *  - uses ncurses API: (sudo apt install libncurses5-dev)
  *  - linker: -lncurses
  *  Detailed documentation: README.md
  */
