@@ -135,6 +135,8 @@ ASSERT( <bl_t/>( 0.1 ) == TRUE );
 // ---------------------------------------------------------------------------------------------------------------------
 /// external function
 
+ASSERT( <x_btcl_test_minimal_s/>.run() == 0 );
+
 ext_add_a   = <x_btcl_test_adder_s/>( .additive = 10 ).add_a;
 ext_add_a_b = <x_btcl_test_adder_s/>( .additive = 10 ).add_a_b;
 ASSERT( ext_add_a  ( 2    ) == 12 );
