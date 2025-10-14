@@ -33,12 +33,14 @@ stamp :s bgfe_frame
     sz_t height; // optional preferred height of label (actual size is calculated from the ext)
     st_s => widget_name;   // optional gtk widget name overrides default widget name
     st_s => tooltip;     // external tooltip (if NULL an internal tooltip is used)
+    sz_t accuracy_digits = 5; // number of digits for accuracy limitations (typically number of decimals after point when converting from float)
     bl_t show_tooltip = false;
     bl_t no_upsync;
     f3_t text_xalign = 0.5; // gradual text alignment: 0: left, 0.5: center, 1.0 right
     f3_t text_yalign = 0.5; // gradual text alignment: 0: top, 0.5: center, 1.0 bottom
 
     func bgfe_frame.set_tooltip{ o.tooltip!.copy_sc( text ); = 0; }
+    func bgfe_frame.set_accuracy_digits { o.accuracy_digits = value; = 0; }
     func bgfe_frame.set_show_tooltip{ o.show_tooltip = flag; = 0; }
     func bgfe_frame.set_width { o.width = value; = 0; }
     func bgfe_frame.set_height{ o.height = value; = 0; }
@@ -99,6 +101,8 @@ func (:s) er_t rtt_set_text( m@* o, st_s* rts_text )
 func (:s) er_t client_to_st( @* o, m st_s* st )
 {
     if( !o.client ) = 0;
+
+
     if( o.client_type == tp_t~ || o.client_type == aware_t~ || o.client_type == er_t~ )
     {
         sc_t name = bnameof( o.client.cast( tp_t* ).0 );
@@ -107,10 +111,17 @@ func (:s) er_t client_to_st( @* o, m st_s* st )
             st.copy_sc( name );
             = 0;
         }
+        else
+        {
+            bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_st_s, st.cast( m x_inst* ) );
+        }
     }
-
-
-    if( o.client_type == st_s~ )
+    else if( o.client_type == f2_t~ || o.client_type == f3_t~ )
+    {
+        f3_t val = ( o.client_type == f2_t~ ) ? o.client.cast( f2_t* ).0 : ( o.client_type == f3_t~ ) ? o.client.cast( f3_t* ).0 : 0;
+        st.copyf( st_s!^.push_fa( "%.#<sz_t>g", o.accuracy_digits ).sc, val );
+    }
+    else if( o.client_type == st_s~ )
     {
         st.copy( o.client.cast( st_s* ) );
     }
@@ -120,9 +131,8 @@ func (:s) er_t client_to_st( @* o, m st_s* st )
     }
     else
     {
-        o.client_get_glimpse( st );
+        o.client_get_glimpse( 16, st );
     }
-
 
     = 0;
 }

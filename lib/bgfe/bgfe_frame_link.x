@@ -177,7 +177,7 @@ func (:s) er_t set_text_from_client_status( m@* o, bl_t force )
 {
     m$* text = st_s!^;
 
-    if( o.show_glimpse && o.client.o ) o.client_get_glimpse( text );
+    if( o.show_glimpse && o.client.o ) o.client_get_glimpse( 16, text );
 
     if( text.size == 0 )
     {
@@ -302,7 +302,7 @@ func (:s) er_t rtt_rebuild( m@* o, vd_t unused )
         g_signal_connect( o.rtt_button_main, "clicked", G_CALLBACK( :s_rtt_button_main_signal_clicked ), o );
         g_signal_connect( o.rtt_button_main, "button-press-event",   G_CALLBACK( o.rtt_button_main_signal_button_press_event ), o );
         gtk_widget_add_events( o.rtt_button_main, GDK_BUTTON_PRESS_MASK );
-        gtk_widget_set_name( o.rtt_button_main, "bgfe_button_compact" );
+        gtk_widget_set_name( o.rtt_button_main, "bgfe_frame_link" );
         gtk_button_set_relief( GTK_BUTTON( o.rtt_button_main ), GTK_RELIEF_NORMAL );
 
         o.rtt_attach_widget( gtk_label_new( "" ), o.rtt_label );

@@ -34,7 +34,7 @@ name reject;
 /// change request to client
 feature er_t client_change_request( m@* o, m bgfe_frame* initiator, m tp_t* action_type )
 {
-    if( o.client() ) o.client().t_bgfe_change_request( o.client_type(), initiator, action_type.1 );
+    if( o.client() ) o.client().t_bgfe_change_request( o.client_type(), o.client(), o.client_type(), o.client_name(), initiator, action_type.1 );
     if( action_type.0 == escalate~ || action_type.0 == escapprove~ )
     {
         if( o.parent() )
@@ -55,7 +55,7 @@ feature er_t client_change_request( m@* o, m bgfe_frame* initiator, m tp_t* acti
 name change_confirm; // notify type
 feature er_t client_change_confirm( m@* o, m bgfe_frame* initiator, m tp_t* action_type )
 {
-    if( o.client() ) o.client().t_bgfe_change_confirm( o.client_type(), initiator, action_type.1 );
+    if( o.client() ) o.client().t_bgfe_change_confirm( o.client_type(), o.client(), o.client_type(), o.client_name(), initiator, action_type.1 );
     if( action_type.0 == escalate~ ) if( o.parent() ) o.parent().client_change_confirm( initiator, action_type.1 );
     = 0;
 }
@@ -65,7 +65,7 @@ feature er_t client_change_confirm( m@* o, m bgfe_frame* initiator, m tp_t* acti
 /// button was pressed
 feature er_t client_button_pressed( m@* o, m bgfe_frame* initiator, m tp_t* action_type )
 {
-    if( o.client() ) o.client().t_bgfe_button_pressed( o.client_type(), initiator, action_type.1 );
+    if( o.client() ) o.client().t_bgfe_button_pressed( o.client_type(), o.client(), o.client_type(), o.client_name(), initiator, action_type.1 );
     if( action_type.0 == escalate~ || action_type.0 == escapprove~ )
     {
         if( o.parent() )
@@ -85,7 +85,7 @@ feature er_t client_button_pressed( m@* o, m bgfe_frame* initiator, m tp_t* acti
 /// button was clicked
 feature er_t client_button_clicked( m@* o, m bgfe_frame* initiator, m tp_t* action_type )
 {
-    if( o.client() ) o.client().t_bgfe_button_clicked( o.client_type(), initiator, action_type.1 );
+    if( o.client() ) o.client().t_bgfe_button_clicked( o.client_type(), o.client(), o.client_type(), o.client_name(), initiator, action_type.1 );
     if( action_type.0 == escalate~ || action_type.0 == escapprove~ )
     {
         if( o.parent() )
@@ -105,7 +105,7 @@ feature er_t client_button_clicked( m@* o, m bgfe_frame* initiator, m tp_t* acti
 /// activation signal
 feature er_t client_activate( m@* o, m bgfe_frame* initiator, m tp_t* action_type )
 {
-    if( o.client() ) o.client().t_bgfe_activate( o.client_type(), initiator, action_type.1 );
+    if( o.client() ) o.client().t_bgfe_activate( o.client_type(), o.client(), o.client_type(), o.client_name(), initiator, action_type.1 );
     if( action_type.0 == escalate~ || action_type.0 == escapprove~ )
     {
         if( o.parent() )
@@ -125,7 +125,7 @@ feature er_t client_activate( m@* o, m bgfe_frame* initiator, m tp_t* action_typ
 /// widget's placement changed
 feature er_t client_placement_changed( m@* o, m bgfe_frame* initiator, bgfe_placement_s* placement, m tp_t* action_type )
 {
-    if( o.client() ) o.client().t_bgfe_placement_changed( o.client_type(), initiator, placement, action_type.1 );
+    if( o.client() ) o.client().t_bgfe_placement_changed( o.client_type(), o.client(), o.client_type(), o.client_name(), initiator, placement, action_type.1 );
     if( action_type.0 == escalate~ || action_type.0 == escapprove~ )
     {
         if( o.parent() )
@@ -145,7 +145,7 @@ feature er_t client_placement_changed( m@* o, m bgfe_frame* initiator, bgfe_plac
 /// widget's mouse status changed
 feature er_t client_mouse_changed( m@* o, m bgfe_frame* initiator, bgfe_mouse_s* mouse, tp_t modified_type, m tp_t* action_type )
 {
-    if( o.client() ) o.client().t_bgfe_mouse_changed( o.client_type(), initiator, mouse, modified_type, action_type.1 );
+    if( o.client() ) o.client().t_bgfe_mouse_changed( o.client_type(), o.client(), o.client_type(), o.client_name(), initiator, mouse, modified_type, action_type.1 );
     if( action_type.0 == escalate~ || action_type.0 == escapprove~ )
     {
         if( o.parent() )
@@ -212,7 +212,7 @@ feature er_t client_edit_frame_type_recursive( @* o, m obliv bgfe_client* conten
 /// see feature in bgfe_client
 feature er_t client_edit_frame_type( @* o, m obliv bgfe_client* content, tp_t content_type, tp_t content_name, m tp_t* action_type, m tp_t* frame_type )
 {
-    if( content ) content.t_bgfe_edit_frame_type( content_type, content, content_type, content_name, action_type, frame_type );
+    if( content && o.client() != content ) content.t_bgfe_edit_frame_type( content_type, content, content_type, content_name, action_type, frame_type );
     = o.client_edit_frame_type_recursive( content, content_type, content_name, action_type, frame_type );
 }
 
@@ -241,7 +241,7 @@ feature er_t client_edit_frame_recursive( @* o, m obliv bgfe_client* content, tp
 /// see feature in bgfe_client
 feature er_t client_edit_frame( @* o, m obliv bgfe_client* content, tp_t content_type, tp_t content_name, m tp_t* action_type, m bgfe_frame* frame )
 {
-    if( content ) content.t_bgfe_edit_frame( content_type, content, content_type, content_name, action_type, frame );
+    if( content && o.client() != content ) content.t_bgfe_edit_frame( content_type, content, content_type, content_name, action_type, frame );
     = o.client_edit_frame_recursive( content, content_type, content_name, action_type, frame );
 }
 

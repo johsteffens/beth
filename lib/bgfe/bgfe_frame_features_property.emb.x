@@ -51,6 +51,7 @@ feature er_t set_text_yalign       ( m@* o, f3_t value ) = 0; // frames with tex
 feature er_t set_title             ( m@* o, sc_t text  ) = 0; // for frames with a title property (e.g. window, frame_s, array_s)
 feature er_t set_min               ( m@* o, f3_t value ) = 0; // for value clamping (e.g. scale)
 feature er_t set_max               ( m@* o, f3_t value ) = 0; // for value clamping (e.g. scale)
+feature er_t set_accuracy_digits   ( m@* o, sz_t value ) = 0; // number of digits for accuracy limitations (typically number of decimals after point when converting from float)
 feature er_t set_step              ( m@* o, f3_t value ) = 0; // for value stepping (e.g. scale)
 feature er_t set_widget_name       ( m@* o, sc_t text  ) = 0; // optional gtk widget name overrides default widget name
 feature er_t set_spacing           ( m@* o, sz_t value ) = 0; // spacing between elements

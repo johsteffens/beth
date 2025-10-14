@@ -29,8 +29,9 @@
 stamp :s bgfe_frame
 {
     /// parameters
-    sz_t width;  // optional preset width
-    sz_t height; // optional preset height
+    // we always need a predefined size > 0 because a window will not reserve space for title, and default control buttons
+    sz_t width = 100; // optional preset width
+    sz_t height = 20; // optional preset height
     st_s => title;
     bl_t keep_above = false;  // keeps window above the nearest to-root window
     bl_t decorated = true;    // decorated: with border; close and minimize button; moveable
@@ -58,8 +59,12 @@ stamp :s bgfe_frame
     hidden bgfe_frame* parent;
 
     /// internals
-    func bgfe_frame.parent       = o.parent;
+    func bgfe_frame.parent              = o.parent;
     func bgfe_frame.set_parent o.parent = parent;
+    func bgfe_frame.client_name = o.frame ? o.frame.client_name() : 0;
+    func bgfe_frame.client_type = o.frame ? o.frame.client_type() : 0;
+    func bgfe_frame.client      = o.frame ? o.frame.client() : NULL;
+
     func bgfe_frame.h_complexity = o.frame ? o.frame.h_complexity() : 1;
     func bgfe_frame.v_complexity = o.frame ? o.frame.v_complexity() : 1;
 

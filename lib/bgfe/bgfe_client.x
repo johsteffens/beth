@@ -62,7 +62,7 @@ feature 'at' er_t bgfe_edit_frame( m@* o, m obliv bgfe_client* content, tp_t con
  *  - 'escapprove'  : 'acknowledge' with the frame passing the notification to the parent; approve in case of no parent.
  *  - 'reject'      : The client rejects the request. The frame discards the GFE-input and sets the affected control back to the client's value.
  */
-feature 'at' er_t bgfe_change_request( m@* o, m bgfe_frame* initiator, m tp_t* action_type ) { action_type.0 = escapprove~; = 0; }
+feature 'at' er_t bgfe_change_request( m@* o, m obliv bgfe_client* content, tp_t content_type, tp_t content_name, m bgfe_frame* initiator, m tp_t* action_type ) { action_type.0 = escapprove~; = 0; }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -71,7 +71,7 @@ feature 'at' er_t bgfe_change_request( m@* o, m bgfe_frame* initiator, m tp_t* a
  *  - 'acknowledge, approve' : The client acknowledges the event.
  *  - 'escalate, escapprove' : 'acknowledge' with the frame passing the notification to the parent.
  */
-feature 'at' er_t bgfe_change_confirm( m@* o, m bgfe_frame* initiator, m tp_t* action_type ) { action_type.0 = escalate~; = 0; }
+feature 'at' er_t bgfe_change_confirm( m@* o, m obliv bgfe_client* content, tp_t content_type, tp_t content_name, m bgfe_frame* initiator, m tp_t* action_type ) { action_type.0 = escalate~; = 0; }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -80,7 +80,7 @@ feature 'at' er_t bgfe_change_confirm( m@* o, m bgfe_frame* initiator, m tp_t* a
  *  - 'acknowledge, approve' : The client acknowledges the event.
  *  - 'escalate, escapprove' : 'acknowledge' with the frame passing the notification to the parent.
  */
-feature 'at' er_t bgfe_button_pressed( m@* o, m bgfe_frame* initiator, m tp_t* action_type ) { action_type.0 = escalate~; = 0; }
+feature 'at' er_t bgfe_button_pressed( m@* o, m obliv bgfe_client* content, tp_t content_type, tp_t content_name, m bgfe_frame* initiator, m tp_t* action_type ) { action_type.0 = escalate~; = 0; }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -89,7 +89,7 @@ feature 'at' er_t bgfe_button_pressed( m@* o, m bgfe_frame* initiator, m tp_t* a
  *  - 'acknowledge, approve' : The client acknowledges the event.
  *  - 'escalate, escapprove' : 'acknowledge' with the frame passing the notification to the parent.
  */
-feature 'at' er_t bgfe_button_clicked( m@* o, m bgfe_frame* initiator, m tp_t* action_type ) { action_type.0 = escalate~; = 0; }
+feature 'at' er_t bgfe_button_clicked( m@* o, m obliv bgfe_client* content, tp_t content_type, tp_t content_name, m bgfe_frame* initiator, m tp_t* action_type ) { action_type.0 = escalate~; = 0; }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -98,7 +98,7 @@ feature 'at' er_t bgfe_button_clicked( m@* o, m bgfe_frame* initiator, m tp_t* a
  *  - 'acknowledge, approve' : The client acknowledges the event.
  *  - 'escalate, escapprove' : 'acknowledge' with the frame passing the notification to the parent.
  */
-feature 'at' er_t bgfe_activate( m@* o, m bgfe_frame* initiator, m tp_t* action_type ) { action_type.0 = escalate~; = 0; }
+feature 'at' er_t bgfe_activate( m@* o, m obliv bgfe_client* content, tp_t content_type, tp_t content_name, m bgfe_frame* initiator, m tp_t* action_type ) { action_type.0 = escalate~; = 0; }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -107,7 +107,7 @@ feature 'at' er_t bgfe_activate( m@* o, m bgfe_frame* initiator, m tp_t* action_
  *  - 'acknowledge, approve' : The client acknowledges the event.
  *  - 'escalate, escapprove' : 'acknowledge' with the frame passing the notification to the parent.
  */
-feature 'at' er_t bgfe_placement_changed( m@* o, m bgfe_frame* initiator, bgfe_placement_s* placement, m tp_t* action_type ) { action_type.0 = escalate~; = 0; }
+feature 'at' er_t bgfe_placement_changed( m@* o, m obliv bgfe_client* content, tp_t content_type, tp_t content_name, m bgfe_frame* initiator, bgfe_placement_s* placement, m tp_t* action_type ) { action_type.0 = escalate~; = 0; }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -117,7 +117,7 @@ feature 'at' er_t bgfe_placement_changed( m@* o, m bgfe_frame* initiator, bgfe_p
  *  - 'acknowledge, approve' : The client acknowledges the event.
  *  - 'escalate, escapprove' : 'acknowledge' with the frame passing the notification to the parent.
  */
-feature 'at' er_t bgfe_mouse_changed( m@* o, m bgfe_frame* initiator, bgfe_mouse_s* mouse, tp_t modified_type, m tp_t* action_type ) { action_type.0 = escalate~; = 0; }
+feature 'at' er_t bgfe_mouse_changed( m@* o, m obliv bgfe_client* content, tp_t content_type, tp_t content_name, m bgfe_frame* initiator, bgfe_mouse_s* mouse, tp_t modified_type, m tp_t* action_type ) { action_type.0 = escalate~; = 0; }
 
 //----------------------------------------------------------------------------------------------------------------------
 

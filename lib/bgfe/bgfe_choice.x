@@ -36,7 +36,7 @@
  *        .push( remove_all~, "Remove All", "" )
  *        .push( reset~, "Reset", "" );
  *
- *  choice.set_client( client ); // obtional: client receives choice evenets
+ *  choice.set_client( client ); // obtional: client receives choice events
  *
  *  choice.popup_run( NULL ); // instead of NULL: pass parent frame if available
  *
@@ -128,7 +128,10 @@ stamp :item_s
             }
 
             m :client* cl = o.nearest_client();
-            if( cl ) frame.set_insensitive( !cl.choice_item_is_active( o ) );
+            if( cl )
+            {
+                frame.set_insensitive( !cl.choice_item_is_active( o ) );
+            }
             action_type.0 = approve~;
         }
         action_type.0 = approve~;

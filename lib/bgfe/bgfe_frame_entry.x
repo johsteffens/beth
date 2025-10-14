@@ -30,6 +30,7 @@ stamp :s bgfe_frame
     bl_t insensitive; // insensitive: does not react to user actions
     f3_t => min; // optional minimum value; only for numeric clients
     f3_t => max; // optional maximum value; only for numeric clients
+    sz_t accuracy_digits = 5; // number of digits for accuracy limitations (typically number of decimals after point when converting from float)
     st_s => text;   // editable text
     st_s => widget_name;   // optional gtk widget name overrides default widget name
     st_s => tooltip;     // external tooltip (if NULL an internal tooltip is used)
@@ -41,6 +42,7 @@ stamp :s bgfe_frame
     func bgfe_frame.set_insensitive { o.insensitive = flag; = 0; }
     func bgfe_frame.set_min { o.min!.0 = value; = 0; }
     func bgfe_frame.set_max { o.max!.0 = value; = 0; }
+    func bgfe_frame.set_accuracy_digits { o.accuracy_digits = value; = 0; }
     func bgfe_frame.set_text  { o.text!.copy_sc( text ); = 0; }
     func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
     func bgfe_frame.set_tooltip{ o.tooltip!.copy_sc( text ); = 0; }
@@ -154,6 +156,11 @@ func (:s) er_t client_to_st( @* o, m st_s* st )
         {
             bgfe_client_t_bgfe_copy_to_typed( o.client, o.client_type, o.client_type, TYPEOF_st_s, st.cast( m x_inst* ) );
         }
+    }
+    else if( o.client_type == f2_t~ || o.client_type == f3_t~ )
+    {
+        f3_t val = ( o.client_type == f2_t~ ) ? o.client.cast( f2_t* ).0 : ( o.client_type == f3_t~ ) ? o.client.cast( f3_t* ).0 : 0;
+        st.copyf( st_s!^.push_fa( "%.#<sz_t>g", o.accuracy_digits ).sc, val );
     }
     else
     {

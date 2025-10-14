@@ -90,14 +90,19 @@ feature er_t add_content_t( m@* o, m obliv bgfe_client* content, tp_t content_ty
  *  Unlike add_content above, the added content object may be NULL, which means that opening the
  *  content window will create the content object at the same time.
  */
-feature er_t add_linked_content( m@* o, tp_t content_name ) = 0;
+feature er_t add_linked_content   ( m@* o, tp_t content_name ) = 0;
+feature er_t add_linked_content_sc( m@* o, sc_t content_name ) = o.add_linked_content( bentypeof( content_name ) );
 
 /** Adds a frame to the content list.
  *  The client of that frame and the client of o need not be related or even exist.
  *  No effect if frame does not support content.
  *  This function forks the frame reference.
  */
-feature er_t add_frame( m@* o, m bgfe_frame* frame ) = 0;
+feature er_t add_frame( m@* o, m bgfe_frame* frame )
+{
+    WRN_fa( "Cannot add a frame to #name\n", o._ );
+    = 0;
+}
 
 /** Adds a new bgfe_frame_s to the content list and returns its reference.
  *  The client of that frame and the client of o need not be related or even exist.
@@ -105,20 +110,62 @@ feature er_t add_frame( m@* o, m bgfe_frame* frame ) = 0;
 feature m bgfe_frame_s* add_sub_frame( m@* o )
 {
     m$* frame = bgfe_frame_s!^;
-
-    o.add_frame( frame ); // frame stays alive by adding it
     frame.set_client_t( o.client(), o.client_type(), 0 );
+    o.add_frame( frame ); // frame stays alive by adding it
     = frame;
 }
 
 /// Adds a label frame with text
-feature er_t add_label( m@* o, sc_t text, sz_t label_width )
+func er_t add_label( m@* o, sc_t text, sz_t label_width )
 {
     m$* label = bgfe_frame_label_s!^;
     label.set_width( label_width );
     label.set_text_xalign( 0 );
     label.text!.copy_sc( text );
      = o.add_frame( label );
+}
+
+/** Adding content with preceding label:
+ *  This function adds a label and content in a horizontally aligned sub-frame.
+ */
+func er_t add_label_content( m@* o, sc_t text, sz_t label_width, m aware bgfe_client* content, tp_t content_name )
+{
+    if( !content ) = 0;
+    = o.add_label_content_t( text, label_width, content, content._, content_name );
+}
+
+func er_t add_label_content_t( m@* o, sc_t text, sz_t label_width, m obliv bgfe_client* content, tp_t content_type, tp_t content_name )
+{
+    m$* f = o.add_sub_frame();
+    f.set_show_border( false );
+    f.set_stretch( false );
+    f.set_center( false );
+    f.set_arrange( horizontal~ );
+    f.add_label( text, label_width );
+    f.add_content_t( content, content_type, content_name );
+    = 0;
+}
+
+/** Adding content with pre- and post-label:
+ *  This function adds a label and content in a horizontally aligned sub-frame.
+ */
+func er_t add_label_content_label( m@* o, sc_t pre_text, sz_t pre_label_width, m aware bgfe_client* content, tp_t content_name, sc_t post_text, sz_t post_label_width )
+{
+    if( !content ) = 0;
+    = o.add_label_content_t_label( pre_text, pre_label_width, content, content._, content_name, post_text, post_label_width );
+}
+
+func er_t add_label_content_t_label( m@* o, sc_t pre_text, sz_t pre_label_width, m obliv bgfe_client* content, tp_t content_type, tp_t content_name, sc_t post_text, sz_t post_label_width )
+{
+    m$* f = o.add_sub_frame();
+    f.set_show_border( false );
+    f.set_stretch( false );
+    f.set_center( false );
+    f.set_arrange( horizontal~ );
+    f.add_label( pre_text, pre_label_width );
+    f.add_content_t( content, content_type, content_name );
+    f.add_label( post_text, post_label_width );
+    = 0;
 }
 
 /** Vertical and horizontal complexity.
@@ -154,30 +201,27 @@ feature er_t open_window_request( m@* o, m tp_t* action_type ) { action_type.0 =
  */
 feature er_t close_window_request( m@* o ) = 0;
 
-feature er_t client_get_glimpse( @* o, m st_s* glimpse )
+feature er_t client_get_glimpse( @* o, sz_t max_chars, m st_s* glimpse )
 {
     if( !o.client() ) = 0;
     glimpse.clear();
     if( o.client_type() == st_s~ )
     {
         st_s* src = o.client().cast( st_s* );
-        if( src.size <= 16 )
+        if( src.size <= max_chars )
         {
             glimpse.copy( src );
         }
         else
         {
-            glimpse.push_fa( "... #<sc_t>", src.crop( src.size - 12, -1 )^.sc );
+            glimpse.push_fa( "... #<sc_t>", src.crop( src.size - max_chars + 4, -1 )^.sc );
         }
     }
     else if( bgfe_client_t_defines_bgfe_get_glimpse( o.client_type() ) )
     {
         o.client().t_bgfe_get_glimpse( o.client_type(), glimpse );
     }
-//    else
-//    {
-//        bgfe_client_t_bgfe_copy_to_typed( o.client(), o.client_type(), o.client_type(), TYPEOF_st_s, glimpse.cast( m x_inst* ) );
-//    }
+
     = 0;
 }
 

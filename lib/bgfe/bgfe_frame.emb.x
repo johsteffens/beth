@@ -135,7 +135,7 @@ func (:s) er_t rtt_open( m@* o, vd_t unused )
     m$* box_name = st_s!^;
     box_name.push_sc( o.widget_name ? o.widget_name.sc : "bgfe_frame" );
 
-    if( o.show_border ) box_name.push_fa( "_border_style#<sz_t>", ( sz_t )( o.nesting_level % 5 ) );
+    if( o.show_border ) box_name.push_fa( "_border_style#<sz_t>", ( sz_t )( o.nesting_level % 4 ) );
 
     gtk_widget_set_name( o.rtt_main_box, box_name.sc );
     gtk_widget_set_size_request( o.rtt_main_box, o.width, o.height );
@@ -430,7 +430,13 @@ func (:s) add_content_t
 
 func (:s) add_linked_content
 {
-    if( !o.client ) = 0;
+    if( !o.client )
+    {
+        WRN_fa( "No client defined. Call set_client first.\n" );
+        = 0;
+    }
+
+    if( !x_stamp_t_exists( o.client_type, content_name ) ) = GERR_fa( "'#name' is not a member of '#name'\n", content_name, o.client_type );
 
     m$* frame_link = :link_s!^;
     frame_link.set_nesting_level( o.nesting_level + o.show_border );
