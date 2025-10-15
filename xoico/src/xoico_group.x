@@ -176,6 +176,11 @@ stamp :s = aware :
         return o.get_trait_group().get_traitline_member_func_from_name( name );
     };
 
+    func :.get_target
+    {
+        return o.xoico_source.target;
+    };
+
     func :.get_feature
     {
         c xoico_feature_s** p_feature = ( const xoico_feature_s** )o.hmap_feature.get( name );
@@ -747,8 +752,6 @@ func (:s) :.parse
         }
         else if( source.parse_bl( " #?w'embed' " ) )
         {
-            m st_s* folder = bcore_file_folder_path( source.get_file() )^;
-            if( folder.size == 0 ) folder.push_char( '.' );
             m st_s* embed_file = st_s!^;
             source.parse_fa( " #string" , embed_file );
             source.parse_fa( " ;" );
@@ -764,6 +767,13 @@ func (:s) :.parse
                 {
                     return source.parse_error_fa( "Xoico: Cyclic inclusion." );
                 }
+            }
+
+            // check for registration in target
+            c xoico_target_s* target = o.get_target();
+            if( target.embedded_sources.find( 0, -1, embed_file ) == target.embedded_sources.size )
+            {
+                return source.parse_error_fa( "Xoico: #<sc_t> is not registered in the target definition: Add this file-path to array 'embedded_sources'.", embed_file.sc );
             }
 
             stack.push_d( embed_source );

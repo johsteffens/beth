@@ -2781,6 +2781,30 @@ bcore_arr_st_s* bcore_arr_st_s_reorder( bcore_arr_st_s* o, const bcore_arr_uz_s*
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+uz_t bcore_arr_st_s_find( const bcore_arr_st_s* o, uz_t start, uz_t end, const st_s* v )
+{
+    if( end >= start )
+    {
+        uz_t end_l = end < o->size ? end : o->size;
+        for( uz_t j = start; j < end_l; j++ )
+        {
+            if( st_s_equal( o->data[ j ], v ) ) return j;
+        }
+        return end_l;
+    }
+    else
+    {
+        uz_t start_l = start < o->size ? start : o->size;
+        for( uz_t j = start_l - 1;  j < start_l && j >= end; j-- )
+        {
+            if( st_s_equal( o->data[ j ], v ) ) return j;
+        }
+        return start_l;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 uz_t bcore_arr_st_s_count_equal( const bcore_arr_st_s* o, const st_s* val )
 {
     uz_t count = 0;

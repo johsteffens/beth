@@ -52,6 +52,13 @@ stamp :target_s = aware :
     bcore_arr_st_s dependencies; // dependent target definitions
     bcore_arr_st_s sources;      // array of source files
 
+    /** Array of source files referenced from other source files
+     *  via directive 'embed'
+     *  This list is included in computing the timestamp for all dependencies.
+     *  See max_last_modification_time
+     */
+    bcore_arr_st_s embedded_sources;
+
     /** Function name of principal signal handler for this target
      *  If not defined, it is assumed that the name is <name>_general_signal_handler
      */
@@ -80,6 +87,9 @@ stamp :target_s = aware :
     hidden  st_s                   full_path_;
     hidden  sz_t                   target_index_ = -1; // Index for target on the compiler; -1 if this target has no representation
     hidden  bcore_hmap_tpvd_s   => hmap_built_target_; // map of targets that have already been built
+
+    /// maximum of the last modification time of all sources of this target and all dependencies
+    hidden  u3_t max_last_modification_time;
 
     func bcore_via_call.source
     {
@@ -196,7 +206,7 @@ stamp :main_s = aware :
 
 func (:target_s) :.load
 {
-    m st_s* st_path = st_s!^^;
+    m st_s* st_path = st_s!^;
     st_path.copy_sc( path );
 
     if( st_path->sc[ 0 ] != '/' )
@@ -206,9 +216,11 @@ func (:target_s) :.load
         st_path = st_s_create_fa( "#<sc_t>/#<sc_t>", current_folder.sc, st_path.sc )^^;
     }
 
-    st_path = bcore_file_path_minimized( st_path.sc )^^;
+    st_path = bcore_file_path_minimized( st_path.sc )^;
 
     o.cast( m x_btcl* ).from_file( st_path.sc );
+    o.max_last_modification_time = u3_max( o.max_last_modification_time, bcore_file_last_modification_time_us( st_path.sc ) );
+
     o->full_path_.copy( st_path );
     if( readonly ) o.readonly = true;
 
@@ -272,6 +284,16 @@ func (:target_s) :.load
 
 //----------------------------------------------------------------------------------------------------------------------
 
+stamp :parse_param_s
+{
+    $ st_s file_path;
+    $ st_s group_name;
+    $ st_s trait_name;
+    $ tp_t embed_method;
+}
+
+stamp :parse_param_arr_s x_array { :parse_param_s => []; }
+
 func (:target_s) :.build
 {
     if( !o.root_    ) o.root_    = ( o.parent_ ) ? o.parent_.root_    : o;
@@ -287,7 +309,11 @@ func (:target_s) :.build
 
     tp_t tp_target_name = bentypeof( o.name.sc );
 
-    foreach( m $* e in o.dependencies_target_ ) e.build();
+    foreach( m $* e in o.dependencies_target_ )
+    {
+        e.build();
+        o.max_last_modification_time = u3_max( o.max_last_modification_time, e.max_last_modification_time );
+    }
 
     if( o.root_.hmap_built_target_.exists( tp_target_name ) )
     {
@@ -303,6 +329,8 @@ func (:target_s) :.build
     bcore_msg_fa( "XOICO: compiling #<sc_t>\n", o.full_path_.sc );
     if( o.beta_level > 0 ) bcore_wrn_fa( "WARNING! XOICO: Builder runs at beta-level #<sz_t>. Turn level back to zero when beta testing is finished.\n", o.beta_level );
     o.compiler.beta_level = o.beta_level;
+
+    m$* parse_param_arr = :parse_param_arr_s!^;
 
     foreach( $* e in o.sources )
     {
@@ -384,7 +412,7 @@ func (:target_s) :.build
         ASSERT( o.extension );
         sz_t index = -1;
 
-        o.compiler.parse( o.name.sc, o.extension.sc, o.root_output_folder(), file_path.sc, group_name.sc, trait_name.sc, embed_method, index.1 );
+        o.compiler.update_target( o.name.sc, o.extension.sc, o.root_output_folder(), file_path.sc, group_name.sc, trait_name.sc, embed_method, index.1 );
 
         if( o.target_index_ == -1 ) o.target_index_ = index;
         if( index != o.target_index_ )
@@ -399,6 +427,12 @@ func (:target_s) :.build
                 o.name.sc
             );
         }
+
+
+        if( !bcore_file_exists( file_path.sc ) ) return bcore_error_push_fa( general_error~, "Could not find source file '#<sc_t>'.", file_path.sc );
+        o.max_last_modification_time = u3_max( o.max_last_modification_time, bcore_file_last_modification_time_us( file_path.sc ) );
+
+        parse_param_arr.push_d( :parse_param_s!( file_path, group_name, trait_name, embed_method ) );
     }
 
     if( o.target_index_ >= 0 )
@@ -418,7 +452,22 @@ func (:target_s) :.build
         target.cengine =< o.cengine.fork();
         target.pre_hash = o.get_hash();
         target.copyright_and_license_terms =< o.copyright_and_license_terms.fork();
+        target.embedded_sources.copy( o.embedded_sources );
+
+        foreach( $* e in parse_param_arr )
+        {
+            target.parse_from_path( e.file_path.sc, e.group_name.sc, e.trait_name.sc, e.embed_method );
+        }
     }
+
+    /** TODO:
+     *  - include timestamps of all files in embed_sources in max_last_modification_time
+     *  - check max_last_modification_time to a target specific timestamp that gets updated with each parsing.
+     *  - the reference timestamp could be the *.state file, which is touched on parsing.
+     *  - skip parsing if max_last_modification_time is smaller (not equal) than that timestamp.
+     */
+
+    //bcore_msg_fa( "#<sc_t> max_last_modification_time: #<u3_t>\n", o.name.sc, o.max_last_modification_time );
 
     return 0;
 };

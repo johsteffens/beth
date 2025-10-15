@@ -1,4 +1,4 @@
-//  Last update: 2025-07-14T14:19:47Z (UTC)
+//  Last update: 2025-10-15T19:31:28Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -906,6 +906,7 @@
   const xoico_feature_s* xoico_group_s_get_traitline_feature_from_name( const xoico_group_s* o, tp_t name ); \
   const xoico_func_s* xoico_group_s_get_traitline_func_from_name( const xoico_group_s* o, tp_t name ); \
   const xoico_func_s* xoico_group_s_get_traitline_member_func_from_name( const xoico_group_s* o, tp_t name ); \
+  xoico_target_s* xoico_group_s_get_target( const xoico_group_s* o ); \
   const xoico_feature_s* xoico_group_s_get_feature( const xoico_group_s* o, tp_t name ); \
   const xoico_func_s* xoico_group_s_get_func( const xoico_group_s* o, tp_t name ); \
   static inline void xoico_group_s_explicit_embeddings_push( const xoico_group_s* o, bcore_arr_st_s* arr ); \
@@ -1185,6 +1186,7 @@
       st_s* target_state; \
       tp_t body_signature_h; \
       tp_t body_signature_c; \
+      bcore_arr_st_s embedded_sources; \
       tp_t pre_hash; \
       xoico_cengine* cengine; \
       xoico_compiler_s* compiler; \
@@ -1310,7 +1312,7 @@
   er_t xoico_compiler_s_register_item( xoico_compiler_s* o, const xoico* item ); \
   er_t xoico_compiler_s_register_func( xoico_compiler_s* o, const xoico_func_s* func ); \
   er_t xoico_compiler_s_check_overwrite( const xoico_compiler_s* o, sc_t file, tp_t body_signature, bl_t* clear_to_overwrite ); \
-  er_t xoico_compiler_s_parse( xoico_compiler_s* o, sc_t target_name, sc_t target_ext, const st_s* target_output_folder, sc_t source_path, sc_t group_name, sc_t trait_name, tp_t embed_method, sz_t* p_target_index ); \
+  er_t xoico_compiler_s_update_target( xoico_compiler_s* o, sc_t target_name, sc_t target_ext, const st_s* target_output_folder, sc_t source_path, sc_t group_name, sc_t trait_name, tp_t embed_method, sz_t* p_target_index ); \
   er_t xoico_compiler_s_finalize( xoico_compiler_s* o, const xoico_host* host ); \
   er_t xoico_compiler_s_expand_setup( xoico_compiler_s* o, const xoico_host* host ); \
   bl_t xoico_compiler_s_to_be_modified( const xoico_compiler_s* o ); \
@@ -1971,6 +1973,7 @@
       st_s* copyright_and_license_terms; \
       bcore_arr_st_s dependencies; \
       bcore_arr_st_s sources; \
+      bcore_arr_st_s embedded_sources; \
       st_s* signal_handler; \
       bl_t define_signal_handler; \
       xoico_cengine* cengine; \
@@ -1982,6 +1985,7 @@
       st_s full_path_; \
       sz_t target_index_; \
       bcore_hmap_tpvd_s* hmap_built_target_; \
+      u3_t max_last_modification_time; \
   }; \
   const st_s* xoico_builder_target_s_root_output_folder( const xoico_builder_target_s* o ); \
   void xoico_builder_target_s_source( xoico_builder_target_s* o, bcore_source* source ); \
@@ -2009,11 +2013,31 @@
   er_t xoico_builder_main_s_build_from_file( xoico_builder_main_s* o, sc_t path ); \
   er_t xoico_builder_main_s_update( const xoico_builder_main_s* o ); \
   static inline bl_t xoico_builder_main_s_update_required( const xoico_builder_main_s* o ){ return  xoico_compiler_s_update_required(o->compiler);}
+#define TYPEOF_xoico_builder_parse_param_s 0xA51A5B5FEE6E41D9ull
+#define BETH_EXPAND_ITEM_xoico_builder_parse_param_s \
+  BCORE_DECLARE_OBJECT( xoico_builder_parse_param_s ) \
+  { \
+      aware_t _; \
+      st_s file_path; \
+      st_s group_name; \
+      st_s trait_name; \
+      tp_t embed_method; \
+  }; \
+  xoico_builder_parse_param_s* xoico_builder_parse_param_s__( xoico_builder_parse_param_s* o, const st_s* file_path, const st_s* group_name, const st_s* trait_name, tp_t embed_method );
+#define TYPEOF_xoico_builder_parse_param_arr_s 0xA0D56EFCC76C37A5ull
+#define BETH_EXPAND_ITEM_xoico_builder_parse_param_arr_s \
+  BCORE_DECLARE_OBJECT( xoico_builder_parse_param_arr_s ) \
+  { \
+      aware_t _; \
+      BCORE_ARRAY_DYN_LINK_STATIC_S( xoico_builder_parse_param_s, ); \
+  };
 #define BETH_EXPAND_GROUP_xoico_builder \
   BCORE_FORWARD_OBJECT( xoico_builder ); \
   BCORE_FORWARD_OBJECT( xoico_builder_arr_target_s ); \
   BCORE_FORWARD_OBJECT( xoico_builder_target_s ); \
   BCORE_FORWARD_OBJECT( xoico_builder_main_s ); \
+  BCORE_FORWARD_OBJECT( xoico_builder_parse_param_s ); \
+  BCORE_FORWARD_OBJECT( xoico_builder_parse_param_arr_s ); \
   XOILA_DECLARE_SPECT( xoico_builder ) \
   { \
       bcore_spect_header_s header; \
@@ -2021,7 +2045,9 @@
   BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( xoico_builder ) \
   BETH_EXPAND_ITEM_xoico_builder_arr_target_s \
   BETH_EXPAND_ITEM_xoico_builder_target_s \
-  BETH_EXPAND_ITEM_xoico_builder_main_s
+  BETH_EXPAND_ITEM_xoico_builder_main_s \
+  BETH_EXPAND_ITEM_xoico_builder_parse_param_s \
+  BETH_EXPAND_ITEM_xoico_builder_parse_param_arr_s
 
 /**********************************************************************************************************************/
 // source: xoico_main.x
@@ -2075,5 +2101,5 @@ BETH_EXPAND_GROUP_xoico_builder
 BETH_EXPAND_GROUP_xoico_main
 
 #endif // __xoico_xo_H
-// XOICO_BODY_SIGNATURE 0x86EE60DEA1E4CD69
-// XOICO_FILE_SIGNATURE 0x401D85EA9046363D
+// XOICO_BODY_SIGNATURE 0xD320125486BF25C3
+// XOICO_FILE_SIGNATURE 0x4A3D673D190FCFF4

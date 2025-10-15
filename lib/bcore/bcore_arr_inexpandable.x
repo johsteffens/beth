@@ -13,6 +13,16 @@
  *  limitations under the License.
  */
 
+/** Search (functions 'find'):
+ *  Search involving positions between start to end in direction start --> end
+ *  Detects first position nearest to start.
+ *  'start' may be larger then 'end' in which case the search direction is backwards.
+ *  The search range is [start, end-1] when start < end and [end, start-1] otherwise.
+ *  if not found, the function returns the larger of (start, end) but maximally o->size.
+ */
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -37,7 +47,7 @@ group :uz = :
     signature void push       ( m @* o, uz_t v );
     signature o    push_left  ( m @* o, uz_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature uz_t pop        ( m @* o );
-    signature uz_t find       ( c @* o,   uz_t start, uz_t end, uz_t v ); // behaves like st_s_find_*
+    signature uz_t find       ( c @* o,   uz_t start, uz_t end, uz_t v ); // See comment "Search (functions 'find')" above
     signature uz_t max        ( c @* o );
     signature uz_t min        ( c @* o );
     signature uz_t idx_max    ( c @* o );
@@ -77,7 +87,7 @@ group :sz = :
     signature void push       ( m @* o, sz_t v );
     signature o    push_left  ( m @* o, sz_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature sz_t pop        ( m @* o );
-    signature uz_t find       ( c @* o,   uz_t start, uz_t end, sz_t v ); // behaves like st_s_find_*
+    signature uz_t find       ( c @* o,   uz_t start, uz_t end, sz_t v ); // See comment "Search (functions 'find')" above
     signature sz_t max        ( c @* o );
     signature sz_t min        ( c @* o );
     signature uz_t idx_max    ( c @* o );
@@ -178,7 +188,7 @@ group :s0 = :
     signature o    push_left  ( m @* o, s0_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature s0_t pop        ( m @* o );
     signature uz_t count_equal( c @* o, s0_t val ); // number of occurrence
-    signature uz_t find       ( c @* o, uz_t start, uz_t end, s0_t v ); // behaves like st_s_find_*
+    signature uz_t find       ( c @* o, uz_t start, uz_t end, s0_t v ); // See comment "Search (functions 'find')" above
     signature s0_t max        ( c @* o );
     signature s0_t min        ( c @* o );
     signature uz_t idx_max    ( c @* o );
@@ -218,7 +228,7 @@ group :s3 = :
     signature o    push_left  ( m @* o, s3_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature s3_t pop        ( m @* o );
     signature uz_t count_equal( c @* o, s3_t val ); // number of occurrence
-    signature uz_t find       ( c @* o, uz_t start, uz_t end, s3_t v ); // behaves like st_s_find_*
+    signature uz_t find       ( c @* o, uz_t start, uz_t end, s3_t v ); // See comment "Search (functions 'find')" above
     signature s3_t max        ( c @* o );
     signature s3_t min        ( c @* o );
     signature uz_t idx_max    ( c @* o );
@@ -258,7 +268,7 @@ group :f3 = :
     signature o    push_left  ( m @* o, f3_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature f3_t pop        ( m @* o );
     signature uz_t count_equal( c @* o, f3_t val ); // number of occurrence
-    signature uz_t find       ( c @* o,   uz_t start, uz_t end, f3_t v ); // behaves like st_s_find_*
+    signature uz_t find       ( c @* o,   uz_t start, uz_t end, f3_t v ); // See comment "Search (functions 'find')" above
     signature f3_t max        ( c @* o );
     signature f3_t min        ( c @* o );
     signature uz_t idx_max    ( c @* o );
@@ -297,7 +307,7 @@ group :tp = :
     signature void push       ( m @* o, tp_t v );
     signature o    push_left  ( m @* o, tp_t v ); // extends array by one; moves all elements up one index and copies v to position 0
     signature tp_t pop        ( m @* o );
-    signature uz_t find       ( c @* o, uz_t start, uz_t end, tp_t v ); // behaves like st_s_find_*
+    signature uz_t find       ( c @* o, uz_t start, uz_t end, tp_t v ); // See comment "Search (functions 'find')" above
     signature bl_t exists     ( c @* o, tp_t v );
     signature uz_t count_equal( c @* o, tp_t val ); // number of occurrence
 
@@ -358,6 +368,7 @@ group :st = :
     signature m st_s* push_fv  ( m @* o, sc_t format, va_list args );
     signature m st_s* push_fa  ( m @* o, sc_t format, ... );
     signature void pop        ( m @* o );
+    signature uz_t find       ( c @* o, uz_t start, uz_t end, c st_s* v ); // See comment "Search (functions 'find')" above
     signature uz_t count_equal( c @* o, c st_s* val ); // number of occurrence
 
     /** Outputs to sink the arrays content in the format of a table.
@@ -392,6 +403,7 @@ group :st = :
         func  : .push_fv;
         func  : .push_fa;
         func  : .pop;
+        func  : .find;
         func  : .count_equal;
         func  : .table_to_sink;
     };
@@ -404,7 +416,7 @@ group :vd = :
     signature o    fill       ( m @* o, uz_t size, vd_t v ); // creates filled array of size <size>
     signature void push       ( m @* o, vd_t v );
     signature vd_t pop        ( m @* o );
-    signature uz_t find       ( c @* o, uz_t start, uz_t end, vd_t v ); // behaves like st_s_find_*
+    signature uz_t find       ( c @* o, uz_t start, uz_t end, vd_t v ); // See comment "Search (functions 'find')" above
     signature uz_t count_equal( c @* o, vd_t val ); // number of occurrence
 
     stamp :s = aware x_inst
@@ -429,7 +441,7 @@ group :fp = :
     signature o    fill       ( m @* o, uz_t size, fp_t v ); // creates filled array of size <size>
     signature void push       ( m @* o, fp_t v );
     signature fp_t pop        ( m @* o );
-    signature uz_t find       ( c @* o, uz_t start, uz_t end, fp_t v ); // behaves like st_s_find_*
+    signature uz_t find       ( c @* o, uz_t start, uz_t end, fp_t v ); // See comment "Search (functions 'find')" above
     signature uz_t count_equal( c @* o, fp_t val ); // number of occurrence
 
     stamp :s = aware x_inst

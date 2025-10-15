@@ -93,7 +93,7 @@ func er_t embed_file_open( m x_source* parent, sc_t file_name, m x_source** incl
     m st_s* folder = bcore_file_folder_path( parent.get_file() )^^;
     if( folder.size == 0 ) folder.push_char( '.' );
 
-    m st_s* path = st_s!^^;
+    m st_s* path = st_s!^;
     if( file_name[ 0 ] == '/' )
     {
         path.copy_sc( file_name );

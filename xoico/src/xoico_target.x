@@ -61,6 +61,13 @@ stamp :s = aware :
     tp_t body_signature_h; // body signature for output file
     tp_t body_signature_c; // body signature for output file
 
+    /** Array of source files referenced from other source files
+     *  via directive 'embed'
+     *  This list is included in computing the timestamp for all dependencies.
+     *  See max_last_modification_time
+     */
+    bcore_arr_st_s embedded_sources;
+
     tp_t pre_hash;
 
     /// Optional cengine that is to be used in all bodies of this target
@@ -116,8 +123,10 @@ stamp :s = aware :
 
 //----------------------------------------------------------------------------------------------------------------------
 
+//    signature er_t parse_from_path( m @* o, sc_t source_path, sc_t group_name /* can be NULL */, sc_t trait_name /* can be NULL */, tp_t embed_method );
 func (:s) :.parse_from_path
 {
+
     bl_t source_exists = false;
 
     foreach( m $* e in o )

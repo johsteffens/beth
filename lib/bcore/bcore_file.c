@@ -202,7 +202,7 @@ u3_t bcore_file_last_modification_time_us( sc_t name )
     u3_t us = ( u3_t )file_stat.st_mtime * 1000000;
 
     // ns-granularity according to some standards but not globally supported
-    //u3_t us = ( u3_t )file_stat.st_mtime.tv_nsec / 1000;
+    //u3_t us = ( u3_t )file_stat.st_mtim.tv_nsec / 1000;
     //u3_t us = ( u3_t )file_stat.st_mtimensec / 1000;
 
     return us;

@@ -38,6 +38,15 @@
  *     -1 when b front-matches o,
  *     +2 when at lowest not-matching position i: b[i] > o[i]
  *     -2 when at lowest not-matching position i: b[i] < o[i]
+ *
+ *
+ *  Search (functions 'find'):
+ *  Search involving positions between start to end in direction start --> end
+ *  Detects first position nearest to start.
+ *  'start' may be larger then 'end' in which case the search direction is backwards.
+ *  The search range is [start, end-1] when start < end and [end, start-1] otherwise.
+ *  if not found, the function returns the larger of (start, end) but maximally o->size.
+ *
  */
 
 /**********************************************************************************************************************/
@@ -63,7 +72,7 @@ s2_t            bcore_arr_uz_s_cmp( const bcore_arr_uz_s* o, const bcore_arr_uz_
 bcore_arr_uz_s* bcore_arr_uz_s_sort(      bcore_arr_uz_s* o, s2_t order ); // stable
 bcore_arr_uz_s* bcore_arr_uz_s_reorder(   bcore_arr_uz_s* o, const bcore_arr_uz_s* order );
 
-uz_t bcore_arr_uz_s_find( const bcore_arr_uz_s* o, uz_t start, uz_t end, uz_t v ); // behaves like st_s_find_*
+uz_t bcore_arr_uz_s_find( const bcore_arr_uz_s* o, uz_t start, uz_t end, uz_t v ); // See comment "Search (functions 'find')" above
 uz_t bcore_arr_uz_s_max(     const bcore_arr_uz_s* o );
 uz_t bcore_arr_uz_s_min(     const bcore_arr_uz_s* o );
 uz_t bcore_arr_uz_s_idx_max( const bcore_arr_uz_s* o );
@@ -96,7 +105,7 @@ s2_t            bcore_arr_sz_s_cmp( const bcore_arr_sz_s* o, const bcore_arr_sz_
 bcore_arr_sz_s* bcore_arr_sz_s_sort(      bcore_arr_sz_s* o, s2_t order ); // stable
 bcore_arr_sz_s* bcore_arr_sz_s_reorder(   bcore_arr_sz_s* o, const bcore_arr_uz_s* order );
 
-uz_t bcore_arr_sz_s_find(    const bcore_arr_sz_s* o, uz_t start, uz_t end, sz_t v ); // behaves like st_s_find_*
+uz_t bcore_arr_sz_s_find(    const bcore_arr_sz_s* o, uz_t start, uz_t end, sz_t v ); // See comment "Search (functions 'find')" above
 sz_t bcore_arr_sz_s_max(     const bcore_arr_sz_s* o );
 sz_t bcore_arr_sz_s_min(     const bcore_arr_sz_s* o );
 uz_t bcore_arr_sz_s_idx_max( const bcore_arr_sz_s* o );
@@ -175,7 +184,7 @@ bcore_arr_s0_s* bcore_arr_s0_s_sort(      bcore_arr_s0_s* o, s2_t order ); // st
 bcore_arr_s0_s* bcore_arr_s0_s_reorder(   bcore_arr_s0_s* o, const bcore_arr_uz_s* order );
 uz_t            bcore_arr_s0_s_count_equal( const bcore_arr_s0_s* o, s0_t val ); // number of occurrence
 
-uz_t            bcore_arr_s0_s_find(    const bcore_arr_s0_s* o, uz_t start, uz_t end, s0_t v ); // behaves like st_s_find_*
+uz_t            bcore_arr_s0_s_find(    const bcore_arr_s0_s* o, uz_t start, uz_t end, s0_t v ); // See comment "Search (functions 'find')" above
 s0_t            bcore_arr_s0_s_max(     const bcore_arr_s0_s* o );
 s0_t            bcore_arr_s0_s_min(     const bcore_arr_s0_s* o );
 uz_t            bcore_arr_s0_s_idx_max( const bcore_arr_s0_s* o );
@@ -205,7 +214,7 @@ bcore_arr_s3_s* bcore_arr_s3_s_sort(      bcore_arr_s3_s* o, s2_t order ); // st
 bcore_arr_s3_s* bcore_arr_s3_s_reorder(   bcore_arr_s3_s* o, const bcore_arr_uz_s* order );
 uz_t            bcore_arr_s3_s_count_equal( const bcore_arr_s3_s* o, s3_t val ); // number of occurrence
 
-uz_t            bcore_arr_s3_s_find(    const bcore_arr_s3_s* o, uz_t start, uz_t end, s3_t v ); // behaves like st_s_find_*
+uz_t            bcore_arr_s3_s_find(    const bcore_arr_s3_s* o, uz_t start, uz_t end, s3_t v ); // See comment "Search (functions 'find')" above
 s3_t            bcore_arr_s3_s_max(     const bcore_arr_s3_s* o );
 s3_t            bcore_arr_s3_s_min(     const bcore_arr_s3_s* o );
 uz_t            bcore_arr_s3_s_idx_max( const bcore_arr_s3_s* o );
@@ -235,7 +244,7 @@ bcore_arr_f3_s* bcore_arr_f3_s_sort(      bcore_arr_f3_s* o, s2_t order ); // st
 bcore_arr_f3_s* bcore_arr_f3_s_reorder(   bcore_arr_f3_s* o, const bcore_arr_uz_s* order );
 uz_t            bcore_arr_f3_s_count_equal( const bcore_arr_f3_s* o, f3_t val ); // number of occurrence
 
-uz_t            bcore_arr_f3_s_find(    const bcore_arr_f3_s* o, uz_t start, uz_t end, f3_t v ); // behaves like st_s_find_*
+uz_t            bcore_arr_f3_s_find(    const bcore_arr_f3_s* o, uz_t start, uz_t end, f3_t v ); // See comment "Search (functions 'find')" above
 f3_t            bcore_arr_f3_s_max(     const bcore_arr_f3_s* o );
 f3_t            bcore_arr_f3_s_min(     const bcore_arr_f3_s* o );
 uz_t            bcore_arr_f3_s_idx_max( const bcore_arr_f3_s* o );
@@ -262,7 +271,7 @@ tp_t            bcore_arr_tp_s_pop(       bcore_arr_tp_s* o );
 s2_t            bcore_arr_tp_s_cmp( const bcore_arr_tp_s* o, const bcore_arr_tp_s* b ); // see comment cmp( o, b ) above
 bcore_arr_tp_s* bcore_arr_tp_s_sort(      bcore_arr_tp_s* o, s2_t order ); // stable
 bcore_arr_tp_s* bcore_arr_tp_s_reorder(   bcore_arr_tp_s* o, const bcore_arr_uz_s* order );
-uz_t            bcore_arr_tp_s_find( const bcore_arr_tp_s* o, uz_t start, uz_t end, tp_t v ); // behaves like st_s_find_*
+uz_t            bcore_arr_tp_s_find( const bcore_arr_tp_s* o, uz_t start, uz_t end, tp_t v ); // See comment "Search (functions 'find')" above
 uz_t            bcore_arr_tp_s_count_equal( const bcore_arr_tp_s* o, tp_t val ); // number of occurrence
 
 static inline bl_t bcore_arr_tp_s_exists( const bcore_arr_tp_s* o, tp_t v )
@@ -313,6 +322,7 @@ st_s*           bcore_arr_st_s_push_fa(   bcore_arr_st_s* o, sc_t format, ... );
 void            bcore_arr_st_s_pop(       bcore_arr_st_s* o );
 bcore_arr_st_s* bcore_arr_st_s_sort(      bcore_arr_st_s* o, s2_t order ); // stable
 bcore_arr_st_s* bcore_arr_st_s_reorder(   bcore_arr_st_s* o, const bcore_arr_uz_s* order );
+uz_t            bcore_arr_st_s_find(        const bcore_arr_st_s* o, uz_t start, uz_t end, const st_s* v ); // See comment "Search (functions 'find')" above
 uz_t            bcore_arr_st_s_count_equal( const bcore_arr_st_s* o, const st_s* val ); // number of occurrence
 
 /** Outputs to sink the arrays content in the format of a table.
@@ -350,7 +360,7 @@ bcore_arr_vd_s* bcore_arr_vd_s_fill(       bcore_arr_vd_s* o, uz_t size, vd_t v 
 bcore_arr_vd_s* bcore_arr_vd_s_push(       bcore_arr_vd_s* o, vd_t v );
 vd_t            bcore_arr_vd_s_pop(        bcore_arr_vd_s* o );
 bcore_arr_vd_s* bcore_arr_vd_s_reorder(    bcore_arr_vd_s* o, const bcore_arr_uz_s* order );
-uz_t            bcore_arr_vd_s_find(  const bcore_arr_vd_s* o, uz_t start, uz_t end, vd_t v );  // behaves like st_s_find_*
+uz_t            bcore_arr_vd_s_find(  const bcore_arr_vd_s* o, uz_t start, uz_t end, vd_t v ); // See comment "Search (functions 'find')" above
 uz_t            bcore_arr_vd_s_count_equal( const bcore_arr_vd_s* o, vd_t val ); // number of occurrence
 
 /**********************************************************************************************************************/
@@ -371,7 +381,7 @@ bcore_arr_fp_s* bcore_arr_fp_s_fill(       bcore_arr_fp_s* o, uz_t size, fp_t v 
 bcore_arr_fp_s* bcore_arr_fp_s_push(       bcore_arr_fp_s* o, fp_t v );
 fp_t            bcore_arr_fp_s_pop(        bcore_arr_fp_s* o );
 bcore_arr_fp_s* bcore_arr_fp_s_reorder(    bcore_arr_fp_s* o, const bcore_arr_uz_s* order );
-uz_t            bcore_arr_fp_s_find(  const bcore_arr_fp_s* o, uz_t start, uz_t end, fp_t v ); // behaves like st_s_find_*
+uz_t            bcore_arr_fp_s_find(  const bcore_arr_fp_s* o, uz_t start, uz_t end, fp_t v ); // See comment "Search (functions 'find')" above
 uz_t            bcore_arr_fp_s_count_equal( const bcore_arr_fp_s* o, fp_t val ); // number of occurrence
 
 /**********************************************************************************************************************/

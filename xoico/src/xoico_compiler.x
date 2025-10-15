@@ -50,11 +50,6 @@ signature c xoico_signature_s* get_signature( c @* o, tp_t name );
 
 signature er_t life_a_push(     m @* o, m bcore_inst* object );
 
-/** If body_signature is != 0 it is matched against the file and a clear_overwrite oly set in case
- *  the file's body signature differs
- */
-signature er_t check_overwrite( c @* o, sc_t file, tp_t body_signature, mutable bl_t* clear_to_overwrite );
-
 signature bl_t get_self(        c @* o, tp_t type, c bcore_self_s** self ); // returns success
 
 
@@ -83,20 +78,6 @@ name as_header;
 name as_string;
 name as_string_without_comments;
 name as_group;
-
-// external interface ...
-signature er_t parse
-(
-    m @* o,
-    sc_t  target_name,
-    sc_t  target_ext,
-    st_s* target_output_folder, // can be NULL (in which case the source code folder is also the output folder)
-    sc_t  source_path,
-    sc_t  group_name, // can be NULL
-    sc_t  trait_name, // can be NULL
-    tp_t  embed_method, // default ( = 0), as_header, as_string, ...
-    m sz_t* p_target_index
-);
 
 signature er_t update_target_files( m @* o, m bl_t* p_modified );
 signature bl_t update_required    ( m @* o );
@@ -276,7 +257,7 @@ stamp :s = aware :
         return 0;
     };
 
-    func :.check_overwrite;
+//    func :.check_overwrite;
     func :.get_self;
     func :.get_type_info;
     //func :.get_type_element_info;
@@ -285,7 +266,6 @@ stamp :s = aware :
     func :.get_type_array_element_info;
 
     // external interface ...
-    func :.parse;
     func :.update_target_files;
     func :.update_required { return o.to_be_modified(); };
     func :.get_verbosity { return o.verbosity; };
@@ -300,7 +280,7 @@ stamp :s = aware :
 
     func bcore_inst_call.init_x
     {
-        if( o-> work_build_time_into_pre_hash )
+        if( o->work_build_time_into_pre_hash )
         {
             o->target_pre_hash = bcore_tp_fold_sc( o->target_pre_hash, __DATE__ );
             o->target_pre_hash = bcore_tp_fold_sc( o->target_pre_hash, __TIME__ );
@@ -419,7 +399,10 @@ func tp_t body_signature( st_s* data )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) :.check_overwrite
+/** If body_signature is != 0 it is matched against the file. clear_overwrite is only set in case
+ *  the file's body signature differs
+ */
+func (:s) er_t check_overwrite( c @* o, sc_t file, tp_t body_signature, mutable bl_t* clear_to_overwrite )
 {
     if( clear_to_overwrite ) clear_to_overwrite.0 = true;
     if( !bcore_file_exists( file ) ) return 0;
@@ -460,7 +443,18 @@ func (:s) :.check_overwrite
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) :.parse
+func (:s) er_t update_target
+(
+    m @* o,
+    sc_t  target_name,
+    sc_t  target_ext,
+    st_s* target_output_folder, // can be NULL (in which case the source code folder is also the output folder)
+    sc_t  source_path,
+    sc_t  group_name, // can be NULL
+    sc_t  trait_name, // can be NULL
+    tp_t  embed_method, // default ( = 0), as_header, as_string, ...
+    m sz_t* p_target_index
+)
 {
     st_s* source_folder = bcore_file_folder_path( source_path )^;
     st_s* output_folder = target_output_folder ? target_output_folder : source_folder;
@@ -500,7 +494,6 @@ func (:s) :.parse
         ERR_fa( "Target '#<sc_t>': Assigned output path '#<sc_t>' differs from requested output path '#<sc_t>'.", target.name.sc, target.output_path.sc, target_output_path.sc );
     }
 
-    target.parse_from_path( source_path, group_name, trait_name, embed_method );
     if( p_target_index ) p_target_index.0 = target_index;
 
     return 0;
