@@ -1,4 +1,4 @@
-//  Last update: 2025-10-15T20:05:57Z (UTC)
+//  Last update: 2025-10-16T12:55:42Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -49,7 +49,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_xoico 0xF24777F0D88E0752ull
+// HKEYOF_xoico 0xC8C8D8C0873C3A00ull
 
 /**********************************************************************************************************************/
 // source: xoico.x
@@ -10629,7 +10629,6 @@ BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( xoico_builder_target_s )
     "st_s => extension = \"xo\";",
     "st_s => root_folder;",
     "bl_t readonly;",
-    "st_s => output_folder;",
     "st_s => copyright_and_license_terms;",
     "bcore_arr_st_s dependencies;",
     "bcore_arr_st_s sources;",
@@ -10638,6 +10637,7 @@ BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( xoico_builder_target_s )
     "bl_t define_signal_handler = true;",
     "aware xoico_cengine => cengine = xoico_che_s;",
     "sz_t beta_level = 0;",
+    "bl_t use_build_timestamp_file = true;",
     "private xoico_compiler_s* compiler;",
     "private xoico_builder_target_s* parent_;",
     "private xoico_builder_target_s* root_;",
@@ -10645,7 +10645,8 @@ BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( xoico_builder_target_s )
     "hidden st_s full_path_;",
     "hidden sz_t target_index_ = -1;",
     "hidden bcore_hmap_tpvd_s => hmap_built_target_;",
-    "hidden u3_t max_last_modification_time;",
+    "hidden st_s => output_folder;",
+    "hidden u3_t param_file_modification_time;",
     "func bcore_via_call:source;",
     "func xoico:get_hash;",
 "}",
@@ -10653,7 +10654,7 @@ BCORE_DEFINE_OBJECT_INST_P_NASC_END( xoico_builder_target_s )
 
 const st_s* xoico_builder_target_s_root_output_folder( const xoico_builder_target_s* o )
 {
-    // xoico_builder.x:42:5
+    // xoico_builder.x:37:5
     
     const st_s* folder = ( o->parent_ ) ? xoico_builder_target_s_root_output_folder(o->parent_) : NULL;
     return  folder ? folder : o->output_folder;
@@ -10661,7 +10662,7 @@ const st_s* xoico_builder_target_s_root_output_folder( const xoico_builder_targe
 
 void xoico_builder_target_s_source( xoico_builder_target_s* o, bcore_source* source )
 {
-    // xoico_builder.x:95:5
+    // xoico_builder.x:100:5
     
     if( !o->root_folder )
     {
@@ -10672,7 +10673,7 @@ void xoico_builder_target_s_source( xoico_builder_target_s* o, bcore_source* sou
 
 const xoico_builder_target_s* xoico_builder_target_s_name_match( const xoico_builder_target_s* o, sc_t name )
 {
-    // xoico_builder.x:104:5
+    // xoico_builder.x:109:5
     
     if( o->name && sc_t_equal( name, o->name->sc ) ) return  o;
     if( o->parent_ ) return  xoico_builder_target_s_name_match(o->parent_,name );
@@ -10681,7 +10682,7 @@ const xoico_builder_target_s* xoico_builder_target_s_name_match( const xoico_bui
 
 void xoico_builder_target_s_push_target_index_to_arr( const xoico_builder_target_s* o, bcore_arr_sz_s* arr )
 {
-    // xoico_builder.x:111:5
+    // xoico_builder.x:116:5
     
     if( o->target_index_ != -1 )
     {
@@ -10695,7 +10696,7 @@ void xoico_builder_target_s_push_target_index_to_arr( const xoico_builder_target
 
 tp_t xoico_builder_target_s_get_hash( const xoico_builder_target_s* o )
 {
-    // xoico_builder.x:123:5
+    // xoico_builder.x:128:5
     
     tp_t hash = bcore_tp_init();
     hash = o->name ? bcore_tp_fold_sc( hash, o->name->sc ) : hash;
@@ -10711,7 +10712,7 @@ tp_t xoico_builder_target_s_get_hash( const xoico_builder_target_s* o )
 
 er_t xoico_builder_target_s_load( xoico_builder_target_s* o, bl_t readonly, sc_t path )
 {
-    // xoico_builder.x:208:1
+    // xoico_builder.x:211:1
     BLM_INIT_LEVEL(0);
     st_s* st_path = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
     st_s_copy_sc(st_path,path );
@@ -10726,7 +10727,8 @@ er_t xoico_builder_target_s_load( xoico_builder_target_s* o, bl_t readonly, sc_t
     st_path = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,bcore_file_path_minimized(st_path->sc )));
     
     BLM_TRY(x_btcl_from_file(((x_btcl*)(o)),st_path->sc ))
-    o->max_last_modification_time = u3_max( o->max_last_modification_time, bcore_file_last_modification_time_us(st_path->sc ) );
+    
+    o->param_file_modification_time = bcore_file_last_modification_time_us(st_path->sc );
     
     st_s_copy(&(o->full_path_),st_path );
     if( readonly ) o->readonly = true;
@@ -10789,9 +10791,181 @@ er_t xoico_builder_target_s_load( xoico_builder_target_s* o, bl_t readonly, sc_t
     }}BLM_RETURNV(er_t, 0)
 }
 
+er_t xoico_builder_target_s_parse_source_element( const xoico_builder_target_s* o, const st_s* element, xoico_builder_parse_param_s* parse_param )
+{
+    // xoico_builder.x:302:1
+    BLM_INIT_LEVEL(0);
+    x_source* source = ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(element )));
+    st_s group_name;BLM_T_INIT_SPUSH(st_s, &group_name);;
+    st_s trait_name;BLM_T_INIT_SPUSH(st_s, &trait_name);;
+    st_s file_path;BLM_T_INIT_SPUSH(st_s, &file_path);;
+    
+    tp_t embed_method = 0;
+    
+    BLM_TRY(x_source_parse_fa(source," " )) // take whitespaces
+    
+    if( x_source_parse_bl(source,"#?w'group' " ) )
+    {
+        BLM_TRY(x_source_parse_fa(source,"#name ", (&(group_name)) ))
+        if( group_name.size == 0 ) BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Group name expected in source declaration." ))
+        BLM_TRY(x_source_parse_fa(source,"= #name ", (&(trait_name)) ))
+        if( trait_name.size == 0 ) BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Trait name expected in source declaration." ))
+    }
+    
+    while( !x_source_eos(source) )
+    {
+        char c = x_source_get_char(source);
+        if( c == ':' ) break;
+        st_s_push_char(&(file_path),c );
+    }
+    
+    if( x_source_parse_bl(source," #?w'embed'" ) )
+    {
+        if( x_source_parse_bl(source," #?w'as_string'" ) )
+        {
+            embed_method = TYPEOF_as_string;
+        }
+        else if( x_source_parse_bl(source," #?w'as_string_without_comments'" ) )
+        {
+            embed_method = TYPEOF_as_string_without_comments;
+        }
+        else
+        {
+            BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Select a valid embedding method (e.g. 'as_string')" ))
+        }
+    }
+    
+    if( file_path.size == 0 ) BLM_RETURNV(er_t, x_source_parse_error_fa(source,"File name expected in source declaration." ))
+    
+    if( file_path.sc[ 0 ] != '/' && o->root_folder )
+    {BLM_INIT_LEVEL(1);
+        const st_s* tmp = ((st_s*)BLM_LEVEL_T_PUSH(1,st_s,st_s_clone(&(file_path))));
+        st_s_copy_fa(&(file_path),"#<sc_t>/#<sc_t>", o->root_folder->sc, tmp->sc );
+    BLM_DOWN();}
+    
+    if( embed_method == 0 )
+    {
+        if     ( st_s_ends_in_sc(&(file_path),".h" ) ) embed_method = TYPEOF_as_header;
+        else if( st_s_ends_in_sc(&(file_path),".x" ) ) embed_method = TYPEOF_as_group;
+        else                                    embed_method = TYPEOF_as_string;
+    }
+    
+    if( group_name.size == 0 )
+    {
+        if( embed_method == TYPEOF_as_header )
+        {
+            /// nothing here
+        }
+        else if( embed_method == TYPEOF_as_group )
+        {BLM_INIT_LEVEL(3);
+            st_s_copy(&(group_name),((st_s*)BLM_LEVEL_T_PUSH(3,st_s,bcore_file_strip_extension(bcore_file_name(file_path.sc ) ))) );
+        BLM_DOWN();}
+        else
+        {
+            st_s_copy_sc(&(group_name),bcore_file_name(file_path.sc ) );
+        }
+        st_s_replace_char_char(&(group_name),'.', '_' );
+        st_s_replace_char_char(&(group_name),' ', '_' );
+        st_s_copy_sc(&(trait_name),"x_inst" );
+    }
+    
+    if( parse_param )
+    {
+        st_s_copy(&(parse_param->file_path),&(file_path ));
+        st_s_copy(&(parse_param->group_name),&(group_name ));
+        st_s_copy(&(parse_param->trait_name),&(trait_name ));
+        parse_param->embed_method = embed_method;
+    }
+    
+    BLM_RETURNV(er_t, 0)
+}
+
+er_t xoico_builder_target_s_get_modification_time( xoico_builder_target_s* o, u3_t* time )
+{
+    // xoico_builder.x:392:1
+    
+    u3_t max_time = o->param_file_modification_time;
+    
+    {const xoico_builder_arr_target_s* __a=o->dependencies_target_ ;if(__a)for(sz_t __i=0;__i<__a->size;__i++){xoico_builder_target_s* e=__a->data[__i];
+    {
+        u3_t t = 0;
+        BLM_TRY(xoico_builder_target_s_get_modification_time(e,&(t )))
+        max_time = u3_max( max_time, t );
+    }
+    
+    }}{const bcore_arr_st_s* __a=&(o->sources );if(__a)for(sz_t __i=0;__i<__a->size;__i++){const st_s* e=__a->data[__i];
+    {BLM_INIT_LEVEL(4);
+        xoico_builder_parse_param_s* parse_param = ((xoico_builder_parse_param_s*)BLM_LEVEL_T_PUSH(4,xoico_builder_parse_param_s,xoico_builder_parse_param_s_create()));
+        BLM_TRY(xoico_builder_target_s_parse_source_element(o,e, parse_param ))
+        if( !bcore_file_exists(parse_param->file_path.sc ) ) BLM_RETURNV(er_t, bcore_error_push_fa(((tp_t)(TYPEOF_general_error)), "Could not find source file '#<sc_t>'.", parse_param->file_path.sc ))
+        max_time = u3_max( max_time, bcore_file_last_modification_time_us(parse_param->file_path.sc ) );
+    BLM_DOWN();}
+    
+    }}{const bcore_arr_st_s* __a=&(o->embedded_sources );if(__a)for(sz_t __i=0;__i<__a->size;__i++){const st_s* e=__a->data[__i];
+    {BLM_INIT_LEVEL(4);
+        st_s* file_path = ((st_s*)BLM_LEVEL_T_PUSH(4,st_s,st_s_clone(e)));
+        if( file_path->size == 0 ) BLM_RETURNV(er_t, bcore_error_push_fa(((tp_t)(TYPEOF_general_error)), "File name expected in embedded source declaration." ))
+        if( file_path->sc[ 0 ] != '/' && o->root_folder )
+        {BLM_INIT_LEVEL(5);
+            const st_s* tmp = ((st_s*)BLM_LEVEL_T_PUSH(5,st_s,st_s_clone(file_path)));
+            st_s_copy_fa(file_path,"#<sc_t>/#<sc_t>", o->root_folder->sc, tmp->sc );
+        BLM_DOWN();}
+    
+        if( !bcore_file_exists(file_path->sc ) ) BLM_RETURNV(er_t, bcore_error_push_fa(((tp_t)(TYPEOF_general_error)), "Could not find embedded source file '#<sc_t>'.", file_path->sc ))
+        max_time = u3_max( max_time, bcore_file_last_modification_time_us(file_path->sc ) );
+    BLM_DOWN();}
+    
+    }}if( time ) (*(time)) = max_time;
+     return  0;
+}
+
+er_t xoico_builder_target_s_get_build_timestamp_path( const xoico_builder_target_s* o, st_s* path )
+{
+    // xoico_builder.x:431:1
+    
+    if( o->full_path_.size == 0 ) return  GERR_fa("'full_path' was not specified" );
+    st_s_copy_fa(path,"#<sc_t>.build.timestamp", o->full_path_.sc );
+    return  0;
+}
+
+er_t xoico_builder_target_s_get_build_timestamp( const xoico_builder_target_s* o, u3_t* time )
+{
+    // xoico_builder.x:440:1
+    BLM_INIT_LEVEL(0);
+    st_s* path = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
+    BLM_TRY(xoico_builder_target_s_get_build_timestamp_path(o,path ))
+    (*(time)) = bcore_file_exists(path->sc ) ? bcore_file_last_modification_time_us(path->sc ) : 0;
+    BLM_RETURNV(er_t, 0)
+}
+
+er_t xoico_builder_target_s_set_build_timestamp( xoico_builder_target_s* o )
+{
+    // xoico_builder.x:450:1
+    BLM_INIT_LEVEL(0);
+    st_s* path = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
+    BLM_TRY(xoico_builder_target_s_get_build_timestamp_path(o,path ))
+    bcore_file_touch(path->sc );
+    BLM_RETURNV(er_t, 0)
+}
+
+bl_t xoico_builder_target_s_is_up_to_date( xoico_builder_target_s* o )
+{
+    // xoico_builder.x:461:1
+    
+    // max last modification time of all sources including dependencies
+    u3_t modification_time = 0;
+    BLM_TRY_EXIT(xoico_builder_target_s_get_modification_time(o,&(modification_time )))
+    bcore_msg_fa( "#<sc_t> modification_time: #<u3_t>\n", o->name->sc, modification_time );
+    
+    u3_t build_timestamp = 0;
+    BLM_TRY_EXIT(xoico_builder_target_s_get_build_timestamp(o,&(build_timestamp )))
+    
+    return  build_timestamp > modification_time;
+}
+
 er_t xoico_builder_target_s_build( xoico_builder_target_s* o )
 {
-    // xoico_builder.x:298:1
+    // xoico_builder.x:476:1
     BLM_INIT_LEVEL(0);
     if( !o->root_    ) o->root_    = ( o->parent_ ) ? o->parent_->root_    : o;
     if( !o->compiler ) o->compiler = ( o->parent_ ) ? o->parent_->compiler : NULL;
@@ -10809,7 +10983,6 @@ er_t xoico_builder_target_s_build( xoico_builder_target_s* o )
     {const xoico_builder_arr_target_s* __a=o->dependencies_target_ ;if(__a)for(sz_t __i=0;__i<__a->size;__i++){xoico_builder_target_s* e=__a->data[__i];
     {
         BLM_TRY(xoico_builder_target_s_build(e))
-        o->max_last_modification_time = u3_max( o->max_last_modification_time, e->max_last_modification_time );
     }
     
     }}if( bcore_hmap_tpvd_s_exists(o->root_->hmap_built_target_,tp_target_name ) )
@@ -10831,85 +11004,14 @@ er_t xoico_builder_target_s_build( xoico_builder_target_s* o )
     
     {const bcore_arr_st_s* __a=&(o->sources );if(__a)for(sz_t __i=0;__i<__a->size;__i++){const st_s* e=__a->data[__i];
     {BLM_INIT_LEVEL(4);
-        x_source* source = ((x_source*)BLM_LEVEL_A_PUSH(4,x_source_create_from_st(e )));
-        st_s group_name;BLM_T_INIT_SPUSH(st_s, &group_name);;
-        st_s trait_name;BLM_T_INIT_SPUSH(st_s, &trait_name);;
-        st_s file_path;BLM_T_INIT_SPUSH(st_s, &file_path);;
-    
-        tp_t embed_method = 0;
-    
-        BLM_TRY(x_source_parse_fa(source," " )) // take whitespaces
-    
-        if( x_source_parse_bl(source,"#?w'group' " ) )
-        {
-            BLM_TRY(x_source_parse_fa(source,"#name ", (&(group_name)) ))
-            if( group_name.size == 0 ) BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Group name expected in source declaration." ))
-            BLM_TRY(x_source_parse_fa(source,"= #name ", (&(trait_name)) ))
-            if( trait_name.size == 0 ) BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Trait name expected in source declaration." ))
-        }
-    
-        while( !x_source_eos(source) )
-        {
-            char c = x_source_get_char(source);
-            if( c == ':' ) break;
-            st_s_push_char(&(file_path),c );
-        }
-    
-        if( x_source_parse_bl(source," #?w'embed'" ) )
-        {
-            if( x_source_parse_bl(source," #?w'as_string'" ) )
-            {
-                embed_method = TYPEOF_as_string;
-            }
-            else if( x_source_parse_bl(source," #?w'as_string_without_comments'" ) )
-            {
-                embed_method = TYPEOF_as_string_without_comments;
-            }
-            else
-            {
-                BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Select a valid embedding method (e.g. 'as_string')" ))
-            }
-        }
-    
-        if( file_path.size == 0 ) BLM_RETURNV(er_t, x_source_parse_error_fa(source,"File name expected in source declaration." ))
-    
-        if( e->sc[ 0 ] != '/' && o->root_folder )
-        {BLM_INIT_LEVEL(5);
-            const st_s* tmp = ((st_s*)BLM_LEVEL_T_PUSH(5,st_s,st_s_clone(&(file_path))));
-            st_s_copy_fa(&(file_path),"#<sc_t>/#<sc_t>", o->root_folder->sc, tmp->sc );
-        BLM_DOWN();}
-    
-        if( embed_method == 0 )
-        {
-            if     ( st_s_ends_in_sc(&(file_path),".h" ) ) embed_method = TYPEOF_as_header;
-            else if( st_s_ends_in_sc(&(file_path),".x" ) ) embed_method = TYPEOF_as_group;
-            else                                    embed_method = TYPEOF_as_string;
-        }
-    
-        if( group_name.size == 0 )
-        {
-            if( embed_method == TYPEOF_as_header )
-            {
-                /// nothing here
-            }
-            else if( embed_method == TYPEOF_as_group )
-            {BLM_INIT_LEVEL(7);
-                st_s_copy(&(group_name),((st_s*)BLM_LEVEL_T_PUSH(7,st_s,bcore_file_strip_extension(bcore_file_name(file_path.sc ) ))) );
-            BLM_DOWN();}
-            else
-            {
-                st_s_copy_sc(&(group_name),bcore_file_name(file_path.sc ) );
-            }
-            st_s_replace_char_char(&(group_name),'.', '_' );
-            st_s_replace_char_char(&(group_name),' ', '_' );
-            st_s_copy_sc(&(trait_name),"x_inst" );
-        }
+        xoico_builder_parse_param_s* parse_param = ((xoico_builder_parse_param_s*)BLM_LEVEL_T_PUSH(4,xoico_builder_parse_param_s,xoico_builder_parse_param_s_create()));
+        BLM_TRY(xoico_builder_target_s_parse_source_element(o,e, parse_param ))
     
         ASSERT( o->name );
         ASSERT( o->extension );
         sz_t index = -1;
     
-        BLM_TRY(xoico_compiler_s_update_target(o->compiler,o->name->sc, o->extension->sc, xoico_builder_target_s_root_output_folder(o), file_path.sc, group_name.sc, trait_name.sc, embed_method, (&(index)) ))
+        BLM_TRY(xoico_compiler_s_update_target(o->compiler,o->name->sc, o->extension->sc, xoico_builder_target_s_root_output_folder(o), parse_param->file_path.sc, parse_param->group_name.sc, parse_param->trait_name.sc, parse_param->embed_method, (&(index)) ))
     
         if( o->target_index_ == -1 ) o->target_index_ = index;
         if( index != o->target_index_ )
@@ -10923,11 +11025,7 @@ er_t xoico_builder_target_s_build( xoico_builder_target_s* o )
             ))
         }
     
-    
-        if( !bcore_file_exists(file_path.sc ) ) BLM_RETURNV(er_t, bcore_error_push_fa(((tp_t)(TYPEOF_general_error)), "Could not find source file '#<sc_t>'.", file_path.sc ))
-        o->max_last_modification_time = u3_max( o->max_last_modification_time, bcore_file_last_modification_time_us(file_path.sc ) );
-    
-        x_array_push_d(((x_array*)(parse_param_arr)),((x_inst*)(xoico_builder_parse_param_s__(xoico_builder_parse_param_s_create(),&(file_path),&( group_name),&( trait_name), embed_method ) )));
+        x_array_push_d(((x_array*)(parse_param_arr)),((x_inst*)(((xoico_builder_parse_param_s*)bcore_fork(parse_param)) )));
     BLM_DOWN();}
     
     }}if( o->target_index_ >= 0 )
@@ -10955,16 +11053,27 @@ er_t xoico_builder_target_s_build( xoico_builder_target_s* o )
         }
     }}BLM_DOWN();}
     
-    /** TODO:
-     *  - include timestamps of all files in embed_sources in max_last_modification_time
-     *  - check max_last_modification_time to a target specific timestamp that gets updated with each parsing.
-     *  - the reference timestamp could be the *.state file, which is touched on parsing.
-     *  - skip parsing if max_last_modification_time is smaller (not equal) than that timestamp.
-     */
-    
-    //bcore_msg_fa( "#<sc_t> max_last_modification_time: #<u3_t>\n", o.name.sc, o.max_last_modification_time );
-    
     BLM_RETURNV(er_t, 0)
+}
+
+er_t xoico_builder_target_s_build_from_file( xoico_builder_target_s* o, sc_t path )
+{
+    // xoico_builder.x:571:1
+    
+    BLM_TRY(xoico_builder_target_s_load(o,false, path ))
+    
+    if( xoico_builder_target_s_is_up_to_date(o) )
+    {
+        bcore_msg_fa( "XOICO: #<sc_t> is up to date\n", o->full_path_.sc );
+    }
+    else
+    {
+        BLM_TRY(xoico_builder_target_s_build(o))
+        BLM_TRY(xoico_compiler_s_finalize(o->compiler,((const xoico_host*)(o ))))
+        if( o->use_build_timestamp_file ) BLM_TRY(xoico_builder_target_s_set_build_timestamp(o))
+    }
+    
+    return  0;
 }
 
 BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( xoico_builder_main_s )
@@ -10978,7 +11087,7 @@ BCORE_DEFINE_OBJECT_INST_P_NASC_END( xoico_builder_main_s )
 
 er_t xoico_builder_main_s_set_dry_run( xoico_builder_main_s* o, bl_t v )
 {
-    // xoico_builder.x:168:5
+    // xoico_builder.x:171:5
     
     o->compiler->dry_run = v;
     return  0;
@@ -10986,14 +11095,14 @@ er_t xoico_builder_main_s_set_dry_run( xoico_builder_main_s* o, bl_t v )
 
 bl_t xoico_builder_main_s_get_dry_run( const xoico_builder_main_s* o )
 {
-    // xoico_builder.x:174:5
+    // xoico_builder.x:177:5
     
     return  o->compiler->dry_run;
 }
 
 er_t xoico_builder_main_s_set_always_expand( xoico_builder_main_s* o, bl_t v )
 {
-    // xoico_builder.x:179:5
+    // xoico_builder.x:182:5
     
     o->compiler->always_expand = v;
     return  0;
@@ -11001,14 +11110,14 @@ er_t xoico_builder_main_s_set_always_expand( xoico_builder_main_s* o, bl_t v )
 
 bl_t xoico_builder_main_s_get_always_expand( const xoico_builder_main_s* o )
 {
-    // xoico_builder.x:185:5
+    // xoico_builder.x:188:5
     
     return  o->compiler->always_expand;
 }
 
 er_t xoico_builder_main_s_set_overwrite_unsigned_target_files( xoico_builder_main_s* o, bl_t v )
 {
-    // xoico_builder.x:190:5
+    // xoico_builder.x:193:5
     
     o->compiler->overwrite_unsigned_target_files = v;
     return  0;
@@ -11016,27 +11125,25 @@ er_t xoico_builder_main_s_set_overwrite_unsigned_target_files( xoico_builder_mai
 
 bl_t xoico_builder_main_s_get_overwrite_unsigned_target_files( const xoico_builder_main_s* o )
 {
-    // xoico_builder.x:196:5
+    // xoico_builder.x:199:5
     
     return  o->compiler->overwrite_unsigned_target_files;
 }
 
 er_t xoico_builder_main_s_build_from_file( xoico_builder_main_s* o, sc_t path )
 {
-    // xoico_builder.x:482:1
+    // xoico_builder.x:595:1
     
     xoico_builder_target_s_attach( &(o->target ),  xoico_builder_target_s_create());
-    BLM_TRY(xoico_builder_target_s_load(o->target,false, path ))
     o->target->compiler = o->compiler;
     if( o->output_folder ) st_s_attach( &(o->target->output_folder ),  ((st_s*)bcore_fork(o->output_folder)));
-    BLM_TRY(xoico_builder_target_s_build(o->target))
-    BLM_TRY(xoico_compiler_s_finalize(o->compiler,((const xoico_host*)(o ))))
+    BLM_TRY(xoico_builder_target_s_build_from_file(o->target,path ))
     return  0;
 }
 
 er_t xoico_builder_main_s_update( const xoico_builder_main_s* o )
 {
-    // xoico_builder.x:495:1
+    // xoico_builder.x:606:1
     
     if( bcore_error_stack_size() > 0 ) return  ((tp_t)(TYPEOF_error_stack));
     BLM_TRY(xoico_compiler_s_update_target_files(o->compiler,NULL ) )
@@ -11747,5 +11854,5 @@ int main( int argc, char** argv )
     BETH_CLOSEV( 0 );
     return retv;
 }
-// XOICO_BODY_SIGNATURE 0x927226FE5643D9CE
-// XOICO_FILE_SIGNATURE 0x6EE75D0E280FDD16
+// XOICO_BODY_SIGNATURE 0x628EA4E59D789747
+// XOICO_FILE_SIGNATURE 0xCB25B3D7599F89AD

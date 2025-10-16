@@ -6,6 +6,7 @@ beth.*
 *.xo.h
 *.xo.c
 *.xo.state
+*.build.timestamp
 !lib/bcore/*.xo.h
 !lib/bcore/*.xo.c
 bin

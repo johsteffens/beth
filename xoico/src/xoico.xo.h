@@ -1,4 +1,4 @@
-//  Last update: 2025-10-15T19:31:28Z (UTC)
+//  Last update: 2025-10-16T12:55:42Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -1969,7 +1969,6 @@
       st_s* extension; \
       st_s* root_folder; \
       bl_t readonly; \
-      st_s* output_folder; \
       st_s* copyright_and_license_terms; \
       bcore_arr_st_s dependencies; \
       bcore_arr_st_s sources; \
@@ -1978,6 +1977,7 @@
       bl_t define_signal_handler; \
       xoico_cengine* cengine; \
       sz_t beta_level; \
+      bl_t use_build_timestamp_file; \
       xoico_compiler_s* compiler; \
       xoico_builder_target_s* parent_; \
       xoico_builder_target_s* root_; \
@@ -1985,7 +1985,8 @@
       st_s full_path_; \
       sz_t target_index_; \
       bcore_hmap_tpvd_s* hmap_built_target_; \
-      u3_t max_last_modification_time; \
+      st_s* output_folder; \
+      u3_t param_file_modification_time; \
   }; \
   const st_s* xoico_builder_target_s_root_output_folder( const xoico_builder_target_s* o ); \
   void xoico_builder_target_s_source( xoico_builder_target_s* o, bcore_source* source ); \
@@ -1993,7 +1994,14 @@
   void xoico_builder_target_s_push_target_index_to_arr( const xoico_builder_target_s* o, bcore_arr_sz_s* arr ); \
   tp_t xoico_builder_target_s_get_hash( const xoico_builder_target_s* o ); \
   er_t xoico_builder_target_s_load( xoico_builder_target_s* o, bl_t readonly, sc_t path ); \
-  er_t xoico_builder_target_s_build( xoico_builder_target_s* o );
+  er_t xoico_builder_target_s_parse_source_element( const xoico_builder_target_s* o, const st_s* element, xoico_builder_parse_param_s* parse_param ); \
+  er_t xoico_builder_target_s_get_modification_time( xoico_builder_target_s* o, u3_t* time ); \
+  er_t xoico_builder_target_s_get_build_timestamp_path( const xoico_builder_target_s* o, st_s* path ); \
+  er_t xoico_builder_target_s_get_build_timestamp( const xoico_builder_target_s* o, u3_t* time ); \
+  er_t xoico_builder_target_s_set_build_timestamp( xoico_builder_target_s* o ); \
+  bl_t xoico_builder_target_s_is_up_to_date( xoico_builder_target_s* o ); \
+  er_t xoico_builder_target_s_build( xoico_builder_target_s* o ); \
+  er_t xoico_builder_target_s_build_from_file( xoico_builder_target_s* o, sc_t path );
 #define TYPEOF_xoico_builder_main_s 0x10B2EBC3A7C03BBDull
 #define BETH_EXPAND_ITEM_xoico_builder_main_s \
   BCORE_DECLARE_OBJECT( xoico_builder_main_s ) \
@@ -2101,5 +2109,5 @@ BETH_EXPAND_GROUP_xoico_builder
 BETH_EXPAND_GROUP_xoico_main
 
 #endif // __xoico_xo_H
-// XOICO_BODY_SIGNATURE 0xD320125486BF25C3
-// XOICO_FILE_SIGNATURE 0x4A3D673D190FCFF4
+// XOICO_BODY_SIGNATURE 0x6849EFCFFB4637D1
+// XOICO_FILE_SIGNATURE 0x24C2FFBB55A575E8

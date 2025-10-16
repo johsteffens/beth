@@ -14,8 +14,10 @@
  */
 
 #include <stdio.h>
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/time.h>
 
 #include "bcore_file.h"
 #include "bcore_sources.h"
@@ -212,10 +214,15 @@ u3_t bcore_file_last_modification_time_us( sc_t name )
 
 bl_t bcore_file_touch( sc_t name )
 {
-    if( bcore_file_exists( name ) ) return true;
-    vd_t handle = fopen( name, "wb" );
-    if( !handle ) return false;
-    fclose( handle );
+    if( !bcore_file_exists( name ) )
+    {
+        vd_t handle = fopen( name, "wb" );
+        if( !handle ) return false;
+        fclose( handle );
+    }
+
+    if( utimes( name, NULL ) ) return false;
+
     return true;
 }
 
