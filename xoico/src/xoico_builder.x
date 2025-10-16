@@ -461,7 +461,6 @@ func (:target_s) bl_t is_up_to_date( m@* o )
     // max last modification time of all sources including dependencies
     u3_t modification_time = 0;
     o.get_modification_time( modification_time );
-    bcore_msg_fa( "#<sc_t> modification_time: #<u3_t>\n", o.name.sc, modification_time );
 
     u3_t build_timestamp = 0;
     o.get_build_timestamp( build_timestamp );

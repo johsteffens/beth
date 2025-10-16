@@ -1,4 +1,4 @@
-//  Last update: 2025-10-16T12:55:42Z (UTC)
+//  Last update: 2025-10-16T14:33:18Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -49,7 +49,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_xoico 0xC8C8D8C0873C3A00ull
+// HKEYOF_xoico 0x584ED2CB350EAAB5ull
 
 /**********************************************************************************************************************/
 // source: xoico.x
@@ -10662,7 +10662,7 @@ const st_s* xoico_builder_target_s_root_output_folder( const xoico_builder_targe
 
 void xoico_builder_target_s_source( xoico_builder_target_s* o, bcore_source* source )
 {
-    // xoico_builder.x:100:5
+    // xoico_builder.x:99:5
     
     if( !o->root_folder )
     {
@@ -10673,7 +10673,7 @@ void xoico_builder_target_s_source( xoico_builder_target_s* o, bcore_source* sou
 
 const xoico_builder_target_s* xoico_builder_target_s_name_match( const xoico_builder_target_s* o, sc_t name )
 {
-    // xoico_builder.x:109:5
+    // xoico_builder.x:108:5
     
     if( o->name && sc_t_equal( name, o->name->sc ) ) return  o;
     if( o->parent_ ) return  xoico_builder_target_s_name_match(o->parent_,name );
@@ -10682,7 +10682,7 @@ const xoico_builder_target_s* xoico_builder_target_s_name_match( const xoico_bui
 
 void xoico_builder_target_s_push_target_index_to_arr( const xoico_builder_target_s* o, bcore_arr_sz_s* arr )
 {
-    // xoico_builder.x:116:5
+    // xoico_builder.x:115:5
     
     if( o->target_index_ != -1 )
     {
@@ -10696,7 +10696,7 @@ void xoico_builder_target_s_push_target_index_to_arr( const xoico_builder_target
 
 tp_t xoico_builder_target_s_get_hash( const xoico_builder_target_s* o )
 {
-    // xoico_builder.x:128:5
+    // xoico_builder.x:127:5
     
     tp_t hash = bcore_tp_init();
     hash = o->name ? bcore_tp_fold_sc( hash, o->name->sc ) : hash;
@@ -10712,7 +10712,7 @@ tp_t xoico_builder_target_s_get_hash( const xoico_builder_target_s* o )
 
 er_t xoico_builder_target_s_load( xoico_builder_target_s* o, bl_t readonly, sc_t path )
 {
-    // xoico_builder.x:211:1
+    // xoico_builder.x:210:1
     BLM_INIT_LEVEL(0);
     st_s* st_path = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
     st_s_copy_sc(st_path,path );
@@ -10793,7 +10793,7 @@ er_t xoico_builder_target_s_load( xoico_builder_target_s* o, bl_t readonly, sc_t
 
 er_t xoico_builder_target_s_parse_source_element( const xoico_builder_target_s* o, const st_s* element, xoico_builder_parse_param_s* parse_param )
 {
-    // xoico_builder.x:302:1
+    // xoico_builder.x:301:1
     BLM_INIT_LEVEL(0);
     x_source* source = ((x_source*)BLM_LEVEL_A_PUSH(0,x_source_create_from_st(element )));
     st_s group_name;BLM_T_INIT_SPUSH(st_s, &group_name);;
@@ -10882,7 +10882,7 @@ er_t xoico_builder_target_s_parse_source_element( const xoico_builder_target_s* 
 
 er_t xoico_builder_target_s_get_modification_time( xoico_builder_target_s* o, u3_t* time )
 {
-    // xoico_builder.x:392:1
+    // xoico_builder.x:391:1
     
     u3_t max_time = o->param_file_modification_time;
     
@@ -10921,7 +10921,7 @@ er_t xoico_builder_target_s_get_modification_time( xoico_builder_target_s* o, u3
 
 er_t xoico_builder_target_s_get_build_timestamp_path( const xoico_builder_target_s* o, st_s* path )
 {
-    // xoico_builder.x:431:1
+    // xoico_builder.x:430:1
     
     if( o->full_path_.size == 0 ) return  GERR_fa("'full_path' was not specified" );
     st_s_copy_fa(path,"#<sc_t>.build.timestamp", o->full_path_.sc );
@@ -10930,7 +10930,7 @@ er_t xoico_builder_target_s_get_build_timestamp_path( const xoico_builder_target
 
 er_t xoico_builder_target_s_get_build_timestamp( const xoico_builder_target_s* o, u3_t* time )
 {
-    // xoico_builder.x:440:1
+    // xoico_builder.x:439:1
     BLM_INIT_LEVEL(0);
     st_s* path = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
     BLM_TRY(xoico_builder_target_s_get_build_timestamp_path(o,path ))
@@ -10940,7 +10940,7 @@ er_t xoico_builder_target_s_get_build_timestamp( const xoico_builder_target_s* o
 
 er_t xoico_builder_target_s_set_build_timestamp( xoico_builder_target_s* o )
 {
-    // xoico_builder.x:450:1
+    // xoico_builder.x:449:1
     BLM_INIT_LEVEL(0);
     st_s* path = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
     BLM_TRY(xoico_builder_target_s_get_build_timestamp_path(o,path ))
@@ -10950,12 +10950,11 @@ er_t xoico_builder_target_s_set_build_timestamp( xoico_builder_target_s* o )
 
 bl_t xoico_builder_target_s_is_up_to_date( xoico_builder_target_s* o )
 {
-    // xoico_builder.x:461:1
+    // xoico_builder.x:460:1
     
     // max last modification time of all sources including dependencies
     u3_t modification_time = 0;
     BLM_TRY_EXIT(xoico_builder_target_s_get_modification_time(o,&(modification_time )))
-    bcore_msg_fa( "#<sc_t> modification_time: #<u3_t>\n", o->name->sc, modification_time );
     
     u3_t build_timestamp = 0;
     BLM_TRY_EXIT(xoico_builder_target_s_get_build_timestamp(o,&(build_timestamp )))
@@ -10965,7 +10964,7 @@ bl_t xoico_builder_target_s_is_up_to_date( xoico_builder_target_s* o )
 
 er_t xoico_builder_target_s_build( xoico_builder_target_s* o )
 {
-    // xoico_builder.x:476:1
+    // xoico_builder.x:474:1
     BLM_INIT_LEVEL(0);
     if( !o->root_    ) o->root_    = ( o->parent_ ) ? o->parent_->root_    : o;
     if( !o->compiler ) o->compiler = ( o->parent_ ) ? o->parent_->compiler : NULL;
@@ -11058,7 +11057,7 @@ er_t xoico_builder_target_s_build( xoico_builder_target_s* o )
 
 er_t xoico_builder_target_s_build_from_file( xoico_builder_target_s* o, sc_t path )
 {
-    // xoico_builder.x:571:1
+    // xoico_builder.x:569:1
     
     BLM_TRY(xoico_builder_target_s_load(o,false, path ))
     
@@ -11087,7 +11086,7 @@ BCORE_DEFINE_OBJECT_INST_P_NASC_END( xoico_builder_main_s )
 
 er_t xoico_builder_main_s_set_dry_run( xoico_builder_main_s* o, bl_t v )
 {
-    // xoico_builder.x:171:5
+    // xoico_builder.x:170:5
     
     o->compiler->dry_run = v;
     return  0;
@@ -11095,14 +11094,14 @@ er_t xoico_builder_main_s_set_dry_run( xoico_builder_main_s* o, bl_t v )
 
 bl_t xoico_builder_main_s_get_dry_run( const xoico_builder_main_s* o )
 {
-    // xoico_builder.x:177:5
+    // xoico_builder.x:176:5
     
     return  o->compiler->dry_run;
 }
 
 er_t xoico_builder_main_s_set_always_expand( xoico_builder_main_s* o, bl_t v )
 {
-    // xoico_builder.x:182:5
+    // xoico_builder.x:181:5
     
     o->compiler->always_expand = v;
     return  0;
@@ -11110,14 +11109,14 @@ er_t xoico_builder_main_s_set_always_expand( xoico_builder_main_s* o, bl_t v )
 
 bl_t xoico_builder_main_s_get_always_expand( const xoico_builder_main_s* o )
 {
-    // xoico_builder.x:188:5
+    // xoico_builder.x:187:5
     
     return  o->compiler->always_expand;
 }
 
 er_t xoico_builder_main_s_set_overwrite_unsigned_target_files( xoico_builder_main_s* o, bl_t v )
 {
-    // xoico_builder.x:193:5
+    // xoico_builder.x:192:5
     
     o->compiler->overwrite_unsigned_target_files = v;
     return  0;
@@ -11125,14 +11124,14 @@ er_t xoico_builder_main_s_set_overwrite_unsigned_target_files( xoico_builder_mai
 
 bl_t xoico_builder_main_s_get_overwrite_unsigned_target_files( const xoico_builder_main_s* o )
 {
-    // xoico_builder.x:199:5
+    // xoico_builder.x:198:5
     
     return  o->compiler->overwrite_unsigned_target_files;
 }
 
 er_t xoico_builder_main_s_build_from_file( xoico_builder_main_s* o, sc_t path )
 {
-    // xoico_builder.x:595:1
+    // xoico_builder.x:593:1
     
     xoico_builder_target_s_attach( &(o->target ),  xoico_builder_target_s_create());
     o->target->compiler = o->compiler;
@@ -11143,7 +11142,7 @@ er_t xoico_builder_main_s_build_from_file( xoico_builder_main_s* o, sc_t path )
 
 er_t xoico_builder_main_s_update( const xoico_builder_main_s* o )
 {
-    // xoico_builder.x:606:1
+    // xoico_builder.x:604:1
     
     if( bcore_error_stack_size() > 0 ) return  ((tp_t)(TYPEOF_error_stack));
     BLM_TRY(xoico_compiler_s_update_target_files(o->compiler,NULL ) )
@@ -11854,5 +11853,5 @@ int main( int argc, char** argv )
     BETH_CLOSEV( 0 );
     return retv;
 }
-// XOICO_BODY_SIGNATURE 0x628EA4E59D789747
-// XOICO_FILE_SIGNATURE 0xCB25B3D7599F89AD
+// XOICO_BODY_SIGNATURE 0xD1684D12994473DC
+// XOICO_FILE_SIGNATURE 0x465F745AA3E5D8E8
