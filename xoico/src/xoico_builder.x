@@ -429,7 +429,20 @@ func (:target_s) er_t get_modification_time( m@* o, m u3_t* time )
 func (:target_s) er_t get_build_timestamp_path( @* o, m st_s* path )
 {
     if( o.full_path_.size == 0 ) = GERR_fa( "'full_path' was not specified" );
-    path.copy_fa( "#<sc_t>.build.timestamp", o.full_path_.sc );
+
+    m$* output_folder = st_s!^;
+    if( o.root_output_folder() )
+    {
+        output_folder.copy( o.root_output_folder() );
+    }
+    else
+    {
+        output_folder.copy( bcore_file_folder_path( o.full_path_.sc )^ );
+    }
+
+    if( output_folder.size == 0 ) output_folder.push_fa( "." );
+
+    path.copy_fa( "#<sc_t>/#<sc_t>.#<sc_t>.build.timestamp", output_folder.sc, o.name.sc, o.extension.sc );
     = 0;
 }
 
@@ -449,7 +462,25 @@ func (:target_s) er_t set_build_timestamp( m@* o )
 {
     m$* path = st_s!^;
     o.get_build_timestamp_path( path );
-    bcore_file_touch( path.sc );
+
+    bl_t clear_to_overwrite = true;
+
+    if( bcore_file_exists( path.sc ) )
+    {
+        clear_to_overwrite = false;
+        o.compiler.check_overwrite( path.sc, 0, clear_to_overwrite );
+    }
+
+    m$* string = st_s!^;
+
+    m bcore_cday_utc_s* time = bcore_cday_utc_s!^;
+    bcore_cday_utc_s_from_system( time );
+    string.push_fa( "Last update: " );
+    bcore_cday_utc_s_to_sink( time, ( bcore_sink* )string );
+    string.push_fa( " (UTC)\n" );
+    bcore_msg_fa( "XOICO: writing #<sc_t>\n", path.sc );
+    xoico_target_write_with_signature( path.sc, string );
+
     = 0;
 }
 

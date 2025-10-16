@@ -414,7 +414,7 @@ func (:s) er_t check_overwrite( c @* o, sc_t file, tp_t body_signature, mutable 
     if( !o.is_correctly_signed( data ) )
     {
         m st_s* s = st_s!^;
-        s.push_fa( "Planted file #<sc_t>: Signature check failed.\n", file );
+        s.push_fa( "XOICO file #<sc_t>: Signature check failed.\n", file );
         s.push_fa( "This file might have been created or edited outside the xoico framework.\n" );
         if( o.overwrite_unsigned_target_files )
         {

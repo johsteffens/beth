@@ -579,7 +579,7 @@ func (:s) :.expand_phase1
 func er_t write_with_signature( sc_t file, c st_s* data )
 {
     tp_t hash = bcore_tp_fold_sc( bcore_tp_init(), data.sc );
-    m x_sink* sink = bcore_file_open_sink( file )^^;
+    m x_sink* sink = bcore_file_open_sink( file )^;
     sink.push_data( ( vc_t )data.data, data.size );
     sink.push_fa( "// XOICO_FILE_SIGNATURE 0x#pl16'0'{#X<tp_t>}\n", hash );
     return 0;
@@ -617,7 +617,7 @@ func (:s) :.expand_phase2
             o.compiler.check_overwrite( file_h.sc, body_signature, clear_to_overwrite.1 );
             if( clear_to_overwrite )
             {
-                bcore_msg_fa( "Writing: #<sc_t>\n", file_h.sc );
+                bcore_msg_fa( "XOICO: writing #<sc_t>\n", file_h.sc );
                 xoico_target_write_with_signature( file_h.sc, o.target_h );
                 if( p_modified.1 ) p_modified.0 = true;
             }
@@ -629,7 +629,7 @@ func (:s) :.expand_phase2
             o.compiler.check_overwrite( file_c.sc, body_signature, clear_to_overwrite.1 );
             if( clear_to_overwrite )
             {
-                bcore_msg_fa( "Writing: #<sc_t>\n", file_c.sc );
+                bcore_msg_fa( "XOICO: writing #<sc_t>\n", file_c.sc );
                 xoico_target_write_with_signature( file_c.sc, o.target_c );
                 if( p_modified.1 ) p_modified.0 = true;
             }
@@ -640,7 +640,7 @@ func (:s) :.expand_phase2
             o.compiler.check_overwrite( file_state.sc, 0, clear_to_overwrite.1 );
             if( clear_to_overwrite )
             {
-                bcore_msg_fa( "Writing: #<sc_t>\n", file_state.sc );
+                bcore_msg_fa( "XOICO: writing #<sc_t>\n", file_state.sc );
                 xoico_target_write_with_signature( file_state.sc, o.target_state );
                 if( p_modified.1 ) p_modified.0 = true;
             }

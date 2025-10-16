@@ -1,4 +1,4 @@
-//  Last update: 2025-10-16T14:33:18Z (UTC)
+//  Last update: 2025-10-16T17:16:15Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -49,7 +49,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_xoico 0x584ED2CB350EAAB5ull
+// HKEYOF_xoico 0xFB11DFA46BA5E268ull
 
 /**********************************************************************************************************************/
 // source: xoico.x
@@ -5733,7 +5733,7 @@ er_t xoico_target_s_expand_phase2( xoico_target_s* o, bl_t* p_modified )
             BLM_TRY(xoico_compiler_s_check_overwrite(o->compiler,file_h->sc, body_signature, (&(clear_to_overwrite)) ))
             if( clear_to_overwrite )
             {
-                bcore_msg_fa( "Writing: #<sc_t>\n", file_h->sc );
+                bcore_msg_fa( "XOICO: writing #<sc_t>\n", file_h->sc );
                 BLM_TRY(xoico_target_write_with_signature(file_h->sc, o->target_h ))
                 if( (p_modified) ) (*(p_modified)) = true;
             }
@@ -5745,7 +5745,7 @@ er_t xoico_target_s_expand_phase2( xoico_target_s* o, bl_t* p_modified )
             BLM_TRY(xoico_compiler_s_check_overwrite(o->compiler,file_c->sc, body_signature, (&(clear_to_overwrite)) ))
             if( clear_to_overwrite )
             {
-                bcore_msg_fa( "Writing: #<sc_t>\n", file_c->sc );
+                bcore_msg_fa( "XOICO: writing #<sc_t>\n", file_c->sc );
                 BLM_TRY(xoico_target_write_with_signature(file_c->sc, o->target_c ))
                 if( (p_modified) ) (*(p_modified)) = true;
             }
@@ -5756,7 +5756,7 @@ er_t xoico_target_s_expand_phase2( xoico_target_s* o, bl_t* p_modified )
             BLM_TRY(xoico_compiler_s_check_overwrite(o->compiler,file_state->sc, 0, (&(clear_to_overwrite)) ))
             if( clear_to_overwrite )
             {
-                bcore_msg_fa( "Writing: #<sc_t>\n", file_state->sc );
+                bcore_msg_fa( "XOICO: writing #<sc_t>\n", file_state->sc );
                 BLM_TRY(xoico_target_write_with_signature(file_state->sc, o->target_state ))
                 if( (p_modified) ) (*(p_modified)) = true;
             }
@@ -6083,7 +6083,7 @@ er_t xoico_compiler_s_check_overwrite( const xoico_compiler_s* o, sc_t file, tp_
     if( !xoico_compiler_is_correctly_signed(data ) )
     {BLM_INIT_LEVEL(1);
         st_s* s = ((st_s*)BLM_LEVEL_T_PUSH(1,st_s,st_s_create()));
-        st_s_push_fa(s,"Planted file #<sc_t>: Signature check failed.\n", file );
+        st_s_push_fa(s,"XOICO file #<sc_t>: Signature check failed.\n", file );
         st_s_push_fa(s,"This file might have been created or edited outside the xoico framework.\n" );
         if( o->overwrite_unsigned_target_files )
         {
@@ -10922,15 +10922,28 @@ er_t xoico_builder_target_s_get_modification_time( xoico_builder_target_s* o, u3
 er_t xoico_builder_target_s_get_build_timestamp_path( const xoico_builder_target_s* o, st_s* path )
 {
     // xoico_builder.x:430:1
+    BLM_INIT_LEVEL(0);
+    if( o->full_path_.size == 0 ) BLM_RETURNV(er_t, GERR_fa("'full_path' was not specified" ))
     
-    if( o->full_path_.size == 0 ) return  GERR_fa("'full_path' was not specified" );
-    st_s_copy_fa(path,"#<sc_t>.build.timestamp", o->full_path_.sc );
-    return  0;
+    st_s* output_folder = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
+    if( xoico_builder_target_s_root_output_folder(o) )
+    {
+        st_s_copy(output_folder,xoico_builder_target_s_root_output_folder(o) );
+    }
+    else
+    {BLM_INIT_LEVEL(1);
+        st_s_copy(output_folder,((st_s*)BLM_LEVEL_T_PUSH(1,st_s,bcore_file_folder_path(o->full_path_.sc ))) );
+    BLM_DOWN();}
+    
+    if( output_folder->size == 0 ) st_s_push_fa(output_folder,"." );
+    
+    st_s_copy_fa(path,"#<sc_t>/#<sc_t>.#<sc_t>.build.timestamp", output_folder->sc, o->name->sc, o->extension->sc );
+    BLM_RETURNV(er_t, 0)
 }
 
 er_t xoico_builder_target_s_get_build_timestamp( const xoico_builder_target_s* o, u3_t* time )
 {
-    // xoico_builder.x:439:1
+    // xoico_builder.x:452:1
     BLM_INIT_LEVEL(0);
     st_s* path = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
     BLM_TRY(xoico_builder_target_s_get_build_timestamp_path(o,path ))
@@ -10940,17 +10953,35 @@ er_t xoico_builder_target_s_get_build_timestamp( const xoico_builder_target_s* o
 
 er_t xoico_builder_target_s_set_build_timestamp( xoico_builder_target_s* o )
 {
-    // xoico_builder.x:449:1
+    // xoico_builder.x:462:1
     BLM_INIT_LEVEL(0);
     st_s* path = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
     BLM_TRY(xoico_builder_target_s_get_build_timestamp_path(o,path ))
-    bcore_file_touch(path->sc );
+    
+    bl_t clear_to_overwrite = true;
+    
+    if( bcore_file_exists(path->sc ) )
+    {
+        clear_to_overwrite = false;
+        BLM_TRY(xoico_compiler_s_check_overwrite(o->compiler,path->sc, 0,&( clear_to_overwrite )))
+    }
+    
+    st_s* string = ((st_s*)BLM_LEVEL_T_PUSH(0,st_s,st_s_create()));
+    
+    bcore_cday_utc_s* time = ((bcore_cday_utc_s*)BLM_LEVEL_T_PUSH(0,bcore_cday_utc_s,bcore_cday_utc_s_create()));
+    bcore_cday_utc_s_from_system( time );
+    st_s_push_fa(string,"Last update: " );
+    bcore_cday_utc_s_to_sink( time,( bcore_sink* )string );
+    st_s_push_fa(string," (UTC)\n" );
+    bcore_msg_fa( "XOICO: writing #<sc_t>\n", path->sc );
+    BLM_TRY(xoico_target_write_with_signature(path->sc, string ))
+    
     BLM_RETURNV(er_t, 0)
 }
 
 bl_t xoico_builder_target_s_is_up_to_date( xoico_builder_target_s* o )
 {
-    // xoico_builder.x:460:1
+    // xoico_builder.x:491:1
     
     // max last modification time of all sources including dependencies
     u3_t modification_time = 0;
@@ -10964,7 +10995,7 @@ bl_t xoico_builder_target_s_is_up_to_date( xoico_builder_target_s* o )
 
 er_t xoico_builder_target_s_build( xoico_builder_target_s* o )
 {
-    // xoico_builder.x:474:1
+    // xoico_builder.x:505:1
     BLM_INIT_LEVEL(0);
     if( !o->root_    ) o->root_    = ( o->parent_ ) ? o->parent_->root_    : o;
     if( !o->compiler ) o->compiler = ( o->parent_ ) ? o->parent_->compiler : NULL;
@@ -11057,7 +11088,7 @@ er_t xoico_builder_target_s_build( xoico_builder_target_s* o )
 
 er_t xoico_builder_target_s_build_from_file( xoico_builder_target_s* o, sc_t path )
 {
-    // xoico_builder.x:569:1
+    // xoico_builder.x:600:1
     
     BLM_TRY(xoico_builder_target_s_load(o,false, path ))
     
@@ -11131,7 +11162,7 @@ bl_t xoico_builder_main_s_get_overwrite_unsigned_target_files( const xoico_build
 
 er_t xoico_builder_main_s_build_from_file( xoico_builder_main_s* o, sc_t path )
 {
-    // xoico_builder.x:593:1
+    // xoico_builder.x:624:1
     
     xoico_builder_target_s_attach( &(o->target ),  xoico_builder_target_s_create());
     o->target->compiler = o->compiler;
@@ -11142,7 +11173,7 @@ er_t xoico_builder_main_s_build_from_file( xoico_builder_main_s* o, sc_t path )
 
 er_t xoico_builder_main_s_update( const xoico_builder_main_s* o )
 {
-    // xoico_builder.x:604:1
+    // xoico_builder.x:635:1
     
     if( bcore_error_stack_size() > 0 ) return  ((tp_t)(TYPEOF_error_stack));
     BLM_TRY(xoico_compiler_s_update_target_files(o->compiler,NULL ) )
@@ -11853,5 +11884,5 @@ int main( int argc, char** argv )
     BETH_CLOSEV( 0 );
     return retv;
 }
-// XOICO_BODY_SIGNATURE 0xD1684D12994473DC
-// XOICO_FILE_SIGNATURE 0x465F745AA3E5D8E8
+// XOICO_BODY_SIGNATURE 0xAF3B835C1DACE353
+// XOICO_FILE_SIGNATURE 0x85D9101857FFBDC6
