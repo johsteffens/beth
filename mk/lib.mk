@@ -131,6 +131,7 @@ ifndef DO_NOT_CLEAN_XO_FILES
 	rm -f *.xo.h
 	rm -f *.xo.c
 	rm -f *.xo.state
+	rm -f *.xo.build.timestamp
 endif
 
 cleanall:
