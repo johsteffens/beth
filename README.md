@@ -261,11 +261,11 @@ For that matter, getting a grasp on *beth* is probably a bit of a challenge even
   * Implemented a [plotting framework](doc/byth/plot.md).
   * Added [plotting extension](doc/byth/plot.md#btcl-interface) for [BTCL](doc/bcore/btcl.md).
 
-* 
-
 **2025**
 
-* Ongoing work: Advanced [BTCL](doc/bcore/btcl.md) features.
+* Developed library [bgfe](lib/bgfe/README.md), which is a graphical front-end based on [GTK (https://www.gtk.org)](https://www.gtk.org/).
+* Advanced [BTCL](doc/bcore/btcl.md) features.
+
 
 
 ------

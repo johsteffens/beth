@@ -357,6 +357,8 @@ func (:s) set_client_with_content_t
     if( !client ) = 0;
     if( o.manual_content ) = 0;
 
+    o.clear_content();
+
     sz_t size = x_stamp_t_size( client_type );
     for( sz_t i = 0; i < size; i++ )
     {
@@ -430,19 +432,23 @@ func (:s) add_content_t
 
 func (:s) add_linked_content
 {
-    if( !o.client )
+    m bgfe_client* client = NULL;
+    tp_t client_type = 0;
+    o.get_nearest_client( client, client_type );
+
+    if( !client || !client_type )
     {
         WRN_fa( "No client defined. Call set_client first.\n" );
         = 0;
     }
 
-    if( !x_stamp_t_exists( o.client_type, content_name ) ) = GERR_fa( "'#name' is not a member of '#name'\n", content_name, o.client_type );
+    if( !x_stamp_t_exists( client_type, content_name ) ) = GERR_fa( "'#name' is not a member of '#name'\n", content_name, client_type );
 
     m$* frame_link = :link_s!^;
     frame_link.set_nesting_level( o.nesting_level + o.show_border );
 
     m$* content_sr = sr_s!^;
-    content_sr.0 = x_stamp_t_m_get_sr( o.client, o.client_type, content_name );
+    content_sr.0 = x_stamp_t_m_get_sr( client, client_type, content_name );
 
     if( content_sr.o )
     {
@@ -450,11 +456,11 @@ func (:s) add_linked_content
     }
     else
     {
-        tp_t content_type = x_stamp_t_type( o.client, o.client_type, content_name );
+        tp_t content_type = x_stamp_t_type( client, client_type, content_name );
         frame_link.set_client_t( NULL, content_type, content_name );
     }
 
-    frame_link.set_holder_t( o.client, o.client_type, o.client_name, false, 0 );
+    frame_link.set_holder_t( client, client_type, o.client_name, false, 0 );
 
     tp_t action_type = escapprove~;
     frame_link.set_parent( o );
@@ -468,16 +474,9 @@ func (:s) add_linked_content
 
 func (:s) add_frame
 {
-    if( frame._ == bgfe_window_s~ )
+    if( o.is_open )
     {
-        m$* window = frame.cast( m bgfe_window_s* );
-        window.set_parent( o );
-        if( o.is_open ) window.open( o );
-        o.window_list!.push_d( window.fork() );
-    }
-    else if( o.is_open )
-    {
-        bcore_wrn_fa( "Adding a non-window frame: o is open." );
+        = GERR_fa( "Frame is open. Close it first." );
     }
     else
     {
@@ -486,6 +485,15 @@ func (:s) add_frame
         o.content_list!.push_d( frame.fork() );
     }
 
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) clear_content
+{
+    if( o.is_open ) = GERR_fa( "Frame is open. Close it first." );
+    o.content_list =< NULL;
     = 0;
 }
 

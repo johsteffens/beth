@@ -98,7 +98,16 @@ func (:s) er_t append_element( m@* o )
     if( action_type == reject~  ) = 0;
 
     m$* array = o.client_array();
-    array.t_push( o.client_type );
+
+    if( array.t_is_static( o.client_type ) )
+    {
+        array.t_push( o.client_type );
+    }
+    else
+    {
+        array.t_push_c( o.client_type, NULL );
+    }
+
     o.rebuild();
     o.focus_to_end();
     o.rte.run( o.rtt_scroll_to_end.cast( bgfe_rte_fp_rtt ), o, NULL );

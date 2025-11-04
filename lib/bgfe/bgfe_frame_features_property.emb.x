@@ -46,8 +46,8 @@ feature er_t set_show_index        ( m@* o, bl_t flag  ) = 0; // true: displays 
 feature er_t set_show_value        ( m@* o, bl_t flag  ) = 0; // where showing the current value is optional (e.g. scale)
 feature er_t set_show_glimpse      ( m@* o, bl_t flag  ) = 0; // shows a glimpse where it is supported
 feature er_t set_text              ( m@* o, sc_t text  ) = 0; // frames with text property: (e.g. button, label, entry)
-feature er_t set_text_xalign       ( m@* o, f3_t value ) = 0; // frames with text property: gradual text alignment: 0: left, 0.5: center, 1.0 right
-feature er_t set_text_yalign       ( m@* o, f3_t value ) = 0; // frames with text property: gradual text alignment: 0: top,  0.5: center, 1.0 bottom
+feature er_t set_x_align           ( m@* o, f3_t value ) = 0; // frames with alignment property: gradual alignment of content element: 0: left, 0.5: center, 1.0 right
+feature er_t set_y_align           ( m@* o, f3_t value ) = 0; // frames with alignment property: gradual alignment of content element: 0: top,  0.5: center, 1.0 bottom
 feature er_t set_title             ( m@* o, sc_t text  ) = 0; // for frames with a title property (e.g. window, frame_s, array_s)
 feature er_t set_min               ( m@* o, f3_t value ) = 0; // for value clamping (e.g. scale)
 feature er_t set_max               ( m@* o, f3_t value ) = 0; // for value clamping (e.g. scale)
@@ -92,6 +92,21 @@ feature er_t set_manual_content( m@* o, bl_t flag ) = 0; // bgfe_frame_s: adds c
 name open, save, select_folder, create_folder;
 feature er_t set_chooser_action( m@* o, tp_t name ) = 0;
 
+
+feature er_t set_allow_custom_type( m@* o, bl_t flag            ) = 0; // allows specifying a custom type (used with bgfe_frame_link_s)
+feature er_t set_type_list        ( m@* o, bcore_arr_tp_s* list ) = 0; // sets a list of permissible types: NULL is allowed (used with bgfe_frame_link_s)
+
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+/// legacy functions (deprecated)
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func er_t set_text_xalign( m@* o, f3_t value ) = o.set_x_align( value );
+func er_t set_text_yalign( m@* o, f3_t value ) = o.set_y_align( value );
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+

@@ -20,17 +20,18 @@ forward bgfe_frame_button_s;
 forward bgfe_frame_entry_s;
 
 /**********************************************************************************************************************/
-/// Frame construction
 
-//----------------------------------------------------------------------------------------------------------------------
-
-/** Allows editing the frame type.
+/** Data editing
  *  If 'content' == 'o', the entered information refers to the client (before escalation).
  *  If 'content' is != 'o', the entered information refers to a client member.
  *  If a unique match is required, a handler ideally matches the address 'content'.
  *  Matching content_type or content_name will affect all nested elements that escalate the request.
  *  To prevent further escalation, set action_type to approve~ or 0.
  */
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Allows editing the frame type.
 feature 'at' er_t bgfe_edit_frame_type( @* o, m obliv bgfe_client* content, tp_t content_type, tp_t content_name, m tp_t* action_type, m tp_t* frame_type ) { action_type.0 = escapprove~; = 0; }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -38,11 +39,6 @@ feature 'at' er_t bgfe_edit_frame_type( @* o, m obliv bgfe_client* content, tp_t
 /** Presents the client the frame serving it and allows the client to editing the frame properties inside this function.
  *  The client may reference 'frame' for later (property-invariant) usage (e.g. calling 'upsync', 'downsunc', etc)
  *  For editing, preferably use frame-property features. See bgfe_frame_features_propery.emb.x.
- *  If 'content' == 'o', the entered information refers to the client (before escalation).
- *  If 'content' is != 'o', the entered information refers to a client member.
- *  If a unique match is required, a handler ideally matches the address 'content'.
- *  Matching content_type or content_name will affect all nested elements that escalate the request.
- *  To prevent further escalation, set action_type to approve~ or 0.
  */
 feature 'at' er_t bgfe_edit_frame( m@* o, m obliv bgfe_client* content, tp_t content_type, tp_t content_name, m tp_t* action_type, m bgfe_frame* frame ) = 0;
 

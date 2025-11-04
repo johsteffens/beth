@@ -32,6 +32,8 @@ stamp :s bgfe_frame
     bl_t apply_alpha;
     bl_t track_placement = true; // traces placement (positioning, size; creates associated client-events)
     bl_t track_mouse;            // traces mouse     (buttons,movement; creates associated client-events)
+    f3_t x_align; // x-alignment of image area inside widget area
+    f3_t y_align; // y-alignment of image area inside widget area
 
     func bgfe_frame.set_width { o.width = value; = 0; }
     func bgfe_frame.set_height{ o.height = value; = 0; }
@@ -39,6 +41,8 @@ stamp :s bgfe_frame
     func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
     func bgfe_frame.set_track_placement{ o.track_placement = flag; = 0; }
     func bgfe_frame.set_track_mouse    { o.track_mouse = flag; = 0; }
+    func bgfe_frame.set_x_align { o.x_align = f3_max( 0, f3_min( 1.0, value ) ); = 0; }
+    func bgfe_frame.set_y_align { o.y_align = f3_max( 0, f3_min( 1.0, value ) ); = 0; }
 
     /// internals
     bcodec_image_bgra_s => rts_image_bgra;
@@ -115,7 +119,15 @@ func (:s) gboolean rtt_signal_draw( m GtkWidget* drw, m cairo_t* cairo, m@* o )
 
     if( surface )
     {
-        cairo_set_source_surface( cairo, surface, 0, 0 );
+        f3_t pwidth = o.placement_shell.placement.width;
+        f3_t pheight = o.placement_shell.placement.height;
+        f3_t iwidth = o.rts_image_bgra.cols;
+        f3_t iheight = o.rts_image_bgra.rows;
+
+        f3_t x = ( pwidth  - iwidth  ) * o.x_align;
+        f3_t y = ( pheight - iheight ) * o.y_align;
+
+        cairo_set_source_surface( cairo, surface, x, y );
         cairo_paint( cairo );
     }
     cairo_surface_destroy( surface );

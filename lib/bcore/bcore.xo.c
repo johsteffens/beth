@@ -1,4 +1,4 @@
-//  Last update: 2025-10-14T09:56:45Z (UTC)
+//  Last update: 2025-10-19T12:54:32Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -73,7 +73,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0xB732EA5449284CA1ull
+// HKEYOF_bcore 0xD6A23A740A345A5Bull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -5848,14 +5848,17 @@ er_t x_btcl_frame_s_eval_reserved_func( x_btcl_frame_s* o, tp_t name, x_source* 
             BLM_TRY(x_btcl_frame_s_eval(o,0, source, sa ))
             if( sr_s_type(sa) != ((tp_t)(TYPEOF_st_s)) ) BLM_RETURNV(er_t, x_source_parse_error_fa(source,"First argument must represent a string.\n" ))
     
+            BLM_TRY(x_source_parse_fa(source," , " ))
+            BLM_TRY(x_btcl_frame_s_eval(o,0, source, sr ))
+    
             x_source* file_source = ((x_source*)BLM_LEVEL_A_PUSH(3,x_source_create_from_file(((const st_s*)(sa->o))->sc )));
-            if( !file_source ) BLM_RETURNV(er_t, ((tp_t)(TYPEOF_general_error)))
     
-            tp_t type = 0;
-            x_inst* obj = ((x_inst*)BLM_LEVEL_A_PUSH(3,((x_inst*)(x_btcl_create_from_source_t(file_source,&( type ))))));
-            if( !obj ) BLM_RETURNV(er_t, ((tp_t)(TYPEOF_general_error)))
-    
-            sr_s_tsm(sr,type, ((x_inst*)bcore_fork(obj)) );
+            if( file_source )
+            {BLM_INIT_LEVEL(4);
+                tp_t type = 0;
+                x_inst* obj = ((x_inst*)BLM_LEVEL_A_PUSH(4,((x_inst*)(x_btcl_create_from_source_t(file_source,&( type ))))));
+                if( obj ) sr_s_tsm(sr,type, ((x_inst*)bcore_fork(obj)) );
+            BLM_DOWN();}
         BLM_DOWN();}
         break;
     
@@ -5864,15 +5867,17 @@ er_t x_btcl_frame_s_eval_reserved_func( x_btcl_frame_s* o, tp_t name, x_source* 
             sr_s* sa = ((sr_s*)BLM_LEVEL_T_PUSH(3,sr_s,sr_s_create()));
             BLM_TRY(x_btcl_frame_s_eval(o,0, source, sa ))
             if( sr_s_type(sa) != ((tp_t)(TYPEOF_st_s)) ) BLM_RETURNV(er_t, x_source_parse_error_fa(source,"First argument must represent a string.\n" ))
+            BLM_TRY(x_source_parse_fa(source," , " ))
+            BLM_TRY(x_btcl_frame_s_eval(o,0, source, sr ))
     
             x_source* file_source = ((x_source*)BLM_LEVEL_A_PUSH(3,x_source_create_from_file(((const st_s*)(sa->o))->sc )));
-            if( !file_source ) BLM_RETURNV(er_t, ((tp_t)(TYPEOF_general_error)))
     
-            tp_t type = 0;
-            x_inst* obj = ((x_inst*)BLM_LEVEL_A_PUSH(3,((x_inst*)(x_btml_create_from_source_t(file_source,&( type ))))));
-            if( !obj ) BLM_RETURNV(er_t, ((tp_t)(TYPEOF_general_error)))
-    
-            sr_s_tsm(sr,type, ((x_inst*)bcore_fork(obj)) );
+            if( file_source )
+            {BLM_INIT_LEVEL(4);
+                tp_t type = 0;
+                x_inst* obj = ((x_inst*)BLM_LEVEL_A_PUSH(4,((x_inst*)(x_btml_create_from_source_t(file_source,&( type ))))));
+                if( obj ) sr_s_tsm(sr,type, ((x_inst*)bcore_fork(obj)) );
+            BLM_DOWN();}
         BLM_DOWN();}
         break;
     
@@ -5881,15 +5886,16 @@ er_t x_btcl_frame_s_eval_reserved_func( x_btcl_frame_s* o, tp_t name, x_source* 
             sr_s* sa = ((sr_s*)BLM_LEVEL_T_PUSH(3,sr_s,sr_s_create()));
             BLM_TRY(x_btcl_frame_s_eval(o,0, source, sa ))
             if( sr_s_type(sa) != ((tp_t)(TYPEOF_st_s)) ) BLM_RETURNV(er_t, x_source_parse_error_fa(source,"First argument must represent a string.\n" ))
+            BLM_TRY(x_source_parse_fa(source," , " ))
+            BLM_TRY(x_btcl_frame_s_eval(o,0, source, sr ))
     
             x_source* file_source = ((x_source*)BLM_LEVEL_A_PUSH(3,x_source_create_from_file(((const st_s*)(sa->o))->sc )));
-            if( !file_source ) BLM_RETURNV(er_t, ((tp_t)(TYPEOF_general_error)))
-    
-            tp_t type = 0;
-            x_inst* obj = ((x_inst*)BLM_LEVEL_A_PUSH(3,((x_inst*)(x_bbml_create_from_source_t(file_source,&( type ))))));
-            if( !obj ) BLM_RETURNV(er_t, ((tp_t)(TYPEOF_general_error)))
-    
-            sr_s_tsm(sr,type, ((x_inst*)bcore_fork(obj)) );
+            if( file_source )
+            {BLM_INIT_LEVEL(4);
+                tp_t type = 0;
+                x_inst* obj = ((x_inst*)BLM_LEVEL_A_PUSH(4,((x_inst*)(x_bbml_create_from_source_t(file_source,&( type ))))));
+                if( obj ) sr_s_tsm(sr,type, ((x_inst*)bcore_fork(obj)) );
+            BLM_DOWN();}
         BLM_DOWN();}
         break;
     
@@ -5898,15 +5904,16 @@ er_t x_btcl_frame_s_eval_reserved_func( x_btcl_frame_s* o, tp_t name, x_source* 
             sr_s* sa = ((sr_s*)BLM_LEVEL_T_PUSH(3,sr_s,sr_s_create()));
             BLM_TRY(x_btcl_frame_s_eval(o,0, source, sa ))
             if( sr_s_type(sa) != ((tp_t)(TYPEOF_st_s)) ) BLM_RETURNV(er_t, x_source_parse_error_fa(source,"First argument must represent a string.\n" ))
+            BLM_TRY(x_source_parse_fa(source," , " ))
+            BLM_TRY(x_btcl_frame_s_eval(o,0, source, sr ))
     
             x_source* file_source = ((x_source*)BLM_LEVEL_A_PUSH(3,x_source_create_from_file(((const st_s*)(sa->o))->sc )));
-            if( !file_source ) BLM_RETURNV(er_t, ((tp_t)(TYPEOF_general_error)))
-    
-            tp_t type = 0;
-            x_inst* obj = ((x_inst*)BLM_LEVEL_A_PUSH(3,((x_inst*)(x_bcml_create_from_source_t(file_source,&( type ))))));
-            if( !obj ) BLM_RETURNV(er_t, ((tp_t)(TYPEOF_general_error)))
-    
-            sr_s_tsm(sr,type, ((x_inst*)bcore_fork(obj)) );
+            if( file_source )
+            {BLM_INIT_LEVEL(4);
+                tp_t type = 0;
+                x_inst* obj = ((x_inst*)BLM_LEVEL_A_PUSH(4,((x_inst*)(x_bcml_create_from_source_t(file_source,&( type ))))));
+                if( obj ) sr_s_tsm(sr,type, ((x_inst*)bcore_fork(obj)) );
+            BLM_DOWN();}
         BLM_DOWN();}
         break;
     
@@ -11037,5 +11044,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0xAF2C7D170B96C9C0
-// XOICO_FILE_SIGNATURE 0xCCEE37BEB915043A
+// XOICO_BODY_SIGNATURE 0x3CE367312BDD64F0
+// XOICO_FILE_SIGNATURE 0x5E4919CC134EFF7D

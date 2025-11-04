@@ -115,12 +115,15 @@ feature m bgfe_frame_s* add_sub_frame( m@* o )
     = frame;
 }
 
+/// Removes content (frame_s or window_s)
+feature er_t clear_content( m@* o ) = 0;
+
 /// Adds a label frame with text
 func er_t add_label( m@* o, sc_t text, sz_t label_width )
 {
     m$* label = bgfe_frame_label_s!^;
     label.set_width( label_width );
-    label.set_text_xalign( 0 );
+    label.set_x_align( 0 );
     label.text!.copy_sc( text );
      = o.add_frame( label );
 }
@@ -246,6 +249,22 @@ func m bgfe_window_s* nearest_window( m @* o )
     if( o._ == bgfe_frame_s~ && o.cast( m bgfe_frame_s* ).window != NULL )  = o.cast( m bgfe_frame_s* ).window;
     if( !o.parent() ) = NULL;
     = o.parent().nearest_window();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Returns the nearest (towards root) client if defined
+func er_t get_nearest_client( m @* o, m bgfe_client** client, m tp_t* client_type )
+{
+    if( o.client() )
+    {
+        if( client      ) client.1 = o.client();
+        if( client_type ) client_type.0 = o.client_type();
+        = 0;
+    }
+
+    if( o.parent() ) = o.parent().get_nearest_client( client, client_type );
+    = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -435,6 +454,11 @@ stamp :s
      *    - The frame must not be open. It can not be added while o is open (warning to stderr).
      */
     func :.add_frame;
+
+    /** Clears all content
+     *  Requires frame to be closed
+     */
+    func :.clear_content;
 
     func :.downsync;
     func :.upsync;

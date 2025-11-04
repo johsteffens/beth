@@ -124,7 +124,7 @@ stamp :item_s
 
             if( o.parent_choice )
             {
-                if( o.parent_choice.arrange == vertical~ ) frame.set_text_xalign( 0 );
+                if( o.parent_choice.arrange == vertical~ ) frame.set_x_align( 0 );
             }
 
             m :client* cl = o.nearest_client();
@@ -253,7 +253,7 @@ stamp :s
             {
                 if( o.parent_choice )
                 {
-                    if( o.parent_choice.arrange == vertical~ ) frame.set_text_xalign( 0 );
+                    if( o.parent_choice.arrange == vertical~ ) frame.set_x_align( 0 );
                     if( o.parent_choice.window_position != 0 ) frame.set_window_position( o.parent_choice.window_position );
                 }
             }

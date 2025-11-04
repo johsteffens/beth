@@ -384,14 +384,17 @@ func (:frame_s) er_t eval_reserved_func( m@* o, tp_t name, m x_source* source, b
             o.eval( 0, source, sa );
             if( sa.type() != st_s~ ) = source.parse_error_fa( "First argument must represent a string.\n" );
 
+            source.parse_fa( " , " );
+            o.eval( 0, source, sr );
+
             m$* file_source = x_source_create_from_file( sa.o.cast( st_s* ).sc )^;
-            if( !file_source ) = general_error~;
 
-            tp_t type = 0;
-            m x_inst* obj = x_btcl_create_from_source_t( file_source, type ).cast( d x_inst* )^;
-            if( !obj ) = general_error~;
-
-            sr.tsm( type, obj.fork() );
+            if( file_source )
+            {
+                tp_t type = 0;
+                m x_inst* obj = x_btcl_create_from_source_t( file_source, type ).cast( d x_inst* )^;
+                if( obj ) sr.tsm( type, obj.fork() );
+            }
         }
         break;
 
@@ -400,15 +403,17 @@ func (:frame_s) er_t eval_reserved_func( m@* o, tp_t name, m x_source* source, b
             m$* sa = sr_s!^;
             o.eval( 0, source, sa );
             if( sa.type() != st_s~ ) = source.parse_error_fa( "First argument must represent a string.\n" );
+            source.parse_fa( " , " );
+            o.eval( 0, source, sr );
 
             m$* file_source = x_source_create_from_file( sa.o.cast( st_s* ).sc )^;
-            if( !file_source ) = general_error~;
 
-            tp_t type = 0;
-            m x_inst* obj = x_btml_create_from_source_t( file_source, type ).cast( d x_inst* )^;
-            if( !obj ) = general_error~;
-
-            sr.tsm( type, obj.fork() );
+            if( file_source )
+            {
+                tp_t type = 0;
+                m x_inst* obj = x_btml_create_from_source_t( file_source, type ).cast( d x_inst* )^;
+                if( obj ) sr.tsm( type, obj.fork() );
+            }
         }
         break;
 
@@ -417,15 +422,16 @@ func (:frame_s) er_t eval_reserved_func( m@* o, tp_t name, m x_source* source, b
             m$* sa = sr_s!^;
             o.eval( 0, source, sa );
             if( sa.type() != st_s~ ) = source.parse_error_fa( "First argument must represent a string.\n" );
+            source.parse_fa( " , " );
+            o.eval( 0, source, sr );
 
             m$* file_source = x_source_create_from_file( sa.o.cast( st_s* ).sc )^;
-            if( !file_source ) = general_error~;
-
-            tp_t type = 0;
-            m x_inst* obj = x_bbml_create_from_source_t( file_source, type ).cast( d x_inst* )^;
-            if( !obj ) = general_error~;
-
-            sr.tsm( type, obj.fork() );
+            if( file_source )
+            {
+                tp_t type = 0;
+                m x_inst* obj = x_bbml_create_from_source_t( file_source, type ).cast( d x_inst* )^;
+                if( obj ) sr.tsm( type, obj.fork() );
+            }
         }
         break;
 
@@ -434,15 +440,16 @@ func (:frame_s) er_t eval_reserved_func( m@* o, tp_t name, m x_source* source, b
             m$* sa = sr_s!^;
             o.eval( 0, source, sa );
             if( sa.type() != st_s~ ) = source.parse_error_fa( "First argument must represent a string.\n" );
+            source.parse_fa( " , " );
+            o.eval( 0, source, sr );
 
             m$* file_source = x_source_create_from_file( sa.o.cast( st_s* ).sc )^;
-            if( !file_source ) = general_error~;
-
-            tp_t type = 0;
-            m x_inst* obj = x_bcml_create_from_source_t( file_source, type ).cast( d x_inst* )^;
-            if( !obj ) = general_error~;
-
-            sr.tsm( type, obj.fork() );
+            if( file_source )
+            {
+                tp_t type = 0;
+                m x_inst* obj = x_bcml_create_from_source_t( file_source, type ).cast( d x_inst* )^;
+                if( obj ) sr.tsm( type, obj.fork() );
+            }
         }
         break;
 

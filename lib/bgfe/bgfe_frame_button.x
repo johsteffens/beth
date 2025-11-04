@@ -33,8 +33,8 @@ stamp :s bgfe_frame
     st_s => tooltip;     // external tooltip (if NULL an internal tooltip is used)
     bl_t show_tooltip = true;
     bl_t no_upsync;
-    f3_t text_xalign = 0.5; // gradual text alignment: 0: left, 0.5: center, 1.0 right
-    f3_t text_yalign = 0.5; // gradual text alignment: 0: top, 0.5: center, 1.0 bottom
+    f3_t x_align = 0.5; // gradual text alignment: 0: left, 0.5: center, 1.0 right
+    f3_t y_align = 0.5; // gradual text alignment: 0: top, 0.5: center, 1.0 bottom
 
     func bgfe_frame.set_width { o.width = value; = 0; }
     func bgfe_frame.set_height{ o.height = value; = 0; }
@@ -43,8 +43,8 @@ stamp :s bgfe_frame
     func bgfe_frame.set_widget_name{ o.widget_name!.copy_sc( text ); = 0; }
     func bgfe_frame.set_tooltip{ o.tooltip!.copy_sc( text ); = 0; }
     func bgfe_frame.set_show_tooltip{ o.show_tooltip = flag; = 0; }
-    func bgfe_frame.set_text_xalign { o.text_xalign = f3_max( 0, f3_min( 1, value ) ); = 0; }
-    func bgfe_frame.set_text_yalign { o.text_yalign = f3_max( 0, f3_min( 1, value ) ); = 0; }
+    func bgfe_frame.set_x_align { o.x_align = f3_max( 0, f3_min( 1, value ) ); = 0; }
+    func bgfe_frame.set_y_align { o.y_align = f3_max( 0, f3_min( 1, value ) ); = 0; }
 
     /// internals
 
@@ -196,8 +196,8 @@ func (:s) er_t rtt_open( m@* o, vd_t unused )
     o.rtt_attach_widget( gtk_button_new(), o.rtt_widget );
     o.rtt_attach_widget( gtk_label_new( o.text ? o.text.sc : "" ), o.rtt_label );
 
-    gtk_label_set_xalign( GTK_LABEL( o.rtt_label ), o.text_xalign );
-    gtk_label_set_yalign( GTK_LABEL( o.rtt_label ), o.text_yalign );
+    gtk_label_set_xalign( GTK_LABEL( o.rtt_label ), o.x_align );
+    gtk_label_set_yalign( GTK_LABEL( o.rtt_label ), o.y_align );
 
     gtk_container_add( GTK_CONTAINER( o.rtt_widget ), o.rtt_label );
     gtk_widget_show( o.rtt_widget );

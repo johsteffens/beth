@@ -36,7 +36,7 @@ stamp :s bgfe_frame
     bl_t keep_above = false;  // keeps window above the nearest to-root window
     bl_t decorated = true;    // decorated: with border; close and minimize button; moveable
     bl_t close_on_lost_focus; // closes the window when focus is lost
-    bl_t is_fleeting;         // closes the window on distraction form an ancestor (see client distraction event)
+    bl_t is_fleeting;         // closes the window on distraction from an ancestor (see client distraction event)
     st_s => widget_name;      // optional gtk widget name overrides default widget name
     sz_t => x; // desired x position (screen coordinates)
     sz_t => y; // desired y position (screen coordinates)
@@ -144,6 +144,7 @@ stamp :s bgfe_frame
     func bgfe_frame.add_content = o.add_content_t( content, content ? content._ : 0, content_name );
     func bgfe_frame.add_linked_content;
 
+    func bgfe_frame.clear_content;
 
     func er_t broadcast_distraction( m@* o );
 }

@@ -106,11 +106,11 @@ TO_FILE_BTML( DIR + "/app_data/object.btml", obj ); // btml format
 TO_FILE_BBML( DIR + "/app_data/object.bbml", obj ); // bbml format
 TO_FILE_BCML( DIR + "/app_data/object.bcml", obj ); // bcml format
 
-// reads an object from a file in specified format
-obj = FROM_FILE     ( DIR + "/app_data/object.btml" ); // btml or btcl format
-obj = FROM_FILE_BTML( DIR + "/app_data/object.btml" ); // btml format
-obj = FROM_FILE_BBML( DIR + "/app_data/object.bbml" ); // bbml format
-obj = FROM_FILE_BCML( DIR + "/app_data/object.bcml" ); // bcml format
+// reads an object from a file in specified format or returns 0 in case the file does not yield an object
+obj = FROM_FILE     ( DIR + "/app_data/object.btml", 0 /*fallback*/ ); // btml or btcl format
+obj = FROM_FILE_BTML( DIR + "/app_data/object.btml", 0 /*fallback*/ ); // btml format
+obj = FROM_FILE_BBML( DIR + "/app_data/object.bbml", 0 /*fallback*/ ); // bbml format
+obj = FROM_FILE_BCML( DIR + "/app_data/object.bcml", 0 /*fallback*/ ); // bcml format
 
 // If the space behind a semicolon contains no expression then that semicolon is ignored.
 
@@ -745,7 +745,7 @@ Built-in functions are available by the names listed in the table below. They ar
 |FLOOR|1|Floor function|floor|yes|
 |MAX|2|maximum of two operands|max|yes|
 |MIN|2|minimum of two operands|min|yes|
-|IFE|3|Conditional ternary operator: ```IFE( a, b, c ) == a ? b : c```|conditional|yes|
+|IFE|3|Conditional ternary operator: ```IFE( a, b, c ) == a ? b : c```; a,b,c are always evaluated|conditional|yes|
 |ASSERT|1|Creates an error condition in case expression evaluates to FALSE. Returns TRUE otherwise.|assert|no|
 |PRINT|1|Prints object to stdout in compact form; behaves as identity|print|no|
 |PRINTLN|1|Prints object to stdout in compact form; last character is 'newline'; behaves as identity|println|no|
@@ -771,7 +771,12 @@ Return: Success flag (boolean)
 ### Reading from a file
 First argument: Path expression (string)
 
-Return: Object represents by the file
+Second argument: Default return object in case the file does not exist or does not yield an object.
+
+Return: 
+
+* If file exists and represents an object: Object represented by the file
+* Otherwise: Second argument
 
 |Name|Arity|Description|Type Name|Exportable|
 |:---|:---|----|----|----|

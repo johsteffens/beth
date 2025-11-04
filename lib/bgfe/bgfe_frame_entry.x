@@ -34,7 +34,7 @@ stamp :s bgfe_frame
     st_s => text;   // editable text
     st_s => widget_name;   // optional gtk widget name overrides default widget name
     st_s => tooltip;     // external tooltip (if NULL an internal tooltip is used)
-    bl_t show_tooltip = false;
+    bl_t show_tooltip = true;
     tp_t take_action_on = modified; // condition under which frame takes action on client: modified : activate
 
     func bgfe_frame.set_width { o.width = value; = 0; }
