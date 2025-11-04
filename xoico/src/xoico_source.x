@@ -33,7 +33,7 @@ stamp :s = aware :
     st_s ext;  // file extension ( "h" or "x" )
     xoico_group_s => [];
 
-    // source file represents plain data to be embedded in target
+    // !=NULL: source file represents plain data to be embedded in target
     bcore_arr_u0_s => plain_data;
     bl_t embed_plain_data_as_string_function; // embed plain data as string function
 

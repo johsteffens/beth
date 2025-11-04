@@ -1,4 +1,4 @@
-//  Last update: 2025-10-16T12:55:42Z (UTC)
+//  Last update: 2025-10-22T12:35:42Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -2018,6 +2018,7 @@
   bl_t xoico_builder_main_s_get_always_expand( const xoico_builder_main_s* o ); \
   er_t xoico_builder_main_s_set_overwrite_unsigned_target_files( xoico_builder_main_s* o, bl_t v ); \
   bl_t xoico_builder_main_s_get_overwrite_unsigned_target_files( const xoico_builder_main_s* o ); \
+  er_t xoico_builder_main_s_set_build_timestamp( xoico_builder_main_s* o ); \
   er_t xoico_builder_main_s_build_from_file( xoico_builder_main_s* o, sc_t path ); \
   er_t xoico_builder_main_s_update( const xoico_builder_main_s* o ); \
   static inline bl_t xoico_builder_main_s_update_required( const xoico_builder_main_s* o ){ return  xoico_compiler_s_update_required(o->compiler);}
@@ -2109,5 +2110,5 @@ BETH_EXPAND_GROUP_xoico_builder
 BETH_EXPAND_GROUP_xoico_main
 
 #endif // __xoico_xo_H
-// XOICO_BODY_SIGNATURE 0x6849EFCFFB4637D1
-// XOICO_FILE_SIGNATURE 0x24C2FFBB55A575E8
+// XOICO_BODY_SIGNATURE 0xEA5785E1B39E96A5
+// XOICO_FILE_SIGNATURE 0x638DB6F0765482B0

@@ -769,11 +769,13 @@ func (:s) :.parse
                 }
             }
 
-            // check for registration in target
-            c xoico_target_s* target = o.get_target();
-            if( target.embedded_sources.find( 0, -1, embed_file ) == target.embedded_sources.size )
+            // check for proper registration in target.embedded_sources
             {
-                return source.parse_error_fa( "Xoico: #<sc_t> is not registered in the target definition: Add this file-path to array 'embedded_sources'.", embed_file.sc );
+                c xoico_target_s* target = o.get_target();
+                if( target.embedded_sources.find( 0, -1, st_s!^.copy_sc( embed_source.get_file() ) ) == target.embedded_sources.size )
+                {
+                    return source.parse_error_fa( "Xoico: #<sc_t> is not registered in the target definition: Add the relative file-path to array 'embedded_sources'.", embed_file.sc );
+                }
             }
 
             stack.push_d( embed_source );

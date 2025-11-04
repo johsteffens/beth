@@ -101,8 +101,11 @@ func x_inst.main
                 er = builder_main.update();
             }
 
+            if( !er ) er = builder_main.set_build_timestamp();
+
             if( !er )
             {
+                builder_main.set_build_timestamp();
                 f3_t time_var = clock() - time;
                 time_var /= CLOCKS_PER_SEC;
                 x_sink_stdout().push_st_d( st_s_createf( "Finished after %.3f seconds.\n", time_var ) );

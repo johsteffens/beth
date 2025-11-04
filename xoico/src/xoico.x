@@ -90,7 +90,7 @@ func er_t parse_f( m x_source* source, sc_t format )
 /// opens an include file from an include directive in parent
 func er_t embed_file_open( m x_source* parent, sc_t file_name, m x_source** include_source )
 {
-    m st_s* folder = bcore_file_folder_path( parent.get_file() )^^;
+    m st_s* folder = bcore_file_folder_path( parent.get_file() )^;
     if( folder.size == 0 ) folder.push_char( '.' );
 
     m st_s* path = st_s!^;

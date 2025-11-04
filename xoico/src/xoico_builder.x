@@ -585,6 +585,25 @@ func (:target_s) :.build
         target.copyright_and_license_terms =< o.copyright_and_license_terms.fork();
         target.embedded_sources.copy( o.embedded_sources );
 
+
+        target.embedded_sources.clear();
+        foreach( $* e in o.embedded_sources )
+        {
+            m$* file_path = e.clone()^;
+            if( file_path.size == 0 ) = bcore_error_push_fa( general_error~, "File name expected in embedded source declaration." );
+            if( file_path.sc[ 0 ] != '/' && o.root_folder )
+            {
+                st_s* tmp = file_path.clone()^;
+                file_path.copy_fa( "#<sc_t>/#<sc_t>", o.root_folder.sc, tmp.sc );
+            }
+
+            target.embedded_sources.push_st( file_path );
+
+//            if( !bcore_file_exists( file_path.sc ) ) = bcore_error_push_fa( general_error~, "Could not find embedded source file '#<sc_t>'.", file_path.sc );
+//            max_time = u3_max( max_time, bcore_file_last_modification_time_us( file_path.sc ) );
+        }
+
+
         foreach( $* e in parse_param_arr )
         {
             target.parse_from_path( e.file_path.sc, e.group_name.sc, e.trait_name.sc, e.embed_method );
@@ -599,7 +618,6 @@ func (:target_s) :.build
 func (:target_s) er_t build_from_file( m @* o, sc_t path )
 {
     o.load( false, path );
-
     if( o.is_up_to_date() )
     {
         bcore_msg_fa( "XOICO: #<sc_t> is up to date\n", o.full_path_.sc );
@@ -608,7 +626,7 @@ func (:target_s) er_t build_from_file( m @* o, sc_t path )
     {
         o.build();
         o.compiler.finalize( o );
-        if( o.use_build_timestamp_file ) o.set_build_timestamp();
+        //if( o.use_build_timestamp_file ) o.set_build_timestamp();
     }
 
     return 0;
@@ -617,6 +635,15 @@ func (:target_s) er_t build_from_file( m @* o, sc_t path )
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:main_s) er_t set_build_timestamp( m@* o )
+{
+    if( !o.target ) = 0;
+    if( o.target.use_build_timestamp_file ) o.target.set_build_timestamp();
+    = 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

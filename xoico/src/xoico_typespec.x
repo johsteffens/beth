@@ -287,6 +287,8 @@ func (:s) :.expand_x
 
     if( o.flag_static   ) sink.push_fa( "static " );
     if( o.flag_volatile ) sink.push_fa( "volatile " );
+    if( o.flag_aware    ) sink.push_fa( "aware " );
+    if( o.flag_obliv    ) sink.push_fa( "obliv " );
     sc_t sc_type = st_type.sc;
 
     if( o.transient )
