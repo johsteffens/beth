@@ -172,7 +172,7 @@ Redesigned framework based on [bhvm](#bhvm). It is mostly implemented in the lan
 ### bmedia
 **Purpose: Audio and Video Interfaces**
 
-This library provides interfaces for video capture, audio capture and audio play. The video interface bases on the video for Linux API. The audio interface bases on the ALSA API. 
+This library provides interfaces for video capture, audio capture and audio play. The video interface bases on the 'Video for Linux' (V4L) API. The audio interface bases on the ALSA API. 
 
 ### bcodec
 **Purpose: Audio and Video Codecs**
