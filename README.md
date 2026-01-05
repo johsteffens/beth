@@ -266,6 +266,9 @@ For that matter, getting a grasp on *beth* is probably a bit of a challenge even
 * Developed library [bgfe](lib/bgfe/README.md), which is a graphical front-end based on [GTK (https://www.gtk.org)](https://www.gtk.org/).
 * Advanced [BTCL](doc/bcore/btcl.md) features.
 
+**2026**
+
+* Ongoing work: Improving SVD.
 
 
 ------
