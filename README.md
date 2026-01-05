@@ -255,7 +255,7 @@ For that matter, getting a grasp on *beth* is probably a bit of a challenge even
 
 **2024**
 
-* Ongoing work: Improving SVD.
+* Ongoing work: Improving SVD in repository bmath_dev
 * Developed and implemented the constructive language [BTCL](doc/bcore/btcl.md)
 * Implemented [byth](lib/byth/README.md), which is a beth-python interface using Python-C API
   * Implemented a [plotting framework](doc/byth/plot.md).
@@ -265,10 +265,11 @@ For that matter, getting a grasp on *beth* is probably a bit of a challenge even
 
 * Developed library [bgfe](lib/bgfe/README.md), which is a graphical front-end based on [GTK (https://www.gtk.org)](https://www.gtk.org/).
 * Advanced [BTCL](doc/bcore/btcl.md) features.
+* Ongoing work: Improving SVD in repository bmath_dev
 
 **2026**
 
-* Ongoing work: Improving SVD.
+* Ongoing work: Improving SVD in repository bmath_dev
 
 
 ------
