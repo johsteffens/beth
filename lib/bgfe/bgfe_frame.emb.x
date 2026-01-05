@@ -430,7 +430,7 @@ func (:s) add_content_t
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) add_linked_content
+func (:s) add_linked_content_with_frame
 {
     m bgfe_client* client = NULL;
     tp_t client_type = 0;
@@ -444,7 +444,7 @@ func (:s) add_linked_content
 
     if( !x_stamp_t_exists( client_type, content_name ) ) = GERR_fa( "'#name' is not a member of '#name'\n", content_name, client_type );
 
-    m$* frame_link = :link_s!^;
+    m$* frame_link = frame ? frame.clone()^ : :link_s!^;
     frame_link.set_nesting_level( o.nesting_level + o.show_border );
 
     m$* content_sr = sr_s!^;

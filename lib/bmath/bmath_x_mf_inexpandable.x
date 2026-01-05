@@ -189,6 +189,9 @@ group bmath_mf =
     signature bl_t is_ubd( @* o );
     signature bl_t is_lbd( @* o );
 
+    signature bl_t is_svd_dag( @* o ); // is diagonal according to svd decomposition rules
+    signature bl_t is_evd_dag( @* o ); // is diagonal according to evd decomposition rules
+
     /// Matrix is nan if at least one element is nan
     signature bl_t is_nan( @* o );
 
@@ -208,6 +211,17 @@ group bmath_mf =
     signature f3_t fdev_zro( @* o );
     signature f3_t fdev_one( @* o );
     signature f3_t fdev_otn( @* o ); // f = o * oT or oT * o (whichever smaller); x = I
+
+    ///------------------------------------------------------------------------------------------------------------------
+    /** Energy independent deviaion:
+     *  dev = ||f(o) - x|| / max( ||f(o)||, ||x|| )
+     *  '|| ... ||' = Frobenius norm  ( sqrt(sum over squares) )
+     *  f is either idenity (o-->o) or a specified function
+     *  Matrix x is a specified (or implied) state.
+     */
+    signature f3_t dev_equ( @* o, @* op );
+    signature f3_t dev_one( @* o );
+    signature f3_t dev_otn( @* o ); // f = o * oT or oT * o (whichever smaller); x = I
 
     /******************************************************************************************************************/
     /// Retrieving basic properties
@@ -328,6 +342,32 @@ group bmath_mf =
      *  d can be NULL
      */
     signature void mul_add_cps( bl_t htpa, @* a, bl_t htpb, @* b, f3_t c, @* d, f3_t e, m@* r );
+
+    /// omp parallelized multiplication
+
+    /// o * m -> r
+    signature void omp_mul(     @* o, @* m, m@* r ); // r can be folded
+
+    /// o * m^T -> r
+    signature void omp_mul_htp(     @* o, @* m, m@* r ); // r can be folded
+
+    /// o^T * m -> r
+    signature void omp_htp_mul(     @* o, @* m, m@* r ); // r can be folded
+
+    /// o^T * m^T -> r
+    signature void omp_htp_mul_htp( @* o, @* m, m@* r ); // r can be folded
+
+    /// ( o * b ) + c -> r
+    signature void omp_mul_add( @* o, @* b, @* c, m@* r );
+
+    /// ( o * b^T ) + c -> r
+    signature void omp_mul_htp_add( @* o, @* b, @* c, m@* r );
+
+    /// ( o^T * b ) + c -> r
+    signature void omp_htp_mul_add( @* o, @* b, @* c, m@* r );
+
+    /// ( o^T * b^T ) + c -> r
+    signature void omp_htp_mul_htp_add( @* o, @* b, @* c, m@* r );
 
     //------------------------------------------------------------------------------------------------------------------
     /// matrix * matrix --> matrix (result matrix is allocated)
@@ -842,6 +882,10 @@ stamp bmath_mf3_s = bmath_mf
     func bmath_mf.is_ubd;
     func bmath_mf.is_lbd;
     func bmath_mf.is_nan;
+
+    func bmath_mf.is_svd_dag;
+    func bmath_mf.is_evd_dag;
+
     func bmath_mf.tss;
 
     ///------------------------------------------------------------------------------------------------------------------
@@ -851,6 +895,13 @@ stamp bmath_mf3_s = bmath_mf
     func bmath_mf.fdev_zro;
     func bmath_mf.fdev_one;
     func bmath_mf.fdev_otn;
+
+    ///------------------------------------------------------------------------------------------------------------------
+    /// Energy independent norm
+
+    func bmath_mf.dev_equ;
+    func bmath_mf.dev_one;
+    func bmath_mf.dev_otn;
 
     /******************************************************************************************************************/
     /// Retrieving basic properties
@@ -937,6 +988,15 @@ stamp bmath_mf3_s = bmath_mf
     func bmath_mf.htp_mul_add;
     func bmath_mf.htp_mul_htp_add;
     func bmath_mf.mul_add_cps;
+
+    func bmath_mf.omp_mul;
+    func bmath_mf.omp_mul_htp;
+    func bmath_mf.omp_htp_mul;
+    func bmath_mf.omp_htp_mul_htp;
+    func bmath_mf.omp_mul_add;
+    func bmath_mf.omp_mul_htp_add;
+    func bmath_mf.omp_htp_mul_add;
+    func bmath_mf.omp_htp_mul_htp_add;
 
     //------------------------------------------------------------------------------------------------------------------
     /// matrix * matrix --> matrix (result matrix is allocated)
@@ -1145,6 +1205,10 @@ stamp bmath_mf2_s = bmath_mf
     func bl_t is_ubd( @* o );
     func bl_t is_lbd( @* o );
     func bl_t is_nan( @* o );
+
+    func bmath_mf.is_svd_dag;
+    func bmath_mf.is_evd_dag;
+
     func f2_t tss( @* o );
 
     ///------------------------------------------------------------------------------------------------------------------
@@ -1154,6 +1218,13 @@ stamp bmath_mf2_s = bmath_mf
     func f2_t fdev_zro( @* o );
     func f2_t fdev_one( @* o );
     func f2_t fdev_otn( @* o ); // f = o * oT or oT * o (whichever smaller); x = I
+
+    ///------------------------------------------------------------------------------------------------------------------
+    /// Energy independent norm
+
+    func bmath_mf.dev_equ;
+    func bmath_mf.dev_one;
+    func bmath_mf.dev_otn;
 
     /******************************************************************************************************************/
     /// Retrieving basic properties
@@ -1230,6 +1301,15 @@ stamp bmath_mf2_s = bmath_mf
     func bmath_mf.htp_mul;
     func bmath_mf.htp_mul_esp;
     func bmath_mf.htp_mul_htp;
+
+    func bmath_mf.omp_mul;
+    func bmath_mf.omp_mul_htp;
+    func bmath_mf.omp_htp_mul;
+    func bmath_mf.omp_htp_mul_htp;
+    func bmath_mf.omp_mul_add;
+    func bmath_mf.omp_mul_htp_add;
+    func bmath_mf.omp_htp_mul_add;
+    func bmath_mf.omp_htp_mul_htp_add;
 
     func void mul_udu_htp(     @* u, const bmath_vf2_s* d, m@* r );
     func void mul_udu_htp_esp( @* u, const bmath_vf2_s* d, m@* r );

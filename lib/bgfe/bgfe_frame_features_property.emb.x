@@ -92,9 +92,10 @@ feature er_t set_manual_content( m@* o, bl_t flag ) = 0; // bgfe_frame_s: adds c
 name open, save, select_folder, create_folder;
 feature er_t set_chooser_action( m@* o, tp_t name ) = 0;
 
-
+// link related properties
 feature er_t set_allow_custom_type( m@* o, bl_t flag            ) = 0; // allows specifying a custom type (used with bgfe_frame_link_s)
 feature er_t set_type_list        ( m@* o, bcore_arr_tp_s* list ) = 0; // sets a list of permissible types: NULL is allowed (used with bgfe_frame_link_s)
+feature er_t set_clearable        ( m@* o, bl_t flag            ) = 0; // displays clear button
 
 //----------------------------------------------------------------------------------------------------------------------
 

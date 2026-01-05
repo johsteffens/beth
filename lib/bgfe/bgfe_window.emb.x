@@ -331,10 +331,10 @@ func (:s) add_content_t
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) add_linked_content
+func (:s) add_linked_content_with_frame
 {
     if( !o.frame ) o.set_default_frame();
-    = o.frame.add_linked_content( content_name );
+    = o.frame.add_linked_content_with_frame( content_name, frame );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

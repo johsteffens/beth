@@ -42,6 +42,7 @@ stamp :s bgfe_frame
 
     func bgfe_frame.set_show_client_name{ o.show_client_name = flag; = 0; }
     func bgfe_frame.set_show_glimpse{ o.show_glimpse = flag; = 0; }
+    func bgfe_frame.set_clearable{ o.clearable = flag; = 0; }
     func bgfe_frame.set_width { o.width = value; = 0; }
     func bgfe_frame.set_height{ o.height = value; = 0; }
     func bgfe_frame.set_insensitive { o.insensitive = flag; = 0; }

@@ -535,6 +535,7 @@ func (:s) bgfe_frame.cycle
                 }
                 else
                 {
+                    o.client_close_confirm( o, action_type.1 );
                     o.window.close();
                     o.window =< NULL;
                     o.button_main_set_name( "bgfe_frame_link" );

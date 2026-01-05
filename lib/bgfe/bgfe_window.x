@@ -142,7 +142,7 @@ stamp :s bgfe_frame
     func bgfe_frame.add_frame;
     func bgfe_frame.add_content_t;
     func bgfe_frame.add_content = o.add_content_t( content, content ? content._ : 0, content_name );
-    func bgfe_frame.add_linked_content;
+    func bgfe_frame.add_linked_content_with_frame;
 
     func bgfe_frame.clear_content;
 

@@ -139,6 +139,7 @@ ifndef DO_NOT_CLEAN_XO_FILES
 	rm -f $(SRC_DIR)/*.xo.c
 	rm -f $(SRC_DIR)/*.xo.state
 	rm -f $(SRC_DIR)/*.xo.build.timestamp
+	rm -f $(ROOT_DIR)/*.xo.build.timestamp
 endif
 	$(CLEAN)
 

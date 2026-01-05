@@ -37,6 +37,7 @@ embed "bgfe_frame_features_client.emb.x";   // client <-> frame communication
 
 forward bgfe_window_s;
 forward bgfe_window_list_s;
+forward bgfe_frame_link_s;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -90,8 +91,18 @@ feature er_t add_content_t( m@* o, m obliv bgfe_client* content, tp_t content_ty
  *  Unlike add_content above, the added content object may be NULL, which means that opening the
  *  content window will create the content object at the same time.
  */
-feature er_t add_linked_content   ( m@* o, tp_t content_name ) = 0;
-feature er_t add_linked_content_sc( m@* o, sc_t content_name ) = o.add_linked_content( bentypeof( content_name ) );
+func er_t add_linked_content   ( m@* o, tp_t content_name ) export = o.add_linked_content_with_frame( content_name, NULL );
+func er_t add_linked_content_sc( m@* o, sc_t content_name ) export = o.add_linked_content_with_frame( bentypeof( content_name ), NULL );
+
+/** Adding linked content with customizable frame
+ *  Linked content is content dynamically owned by this frame's client (typically a declared link).
+ *  It is represented by a button which opens a window with the respective content object.
+ *  Unlike add_content above, the added content object may be NULL, which means that opening the
+ *  content window will create the content object at the same time.
+ *  frame_link: optional custom frame_link (NULL for default frame_link)
+ */
+feature er_t add_linked_content_with_frame   ( m@* o, tp_t content_name, c bgfe_frame_link_s* frame ) = 0;
+feature er_t add_linked_content_with_frame_sc( m@* o, sc_t content_name, c bgfe_frame_link_s* frame ) = o.add_linked_content_with_frame( bentypeof( content_name ), frame );
 
 /** Adds a frame to the content list.
  *  The client of that frame and the client of o need not be related or even exist.
@@ -439,7 +450,7 @@ stamp :s
      *  Unlike add_content above, the added content object may be NULL, which means that opening the
      *  content window will create the content object at the same time.
      */
-    func :.add_linked_content;
+    func :.add_linked_content_with_frame;
 
     /** Adding frames:
      *  A frame is added to the content-list or a window to the window-list.
