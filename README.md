@@ -46,7 +46,7 @@ I designed/developed/invented code and methods inside beth from scratch with foc
 # License
 The source code in this repository is licensed under the [Apache 2.0 License](LICENSE). 
 
-*Copyright (C) 2017, ..., 2025 Johannes B. Steffens.*
+*Copyright (C) 2017, ..., 2026 Johannes B. Steffens.*
 
 # Core Concepts
 
