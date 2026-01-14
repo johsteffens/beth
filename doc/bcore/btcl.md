@@ -250,7 +250,7 @@ Float literals are specified via decimal point (even if the value is a whole num
 123.0       // float (f3_t) (123.0)
 123E1       // float (f3_t) (1230)
 ```
-## SI Metric Symbols for literals
+## SI Metric Symbols for Literals
 
 For certain groups of small and large numbers, the literal expression can be simplified with a suffix-character representing a factor. The character mostly corresponds to the set of [SI Metric Symbols](https://en.wikipedia.org/wiki/Metric_prefix) (See Exceptions below).
 

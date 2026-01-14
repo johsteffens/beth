@@ -1,4 +1,4 @@
-//  Last update: 2026-01-14T11:41:04Z (UTC)
+//  Last update: 2026-01-14T12:38:26Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -75,7 +75,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0x9ECD3EF1E3F58E29ull
+// HKEYOF_bcore 0xF9231D243A380D60ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -3308,9 +3308,9 @@ XOILA_DEFINE_SPECT_NASC_BEGIN( x_inst, bcore_parse )
 "}",
 XOILA_DEFINE_SPECT_NASC_END( x_inst, bcore_parse )
 
-er_t bcore_parse_number_literal( x_source* source, sr_s* sr )
+er_t bcore_parse_number_literal_to_sr( x_source* source, sr_s* sr )
 {
-    // bcore_parse.x:24:1
+    // bcore_parse.x:27:1
     BLM_INIT_LEVEL(0);
     bl_t is_hex = false;
     bl_t is_float = false;
@@ -3425,6 +3425,26 @@ er_t bcore_parse_number_literal( x_source* source, sr_s* sr )
         }
     }
     
+    BLM_RETURNV(er_t, 0)
+}
+
+er_t bcore_parse_number_literal_to_f3( x_source* source, f3_t* val )
+{
+    // bcore_parse.h:39:1
+    BLM_INIT_LEVEL(0);
+    sr_s* sr = ((sr_s*)BLM_LEVEL_T_PUSH(0,sr_s,sr_s_create()));
+    BLM_TRY(bcore_parse_number_literal_to_sr(source, sr ))
+    if( val ) (*(val)) = sr_s_to_f3(sr);
+    BLM_RETURNV(er_t, 0)
+}
+
+er_t bcore_parse_number_literal_to_s3( x_source* source, s3_t* val )
+{
+    // bcore_parse.h:49:1
+    BLM_INIT_LEVEL(0);
+    sr_s* sr = ((sr_s*)BLM_LEVEL_T_PUSH(0,sr_s,sr_s_create()));
+    BLM_TRY(bcore_parse_number_literal_to_sr(source, sr ))
+    if( val ) (*(val)) = sr_s_to_s3(sr);
     BLM_RETURNV(er_t, 0)
 }
 
@@ -4887,7 +4907,7 @@ er_t x_btcl_s_run_from_source( const x_btcl_s* o, x_source* source )
 
 er_t x_btcl_s_parse_create_object( const x_btcl_s* o, x_source* source, sr_s* obj )
 {
-    // bcore_x_btcl.x:1478:1
+    // bcore_x_btcl.x:1357:1
     BLM_INIT_LEVEL(0);
     x_btcl_context_s* context = x_btcl_context_s_setup(((x_btcl_context_s*)BLM_LEVEL_T_PUSH(0,x_btcl_context_s,x_btcl_context_s_create())));
     bcore_arr_st_s_attach( &(context->eval_path_arr ),  ((bcore_arr_st_s*)bcore_fork(o->eval_path_arr)));
@@ -5196,129 +5216,9 @@ tp_t x_btcl_frame_s_get_identifier( x_btcl_frame_s* o, x_source* source, bl_t ta
     return  tp_identifier;
 }
 
-er_t x_btcl_frame_s_eval_number_literal( x_btcl_frame_s* o, x_source* source, sr_s* sr )
-{
-    // bcore_x_btcl.x:924:1
-    BLM_INIT_LEVEL(0);
-    bl_t is_hex = false;
-    bl_t is_float = false;
-    st_s st;BLM_T_INIT_SPUSH(st_s, &st);;
-    
-    if( x_source_parse_bl(source,"#?'0x'" ) )
-    {
-        st_s_push_sc(&(st),"0x" );
-        is_hex = true;
-    }
-    else if( x_source_parse_bl(source,"#?'0X'" ) )
-    {
-        st_s_push_sc(&(st),"0X" );
-        is_hex = true;
-    }
-    
-    if( is_hex )
-    {
-        while( x_source_parse_bl(source,"#?(([0]>='0'&&[0]<='9')||([0]>='a'&&[0]<='f')||([0]>='A'&&[0]<='F'))" ) )
-        {
-            st_s_push_char(&(st),x_source_get_char(source) );
-        }
-    }
-    else // decimal
-    {
-        while( x_source_parse_bl(source,"#?([0]>='0'&&[0]<='9')" ) ) st_s_push_char(&(st),x_source_get_char(source) );
-    }
-    
-    if( !is_hex && x_source_parse_bl(source,"#?([0]=='.')" ) )
-    {
-        st_s_push_char(&(st),x_source_get_char(source) );
-        while( x_source_parse_bl(source,"#?([0]>='0'&&[0]<='9')" ) ) st_s_push_char(&(st),x_source_get_char(source) );
-        is_float = true;
-    }
-    
-    bl_t exponent = false;
-    
-    if( !is_hex && x_source_parse_bl(source,"#?([0]=='e'||[0]=='E')" ) )
-    {
-        st_s_push_char(&(st),x_source_get_char(source) );
-        exponent = true;
-        is_float = true;
-    }
-    
-    if( exponent )
-    {
-        if( x_source_parse_bl(source,"#?([0]=='+'||[0]=='-')" ) )
-        {
-            st_s_push_char(&(st),x_source_get_char(source) );
-        }
-    
-        while( x_source_parse_bl(source,"#?([0]>='0'&&[0]<='9')" ) )
-        {
-            st_s_push_char(&(st),x_source_get_char(source) );
-        }
-    }
-    
-    f3_t factor = 1.0;
-    bl_t use_suffix = true;
-    
-    char c = x_source_inspect_char(source);
-    switch( c )
-    {
-        case 'd': factor = 1E-1;  break; // deci
-        case 'c': factor = 1E-2;  break; // centi
-        case 'm': factor = 1E-3;  break; // milli
-        case 'u': factor = 1E-6;  break; // micro
-        case 'n': factor = 1E-9;  break; // nano
-        case 'p': factor = 1E-12; break; // pico
-        case 'f': factor = 1E-15; break; // femto
-        case 'a': factor = 1E-18; break; // atto
-        case 'z': factor = 1E-21; break; // zepto
-        case 'y': factor = 1E-24; break; // yocto
-        case 'r': factor = 1E-27; break; // ronto
-        case 'q': factor = 1E-30; break; // quecto
-    
-        case 'D': factor = 1E+1;  break; // deca
-        case 'C': factor = 1E+2;  break; // cento
-        case 'K': factor = 1E+3;  break; // kilo
-        case 'M': factor = 1E+6;  break; // mega
-        case 'G': factor = 1E+9;  break; // giga
-        case 'T': factor = 1E+12; break; // tera
-        case 'P': factor = 1E+15; break; // peta
-        case 'X': factor = 1E+18; break; // exa
-        case 'Z': factor = 1E+21; break; // zetta
-        case 'Y': factor = 1E+24; break; // yotta
-        case 'R': factor = 1E+27; break; // ronna
-        case 'Q': factor = 1E+30; break; // quetta
-    
-        default: use_suffix = false; break;
-    }
-    
-    if( use_suffix ) x_source_get_char(source);
-    
-    if( is_float )
-    {
-        f3_t f3 = 0;
-        st_s_parse_fa(&(st),0, -1, "#<f3_t*>", (&(f3)) );
-        sr_s_const_from_f3(sr,f3 * factor );
-    }
-    else
-    {
-        s3_t s3 = 0;
-        st_s_parse_fa(&(st),0, -1, "#<s3_t*>", (&(s3)) );
-        if( use_suffix )
-        {
-            sr_s_const_from_f3(sr,s3 * factor );
-        }
-        else
-        {
-            sr_s_const_from_s3(sr,s3 );
-        }
-    }
-    
-    BLM_RETURNV(er_t, 0)
-}
-
 er_t x_btcl_frame_s_eval_condition( x_btcl_frame_s* o, x_source* source, bl_t* condition )
 {
-    // bcore_x_btcl.x:1045:1
+    // bcore_x_btcl.x:924:1
     BLM_INIT_LEVEL(0);
     sr_s* sb = ((sr_s*)BLM_LEVEL_T_PUSH(0,sr_s,sr_s_create()));
     BLM_TRY(x_btcl_frame_s_eval(o,0, source, sb ))
@@ -5329,7 +5229,7 @@ er_t x_btcl_frame_s_eval_condition( x_btcl_frame_s* o, x_source* source, bl_t* c
 
 er_t x_btcl_frame_s_eval_in_frame( const x_btcl_frame_s* o, s2_t priority, x_source* source, sr_s* obj )
 {
-    // bcore_x_btcl.x:1088:1
+    // bcore_x_btcl.x:967:1
     BLM_INIT_LEVEL(0);
     x_btcl_frame_s* frame = x_btcl_frame_s_setup(((x_btcl_frame_s*)BLM_LEVEL_T_PUSH(0,x_btcl_frame_s,x_btcl_frame_s_create())),o );
     BLM_TRY(x_btcl_frame_s_eval(frame,priority, source, obj ))
@@ -5339,7 +5239,7 @@ er_t x_btcl_frame_s_eval_in_frame( const x_btcl_frame_s* o, s2_t priority, x_sou
 
 er_t x_btcl_frame_s_eval( x_btcl_frame_s* o, s2_t exit_priority, x_source* source, sr_s* obj )
 {
-    // bcore_x_btcl.x:1098:1
+    // bcore_x_btcl.x:977:1
     
     o->eval_depth++;
     
@@ -5355,7 +5255,7 @@ er_t x_btcl_frame_s_eval( x_btcl_frame_s* o, s2_t exit_priority, x_source* sourc
     /// number literal
     else if( x_source_parse_bl(source," #?([0]>='0'&&[0]<='9')" ) )
     {
-        BLM_TRY(x_btcl_frame_s_eval_number_literal(o,source, obj ))
+        BLM_TRY(bcore_parse_number_literal_to_sr(source, obj ))
     }
     
     /// string literal
@@ -5664,7 +5564,7 @@ er_t x_btcl_frame_s_eval( x_btcl_frame_s* o, s2_t exit_priority, x_source* sourc
 
 er_t x_btcl_frame_s_parse_create_final_object( x_btcl_frame_s* o, x_source* source, sr_s* obj )
 {
-    // bcore_x_btcl.x:1429:1
+    // bcore_x_btcl.x:1308:1
     BLM_INIT_LEVEL(0);
     sr_s* sr = ((sr_s*)BLM_LEVEL_T_PUSH(0,sr_s,sr_s_create()));
     BLM_TRY(x_btcl_frame_s_eval(o,0, source, sr ))
@@ -7129,7 +7029,7 @@ er_t x_btcl_generic_copy( sr_s* sr, const sr_s* sb )
 
 er_t x_btcl_to_sink( bl_t detailed, const sr_s* sr, x_sink* sink )
 {
-    // bcore_x_btcl.x:1061:1
+    // bcore_x_btcl.x:940:1
     
     if( detailed )
     {
@@ -7175,7 +7075,7 @@ er_t x_btcl_bop_cat_ab( sr_s* a, sr_s* b, sr_s* sr )
 
 void x_btcl_selftest( sc_t file )
 {
-    // bcore_x_btcl.x:1510:1
+    // bcore_x_btcl.x:1389:1
     BLM_INIT_LEVEL(0);
     sr_s* obj = ((sr_s*)BLM_LEVEL_T_PUSH(0,sr_s,sr_s_create()));
     BLM_TRY_EXIT(x_btcl_parse_create_object(((x_source*)BLM_LEVEL_A_PUSH(0,x_source_check_create_from_file(file ))), obj ))
@@ -10642,7 +10542,11 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             // source: bcore_parse.h
 
             // group: bcore_parse
-            BCORE_REGISTER_FUNC( bcore_parse_number_literal );
+            BCORE_REGISTER_FUNC( bcore_parse_number_literal_to_sr );
+            BCORE_REGISTER_FUNC( bcore_parse_number_literal_to_f3 );
+            BCORE_REGISTER_FUNC( bcore_parse_number_literal_to_s3 );
+            BCORE_REGISTER_FUNC( bcore_parse_st_number_literal_to_f3 );
+            BCORE_REGISTER_FUNC( bcore_parse_st_number_literal_to_s3 );
             XOILA_REGISTER_SPECT( bcore_parse );
 
             // --------------------------------------------------------------------
@@ -11186,5 +11090,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x655DE19462E92CB1
-// XOICO_FILE_SIGNATURE 0xD638B80227E1EDF6
+// XOICO_BODY_SIGNATURE 0xED82087936479F08
+// XOICO_FILE_SIGNATURE 0xB5FD79C07C385E60

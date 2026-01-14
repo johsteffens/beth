@@ -21,9 +21,9 @@
 
 /** Parses a number from source considering all integer, hex and float encodings and SI metric symbols as suffix.
  *  Creates f3_t or s3_t depending on syntax; makes sr constant
- *  See also https://github.com/johsteffens/beth/blob/master/doc/bcore/btcl.md#shortcuts-for-literals
+ *  See also https://github.com/johsteffens/beth/blob/master/doc/bcore/btcl.md#si-metric-symbols-for-literals
  */
-func er_t number_literal( m x_source* source, m sr_s* sr )
+func er_t number_literal_to_sr( m x_source* source, m sr_s* sr )
 {
     bl_t is_hex = false;
     bl_t is_float = false;

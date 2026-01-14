@@ -1,4 +1,4 @@
-//  Last update: 2026-01-14T11:41:04Z (UTC)
+//  Last update: 2026-01-14T12:38:26Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -2554,12 +2554,18 @@
 #define TYPEOF_bcore_parse_spect_s 0xB71B1E6A29428C12ull
 #define BETH_EXPAND_GROUP_bcore_parse \
   BCORE_FORWARD_OBJECT( bcore_parse ); \
-  er_t bcore_parse_number_literal( x_source* source, sr_s* sr ); \
+  er_t bcore_parse_number_literal_to_sr( x_source* source, sr_s* sr ); \
+  er_t bcore_parse_number_literal_to_f3( x_source* source, f3_t* val ); \
+  er_t bcore_parse_number_literal_to_s3( x_source* source, s3_t* val ); \
+  static inline er_t bcore_parse_st_number_literal_to_f3( const st_s* st, f3_t* val ); \
+  static inline er_t bcore_parse_st_number_literal_to_s3( const st_s* st, s3_t* val ); \
   XOILA_DECLARE_SPECT( bcore_parse ) \
   { \
       bcore_spect_header_s header; \
   }; \
-  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_parse )
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_parse ) \
+  static inline er_t bcore_parse_st_number_literal_to_f3( const st_s* st, f3_t* val ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, bcore_parse_number_literal_to_f3(((x_source*)(((bcore_source_string_s*)BLM_LEVEL_T_PUSH(0,bcore_source_string_s,bcore_source_string_s_create_from_string(st ))))), val ))} \
+  static inline er_t bcore_parse_st_number_literal_to_s3( const st_s* st, s3_t* val ){BLM_INIT_LEVEL(0);BLM_RETURNV(er_t, bcore_parse_number_literal_to_s3(((x_source*)(((bcore_source_string_s*)BLM_LEVEL_T_PUSH(0,bcore_source_string_s,bcore_source_string_s_create_from_string(st ))))), val ))}
 
 /**********************************************************************************************************************/
 // source: bcore_x_btml.h
@@ -3019,7 +3025,6 @@
   x_btcl_frame_s* x_btcl_frame_s_import_forked_vars( x_btcl_frame_s* o, tp_t prefix, x_btcl_frame_s* src_frame ); \
   er_t x_btcl_frame_s_generic_copy( x_btcl_frame_s* o, const x_source_point_s* sp, sr_s* sr, const sr_s* sb ); \
   tp_t x_btcl_frame_s_get_identifier( x_btcl_frame_s* o, x_source* source, bl_t take_from_source ); \
-  er_t x_btcl_frame_s_eval_number_literal( x_btcl_frame_s* o, x_source* source, sr_s* sr ); \
   er_t x_btcl_frame_s_eval_condition( x_btcl_frame_s* o, x_source* source, bl_t* condition ); \
   er_t x_btcl_frame_s_eval_in_frame( const x_btcl_frame_s* o, s2_t priority, x_source* source, sr_s* obj ); \
   er_t x_btcl_frame_s_eval( x_btcl_frame_s* o, s2_t exit_priority, x_source* source, sr_s* obj ); \
@@ -4260,5 +4265,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x1F2CA0ED2136B760
-// XOICO_FILE_SIGNATURE 0x305340ED2D9409DF
+// XOICO_BODY_SIGNATURE 0x00E9F36631EEB4CC
+// XOICO_FILE_SIGNATURE 0x9513FEAC8A1D6D1A

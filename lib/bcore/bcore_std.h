@@ -78,6 +78,7 @@
 #include "bcore_x_deque.h"
 #include "bcore_x_compare.h"
 
+#include "bcore_parse.h"
 #include "bcore_x_btcl.h"
 
 #endif // BCORE_STD_H
