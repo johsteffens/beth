@@ -193,7 +193,7 @@ For example:
 * The large increase of built-in features over the years. Of which only a fraction appears to be truly needed in any given code base.
 * Consequently rather slow compilation.
 
-More modern languages (e.g. Java, Python, Go) provide advanced features as well as alleviating some of above issues. Still, they may come at a loss of efficiency and/or loss of control over how code and data is mapped onto the hardware.
+More modern languages (e.g. Java, Python) provide advanced features as well as alleviating some of above issues. Still, they may come at a loss of efficiency and/or loss of control over how code and data is mapped onto the hardware.
 
 Overcoming these deficiencies is a key motivation in project *beth*. The language 'C' was preferred over 'C++' because most concepts that set 'C++' apart from 'C' have been solved differently in *beth*. This effort culminates in the language [Xoila](#xoila).
 

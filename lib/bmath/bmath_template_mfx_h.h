@@ -583,10 +583,10 @@ void BCATU(bmath_mfx_s,ubd_to_lbd)( bmath_mfx_s* a, bmath_mfx_s* v );
  */
 void BCATU(bmath_mfx_s,lbd_to_ubd)( bmath_mfx_s* u, bmath_mfx_s* a );
 
-/** ubd_to_lbd with v deemed transposed. */
+/** ubd_to_lbd with v deemed transposed. (v may be full, thin or NULL)*/
 void BCATU(bmath_mfx_s,ubd_to_lbd_htp)( bmath_mfx_s* a, bmath_mfx_s* v );
 
-/** lbd_to_vbd with u deemed transposed. */
+/** lbd_to_vbd with u deemed transposed. (u may be full, thin or NULL)*/
 void BCATU(bmath_mfx_s,lbd_to_ubd_htp)( bmath_mfx_s* u, bmath_mfx_s* a );
 
 /**********************************************************************************************************************/

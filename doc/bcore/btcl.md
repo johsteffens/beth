@@ -250,11 +250,11 @@ Float literals are specified via decimal point (even if the value is a whole num
 123.0       // float (f3_t) (123.0)
 123E1       // float (f3_t) (1230)
 ```
-## Shortcuts for literals
+## SI Metric Symbols for literals
 
-For certain groups of small and large numbers, the literal expression can be simplified by appending a character representing a shortcut for a factor.
+For certain groups of small and large numbers, the literal expression can be simplified with a suffix-character representing a factor. The character mostly corresponds to the set of [SI Metric Symbols](https://en.wikipedia.org/wiki/Metric_prefix) (See Exceptions below).
 
-Using that shortcut with a number literal turns the type always into floating point. This holds true even if the resulting value could be represented by an integer.
+Using that symbol with a number literal turns the type always into floating point. This holds true even if the resulting value could be represented by an integer.
 
 | Character | Derived from | Factor |
 | --------- | ------------ | ------ |
@@ -282,6 +282,8 @@ Using that shortcut with a number literal turns the type always into floating po
 | Y         | Yotta         | 1E24    |
 | R         | Ronna         | 1E27    |
 | Q         | Quetta       | 1E30    |
+
+### Exceptions:
 
 (*): Character 'E' cannot be used here, because it clashes with exponential notation.
 
