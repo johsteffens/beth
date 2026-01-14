@@ -1,4 +1,4 @@
-//  Last update: 2025-10-19T12:54:32Z (UTC)
+//  Last update: 2026-01-14T11:41:04Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -30,6 +30,7 @@
  *  bcore_shell.h
  *  bcore_huffman.h
  *  bcore_indexer.h
+ *  bcore_parse.h
  *  bcore_x_btml.h
  *  bcore_x_bbml.h
  *  bcore_x_bcml.h
@@ -47,6 +48,7 @@
  *  bcore_huffman.x
  *  bcore_img_inexpandable.x
  *  bcore_name_manager_inexpandable.x
+ *  bcore_parse.x
  *  bcore_sink_inexpandable.x
  *  bcore_source_inexpandable.x
  *  bcore_sr_inexpandable.x
@@ -73,7 +75,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0xD6A23A740A345A5Bull
+// HKEYOF_bcore 0x9ECD3EF1E3F58E29ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -1038,7 +1040,7 @@ BCORE_DEFINE_OBJECT_INST_P_NASC_BEGIN( x_thread_s )
 "aware x_thread",
 "{",
     "private pthread_t _thread;",
-    "bl_t _join;",
+    "private bl_t _join;",
     "func bcore_inst_call:down_e;",
 "}",
 BCORE_DEFINE_OBJECT_INST_P_NASC_END( x_thread_s )
@@ -3291,6 +3293,139 @@ void bcore_indexer_selftest( void )
     }
     
     BLM_DOWN();
+}
+
+/**********************************************************************************************************************/
+// source: bcore_parse.h
+#include "bcore_parse.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_parse; embeds: bcore_parse.x
+
+XOILA_DEFINE_SPECT_NASC_BEGIN( x_inst, bcore_parse )
+"{",
+    "bcore_spect_header_s header;",
+"}",
+XOILA_DEFINE_SPECT_NASC_END( x_inst, bcore_parse )
+
+er_t bcore_parse_number_literal( x_source* source, sr_s* sr )
+{
+    // bcore_parse.x:24:1
+    BLM_INIT_LEVEL(0);
+    bl_t is_hex = false;
+    bl_t is_float = false;
+    st_s st;BLM_T_INIT_SPUSH(st_s, &st);;
+    
+    if( x_source_parse_bl(source,"#?'0x'" ) )
+    {
+        st_s_push_sc(&(st),"0x" );
+        is_hex = true;
+    }
+    else if( x_source_parse_bl(source,"#?'0X'" ) )
+    {
+        st_s_push_sc(&(st),"0X" );
+        is_hex = true;
+    }
+    
+    if( is_hex )
+    {
+        while( x_source_parse_bl(source,"#?(([0]>='0'&&[0]<='9')||([0]>='a'&&[0]<='f')||([0]>='A'&&[0]<='F'))" ) )
+        {
+            st_s_push_char(&(st),x_source_get_char(source) );
+        }
+    }
+    else // decimal
+    {
+        while( x_source_parse_bl(source,"#?([0]>='0'&&[0]<='9')" ) ) st_s_push_char(&(st),x_source_get_char(source) );
+    }
+    
+    if( !is_hex && x_source_parse_bl(source,"#?([0]=='.')" ) )
+    {
+        st_s_push_char(&(st),x_source_get_char(source) );
+        while( x_source_parse_bl(source,"#?([0]>='0'&&[0]<='9')" ) ) st_s_push_char(&(st),x_source_get_char(source) );
+        is_float = true;
+    }
+    
+    bl_t exponent = false;
+    
+    if( !is_hex && x_source_parse_bl(source,"#?([0]=='e'||[0]=='E')" ) )
+    {
+        st_s_push_char(&(st),x_source_get_char(source) );
+        exponent = true;
+        is_float = true;
+    }
+    
+    if( exponent )
+    {
+        if( x_source_parse_bl(source,"#?([0]=='+'||[0]=='-')" ) )
+        {
+            st_s_push_char(&(st),x_source_get_char(source) );
+        }
+    
+        while( x_source_parse_bl(source,"#?([0]>='0'&&[0]<='9')" ) )
+        {
+            st_s_push_char(&(st),x_source_get_char(source) );
+        }
+    }
+    
+    f3_t factor = 1.0;
+    bl_t use_suffix = true;
+    
+    char c = x_source_inspect_char(source);
+    switch( c )
+    {
+        case 'd': factor = 1E-1;  break; // deci
+        case 'c': factor = 1E-2;  break; // centi
+        case 'm': factor = 1E-3;  break; // milli
+        case 'u': factor = 1E-6;  break; // micro
+        case 'n': factor = 1E-9;  break; // nano
+        case 'p': factor = 1E-12; break; // pico
+        case 'f': factor = 1E-15; break; // femto
+        case 'a': factor = 1E-18; break; // atto
+        case 'z': factor = 1E-21; break; // zepto
+        case 'y': factor = 1E-24; break; // yocto
+        case 'r': factor = 1E-27; break; // ronto
+        case 'q': factor = 1E-30; break; // quecto
+    
+        case 'D': factor = 1E+1;  break; // deca
+        case 'C': factor = 1E+2;  break; // cento
+        case 'K': factor = 1E+3;  break; // kilo
+        case 'M': factor = 1E+6;  break; // mega
+        case 'G': factor = 1E+9;  break; // giga
+        case 'T': factor = 1E+12; break; // tera
+        case 'P': factor = 1E+15; break; // peta
+        case 'X': factor = 1E+18; break; // exa
+        case 'Z': factor = 1E+21; break; // zetta
+        case 'Y': factor = 1E+24; break; // yotta
+        case 'R': factor = 1E+27; break; // ronna
+        case 'Q': factor = 1E+30; break; // quetta
+    
+        default: use_suffix = false; break;
+    }
+    
+    if( use_suffix ) x_source_get_char(source);
+    
+    if( is_float )
+    {
+        f3_t f3 = 0;
+        st_s_parse_fa(&(st),0, -1, "#<f3_t*>", (&(f3)) );
+        sr_s_const_from_f3(sr,f3 * factor );
+    }
+    else
+    {
+        s3_t s3 = 0;
+        st_s_parse_fa(&(st),0, -1, "#<s3_t*>", (&(s3)) );
+        if( use_suffix )
+        {
+            sr_s_const_from_f3(sr,s3 * factor );
+        }
+        else
+        {
+            sr_s_const_from_s3(sr,s3 );
+        }
+    }
+    
+    BLM_RETURNV(er_t, 0)
 }
 
 /**********************************************************************************************************************/
@@ -10504,6 +10639,13 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
             XOILA_REGISTER_SPECT( bcore_indexer );
 
             // --------------------------------------------------------------------
+            // source: bcore_parse.h
+
+            // group: bcore_parse
+            BCORE_REGISTER_FUNC( bcore_parse_number_literal );
+            XOILA_REGISTER_SPECT( bcore_parse );
+
+            // --------------------------------------------------------------------
             // source: bcore_x_btml.h
 
             // group: x_btml
@@ -11044,5 +11186,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x3CE367312BDD64F0
-// XOICO_FILE_SIGNATURE 0x5E4919CC134EFF7D
+// XOICO_BODY_SIGNATURE 0x655DE19462E92CB1
+// XOICO_FILE_SIGNATURE 0xD638B80227E1EDF6

@@ -1,4 +1,4 @@
-//  Last update: 2025-10-14T09:43:51Z (UTC)
+//  Last update: 2026-01-14T11:41:04Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -30,6 +30,7 @@
  *  bcore_shell.h
  *  bcore_huffman.h
  *  bcore_indexer.h
+ *  bcore_parse.h
  *  bcore_x_btml.h
  *  bcore_x_bbml.h
  *  bcore_x_bcml.h
@@ -47,6 +48,7 @@
  *  bcore_huffman.x
  *  bcore_img_inexpandable.x
  *  bcore_name_manager_inexpandable.x
+ *  bcore_parse.x
  *  bcore_sink_inexpandable.x
  *  bcore_source_inexpandable.x
  *  bcore_sr_inexpandable.x
@@ -2543,6 +2545,23 @@
   BETH_EXPAND_ITEM_bcore_indexer_s
 
 /**********************************************************************************************************************/
+// source: bcore_parse.h
+
+//----------------------------------------------------------------------------------------------------------------------
+// group: bcore_parse; embeds: bcore_parse.x
+
+#define TYPEOF_bcore_parse 0xC9DE673087A88606ull
+#define TYPEOF_bcore_parse_spect_s 0xB71B1E6A29428C12ull
+#define BETH_EXPAND_GROUP_bcore_parse \
+  BCORE_FORWARD_OBJECT( bcore_parse ); \
+  er_t bcore_parse_number_literal( x_source* source, sr_s* sr ); \
+  XOILA_DECLARE_SPECT( bcore_parse ) \
+  { \
+      bcore_spect_header_s header; \
+  }; \
+  BCORE_DECLARE_VIRTUAL_AWARE_OBJECT( bcore_parse )
+
+/**********************************************************************************************************************/
 // source: bcore_x_btml.h
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -4241,5 +4260,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x0F88467840A422FE
-// XOICO_FILE_SIGNATURE 0x15B3BFF857CBB831
+// XOICO_BODY_SIGNATURE 0x1F2CA0ED2136B760
+// XOICO_FILE_SIGNATURE 0x305340ED2D9409DF

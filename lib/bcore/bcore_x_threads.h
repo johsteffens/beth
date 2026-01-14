@@ -171,7 +171,7 @@ group :thread
     stamp :s =
     {
         private pthread_t _thread; // do not access directly
-        bl_t _join;   // true in case thread needs joining
+        private bl_t _join;   // true in case thread needs joining
         func bcore_inst_call.down_e;
 
         /** Calls obj.m_thread_func() or obj.c_thread_func() in a new joinable thread
