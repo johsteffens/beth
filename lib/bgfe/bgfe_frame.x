@@ -139,6 +139,16 @@ func er_t add_label( m@* o, sc_t text, sz_t label_width )
      = o.add_frame( label );
 }
 
+func er_t add_label_with_tooltip( m@* o, sc_t text, sz_t label_width, sc_t tooltip )
+{
+    m$* label = bgfe_frame_label_s!^;
+    label.set_width( label_width );
+    label.set_x_align( 0 );
+    label.text!.copy_sc( text );
+    label.set_tooltip( tooltip );
+     = o.add_frame( label );
+}
+
 /** Adding content with preceding label:
  *  This function adds a label and content in a horizontally aligned sub-frame.
  */
@@ -156,6 +166,27 @@ func er_t add_label_content_t( m@* o, sc_t text, sz_t label_width, m obliv bgfe_
     f.set_center( false );
     f.set_arrange( horizontal~ );
     f.add_label( text, label_width );
+    f.add_content_t( content, content_type, content_name );
+    = 0;
+}
+
+/** Adding content with preceding label:
+ *  This function adds a label and content in a horizontally aligned sub-frame.
+ */
+func er_t add_label_with_tooltip_content( m@* o, sc_t text, sz_t label_width, sc_t tooltip, m aware bgfe_client* content, tp_t content_name )
+{
+    if( !content ) = 0;
+    = o.add_label_with_tooltip_content_t( text, label_width, tooltip, content, content._, content_name );
+}
+
+func er_t add_label_with_tooltip_content_t( m@* o, sc_t text, sz_t label_width, sc_t tooltip, m obliv bgfe_client* content, tp_t content_type, tp_t content_name )
+{
+    m$* f = o.add_sub_frame();
+    f.set_show_border( false );
+    f.set_stretch( false );
+    f.set_center( false );
+    f.set_arrange( horizontal~ );
+    f.add_label_with_tooltip( text, label_width, tooltip );
     f.add_content_t( content, content_type, content_name );
     = 0;
 }
@@ -179,6 +210,28 @@ func er_t add_label_content_t_label( m@* o, sc_t pre_text, sz_t pre_label_width,
     f.add_label( pre_text, pre_label_width );
     f.add_content_t( content, content_type, content_name );
     f.add_label( post_text, post_label_width );
+    = 0;
+}
+
+/** Adding content with pre- and post-label:
+ *  This function adds a label and content in a horizontally aligned sub-frame.
+ */
+func er_t add_label_with_tooltip_content_label( m@* o, sc_t pre_text, sz_t pre_label_width, sc_t tooltip, m aware bgfe_client* content, tp_t content_name, sc_t post_text, sz_t post_label_width )
+{
+    if( !content ) = 0;
+    = o.add_label_with_tooltip_content_t_label( pre_text, pre_label_width, tooltip, content, content._, content_name, post_text, post_label_width );
+}
+
+func er_t add_label_with_tooltip_content_t_label( m@* o, sc_t pre_text, sz_t pre_label_width, sc_t tooltip, m obliv bgfe_client* content, tp_t content_type, tp_t content_name, sc_t post_text, sz_t post_label_width )
+{
+    m$* f = o.add_sub_frame();
+    f.set_show_border( false );
+    f.set_stretch( false );
+    f.set_center( false );
+    f.set_arrange( horizontal~ );
+    f.add_label( pre_text, pre_label_width );
+    f.add_content_t( content, content_type, content_name );
+    f.add_label_with_tooltip( post_text, post_label_width, tooltip );
     = 0;
 }
 
@@ -347,7 +400,9 @@ stamp :s
     sz_t spacing;   // spacing between elements
     bl_t end_bound; // packs elements with reference to the end of the box (false: reference to the start)
     bl_t center = true;  // centers widgets in an expanded space
-    bl_t stretch = true; // stretches elements to fill expanded space
+    bl_t stretch_last  = false; // stretches the last element to fill expanded space
+    bl_t stretch_first = false; // stretches the last element to fill expanded space
+    bl_t stretch = true; // stretches all elements to fill expanded space
     sz_t nesting_level;  // nesting level (embedded nesting)
     tp_t window_policy = any; // window-policy: any~ | one~ | zero~;
     bl_t manual_content; // true: ignores content in function set_client_with_content (content is intended to be added manually via function add_content)
@@ -363,6 +418,8 @@ stamp :s
     func bgfe_frame.set_spacing     { o.spacing   = value; = 0; }
     func bgfe_frame.set_end_bound   { o.end_bound = flag; = 0; }
     func bgfe_frame.set_center      { o.center    = flag; = 0; }
+    func bgfe_frame.set_stretch_last  { o.stretch_last = flag; = 0; }
+    func bgfe_frame.set_stretch_first { o.stretch_first = flag; = 0; }
     func bgfe_frame.set_stretch     { o.stretch   = flag; = 0; }
     func bgfe_frame.set_nesting_level  { o.nesting_level = value; = 0; }
     func bgfe_frame.set_window_policy  { o.window_policy = name; = 0; }

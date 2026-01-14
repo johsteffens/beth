@@ -39,7 +39,7 @@ stamp :s bgfe_frame
     f3_t x_align = 0.5; // gradual text alignment: 0: left, 0.5: center, 1.0 right
     f3_t y_align = 0.5; // gradual text alignment: 0: top, 0.5: center, 1.0 bottom
 
-    func bgfe_frame.set_tooltip{ o.tooltip!.copy_sc( text ); = 0; }
+    func bgfe_frame.set_tooltip{ o.tooltip!.copy_sc( text ); o.show_tooltip = true; = 0; }
     func bgfe_frame.set_accuracy_digits { o.accuracy_digits = value; = 0; }
     func bgfe_frame.set_show_tooltip{ o.show_tooltip = flag; = 0; }
     func bgfe_frame.set_width { o.width = value; = 0; }

@@ -237,10 +237,10 @@ stamp :s
     func er_t start( m@* o )
     {
         o.mutex.create_lock()^;
+        if( o.is_running ) = 0;
         if( o.verbosity > 0 ) bcore_msg_fa( "#name: starting\n", o._ );
 
         o.thread.call_m_thread_func( o );
-        if( o.is_running ) = 0;
         o.is_running = true;
 
         if( o.verbosity > 0 ) bcore_msg_fa( "#name: setting up css\n", o._ );

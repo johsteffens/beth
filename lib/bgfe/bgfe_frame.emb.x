@@ -169,13 +169,15 @@ func (:s) er_t rtt_open( m@* o, vd_t unused )
 
     foreach( m$* e in o.content_list )
     {
+        bl_t fill = o.stretch || ( o.stretch_first && ( __i == 0 ) ) || ( o.stretch_last && ( __i == o.content_list.size - 1 ) );
+        bl_t expand = o.center || fill;
         if( o.end_bound )
         {
-            gtk_box_pack_end( GTK_BOX( o.rtt_content_box ), e.rtt_widget(), o.center, o.stretch, 0 );
+            gtk_box_pack_end( GTK_BOX( o.rtt_content_box ), e.rtt_widget(), expand, fill, 0 );
         }
         else
         {
-            gtk_box_pack_start( GTK_BOX( o.rtt_content_box ), e.rtt_widget(), o.center, o.stretch, 0 );
+            gtk_box_pack_start( GTK_BOX( o.rtt_content_box ), e.rtt_widget(), expand, fill, 0 );
         }
     }
 

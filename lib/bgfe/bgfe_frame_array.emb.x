@@ -90,6 +90,36 @@ func (:s) er_t paste_to_end( m@* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+// prepends an element to the array
+func (:s) er_t prepend_element( m@* o )
+{
+    tp_t action_type = escapprove~;
+    o.client_change_request( o, action_type.1 );
+    if( action_type == reject~  ) = 0;
+
+    m$* array = o.client_array();
+
+    if( array.t_is_static( o.client_type ) )
+    {
+        array.t_insert_t( o.client_type, 0, array.t_get_mono_type( o.client_type ) );
+    }
+    else
+    {
+        array.t_insert_c( o.client_type, 0, NULL );
+    }
+
+    o.rebuild();
+    o.focus_to_first();
+    //o.rte.run( o.rtt_scroll_to_begin.cast( bgfe_rte_fp_rtt ), o, NULL );
+
+    tp_t confirm_action_type = TYPEOF_escalate;
+    o.client_change_confirm( o, confirm_action_type.1 );
+
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 // appends an element to the array
 func (:s) er_t append_element( m@* o )
 {
@@ -109,7 +139,7 @@ func (:s) er_t append_element( m@* o )
     }
 
     o.rebuild();
-    o.focus_to_end();
+    o.focus_to_last();
     o.rte.run( o.rtt_scroll_to_end.cast( bgfe_rte_fp_rtt ), o, NULL );
 
     tp_t confirm_action_type = TYPEOF_escalate;
@@ -427,7 +457,19 @@ func (:s) er_t rtt_scroll_to_end( m@* o, vd_t unused )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) er_t focus_to_end( m@* o )
+func (:s) er_t focus_to_first( m@* o )
+{
+    if( o.item_arr.size > 0 )
+    {
+        m bgfe_frame* frame  = o.item_arr.[ 0 ].client_frame;
+        if( frame ) frame.grab_focus();
+    }
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) er_t focus_to_last( m@* o )
 {
     if( o.item_arr.size > 0 )
     {
@@ -457,7 +499,8 @@ func (:s) open
         o.menu!;
         o.menu.set_client( o );
         o.menu.set_arrange( horizontal~ );
-        o.menu.push( append~      , "+", "Append new element" );
+        o.menu.push( prepend~     , "+[]", "Prepend new element" );
+        o.menu.push( append~      , "[]+", "Append new element" );
         o.menu.push( remove_last~ , "⌫", "Remove last element" );
         o.menu.push( cut_selected~, "✂", "Cut selected elements to clipboard" );
         m$* choice = o.menu.push_choice( "" );
@@ -627,6 +670,7 @@ func (:s) bgfe_choice_client.choice_item_selection
         case copy_selected~:   o.copy_selected(); break;
         case cut_selected~:    o.cut_selected(); break;
         case paste_to_end~:    o.paste_to_end(); break;
+        case prepend~:         o.prepend_element(); break;
         case append~:          o.append_element(); break;
         case remove_selected~: o.remove_selected(); break;
         case remove_last~:     o.remove_last(); break;

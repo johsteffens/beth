@@ -293,6 +293,11 @@ func (:s) close
         o.window.close();
         o.window =< NULL;
     }
+    if( o.embedded_frame )
+    {
+        o.embedded_frame.close();
+        o.embedded_frame =< NULL;
+    }
     o.rte.run( o.rtt_close.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.is_open = false;
     = 0;
