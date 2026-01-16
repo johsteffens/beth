@@ -252,7 +252,7 @@ Float literals are specified via decimal point (even if the value is a whole num
 ```
 ## SI Metric Symbols for Literals
 
-For certain groups of small and large numbers, the literal expression can be simplified with a suffix-character representing a factor. The character mostly corresponds to the set of [SI Metric Symbols](https://en.wikipedia.org/wiki/Metric_prefix) (See Exceptions below).
+For certain groups of small and large numbers, the literal expression can be simplified with a suffix-character representing a factor. The character mostly corresponds to the set of [SI Metric Symbols](https://en.wikipedia.org/wiki/Metric_prefix) (List of Deviations below).
 
 Using that symbol with a number literal turns the type always into floating point. This holds true even if the resulting value could be represented by an integer.
 
@@ -261,7 +261,7 @@ Using that symbol with a number literal turns the type always into floating poin
 | d         | deci         | 1E-1   |
 | c         | centi        | 1E-2   |
 | m         | milli        | 1E-3   |
-| u         | micro        | 1E-6   |
+| u    | micro        | 1E-6   |
 | n         | nano        | 1E-9   |
 | p         | pico        | 1E-12   |
 | f         | femto        | 1E-15   |
@@ -270,22 +270,28 @@ Using that symbol with a number literal turns the type always into floating poin
 | y         | yocto        | 1E-24   |
 | r         | ronto        | 1E-27   |
 | q         | quecto        | 1E-30   |
-| D         | Deca         | 1E1    |
-| C         | Cento        | 1E2    |
-| K         | Kilo         | 1E3    |
+| D    | Deca         | 1E1    |
+| C    | Cento (sames as Hekto) | 1E2    |
+| h         | Hekto        | 1E2    |
+| K    | Kilo         | 1E3    |
+| k         | Kilo         | 1E3    |
 | M         | Mega         | 1E6    |
 | G         | Giga         | 1E9    |
 | T         | Tera         | 1E12    |
 | P         | Peta         | 1E15    |
-| X (*)    | Exa | 1E18    |
+| X    | Exa | 1E18    |
 | Z         | Zetta         | 1E21    |
 | Y         | Yotta         | 1E24    |
 | R         | Ronna         | 1E27    |
 | Q         | Quetta       | 1E30    |
 
-### Exceptions:
+### Deviations from SI
 
-(*): Character 'E' cannot be used here, because it clashes with exponential notation.
+* Character 'u' represents 'Micro'. SI defines '$\mu$' for 'Micro'. We limit ourselves to ASCII symbols.
+* Character 'D': represents 'Deca'. SI defines two characters 'da' for 'Deca'. We limit ourselves to a single character symbol.
+* Character 'X' represents 'Exa'. SI defines character 'E' for 'Exa', which we cannot use, because it clashes with the exponential notation.
+* Characters 'C' and 'h' both represent the same quantity: 'Hekto'. 'C' is not SI compliant but allowed for legacy reasons.
+* Characters 'K' and 'k' both represent the same quantity: 'Kilo'. 'K' is not SI compliant but allowed for legacy reasons.
 
 ### Examples
 
@@ -295,8 +301,8 @@ Using that symbol with a number literal turns the type always into floating poin
 5m == 0.005;
 5.1u == 5.1E-6;
 5D == 50;
-5C == 500;
-5K == 5000;
+5h == 500;
+5k == 5000;
 5.2M == 5.2E6;
 5E3X == 5E21
 ```

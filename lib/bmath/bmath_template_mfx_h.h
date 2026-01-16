@@ -266,7 +266,7 @@ f3_t BCATU(bmath_mfx_s,tss)( const bmath_mfx_s* o );
 //----------------------------------------------------------------------------------------------------------------------
 // Frobenius norm
 
-/** fdev = ||f(o) - x||
+/** fdev = ||o - x||
  *  '|| ... ||' = Frobenius norm  ( sqrt(sum over squares) )
  *  f is either idenity (o-->o) or a specified function
  *  Matrix x is a specified (or implied) state.
@@ -278,7 +278,7 @@ f3_t BCATU(bmath_mfx_s,fdev_one)( const bmath_mfx_s* o ); // f = o; x = I
 f3_t BCATU(bmath_mfx_s,fdev_otn)( const bmath_mfx_s* o ); // f = o * oT or oT * o (whichever smaller); x = I
 
 /** Energy independent deviaion:
- *  dev = ||f(o) - x|| / max( ||f(o)||, ||x|| )
+ *  dev = ||o - x|| / max( ||o||, ||x|| )
  *  '|| ... ||' = Frobenius norm  ( sqrt(sum over squares) )
  *  f is either idenity (o-->o) or a specified function
  *  Matrix x is a specified (or implied) state.

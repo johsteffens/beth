@@ -29,6 +29,12 @@ func er_t number_literal_to_sr( m x_source* source, m sr_s* sr )
     bl_t is_float = false;
     st_s^ st;
 
+    source.parse_fa( " " );
+    if( source.parse_bl( "#?([0]=='+'||[0]=='-')" ) )
+    {
+        st.push_char( source.get_char() );
+    }
+
     if( source.parse_bl( "#?'0x'" ) )
     {
         st.push_sc( "0x" );
@@ -102,7 +108,9 @@ func er_t number_literal_to_sr( m x_source* source, m sr_s* sr )
 
         case 'D': factor = 1E+1;  break; // deca
         case 'C': factor = 1E+2;  break; // cento
+        case 'h': factor = 1E+2;  break; // hekto
         case 'K': factor = 1E+3;  break; // kilo
+        case 'k': factor = 1E+3;  break; // kilo
         case 'M': factor = 1E+6;  break; // mega
         case 'G': factor = 1E+9;  break; // giga
         case 'T': factor = 1E+12; break; // tera
@@ -121,13 +129,13 @@ func er_t number_literal_to_sr( m x_source* source, m sr_s* sr )
     if( is_float )
     {
         f3_t f3 = 0;
-        st.parse_fa( 0, -1, "#<f3_t*>", f3.1 );
+        st.parse_em_fa( 0, -1, NULL, "#<f3_t*>", f3.1 );
         sr.const_from_f3( f3 * factor );
     }
     else
     {
         s3_t s3 = 0;
-        st.parse_fa( 0, -1, "#<s3_t*>", s3.1 );
+        st.parse_em_fa( 0, -1, NULL, "#<s3_t*>", s3.1 );
         if( use_suffix )
         {
             sr.const_from_f3( s3 * factor );

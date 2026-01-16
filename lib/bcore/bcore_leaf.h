@@ -48,7 +48,7 @@ static inline f3_t f3_min  ( f3_t a, f3_t b ) { return a < b ? a : b; }
 static inline f3_t f3_max  ( f3_t a, f3_t b ) { return a > b ? a : b; }
 static inline f3_t f3_sig  ( f3_t v ) { return v  < 0 ? -1 : 1; }
 static inline f3_t f3_abs  ( f3_t v ) { return v  < 0 ? -v : v; }
-static inline f3_t f3_inv  ( f3_t v ) { return v != 0 ? 1.0 / v : f3_lim_inf; }
+static inline f3_t f3_inv  ( f3_t v ) { return f3_abs( v ) >= f3_lim_min ? 1.0 / v : f3_lim_inf; }
 static inline s2_t f3_rs2  ( f3_t v ) { return  lrint( v ); }
 static inline s3_t f3_rs3  ( f3_t v ) { return llrint( v ); }
 static inline void f3_t_swap( f3_t* v1, f3_t* v2 ) { f3_t t = *v1; *v1 = *v2; *v2 = t;  }
@@ -103,7 +103,7 @@ static inline f2_t f2_min  ( f2_t a, f2_t b ) { return a < b ? a : b; }
 static inline f2_t f2_max  ( f2_t a, f2_t b ) { return a > b ? a : b; }
 static inline f2_t f2_sig  ( f2_t v ) { return v  < 0 ? -1 : 1; }
 static inline f2_t f2_abs  ( f2_t v ) { return v  < 0 ? -v : v; }
-static inline f2_t f2_inv  ( f2_t v ) { return v != 0 ? 1.0 / v : f2_lim_inf; }
+static inline f2_t f2_inv  ( f2_t v ) { return f3_abs( v ) >= f2_lim_min ? 1.0 / v : f2_lim_inf; }
 static inline s2_t f2_rs2  ( f2_t v ) { return  lrintf( v ); }
 static inline s3_t f2_rs3  ( f2_t v ) { return llrintf( v ); }
 static inline void f2_t_swap( f2_t* v1, f2_t* v2 ) { f2_t t = *v1; *v1 = *v2; *v2 = t;  }

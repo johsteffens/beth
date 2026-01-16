@@ -1,4 +1,4 @@
-//  Last update: 2026-01-14T12:38:26Z (UTC)
+//  Last update: 2026-01-15T10:16:25Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -75,7 +75,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0xF9231D243A380D60ull
+// HKEYOF_bcore 0x0D64B41452A00EC3ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -3316,6 +3316,12 @@ er_t bcore_parse_number_literal_to_sr( x_source* source, sr_s* sr )
     bl_t is_float = false;
     st_s st;BLM_T_INIT_SPUSH(st_s, &st);;
     
+    BLM_TRY(x_source_parse_fa(source," " ))
+    if( x_source_parse_bl(source,"#?([0]=='+'||[0]=='-')" ) )
+    {
+        st_s_push_char(&(st),x_source_get_char(source) );
+    }
+    
     if( x_source_parse_bl(source,"#?'0x'" ) )
     {
         st_s_push_sc(&(st),"0x" );
@@ -3389,7 +3395,9 @@ er_t bcore_parse_number_literal_to_sr( x_source* source, sr_s* sr )
     
         case 'D': factor = 1E+1;  break; // deca
         case 'C': factor = 1E+2;  break; // cento
+        case 'h': factor = 1E+2;  break; // hekto
         case 'K': factor = 1E+3;  break; // kilo
+        case 'k': factor = 1E+3;  break; // kilo
         case 'M': factor = 1E+6;  break; // mega
         case 'G': factor = 1E+9;  break; // giga
         case 'T': factor = 1E+12; break; // tera
@@ -3408,13 +3416,13 @@ er_t bcore_parse_number_literal_to_sr( x_source* source, sr_s* sr )
     if( is_float )
     {
         f3_t f3 = 0;
-        st_s_parse_fa(&(st),0, -1, "#<f3_t*>", (&(f3)) );
+        BLM_TRY(st_s_parse_em_fa(&(st),0, -1, NULL, "#<f3_t*>", (&(f3)) ))
         sr_s_const_from_f3(sr,f3 * factor );
     }
     else
     {
         s3_t s3 = 0;
-        st_s_parse_fa(&(st),0, -1, "#<s3_t*>", (&(s3)) );
+        BLM_TRY(st_s_parse_em_fa(&(st),0, -1, NULL, "#<s3_t*>", (&(s3)) ))
         if( use_suffix )
         {
             sr_s_const_from_f3(sr,s3 * factor );
@@ -11090,5 +11098,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0xED82087936479F08
-// XOICO_FILE_SIGNATURE 0xB5FD79C07C385E60
+// XOICO_BODY_SIGNATURE 0x5A70EC6CBBA699E3
+// XOICO_FILE_SIGNATURE 0x134A747685D5AB84
