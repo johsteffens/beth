@@ -229,9 +229,9 @@ func er_t add_label_with_tooltip_content_t_label( m@* o, sc_t pre_text, sz_t pre
     f.set_stretch( false );
     f.set_center( false );
     f.set_arrange( horizontal~ );
-    f.add_label( pre_text, pre_label_width );
+    f.add_label_with_tooltip( pre_text, pre_label_width, tooltip );
     f.add_content_t( content, content_type, content_name );
-    f.add_label_with_tooltip( post_text, post_label_width, tooltip );
+    f.add_label( post_text, post_label_width );
     = 0;
 }
 

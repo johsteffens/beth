@@ -102,7 +102,6 @@ func (:s) er_t client_to_st( @* o, m st_s* st )
 {
     if( !o.client ) = 0;
 
-
     if( o.client_type == tp_t~ || o.client_type == aware_t~ || o.client_type == er_t~ )
     {
         sc_t name = bnameof( o.client.cast( tp_t* ).0 );
@@ -121,18 +120,20 @@ func (:s) er_t client_to_st( @* o, m st_s* st )
         f3_t val = ( o.client_type == f2_t~ ) ? o.client.cast( f2_t* ).0 : ( o.client_type == f3_t~ ) ? o.client.cast( f3_t* ).0 : 0;
         st.copyf( st_s!^.push_fa( "%.#<sz_t>g", o.accuracy_digits ).sc, val );
     }
-    else if( o.client_type == st_s~ )
-    {
-        st.copy( o.client.cast( st_s* ) );
-    }
-    else if( o.client_type == sc_t~ )
-    {
-        st.copy_sc( o.client.cast( sc_t* ).0 );
-    }
-    else
-    {
-        o.client_get_glimpse( 16, st );
-    }
+    else if( o.client_type == sz_t~ ) st.copy_fa( "#<sz_t>", o.client.cast( sz_t* ).0 );
+    else if( o.client_type == uz_t~ ) st.copy_fa( "#<uz_t>", o.client.cast( uz_t* ).0 );
+    else if( o.client_type == s3_t~ ) st.copy_fa( "#<s3_t>", o.client.cast( s3_t* ).0 );
+    else if( o.client_type == u3_t~ ) st.copy_fa( "#<u3_t>", o.client.cast( u3_t* ).0 );
+    else if( o.client_type == s2_t~ ) st.copy_fa( "#<s2_t>", o.client.cast( s2_t* ).0 );
+    else if( o.client_type == u2_t~ ) st.copy_fa( "#<u2_t>", o.client.cast( u2_t* ).0 );
+    else if( o.client_type == s1_t~ ) st.copy_fa( "#<s1_t>", o.client.cast( s1_t* ).0 );
+    else if( o.client_type == u1_t~ ) st.copy_fa( "#<u1_t>", o.client.cast( u1_t* ).0 );
+    else if( o.client_type == s0_t~ ) st.copy_fa( "#<s0_t>", o.client.cast( s0_t* ).0 );
+    else if( o.client_type == u0_t~ ) st.copy_fa( "#<u0_t>", o.client.cast( u0_t* ).0 );
+    else if( o.client_type == st_s~ ) st.copy( o.client.cast( st_s* ) );
+    else if( o.client_type == sc_t~ ) st.copy_sc( o.client.cast( sc_t* ).0 );
+    else if( o.client_type == bl_t~ ) st.push_sc( o.client.cast( bl_t* ).0 ? "true" : "false" );
+    else o.client_get_glimpse( 16, st );
 
     = 0;
 }
