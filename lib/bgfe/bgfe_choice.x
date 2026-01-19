@@ -164,6 +164,8 @@ stamp :s
     hidden tp_t window_position = 0; // window position for sub-choices (0: automatic)
     hidden sz_t spacing = 0; // spacing between buttons
     hidden bl_t show_border = false; // border around button array
+    hidden bl_t center = false;
+    hidden bl_t stretch = false;
 
     func bgfe_frame.set_arrange            { o.arrange = name; = 0; }
     func bgfe_frame.set_scrollable         { o.scrollable = flag; = 0; }
@@ -172,6 +174,8 @@ stamp :s
     func bgfe_frame.set_window_position    { o.window_position = name; = 0; }
     func bgfe_frame.set_spacing            { o.spacing = value; = 0; }
     func bgfe_frame.set_show_border        { o.show_border = flag; = 0; }
+    func bgfe_frame.set_center             { o.center = flag; = 0; }
+    func bgfe_frame.set_stretch            { o.stretch = flag; = 0; }
 
     /// internals
     :item_arr_s item_arr;
@@ -207,6 +211,8 @@ stamp :s
     }
 
     func m :item_s* push_item( m@* o ) = o.item_arr.push_d( :item_s! ).cast( m :item_s* );
+
+    func er_t clear( m@* o ) { o.item_arr.clear(); = 0; }
 
     func o push( m@* o, tp_t case_tp, sc_t text, sc_t tooltip )
     {
@@ -272,8 +278,8 @@ stamp :s
                 frame.set_max_content_height( o.max_content_height );
                 frame.set_show_border( o.show_border );
                 frame.set_show_index( false );
-                frame.set_center( false );
-                frame.set_stretch( false );
+                frame.set_center( o.center );
+                frame.set_stretch( o.stretch );
                 frame.set_spacing( o.spacing );
 
                 o.frame_array = frame.cast( m bgfe_frame_array_s* );

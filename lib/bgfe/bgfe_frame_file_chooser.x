@@ -128,8 +128,6 @@ func (:s) void rtt_signal_file_activated( m GtkFileChooser* chooser, m@* o )
 {
     sc_t path = gtk_file_chooser_get_filename( chooser );
 
-    bcore_msg_fa( "#name: rtt_signal_file_activated; path: #<sc_t>\n", o._, path );
-
     if( path != NULL && path[ 0 ] != 0 )
     {
         o.mutex.lock();
@@ -145,7 +143,6 @@ func (:s) void rtt_signal_file_activated( m GtkFileChooser* chooser, m@* o )
 func (:s) void rtt_signal_selection_changed( m GtkFileChooser* chooser, m@* o )
 {
     sc_t path = gtk_file_chooser_get_filename( chooser );
-    bcore_msg_fa( "#name: rtt_signal_selection_changed; path: #<sc_t>\n", o._, path );
 
     if( path != NULL && path[ 0 ] != 0 )
     {
@@ -198,8 +195,6 @@ func (:s) void rtt_button_cancel_signal_clicked( m GtkWidget* win, m@* o )
 func (:s) void rtt_button_apply_signal_clicked( m GtkWidget* win, m@* o )
 {
     sc_t path = gtk_file_chooser_get_filename( GTK_FILE_CHOOSER( o.rtt_widget ) );
-
-    bcore_msg_fa( "#name: rtt_button_apply_signal_clicked; path: #<sc_t>\n", o._, path );
 
     if( path != NULL && path[ 0 ] != 0 )
     {
@@ -408,8 +403,6 @@ func (:s) bgfe_frame.upsync
 
     m$* client_path = st_s!^;
     o.client_to_st( client_path );
-
-    bcore_msg_fa( "#name: upsync #<sc_t>\n", o._, client_path.sc );
 
     if( !o.path || !client_path.equal( o.path ) )
     {

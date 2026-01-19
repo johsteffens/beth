@@ -91,7 +91,7 @@ func (:s) er_t set_text_from_client_status( m@* o, bl_t force )
 {
     m$* text = st_s!^;
 
-    if( o.show_glimpse && o.client.o ) o.client_get_glimpse( 16, text );
+    if( o.show_glimpse && o.client.o ) o.client_get_glimpse( o.glimpse_chars, text );
 
     if( text.size == 0 )
     {

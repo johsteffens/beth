@@ -74,6 +74,8 @@ func (:item_s) open
         frame_link.clearable = o.parent.arr_editable;
         frame_link.clearable = frame_link.clearable && !array.t_is_static( array_type );
         frame_link.set_window_position( ( o.parent.arrange == horizontal~ ) ? lower_left~ : upper_right~ );
+        frame_link.set_x_align( o.x_align );
+        frame_link.set_y_align( o.y_align );
 
         tp_t action_type = escapprove~;
 
@@ -144,6 +146,8 @@ func (:item_s) open
 
         o.menu_frame!;
         o.menu_frame.set_show_border( false );
+        o.menu_frame.set_arrange( vertical~ );
+        o.menu_frame.set_stretch( false );
         o.menu_frame.set_client_with_content( o.menu, 0 );
         o.menu_frame.open( o );
     }

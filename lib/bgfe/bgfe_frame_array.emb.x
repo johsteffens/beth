@@ -374,6 +374,8 @@ func (:s) er_t rebuild( m@* o )
         m$* item = :item_s!^;
         item.has_select_button = o.arr_editable;
         item.show_index = o.show_index;
+        item.set_x_align( o.x_align );
+        item.set_y_align( o.y_align );
         item.setup( o, i );
 
         o.item_arr.push_d( item.fork() );

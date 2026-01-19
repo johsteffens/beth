@@ -38,6 +38,7 @@ stamp :s bgfe_frame
     f3_t y_align = 0.5; // gradual text alignment: 0: top, 0.5: center, 1.0 bottom
     tp_t window_position = upper_right; // window position relative to reference frame
     bl_t allow_custom_type = true;
+    sz_t glimpse_chars = 16; // number of characters used in a text glimpse
     bcore_arr_tp_s => type_list; // list of types to choose from
 
     func bgfe_frame.set_show_client_name{ o.show_client_name = flag; = 0; }
@@ -51,6 +52,7 @@ stamp :s bgfe_frame
     func bgfe_frame.set_window_position { o.window_position = name; = 0; }
     func bgfe_frame.set_allow_custom_type { o.allow_custom_type = flag; = 0; }
     func bgfe_frame.set_type_list { o.type_list =< list.clone(); = 0; }
+    func bgfe_frame.set_glimpse_chars{ o.glimpse_chars = value; = 0; }
 
     /// internals
     hidden sr_s client; // client (as strong smart reference)

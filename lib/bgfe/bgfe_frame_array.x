@@ -41,9 +41,13 @@ stamp :item_s bgfe_frame
     sz_t index = -1;  // array index (call setup to set index)
     bl_t has_select_button;
     bl_t show_index = true;
+    f3_t x_align = 0.5; // for links: gradual text alignment: 0: left, 0.5: center, 1.0 right
+    f3_t y_align = 0.5; // for links: gradual text alignment: 0: top, 0.5: center, 1.0 bottom
 
     func bgfe_frame.set_width   { o.width   = value; = 0; }
     func bgfe_frame.set_height  { o.height  = value; = 0; }
+    func bgfe_frame.set_x_align { o.x_align = f3_max( 0, f3_min( 1, value ) ); = 0; }
+    func bgfe_frame.set_y_align { o.y_align = f3_max( 0, f3_min( 1, value ) ); = 0; }
 
     /// selected status
     hidden bl_t selected;
@@ -121,6 +125,8 @@ stamp :s bgfe_frame
     sz_t nesting_level;    // nesting level (embedded nesting)
     tp_t window_policy = one; // window-policy: any~ | one~ | none~;
     bl_t scrollable = true;
+    f3_t x_align = 0.5; // for links: gradual text alignment: 0: left, 0.5: center, 1.0 right
+    f3_t y_align = 0.5; // for links: gradual text alignment: 0: top, 0.5: center, 1.0 bottom
 
     func bgfe_frame.set_width   { o.width   = value; = 0; }
     func bgfe_frame.set_height  { o.height  = value; = 0; }
@@ -143,6 +149,8 @@ stamp :s bgfe_frame
     func bgfe_frame.set_nesting_level { o.nesting_level = value; = 0; }
     func bgfe_frame.set_window_policy { o.window_policy = name; = 0; }
     func bgfe_frame.set_scrollable    { o.scrollable = flag; = 0; }
+    func bgfe_frame.set_x_align { o.x_align = f3_max( 0, f3_min( 1, value ) ); = 0; }
+    func bgfe_frame.set_y_align { o.y_align = f3_max( 0, f3_min( 1, value ) ); = 0; }
 
     /// internals
     hidden bgfe_client* client; // client
@@ -196,6 +204,9 @@ stamp :s bgfe_frame
     func bgfe_frame.downsync;
     func bgfe_frame.upsync;
     func er_t close_all_item_windows( m@* o ); // sends a close request to client windows (only effective if any window is open)
+
+    func sz_t size( @* o ) = o.item_arr.size;
+    func bl_t is_selected( @* o, sz_t index ) = ( index >= 0 && index < o.item_arr.size ) ? o.item_arr.[ index ].selected : false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

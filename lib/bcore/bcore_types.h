@@ -20,7 +20,12 @@
 #include <stdint.h>
 #include <inttypes.h>
 #include <float.h>
+
+#if __STDC_VERSION__ < 202311l
+// Since C23 keywords bool, true, false are native and stdbool.h deprecated.
 #include <stdbool.h>
+#endif
+
 #include <stdatomic.h>
 
 typedef float  flt32_t;

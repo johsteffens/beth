@@ -44,7 +44,7 @@ type bl_t;
 type tp_t, aware_t, er_t, sc_t, sd_t;
 type vd_t, vc_t;
 type fp_t;
-type char, void, int;
+type char, void, int, size_t;
 type clock_t;
 
 // objects
