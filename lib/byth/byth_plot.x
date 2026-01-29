@@ -20,12 +20,19 @@
 /// plot data
 stamp :data_s
 {
-     $ st_s => label;
-     $ bcore_arr_f3_s => arr;
-     func o set_label( m@* o, sc_t label ) o.label!.copy_sc( label );
-     func er_t set_size( m@* o, sz_t size ) { EM_ASSERT( size >= 0 ); o.arr!.set_size( size ); = 0; }
-     func er_t set_value( m@* o, sz_t index, f3_t value ) { EM_ASSERT( o.arr && o.arr.size > index && index >= 0 ); o.arr.[ index ] = value; =0; }
-     func o push( m@* o, f3_t v ) o.arr!.push( v );
+    $ st_s => label;
+    $ bcore_arr_f3_s => y_arr;
+    bcore_arr_f3_s => x_arr; // (optional) for individual x-y plots; must be set for all graphs; otherwise ineffective
+    func o set_label( m@* o, sc_t label ) o.label!.copy_sc( label );
+    func er_t set_size( m@* o, sz_t size ) { EM_ASSERT( size >= 0 ); o.y_arr!.set_size( size ); = 0; }
+    func er_t set_value( m@* o, sz_t index, f3_t value ) { EM_ASSERT( o.y_arr && o.y_arr.size > index && index >= 0 ); o.y_arr.[ index ] = value; =0; }
+    func o push( m@* o, f3_t v ) o.y_arr!.push( v );
+    func o push_xy( m@* o, f3_t x, f3_t y )
+    {
+        o.x_arr!.push( x );
+        o.y_arr!.push( y );
+        EM_ASSERT( o.x_arr.size == o.y_arr.size );
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -148,7 +155,7 @@ stamp :frame_s x_array
 
     :axis_s => x_axis;
     :axis_s => y_axis;
-    bcore_arr_f3_s => x_arr; // optional x-values
+    bcore_arr_f3_s => x_arr; // optional common x-values (alternatively the data array can have dedicated x-values per graph)
     :data_s => []; // array of y data (multiple curves)
 
     /// optional text points at specified coordinates (coordinate system of plot)

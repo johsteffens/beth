@@ -87,16 +87,22 @@ def update_plot( plt, fig, frame_arr, appearance ):
                 ax.set_ylim( frame['y_axis'][ 'limit' ][ 'min' ], frame['y_axis'][ 'limit' ][ 'max' ] )
 
         show_legend = False
+        individual_xy = True;
 
-        for y_data in frame[''][ '_list_' ]:
-            if( y_data[ 'label' ] is not None ): show_legend = True
+        for graph in frame[''][ '_list_' ]:
+            if( graph[ 'label' ] is not None ): show_legend = True
+            if( graph[ 'x_arr' ] is None ): individual_xy = False
 
         if( frame['x_arr'] is not None ):
-            for y_data in frame[''][ '_list_' ]:
-                ax.plot( frame['x_arr'][ '_list_' ], y_data[ 'arr' ][ '_list_' ], linestyle = '-', marker = '', label = y_data[ 'label' ], linewidth = linewidth )
+            for graph in frame[''][ '_list_' ]:
+                ax.plot( frame['x_arr'][ '_list_' ], graph[ 'y_arr' ][ '_list_' ], linestyle = '-', marker = '', label = graph[ 'label' ], linewidth = linewidth )
         else:
-            for y_data in frame[''][ '_list_' ]:
-                ax.plot( y_data[ 'arr' ][ '_list_' ], linestyle = '-', marker = '', label = y_data[ 'label' ], linewidth = linewidth )
+            if( individual_xy ):
+                for graph in frame[''][ '_list_' ]:
+                    ax.plot( graph[ 'x_arr' ][ '_list_' ], graph[ 'y_arr' ][ '_list_' ], linestyle = '-', marker = '', label = graph[ 'label' ], linewidth = linewidth )
+            else:
+                for graph in frame[''][ '_list_' ]:
+                    ax.plot( graph[ 'y_arr' ][ '_list_' ], linestyle = '-', marker = '', label = graph[ 'label' ], linewidth = linewidth )
 
         if( show_legend ): ax.legend() # adds legend with specified plot labels above
 

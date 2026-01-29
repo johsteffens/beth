@@ -73,18 +73,16 @@ func (:s) er_t paste_to_end( m@* o )
     if( action_type == reject~  ) = 0;
 
     m$* array = o.client_array();
-
     foreach( m$* e in o.copied_elements ) array.t_push_sr( o.client_type, sr_twc( e.type(), e.o ) );
+    tp_t confirm_action_type = TYPEOF_escalate;
+    o.client_change_confirm( o, confirm_action_type.1 );
+
     o.rebuild();
 
     sz_t size = o.copied_elements.size;
     for( sz_t i = 0; i < size; i++ ) o.item_arr.[ o.item_arr.size - size + i ].set_selected( true );
 
     o.rte.run( o.rtt_scroll_to_end.cast( bgfe_rte_fp_rtt ), o, NULL );
-
-    tp_t confirm_action_type = TYPEOF_escalate;
-    o.client_change_confirm( o, confirm_action_type.1 );
-
     = 0;
 }
 
@@ -107,14 +105,12 @@ func (:s) er_t prepend_element( m@* o )
     {
         array.t_insert_c( o.client_type, 0, NULL );
     }
+    tp_t confirm_action_type = TYPEOF_escalate;
+    o.client_change_confirm( o, confirm_action_type.1 );
 
     o.rebuild();
     o.focus_to_first();
     //o.rte.run( o.rtt_scroll_to_begin.cast( bgfe_rte_fp_rtt ), o, NULL );
-
-    tp_t confirm_action_type = TYPEOF_escalate;
-    o.client_change_confirm( o, confirm_action_type.1 );
-
     = 0;
 }
 
@@ -137,14 +133,12 @@ func (:s) er_t append_element( m@* o )
     {
         array.t_push_c( o.client_type, NULL );
     }
+    tp_t confirm_action_type = TYPEOF_escalate;
+    o.client_change_confirm( o, confirm_action_type.1 );
 
     o.rebuild();
     o.focus_to_last();
     o.rte.run( o.rtt_scroll_to_end.cast( bgfe_rte_fp_rtt ), o, NULL );
-
-    tp_t confirm_action_type = TYPEOF_escalate;
-    o.client_change_confirm( o, confirm_action_type.1 );
-
     = 0;
 }
 
@@ -159,11 +153,10 @@ func (:s) er_t remove_last( m@* o )
 
     m$* array = o.client_array();
     array.t_pop( o.client_type );
-    o.rebuild();
-
     tp_t confirm_action_type = TYPEOF_escalate;
     o.client_change_confirm( o, confirm_action_type.1 );
 
+    o.rebuild();
     = 0;
 }
 
@@ -195,10 +188,10 @@ func (:s) er_t remove_selected( m@* o )
 
     m$* array = o.client_array();
     array.t_reorder( o.client_type, index_arr );
-    o.rebuild();
-
     tp_t confirm_action_type = TYPEOF_escalate;
     o.client_change_confirm( o, confirm_action_type.1 );
+
+    o.rebuild();
 
     = 0;
 }
@@ -215,10 +208,10 @@ func (:s) er_t indexed_remove( m@* o, sz_t index )
     if( action_type == reject~  ) = 0;
 
     array.t_remove( o.client_type, index );
-    o.rebuild();
-
     tp_t confirm_action_type = TYPEOF_escalate;
     o.client_change_confirm( o, confirm_action_type.1 );
+
+    o.rebuild();
 
     = 0;
 }
@@ -237,11 +230,10 @@ func (:s) er_t indexed_cut( m@* o, sz_t index )
     o.copied_elements!.clear();
     o.copied_elements.push_sr( sr_clone( array.t_c_get_sr( o.client_type, index ) ) );
     array.t_remove( o.client_type, index );
-    o.rebuild();
-
     tp_t confirm_action_type = TYPEOF_escalate;
     o.client_change_confirm( o, confirm_action_type.1 );
 
+    o.rebuild();
     = 0;
 }
 
@@ -257,11 +249,10 @@ func (:s) er_t indexed_move_to_prev( m@* o, sz_t index )
     if( action_type == reject~  ) = 0;
 
     array.t_swap( o.client_type, index, index - 1 );
-    o.rebuild();
-
     tp_t confirm_action_type = TYPEOF_escalate;
     o.client_change_confirm( o, confirm_action_type.1 );
 
+    o.rebuild();
     = 0;
 }
 
@@ -277,11 +268,10 @@ func (:s) er_t indexed_move_to_next( m@* o, sz_t index )
     if( action_type == reject~  ) = 0;
 
     array.t_swap( o.client_type, index, index + 1 );
-    o.rebuild();
-
     tp_t confirm_action_type = TYPEOF_escalate;
     o.client_change_confirm( o, confirm_action_type.1 );
 
+    o.rebuild();
     = 0;
 }
 
@@ -297,11 +287,10 @@ func (:s) er_t indexed_move_to_first( m@* o, sz_t index )
     if( action_type == reject~  ) = 0;
 
     array.t_swap( o.client_type, index, 0 );
-    o.rebuild();
-
     tp_t confirm_action_type = TYPEOF_escalate;
     o.client_change_confirm( o, confirm_action_type.1 );
 
+    o.rebuild();
     = 0;
 }
 
@@ -317,11 +306,10 @@ func (:s) er_t indexed_move_to_last( m@* o, sz_t index )
     if( action_type == reject~  ) = 0;
 
     array.t_swap( o.client_type, index, array.t_size( o.client_type ) - 1 );
-    o.rebuild();
-
     tp_t confirm_action_type = TYPEOF_escalate;
     o.client_change_confirm( o, confirm_action_type.1 );
 
+    o.rebuild();
     = 0;
 }
 
@@ -351,11 +339,10 @@ func (:s) er_t indexed_duplicate( m@* o, sz_t index )
 
 
     array.t_insert_sr( o.client_type, index, sr_clone( array.t_c_get_sr( o.client_type, index ) ) );
-    o.rebuild();
-
     tp_t confirm_action_type = TYPEOF_escalate;
     o.client_change_confirm( o, confirm_action_type.1 );
 
+    o.rebuild();
     = 0;
 }
 

@@ -16,10 +16,10 @@ The plotting interface wraps python's &#x1F517;[matplotlib](https://matplotlib.o
   - A curve is defined by `byth_plot_data_s`.
   - `byth_plot_frame_s` is an array of `byth_plot_data_s`, each representing a separate curve.
   - Optional explicit x values can be supplied via member `x_arr`. If left undefined, the x axis represents the index.
-- Call `(byth_plot_frame_s) show()`
+- Call `(byth_plot_frame_s) show`
+  - This function sends a plot request to the [plot runtime manager](#plot-runtime-manager) and returns.
   - Use argument NULL for default appearance.
   - Use argument `byth_plot_appearance_s` for custom appearance.
-  - Ths function show a plot request to the [plot runtime manager](#plot-runtime-manager) and returns.
 
 **Example for a plot with two curves:**
 
@@ -40,9 +40,11 @@ f3_t periods = 2;
 for( sz_t i = 0; i < samples; i++ )
 {
     f3_t x = ( periods * 2.0 * f3_pi() * i ) / samples;
-    frame.push_x( x );
+    frame.push_x( x ); // (optional for common x values)
     frame.[0].push( f3_sin( x )       ); // curve 0
     frame.[1].push( f3_cos( x ) * 0.5 ); // curve 1
+    // Alternative you can use individual x-values as follows
+    // frame.[0].push_xy( x, f3_sin( x ) );
 }
 
 // Displaying plot in dedicated window.
