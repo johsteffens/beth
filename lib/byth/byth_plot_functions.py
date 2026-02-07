@@ -93,16 +93,19 @@ def update_plot( plt, fig, frame_arr, appearance ):
             if( graph[ 'label' ] is not None ): show_legend = True
             if( graph[ 'x_arr' ] is None ): individual_xy = False
 
+        linestyle = appearance['line_style']
+        marker = appearance['marker']
+
         if( frame['x_arr'] is not None ):
             for graph in frame[''][ '_list_' ]:
-                ax.plot( frame['x_arr'][ '_list_' ], graph[ 'y_arr' ][ '_list_' ], linestyle = '-', marker = '', label = graph[ 'label' ], linewidth = linewidth )
+                ax.plot( frame['x_arr'][ '_list_' ], graph[ 'y_arr' ][ '_list_' ], linestyle = linestyle, marker = marker, label = graph[ 'label' ], linewidth = linewidth )
         else:
             if( individual_xy ):
                 for graph in frame[''][ '_list_' ]:
-                    ax.plot( graph[ 'x_arr' ][ '_list_' ], graph[ 'y_arr' ][ '_list_' ], linestyle = '-', marker = '', label = graph[ 'label' ], linewidth = linewidth )
+                    ax.plot( graph[ 'x_arr' ][ '_list_' ], graph[ 'y_arr' ][ '_list_' ], linestyle = linestyle, marker = marker, label = graph[ 'label' ], linewidth = linewidth )
             else:
                 for graph in frame[''][ '_list_' ]:
-                    ax.plot( graph[ 'y_arr' ][ '_list_' ], linestyle = '-', marker = '', label = graph[ 'label' ], linewidth = linewidth )
+                    ax.plot( graph[ 'y_arr' ][ '_list_' ], linestyle = linestyle, marker = marker, label = graph[ 'label' ], linewidth = linewidth )
 
         if( show_legend ): ax.legend() # adds legend with specified plot labels above
 

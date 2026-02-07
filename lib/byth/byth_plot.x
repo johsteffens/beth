@@ -84,7 +84,9 @@ stamp :textpoint_arr_s x_array
 /// plot appearance parameters
 stamp :appearance_s
 {
+    // style; see https://matplotlib.org/stable/gallery/style_sheets/index.html
     st_s preferred_style = "ggplot"; // run 'print( matplotlib.pyplot.style.available )' to get all available styles
+
     st_s => window_title; // title on window frame
     bl_t reopen_window = true; // True: after window was manually close it is reopened on new data
     bl_t keep_window_alive = false; // True: application terminator waits while a window is open
@@ -112,6 +114,12 @@ stamp :appearance_s
     // textpoints
     f3_t textpoint_font_size   = 8;
     st_s textpoint_font_weight = "normal";
+
+    // linestyle; see https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html
+    st_s line_style = "-";
+
+    // marker; https://matplotlib.org/stable/gallery/lines_bars_and_markers/marker_reference.html
+    st_s marker = "";
 
     /// Only for multiple plots...
     sz_t cols = 2;          // ordering of plots (number of columns); rows = ceil( size / cols )

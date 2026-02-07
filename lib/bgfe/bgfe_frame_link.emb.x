@@ -832,6 +832,7 @@ group :type_dialog
                 o.choice.set_client( o );
                 o.choice.set_arrange( horizontal~ );
                 m$* choice = o.choice.push_choice( "" );
+                choice.set_scrollable( parent.type_list.size > 10 );
                 foreach( tp_t e in parent.type_list ) choice.push( e, bnameof( e ), "" );
             }
 

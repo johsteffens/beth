@@ -207,6 +207,25 @@ stamp :s bgfe_frame
 
     func sz_t size( @* o ) = o.item_arr.size;
     func bl_t is_selected( @* o, sz_t index ) = ( index >= 0 && index < o.item_arr.size ) ? o.item_arr.[ index ].selected : false;
+    func er_t select  ( m @* o, sz_t index, bl_t flag ) { if( index >= 0 && index < o.item_arr.size ) o.item_arr.[ index ].set_selected( flag ); = 0; }
+    func er_t select_all ( m @* o );
+    func er_t select_none( m @* o );
+
+    /// stores all selections in an external array
+    func er_t get_selection( @* o, m bcore_arr_sz_s* index_arr )
+    {
+        index_arr.set_size( 0 );
+        foreach( $*e in o.item_arr ) if( e.selected ) index_arr.push( __i );
+        = 0;
+    }
+
+    /// restores selection from an external array
+    func er_t set_selection( m @* o, bcore_arr_sz_s* index_arr )
+    {
+        o.select_none();
+        foreach( m$* index in index_arr ) o.select( index, true );
+        = 0;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

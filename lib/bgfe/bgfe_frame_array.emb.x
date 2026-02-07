@@ -32,8 +32,8 @@ func (:s) bl_t rebuild_is_necessary( @* o )
 
 func (:s) bl_t any_selected( m@* o ) { foreach( m$* e in o.item_arr ) if( e.selected ) = true; = false; }
 func (:s) bl_t any_copied  ( m@* o ) = ( o.copied_elements != NULL ) && ( o.copied_elements.size > 0 );
-func (:s) er_t select_all ( m@* o ) { foreach( m$* e in o.item_arr ) e.set_selected( true  ); = 0; }
-func (:s) er_t select_none( m@* o ) { foreach( m$* e in o.item_arr ) e.set_selected( false ); = 0; }
+func (:s) select_all  { foreach( m$* e in o.item_arr ) e.set_selected( true  ); = 0; }
+func (:s) select_none { foreach( m$* e in o.item_arr ) e.set_selected( false ); = 0; }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -286,7 +286,8 @@ func (:s) er_t indexed_move_to_first( m@* o, sz_t index )
     o.client_change_request( o, action_type.1 );
     if( action_type == reject~  ) = 0;
 
-    array.t_swap( o.client_type, index, 0 );
+    for( sz_t i = index; i > 0; i-- ) array.t_swap( o.client_type, i, i - 1 );
+
     tp_t confirm_action_type = TYPEOF_escalate;
     o.client_change_confirm( o, confirm_action_type.1 );
 
@@ -305,7 +306,11 @@ func (:s) er_t indexed_move_to_last( m@* o, sz_t index )
     o.client_change_request( o, action_type.1 );
     if( action_type == reject~  ) = 0;
 
-    array.t_swap( o.client_type, index, array.t_size( o.client_type ) - 1 );
+
+    sz_t size = array.t_size( o.client_type );
+    for( sz_t i = index; i < size - 1; i++ ) array.t_swap( o.client_type, i, i + 1 );
+
+
     tp_t confirm_action_type = TYPEOF_escalate;
     o.client_change_confirm( o, confirm_action_type.1 );
 

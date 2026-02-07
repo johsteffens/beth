@@ -17,6 +17,11 @@
 
 /** File chooser interactive frame editor based on GTK 'FileChooserWidget'
  *  Associated types: st_s and convertible types
+ *
+ *  For frequent usage as modal dialog use following functions:
+ *    - bgfe_frame_file_chooser_file_save
+ *    - bgfe_frame_file_chooser_file_open
+ *
  */
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -38,6 +43,11 @@ stamp :s bgfe_frame
     func bgfe_frame.set_chooser_action{ o.chooser_action = name; = 0; } // open, save, select_folder, create_folder;
     func bgfe_frame.set_take_action_on{ o.take_action_on = name; = 0; }
     func bgfe_frame.set_close_window  { o.close_window = flag; = 0; }
+
+    /// chooser was cancelled
+    bl_t cancelled;
+
+    func bl_t cancelled( @* o ) = o.cancelled;
 
     /// internals
     hidden bgfe_client* client; // client
@@ -80,6 +90,7 @@ stamp :s bgfe_frame
 
     /// interface functions ...
     func bgfe_frame.set_client_t;
+    func bgfe_frame.set_client = o.set_client_t( client, client._, client_name );
     func bgfe_frame.cycle;
     func bgfe_frame.upsync;
     func bgfe_frame.downsync;
@@ -176,6 +187,7 @@ func (:s) open
     o.rts_path =< o.path.clone();
     o.mutex.unlock();
 
+    o.cancelled = false;
     o.rte.run( o.rtt_open.cast( bgfe_rte_fp_rtt ), o, NULL );
     o.is_open = true;
     = 0;
@@ -209,6 +221,7 @@ func (:s) void rtt_button_apply_signal_clicked( m GtkWidget* win, m@* o )
 //----------------------------------------------------------------------------------------------------------------------
 
 identifier gtk_file_chooser_widget_new, gtk_file_chooser_set_filename, gtk_file_chooser_set_file, GTK_FILE_CHOOSER, g_file_new_for_path;
+identifier gtk_file_chooser_set_current_name;
 identifier GTK_FILE_CHOOSER_ACTION_OPEN, GTK_FILE_CHOOSER_ACTION_SAVE, GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER;
 identifier gtk_file_chooser_set_extra_widget;
 type GtkFileChooserAction, GFile;
@@ -216,6 +229,11 @@ type GtkFileChooserAction, GFile;
 func (:s) er_t rtt_set_path( m@* o, sc_t path )
 {
     gtk_file_chooser_set_filename( GTK_FILE_CHOOSER( o.rtt_widget ), path );
+
+    if( !bcore_file_exists( path ) )
+    {
+        gtk_file_chooser_set_current_name( GTK_FILE_CHOOSER( o.rtt_widget ), bcore_file_name( path ) );
+    }
 
     // seems to be the same behavior as `set_filename`
 //    m GFile* g_file = g_file_new_for_path( path );
@@ -238,8 +256,6 @@ func (:s) er_t rtt_open( m@* o, vd_t unused )
     }
 
     o.rtt_attach_widget( gtk_file_chooser_widget_new( gtk_chooser_action ), o.rtt_widget );
-
-    if( o.rts_path ) o.rtt_set_path( o.rts_path.sc );
 
     gtk_widget_set_name( o.rtt_widget, o.widget_name ? o.widget_name.sc : ifnameof( o._ ) );
     gtk_widget_set_size_request( o.rtt_widget, o.width, o.height );
@@ -271,6 +287,8 @@ func (:s) er_t rtt_open( m@* o, vd_t unused )
     g_signal_connect( o.rtt_widget, "file-activated",         G_CALLBACK( :s_rtt_signal_file_activated         ), o );
     g_signal_connect( o.rtt_widget, "selection-changed",      G_CALLBACK( :s_rtt_signal_selection_changed      ), o );
     g_signal_connect( o.rtt_widget, "update-preview",         G_CALLBACK( :s_rtt_signal_update_preview         ), o );
+
+    if( o.rts_path ) o.rtt_set_path( o.rts_path.sc );
 
     = 0;
 }
@@ -360,6 +378,7 @@ func (:s) bgfe_frame.cycle
 
     if( cancel_clicked )
     {
+        o.cancelled = true;
         if( o.close_window && o.nearest_window() ) o.nearest_window().requesting_close();
     }
 
@@ -415,6 +434,46 @@ func (:s) bgfe_frame.upsync
         o.path_modified = false;
     }
 
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Runs chooser in modal mode to pick a file for saving data
+func er_t file_save( m st_s* path, m bl_t* cancelled /*can be NULL*/ )
+{
+    EM_ASSERT( path != NULL );
+    m$* chooser = :s!^;
+    chooser.set_client( path, 0 );
+    chooser.set_chooser_action( save~ );
+    m$* window = bgfe_window_s!^;
+    window.set_frame( chooser );
+    window.open( NULL );
+    window.loop_while_open_sleep_ms( escapprove~, 10 );
+    window.close();
+    if( cancelled ) cancelled.0 = chooser.cancelled();
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Runs chooser in modal mode to pick a file for loading data
+func er_t file_open( m st_s* path, m bl_t* cancelled /*can be NULL*/ )
+{
+    EM_ASSERT( path != NULL );
+    m$* chooser = :s!^;
+    chooser.set_client( path, 0 );
+    chooser.set_chooser_action( open~ );
+    m$* window = bgfe_window_s!^;
+    window.set_frame( chooser );
+    window.open( NULL );
+    window.loop_while_open_sleep_ms( escapprove~, 10 );
+    window.close();
+    if( cancelled ) cancelled.0 = chooser.cancelled();
     = 0;
 }
 
