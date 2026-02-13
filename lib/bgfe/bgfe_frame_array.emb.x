@@ -526,7 +526,7 @@ func (:s) er_t rtt_open( m@* o, vd_t unused )
     gtk_widget_show( o.rtt_main_box );
 
     o.rtt_attach_widget( gtk_box_new( GTK_ORIENTATION_HORIZONTAL, 0 ), o.rtt_top_bar );
-    gtk_box_pack_start( GTK_BOX( o.rtt_main_box ), o.rtt_top_bar, true, true, 5 );
+    gtk_box_pack_start( GTK_BOX( o.rtt_main_box ), o.rtt_top_bar, false, false, 5 );
 
     m$* box_name = st_s!^;
     box_name.push_sc( o.widget_name ? o.widget_name.sc : "bgfe_frame" );
