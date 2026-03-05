@@ -19,7 +19,7 @@
 /**********************************************************************************************************************/
 
 /// menu items for the array
-name prepend, append, remove_last, remove_selected, select_all, select_none, copy_selected, cut_selected, paste_to_end;
+name prepend, append, remove_last, remove_selected, select_all, select_none, copy_selected, cut_selected, append_clipboard, prepend_clipboard;
 
 /// menu items for array elements
 name remove, cut, move_to_prev, move_to_next, move_to_first, move_to_last, copy, duplicate;

@@ -102,7 +102,12 @@ group bmath_mf =
     /// Basic matrix operations
 
     signature void clear( m@* o );
+
+    /// allocates matrix (stride = cols)
     signature o set_size( m@* o, uz_t rows, uz_t cols );
+
+    /// allocates matrix with row-alignment (sets stride value >= cols to a multiple of align)
+    signature o set_aligned_size( m@* o, uz_t align, uz_t rows, uz_t cols );
 
     /** Sets all matrix elements to random values.
      *  hsm: true: Creates a symmetric matrix
@@ -835,6 +840,7 @@ stamp bmath_mf3_s = bmath_mf
 
     func bmath_mf.clear;
     func bmath_mf.set_size;
+    func bmath_mf.set_aligned_size;
     func bmath_mf.set_random;
     func bmath_mf.set_random_u3;
     func bmath_mf.set_random_full_rank;
@@ -1157,8 +1163,10 @@ stamp bmath_mf2_s = bmath_mf
     /******************************************************************************************************************/
     /// Basic matrix operations
 
-    func void clear( m@* o );
-    func o set_size( m@* o, uz_t rows, uz_t cols );
+    func bmath_mf.clear;
+    func bmath_mf.set_size;
+    func bmath_mf.set_aligned_size;
+
     func void set_random(    m@* o, bl_t hsm, bl_t pdf, sz_t rank_deficit, f2_t density, f2_t min, f2_t max, m bcore_prsg* prsg );
     func void set_random_u3( m@* o, bl_t hsm, bl_t pdf, sz_t rank_deficit, f2_t density, f2_t min, f2_t max, u3_t* p_rval );
     func void set_random_full_rank(    m@* o, bl_t pdf, f2_t eps, m bcore_prsg* prsg );

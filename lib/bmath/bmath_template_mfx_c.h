@@ -40,6 +40,14 @@ bmath_mfx_s* BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bmath_mfx_s* BCATU(bmath_mfx_s,set_aligned_size)( bmath_mfx_s* o, uz_t align, uz_t rows, uz_t cols )
+{
+    bcore_matrix_a_set_aligned_size( ( bcore_matrix* )o, align, rows, cols );
+    return o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void BCATU(bmath_mfx_s,set_random)( bmath_mfx_s* o, bl_t hsm, bl_t pdf, sz_t rank_deficit, fx_t density, fx_t min, fx_t max, bcore_prsg* prsg )
 {
     BLM_INIT();
@@ -213,6 +221,15 @@ bmath_mfx_s* BCATU(bmath_mfx_s,create_set_size)( uz_t rows, uz_t cols )
 {
     bmath_mfx_s* o = BCATU(bmath_mfx_s,create)();
     BCATU(bmath_mfx_s,set_size)( o, rows, cols );
+    return o;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bmath_mfx_s* BCATU(bmath_mfx_s,create_set_aligned_size)( uz_t align, uz_t rows, uz_t cols )
+{
+    bmath_mfx_s* o = BCATU(bmath_mfx_s,create)();
+    BCATU(bmath_mfx_s,set_aligned_size)( o, align, rows, cols );
     return o;
 }
 

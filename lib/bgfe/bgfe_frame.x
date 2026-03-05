@@ -104,6 +104,8 @@ func er_t add_linked_content_sc( m@* o, sc_t content_name ) export = o.add_linke
 feature er_t add_linked_content_with_frame   ( m@* o, tp_t content_name, c bgfe_frame_link_s* frame ) = 0;
 feature er_t add_linked_content_with_frame_sc( m@* o, sc_t content_name, c bgfe_frame_link_s* frame ) = o.add_linked_content_with_frame( bentypeof( content_name ), frame );
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /** Adds a frame to the content list.
  *  The client of that frame and the client of o need not be related or even exist.
  *  No effect if frame does not support content.
@@ -114,6 +116,8 @@ feature er_t add_frame( m@* o, m bgfe_frame* frame )
     WRN_fa( "Cannot add a frame to #name\n", o._ );
     = 0;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /** Adds a new bgfe_frame_s to the content list and returns its reference.
  *  The client of that frame and the client of o need not be related or even exist.
@@ -126,8 +130,12 @@ feature m bgfe_frame_s* add_sub_frame( m@* o )
     = frame;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /// Removes content (frame_s or window_s)
 feature er_t clear_content( m@* o ) = 0;
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Adds a label frame with text
 func er_t add_label( m@* o, sc_t text, sz_t label_width )
@@ -139,6 +147,8 @@ func er_t add_label( m@* o, sc_t text, sz_t label_width )
      = o.add_frame( label );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 func er_t add_label_with_tooltip( m@* o, sc_t text, sz_t label_width, sc_t tooltip )
 {
     m$* label = bgfe_frame_label_s!^;
@@ -149,6 +159,8 @@ func er_t add_label_with_tooltip( m@* o, sc_t text, sz_t label_width, sc_t toolt
      = o.add_frame( label );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /** Adding content with preceding label:
  *  This function adds a label and content in a horizontally aligned sub-frame.
  */
@@ -157,6 +169,8 @@ func er_t add_label_content( m@* o, sc_t text, sz_t label_width, m aware bgfe_cl
     if( !content ) = 0;
     = o.add_label_content_t( text, label_width, content, content._, content_name );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 func er_t add_label_content_t( m@* o, sc_t text, sz_t label_width, m obliv bgfe_client* content, tp_t content_type, tp_t content_name )
 {
@@ -170,6 +184,54 @@ func er_t add_label_content_t( m@* o, sc_t text, sz_t label_width, m obliv bgfe_
     = 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
+func er_t add_label_linked_content( m@* o, sc_t text, sz_t label_width, tp_t content_name, sz_t link_width )
+{
+    m$* f = o.add_sub_frame();
+    f.set_show_border( false );
+    f.set_stretch( false );
+    f.set_center( false );
+    f.set_arrange( horizontal~ );
+    f.add_label( text, label_width );
+    m$* link_frame = bgfe_frame_link_s!^;
+    link_frame.set_width( link_width );
+    f.add_linked_content_with_frame( content_name, link_frame );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func er_t add_label_with_tooltip_linked_content( m@* o, sc_t text, sz_t label_width, sc_t tooltip, tp_t content_name, sz_t link_width )
+{
+    m$* f = o.add_sub_frame();
+    f.set_show_border( false );
+    f.set_stretch( false );
+    f.set_center( false );
+    f.set_arrange( horizontal~ );
+    f.add_label_with_tooltip( text, label_width, tooltip );
+    m$* link_frame = bgfe_frame_link_s!^;
+    link_frame.set_width( link_width );
+    f.add_linked_content_with_frame( content_name, link_frame );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func er_t add_label_linked_content_sc( m@* o, sc_t text, sz_t label_width, sc_t content_name, sz_t link_width )
+{
+    = o.add_label_linked_content( text, label_width, bentypeof( content_name ), link_width );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func er_t add_label_with_tooltip_linked_content_sc( m@* o, sc_t text, sz_t label_width, sc_t tooltip, sc_t content_name, sz_t link_width )
+{
+    = o.add_label_with_tooltip_linked_content( text, label_width, tooltip, bentypeof( content_name ), link_width );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /** Adding content with preceding label:
  *  This function adds a label and content in a horizontally aligned sub-frame.
  */
@@ -178,6 +240,8 @@ func er_t add_label_with_tooltip_content( m@* o, sc_t text, sz_t label_width, sc
     if( !content ) = 0;
     = o.add_label_with_tooltip_content_t( text, label_width, tooltip, content, content._, content_name );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 func er_t add_label_with_tooltip_content_t( m@* o, sc_t text, sz_t label_width, sc_t tooltip, m obliv bgfe_client* content, tp_t content_type, tp_t content_name )
 {
@@ -191,6 +255,8 @@ func er_t add_label_with_tooltip_content_t( m@* o, sc_t text, sz_t label_width, 
     = 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /** Adding content with pre- and post-label:
  *  This function adds a label and content in a horizontally aligned sub-frame.
  */
@@ -199,6 +265,8 @@ func er_t add_label_content_label( m@* o, sc_t pre_text, sz_t pre_label_width, m
     if( !content ) = 0;
     = o.add_label_content_t_label( pre_text, pre_label_width, content, content._, content_name, post_text, post_label_width );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 func er_t add_label_content_t_label( m@* o, sc_t pre_text, sz_t pre_label_width, m obliv bgfe_client* content, tp_t content_type, tp_t content_name, sc_t post_text, sz_t post_label_width )
 {
@@ -213,6 +281,8 @@ func er_t add_label_content_t_label( m@* o, sc_t pre_text, sz_t pre_label_width,
     = 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /** Adding content with pre- and post-label:
  *  This function adds a label and content in a horizontally aligned sub-frame.
  */
@@ -221,6 +291,8 @@ func er_t add_label_with_tooltip_content_label( m@* o, sc_t pre_text, sz_t pre_l
     if( !content ) = 0;
     = o.add_label_with_tooltip_content_t_label( pre_text, pre_label_width, tooltip, content, content._, content_name, post_text, post_label_width );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 func er_t add_label_with_tooltip_content_t_label( m@* o, sc_t pre_text, sz_t pre_label_width, sc_t tooltip, m obliv bgfe_client* content, tp_t content_type, tp_t content_name, sc_t post_text, sz_t post_label_width )
 {
@@ -234,6 +306,8 @@ func er_t add_label_with_tooltip_content_t_label( m@* o, sc_t pre_text, sz_t pre
     f.add_label( post_text, post_label_width );
     = 0;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /** Vertical and horizontal complexity.
  *  The complexity indicates how much space the widget of a frame tends to occupy in horizontal and vertical direction.
@@ -267,6 +341,8 @@ feature er_t open_window_request( m@* o, m tp_t* action_type ) { action_type.0 =
  *  This is typically generated from a holder of a link-frame based on its window policy.
  */
 feature er_t close_window_request( m@* o ) = 0;
+
+//----------------------------------------------------------------------------------------------------------------------
 
 feature er_t client_get_glimpse( @* o, sz_t max_chars, m st_s* glimpse )
 {

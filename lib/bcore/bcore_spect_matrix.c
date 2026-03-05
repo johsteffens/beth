@@ -72,15 +72,24 @@ void bcore_matrix_default_clear( const bcore_matrix_s* p, bcore_matrix* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void bcore_matrix_default_set_size( const bcore_matrix_s* p, bcore_matrix* o, uz_t rows, uz_t cols )
+void bcore_matrix_default_set_aligned_size( const bcore_matrix_s* p, bcore_matrix* o, uz_t align, uz_t rows, uz_t cols )
 {
     if( p->rows_fix   > 0 && rows != p->rows_fix   ) ERR_fa( "Array has a fixed row-size of #<uz_t>"   , p->rows_fix );
     if( p->cols_fix   > 0 && cols != p->cols_fix   ) ERR_fa( "Array has a fixed column-size of #<uz_t>", p->cols_fix );
     if( p->stride_fix > 0 && cols != p->stride_fix ) ERR_fa( "Array has a fixed stride-size of #<uz_t>", p->stride_fix );
-    bcore_array_p_set_size( p->spect_array, (bcore_array*)o, rows * cols );
-    if( p->stride_off != ( uz_t )-1 ) *( uz_t* )BCORE_OFFSET( o, p->stride_off ) = cols;
+    uz_t stride = cols;
+    if( align > 0 ) stride += ( ( cols % align ) > 0 ) ? ( align - ( cols % align ) ) : 0;
+    bcore_array_p_set_size( p->spect_array, (bcore_array*)o, rows * stride );
+    if( p->stride_off != ( uz_t )-1 ) *( uz_t* )BCORE_OFFSET( o, p->stride_off ) = stride;
     if( p->cols_off   != ( uz_t )-1 ) *( uz_t* )BCORE_OFFSET( o, p->cols_off   ) = cols;
     if( p->rows_off   != ( uz_t )-1 ) *( uz_t* )BCORE_OFFSET( o, p->rows_off   ) = rows;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void bcore_matrix_default_set_size( const bcore_matrix_s* p, bcore_matrix* o, uz_t rows, uz_t cols )
+{
+    bcore_matrix_default_set_aligned_size( p, o, 0, rows, cols );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

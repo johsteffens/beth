@@ -64,7 +64,7 @@ func (:s) er_t cut_selected( m@* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-func (:s) er_t paste_to_end( m@* o )
+func (:s) er_t append_clipboard( m@* o )
 {
     tp_t action_type = escapprove~;
     if( !o.copied_elements || o.copied_elements.size == 0 ) = 0;
@@ -83,6 +83,30 @@ func (:s) er_t paste_to_end( m@* o )
     for( sz_t i = 0; i < size; i++ ) o.item_arr.[ o.item_arr.size - size + i ].set_selected( true );
 
     o.rte.run( o.rtt_scroll_to_end.cast( bgfe_rte_fp_rtt ), o, NULL );
+    = 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) er_t prepend_clipboard( m@* o )
+{
+    tp_t action_type = escapprove~;
+    if( !o.copied_elements || o.copied_elements.size == 0 ) = 0;
+
+    o.client_change_request( o, action_type.1 );
+    if( action_type == reject~  ) = 0;
+
+    m$* array = o.client_array();
+    foreach( m$* e in o.copied_elements ) array.t_insert_sr( o.client_type, __i, sr_twc( e.type(), e.o ) );
+    tp_t confirm_action_type = TYPEOF_escalate;
+    o.client_change_confirm( o, confirm_action_type.1 );
+
+    o.rebuild();
+
+    sz_t size = o.copied_elements.size;
+    for( sz_t i = 0; i < size; i++ ) o.item_arr.[ i ].set_selected( true );
+
+//    o.rte.run( o.rtt_scroll_to_begin.cast( bgfe_rte_fp_rtt ), o, NULL );
     = 0;
 }
 
@@ -495,14 +519,19 @@ func (:s) open
         o.menu.set_arrange( horizontal~ );
         o.menu.push( prepend~     , "+[]", "Prepend new element" );
         o.menu.push( append~      , "[]+", "Append new element" );
-        o.menu.push( remove_last~ , "⌫", "Remove last element" );
-        o.menu.push( cut_selected~, "✂", "Cut selected elements to clipboard" );
+        o.menu.push( copy_selected~, "☑→📋", "Copy selected elements to clipboard" );
+        o.menu.push( cut_selected~ , "✂→📋", "Cut selected elements to clipboard" );
+        o.menu.push( append_clipboard~  , "[]+📋", "Append copied elements" );
+        o.menu.push( prepend_clipboard~ , "📋+[]", "Prepend copied elements" );
+        o.menu.push( remove_last~  , "⌫", "Remove last element" );
         m$* choice = o.menu.push_choice( "" );
 
         choice.push( select_all~   , "All ☑", NULL );
         choice.push( select_none~  , "All ☐", NULL );
-        choice.push( copy_selected~, "Copy 📋" , "Copy selected elements to clipboard" );
-        choice.push( paste_to_end~ , "Paste"   , "Append copied elements" );
+        choice.push( copy_selected~, "☑→📋" , "Copy selected elements to clipboard" );
+        choice.push( cut_selected~ , "✂→📋" , "Cut selected elements to clipboard" );
+        choice.push( append_clipboard~  , "[]+📋" , "Append copied elements" );
+        choice.push( prepend_clipboard~ , "📋+[]" , "Prepend copied elements" );
 
         o.menu_frame!;
         o.menu_frame.set_show_border( false );
@@ -645,9 +674,10 @@ func (:s) bgfe_choice_client.choice_item_is_active
     {
         case select_all~: =o.item_arr.size > 0;
         case select_none~: =o.item_arr.size > 0;
-        case copy_selected~: = o.any_selected();
+        case copy_selected~: = true;
         case cut_selected~: = true;
-        case paste_to_end~: = o.any_copied();
+        case append_clipboard~: = true;
+        case prepend_clipboard~: = true;
         default: break;
     }
     = true;
@@ -663,9 +693,10 @@ func (:s) bgfe_choice_client.choice_item_selection
         case select_none~:     o.select_none(); break;
         case copy_selected~:   o.copy_selected(); break;
         case cut_selected~:    o.cut_selected(); break;
-        case paste_to_end~:    o.paste_to_end(); break;
         case prepend~:         o.prepend_element(); break;
         case append~:          o.append_element(); break;
+        case append_clipboard~:  o.append_clipboard(); break;
+        case prepend_clipboard~: o.prepend_clipboard(); break;
         case remove_selected~: o.remove_selected(); break;
         case remove_last~:     o.remove_last(); break;
         default: break;

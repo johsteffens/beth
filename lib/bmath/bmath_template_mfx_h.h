@@ -134,7 +134,12 @@ typedef bl_t (*BCATU(bmath_fp,mfx,s,htp    ))( const bmath_mfx_s* o, bmath_mfx_s
 /// Matrix object of fx_t (bmath_mfx_s)
 
 void BCATU(bmath_mfx_s,clear)(    bmath_mfx_s* o );
+
+/// Allocates matrix (stride = cols)
 bmath_mfx_s* BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols );
+
+/// Allocates matrix with aligned rows (align should be a power of 2: e.g. 0x40)
+bmath_mfx_s* BCATU(bmath_mfx_s,set_aligned_size)( bmath_mfx_s* o, uz_t align, uz_t rows, uz_t cols );
 
 /** Sets all matrix elements to random values.
  *  hsm: true: Creates a symmetric matrix
@@ -172,6 +177,7 @@ void BCATU(bmath_mfx_s,set_random_full_rank)(    bmath_mfx_s* o, bl_t pdf, fx_t 
 void BCATU(bmath_mfx_s,set_random_full_rank_u3)( bmath_mfx_s* o, bl_t pdf, fx_t eps, u3_t* p_rval );
 
 bmath_mfx_s* BCATU(bmath_mfx_s,create_set_size)( uz_t rows, uz_t cols );
+bmath_mfx_s* BCATU(bmath_mfx_s,create_set_aligned_size)( uz_t align, uz_t rows, uz_t cols );
 bmath_mfx_s* BCATU(bmath_mfx_s,create_fill_random)( uz_t rows, uz_t cols, fx_t min, fx_t max, u2_t* rval );
 
 static inline void BCATU(bmath_mfx_s,set_size_to)( const bmath_mfx_s* o, bmath_mfx_s* res ) { BCATU(bmath_mfx_s,set_size)( res, o->rows, o->cols ); }
