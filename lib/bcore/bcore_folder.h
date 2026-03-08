@@ -27,12 +27,18 @@
 
 /**********************************************************************************************************************/
 
-bl_t bcore_folder_exists( sc_t name ); // checks if folder exists
-bl_t bcore_folder_create( sc_t name ); // creates new folder in mode 0700 if not existing; returns true if success or existing
-bl_t bcore_folder_delete( sc_t name ); // deletes empty folder if existing; returns true if success or folder did not exist in the first place
-bl_t bcore_folder_rename( sc_t src_name, sc_t dst_name ); // renames folder if existing; returns success
+bl_t bcore_folder_exists( sc_t path ); // checks if folder exists
 
-st_s* bcore_folder_get_current( st_s* name ); // obtains current folder; returns name
+/** creates new folder if not existing; returns true if success or already existing
+ *  smode: "rwx"-access flags for user, group, other: [uuugggooo]; e.g.: "rwxr--r--"
+ *  recursive: true creates all parent folders if not existing, false: creates only final folder.
+ */
+bl_t bcore_folder_create( sc_t path, bl_t recursive, sc_t smode );
+
+bl_t bcore_folder_delete( sc_t path ); // deletes empty folder if existing; returns true if success or folder did not exist in the first place
+bl_t bcore_folder_rename( sc_t src_path, sc_t dst_path ); // renames folder if existing; returns success
+
+st_s* bcore_folder_get_current( st_s* path ); // obtains current folder; returns path
 
 /**********************************************************************************************************************/
 /** bcore_folder_s represents a full directory tree with files and sub-folders

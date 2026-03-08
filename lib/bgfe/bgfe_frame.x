@@ -418,7 +418,7 @@ func tp_t default_frame_type( tp_t client_type )
 {
     switch( client_type )
     {
-        case f3_t~: = bgfe_frame_scale_s~;
+        case f3_t~: = bgfe_frame_entry_s~;
         case f2_t~: = bgfe_frame_scale_s~;
         case s3_t~: = bgfe_frame_entry_s~;
         case s2_t~: = bgfe_frame_entry_s~;

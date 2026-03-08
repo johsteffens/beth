@@ -1,4 +1,4 @@
-//  Last update: 2026-01-15T10:16:25Z (UTC)
+//  Last update: 2026-03-06T21:46:45Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -75,7 +75,7 @@
 #include "bcore_const_manager.h"
 
 // To force a rebuild of this target by xoico, reset the hash key value below to 0.
-// HKEYOF_bcore 0x0D64B41452A00EC3ull
+// HKEYOF_bcore 0x078F8453555C6C17ull
 
 /**********************************************************************************************************************/
 // source: bcore_x_root_inexpandable.h
@@ -5796,7 +5796,7 @@ er_t x_btcl_frame_s_eval_reserved_func( x_btcl_frame_s* o, tp_t name, x_source* 
             sr_s* sb = ((sr_s*)BLM_LEVEL_T_PUSH(3,sr_s,sr_s_create()));
             BLM_TRY(x_btcl_frame_s_eval(o,0, source, sb ))
             if( sr_s_type(sb) != ((tp_t)(TYPEOF_st_s)) ) BLM_RETURNV(er_t, x_source_parse_error_fa(source,"Expression must represent a string.\n" ))
-            sr_s_from_bl(sr,bcore_folder_create(((const st_s*)(sb->o))->sc ) );
+            sr_s_from_bl(sr,bcore_folder_create(((const st_s*)(sb->o))->sc, false, "rwxrwxr--" ) );
         BLM_DOWN();}
         break;
     
@@ -11098,5 +11098,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o )
     }
     return NULL;
 }
-// XOICO_BODY_SIGNATURE 0x5A70EC6CBBA699E3
-// XOICO_FILE_SIGNATURE 0x134A747685D5AB84
+// XOICO_BODY_SIGNATURE 0xA9C17B61CDB581C6
+// XOICO_FILE_SIGNATURE 0x49B37999DFCC3BE3

@@ -26,57 +26,87 @@
 #include "bcore_spect_inst.h"
 #include "bcore_life.h"
 #include "bcore_sc.h"
+#include "bcore_file.h"
 
 /**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t bcore_folder_exists( sc_t name )
+bl_t bcore_folder_exists( sc_t path )
 {
+    if( sc_t_equal( path, ""  ) ) return true;
+    if( sc_t_equal( path, "/" ) )  return true;
+    if( sc_t_equal( path, "." ) )  return true;
+
     struct stat file_stat;
-    if( stat( name, &file_stat ) != 0 ) return false;
+    if( stat( path, &file_stat ) != 0 ) return false;
     if( !S_ISDIR( file_stat.st_mode ) ) return false;
     return true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t bcore_folder_create( sc_t name )
+bl_t bcore_folder_create( sc_t path, bl_t recursive, sc_t smode )
 {
-    if( bcore_folder_exists( name ) ) return true;
-    if( mkdir( name, 0700 ) != 0 ) return false;
+    if( bcore_folder_exists( path ) ) return true;
+
+    if( recursive )
+    {
+        st_s* parent_path = bcore_file_folder_path( path );
+        bl_t success = bcore_folder_create( parent_path->sc, true, smode );
+        st_s_discard( parent_path );
+        if( !success ) return false;
+    }
+
+    s2_t nmode = 0;
+    sc_t smask = "rwxrwxrwx";
+    if( smode )
+    {
+        for( sz_t i = 0; smask[ i ] != 0; i++ )
+        {
+            char c = smode[ i ];
+            if( c != '-' && c != smask[ i ] ) { ERR_fa( "Invalid mode string #<sc_t>\n", smode ); return false; }
+            nmode = ( nmode << 1 ) | ( ( c == smask[ i ] ) ? 1 : 0 );
+        }
+    }
+    else
+    {
+        nmode = 0700;
+    }
+
+    if( mkdir( path, nmode ) != 0 ) return false;
     return true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t bcore_folder_delete( sc_t name )
+bl_t bcore_folder_delete( sc_t path )
 {
-    if( !bcore_folder_exists( name ) ) return true;
-    if( rmdir( name ) != 0 ) return false;
+    if( !bcore_folder_exists( path ) ) return true;
+    if( rmdir( path ) != 0 ) return false;
     return true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bl_t bcore_folder_rename( sc_t src_name, sc_t dst_name )
+bl_t bcore_folder_rename( sc_t src_path, sc_t dst_path )
 {
-    if( !bcore_folder_exists( src_name ) ) return false;
-    if( rename( src_name, dst_name ) != 0 ) return false;
+    if( !bcore_folder_exists( src_path ) ) return false;
+    if( rename( src_path, dst_path ) != 0 ) return false;
     return true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-st_s* bcore_folder_get_current( st_s* name )
+st_s* bcore_folder_get_current( st_s* path )
 {
-    if( !name ) return name;
+    if( !path ) return path;
     char *get_current_dir_name( void ); // prototype not defined in unistd.h
     sd_t sd = get_current_dir_name();
     ASSERT( sd );
-    st_s_copy_sc( name, sd );
+    st_s_copy_sc( path, sd );
     free( sd );
-    return name;
+    return path;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

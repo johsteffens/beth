@@ -22,16 +22,19 @@
 group bcore_folder
 {
     // checks if folder exists
-    func bl_t exists( sc_t name );
+    func bl_t exists( sc_t path );
 
-    // creates new folder in mode 0700 if not existing; returns true if success or existing
-    func bl_t create( sc_t name );
+    /** creates new folder if not existing; returns true if success or already existing
+     *  smode: "rwx"-access flags for user, group, other: [uuugggooo]; e.g.: "rwxr--r--"
+     *  recursive: true creates all parent folders if not existing, false: creates only final folder.
+     */
+    func bl_t create( sc_t path, bl_t recursive, sc_t smode );
 
     // deletes empty folder if existing; returns true if success or folder did not exist in the first place
-    func bl_t delete( sc_t name );
+    func bl_t delete( sc_t path );
 
     // renames folder if existing; returns success
-    func bl_t rename( sc_t src_name, sc_t dst_name ); // renames folder if existing; returns success
+    func bl_t rename( sc_t src_path, sc_t dst_path ); // renames folder if existing; returns success
 
     // obtains current folder string and stores it in o
     func o get_current( m st_s* o );
