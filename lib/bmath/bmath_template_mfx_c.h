@@ -32,9 +32,9 @@ void BCATU(bmath_mfx_s,clear)( bmath_mfx_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bmath_mfx_s* BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols )
+bmath_mfx_s* BCATU(bmath_mfx_s,set_compact_size)( bmath_mfx_s* o, uz_t rows, uz_t cols )
 {
-    bcore_matrix_a_set_size( ( bcore_matrix* )o, rows, cols );
+    bcore_matrix_a_set_compact_size( ( bcore_matrix* )o, rows, cols );
     return o;
 }
 
@@ -1036,29 +1036,11 @@ bl_t BCATU(bmath_mfx_s,piv)( const bmath_mfx_s* o, fx_t eps, bmath_mfx_s* res )
     uz_t n = uz_min( o->rows, o->cols );
     if( n == 0 ) return true;
 
-    bmath_mfx_s* a = BCATU(bmath_mfx_s,create)();
-    // we let 'a' use the space of res
-    if( o != res )
-    {
-        a->data   = res->data;
-        a->rows   = o->rows;
-        a->cols   = o->cols;
-        a->stride = a->cols;
-        a->size   = a->rows * a->cols;
-        a->space  = 0; // a does not own its space
-        BCATU(bmath_mfx_s,cpy)( o, a );
-    }
-    else
-    {
-        *a = *res;
-        a->space = 0; // a does not own its space
-    }
-
+    bmath_mfx_s* a = BCATU(bmath_mfx_s,clone)( o );
     bmath_mfx_s* u = BCATU(bmath_mfx_s,create)();
     bmath_mfx_s* v = BCATU(bmath_mfx_s,create)();
     bmath_vfx_s* d = BCATU(bmath_vfx_s,create)();
 
-    BCATU(bmath_mfx_s,set_size)( a, o->rows, o->cols );
     BCATU(bmath_mfx_s,set_size)( u, o->rows, n );
     BCATU(bmath_mfx_s,set_size)( v, o->cols, n );
     BCATU(bmath_vfx_s,set_size)( d, n );
@@ -1115,12 +1097,11 @@ bl_t BCATU(bmath_mfx_s,hsm_piv)( const bmath_mfx_s* o, fx_t eps, bmath_mfx_s* re
     uz_t n = o->rows;
     if( n == 0 ) return true;
 
-    bmath_mfx_s* a = res; // a occupies space of res
     bmath_mfx_s* q = BCATU(bmath_mfx_s,create)();
     BCATU(bmath_mfx_s,set_size)( q, n, n );
     BCATU(bmath_mfx_s,one)( q );
 
-    BCATU(bmath_mfx_s,cpy)( o, a );
+    bmath_mfx_s* a = BCATU(bmath_mfx_s,clone)( o );
     bl_t success = BCATU(bmath_mfx_s,evd_htp)( a, q );
 
     bmath_vfx_s* dag = BCATU(bmath_vfx_s,create)();
@@ -1139,6 +1120,7 @@ bl_t BCATU(bmath_mfx_s,hsm_piv)( const bmath_mfx_s* o, fx_t eps, bmath_mfx_s* re
 
     BCATU(bmath_vfx_s,discard)( dag );
     BCATU(bmath_mfx_s,discard)( q );
+    BCATU(bmath_mfx_s,discard)( a );
 
     return success;
 }

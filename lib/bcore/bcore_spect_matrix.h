@@ -58,7 +58,30 @@ uz_t bcore_matrix_default_get_stride( const bcore_matrix_s* p, const bcore_matri
     return p->stride_fix > 0 ? p->stride_fix : *( uz_t* )BCORE_OFFSET( o, p->stride_off );
 }
 
-void bcore_matrix_default_set_size( const bcore_matrix_s* p, bcore_matrix* o, uz_t rows, uz_t cols );
+/** Allocates matrix with explicitly strided rows.
+ *  stride<cols is allowed but it makes rows overlap in memory.
+ */
+void bcore_matrix_default_set_strided_size( const bcore_matrix_s* p, bcore_matrix* o, uz_t stride, uz_t rows, uz_t cols );
+
+/// Allocates matrix with stride = cols.
+static inline
+void bcore_matrix_default_set_compact_size( const bcore_matrix_s* p, bcore_matrix* o, uz_t rows, uz_t cols )
+{
+    bcore_matrix_default_set_strided_size( p, o, cols, rows, cols );
+}
+
+/** Allocates matrix with aligned rows
+ *  Align > 0 chooses min(stride) such that stride >= cols and stride % align = 0.
+ *  Alignment can improve cache- and vectorization-efficiency.
+ *  Align should be a power of 2: e.g. 0x10)
+ */
+static inline
+void bcore_matrix_default_set_aligned_size( const bcore_matrix_s* p, bcore_matrix* o, uz_t align, uz_t rows, uz_t cols )
+{
+    uz_t stride = cols;
+    if( align > 0 ) stride += ( ( cols % align ) > 0 ) ? ( align - ( cols % align ) ) : 0;
+    bcore_matrix_default_set_strided_size( p, o, stride, rows, cols );
+}
 
 static inline
 uz_t bcore_matrix_default_get_row_index( const bcore_matrix_s* p, const bcore_matrix* o, uz_t i )
@@ -90,8 +113,9 @@ BCORE_FUNC_SPECT_CONST0_RET0_ARG0_MAP0( bcore_matrix, clear               )
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_matrix, get_rows,      uz_t )
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_matrix, get_cols,      uz_t )
 BCORE_FUNC_SPECT_CONST1_RET1_ARG0_MAP0( bcore_matrix, get_stride,    uz_t )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_matrix, set_size,                      uz_t, rows, uz_t, cols )
-BCORE_FUNC_SPECT_CONST0_RET0_ARG3_MAP0( bcore_matrix, set_aligned_size, uz_t, align, uz_t, rows, uz_t, cols )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG3_MAP0( bcore_matrix, set_strided_size, uz_t, stride, uz_t, rows, uz_t, cols )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG3_MAP0( bcore_matrix, set_aligned_size, uz_t, align,  uz_t, rows, uz_t, cols )
+BCORE_FUNC_SPECT_CONST0_RET0_ARG2_MAP0( bcore_matrix, set_compact_size,               uz_t, rows, uz_t, cols )
 BCORE_FUNC_SPECT_CONST1_RET1_ARG1_MAP0( bcore_matrix, get_row_index, uz_t, uz_t, i )
 BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAP0( bcore_matrix, get_index,     uz_t, uz_t, i, uz_t, j )
 BCORE_FUNC_SPECT_CONST1_RET1_ARG2_MAP0( bcore_matrix, get_cell,      sr_s, uz_t, i, uz_t, j )

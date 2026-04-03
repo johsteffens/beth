@@ -136,10 +136,27 @@ typedef bl_t (*BCATU(bmath_fp,mfx,s,htp    ))( const bmath_mfx_s* o, bmath_mfx_s
 void BCATU(bmath_mfx_s,clear)(    bmath_mfx_s* o );
 
 /// Allocates matrix (stride = cols)
-bmath_mfx_s* BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols );
+bmath_mfx_s* BCATU(bmath_mfx_s,set_compact_size)( bmath_mfx_s* o, uz_t rows, uz_t cols );
 
-/// Allocates matrix with aligned rows (align should be a power of 2: e.g. 0x40)
+/** Allocates matrix with explicitly strided rows.
+ *  stride<cols is allowed but it makes rows overlap in memory.
+ */
+bmath_mfx_s* BCATU(bmath_mfx_s,set_strided_size)( bmath_mfx_s* o, uz_t stride, uz_t rows, uz_t cols );
+
+/** Allocates matrix with aligned rows.
+ *  Align > 0 chooses min(stride) such that stride >= cols and stride % align = 0.
+ *  Alignment can improve cache- and vectorization-efficiency.
+ *  Align should be a power of 2: e.g. 0x10)
+ */
 bmath_mfx_s* BCATU(bmath_mfx_s,set_aligned_size)( bmath_mfx_s* o, uz_t align, uz_t rows, uz_t cols );
+
+/// Allocates matrix
+static inline
+bmath_mfx_s* BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols )
+{
+    //return BCATU(bmath_mfx_s,set_compact_size)( o, rows, cols );
+    return BCATU(bmath_mfx_s,set_aligned_size)( o, 0x20, rows, cols );
+}
 
 /** Sets all matrix elements to random values.
  *  hsm: true: Creates a symmetric matrix
