@@ -92,6 +92,15 @@ stamp :bgra_s x_array
     func o set_argb(  m@* o, sz_t row, sz_t col, u0_t a, u0_t r, u0_t g, u0_t b ) = o.set_bgra( row, col, b, g, r, a );
     func o set_rgb(   m@* o, sz_t row, sz_t col,         u0_t r, u0_t g, u0_t b ) = o.set_bgra( row, col, b, g, r, 0 );
 
+    func o fill_bgra( m@* o, u0_t b, u0_t g, u0_t r, u0_t a )
+    {
+        m u0_t* p = o.data;
+        for( sz_t i = 0; i <= o.size - 4; i += 4 ) { p[i+0]=b; p[i+1]=g; p[i+2]=r; p[i+3]=a; }
+    }
+
+    func o fill_black( m@* o ) = o.fill_bgra( 0, 0, 0, 0 );
+    func o fill_white( m@* o ) = o.fill_bgra( 255, 255, 255, 0 );
+
     /// pnm file format
     func o pnm_to_sink    ( c@* o, m x_sink*   sink   );
     func o pnm_from_source( m@* o, m x_source* source );
