@@ -56,7 +56,13 @@
  *
  *  Returns false in case convergence could not be achieved.
  */
-bl_t BCATU(bmath_mfx_s,svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v );
+bl_t BCATU(bmath_mfx_s,svd      )( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v );
+bl_t BCATU(bmath_mfx_s,svd_htp  )( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v ); // like svd except that u, v are transposed
+
+/** svd2 (thin-svd): For f3_t based on mocutsvd
+ */
+bl_t BCATU(bmath_mfx_s,svd2     )( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v );
+bl_t BCATU(bmath_mfx_s,svd2_htp )( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v ); // like svd2 except that u, v are transposed
 
 /**********************************************************************************************************************/
 

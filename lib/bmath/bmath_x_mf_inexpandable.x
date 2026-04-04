@@ -104,10 +104,13 @@ group bmath_mf =
     signature void clear( m@* o );
 
     /// allocates matrix (stride = cols)
-    signature o set_size( m@* o, uz_t rows, uz_t cols );
+    signature o set_compact_size( m@* o, uz_t rows, uz_t cols );
 
     /// allocates matrix with row-alignment (sets stride value >= cols to a multiple of align)
     signature o set_aligned_size( m@* o, uz_t align, uz_t rows, uz_t cols );
+
+    /// allocates matrix with default row-alignment
+    signature o set_size( m@* o, uz_t rows, uz_t cols );
 
     /** Sets all matrix elements to random values.
      *  hsm: true: Creates a symmetric matrix
@@ -749,7 +752,12 @@ group bmath_mf =
      *
      *  Returns false in case convergence could not be achieved.
      */
-    signature bl_t svd( m@* u, m@* a, m@* v );
+    signature bl_t svd     ( m@* u, m@* a, m@* v );
+    signature bl_t svd_htp ( m@* u, m@* a, m@* v );
+
+    /// svd2: only thin-svd; for f3_t based on mocutsvd
+    signature bl_t svd2    ( m@* u, m@* a, m@* v );
+    signature bl_t svd2_htp( m@* u, m@* a, m@* v );
 
     /******************************************************************************************************************/
     /// Covariance
@@ -841,6 +849,7 @@ stamp bmath_mf3_s = bmath_mf
     func bmath_mf.clear;
     func bmath_mf.set_size;
     func bmath_mf.set_aligned_size;
+    func bmath_mf.set_compact_size;
     func bmath_mf.set_random;
     func bmath_mf.set_random_u3;
     func bmath_mf.set_random_full_rank;
@@ -1104,6 +1113,9 @@ stamp bmath_mf3_s = bmath_mf
     /// (SVD) Singular Value Decomposition
 
     func bmath_mf.svd;
+    func bmath_mf.svd_htp;
+    func bmath_mf.svd2;
+    func bmath_mf.svd2_htp;
 
     /******************************************************************************************************************/
     /// Covariance
@@ -1165,6 +1177,7 @@ stamp bmath_mf2_s = bmath_mf
 
     func bmath_mf.clear;
     func bmath_mf.set_size;
+    func bmath_mf.set_compact_size;
     func bmath_mf.set_aligned_size;
 
     func void set_random(    m@* o, bl_t hsm, bl_t pdf, sz_t rank_deficit, f2_t density, f2_t min, f2_t max, m bcore_prsg* prsg );
@@ -1433,6 +1446,9 @@ stamp bmath_mf2_s = bmath_mf
     /// (SVD) Singular Value Decomposition
 
     func bmath_mf.svd;
+    func bmath_mf.svd_htp;
+    func bmath_mf.svd2;
+    func bmath_mf.svd2_htp;
 
     /******************************************************************************************************************/
     /// Covariance

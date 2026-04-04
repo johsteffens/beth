@@ -153,6 +153,9 @@ vd_t bmath_mf2_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FUNC( bmath_mf2_s_qrd_pmt );
             BCORE_REGISTER_FUNC( bmath_mf2_s_pmt_lqd );
             BCORE_REGISTER_FUNC( bmath_mf2_s_svd );
+            BCORE_REGISTER_FUNC( bmath_mf2_s_svd_htp );
+            BCORE_REGISTER_FUNC( bmath_mf2_s_svd2 );
+            BCORE_REGISTER_FUNC( bmath_mf2_s_svd2_htp );
 
             BCORE_REGISTER_FUNC( bmath_mf2_s_cld );
             BCORE_REGISTER_FUNC( bmath_mf2_s_trd );

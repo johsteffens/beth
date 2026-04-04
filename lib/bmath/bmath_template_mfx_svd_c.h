@@ -285,6 +285,123 @@ bl_t BCATU(bmath_mfx_s,svd)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bl_t BCATU(bmath_mfx_s,svd_htp)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
+{
+    bl_t success = false;
+    if( a->rows == a->cols )
+    {
+        success = BCATU(bmath_mfx_s,svd)( u, a, v );
+        BCATU(bmath_mfx_s,htp)( u, u );
+        BCATU(bmath_mfx_s,htp)( v, v );
+    }
+    else
+    {
+        bmath_mfx_s* ut = u ? BCATU(bmath_mfx_s,create)() : NULL;
+        bmath_mfx_s* vt = v ? BCATU(bmath_mfx_s,create)() : NULL;
+        if( u ) BCATU(bmath_mfx_s,set_size)( ut, u->cols, u->rows );
+        if( v ) BCATU(bmath_mfx_s,set_size)( vt, v->cols, v->rows );
+        success = BCATU(bmath_mfx_s,svd)( ut, a, vt );
+        if( u ) BCATU(bmath_mfx_s,htp)( ut, u );
+        if( v ) BCATU(bmath_mfx_s,htp)( vt, v );
+        BCATU(bmath_mfx_s,discard)( ut );
+        BCATU(bmath_mfx_s,discard)( vt );
+    }
+
+    return success;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// based on mocutsvd; fallback to bmath_mfx_s,svd for cases mocutsvd does not handle
+bl_t BCATU(bmath_mfx_s,svd2_htp)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
+{
+    #if BMATH_TEMPLATE_FX_PREC == 3
+        sz_t n = sz_min( a->rows, a->cols );
+
+        if( u )
+        {
+            ASSERT( u != v );
+
+            if( u->data )
+            {
+                ASSERT( u->rows == n );
+                ASSERT( u->cols == a->rows );
+            }
+            else
+            {
+                bmath_mf3_s_set_size( u, n, a->rows );
+            }
+        }
+
+        if( v )
+        {
+            if( v->data )
+            {
+                ASSERT( v->rows == n );
+                ASSERT( v->cols == a->cols );
+            }
+            else
+            {
+                bmath_mf3_s_set_size( v, n, a->cols );
+            }
+        }
+
+        bl_t success = true;
+
+        sz_t a_rows = a->rows;
+        sz_t a_cols = a->cols;
+        sz_t a_stride = a->stride;
+        sz_t u_stride = u ? u->stride : 0;
+        sz_t v_stride = v ? v->stride : 0;
+        f3_t* a_data = a->data;
+        f3_t* u_data = u ? u->data : NULL;
+        f3_t* v_data = v ? v->data : NULL;
+
+        int err = mocut_thin_svd( a_rows, a_cols, a_data, a_stride, u_data, u_stride, v_data, v_stride );
+
+        if( err )
+        {
+            success = false;
+            if( err != MOCUT_WRN_CONVERGENCE )
+            {
+                ERR_fa( "#<sc_t>\n", mocut_err_text( err ) );
+            }
+        }
+
+        /// thin decomposition: beth_svd framework requires diagonal a to have square format
+        a->rows = n;
+        a->cols = n;
+
+        return success;
+    #else
+        return BCATU(bmath_mfx_s,svd_htp)( u, a, v );
+    #endif // BMATH_TEMPLATE_FX_PREC
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// based on mocutsvd; fallback to bmath_mfx_s,svd for cases mocutsvd does not handle
+bl_t BCATU(bmath_mfx_s,svd2)( bmath_mfx_s* u, bmath_mfx_s* a, bmath_mfx_s* v )
+{
+    #if BMATH_TEMPLATE_FX_PREC == 3
+        bl_t success = false;
+        bmath_mfx_s* ut = u ? BCATU(bmath_mfx_s,create)() : NULL;
+        bmath_mfx_s* vt = v ? BCATU(bmath_mfx_s,create)() : NULL;
+        if( u ) BCATU(bmath_mfx_s,set_size)( ut, u->cols, u->rows );
+        if( v ) BCATU(bmath_mfx_s,set_size)( vt, v->cols, v->rows );
+        success = BCATU(bmath_mfx_s,svd2_htp)( ut, a, vt );
+        if( u ) BCATU(bmath_mfx_s,htp)( ut, u );
+        if( v ) BCATU(bmath_mfx_s,htp)( vt, v );
+        BCATU(bmath_mfx_s,discard)( ut );
+        BCATU(bmath_mfx_s,discard)( vt );
+        return success;
+    #else
+        return BCATU(bmath_mfx_s,svd)( u, a, v );
+    #endif // BMATH_TEMPLATE_FX_PREC
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 #include "bmath_template_fx_end.h"

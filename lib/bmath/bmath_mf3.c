@@ -74,11 +74,91 @@ BCORE_DEFINE_OBJECT_INST( bmath_matrix, bmath_mf3_s )
 "}";
 
 /**********************************************************************************************************************/
+/// functions specific to f3_t
+
+//----------------------------------------------------------------------------------------------------------------------
+
+//bl_t bmath_mf3_s_svd_htp( const bmath_mf3_s* o, bmath_mf3_s* u, bmath_vf3_s* d, bmath_mf3_s* v )
+//{
+//    bmath_mf3_s* a = bmath_mf3_s_clone( o );
+//
+//    sz_t n = sz_min( a->rows, a->cols );
+//
+//    if( u )
+//    {
+//        ASSERT( u != v );
+//
+//        if( u->data )
+//        {
+//            ASSERT( u->rows == n );
+//            ASSERT( u->cols == a->rows );
+//        }
+//        else
+//        {
+//            bmath_mf3_s_set_size( u, n, a->rows );
+//        }
+//    }
+//
+//    if( v )
+//    {
+//        if( v->data )
+//        {
+//            ASSERT( v->rows == n );
+//            ASSERT( v->cols != a->cols );
+//        }
+//        else
+//        {
+//            bmath_mf3_s_set_size( v, n, a->cols );
+//        }
+//    }
+//
+//    bl_t success = true;
+//
+//    sz_t a_rows = a->rows;
+//    sz_t a_cols = a->cols;
+//    sz_t a_stride = a->stride;
+//    sz_t u_stride = u ? u->stride : 0;
+//    sz_t v_stride = v ? v->stride : 0;
+//    f3_t* a_data = a->data;
+//    f3_t* u_data = u ? u->data : NULL;
+//    f3_t* v_data = v ? v->data : NULL;
+//
+//    int err = mocut_thin_svd( a_rows, a_cols, a_data, a_stride, u_data, u_stride, v_data, v_stride );
+//
+//    if( err )
+//    {
+//        success = false;
+//        if( err != MOCUT_WRN_CONVERGENCE )
+//        {
+//            ERR_fa( "#<sc_t>\n", mocut_err_text( err ) );
+//        }
+//    }
+//
+//    if( d )
+//    {
+//        if( d->size == 0 ) bmath_vf3_s_set_size( d, sz_min( a->rows, a->cols ) );
+//        for( sz_t i = 0; i < d->size; i++ ) d->data[ i ] = a->data[ ( a->stride + 1 ) * i ];
+//    }
+//
+//    bmath_mf3_s_discard( a );
+//
+//    return success;
+//}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
 /// array of mf3_s
+
+//----------------------------------------------------------------------------------------------------------------------
 
 BCORE_DEFINE_ARRAY_DYN_SOLID_STATIC_AUT( bmath_mf3_s, bmath_arr_mf3_s );
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 vd_t bmath_mf3_signal_handler( const bcore_signal_s* o )
 {
@@ -157,6 +237,9 @@ vd_t bmath_mf3_signal_handler( const bcore_signal_s* o )
             BCORE_REGISTER_FUNC( bmath_mf3_s_qrd_pmt );
             BCORE_REGISTER_FUNC( bmath_mf3_s_pmt_lqd );
             BCORE_REGISTER_FUNC( bmath_mf3_s_svd );
+            BCORE_REGISTER_FUNC( bmath_mf3_s_svd_htp );
+            BCORE_REGISTER_FUNC( bmath_mf3_s_svd2 );
+            BCORE_REGISTER_FUNC( bmath_mf3_s_svd2_htp );
 
             BCORE_REGISTER_FUNC( bmath_mf3_s_cld );
             BCORE_REGISTER_FUNC( bmath_mf3_s_trd );
@@ -189,6 +272,8 @@ vd_t bmath_mf3_signal_handler( const bcore_signal_s* o )
 
     return NULL;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
 

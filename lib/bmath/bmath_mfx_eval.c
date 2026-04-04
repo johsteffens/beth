@@ -1308,7 +1308,7 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
             r->assert_a = r->assert_a && true;
         }
     }
-    else if( fp_type == TYPEOF_bmath_fp_mf2_s_svd )
+    else if( fp_type == TYPEOF_bmath_fp_mf2_s_svd || fp_type == TYPEOF_bmath_fp_mf2_s_svd2 )
     {
         near_limit = o->near_limit_f2;
         if( o->test0 )
@@ -1331,18 +1331,18 @@ static void run_uav( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
             r->assert_a = r->assert_a && bmath_mf3_s_is_svd_dag( a );
         }
     }
-    else if( fp_type == TYPEOF_bmath_fp_mf3_s_svd )
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_svd || fp_type == TYPEOF_bmath_fp_mf3_s_svd2 )
     {
         if( o->test0 )
         {
-            bmath_mf3_s_cpy( m0, a );
+            bmath_mf3_s_copy( a, m0 );
             ABS_TIME_OF( r->success0 = ( ( bmath_fp_mf3_s_svd )fp )( NULL, a, NULL ), r->time0 );
             r->assert_a = bmath_mf3_s_is_svd_dag( a );
         }
 
         if( o->test1 )
         {
-            bmath_mf3_s_cpy( m0, a );
+            bmath_mf3_s_copy( a, m0 );
             ABS_TIME_OF( r->success1 = ( ( bmath_fp_mf3_s_svd )fp )( u, a, v ), r->time1 );
             r->assert_a = r->assert_a && bmath_mf3_s_is_svd_dag( a );
         }
@@ -2717,10 +2717,12 @@ void bmath_mfx_eval_s_label_run( const bmath_mfx_eval_s* o, sc_t label, tp_t fp_
 
         case TYPEOF_bmath_fp_mf2_s_uav:
         case TYPEOF_bmath_fp_mf2_s_svd:
+        case TYPEOF_bmath_fp_mf2_s_svd2:
         case TYPEOF_bmath_fp_mf2_s_ubd:
         case TYPEOF_bmath_fp_mf2_s_lbd:
         case TYPEOF_bmath_fp_mf3_s_uav:
         case TYPEOF_bmath_fp_mf3_s_svd:
+        case TYPEOF_bmath_fp_mf3_s_svd2:
         case TYPEOF_bmath_fp_mf3_s_ubd:
         case TYPEOF_bmath_fp_mf3_s_lbd:
             run_uav( o, fp_type, fp, r );

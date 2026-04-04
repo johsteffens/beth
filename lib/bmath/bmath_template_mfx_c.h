@@ -32,6 +32,7 @@ void BCATU(bmath_mfx_s,clear)( bmath_mfx_s* o )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// alignment == 0
 bmath_mfx_s* BCATU(bmath_mfx_s,set_compact_size)( bmath_mfx_s* o, uz_t rows, uz_t cols )
 {
     bcore_matrix_a_set_compact_size( ( bcore_matrix* )o, rows, cols );
