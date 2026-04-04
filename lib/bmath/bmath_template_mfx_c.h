@@ -3083,8 +3083,8 @@ void BCATU(bmath_mfx_s,sweep_dcol_rotate_rev)( bmath_mfx_s* o, uz_t col_start, u
         bmath_grt_fx_s* g = grt->data + col_start;
         fx_t* r0  = o->data + col_start;
 
-        for( ; i + 4 < row_end; i += 4 ) BCATU(bmath_simd,fx,4drow_swipe_rev)( r0 + o->stride * i, o->stride, g, size );
-        for( ; i < row_end    ; i++    ) BCATU(bmath_simd,fx,drow_swipe_rev)(  r0 + o->stride * i,            g, size );
+        for( ; i + 4 < row_end; i += 4 ) BCATU(bmath_grt,fx,4drow_swipe_rev)( r0 + o->stride * i, o->stride, g, size );
+        for( ; i < row_end    ; i++    ) BCATU(bmath_grt,fx,drow_swipe_rev)(  r0 + o->stride * i,            g, size );
     }
 }
 

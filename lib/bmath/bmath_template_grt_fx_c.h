@@ -60,113 +60,122 @@ bmath_arr_grt_fx_s BCATU(bmath_arr_grt,fx,of_size)( sz_t size )
 /**********************************************************************************************************************/
 /// simd optimized code
 
-void BCATU(bmath_simd,fx,row_rotate_default)( fx_t* v1, fx_t* v2, sz_t size, const bmath_grt_fx_s* grt )
-{
-    for( sz_t i = 0; i < size; i++ )
-    {
-        f3_t b = v2[ i ];
-        v2[ i ] = b * grt->c - v1[ i ] * grt->s;
-        v1[ i ] = b * grt->s + v1[ i ] * grt->c;
-    }
-}
+/** NOTE: SIMD enhanced givens rotations caused unpredictable behavior on mf3_s_ubd and mf3_s_svd (newer hardware)
+ *  We therefore disable this portion an use fallback operations.
+ *
+ *  Possible reasons
+ *     * bug in simd code (but unclear why it did not reveal itself on earlier tests)
+ *     * hardware specific issue (instability was discovered on AMD 7950)
+ *     * incompatibility with -march=native
+ */
 
-#if (defined BMATH_AVX)
-
-void BCATU(bmath_simd,fx,row_rotate_avx)( fx_t* v1, fx_t* v2, sz_t size, const bmath_grt_fx_s* grt )
-{
-    M5_T s_pk = M5_SET_ALL( grt->s );
-    M5_T c_pk = M5_SET_ALL( grt->c );
-
-    sz_t i;
-    for( i = 0; i <= size - P5_SIZE; i += P5_SIZE )
-    {
-        M5_T a_pk = M5_LOAD( v1 + i );
-        M5_T b_pk = M5_LOAD( v2 + i );
-        M5_STOR( v1 + i, M5_MUL_ADD( a_pk, c_pk, M5_MUL( b_pk, s_pk ) ) );
-        M5_STOR( v2 + i, M5_MUL_SUB( b_pk, c_pk, M5_MUL( a_pk, s_pk ) ) );
-    }
-
-    for( ; i < size; i++ )
-    {
-        f3_t b = v2[ i ];
-        v2[ i ] = b * grt->c - v1[ i ] * grt->s;
-        v1[ i ] = b * grt->s + v1[ i ] * grt->c;
-    }
-}
-
-#endif // BMATH_AVX
-
-void BCATU(bmath_simd,fx,row_rotate)( fx_t* v1, fx_t* v2, sz_t size, const bmath_grt_fx_s* grt )
-{
-#if (defined BMATH_AVX)
-    BCATU(bmath_simd,fx,row_rotate_avx)( v1, v2, size, grt );
-#else
-    BCATU(bmath_simd,fx,row_rotate_default)( v1, v2, size, grt );
-#endif // BMATH_AVX
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void BCATU(bmath_simd,fx,col_rotate_default)( fx_t* v1, fx_t* v2, sz_t stride, sz_t size, const bmath_grt_fx_s* grt )
-{
-    for( sz_t i = 0; i < size; i++ )
-    {
-        f3_t b = v2[ i * stride ];
-        v2[ i * stride ] = b * grt->c - v1[ i * stride ] * grt->s;
-        v1[ i * stride ] = b * grt->s + v1[ i * stride ] * grt->c;
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-#if (defined BMATH_AVX) && (BMATH_TEMPLATE_FX_PREC == 3)
-/// AVX improves insignificantly due to memory latency
-void BCATU(bmath_simd,fx,col_rotate_avx)( fx_t* v1, fx_t* v2, sz_t stride, sz_t size, const bmath_grt_fx_s* grt )
-{
-    M5_T s_pk = { grt->s, grt->s, grt->s, grt->s };
-    M5_T c_pk = { grt->c, grt->c, grt->c, grt->c };
-
-    sz_t i;
-    for( i = 0; i <= size - 4; i += 4 )
-    {
-        M5_T a1_pk = { v1[ ( i + 0 ) * stride ], v1[ ( i + 1 ) * stride ], v1[ ( i + 2 ) * stride ], v1[ ( i + 3 ) * stride ] };
-        M5_T b1_pk = { v2[ ( i + 0 ) * stride ], v2[ ( i + 1 ) * stride ], v2[ ( i + 2 ) * stride ], v2[ ( i + 3 ) * stride ] };
-        M5_T a2_pk = M5_MUL_ADD( a1_pk, c_pk, M5_MUL( b1_pk, s_pk ) );
-        M5_T b2_pk = M5_MUL_SUB( b1_pk, c_pk, M5_MUL( a1_pk, s_pk ) );
-        v1[ ( i + 0 ) * stride ] = a2_pk[ 0 ];
-        v1[ ( i + 1 ) * stride ] = a2_pk[ 1 ];
-        v1[ ( i + 2 ) * stride ] = a2_pk[ 2 ];
-        v1[ ( i + 3 ) * stride ] = a2_pk[ 3 ];
-
-        v2[ ( i + 0 ) * stride ] = b2_pk[ 0 ];
-        v2[ ( i + 1 ) * stride ] = b2_pk[ 1 ];
-        v2[ ( i + 2 ) * stride ] = b2_pk[ 2 ];
-        v2[ ( i + 3 ) * stride ] = b2_pk[ 3 ];
-    }
-
-    for( ; i < size; i++ )
-    {
-        f3_t b = v2[ i * stride ];
-        v2[ i * stride ] = b * grt->c - v1[ i * stride ] * grt->s;
-        v1[ i * stride ] = b * grt->s + v1[ i * stride ] * grt->c;
-    }
-}
-#endif // BMATH_AVX
+//void BCATU(bmath_simd,fx,row_rotate_default)( fx_t* v1, fx_t* v2, sz_t size, const bmath_grt_fx_s* grt )
+//{
+//    for( sz_t i = 0; i < size; i++ )
+//    {
+//        f3_t b = v2[ i ];
+//        v2[ i ] = b * grt->c - v1[ i ] * grt->s;
+//        v1[ i ] = b * grt->s + v1[ i ] * grt->c;
+//    }
+//}
+//
+//#if (defined BMATH_AVX)
+//
+//void BCATU(bmath_simd,fx,row_rotate_avx)( fx_t* v1, fx_t* v2, sz_t size, const bmath_grt_fx_s* grt )
+//{
+//    M5_T s_pk = M5_SET_ALL( grt->s );
+//    M5_T c_pk = M5_SET_ALL( grt->c );
+//
+//    sz_t i;
+//    for( i = 0; i <= size - P5_SIZE; i += P5_SIZE )
+//    {
+//        M5_T a_pk = M5_LOAD( v1 + i );
+//        M5_T b_pk = M5_LOAD( v2 + i );
+//        M5_STOR( v1 + i, M5_MUL_ADD( a_pk, c_pk, M5_MUL( b_pk, s_pk ) ) );
+//        M5_STOR( v2 + i, M5_MUL_SUB( b_pk, c_pk, M5_MUL( a_pk, s_pk ) ) );
+//    }
+//
+//    for( ; i < size; i++ )
+//    {
+//        f3_t b = v2[ i ];
+//        v2[ i ] = b * grt->c - v1[ i ] * grt->s;
+//        v1[ i ] = b * grt->s + v1[ i ] * grt->c;
+//    }
+//}
+//
+//#endif // BMATH_AVX
+//
+//void BCATU(bmath_simd,fx,row_rotate)( fx_t* v1, fx_t* v2, sz_t size, const bmath_grt_fx_s* grt )
+//{
+//#if (defined BMATH_AVX)
+//    BCATU(bmath_simd,fx,row_rotate_avx)( v1, v2, size, grt );
+//#else
+//    BCATU(bmath_simd,fx,row_rotate_default)( v1, v2, size, grt );
+//#endif // BMATH_AVX
+//}
+//
+////----------------------------------------------------------------------------------------------------------------------
+//
+//void BCATU(bmath_simd,fx,col_rotate_default)( fx_t* v1, fx_t* v2, sz_t stride, sz_t size, const bmath_grt_fx_s* grt )
+//{
+//    for( sz_t i = 0; i < size; i++ )
+//    {
+//        f3_t b = v2[ i * stride ];
+//        v2[ i * stride ] = b * grt->c - v1[ i * stride ] * grt->s;
+//        v1[ i * stride ] = b * grt->s + v1[ i * stride ] * grt->c;
+//    }
+//}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_simd,fx,col_rotate)( fx_t* v1, fx_t* v2, sz_t stride, sz_t size, const bmath_grt_fx_s* grt )
-{
-#if (defined BMATH_AVX) && (BMATH_TEMPLATE_FX_PREC == 3)
-    BCATU(bmath_simd,fx,col_rotate_avx)( v1, v2, stride, size, grt );
-#else
-    BCATU(bmath_simd,fx,col_rotate_default)( v1, v2, stride, size, grt );
-#endif // BMATH_AVX
-}
+//#if (defined BMATH_AVX) && (BMATH_TEMPLATE_FX_PREC == 3)
+///// AVX improves insignificantly due to memory latency
+//void BCATU(bmath_simd,fx,col_rotate_avx)( fx_t* v1, fx_t* v2, sz_t stride, sz_t size, const bmath_grt_fx_s* grt )
+//{
+//    M5_T s_pk = { grt->s, grt->s, grt->s, grt->s };
+//    M5_T c_pk = { grt->c, grt->c, grt->c, grt->c };
+//
+//    sz_t i;
+//    for( i = 0; i <= size - 4; i += 4 )
+//    {
+//        M5_T a1_pk = { v1[ ( i + 0 ) * stride ], v1[ ( i + 1 ) * stride ], v1[ ( i + 2 ) * stride ], v1[ ( i + 3 ) * stride ] };
+//        M5_T b1_pk = { v2[ ( i + 0 ) * stride ], v2[ ( i + 1 ) * stride ], v2[ ( i + 2 ) * stride ], v2[ ( i + 3 ) * stride ] };
+//        M5_T a2_pk = M5_MUL_ADD( a1_pk, c_pk, M5_MUL( b1_pk, s_pk ) );
+//        M5_T b2_pk = M5_MUL_SUB( b1_pk, c_pk, M5_MUL( a1_pk, s_pk ) );
+//        v1[ ( i + 0 ) * stride ] = a2_pk[ 0 ];
+//        v1[ ( i + 1 ) * stride ] = a2_pk[ 1 ];
+//        v1[ ( i + 2 ) * stride ] = a2_pk[ 2 ];
+//        v1[ ( i + 3 ) * stride ] = a2_pk[ 3 ];
+//
+//        v2[ ( i + 0 ) * stride ] = b2_pk[ 0 ];
+//        v2[ ( i + 1 ) * stride ] = b2_pk[ 1 ];
+//        v2[ ( i + 2 ) * stride ] = b2_pk[ 2 ];
+//        v2[ ( i + 3 ) * stride ] = b2_pk[ 3 ];
+//    }
+//
+//    for( ; i < size; i++ )
+//    {
+//        f3_t b = v2[ i * stride ];
+//        v2[ i * stride ] = b * grt->c - v1[ i * stride ] * grt->s;
+//        v1[ i * stride ] = b * grt->s + v1[ i * stride ] * grt->c;
+//    }
+//}
+//#endif // BMATH_AVX
+//
+////----------------------------------------------------------------------------------------------------------------------
+//
+//void BCATU(bmath_simd,fx,col_rotate)( fx_t* v1, fx_t* v2, sz_t stride, sz_t size, const bmath_grt_fx_s* grt )
+//{
+//#if (defined BMATH_AVX) && (BMATH_TEMPLATE_FX_PREC == 3)
+//    BCATU(bmath_simd,fx,col_rotate_avx)( v1, v2, stride, size, grt );
+//#else
+//    BCATU(bmath_simd,fx,col_rotate_default)( v1, v2, stride, size, grt );
+//#endif // BMATH_AVX
+//}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_simd,fx,drow_swipe_rev)( fx_t* row, const bmath_grt_fx_s* grt, sz_t size )
+void BCATU(bmath_grt,fx,drow_swipe_rev)( fx_t* row, const bmath_grt_fx_s* grt, sz_t size )
 {
     fx_t v = row[ 0 ];
     sz_t i;
@@ -185,7 +194,7 @@ void BCATU(bmath_simd,fx,drow_swipe_rev)( fx_t* row, const bmath_grt_fx_s* grt, 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void BCATU(bmath_simd,fx,4drow_swipe_rev)( fx_t* row, sz_t stride, const bmath_grt_fx_s* grt, sz_t size )
+void BCATU(bmath_grt,fx,4drow_swipe_rev)( fx_t* row, sz_t stride, const bmath_grt_fx_s* grt, sz_t size )
 {
     fx_t a[ 4 ];
 

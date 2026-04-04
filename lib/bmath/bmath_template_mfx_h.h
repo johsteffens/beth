@@ -59,8 +59,8 @@
  *
  *  Factorizations:
  *    cld: cholesky-decomposition
- *    lqd: LQ-decomposition  (A -> A',Vt | A = A'* Vt, A' lower trianglular and V othronormal  )
- *    qrd: QR-decomposition  (A -> U, A' | A = U * A', A' upper trianglular and U othronormal )
+ *    lqd: LQ-decomposition  (A -> A',Vt | A = A'* Vt, A' lower trianglular and V orthonormal  )
+ *    qrd: QR-decomposition  (A -> U, A' | A = U * A', A' upper trianglular and U orthonormal )
  *    trd: tri diagonal decomposition     or symmetric tri-diagonal matrix
  *    ubd: upper bidiagonal decomposition or upper-bidiagonal matrix
  *    lbd: lower bidiagonal decomposition or lower-bidiagonal matrix
@@ -91,6 +91,12 @@
  */
 
 /**********************************************************************************************************************/
+
+/** Automatic row-alignment alignment for set_size function
+ *  Set to 0 if there are matrix functions assuming cols == stride
+ */
+//#define BMATH_MFX_AUTO_ROW_ALIGN 0x20
+#define BMATH_MFX_AUTO_ROW_ALIGN 0 // TODO: fix alignment issue in bmath_mfx_s_svd
 
 // NOTE: Do not include non-templates (template definitions could be undone/changed)
 #include "bmath_template_fx_begin.h"
@@ -154,8 +160,8 @@ bmath_mfx_s* BCATU(bmath_mfx_s,set_aligned_size)( bmath_mfx_s* o, uz_t align, uz
 static inline
 bmath_mfx_s* BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols )
 {
-    //return BCATU(bmath_mfx_s,set_compact_size)( o, rows, cols );
-    return BCATU(bmath_mfx_s,set_aligned_size)( o, 0x20, rows, cols );
+    return BCATU(bmath_mfx_s,set_compact_size)( o, rows, cols );
+    //return BCATU(bmath_mfx_s,set_aligned_size)( o, BMATH_MFX_AUTO_ROW_ALIGN, rows, cols );
 }
 
 /** Sets all matrix elements to random values.
@@ -631,8 +637,8 @@ static inline void BCATU(bmath_mfx_s,arow_rotate)( bmath_mfx_s* o, uz_t idx, con
     {
         fx_t* row_a = o->data + o->stride * idx;
         fx_t* row_b = row_a + o->stride;
-//        for( uz_t i = col_start; i < col_end; i++ ) BCATU(bmath_grt,fx,s,rotate)( grt, row_a + i, row_b + i );
-        BCATU(bmath_simd,fx,row_rotate)( row_a + col_start, row_b + col_start, col_end - col_start, grt );
+        for( uz_t i = col_start; i < col_end; i++ ) BCATU(bmath_grt,fx,s,rotate)( grt, row_a + i, row_b + i );
+//        BCATU(bmath_simd,fx,row_rotate)( row_a + col_start, row_b + col_start, col_end - col_start, grt );
     }
 }
 
@@ -645,8 +651,8 @@ static inline void BCATU(bmath_mfx_s,drow_rotate)( bmath_mfx_s* o, uz_t a_idx, u
     {
         fx_t* row_a = o->data + o->stride * a_idx;
         fx_t* row_b = o->data + o->stride * b_idx;
-//        for( uz_t i = col_start; i < col_end; i++ ) BCATU(bmath_grt,fx,s,rotate)( grt, row_a + i, row_b + i );
-        BCATU(bmath_simd,fx,row_rotate)( row_a + col_start, row_b + col_start, col_end - col_start, grt );
+        for( uz_t i = col_start; i < col_end; i++ ) BCATU(bmath_grt,fx,s,rotate)( grt, row_a + i, row_b + i );
+//        BCATU(bmath_simd,fx,row_rotate)( row_a + col_start, row_b + col_start, col_end - col_start, grt );
     }
 }
 
@@ -660,9 +666,9 @@ static inline void BCATU(bmath_mfx_s,acol_rotate)( bmath_mfx_s* o, uz_t idx, con
         fx_t* col_a = o->data + idx;
         fx_t* col_b = col_a + 1;
 
-//        for( uz_t i = row_start; i < row_end; i++ ) BCATU(bmath_grt,fx,s,rotate)( grt, col_a + i * o->stride, col_b + i * o->stride );
+        for( uz_t i = row_start; i < row_end; i++ ) BCATU(bmath_grt,fx,s,rotate)( grt, col_a + i * o->stride, col_b + i * o->stride );
 
-        BCATU(bmath_simd,fx,col_rotate)( col_a + row_start * o->stride, col_b + row_start * o->stride, o->stride, row_end - row_start, grt );
+//        BCATU(bmath_simd,fx,col_rotate)( col_a + row_start * o->stride, col_b + row_start * o->stride, o->stride, row_end - row_start, grt );
     }
 }
 
@@ -676,9 +682,9 @@ static inline void BCATU(bmath_mfx_s,dcol_rotate)( bmath_mfx_s* o, uz_t a_idx, u
         fx_t* col_a = o->data + a_idx;
         fx_t* col_b = o->data + b_idx;
 
-//        for( uz_t i = row_start; i < row_end; i++ ) BCATU(bmath_grt,fx,s,rotate)( grt, col_a + i * o->stride, col_b + i * o->stride );
+        for( uz_t i = row_start; i < row_end; i++ ) BCATU(bmath_grt,fx,s,rotate)( grt, col_a + i * o->stride, col_b + i * o->stride );
 
-        BCATU(bmath_simd,fx,col_rotate)( col_a + row_start * o->stride, col_b + row_start * o->stride, o->stride, row_end - row_start, grt );
+//        BCATU(bmath_simd,fx,col_rotate)( col_a + row_start * o->stride, col_b + row_start * o->stride, o->stride, row_end - row_start, grt );
     }
 }
 

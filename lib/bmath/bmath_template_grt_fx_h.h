@@ -238,17 +238,18 @@ static inline fx_t BCATU(bmath_arr_grt,fx,s,density)( const bmath_arr_grt_fx_s* 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// givens row rotation (simd optimized)
-void BCATU(bmath_simd,fx,row_rotate)( fx_t* v1, fx_t* v2, sz_t size, const bmath_grt_fx_s* grt );
+///// givens row rotation (simd optimized)
+//void BCATU(bmath_simd,fx,row_rotate)( fx_t* v1, fx_t* v2, sz_t size, const bmath_grt_fx_s* grt );
+//
+///// givens column rotation (simd optimized)
+//void BCATU(bmath_simd,fx,col_rotate)( fx_t* v1, fx_t* v2, sz_t stride, sz_t size, const bmath_grt_fx_s* grt );
 
-/// givens column rotation (simd optimized)
-void BCATU(bmath_simd,fx,col_rotate)( fx_t* v1, fx_t* v2, sz_t stride, sz_t size, const bmath_grt_fx_s* grt );
 
-/// see bmath_mfx_s_drow_swipe_rev (simd optimized)
-void BCATU(bmath_simd,fx,drow_swipe_rev)( fx_t* row, const bmath_grt_fx_s* grt, sz_t size );
+/// see bmath_mfx_s_drow_swipe_rev
+void BCATU(bmath_grt,fx,drow_swipe_rev)( fx_t* row, const bmath_grt_fx_s* grt, sz_t size );
 
 /// bmath_simd_fx_drow_swipe_rev for 4 successive rows (simd optimized)
-void BCATU(bmath_simd,fx,4drow_swipe_rev)( fx_t* row, sz_t stride, const bmath_grt_fx_s* grt, sz_t size );
+void BCATU(bmath_grt,fx,4drow_swipe_rev)( fx_t* row, sz_t stride, const bmath_grt_fx_s* grt, sz_t size );
 
 /**********************************************************************************************************************/
 
