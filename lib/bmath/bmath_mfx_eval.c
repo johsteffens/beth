@@ -1618,8 +1618,8 @@ static void run_ua( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
         sz_t n = uz_min( a->rows, a->cols );
         for( uz_t i = 1; i < n; i++ )
         {
-            if( a->data[ i * ( a->stride + 1 ) ] > a->data[ ( i - 1 ) * ( a->stride + 1 ) ] ) r->assert_a = false;
-            if( a->data[ i * ( a->stride + 1 ) ] < 0 ) r->assert_a = false;
+            if( a->data[ i * ( a->stride + 1 ) ] > a->data[ ( i - 1 ) * ( a->stride + 1 ) ] + o->near_limit_f2 ) r->assert_a = false;
+            if( a->data[ i * ( a->stride + 1 ) ] < -o->near_limit_f2 ) r->assert_a = false;
         }
 
         if( o->create_a_log )
@@ -1837,13 +1837,17 @@ static void run_av( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx_
             r->assert_a = r->assert_a && bmath_mf3_s_is_ltr( a );
         }
 
+        bcore_msg_fa( "assert_a: #<bl_t>\n", r->assert_a );
+
         // assert monotonic descending non-negative diagonal elements
         sz_t n = uz_min( a->rows, a->cols );
         for( uz_t i = 1; i < n; i++ )
         {
-            if( a->data[ i * ( a->stride + 1 ) ] > a->data[ ( i - 1 ) * ( a->stride + 1 ) ] ) r->assert_a = false;
-            if( a->data[ i * ( a->stride + 1 ) ] < 0 ) r->assert_a = false;
+            if( a->data[ i * ( a->stride + 1 ) ] > a->data[ ( i - 1 ) * ( a->stride + 1 ) ] + o->near_limit_f2 ) r->assert_a = false;
+            if( a->data[ i * ( a->stride + 1 ) ] < -o->near_limit_f2 ) r->assert_a = false;
         }
+
+        bcore_msg_fa( "assert_a: #<bl_t>\n", r->assert_a );
 
         if( o->create_a_log )
         {

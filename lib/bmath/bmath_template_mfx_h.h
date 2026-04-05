@@ -95,8 +95,8 @@
 /** Automatic row-alignment alignment for set_size function
  *  Set to 0 if there are matrix functions assuming cols == stride
  */
-//#define BMATH_MFX_AUTO_ROW_ALIGN 0x20
-#define BMATH_MFX_AUTO_ROW_ALIGN 0 // TODO: fix alignment issue in bmath_mfx_s_svd
+#define BMATH_MFX_AUTO_ROW_ALIGN 0x20
+//#define BMATH_MFX_AUTO_ROW_ALIGN 0
 
 // NOTE: Do not include non-templates (template definitions could be undone/changed)
 #include "bmath_template_fx_begin.h"
@@ -160,8 +160,8 @@ bmath_mfx_s* BCATU(bmath_mfx_s,set_aligned_size)( bmath_mfx_s* o, uz_t align, uz
 static inline
 bmath_mfx_s* BCATU(bmath_mfx_s,set_size)( bmath_mfx_s* o, uz_t rows, uz_t cols )
 {
-    return BCATU(bmath_mfx_s,set_compact_size)( o, rows, cols );
-    //return BCATU(bmath_mfx_s,set_aligned_size)( o, BMATH_MFX_AUTO_ROW_ALIGN, rows, cols );
+    //return BCATU(bmath_mfx_s,set_compact_size)( o, rows, cols );
+    return BCATU(bmath_mfx_s,set_aligned_size)( o, BMATH_MFX_AUTO_ROW_ALIGN, rows, cols );
 }
 
 /** Sets all matrix elements to random values.
