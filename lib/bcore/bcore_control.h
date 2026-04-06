@@ -20,12 +20,11 @@
 
 /// if this include causes an ERROR, try disable it (dependencies, if any, should not be critical)
 #include <time.h>
-#include <sys/time.h>
 
-// This definition prevents clashes with redefining some POSIX types in other libraries (here: struct timespec)
-#ifndef _POSIX_C_SOURCE
-#define _POSIX_C_SOURCE 1
-#endif
+//// This definition prevents clashes with redefining some POSIX types in other libraries (here: struct timespec)
+//#ifndef _POSIX_C_SOURCE
+//#define _POSIX_C_SOURCE 1
+//#endif
 
 #include "bcore_first.h"
 #include "bcore_types.h"
@@ -217,7 +216,7 @@ static inline vd_t bcore_pass_bounds( vd_t o, sz_t size, sz_t index, sc_t f_name
 /**********************************************************************************************************************/
 /// Timer
 
-/// retrieves time based on function gettimeofday
+/// retrieves time
 void bcore_get_time( u3_t* seconds, u3_t* microseconds );
 u3_t bcore_time_us( void ); /// returns (full) time in microseconds
 u3_t bcore_time_ms( void ); /// returns (full) time in milliseconds
@@ -251,15 +250,14 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
     time_var /= CLOCKS_PER_SEC; \
 } \
 
-//  gettimeofday is not standardized on all platforms
 #define ABS_TIME_OF( expression, time_var ) \
 { \
-    struct timeval t0, t1; \
-    gettimeofday( &t0, NULL ); \
+    struct timespec t0, t1; \
+    clock_gettime( CLOCK_MONOTONIC, &t0 ); \
     expression; \
-    gettimeofday( &t1, NULL ); \
+    clock_gettime( CLOCK_MONOTONIC, &t1 ); \
     time_var = t1.tv_sec - t0.tv_sec; \
-    time_var += ( t1.tv_usec - t0.tv_usec ) * 1E-6; \
+    time_var += ( t1.tv_nsec - t0.tv_nsec ) * 1E-9; \
 } \
 
 #define CPU_TIME_TO_STDOUT( expression ) \

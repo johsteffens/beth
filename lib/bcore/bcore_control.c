@@ -14,7 +14,7 @@
  */
 
 #include <stdio.h>
-#include <sys/time.h>
+#include <time.h>
 
 #include "bcore_control.h"
 #include "bcore_tbman.h"
@@ -469,10 +469,10 @@ bl_t bcore_strany( char c, sc_t str )
 
 void bcore_get_time( u3_t* seconds, u3_t* microseconds )
 {
-    struct timeval t = { 0 };
-    gettimeofday( &t, NULL );
+    struct timespec t;
+    clock_gettime( CLOCK_MONOTONIC, &t );
     if( seconds ) *seconds = t.tv_sec;
-    if( microseconds ) *microseconds = t.tv_usec;
+    if( microseconds ) *microseconds = t.tv_nsec / 1000;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
