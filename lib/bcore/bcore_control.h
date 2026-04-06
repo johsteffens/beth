@@ -18,13 +18,12 @@
 
 #include <stdarg.h>
 
-/// if this include causes an ERROR, try disable it (dependencies, if any, should not be critical)
 #include <time.h>
 
-//// This definition prevents clashes with redefining some POSIX types in other libraries (here: struct timespec)
-//#ifndef _POSIX_C_SOURCE
-//#define _POSIX_C_SOURCE 1
-//#endif
+// This definition prevents clashes with redefining some POSIX types in other libraries (here: struct timespec)
+#ifndef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE 1
+#endif
 
 #include "bcore_first.h"
 #include "bcore_types.h"
@@ -248,7 +247,7 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
     expression; \
     time_var = clock() - time; \
     time_var /= CLOCKS_PER_SEC; \
-} \
+}
 
 #define ABS_TIME_OF( expression, time_var ) \
 { \
@@ -258,11 +257,11 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
     clock_gettime( CLOCK_MONOTONIC, &t1 ); \
     time_var = t1.tv_sec - t0.tv_sec; \
     time_var += ( t1.tv_nsec - t0.tv_nsec ) * 1E-9; \
-} \
+}
 
 #define CPU_TIME_TO_STDOUT( expression ) \
 { \
-    f3_t __time_sec; \
+    f3_t __time_sec = 0; \
     CPU_TIME_OF( expression, __time_sec ) \
     if( __time_sec >= 100 ) \
     { \
@@ -276,7 +275,7 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
 
 #define ABS_TIME_TO_STDOUT( expression ) \
 { \
-    f3_t __time_sec; \
+    f3_t __time_sec = 0; \
     ABS_TIME_OF( expression, __time_sec ) \
     if( __time_sec >= 100 ) \
     { \
@@ -290,7 +289,8 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
 
 #define CPU_TIME_TO_STRING( expression, string ) \
 { \
-    CPU_TIME_OF( expression, f3_t __time_sec ) \
+    f3_t __time_sec = 0; \
+    CPU_TIME_OF( expression, __time_sec ) \
     if( __time_sec >= 100 ) \
     { \
         if( string ) st_s_push_fa( string, "#pl5 {#<uz_t>}s : "#expression"\n", ( uz_t ) __time_sec ); \
@@ -303,7 +303,8 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
 
 #define ABS_TIME_TO_STRING( expression, string ) \
 { \
-    ABS_TIME_OF( expression, f3_t __time_sec ) \
+    f3_t __time_sec = 0; \
+    ABS_TIME_OF( expression, __time_sec ) \
     if( __time_sec >= 100 ) \
     { \
         if( string ) st_s_push_fa( string, "#pl5 {#<uz_t>}s : "#expression"\n", ( uz_t ) __time_sec ); \

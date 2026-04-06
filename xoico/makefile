@@ -2,9 +2,9 @@ TARGET = bin/xoico
 
 CC       = gcc
 MAKE     = make
-CFLAGS   = -Wall -O3 -std=c11 
+CFLAGS   = -Wall -O3
 
-BETH_LIBS = bcore 
+BETH_LIBS = bcore
 LIBS      = $(BETH_LIBS) m pthread atomic
 LDFLAGS   = $(addprefix -l, $(LIBS))
 
@@ -28,7 +28,7 @@ LIB_FOLDER = -L $(BETH_BIN)
 SRCS = $(wildcard $(MAIN_SRC)/*.c)
 
 $(TARGET): $(SRCS)
-	$(foreach lib,$(BETH_LIBS),$(MAKE) -j12 -l2.5 -C $(BETH_LIB_DIR)/$(lib) pass2;)   
+	$(foreach lib,$(BETH_LIBS),$(MAKE) -j12 -l2.5 -C $(BETH_LIB_DIR)/$(lib) pass2;)
 	mkdir -p $(dir $(TARGET) )
 	$(CC) -o $@ $(CFLAGS) $(INCLUDES) $(SRCS) $(LIB_FOLDERS) $(LDFLAGS)
 
