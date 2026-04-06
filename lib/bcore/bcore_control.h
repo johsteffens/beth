@@ -18,13 +18,6 @@
 
 #include <stdarg.h>
 
-#include <time.h>
-
-// This definition prevents clashes with redefining some POSIX types in other libraries (here: struct timespec)
-#ifndef _POSIX_C_SOURCE
-#define _POSIX_C_SOURCE 1
-#endif
-
 #include "bcore_first.h"
 #include "bcore_types.h"
 #include "bcore_feature.h"
@@ -220,6 +213,12 @@ void bcore_get_time( u3_t* seconds, u3_t* microseconds );
 u3_t bcore_time_us( void ); /// returns (full) time in microseconds
 u3_t bcore_time_ms( void ); /// returns (full) time in milliseconds
 
+/// retrieves absolute time elapsed after a specified reference time point (e.g. start of the system)
+f3_t bcore_get_abs_time();
+
+/// retrieves cpu time elapsed after a specified reference time point (e.g. start of the system)
+f3_t bcore_get_cpu_time();
+
 /**********************************************************************************************************************/
 
 vd_t bcore_control_signal_handler( const bcore_signal_s* o );
@@ -243,20 +242,18 @@ vd_t bcore_control_signal_handler( const bcore_signal_s* o );
 // cpu time assessment
 #define CPU_TIME_OF( expression, time_var ) \
 { \
-    clock_t time = clock(); \
+    f3_t __t0 = bcore_get_cpu_time(); \
     expression; \
-    time_var = clock() - time; \
-    time_var /= CLOCKS_PER_SEC; \
+    f3_t __t1 = bcore_get_cpu_time(); \
+    time_var = ( __t1 - __t0 ); \
 }
 
 #define ABS_TIME_OF( expression, time_var ) \
 { \
-    struct timespec t0, t1; \
-    clock_gettime( CLOCK_MONOTONIC, &t0 ); \
+    f3_t __t0 = bcore_get_abs_time(); \
     expression; \
-    clock_gettime( CLOCK_MONOTONIC, &t1 ); \
-    time_var = t1.tv_sec - t0.tv_sec; \
-    time_var += ( t1.tv_nsec - t0.tv_nsec ) * 1E-9; \
+    f3_t __t1 = bcore_get_abs_time(); \
+    time_var = ( __t1 - __t0 ); \
 }
 
 #define CPU_TIME_TO_STDOUT( expression ) \

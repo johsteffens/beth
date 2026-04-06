@@ -497,6 +497,26 @@ u3_t bcore_time_ms( void )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// retrieves absolute time elapsed after a specified reference time point (e.g. start of the system)
+f3_t bcore_get_abs_time()
+{
+    struct timespec time;
+    clock_gettime( CLOCK_MONOTONIC, &time );
+    return (f3_t)time.tv_sec + ( (f3_t)time.tv_nsec * 1E-9 );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// retrieves cpu time elapsed after a specified reference time point (e.g. start of the system)
+f3_t bcore_get_cpu_time()
+{
+    f3_t t = clock();
+    t /= CLOCKS_PER_SEC;
+    return t;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
 
 //----------------------------------------------------------------------------------------------------------------------
