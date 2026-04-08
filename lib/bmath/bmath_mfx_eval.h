@@ -129,6 +129,12 @@ name bmath_fp_mf2_s_mul;
 name bmath_fp_mf2_s_mul_htp;
 name bmath_fp_mf2_s_htp_mul;
 name bmath_fp_mf2_s_htp_mul_htp;
+
+name bmath_fp_mf2_s_omp_mul;
+name bmath_fp_mf2_s_omp_mul_htp;
+name bmath_fp_mf2_s_omp_htp_mul;
+name bmath_fp_mf2_s_omp_htp_mul_htp;
+
 name bmath_fp_mf2_s_uav;
 name bmath_fp_mf2_s_ua;
 name bmath_fp_mf2_s_av;
@@ -159,6 +165,11 @@ name bmath_fp_mf3_s_mul;
 name bmath_fp_mf3_s_mul_htp;
 name bmath_fp_mf3_s_htp_mul;
 name bmath_fp_mf3_s_htp_mul_htp;
+
+name bmath_fp_mf3_s_omp_mul;
+name bmath_fp_mf3_s_omp_mul_htp;
+name bmath_fp_mf3_s_omp_htp_mul;
+name bmath_fp_mf3_s_omp_htp_mul_htp;
 
 name bmath_fp_mf3_s_uav;
 name bmath_fp_mf3_s_ua;

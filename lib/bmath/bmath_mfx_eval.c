@@ -162,7 +162,7 @@ static void run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
     bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, prsg );
     bmath_mf3_s_set_random( m1, false, false, 0, o->density, -1.0, 1.0, prsg );
 
-    if( fp_type == TYPEOF_bmath_fp_mf2_s_mul )
+    if( fp_type == TYPEOF_bmath_fp_mf2_s_mul || fp_type == TYPEOF_bmath_fp_mf2_s_omp_mul )
     {
         bmath_mf2_s* _m0 = BLM_A_PUSH( bmath_mf2_s_clone_a( m0 ) );
         bmath_mf2_s* _m1 = BLM_A_PUSH( bmath_mf2_s_clone_a( m1 ) );
@@ -183,7 +183,7 @@ static void run_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath_mfx
             }
         }
     }
-    else if( fp_type == TYPEOF_bmath_fp_mf3_s_mul )
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_mul || fp_type == TYPEOF_bmath_fp_mf3_s_omp_mul )
     {
         if( o->test1 )
         {
@@ -328,7 +328,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
     bcore_prsg* prsg = BLM_A_PUSH( bcore_prsg_a_clone( o->prsg ) );
     ASSERT( prsg );
 
-    if( fp_type == TYPEOF_bmath_fp_mf2_s_mul_htp )
+    if( fp_type == TYPEOF_bmath_fp_mf2_s_mul_htp || fp_type == TYPEOF_bmath_fp_mf2_s_omp_mul_htp )
     {
         bmath_mf2_s* _m0 = BLM_A_PUSH( bmath_mf2_s_create() );
         bmath_mf2_s* _m1 = BLM_A_PUSH( bmath_mf2_s_create() );
@@ -392,7 +392,7 @@ static void run_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
             }
         }
     }
-    else if( fp_type == TYPEOF_bmath_fp_mf3_s_mul_htp )
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_mul_htp || fp_type == TYPEOF_bmath_fp_mf3_s_omp_mul_htp )
     {
         if( o->test0 )
         {
@@ -622,7 +622,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
     bcore_prsg* prsg = BLM_A_PUSH( bcore_prsg_a_clone( o->prsg ) );
     ASSERT( prsg );
 
-    if( fp_type == TYPEOF_bmath_fp_mf2_s_htp_mul )
+    if( fp_type == TYPEOF_bmath_fp_mf2_s_htp_mul || fp_type == TYPEOF_bmath_fp_mf2_s_omp_htp_mul )
     {
         bmath_mf2_s* _m0 = BLM_A_PUSH( bmath_mf2_s_create() );
         bmath_mf2_s* _m1 = BLM_A_PUSH( bmath_mf2_s_create() );
@@ -709,7 +709,7 @@ static void run_htp_mul( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, bmath
             }
         }
     }
-    else if( fp_type == TYPEOF_bmath_fp_mf3_s_htp_mul )
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_htp_mul || fp_type == TYPEOF_bmath_fp_mf3_s_omp_htp_mul )
     {
         if( o->test0 )
         {
@@ -1022,7 +1022,7 @@ static void run_htp_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
     bmath_mf3_s_set_random( m0, false, false, 0, o->density, -1.0, 1.0, prsg );
     bmath_mf3_s_set_random( m1, false, false, 0, o->density, -1.0, 1.0, prsg );
 
-    if( fp_type == TYPEOF_bmath_fp_mf2_s_htp_mul_htp )
+    if( fp_type == TYPEOF_bmath_fp_mf2_s_htp_mul_htp || fp_type == TYPEOF_bmath_fp_mf2_s_omp_htp_mul_htp )
     {
         bmath_mf2_s* _m0 = BLM_A_PUSH( bmath_mf2_s_create() );
         bmath_mf2_s* _m1 = BLM_A_PUSH( bmath_mf2_s_create() );
@@ -1056,7 +1056,7 @@ static void run_htp_mul_htp( const bmath_mfx_eval_s* o, tp_t fp_type, fp_t fp, b
             }
         }
     }
-    else if( fp_type == TYPEOF_bmath_fp_mf3_s_htp_mul_htp )
+    else if( fp_type == TYPEOF_bmath_fp_mf3_s_htp_mul_htp || fp_type == TYPEOF_bmath_fp_mf3_s_omp_htp_mul_htp )
     {
         if( o->test1 )
         {
@@ -2689,6 +2689,8 @@ void bmath_mfx_eval_s_label_run( const bmath_mfx_eval_s* o, sc_t label, tp_t fp_
         case TYPEOF_bmath_fp_xsmf3_s_mul:
         case TYPEOF_bmath_fp_mf2_s_mul:
         case TYPEOF_bmath_fp_mf3_s_mul:
+        case TYPEOF_bmath_fp_mf2_s_omp_mul:
+        case TYPEOF_bmath_fp_mf3_s_omp_mul:
             run_mul( o, fp_type, fp, r );
             break;
 
@@ -2698,6 +2700,8 @@ void bmath_mfx_eval_s_label_run( const bmath_mfx_eval_s* o, sc_t label, tp_t fp_
         case TYPEOF_bmath_fp_xsmf3_s_mul_htp:
         case TYPEOF_bmath_fp_mf2_s_mul_htp:
         case TYPEOF_bmath_fp_mf3_s_mul_htp:
+        case TYPEOF_bmath_fp_mf2_s_omp_mul_htp:
+        case TYPEOF_bmath_fp_mf3_s_omp_mul_htp:
             run_mul_htp( o, fp_type, fp, r );
             break;
 
@@ -2707,6 +2711,8 @@ void bmath_mfx_eval_s_label_run( const bmath_mfx_eval_s* o, sc_t label, tp_t fp_
         case TYPEOF_bmath_fp_xsmf3_s_htp_mul:
         case TYPEOF_bmath_fp_mf2_s_htp_mul:
         case TYPEOF_bmath_fp_mf3_s_htp_mul:
+        case TYPEOF_bmath_fp_mf2_s_omp_htp_mul:
+        case TYPEOF_bmath_fp_mf3_s_omp_htp_mul:
             run_htp_mul( o, fp_type, fp, r );
             break;
 
@@ -2716,6 +2722,8 @@ void bmath_mfx_eval_s_label_run( const bmath_mfx_eval_s* o, sc_t label, tp_t fp_
         case TYPEOF_bmath_fp_xsmf3_s_htp_mul_htp:
         case TYPEOF_bmath_fp_mf2_s_htp_mul_htp:
         case TYPEOF_bmath_fp_mf3_s_htp_mul_htp:
+        case TYPEOF_bmath_fp_mf2_s_omp_htp_mul_htp:
+        case TYPEOF_bmath_fp_mf3_s_omp_htp_mul_htp:
             run_htp_mul_htp( o, fp_type, fp, r );
             break;
 

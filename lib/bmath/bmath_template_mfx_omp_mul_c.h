@@ -386,6 +386,7 @@ static void htp_mul_htp_acc( const bmath_mfx_s* a, const bmath_mfx_s* b, bmath_m
 
 void BCATU(bmath_mfx_s,omp_mul)( const bmath_mfx_s* a, const bmath_mfx_s* b, bmath_mfx_s* r )
 {
+    ASSERT( r->stride >= r->cols );
     BCATU(bmath_mfx_s,zro)( r );
     mul_acc( a, b, r );
 }
@@ -394,6 +395,7 @@ void BCATU(bmath_mfx_s,omp_mul)( const bmath_mfx_s* a, const bmath_mfx_s* b, bma
 
 void BCATU(bmath_mfx_s,omp_mul_htp)( const bmath_mfx_s* a, const bmath_mfx_s* b, bmath_mfx_s* r )
 {
+    ASSERT( r->stride >= r->cols );
     BCATU(bmath_mfx_s,zro)( r );
     mul_htp_acc( a, b, r );
 }
@@ -402,6 +404,7 @@ void BCATU(bmath_mfx_s,omp_mul_htp)( const bmath_mfx_s* a, const bmath_mfx_s* b,
 
 void BCATU(bmath_mfx_s,omp_htp_mul)( const bmath_mfx_s* a, const bmath_mfx_s* b, bmath_mfx_s* r )
 {
+    ASSERT( r->stride >= r->cols );
     BCATU(bmath_mfx_s,zro)( r );
     htp_mul_acc( a, b, r );
 }
@@ -410,6 +413,7 @@ void BCATU(bmath_mfx_s,omp_htp_mul)( const bmath_mfx_s* a, const bmath_mfx_s* b,
 
 void BCATU(bmath_mfx_s,omp_htp_mul_htp)( const bmath_mfx_s* a, const bmath_mfx_s* b, bmath_mfx_s* r )
 {
+    ASSERT( r->stride >= r->cols );
     BCATU(bmath_mfx_s,zro)( r );
     htp_mul_htp_acc( a, b, r );
 }
@@ -428,6 +432,7 @@ void BCATU(bmath_mfx_s,omp_mul_add)( const bmath_mfx_s* a, const bmath_mfx_s* b,
         return;
     }
 
+    ASSERT( r->stride >= r->cols );
     ASSERT( a->cols == b->rows );
     ASSERT( a->rows == r->rows );
     ASSERT( b->cols == r->cols );
@@ -460,6 +465,7 @@ void BCATU(bmath_mfx_s,omp_mul_htp_add)( const bmath_mfx_s* o, const bmath_mfx_s
         return;
     }
 
+    ASSERT( r->stride >= r->cols );
     ASSERT( o->cols == b->cols );
     ASSERT( o->rows == r->rows );
     ASSERT( b->rows == r->cols );
@@ -492,6 +498,7 @@ void BCATU(bmath_mfx_s,omp_htp_mul_add)( const bmath_mfx_s* o, const bmath_mfx_s
         return;
     }
 
+    ASSERT( r->stride >= r->cols );
     ASSERT( o->rows == b->rows );
     ASSERT( o->cols == r->rows );
     ASSERT( b->cols == r->cols );
@@ -524,6 +531,7 @@ void BCATU(bmath_mfx_s,omp_htp_mul_htp_add)( const bmath_mfx_s* o, const bmath_m
         return;
     }
 
+    ASSERT( r->stride >= r->cols );
     ASSERT( o->rows == b->cols );
     ASSERT( o->cols == r->rows );
     ASSERT( b->rows == r->cols );
@@ -557,6 +565,7 @@ void BCATU(bmath_mfx_s,omp_mul_add_cps)( bl_t htpa, const bmath_mfx_s* a, bl_t h
         return;
     }
 
+    ASSERT( r->stride >= r->cols );
     ASSERT( ( htpa ? a->rows : a->cols ) == ( htpb ? b->cols : b->rows ) );
     ASSERT( ( htpa ? a->cols : a->rows ) == r->rows );
     ASSERT( ( htpb ? b->rows : b->cols ) == r->cols );

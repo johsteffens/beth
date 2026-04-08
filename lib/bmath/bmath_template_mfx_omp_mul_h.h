@@ -34,28 +34,28 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 /// o * m -> r
-void BCATU(bmath_mfx_s,omp_mul)(     const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r ); // r can be folded
+void BCATU(bmath_mfx_s,omp_mul)( const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r ); // r must not be folded
 
 /// o * m^T -> r
-void BCATU(bmath_mfx_s,omp_mul_htp)(     const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r ); // r can be folded
+void BCATU(bmath_mfx_s,omp_mul_htp)( const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r ); // r must not be folded
 
 /// o^T * m -> r
-void BCATU(bmath_mfx_s,omp_htp_mul)(     const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r ); // r can be folded
+void BCATU(bmath_mfx_s,omp_htp_mul)( const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r ); // r must not be folded
 
 /// o^T * m^T -> r
-void BCATU(bmath_mfx_s,omp_htp_mul_htp)( const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r ); // r can be folded
+void BCATU(bmath_mfx_s,omp_htp_mul_htp)( const bmath_mfx_s* o, const bmath_mfx_s* m, bmath_mfx_s* r ); // r must not be folded
 
 /// ( o * b ) + c -> r
-void BCATU(bmath_mfx_s,omp_mul_add)( const bmath_mfx_s* o, const bmath_mfx_s* b, const bmath_mfx_s* c, bmath_mfx_s* r );
+void BCATU(bmath_mfx_s,omp_mul_add)( const bmath_mfx_s* o, const bmath_mfx_s* b, const bmath_mfx_s* c, bmath_mfx_s* r );  // r must not be folded
 
 /// ( o * b^T ) + c -> r
-void BCATU(bmath_mfx_s,omp_mul_htp_add)( const bmath_mfx_s* o, const bmath_mfx_s* b, const bmath_mfx_s* c, bmath_mfx_s* r );
+void BCATU(bmath_mfx_s,omp_mul_htp_add)( const bmath_mfx_s* o, const bmath_mfx_s* b, const bmath_mfx_s* c, bmath_mfx_s* r );  // r must not be folded
 
 /// ( o^T * b ) + c -> r
-void BCATU(bmath_mfx_s,omp_htp_mul_add)( const bmath_mfx_s* o, const bmath_mfx_s* b, const bmath_mfx_s* c, bmath_mfx_s* r );
+void BCATU(bmath_mfx_s,omp_htp_mul_add)( const bmath_mfx_s* o, const bmath_mfx_s* b, const bmath_mfx_s* c, bmath_mfx_s* r );  // r must not be folded
 
 /// ( o^T * b^T ) + c -> r
-void BCATU(bmath_mfx_s,omp_htp_mul_htp_add)( const bmath_mfx_s* o, const bmath_mfx_s* b, const bmath_mfx_s* c, bmath_mfx_s* r );
+void BCATU(bmath_mfx_s,omp_htp_mul_htp_add)( const bmath_mfx_s* o, const bmath_mfx_s* b, const bmath_mfx_s* c, bmath_mfx_s* r );  // r must not be folded
 
 /** composite multiply-add function. Satisfies functionality of BLAS:DGEMM. Supports folded r.
  *  op(a) * op(b) * c + d * e -> r
@@ -63,7 +63,7 @@ void BCATU(bmath_mfx_s,omp_htp_mul_htp_add)( const bmath_mfx_s* o, const bmath_m
  *  c, e are scalar.
  *  d can be NULL
  */
-void BCATU(bmath_mfx_s,omp_mul_add_cps)( bl_t htpa, const bmath_mfx_s* a, bl_t htpb, const bmath_mfx_s* b, fx_t c, const bmath_mfx_s* d, f3_t e, bmath_mfx_s* r );
+void BCATU(bmath_mfx_s,omp_mul_add_cps)( bl_t htpa, const bmath_mfx_s* a, bl_t htpb, const bmath_mfx_s* b, fx_t c, const bmath_mfx_s* d, f3_t e, bmath_mfx_s* r );  // r must not be folded
 void BCATU(bmath_mfx_s,omp_mul_add_cps_selftest)();
 
 //----------------------------------------------------------------------------------------------------------------------
