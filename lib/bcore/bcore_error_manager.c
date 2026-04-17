@@ -16,6 +16,7 @@
 #include "bcore_error_manager.h"
 #include "bcore_sinks.h"
 #include "bcore_life.h"
+#include "bcore_tbman.h"
 
 static bcore_error_manager_context_s* context_g = NULL;
 
@@ -329,7 +330,19 @@ vd_t bcore_error_manager_signal_handler( const bcore_signal_s* o )
                     }
                     st_s_discard( msg );
                 }
-                bcore_error_manager_context_s_detach( &context_g );
+
+                if( verbosity > 0 )
+                {
+                    uz_t count = bcore_error_stack_size();
+                    uz_t space = bcore_tbman_total_granted_space();
+                    bcore_error_manager_context_s_detach( &context_g );
+                    space -= bcore_tbman_total_granted_space();
+                    bcore_msg( "  bcore_error_manager ............. % 7zu (by % 4zu errors      )\n", space, count );
+                }
+                else
+                {
+                    bcore_error_manager_context_s_detach( &context_g );
+                }
             }
         }
         break;

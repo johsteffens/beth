@@ -13,7 +13,7 @@
  *  limitations under the License.
  */
 
-/** Function management framework.
+/** Low Level Function management framework.
  *  This framework links types to functions.
  *  Type value 0 is reserved and not allowed to be associated with a function.
  */
@@ -22,6 +22,10 @@
 #define BCORE_FUNCTION_MANAGER_H
 
 #include "bcore_control.h"
+
+/**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /// enrolls function in global manager (thread safe); checks for collisions;
 void bcore_function_set( tp_t t, fp_t f );
@@ -35,14 +39,16 @@ bl_t bcore_function_exists( tp_t t );
 /// removes t if existing
 void bcore_function_remove( tp_t t );
 
-// number of registered functions
+/// number of registered functions
 sz_t bcore_function_size( void );
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
 
 vd_t bcore_function_manager_signal_handler( const bcore_signal_s* o );
-
-/**********************************************************************************************************************/
 
 // Macros
 #define BCORE_REGISTER_FUNC( name ) bcore_function_set( entypeof( #name ), ( fp_t )name )

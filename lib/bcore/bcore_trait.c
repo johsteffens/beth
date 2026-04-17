@@ -603,7 +603,7 @@ vd_t bcore_trait_signal_handler( const bcore_signal_s* o )
                 uz_t space = bcore_tbman_total_granted_space();
                 trait_manager_close();
                 space -= bcore_tbman_total_granted_space();
-                bcore_msg( "  trait manager ....... % 7zu (by % 4zu traits       )\n", space, count );
+                bcore_msg( "  bcore_trait ..................... % 7zu (by % 4zu traits      )\n", space, count );
             }
             else
             {

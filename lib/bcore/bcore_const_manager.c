@@ -262,7 +262,7 @@ vd_t bcore_const_manager_signal_handler( const bcore_signal_s* o )
                 bcore_mutex_s_discard( mutex_st_g );
                 sz_t space2 = bcore_tbman_total_granted_space();
                 sz_t space = space1 - space2;
-                bcore_msg_fa( "  const manager ....... #pl7 {#<sz_t>} (by #pl4 {#<sz_t>} constants    )\n", space, count );
+                bcore_msg_fa( "  bcore_const_manager ............. #pl7 {#<sz_t>} (by #pl4 {#<sz_t>} constants   )\n", space, count );
                 if( space < 0 )
                 {
                     bcore_msg_fa( "    A negative memory balance in the const-manager\n" );

@@ -1,4 +1,4 @@
-//  Last update: 2026-01-14T12:38:26Z (UTC)
+//  Last update: 2026-04-17T14:12:46Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -198,6 +198,7 @@
   void x_source_point_s_parse_msg_to_sink_fv( const x_source_point_s* o, x_sink* sink, sc_t format, va_list args ); \
   er_t x_source_point_s_parse_error_fv( const x_source_point_s* o, sc_t format, va_list args ); \
   void x_source_point_s_source_reference_to_sink( const x_source_point_s* o, bl_t file_name_only, x_sink* sink ); \
+  void x_source_point_s_source_c_preprocessor_line_to_sink( const x_source_point_s* o, bl_t file_name_only, x_sink* sink ); \
   static inline x_source_point_s* x_source_point_s_setup_from_source( x_source_point_s* o, x_source* source ){ x_source_a_attach( &(o->source ), (x_source*)( ((x_source*)bcore_fork(source)))); o->index = x_source_get_index(source); return o;} \
   static inline x_source_point_s* x_source_point_s__( x_source_point_s* o, x_source* source ){return  x_source_point_s_setup_from_source(o,source );} \
   static inline void x_source_point_s_parse_msg_to_sink_fa( const x_source_point_s* o, x_sink* sink, sc_t format, ... ){ va_list a; va_start( a, format ); x_source_point_s_parse_msg_to_sink_fv(o,sink, format, a ); va_end( a );} \
@@ -4265,5 +4266,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x00E9F36631EEB4CC
-// XOICO_FILE_SIGNATURE 0x9513FEAC8A1D6D1A
+// XOICO_BODY_SIGNATURE 0x587CD9E827CF0974
+// XOICO_FILE_SIGNATURE 0x7A23E263620D771A

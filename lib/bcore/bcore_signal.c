@@ -63,6 +63,7 @@
 #include "bcore_hmap_name.h"
 #include "bcore_cday.h"
 #include "bcore_error_manager.h"
+#include "bcore_generic_function_manager.h"
 #include "bcore_prsg.h"
 
 BCORE_DEFINE_FUNCTIONS_OBJ_FLAT( bcore_signal_s )
@@ -151,6 +152,7 @@ vd_t bcore_general_signal_handler( const bcore_signal_s* o )
         bcore_hmap_name_signal_handler,
         bcore_cday_signal_handler,
         bcore_error_manager_signal_handler,
+        bcore_generic_function_manager_signal_handler,
         bcore_prsg_signal_handler,
     };
 

@@ -232,7 +232,7 @@ vd_t bcore_global_manager_signal_handler( const bcore_signal_s* o )
                 bcore_mutex_s_discard( mutex_g );
                 sz_t space2 = bcore_tbman_total_granted_space();
                 sz_t space = space1 - space2;
-                bcore_msg_fa( " global manager ....... #pl7 {#<sz_t>} (by #pl4 {#<sz_t>} objects      )\n", space, count );
+                bcore_msg_fa( "  bcore_global_manager ............ #pl7 {#<sz_t>} (by #pl4 {#<sz_t>} objects     )\n", space, count );
             }
             else
             {

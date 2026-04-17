@@ -281,6 +281,8 @@ void st_s_print_fa( sc_t format, ... );
  *          "#?([0]=='H'&&[1]=='A'&&[2]=='L')" behaves as "#=?'HAL'"
  *          Test for a digit:  "#?([0]>='0'&&[0]<='9')"
  *          Test for a letter: "#?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z'))"
+ *          Test for a the beginning of an identifier:
+ *               "#?(([0]>='A'&&[0]<='Z')||([0]>='a'&&[0]<='z')||([0]=='_'))"
  *
  *  "#?!..."
  *      Argument: bl_t*

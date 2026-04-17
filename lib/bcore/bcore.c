@@ -203,15 +203,15 @@ void bcore_down( s2_t verbosity )
     bcore_mutex_s_unlock( &mutex );
     bcore_mutex_s_down( &mutex );
 
-    bcore_general_signal_handler( &signal_down1 );
 
     if( verbosity > 0 )
     {
-        bcore_msg( "\nBeth global system's memory usage (bytes):\n");
+        bcore_msg( "\nBeth system's memory usage (bytes):\n");
         uz_t space = bcore_tbman_total_granted_space();
-        bcore_msg( "Total ................. % 7zu\n", space );
+        bcore_msg( "Total ............................. % 7zu\n", space );
     }
 
+    bcore_general_signal_handler( &signal_down1 );
     bcore_general_signal_handler( &signal_down0 );
 }
 

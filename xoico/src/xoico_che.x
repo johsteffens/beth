@@ -2273,8 +2273,10 @@ func (:s) er_t translate_mutable( m @* o, c xoico_host* host, c xoico_body_s* bo
 
     if( o.insert_source_reference && !body.code.single_line )
     {
-        sink.push_fa( "// " );
-        body.code.source_point.source_reference_to_sink( true, sink );
+        //sink.push_fa( "// " );
+        //body.code.source_point.source_reference_to_sink( true, sink );
+
+        body.code.source_point.source_c_preprocessor_line_to_sink( true, sink );
         sink.push_fa( "\n" );
     }
 

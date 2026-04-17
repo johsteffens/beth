@@ -38,11 +38,11 @@ int main( void )
         return 2;
     }
 
-    bcore_flect_parse_all_flects();
-    bcore_inst_test_all_types();
-
 //    bcore_quicktypes_to_stdout( NULL ); return 0;
 //    bmath_quicktypes_to_stdout( NULL ); return 0;
+
+    bcore_flect_parse_all_flects();
+    bcore_inst_test_all_types();
 
     selftest( "bcore_spect_inst" );
 
@@ -109,6 +109,8 @@ int main( void )
     selftest( "bcore_spect_hash" );
     selftest( "bcore_tbman" );
 
+    selftest( "bcore_generic_function_manager" );
+
     bcore_huffman_selftest();
     bcore_indexer_selftest();
 
@@ -120,7 +122,11 @@ int main( void )
 
     bcore_msg_fa( "\n" );
     bcore_msg_fa( "#r80{=}\n" );
-    bcore_msg_fa( "All tests completed without error.\n" );
+
+    if( bcore_error_stack_size() == 0 )
+    {
+        bcore_msg_fa( "All tests completed without error.\n" );
+    }
 
     BETH_CLOSEV( 1 );
 //    BETH_CLOSEV( 0 );

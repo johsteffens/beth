@@ -418,8 +418,6 @@ vd_t bcore_name_manager_signal_handler( const bcore_signal_s* o )
 
         case TYPEOF_down0:
         {
-            // bcore_tbman_instance_disgnostics();
-
             s2_t verbosity = o->object ? *( s2_t* )o->object : 0;
             if( verbosity > 0 )
             {
@@ -427,7 +425,7 @@ vd_t bcore_name_manager_signal_handler( const bcore_signal_s* o )
                 uz_t space = bcore_tbman_total_granted_space();
                 name_manager_close();
                 space -= bcore_tbman_total_granted_space();
-                bcore_msg( "  name mananger ....... % 7zu (by % 4zu names        )\n", space, count );
+                bcore_msg( "  bcore_name_mananger ............. % 7zu (by % 4zu names       )\n", space, count );
             }
             else
             {
