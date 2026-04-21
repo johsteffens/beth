@@ -144,15 +144,15 @@ stamp:
   C-Prototypes are generated and registered as featured function.
 
   Function Syntax:
-   func <group_name> . <signature_name> [inline|export] [[{] <body> [}]];
+   func <group_name> . <signature_name> [generic] [inline|export] [{] <body> [}] ];
          <signature_name> is a signature defined in group <group_name>
          Creates a function <stamp_name>_s_<signature_name>.
 
-   func <group_name> . <feature_name> [inline|export] [[{] <body> [}]];
+   func <group_name> . <feature_name> [generic] [ [inline|export] [{] <body> [}] ];
          <feature_name> is a feature defined in group <group_name>
          Creates a function <stamp_name>_s_<feature_name> and binds it to <group_name>_<feature_name>.
 
-   func (<signature-def>) [inline|export] [[{] <body> [}]];
+   func (<signature-def>) [generic] [ [inline|export] [{] <body> [}] ];
          Creates a function <stamp_name>_s_<signature_name>.
 
   Special conditions:
@@ -185,7 +185,9 @@ Functions:
   Features and functions can have a body.
   The body is normally enclosed in '{ ... }' Braces can be omitted if the body contains only a single statement.
   Symbol ':' immediately followed by a name serves as namespace expander
-  Keywords: 'inline', 'export' preceding the body forces inline or not-inline expansion.
+  Keywords:
+    'generic' indicates that this function's full reflection is to be registered with the beth bcore_generic_function_manager
+    'inline', 'export' preceding the body forces inline or not-inline expansion.
   Registration: group functions (functions which are not member of a stamp) are registered in the function manager (macro REGISTER_FUNC)
 
 Functor-style stamp declaration:

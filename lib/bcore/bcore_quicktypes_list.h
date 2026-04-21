@@ -135,12 +135,15 @@
 #define TYPEOF_bcore_unlock_s                   0x8DA4EE0A705BA36Dull
 #define TYPEOF_bcore_via                        0x18B9A68C9B5CD219ull
 #define TYPEOF_bcore_via_s                      0x541D0401D4DCFF33ull
+#define TYPEOF_const                            0x65C9718E19E3DF34ull
+#define TYPEOF_discardable                      0xED16F8CC0E7FC721ull
 #define TYPEOF_down0                            0x965FAAAB1186C79Full
 #define TYPEOF_down1                            0x965FA9AB1186C5ECull
 #define TYPEOF_get_quicktypes                   0xE04F86881BBEC5ACull
 #define TYPEOF_init0                            0x6A72CF8F8250F179ull
 #define TYPEOF_init1                            0x6A72CE8F8250EFC6ull
 #define TYPEOF_local                            0x249F1FB6F3A680E8ull
+#define TYPEOF_mutable                          0xD3AC3C45566EFDE9ull
 #define TYPEOF_none                             0x3C0D17BAD169557Bull
 #define TYPEOF_push_dependencies                0x2C61B4D51672DB73ull
 #define TYPEOF_selftest                         0x7EE758BBFCED33E3ull

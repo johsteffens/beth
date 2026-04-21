@@ -54,6 +54,8 @@ stamp :s = aware :
         return o.expandable && host.compiler().is_feature( o.signature_global_name );
     };
 
+    func bl_t is_generic( c @* o ) = o.signature && o.signature.is_generic;
+
     func xoico.parse;
     func xoico.finalize;
     func xoico.expand_forward;
@@ -106,10 +108,8 @@ func (:s) xoico.parse
 
     o.source_point.setup_from_source( source );
 
-    if( source.parse_bl( " #?'('" ) ) // old style enclosed signature
-    {
-        return source.parse_error_fa( "Signature-enclosure '( ...sig... )' is deprecated." );
-    }
+     // old style enclosed signature is deprecated
+    if( source.parse_bl( " #?'('" ) ) return source.parse_error_fa( "Signature-enclosure '( ...sig... )' is deprecated." );
 
     // We first try parsing a direct signature. If that fails, we assume the signature is referenced by an identifier.
     // This allows parsing without old style bracket enclosing. If that is a save practice under all circumstances is to be seen.
@@ -281,19 +281,30 @@ func (:s) xoico.expand_declaration
     c $* signature = o.signature;
     ASSERT( signature );
     m $* compiler = host.compiler();
+    sc_t sc_global_name = compiler.nameof( o.global_name );
 
     if( go_inline )
     {
         sink.push_fa( " \\\n#rn{ }", indent );
         sink.push_fa( "static inline " );
-        signature.expand_declaration( host, xoico_compiler_s_nameof( compiler, o->global_name ), indent, sink );
+        signature.expand_declaration( host, sc_global_name, indent, sink );
         o.body.expand( host, signature, indent, sink );
     }
     else if( !o->declare_in_expand_forward )
     {
         sink.push_fa( " \\\n#rn{ }", indent );
-        signature.expand_declaration( host, xoico_compiler_s_nameof( compiler, o->global_name ), indent, sink );
+        signature.expand_declaration( host, sc_global_name, indent, sink );
         sink.push_fa( ";" );
+    }
+
+    if( signature.is_generic )
+    {
+        m$* gfunc = bcore_generic_function_s!^;
+        signature.to_generic_function( host, sc_global_name, gfunc );
+        m$* st = st_s!^;
+        gfunc.push_c_code_bgwf_definition_one_line( st );
+        sink.push_fa( " \\\n#rn{ }", indent );
+        sink.push_fa( "static inline #<sc_t>;", st.sc );
     }
 
     return 0;
@@ -326,16 +337,34 @@ func (:s) xoico.expand_definition
 func (:s) xoico.expand_init1
 {
     if( !o.expandable ) return 0;
-    if( !o.register_in_function_manager ) return 0;
 
     sc_t sc_global_name = host.compiler().nameof( o.global_name );
 
-    sink.push_fa
-    (
-        "#rn{ }BCORE_REGISTER_FUNC( #<sc_t> );\n",
-        indent,
-        sc_global_name
-    );
+    if( o.register_in_function_manager )
+    {
+        sink.push_fa
+        (
+            "#rn{ }BCORE_REGISTER_FUNC( #<sc_t> );\n",
+            indent,
+            sc_global_name
+        );
+    }
+
+    if( o.is_generic() )
+    {
+        m$* gfunc = bcore_generic_function_s!^;
+        o.signature.to_generic_function( host, sc_global_name, gfunc );
+        m$* st = st_s!^;
+        gfunc.push_x_code( st );
+
+        sink.push_fa
+        (
+            "#rn{ }bcore_generic_function_manager_register_func( \"#<sc_t>\", #<sc_t>__bgwf );\n",
+            indent,
+            st.sc,
+            sc_global_name
+        );
+    }
 
     return 0;
 };

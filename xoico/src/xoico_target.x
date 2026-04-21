@@ -576,6 +576,54 @@ func (:s) :.expand_phase1
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/* Replaces all statements `#line reset` with a valid c-preprocessor
+ * #line statement switching line tracking back to the current file.
+ * Only #line statements that occur at the beginning of a line (preceding spaces or tabs are allowed)
+ * will be replaced.
+ */
+func er_t reset_line_directives( sc_t file, m st_s* data )
+{
+    sc_t file_name = bcore_file_name( file );
+    m$* buf = data.clone()^;
+    data.clear();
+
+    sz_t linenum = 1;
+    bl_t newline = true;
+
+    for( sz_t i = 0; i < buf.size; i++ )
+    {
+        char c = buf.[ i ];
+        data.push_char( c );
+
+        switch( c )
+        {
+            case '\n': linenum++; newline = true; break;
+            case '\t': break;
+            case ' ' : break;
+            case '#' :
+            {
+                if( newline )
+                {
+                    s2_t cmp = sc_t_cmp( "#line reset", buf.sc + i );
+                    if( cmp == 0 || cmp == 1 )
+                    {
+                        data.push_fa( "line #<sz_t> \"#<sc_t>\"", linenum + 1, file_name );
+                        while( i < buf.size && buf.[ i + 1 ] != '\n' ) i++;
+                    }
+                    newline = false;
+                }
+            }
+            break;
+
+            default: newline = false; break;
+        }
+    }
+
+    return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func er_t write_with_signature( sc_t file, c st_s* data )
 {
     tp_t hash = bcore_tp_fold_sc( bcore_tp_init(), data.sc );
@@ -630,7 +678,8 @@ func (:s) :.expand_phase2
             if( clear_to_overwrite )
             {
                 bcore_msg_fa( "XOICO: writing #<sc_t>\n", file_c.sc );
-                xoico_target_write_with_signature( file_c.sc, o.target_c );
+                xoico_target_reset_line_directives( file_c.sc, o.target_c );
+                xoico_target_write_with_signature ( file_c.sc, o.target_c );
                 if( p_modified.1 ) p_modified.0 = true;
             }
         }

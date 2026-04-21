@@ -759,6 +759,7 @@ func (:s) :.get_type_array_element_info
 
 func (:s) :.update_target_files
 {
+
     bl_t modified = false;
     bl_t verbosity = o.verbosity;
     f3_t time = 0;

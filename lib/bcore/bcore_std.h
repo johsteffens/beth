@@ -61,6 +61,7 @@
 #include "bcore_xoila.h"
 #include "bcore_main.h"
 #include "bcore_error_manager.h"
+#include "bcore_generic_function_manager.h"
 #include "bcore_prsg.h"
 #include "bcore_cday.h"
 #include "bcore_shell.h"

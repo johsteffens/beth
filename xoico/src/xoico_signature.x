@@ -18,7 +18,8 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 signature er_t relent( m @* o, c xoico_host* host, tp_t tp_obj_type );
-signature er_t expand_declaration( c @* o, c xoico_host* host, sc_t sc_func_global_name, sz_t indent, m x_sink* sink );
+signature er_t expand_declaration ( c @* o, c xoico_host* host, sc_t sc_func_global_name, sz_t indent, m x_sink* sink );
+signature er_t to_generic_function( c @* o, c xoico_host* host, sc_t sc_func_global_name, m bcore_generic_function_s* gfunc );
 signature er_t set_global_name( m @* o, c xoico_host* host );
 signature bl_t as_member( c @* o ); // indicates that the function can be used as member function to an object
 
@@ -27,6 +28,9 @@ stamp :s = aware :
     tp_t name;
     tp_t base_name;
     tp_t global_name;
+
+    // true: signature should be used with bcore_generic_function_manager
+    bl_t is_generic;
 
     xoico_typespec_s typespec_ret; // return type
     xoico_arg_s => arg_o; // (first) object argument (NULL in case of plain function)
@@ -73,6 +77,7 @@ stamp :s = aware :
     };
 
     func :.expand_declaration;
+    func :.to_generic_function;
 
     func xoico_arg.is_variadic { return o.args.is_variadic(); };
 
@@ -123,6 +128,7 @@ func (:s) xoico.get_hash
     hash = bcore_tp_fold_tp( hash, o.typespec_ret.get_hash() );
     hash = bcore_tp_fold_tp( hash, o.arg_o ? o.arg_o.get_hash() : 0 );
     hash = bcore_tp_fold_tp( hash, o.args.get_hash() );
+    hash = bcore_tp_fold_bl( hash, o.is_generic );
     return hash;
 };
 
@@ -192,6 +198,8 @@ func (:s) xoico.parse
         source.parse_fa( " )" );
     }
 
+    o.is_generic = source.parse_bl( " #?'generic'" );
+
     /// if return type is a name in the argument list, copy argument typespec to return typespec
     xoico_arg_s* ret_arg = ( o.typespec_ret.indirection == 0 ) ? o.get_arg_by_name( o.typespec_ret.type ) : NULL;
 
@@ -236,6 +244,21 @@ func (:s) :.expand_declaration
         }
         sink.push_fa( " )" );
     }
+    return 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) :.to_generic_function
+{
+    o.typespec_ret.to_generic_function_item( host, gfunc.base );
+    gfunc.base.name = bentypeof( sc_func_global_name );
+
+    gfunc.clear();
+
+    if( o.arg_o ) o.arg_o.push_to_generic_function( host, gfunc );
+    o.args.push_to_generic_function( host, gfunc );
+
     return 0;
 };
 

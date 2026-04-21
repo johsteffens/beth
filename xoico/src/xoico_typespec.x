@@ -20,6 +20,7 @@
 signature er_t parse(  m @* o, c xoico_host* host, m x_source* source );
 signature er_t relent( m @* o, c xoico_host* host, tp_t tp_obj_type );
 signature er_t expand( c @* o, c xoico_host* host, m x_sink* sink );
+signature er_t to_generic_function_item( c @* o, c xoico_host* host, m bcore_generic_function_item_s* item );
 signature er_t expand_x( c @* o, c xoico_host* host, m x_sink* sink ); // expands in x-format
 signature bl_t converts_to( c @* o, c @* b ); // in 'C' auto-converts to b without a cast
 signature bl_t is_ptr_type( c @* o ); // type is a pointer type (like vc_t, vd_t, sc_t, sd_t)
@@ -50,7 +51,7 @@ stamp :transient_s = aware :
 
 stamp :s = aware :
 {
-    tp_t type; // possible variable types are TYPEOF_type_deduce and type_object~
+    tp_t type; // possible variable types are type_deduce~ and type_object~
     tp_t access_class; // 'const|mutable|discardable'
 
     :transient_s => transient;
@@ -85,6 +86,7 @@ stamp :s = aware :
     };
 
     func :.expand;
+    func :.to_generic_function_item;
     func :.expand_x;
     func :.converts_to;
     func :.is_ptr_type;
@@ -251,6 +253,36 @@ func (:s) :.expand
 
     return 0;
 };
+
+//----------------------------------------------------------------------------------------------------------------------
+
+func (:s) to_generic_function_item
+{
+    if( o.flag_variadic )
+    {
+        = GERR_fa( "Cannot convert a variadic argument to bcore_generic_function_item_s\n" );
+    }
+
+    tp_t type = o.type;
+
+    if( type == type_object~ )
+    {
+        type = host.obj_type();
+    }
+    else if( type == type_deduce~ )
+    {
+        = GERR_fa( "Cannot resolve 'type_deduce' at this point." );
+    }
+
+    item.type          = type;
+    item.access_class  = o.access_class;
+    item.indirection   = o.indirection;
+    item.flag_restrict = o.flag_restrict;
+    item.flag_obliv    = o.flag_obliv;
+    item.flag_aware    = o.flag_aware;
+
+    return 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

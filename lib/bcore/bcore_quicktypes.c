@@ -39,8 +39,8 @@ static sr_s leaf_typelist()
 {
     sr_s list = bcore_inst_t_create_sr( bcore_flect_type_parse_fa( "{ aware_t _; st_s => [] arr; }" ) );
     bcore_array_r_push_sc( &list, "" );
-    bcore_array_r_push_sc( &list, "char" );
     bcore_array_r_push_sc( &list, "void" );
+    bcore_array_r_push_sc( &list, "char" );
     bcore_array_r_push_sc( &list, "s0_t" );
     bcore_array_r_push_sc( &list, "s1_t" );
     bcore_array_r_push_sc( &list, "s2_t" );
@@ -183,6 +183,11 @@ static sr_s object_typelist()
     bcore_array_r_push_sc( &list, "selftest" );          // (type) selftest (returns NULL or st_s*)
     bcore_array_r_push_sc( &list, "get_quicktypes" );    // (type) object referencing an array accepting strings
     bcore_array_r_push_sc( &list, "push_dependencies" ); // appends to bcore_arr_ft_s all signal handlers the current handler depends on
+
+    // type qualifiers
+    bcore_array_r_push_sc( &list, "const"   );
+    bcore_array_r_push_sc( &list, "mutable" );
+    bcore_array_r_push_sc( &list, "discardable" );
 
     // quicktypes from TYPEOF_get_quicktypes
     bcore_signal_s signal = bcore_signal_init( TYPEOF_local, TYPEOF_get_quicktypes, list.o );

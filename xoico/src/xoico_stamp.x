@@ -1024,6 +1024,11 @@ func (:s) xoico.expand_init1
                 compiler.nameof( func.name )
             );
         }
+
+        if( func.is_generic() )
+        {
+            func.expand_init1( host, indent, sink );
+        }
     }
     sink.push_fa( "#rn{ }BCORE_REGISTER_OBJECT( #<sc_t> );\n", indent, o.st_name.sc );
     return 0;

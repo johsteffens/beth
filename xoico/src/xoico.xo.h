@@ -1,4 +1,4 @@
-//  Last update: 2026-04-06T12:25:55Z (UTC)
+//  Last update: 2026-04-21T13:47:51Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -414,6 +414,7 @@
   er_t xoico_typespec_s_parse( xoico_typespec_s* o, const xoico_host* host, x_source* source ); \
   tp_t xoico_typespec_s_get_hash( const xoico_typespec_s* o ); \
   er_t xoico_typespec_s_expand( const xoico_typespec_s* o, const xoico_host* host, x_sink* sink ); \
+  er_t xoico_typespec_s_to_generic_function_item( const xoico_typespec_s* o, const xoico_host* host, bcore_generic_function_item_s* item ); \
   er_t xoico_typespec_s_expand_x( const xoico_typespec_s* o, const xoico_host* host, x_sink* sink ); \
   bl_t xoico_typespec_s_converts_to( const xoico_typespec_s* o, const xoico_typespec_s* b ); \
   bl_t xoico_typespec_s_is_ptr_type( const xoico_typespec_s* o ); \
@@ -490,6 +491,8 @@
   er_t xoico_arg_s_relent( xoico_arg_s* o, const xoico_host* host, tp_t tp_obj_type ); \
   static inline er_t xoico_arg_s_convert_transient_types( xoico_arg_s* o, const xoico_host* host, const xoico_transient_map_s* map ); \
   er_t xoico_arg_s_expand( const xoico_arg_s* o, const xoico_host* host, x_sink* sink ); \
+  er_t xoico_arg_s_to_generic_function_item( const xoico_arg_s* o, const xoico_host* host, bcore_generic_function_item_s* item ); \
+  er_t xoico_arg_s_push_to_generic_function( const xoico_arg_s* o, const xoico_host* host, bcore_generic_function_s* gfunc ); \
   er_t xoico_arg_s_expand_x( const xoico_arg_s* o, const xoico_host* host, x_sink* sink ); \
   er_t xoico_arg_s_expand_name( const xoico_arg_s* o, const xoico_host* host, x_sink* sink ); \
   er_t xoico_arg_s_to_self_item_st( const xoico_arg_s* o, const xoico_host* host, st_s* st ); \
@@ -527,6 +530,7 @@
   er_t xoico_args_s_relent( xoico_args_s* o, const xoico_host* host, tp_t tp_obj_type ); \
   er_t xoico_args_s_convert_transient_types( xoico_args_s* o, const xoico_host* host, const xoico_transient_map_s* map ); \
   er_t xoico_args_s_expand( const xoico_args_s* o, const xoico_host* host, bl_t first, x_sink* sink ); \
+  er_t xoico_args_s_push_to_generic_function( const xoico_args_s* o, const xoico_host* host, bcore_generic_function_s* gfunc ); \
   er_t xoico_args_s_expand_x( const xoico_args_s* o, const xoico_host* host, bl_t first, x_sink* sink ); \
   er_t xoico_args_s_expand_name( const xoico_args_s* o, const xoico_host* host, bl_t first, x_sink* sink ); \
   tp_t xoico_args_s_get_hash( const xoico_args_s* o ); \
@@ -559,6 +563,7 @@
       tp_t name; \
       tp_t base_name; \
       tp_t global_name; \
+      bl_t is_generic; \
       xoico_typespec_s typespec_ret; \
       xoico_arg_s* arg_o; \
       xoico_args_s args; \
@@ -580,6 +585,7 @@
   er_t xoico_signature_s_set_global_name( xoico_signature_s* o, const xoico_host* host ); \
   er_t xoico_signature_s_parse( xoico_signature_s* o, const xoico_host* host, x_source* source ); \
   er_t xoico_signature_s_expand_declaration( const xoico_signature_s* o, const xoico_host* host, sc_t sc_func_global_name, sz_t indent, x_sink* sink ); \
+  er_t xoico_signature_s_to_generic_function( const xoico_signature_s* o, const xoico_host* host, sc_t sc_func_global_name, bcore_generic_function_s* gfunc ); \
   bl_t xoico_signature_s_fits_transient_type_feature( const xoico_signature_s* o ); \
   static inline tp_t xoico_signature_s_get_global_name_tp( const xoico_signature_s* o ){ return  o->global_name;} \
   static inline bl_t xoico_signature_s_is_variadic( const xoico_signature_s* o ){ return  xoico_args_s_is_variadic(&(o->args));} \
@@ -677,6 +683,7 @@
       x_source_point_s source_point; \
   }; \
   bl_t xoico_func_s_reflectable( const xoico_func_s* o, const xoico_host* host ); \
+  static inline bl_t xoico_func_s_is_generic( const xoico_func_s* o ); \
   static inline const x_source_point_s* xoico_func_s_get_source_point( const xoico_func_s* o ); \
   static inline bl_t xoico_func_s_as_member( const xoico_func_s* o ); \
   tp_t xoico_func_s_get_hash( const xoico_func_s* o ); \
@@ -688,6 +695,7 @@
   er_t xoico_func_s_expand_declaration( const xoico_func_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   er_t xoico_func_s_expand_definition( const xoico_func_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
   er_t xoico_func_s_expand_init1( const xoico_func_s* o, const xoico_host* host, sz_t indent, x_sink* sink ); \
+  static inline bl_t xoico_func_s_is_generic( const xoico_func_s* o ){return  o->signature && o->signature->is_generic;} \
   static inline const x_source_point_s* xoico_func_s_get_source_point( const xoico_func_s* o ){ return &( o->source_point);} \
   static inline bl_t xoico_func_s_as_member( const xoico_func_s* o ){ return  o->signature ? xoico_signature_s_as_member(o->signature) : false;}
 #define BETH_EXPAND_GROUP_xoico_func \
@@ -1218,6 +1226,7 @@
 #define BETH_EXPAND_GROUP_xoico_target \
   BCORE_FORWARD_OBJECT( xoico_target ); \
   BCORE_FORWARD_OBJECT( xoico_target_s ); \
+  er_t xoico_target_reset_line_directives( sc_t file, st_s* data ); \
   er_t xoico_target_write_with_signature( sc_t file, const st_s* data ); \
   XOILA_DECLARE_SPECT( xoico_target ) \
   { \
@@ -1414,6 +1423,7 @@
       aware_t _; \
       bl_t verbose; \
       bl_t insert_source_reference; \
+      bl_t use_line_directive; \
       bl_t for_all_functions_enable_try; \
       bl_t waive_unknown_member_variable; \
       bl_t waive_unknown_member_function; \
@@ -1977,7 +1987,8 @@
       bl_t define_signal_handler; \
       xoico_cengine* cengine; \
       sz_t beta_level; \
-      bl_t use_build_timestamp_file; \
+      bl_t create_build_timestamp_file; \
+      bl_t check_build_timestamp_file; \
       xoico_compiler_s* compiler; \
       xoico_builder_target_s* parent_; \
       xoico_builder_target_s* root_; \
@@ -2110,5 +2121,5 @@ BETH_EXPAND_GROUP_xoico_builder
 BETH_EXPAND_GROUP_xoico_main
 
 #endif // __xoico_xo_H
-// XOICO_BODY_SIGNATURE 0xEA5785E1B39E96A5
-// XOICO_FILE_SIGNATURE 0x8C9AEAC8C02CD395
+// XOICO_BODY_SIGNATURE 0x55BEF8BD3E37306C
+// XOICO_FILE_SIGNATURE 0x0D4FA9C89B38DC1C

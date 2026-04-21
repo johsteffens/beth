@@ -67,15 +67,18 @@ stamp :target_s = aware :
     aware xoico_cengine => cengine = xoico_che_s;
 
     /** Beta level (normally 0)
-     *  New features in a testing phase can e activated at a beta-level > 0.
-     *  Any beta level > 0 is considered to be transient and should only exist while development work on xoico is performed.
+     *  New features in a testing phase can be slectively activated at a beta-level > 0.
+     *  A level > 0 is considered transient and should only be used while development work on xoico is performed.
      */
     sz_t beta_level = 0;
 
-    /** For speedup: Checks the latest changes in all dependencies and only initiates a build if it is not older than the last build.
+    /** For speedup xoico checks the latest changes in all dependencies and only initiates a build if it is not older than the last build.
      *  For this purpose a timestamp file <config file>.build.timestamp is created in the directory of the config file.
+     *
+     *  check_build_timestamp_file can temporarily set to 'false' to force code generation during development work on xoico.
      */
-    bl_t use_build_timestamp_file = true;
+    bl_t create_build_timestamp_file = true; // creates timestamp file
+    bl_t check_build_timestamp_file  = true; // checks timestamp file to determine if the build is up to date
 
     // Runtime data
     private xoico_compiler_s* compiler;
@@ -489,6 +492,8 @@ func (:target_s) er_t set_build_timestamp( m@* o )
 /// checks if last target build is newer than the latest change in all dependencies
 func (:target_s) bl_t is_up_to_date( m@* o )
 {
+    if( !o.check_build_timestamp_file ) = false;
+
     // max last modification time of all sources including dependencies
     u3_t modification_time = 0;
     o.get_modification_time( modification_time );
@@ -598,9 +603,6 @@ func (:target_s) :.build
             }
 
             target.embedded_sources.push_st( file_path );
-
-//            if( !bcore_file_exists( file_path.sc ) ) = bcore_error_push_fa( general_error~, "Could not find embedded source file '#<sc_t>'.", file_path.sc );
-//            max_time = u3_max( max_time, bcore_file_last_modification_time_us( file_path.sc ) );
         }
 
 
@@ -626,7 +628,6 @@ func (:target_s) er_t build_from_file( m @* o, sc_t path )
     {
         o.build();
         o.compiler.finalize( o );
-        //if( o.use_build_timestamp_file ) o.set_build_timestamp();
     }
 
     return 0;
@@ -641,7 +642,7 @@ func (:target_s) er_t build_from_file( m @* o, sc_t path )
 func (:main_s) er_t set_build_timestamp( m@* o )
 {
     if( !o.target ) = 0;
-    if( o.target.use_build_timestamp_file ) o.target.set_build_timestamp();
+    if( o.target.create_build_timestamp_file ) o.target.set_build_timestamp();
     = 0;
 }
 

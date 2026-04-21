@@ -1,11 +1,11 @@
 # Beth Holor Virtual Machine (BHVM)
 
 ## Holor
-Name and definition was inspired by *Moon & Spencer's work: "Theory of Holors"*.  
+Name and definition was inspired by *Moon & Spencer's work: "Theory of Holors"* [1].  
 
 A holor can be understood as generalization of a Tensor. Likewise it can be seen as canonical extension of a matrix to *n* dimensions. My definition actually represents a specific sub-class of the M&S holor. I have chosen different semantics and nomenclature to describe its properties as it seemed better suited to the realm of intended use cases.
 
-In the scope of this library the holor is physically represented as multidimensional array. (Jagged arrays are excluded.)
+In the scope of this library, the holor is physically represented as multidimensional array. (Jagged arrays are excluded.)
 
 ### Inductive Definition
 A given holor has an *order* **n**, with **n** being a non-negative whole number. I use the specifying term **n-holor**.
@@ -15,8 +15,7 @@ A given holor has an *order* **n**, with **n** being a non-negative whole number
 **B:** The **(n+1)-holor** is an array of **n-holors**. I call the array-size: **Leading Dimension**. Each element is an **n-holor** and each has the the same leading dimension. Values across elements are independent.
 
 ### Shape
-Above definition implies that an n-holor is a hierarchical composition of n sub-holors: { n-holor, (n-1)-holor, ... , 1-holor }, each with a specified
-leading dimension. 
+Above definition implies that an n-holor is a hierarchical composition of n sub-holors: { n-holor, (n-1)-holor, ... , 1-holor }, each with a specified leading dimension. 
 
 I call the ordered set (or sequence) of 'n' leading dimensions **shape**. The shape of the 0-holor is the empty set: \{ \}.
 
@@ -32,7 +31,7 @@ I define **volume** as the product of all elements of **shape**.
 
 The 0-holor has volume **1** (*empty product*).
 
-<sub> Note: *'volume'* is the related to Moon & Spencer's *'Number of Merates'*</sub>
+***Note:** `Volume` is the related to Moon & Spencer's `Number of Merates` [1]*
 
 ### Value
 I call the composite of all individual scalars of a given holor **the value** of that holor. The value is stored as array of a specified data type. Currently the types f2_t (float) and f3_t (double) are supported.
@@ -66,19 +65,19 @@ We define the HVM as virtual machine with holors as data elements holor-operands
 
 1. A database for storing holors where each holor is addressable by an integer index.
 
-2. A collection of _virtual machine operations_ (vop). Each vop representing
-an operation of arity n on holors and containing an array of n+1 indices, where the
-first n indices address the input holors and the last one the output holor of the
-given operation. Normally, a vop can handle holors of all data types (f2_t or f3_t)
-in any combination.
+2. A collection of _virtual machine operations_ (vop). Each vop representing an operation of arity n on holors and containing an array of n+1 indices, where the first n indices address the input holors and the last one the output holor of the given operation. Normally, a vop can handle holors of all data types (f2_t or f3_t) in any combination.
 
 3. An executable array of vop, called _track_. 
 Executing a track means executing all vop in the track from first to last in given sequence.
 
 4. An database of tracks, called _library_.
 
-Additional components are allowed but not mandatory. Typically such components would include operations such as conditional execution, jump, loop, 
-branch, call-subroutine, etc (turning a HVM into a Turing Machine).
+Additional components are allowed but not mandatory. Typically such components would include operations such as conditional execution, jump, loop, branch, call-subroutine, etc (turning a HVM into a Turing Machine).
+
+
+
+## References
+[1] Moon, Parry Hiram and Domina Eberle Spencer. “Theory of Holors.” (1986). https://api.semanticscholar.org/CorpusID:116805209
 
 ------
 <sub>&copy; 2019, 2020 Johannes B. Steffens</sub>

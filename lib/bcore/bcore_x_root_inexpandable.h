@@ -404,6 +404,7 @@ embed "bcore_via_inexpandable.x";
 embed "bcore_sr_inexpandable.x";
 embed "bcore_img_inexpandable.x";
 embed "bcore_folder_inexpandable.x";
+embed "bcore_generic_function_manager_inexpandable.x";
 
 #endif // XOILA_SECTION
 

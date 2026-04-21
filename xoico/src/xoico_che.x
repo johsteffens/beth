@@ -209,6 +209,9 @@ stamp :s = aware :
     /// Prepends a commented reference to the xoila source for each function in *xoila_out.c
     bl_t insert_source_reference = true;
 
+    /// in case (insert_source_reference == true): uses the C preprocessor directive #line to specify source info
+    bl_t use_line_directive = true;
+
     /// Prepends a commented reference to the xoila source for each function in *xoila_out.c
     bl_t for_all_functions_enable_try = true;
 
@@ -2271,13 +2274,24 @@ func (:s) er_t translate_mutable( m @* o, c xoico_host* host, c xoico_body_s* bo
         buf.size = i;
     }
 
+    bl_t push_line_reset = false;
+
     if( o.insert_source_reference && !body.code.single_line )
     {
-        //sink.push_fa( "// " );
-        //body.code.source_point.source_reference_to_sink( true, sink );
-
-        body.code.source_point.source_c_preprocessor_line_to_sink( true, sink );
-        sink.push_fa( "\n" );
+        if( o.use_line_directive )
+        {
+            if( body.code.source_point.source_c_preprocessor_line_to_sink( true, sink ) )
+            {
+                sink.push_fa( "\n" );
+                push_line_reset = true;
+            }
+        }
+        else
+        {
+            sink.push_fa( "// " );
+            body.code.source_point.source_reference_to_sink( true, sink );
+            sink.push_fa( "\n" );
+        }
     }
 
     if( indentation > 0 ) o.remove_indentation( buf, indentation );
@@ -2289,6 +2303,8 @@ func (:s) er_t translate_mutable( m @* o, c xoico_host* host, c xoico_body_s* bo
     }
 
     sink.push_sc( buf.sc );
+
+    if( push_line_reset ) sink.push_fa( "\n##line reset" );
 
     return 0;
 };

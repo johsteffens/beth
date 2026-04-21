@@ -75,7 +75,6 @@ func (:s) er_t relent( m @* o, c xoico_host* host, tp_t tp_obj_type )
     return o.typespec.relent( host, tp_obj_type );
 };
 
-
 // ---------------------------------------------------------------------------------------------------------------------
 
 func (:s) xoico.convert_transient_types { return o.typespec.convert_transient_types( host, map ); };
@@ -90,6 +89,25 @@ func (:s) er_t expand( c @* o, c xoico_host* host, m x_sink* sink )
         sink.push_fa( " " );
         o.expand_name( host, sink );
     }
+    return 0;
+};
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+func (:s) er_t to_generic_function_item( c @* o, c xoico_host* host, m bcore_generic_function_item_s* item )
+{
+    try( o.typespec.to_generic_function_item( host, item ) );
+    item.name = o.name;
+    return 0;
+};
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+func (:s) er_t push_to_generic_function( c @* o, c xoico_host* host, m bcore_generic_function_s* gfunc )
+{
+    m$* item = bcore_generic_function_item_s!^;
+    o.to_generic_function_item( host, item );
+    gfunc.push_item_d( item.fork() );
     return 0;
 };
 

@@ -75,6 +75,19 @@ func (:s) er_t expand( c @* o, c xoico_host* host, bl_t first, m x_sink* sink )
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+func (:s) er_t push_to_generic_function( c @* o, c xoico_host* host, m bcore_generic_function_s* gfunc )
+{
+    foreach( m $* arg in o )
+    {
+        m$* item = bcore_generic_function_item_s!^;
+        arg.to_generic_function_item( host, item );
+        gfunc.push_item_d( item.fork() );
+    }
+    return 0;
+};
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 func (:s) er_t expand_x( c @* o, c xoico_host* host, bl_t first, m x_sink* sink )
 {
     foreach( m $* arg in o )

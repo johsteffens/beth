@@ -189,8 +189,11 @@ stamp :point_s = x_inst
     /// write a source reference to sink in the form <file_path>:<line>:<col>
     func void source_reference_to_sink( @* o, bl_t file_name_only, m x_sink* sink );
 
-    /// writes preprocessor directive to sink in the form #line <line> "<file_path>"
-    func void source_c_preprocessor_line_to_sink( @* o, bl_t file_name_only, m x_sink* sink );
+    /** Attempts to write preprocessor directive to sink in the form #line <line> "<file_path>"
+     *  returns 'true' if successful
+     *  returns 'false' in case the directive could not be written (e.g. because file path was not available)
+     */
+    func bl_t source_c_preprocessor_line_to_sink( @* o, bl_t file_name_only, m x_sink* sink );
 
     func :.parse_msg_to_sink_fv;
     func :.parse_msg_fv;
@@ -279,23 +282,25 @@ func (:point_s) source_reference_to_sink
 
 func (:point_s) source_c_preprocessor_line_to_sink
 {
-    if( !o.source ) return;
+    bl_t success = false;
+    if( !o.source ) return success;
     s3_t index = o.source.get_index();
     o.source.set_index( o.index );
 
     m bcore_source_context_s* context = bcore_source_context_s!^;
     o.source.cast( bcore_source* ).get_context( context );
 
-    sink.push_fa( "##line #<sz_t>", context.line );
-
     if( context.file_path )
     {
+        sink.push_fa( "##line #<sz_t>", context.line );
         m st_s* file = context.file_path.clone()^;
         if( file_name_only ) file.copy_sc( bcore_file_name( file.sc ) );
         sink.push_fa( " \"#<sc_t>\"", file.sc );
+        success = true;
     }
 
     o.source.set_index( index );
+    return success;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
