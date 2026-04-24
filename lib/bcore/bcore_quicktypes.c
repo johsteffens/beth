@@ -189,6 +189,9 @@ static sr_s object_typelist()
     bcore_array_r_push_sc( &list, "mutable" );
     bcore_array_r_push_sc( &list, "discardable" );
 
+    // other
+    bcore_array_r_push_sc( &list, "o" );
+
     // quicktypes from TYPEOF_get_quicktypes
     bcore_signal_s signal = bcore_signal_init( TYPEOF_local, TYPEOF_get_quicktypes, list.o );
     bcore_general_signal_handler( &signal );

@@ -132,12 +132,12 @@ func st pop_all_to_st( m st_s* st ) { :pop_all_to_sink( st ); = st; }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// deprecated: prefer group EM below
+/// backward compatibility: preferably use group EM below
 group GERR
 {
     set inexpandable;
 
-    /// EM_ERR_fa is a makro definition below; like ERR_fa but via bcore_error manager using generic_error
+    /// same as EM_ERR_fa (below)
     func er_t fa( sc_t format, ... );
 };
 
@@ -169,7 +169,7 @@ group EM
 /// same purpose as ASSERT() but returns er_t and can be used in x-exception handling
 #define EM_ASSERT( condition ) ( ( condition ) ? (er_t)0 : bcore_error_push_fa( TYPEOF_assert_error, "assertion '#<sc_t>' failed in function #<sc_t> (#<sc_t> line #<sz_t>)\n", #condition, __func__, __FILE__, (sz_t)__LINE__ ) )
 
-/// (deprecated) same as EM_ERR_fa above
+/// same as EM_ERR_fa above
 #define GERR_fa( ... ) bcore_error_push_gffl_fa( __func__, __FILE__, __LINE__, __VA_ARGS__ )
 
 /**********************************************************************************************************************/

@@ -146,14 +146,16 @@ vd_t bcore_general_signal_handler( const bcore_signal_s* o )
         bcore_file_signal_handler,
         bcore_folder_signal_handler,
         bcore_spect_hash_signal_handler,
-        bcore_xo_signal_handler,
+        bcore_error_manager_signal_handler,
+        bcore_generic_function_manager_signal_handler,
         bcore_spect_inst_call_signal_handler,
         bcore_spect_via_call_signal_handler,
         bcore_hmap_name_signal_handler,
         bcore_cday_signal_handler,
-        bcore_error_manager_signal_handler,
-        bcore_generic_function_manager_signal_handler,
         bcore_prsg_signal_handler,
+
+        /// xoico output
+        bcore_xo_signal_handler,
     };
 
     return bcore_signal_s_broadcast( o, arr, sizeof( arr ) / sizeof( bcore_fp_signal_handler ) );

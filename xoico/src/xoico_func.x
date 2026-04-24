@@ -304,7 +304,7 @@ func (:s) xoico.expand_declaration
         m$* st = st_s!^;
         gfunc.push_c_code_bgwf_definition_one_line( st );
         sink.push_fa( " \\\n#rn{ }", indent );
-        sink.push_fa( "static inline #<sc_t>;", st.sc );
+        sink.push_fa( "static inline #<sc_t>", st.sc );
     }
 
     return 0;

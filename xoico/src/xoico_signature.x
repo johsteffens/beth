@@ -148,7 +148,7 @@ func (:s) xoico.parse
     m $* compiler = host.compiler();
     m $* name_buf = st_s!^^;
 
-    if( source.parse_bl( " #?'extending'" ) )
+    if( source.parse_bl( " #?w'extending'" ) )
     {
         tp_t tp_name = 0;
         host.parse_name_tp( source, tp_name.1 );
@@ -198,7 +198,7 @@ func (:s) xoico.parse
         source.parse_fa( " )" );
     }
 
-    o.is_generic = source.parse_bl( " #?'generic'" );
+    o.is_generic = source.parse_bl( " #?w'generic'" );
 
     /// if return type is a name in the argument list, copy argument typespec to return typespec
     xoico_arg_s* ret_arg = ( o.typespec_ret.indirection == 0 ) ? o.get_arg_by_name( o.typespec_ret.type ) : NULL;

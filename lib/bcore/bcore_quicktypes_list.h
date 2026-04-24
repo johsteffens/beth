@@ -145,6 +145,7 @@
 #define TYPEOF_local                            0x249F1FB6F3A680E8ull
 #define TYPEOF_mutable                          0xD3AC3C45566EFDE9ull
 #define TYPEOF_none                             0x3C0D17BAD169557Bull
+#define TYPEOF_o                                0xAF63E24C8601F6BEull
 #define TYPEOF_push_dependencies                0x2C61B4D51672DB73ull
 #define TYPEOF_selftest                         0x7EE758BBFCED33E3ull
 #define TYPEOF_st_s                             0xAFC24F191E3D18FCull

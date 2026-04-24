@@ -23,6 +23,7 @@
 #include "bcore_signal.h"
 #include "bcore_tbman.h"
 #include "bcore_sources.h"
+#include "bcore_error_manager.h"
 
 
 static bcore_generic_function_manager_s* manager_g = NULL;
@@ -69,14 +70,7 @@ er_t bcore_generic_function_item_s_parse_cx_code( bcore_generic_function_item_s*
         BLM_TRY( bcore_source_a_parse_error_fa( source, "Type name expected." ) );
     }
 
-    tp_t type = bentypeof( st_name->sc );
-
-    if( !bcore_flect_exists( type ) )
-    {
-        BLM_TRY( bcore_source_a_parse_error_fa( source, "Type '#name' has no reflection.", type ) );
-    }
-
-    o->type = type;
+    o->type = bentypeof( st_name->sc );
 
     bcore_source_a_parse_em_fa( source, " " );
     while( bcore_source_a_parse_bl_fa( source, " #?'*'" ) )
@@ -465,7 +459,12 @@ void bcore_generic_function_manager_set_c( const bcore_generic_function_s* funct
 void bcore_generic_function_manager_register_func( sc_t x_code, bcore_fp_generic_wrapper fp )
 {
     bcore_generic_function_s* function = bcore_generic_function_s_create();
-    bcore_generic_function_s_parse_cx_code_sc( function, x_code );
+    er_t err = bcore_generic_function_s_parse_cx_code_sc( function, x_code );
+    if( err )
+    {
+        bcore_error_pop_all_to_stderr();
+        ERR_fa( "Error while registering generic function." );
+    }
     function->fp = fp;
     bcore_generic_function_manager_set_d( function );
 }

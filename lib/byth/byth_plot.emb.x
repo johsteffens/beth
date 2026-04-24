@@ -18,7 +18,7 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 /** Thread safe runtime plot engine.
- *  The should only exist one global instance.
+ *  There should only exist one global instance.
  *  The plot manager maintain a plot window which is opened upon a plot request or
  *  is updated in case it is already open.
  *  The window can be manually closed. Otherwise it stays open until the program ends.
@@ -235,6 +235,77 @@ func (:frame_arr_s) show
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+//func (:btcl_function_s) plot
+//{
+//    if( !arg ) = GERR_fa( "arg is zero" );
+//
+//    m$* functor_list = :functor_list_s!^;
+//
+//    tp_t arg_type = arg._;
+//
+//    if( arg_type == x_btcl_functor_f3_s~ )
+//    {
+//        functor_list.push_btcl( "", arg.cast( m x_btcl_functor_f3_s* ) );
+//    }
+//    else if( arg_type == x_btcl_functor_s~ )
+//    {
+//        m$* functor = x_btcl_functor_f3_s!^;
+//        functor.from_functor( arg.cast( m x_btcl_functor_s* ) );
+//        functor_list.push_btcl( "", functor );
+//    }
+//    else if( arg_type == x_btcl_function_s~ )
+//    {
+//        m$* functor = x_btcl_functor_f3_s!^;
+//        functor.setup( sp, arg.cast( m x_btcl_function_s* ), lexical_frame );
+//        functor_list.push_btcl( "", functor );
+//    }
+//    else if( arg_type == x_btcl_list_s~ )
+//    {
+//        x_btcl_list_s* list = arg.cast( x_btcl_list_s* );
+//        for( sz_t i = 0; i < list.size(); i++ )
+//        {
+//            m sr_s* sr = list.arr.[ i ];
+//            m$* functor = x_btcl_functor_f3_s!^;
+//            m$* label = st_s!^;
+//            if     ( sr.type() == x_btcl_functor_f3_s~  ) functor.copy( sr.o.cast( x_btcl_functor_f3_s* ) );
+//            else if( sr.type() == x_btcl_functor_s~     ) functor.from_functor( sr.o.cast( x_btcl_functor_s* ) );
+//            else if( sr.type() == x_btcl_function_s~    ) functor.setup( sp, sr.o.cast( m x_btcl_function_s* ), lexical_frame );
+//            else if( sr.type() == st_s~ ) label.copy( sr.o.cast( st_s* ) );
+//            else if( sr.type() == x_btcl_list_s~ )
+//            {
+//                x_btcl_list_s* list2 = list.arr.[ i ].o.cast( x_btcl_list_s* );
+//                for( sz_t i = 0; i < list2.size(); i++ )
+//                {
+//                    m sr_s* sr = list2.arr.[ i ];
+//
+//                    if     ( sr.type() == x_btcl_functor_f3_s~  ) functor.copy( sr.o.cast( x_btcl_functor_f3_s* ) );
+//                    else if( sr.type() == x_btcl_function_s~ ) functor.setup( sp, sr.o.cast( m x_btcl_function_s* ), lexical_frame );
+//                    else if( sr.type() == st_s~ ) label.copy( sr.o.cast( st_s* ) );
+//                }
+//            }
+//
+//            if( functor.op_tree ) functor_list.push_btcl( label.sc, functor );
+//        }
+//    }
+//    else
+//    {
+//        = GERR_fa( "Cannot plot '#<sc_t>'.", bnameof( arg_type ) );
+//    }
+//
+//    if( functor_list.size > 0 )
+//    {
+//        m$* frame = :frame_s!^;
+//        if( o.title ) frame.title =< o.title.clone();
+//        frame.from_functor_list( functor_list, o.x1, o.x2, o.samples );
+//        frame.show( o.appearance );
+//        if( o.wait_for_enter_key ) x_source_stdin().parse_fa( "\n" );
+//    }
+//
+//    = 0;
+//}
 
 //----------------------------------------------------------------------------------------------------------------------
 

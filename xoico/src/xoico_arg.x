@@ -97,7 +97,7 @@ func (:s) er_t expand( c @* o, c xoico_host* host, m x_sink* sink )
 func (:s) er_t to_generic_function_item( c @* o, c xoico_host* host, m bcore_generic_function_item_s* item )
 {
     try( o.typespec.to_generic_function_item( host, item ) );
-    item.name = o.name;
+    item.name = bentypeof( host.compiler().nameof( o.name ) );
     return 0;
 };
 

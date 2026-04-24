@@ -133,7 +133,7 @@ ASSERT( <bl_t/>( 0.0 ) == FALSE );
 ASSERT( <bl_t/>( 0.1 ) == TRUE );
 
 // ---------------------------------------------------------------------------------------------------------------------
-/// external function
+/// external btcl_function
 
 ASSERT( <x_btcl_test_minimal_s/>.run() == 0 );
 
@@ -152,6 +152,22 @@ line2
 );
 
 ASSERT( result == "\nline1\nline2\n" );
+
+// ---------------------------------------------------------------------------------------------------------------------
+/// external generic function
+
+obj = <x_btcl_test_generic_s/>( .value = 10 );
+ASSERT( obj.get_value() == 10 );
+ASSERT( obj.add1( 20 ) == 30 );
+ASSERT( obj.add2( 20 ) == 30 );
+ASSERT( obj.mul_add( 2, 20 ) == 40 );
+ASSERT( obj.clone_me().get_value() == 10 );
+ASSERT( obj.clone_me().get_value_ptr() == 10 );
+ASSERT( obj.fork_me().get_value() == 10 );
+ASSERT( obj.fork_me().get_value_ptr() == 10 );
+ASSERT( obj.get_me().get_value() == 10 );
+ASSERT( obj.get_me().get_value_ptr() == 10 );
+ASSERT( obj.add_to_me1( obj ).add_to_me2( obj ).add_to_me3( obj ).get_value_ptr() == 40 );
 
 // ---------------------------------------------------------------------------------------------------------------------
 /// partial function call

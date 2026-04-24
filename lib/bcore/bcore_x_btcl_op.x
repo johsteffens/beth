@@ -61,7 +61,7 @@ func (:frame_s) er_t eval_op_member( m@* o, m x_source* source, m sr_s* sr )
         {
             s2_t arity = x_btcl_t_btcl_function_arity( sr.o, sr.type(), name );
             bl_t is_mutable = x_btcl_t_btcl_function_mutable( sr.o, sr.type(), name );
-            sr.asm( :function_s!.setup_external_function( name, arity, is_mutable, sr.o.cast( :* ) ) );
+            sr.asm( :function_s!.setup_external_btcl_function( name, arity, is_mutable, sr.o.cast( :* ), sr.type() ) );
         }
         else if( name == TYPEOF_parse )
         {
@@ -103,7 +103,15 @@ func (:frame_s) er_t eval_op_member( m@* o, m x_source* source, m sr_s* sr )
         }
         else
         {
-            = source.parse_error_fa( "#<sc_t>.#<sc_t> does not exist.\n", bnameof( sr.o_type() ), o.nameof( name ) );
+            tp_t full_name = btypeof( st_s!^.push_fa( "#<sc_t>_#<sc_t>", bnameof( sr.o_type() ), o.nameof( name ) ).sc );
+            if( bcore_generic_function_manager_exists( full_name ) )
+            {
+                sr.asm( :function_s!.setup_external_generic_function( source, full_name, sr.o.cast( :* ), sr.type() ) );
+            }
+            else
+            {
+                = source.parse_error_fa( "#<sc_t>.#<sc_t> does not exist.\n", bnameof( sr.o_type() ), o.nameof( name ) );
+            }
         }
     }
     else if( source.parse_bl( " #?'['" ) ) // array index

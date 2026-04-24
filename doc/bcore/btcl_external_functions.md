@@ -1,8 +1,66 @@
-# Standard External Functions
+# BTCL: External Functions
 
-BTCL can execute stamp functionality with stamps implementing the features below. These define a set of functions. Each can be used in BTCL source code like a member function call.
+External functions are defined outside the BTCL. They use a standardized reflection, which allows BTCL to detect and call them from a btcl-script. 
 
-## Features
+There are 3 types of external functions:
+  * [Generic Functions](#generic-functions)
+  * [Featured Functions](#featured-functions)
+  * [Parsing Functions](#parsing-functions)
+
+## Generic Functions
+
+Generic functions are (xoila-) functions, which are are declared `generic`. These function store the complete signature-reflection with the *beth generic function manager*. Thus, they are discoverable by BTCL and usable in BTCL-code.
+
+**Example:**
+
+XOILA
+
+``` C
+func f3_t add_two_numbers( f3_t a, f3_t b ) generic = a + b;
+```
+
+BTCL
+
+``` C
+c = add_two_numbers( 3, 5 );
+// c is f3_t containing the value 8
+```
+### Indirections
+Arguments and return values can have indirection 0 or 1.
+
+### Mutable Arguments
+Arguments can be mutable. They are copied before being passed to the generic function. (No side effect in BTCL code)
+
+### Normal Return Behavior
+By default, the generic function's return value represents the BTCL return value.
+If the generic function returns 'void', the BTCL function returns 0 or a [redirected return](#redirected-return) value.
+If the generic function returns 'er_t' ...
+
+* an actual error condition is converted into a parse error.
+* without error condition, the BTCL function returns 0 or a [redirected return](#redirected-return) value.
+
+### Redirected Return
+A argument of name `btcl_return` indicates an alternative return for the generic function. It must be mutable at indirection '1'. It serves as return value but not as argument in the the BTCL function:
+
+XOILA
+
+``` C
+func void add_two_numbers( f3_t a, f3_t b, m f3_t* btcl_return ) generic btcl_return.0 = a + b;
+```
+BTCL
+
+``` C
+c = add_two_numbers( 3, 5 );
+// c is f3_t containing the value 8
+```
+
+The redirected return argument only takes effect when the generic functions return is either `void` or `er_t`.
+
+## Featured Functions
+
+BTCL can execute functionality with stamps implementing the btcl-features below. These define a set of functions. Each can be used in BTCL source code like a member function call.
+
+### Features
 
 ``` C
 // (required) return -1 when function 'name' is not defined
@@ -78,11 +136,11 @@ obj = <my_stamp_s/>( .additive = 10 );
 ```
 
 
-# Parsing-Function 
+## Parsing Functions
 
 The parsing function receives full parsing control of a source code section. it takes responsibility for parsing the designated code section and also recognizing the proper end of that section and thus returning control to the btcl parser at the correct place. In that way, the parsing function can impose an alternative syntax onto the btcl source code.
 
-## Features
+### Features
 
 ``` C
 // Overload one of these features depending on whether o is mutable or not.

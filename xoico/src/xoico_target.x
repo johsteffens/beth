@@ -37,7 +37,7 @@ stamp :s = aware :
      */
     st_s => copyright_and_license_terms;
 
-    /// prevents body update if body signature is unchanged
+    /// prevents body-update in case body signature is unchanged
     bl_t update_target_on_body_signature = true;
 
     st_s include_path; // (local) path used in generated '#include' directives

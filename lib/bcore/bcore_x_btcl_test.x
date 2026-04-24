@@ -13,8 +13,10 @@
  *  limitations under the License.
  */
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /**********************************************************************************************************************/
-/// demonstrating the use of btcl_function features above; see beth/data/bcore/btcl/selftest.btcl for usage
+/// External functions via btcl_function interface (see beth/data/bcore/btcl/selftest.btcl)
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -61,6 +63,7 @@ stamp :minimal_s
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+/// External parser
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -82,3 +85,46 @@ stamp :parser_s
 //----------------------------------------------------------------------------------------------------------------------
 
 /**********************************************************************************************************************/
+/** External generic functions
+ *  An external generic function is defined by adding the keyword 'generic' to the function signature.
+ *  Arguments and return values can have indirections 0 or 1.
+ *  Return value:
+ *     The btcl-return value is normally the same as the generic function's return value.
+ */
+
+//----------------------------------------------------------------------------------------------------------------------
+
+stamp :generic_s
+{
+    f3_t value;
+
+    /// If the return value is void or er_t, the mutable argument btcl_return is treated as return variable
+
+    func f3_t add1( c@* o, f3_t value )              generic = o.value + value;
+    func void add2( c@* o, f3_t value, m f3_t* btcl_return ) generic btcl_return.0 = o.value + value; // btcl_return out as last mutable element
+    func f3_t mul_add( c@* o, f3_t mul, f3_t* add ) generic = o.value * mul + add.0;
+    func f3_t* get_value_ptr( c@* o )               generic = o.value.1;
+    func f3_t get_value( c@* o )                    generic = o.value.1;
+    func d@* clone_me( c@* o )                      generic = o.clone();
+    func d@* fork_me( m@* o )                       generic = o.fork();
+    func o   get_me( c@* o )                        generic = o;
+    func o   add_to_me1( m@* o, @* src )            generic { o.value += src.value; = o; }
+
+    func void add_to_me2( m@* o, @* src, m@* btcl_return ) generic
+    {
+        o.value += src.value;
+        btcl_return.copy( o );
+    }
+
+    func er_t add_to_me3( m@* o, @* src, m@* btcl_return ) generic
+    {
+        o.value += src.value;
+        btcl_return.copy( o );
+        = 0;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**********************************************************************************************************************/
+

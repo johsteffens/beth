@@ -208,7 +208,6 @@ stamp :frame_arr_s x_array
 //----------------------------------------------------------------------------------------------------------------------
 
 name plot;
-name plot_f3;
 stamp :btcl_function_s
 {
     st_s => title;
@@ -234,6 +233,8 @@ stamp :btcl_function_s
     }
 
     func x_btcl.btcl_function;
+
+    func er_t plot( c@* o, aware x_inst* arg ) /*generic*/;
 
 }
 

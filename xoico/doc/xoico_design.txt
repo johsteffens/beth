@@ -694,6 +694,8 @@ FEATURES, BUGS ...
 - (done) (solved via nasc strings) spect  definition (macro XOILA_DEFINE_SPECT): restructure to avoid long string constants (see ISO C99 4095 bytes limit)
 - (done) (solved via nasc strings) object definition (macro BCORE_DEFINE_OBJECT_INST_P): restructure to avoid long string constants (see ISO C99 4095 bytes limit)
 
+- (done) implemented framework for generic fnctions
+
 TODO:
 
 - stamp: allow function-style readonly request of a member variable even if the function was not defined
@@ -716,7 +718,7 @@ Keywords (for syntax highlight)
 
 group stamp stump hidden private func name signature body obliv aware feature extending verbatim
 mutable discardable retrievable forward include embed eval_file eval_string cast foreach in verbatim_C fork
-strict try scope t_scope scope_local scope_func extern wrap restrict type identifier trans TE TO
+strict try scope t_scope scope_local scope_func extern wrap restrict type identifier trans TE TO generic
 
 
 Leaf types (for syntax highlight)

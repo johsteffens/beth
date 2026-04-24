@@ -61,7 +61,7 @@ func bl_t has_reflection( tp_t type ) = bcore_flect_exists( type );
 /**********************************************************************************************************************/
 /// create/copy/clone/discard
 
-// t_create below behaves as shown below but is implicity defined by xoico; hence commented out here to avoid xoico compiler errors
+// t_create below exists and behaves as shown below. It is implicity defined by xoico; hence commented out here to avoid compiler errors
 //  func d obliv x_inst* t_create( tp_t type ) = bcore_inst_t_create( type )
     func d aware x_inst*   create( tp_t type ); // only for aware types (checked at runtime)
 

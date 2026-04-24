@@ -709,30 +709,181 @@ func (:signature_s) er_t parse( m@* o, m :frame_s* frame, m x_source* source )
 //----------------------------------------------------------------------------------------------------------------------
 
 /// a function of an external stamp via feature bctl_function
+// function type
+name btcl_function;
+name generic_function;
 stamp :external_function_s
 {
+    tp_t function_type;
     tp_t name;
-    bl_t is_mutable;
     : -> object;
+    tp_t object_type;
+    bl_t is_mutable;
 
-    func o setup( m@* o, tp_t name, bl_t is_mutable, :* object )
+    func o setup_btcl_function( m@* o, tp_t name, bl_t is_mutable, :* object, tp_t object_type )
     {
         o.name = name;
         o.is_mutable = is_mutable;
+        o.object_type = object_type;
         o.object =< object.cast( m$* ).fork();
+        o.function_type = btcl_function~;
+    }
+
+    func o setup_generic_function( m@* o, x_source* source, bcore_generic_function_s* gf, tp_t full_name, bl_t is_mutable, :* object, tp_t object_type )
+    {
+        for( sz_t i = 0; i < gf.size; i++ )
+        {
+            $* arg = gf.[ i ];
+            if( arg.indirection >= 2 ) source.parse_error_fa( "Generic function '#name': Argument '#name' is declared with indirection > 1, which is not yet supported in BTCL.", full_name, arg.name );
+        }
+
+        if( gf.base.indirection >= 2 ) source.parse_error_fa( "Generic function '#name': Return value is declared with indirection > 1, which is not yet supported in BTCL.", full_name );
+
+        o.name = full_name;
+        o.is_mutable = is_mutable;
+        o.object_type = object_type;
+        o.object =< object.cast( m$* ).fork();
+        o.function_type = generic_function~;
     }
 
     func er_t execute( m@* o, x_source_point_s* sp, m :frame_s* lexical_frame, bcore_arr_sr_s* args, m sr_s* sr )
     {
-        sr.from_f3( 0 );
-        if( o.is_mutable )
+        switch( o.function_type )
         {
-            o.object.clone()^.m_btcl_function( o.name, sp, lexical_frame, args, sr );
+            case btcl_function~:
+            {
+                sr.from_f3( 0 );
+                if( o.is_mutable )
+                {
+                    o.object.clone()^.m_btcl_function( o.name, sp, lexical_frame, args, sr );
+                }
+                else
+                {
+                    o.object.btcl_function( o.name, sp, lexical_frame, args, sr );
+                }
+            }
+            break;
+
+            case generic_function~:
+            {
+                bcore_generic_function_s* gf = bcore_generic_function_manager_get( o.name );
+
+                m$* vd_args = bcore_arr_vd_s!^.set_size( gf.size );
+                m$* arr_sr = bcore_arr_sr_s!^ .set_size( gf.size );
+
+                sr.from_f3( 0 );
+
+                sz_t k = 0;
+                for( sz_t i = 0; i < gf.size; i++ )
+                {
+                    $* gf_arg = gf.[ i ];
+                    m x_inst* src_inst = NULL;
+                    tp_t src_type = 0;
+
+                    if( gf_arg.name == TYPEOF_o )
+                    {
+                        src_inst = o.object;
+                        src_type = o.object_type;
+                    }
+                    else if( gf.[ i ].name == TYPEOF_btcl_return )
+                    {
+                        if( gf.[ i ].access_class != TYPEOF_mutable ) sp.parse_error_fa( "Generic function '#name': variable 'btcl_return' must be 'mutable'", o.name );
+                        if( gf.[ i ].indirection != 1 ) sp.parse_error_fa( "Generic function '#name': variable 'btcl_return' must have an indirection of 1", o.name );
+                        sr.tsm( gf.[ i ].type, x_inst_t_create( gf.[ i ].type ) );
+                        vd_args.[ i ] = sr.o;
+                    }
+                    else
+                    {
+                        src_inst = args.[ k ].o;
+                        src_type = args.[ k ].type();
+                        k++;
+                    }
+
+                    if( src_inst )
+                    {
+                        m$* dst_sr = arr_sr.[ i ];
+                        tp_t dst_type = gf_arg.type;
+
+                        if( src_type == dst_type )
+                        {
+                            if( gf_arg.indirection == 0 )
+                            {
+                                dst_sr.twc( src_type, src_inst );
+                            }
+                            else if( gf_arg.indirection == 1 )
+                            {
+                                switch( gf_arg.access_class )
+                                {
+                                    case TYPEOF_const      : dst_sr.twc( dst_type, src_inst ); break;
+                                    case TYPEOF_mutable    : dst_sr.tsm( dst_type, src_inst.t_clone( src_type ) ); break;
+                                    case TYPEOF_discardable: dst_sr.tsm( dst_type, src_inst.t_clone( src_type ).fork() ); break;
+                                    default: GERR_fa( "Invalid access type." );
+                                }
+                            }
+                            else
+                            {
+                                GERR_fa( "Unhandled indirection level '#<sz_t>'", (sz_t)gf_arg.indirection );
+                            }
+                        }
+                        else
+                        {
+                            dst_sr.tsm( dst_type, x_inst_t_create( dst_type ) );
+                            x_inst_t_copy_typed( dst_sr.o, dst_type, src_type, src_inst );
+                        }
+
+                        vd_args.[ i ] = dst_sr.o;
+                    }
+                }
+
+                er_t err = 0;
+                vd_t reto = NULL;
+                vd_t vd_ret = &reto;
+
+                if( gf.base.type == TYPEOF_void )
+                {
+                    vd_ret = NULL;
+                }
+                else if( gf.base.type == TYPEOF_er_t && gf.base.indirection == 0 )
+                {
+                    vd_ret = err.1;
+                }
+                else if( gf.base.indirection == 0 )
+                {
+                    sr.tsm( gf.base.type, x_inst_t_create( gf.base.type ) );
+                    vd_ret = sr.o;
+                }
+
+                verbatim_C{ gf->fp( vd_ret, vd_args->data ) };
+
+                if( err )
+                {
+                    m$* msg = st_s!^;
+                    bcore_error_pop_st( err, msg );
+                    sp.parse_error_fa( "Generic function '#name' generated an error '#name':\n#<sc_t>", o.name, err, msg.sc );
+                    = err;
+                }
+
+                if( gf.base.indirection == 1 )
+                {
+                    if( !reto ) sp.parse_error_fa( "Generic function '#name' returned NULL.", o.name );
+                    switch( gf.base.access_class )
+                    {
+                        case TYPEOF_const      : sr.tsc( gf.base.type, bcore_fork( reto ) ); break;
+                        case TYPEOF_mutable    : sr.tsc( gf.base.type, bcore_fork( reto ) ); break;
+                        case TYPEOF_discardable: sr.tsc( gf.base.type, reto ); break;
+                        default: GERR_fa( "Invalid access type." );
+                    }
+                }
+            }
+            break;
+
+            default:
+            {
+                = sp.parse_error_fa( "Invalid function type '#name'.\n", o.function_type );
+            }
+            break;
         }
-        else
-        {
-            o.object.btcl_function( o.name, sp, lexical_frame, args, sr );
-        }
+
         = 0;
     }
 }
@@ -740,6 +891,7 @@ stamp :external_function_s
 //----------------------------------------------------------------------------------------------------------------------
 
 /// a function is a composition of signature and block
+name btcl_return;
 stamp :function_s
 {
     :signature_s         -> signature;
@@ -748,7 +900,7 @@ stamp :function_s
     :function_s          -> wrapped_function;  // wrapped function on partial call
     bcore_arr_sr_s       -> wrapped_arg_list;  // wrapped arguments on partial call
 
-    :function_s => tail; // tail of a cain of function (the head is the function that defines the signature of the entire chain)
+    :function_s => tail; // tail of a chain of functions (the head is the function that defines the signature of the entire chain)
 
     func o setup( m@* o, m :signature_s* signature, m :block_s* block, c :function_s* tail )
     {
@@ -758,12 +910,41 @@ stamp :function_s
         o.external_function =< NULL;
     }
 
-    func o setup_external_function( m@* o, tp_t name, s2_t arity, bl_t is_mutable, :* object )
+    func o setup_external_btcl_function( m@* o, tp_t name, s2_t arity, bl_t is_mutable, :* object, tp_t object_type )
     {
         o.signature =< :signature_s!;
         o.signature.arg_list.set_size( arity );
         for( sz_t i = 0; i < arity; i++ ) o.signature.arg_list.[ i ] = i + 1;
-        o.external_function =< :external_function_s!.setup( name, is_mutable, object );
+        o.external_function =< :external_function_s!.setup_btcl_function( name, is_mutable, object, object_type );
+        o.block =< NULL;
+        o.tail  =< NULL;
+        = o;
+    }
+
+    func o setup_external_generic_function( m@* o, c x_source* source, tp_t full_name, :* object, tp_t object_type )
+    {
+        bcore_generic_function_s* gf = bcore_generic_function_manager_get( full_name );
+        if( !gf ) source.parse_error_fa( "generic function '#name' not found.", full_name );
+        if( gf.size < 1 ) source.parse_error_fa( "generic function '#name' accepts too few arguments.", full_name );
+
+        bl_t is_mutable = false;
+
+        o.signature =< :signature_s!;
+        o.signature.arg_list.set_size( 0 );
+        for( sz_t i = 0; i < gf.size; i++ )
+        {
+            if( gf.[ i ].name == TYPEOF_o )
+            {
+                if( gf.[ i ].access_class == discardable~ ) source.parse_error_fa( "Argument 'o' has access class 'discardable'." );
+                is_mutable = ( gf.[ i ].access_class == mutable~ );
+            }
+            else if( gf.[ i ].name != TYPEOF_btcl_return )
+            {
+                o.signature.arg_list.push( i );
+            }
+        }
+
+        o.external_function =< :external_function_s!.setup_generic_function( source, gf, full_name, is_mutable, object, object_type );
         o.block =< NULL;
         o.tail  =< NULL;
         = o;

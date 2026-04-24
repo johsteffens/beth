@@ -1010,6 +1010,8 @@ func (:s) xoico.expand_init1
 {
     m $* compiler = o.group.compiler;
 
+    sink.push_fa( "#rn{ }BCORE_REGISTER_OBJECT( #<sc_t> );\n", indent, o.st_name.sc );
+
     foreach( m $* func in o.funcs )
     {
         if( func.reflectable( host ) )
@@ -1030,7 +1032,7 @@ func (:s) xoico.expand_init1
             func.expand_init1( host, indent, sink );
         }
     }
-    sink.push_fa( "#rn{ }BCORE_REGISTER_OBJECT( #<sc_t> );\n", indent, o.st_name.sc );
+
     return 0;
 };
 

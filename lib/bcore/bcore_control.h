@@ -16,6 +16,10 @@
 #ifndef BCORE_CONTROL_H
 #define BCORE_CONTROL_H
 
+#ifndef _POSIX_C_SOURCE
+    #define _POSIX_C_SOURCE 1
+#endif
+
 #include <stdarg.h>
 
 #include "bcore_first.h"

@@ -47,6 +47,9 @@ type fp_t;
 type char, void, int, size_t;
 type clock_t;
 
+// names
+name o, const, mutable, discardable;
+
 // objects
 type bcore_self_s;
 type bcore_self_item_s;
