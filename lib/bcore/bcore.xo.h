@@ -1,4 +1,4 @@
-//  Last update: 2026-04-24T16:56:50Z (UTC)
+//  Last update: 2026-05-14T13:42:22Z (UTC)
 /** This file was generated from xoila source code.
  *  Compiling Agent : XOICO (C) 2020 ... 2025 J.B.Steffens
  *  Note that any manual changes in this file can be erased or overwritten by XOICO.
@@ -3994,6 +3994,9 @@
   static inline x_btcl_test_generic_s* x_btcl_test_generic_s_add_to_me1( x_btcl_test_generic_s* o, const x_btcl_test_generic_s* src ); \
   void x_btcl_test_generic_s_add_to_me2( x_btcl_test_generic_s* o, const x_btcl_test_generic_s* src, x_btcl_test_generic_s* btcl_return ); \
   er_t x_btcl_test_generic_s_add_to_me3( x_btcl_test_generic_s* o, const x_btcl_test_generic_s* src, x_btcl_test_generic_s* btcl_return ); \
+  er_t x_btcl_test_generic_s_add_to_me4( x_btcl_test_generic_s* o, const x_btcl_test_generic_s* src, const x_btcl_test_generic_s** btcl_return ); \
+  er_t x_btcl_test_generic_s_add_to_me5( x_btcl_test_generic_s* o, const x_btcl_test_generic_s* src, x_btcl_test_generic_s** btcl_return ); \
+  er_t x_btcl_test_generic_s_add_to_me6( x_btcl_test_generic_s* o, const x_btcl_test_generic_s* src, x_btcl_test_generic_s** btcl_return ); \
   static inline f3_t x_btcl_test_generic_s_add1( const x_btcl_test_generic_s* o, f3_t value ){return  o->value + value;} \
   static inline void x_btcl_test_generic_s_add1__bgwf( vd_t r, vd_t a[] ){ *(f3_t*)r = x_btcl_test_generic_s_add1( (const x_btcl_test_generic_s*)a[0], *(f3_t*)a[1]); } \
   static inline void x_btcl_test_generic_s_add2( const x_btcl_test_generic_s* o, f3_t value, f3_t* btcl_return ){(*(btcl_return)) = o->value + value;} \
@@ -4013,7 +4016,10 @@
   static inline x_btcl_test_generic_s* x_btcl_test_generic_s_add_to_me1( x_btcl_test_generic_s* o, const x_btcl_test_generic_s* src ){ o->value += src->value; return  o;} \
   static inline void x_btcl_test_generic_s_add_to_me1__bgwf( vd_t r, vd_t a[] ){ *(x_btcl_test_generic_s**)r = x_btcl_test_generic_s_add_to_me1( (x_btcl_test_generic_s*)a[0], (const x_btcl_test_generic_s*)a[1]); } \
   static inline void x_btcl_test_generic_s_add_to_me2__bgwf( vd_t r, vd_t a[] ){ x_btcl_test_generic_s_add_to_me2( (x_btcl_test_generic_s*)a[0], (const x_btcl_test_generic_s*)a[1], (x_btcl_test_generic_s*)a[2]); } \
-  static inline void x_btcl_test_generic_s_add_to_me3__bgwf( vd_t r, vd_t a[] ){ *(er_t*)r = x_btcl_test_generic_s_add_to_me3( (x_btcl_test_generic_s*)a[0], (const x_btcl_test_generic_s*)a[1], (x_btcl_test_generic_s*)a[2]); }
+  static inline void x_btcl_test_generic_s_add_to_me3__bgwf( vd_t r, vd_t a[] ){ *(er_t*)r = x_btcl_test_generic_s_add_to_me3( (x_btcl_test_generic_s*)a[0], (const x_btcl_test_generic_s*)a[1], (x_btcl_test_generic_s*)a[2]); } \
+  static inline void x_btcl_test_generic_s_add_to_me4__bgwf( vd_t r, vd_t a[] ){ *(er_t*)r = x_btcl_test_generic_s_add_to_me4( (x_btcl_test_generic_s*)a[0], (const x_btcl_test_generic_s*)a[1], (const x_btcl_test_generic_s**)a[2]); } \
+  static inline void x_btcl_test_generic_s_add_to_me5__bgwf( vd_t r, vd_t a[] ){ *(er_t*)r = x_btcl_test_generic_s_add_to_me5( (x_btcl_test_generic_s*)a[0], (const x_btcl_test_generic_s*)a[1], (x_btcl_test_generic_s**)a[2]); } \
+  static inline void x_btcl_test_generic_s_add_to_me6__bgwf( vd_t r, vd_t a[] ){ *(er_t*)r = x_btcl_test_generic_s_add_to_me6( (x_btcl_test_generic_s*)a[0], (const x_btcl_test_generic_s*)a[1], (x_btcl_test_generic_s**)a[2]); }
 #define BETH_EXPAND_GROUP_x_btcl_test \
   BCORE_FORWARD_OBJECT( x_btcl_test ); \
   BCORE_FORWARD_OBJECT( x_btcl_test_adder_s ); \
@@ -4314,5 +4320,5 @@ vd_t bcore_xo_signal_handler( const bcore_signal_s* o );
 
 
 #endif // __bcore_xo_H
-// XOICO_BODY_SIGNATURE 0x91D3EF0E3E0595EE
-// XOICO_FILE_SIGNATURE 0xDC3866CE459F9650
+// XOICO_BODY_SIGNATURE 0x5D8EAE6B7E8589D0
+// XOICO_FILE_SIGNATURE 0xAB2DEADEF15B5DF9

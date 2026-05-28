@@ -131,31 +131,6 @@ stamp :appearance_s
 
 //----------------------------------------------------------------------------------------------------------------------
 
-stamp :functor_s
-{
-    st_s => label;
-    x_btcl_functor_f3_s => functor;
-
-    func o setup( m@* o, sc_t label, m x_btcl_functor_f3_s* functor )
-    {
-        if( label ) o.label!.copy_sc( label );
-        o.functor =< functor.fork();
-    }
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-stamp :functor_list_s x_array
-{
-    :functor_s => [];
-    func o push_btcl( m@* o, sc_t label, m x_btcl_functor_f3_s* functor )
-    {
-        o.push().setup( label, functor );
-    }
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
 /// Single plot. Multiple curves.
 stamp :frame_s x_array
 {

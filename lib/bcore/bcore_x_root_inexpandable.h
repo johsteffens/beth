@@ -114,8 +114,10 @@ identifier bcore_error_stack_size;
 identifier bcore_error_pop_all_to_stderr;
 
 identifier bcore_get_time;
-identifier bcore_time_us; /// returns (full) time in microseconds
-identifier bcore_time_ms; /// returns (full) time in milliseconds
+identifier bcore_time_us;      // returns (full) time in microseconds
+identifier bcore_time_ms;      // returns (full) time in milliseconds
+identifier bcore_get_abs_time; // retrieves absolute time elapsed after a specified reference time point (e.g. start of the system)
+identifier bcore_get_cpu_time; // retrieves cpu time elapsed after a specified reference time point (e.g. start of the system)
 
 identifier bcore_folder_get_current;
 
@@ -132,7 +134,7 @@ identifier f3_ident, f3_neg, f3_max, f3_min, f3_t_swap, f3_sig, f3_abs, f3_sqr, 
 identifier f2_ident, f2_neg, f2_max, f2_min, f2_t_swap, f2_sig, f2_abs, f2_sqr, f2_srt, f2_inv, f2_rs2, f2_rs3;
 
 
-identifier sin, cos, tan, tanh, pow, lrint, atan2, frexp;
+identifier sin, cos, tan, tanh, pow, lrint, atan2, frexp, acos, asin;
 
 identifier f3_pi;
 identifier f3_pi_2; // PI / 2
@@ -228,6 +230,8 @@ identifier bcore_tp_is_numeric;
 identifier bcore_tp_is_float;
 
 identifier bcore_lcg00_u3;
+identifier bcore_lcg01_u3;
+identifier bcore_lcg02_u3;
 
 identifier bcore_err_fv;
 identifier bcore_strlen;

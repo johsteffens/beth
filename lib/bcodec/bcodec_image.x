@@ -118,7 +118,7 @@ stamp :bgra_s x_array
 
     ///------------------------------------------------------------------------------------------------------------------
     // Note: Default deviations below can include the alpha channel.
-    //       Choose ...bgr to limit deviations to color chanels
+    //       Choose ...bgr to limit deviations to color channels
 
     /// square sum deviation
     func f3_t sdev_equ    ( @* o, @* b ); // deviation from equality
@@ -232,7 +232,7 @@ group :gen
 
 /** YUYV image encoding typically used in video capturing
  *  Chrominance (UV) is encoded at half (x-) resolution.
- *  Two adjaced pixels share the same chrominance but encode individual luminance.
+ *  Two adjacent pixels share the same chrominance but encode individual luminance.
  *  Data is encoded in YUYV pattern (4 bytes per 2 pixel).
  */
 stamp :yuyv_s x_array

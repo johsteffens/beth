@@ -180,6 +180,93 @@ func m :engine_s* get_global_engine()
 
 //----------------------------------------------------------------------------------------------------------------------
 
+stamp :functor_s
+{
+    st_s => label;
+    x_btcl_functor_f3_s => btcl_functor;
+
+    // generic function ...
+    hidden bcore_generic_function_s* generic_function;
+    hidden x_inst* generic_object;
+
+    func f3_t call( @* o, f3_t val )
+    {
+        if( o.btcl_functor ) = o.btcl_functor.unary_f3( val );
+
+        if( o.generic_function )
+        {
+            f3_t ret = 0;
+
+            verbatim_C
+            {
+                vd_t args[] = { o->generic_object, &val };
+                o->generic_function->fp( &ret, args );
+            };
+
+            = ret;
+        }
+        = 0;
+    }
+
+    func o setup_from_btcl_functor( m@* o, sc_t label, m x_btcl_functor_f3_s* btcl_functor )
+    {
+        if( label ) o.label!.copy_sc( label );
+        o.btcl_functor =< btcl_functor.fork();
+    }
+
+    func er_t setup_from_btcl_function( m@* o, sc_t label, m x_btcl_function_s* btcl_function, x_source_point_s* source_point, m x_btcl_frame_s* lexical_frame )
+    {
+        if( label ) o.label!.copy_sc( label );
+
+        if( btcl_function.external_function && btcl_function.external_function.function_type == generic_function~ )
+        {
+            m$* generic_object = btcl_function.external_function.object;
+            tp_t function_name = btcl_function.external_function.name;
+            if( !generic_object ) source_point.parse_error_fa( "generic object required." );
+
+            bcore_generic_function_s* generic_function = bcore_generic_function_manager_get( function_name );
+            if( !generic_function ) source_point.parse_error_fa( "Generic function '#name' not found.", function_name );
+
+            if( generic_function.base.type != f3_t~     ) source_point.parse_error_fa( "Plotting generic function '#name': Return type must be 'f3_t'.", function_name );
+            if( generic_function.base.indirection  != 0 ) source_point.parse_error_fa( "Plotting generic function '#name': Indirection must be 0.", function_name );
+            if( generic_function.size              != 2 ) source_point.parse_error_fa( "Plotting generic function '#name': Number of arguments must be 2.", function_name );
+            if( generic_function.[ 0 ].indirection != 1 ) source_point.parse_error_fa( "Plotting generic function '#name': First argument must have indirection 1.", function_name );
+            if( generic_function.[ 1 ].type    != f3_t~ ) source_point.parse_error_fa( "Plotting generic function '#name': Second argument must be 'f3_t'.", function_name );
+            if( generic_function.[ 1 ].indirection != 0 ) source_point.parse_error_fa( "Plotting generic function '#name': Second argument must have indirection 0.", function_name );
+
+            o.generic_function = generic_function.cast( m$* );
+            o.generic_object = generic_object;
+        }
+        else
+        {
+            o.btcl_functor!.setup( source_point, btcl_function, lexical_frame );
+            if( o.btcl_functor.args() != 1 ) = EM_ERR_fa( "Functor is not unary; args == #<sz_t>", o.btcl_functor.args() );
+
+        }
+
+        = 0;
+    }
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+stamp :functor_list_s x_array
+{
+    :functor_s => [];
+
+    func o push_btcl_functor( m@* o, sc_t label, m x_btcl_functor_f3_s* btcl_functor )
+    {
+        o.push().setup_from_btcl_functor( label, btcl_functor );
+    }
+
+    func o push_btcl_function( m@* o, sc_t label, m x_btcl_function_s* btcl_function, x_source_point_s* source_point, m x_btcl_frame_s* lexical_frame )
+    {
+        o.push().setup_from_btcl_function( label, btcl_function, source_point, lexical_frame );
+    }
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 func (:frame_s) from_functor_list
 {
     for( sz_t i = 0; i < samples; i++ )
@@ -191,8 +278,6 @@ func (:frame_s) from_functor_list
     for( sz_t i = 0; i < list.size; i++ )
     {
         :functor_s* f = list.[ i ];
-        x_btcl_functor_f3_s* functor = f.functor;
-        if( functor.args() != 1 ) = EM_ERR_fa( "Functor is not unary; args == #<sz_t>", functor.args() );
 
         m$* data = :data_s!^;
         if( f.label && f.label.size > 0 )
@@ -207,7 +292,7 @@ func (:frame_s) from_functor_list
         for( sz_t i = 0; i < samples; i++ )
         {
             f3_t x = x1 + ( x2 - x1 ) * ( i.cast( f3_t ) / samples );
-            data.push( functor.unary_f3( x ) );
+            data.push( f.call( x ) );
         }
 
         o.push_d( data.fork() );
@@ -238,77 +323,6 @@ func (:frame_arr_s) show
 
 //----------------------------------------------------------------------------------------------------------------------
 
-//func (:btcl_function_s) plot
-//{
-//    if( !arg ) = GERR_fa( "arg is zero" );
-//
-//    m$* functor_list = :functor_list_s!^;
-//
-//    tp_t arg_type = arg._;
-//
-//    if( arg_type == x_btcl_functor_f3_s~ )
-//    {
-//        functor_list.push_btcl( "", arg.cast( m x_btcl_functor_f3_s* ) );
-//    }
-//    else if( arg_type == x_btcl_functor_s~ )
-//    {
-//        m$* functor = x_btcl_functor_f3_s!^;
-//        functor.from_functor( arg.cast( m x_btcl_functor_s* ) );
-//        functor_list.push_btcl( "", functor );
-//    }
-//    else if( arg_type == x_btcl_function_s~ )
-//    {
-//        m$* functor = x_btcl_functor_f3_s!^;
-//        functor.setup( sp, arg.cast( m x_btcl_function_s* ), lexical_frame );
-//        functor_list.push_btcl( "", functor );
-//    }
-//    else if( arg_type == x_btcl_list_s~ )
-//    {
-//        x_btcl_list_s* list = arg.cast( x_btcl_list_s* );
-//        for( sz_t i = 0; i < list.size(); i++ )
-//        {
-//            m sr_s* sr = list.arr.[ i ];
-//            m$* functor = x_btcl_functor_f3_s!^;
-//            m$* label = st_s!^;
-//            if     ( sr.type() == x_btcl_functor_f3_s~  ) functor.copy( sr.o.cast( x_btcl_functor_f3_s* ) );
-//            else if( sr.type() == x_btcl_functor_s~     ) functor.from_functor( sr.o.cast( x_btcl_functor_s* ) );
-//            else if( sr.type() == x_btcl_function_s~    ) functor.setup( sp, sr.o.cast( m x_btcl_function_s* ), lexical_frame );
-//            else if( sr.type() == st_s~ ) label.copy( sr.o.cast( st_s* ) );
-//            else if( sr.type() == x_btcl_list_s~ )
-//            {
-//                x_btcl_list_s* list2 = list.arr.[ i ].o.cast( x_btcl_list_s* );
-//                for( sz_t i = 0; i < list2.size(); i++ )
-//                {
-//                    m sr_s* sr = list2.arr.[ i ];
-//
-//                    if     ( sr.type() == x_btcl_functor_f3_s~  ) functor.copy( sr.o.cast( x_btcl_functor_f3_s* ) );
-//                    else if( sr.type() == x_btcl_function_s~ ) functor.setup( sp, sr.o.cast( m x_btcl_function_s* ), lexical_frame );
-//                    else if( sr.type() == st_s~ ) label.copy( sr.o.cast( st_s* ) );
-//                }
-//            }
-//
-//            if( functor.op_tree ) functor_list.push_btcl( label.sc, functor );
-//        }
-//    }
-//    else
-//    {
-//        = GERR_fa( "Cannot plot '#<sc_t>'.", bnameof( arg_type ) );
-//    }
-//
-//    if( functor_list.size > 0 )
-//    {
-//        m$* frame = :frame_s!^;
-//        if( o.title ) frame.title =< o.title.clone();
-//        frame.from_functor_list( functor_list, o.x1, o.x2, o.samples );
-//        frame.show( o.appearance );
-//        if( o.wait_for_enter_key ) x_source_stdin().parse_fa( "\n" );
-//    }
-//
-//    = 0;
-//}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 func (:btcl_function_s) btcl_function
 {
     switch( name )
@@ -321,19 +335,17 @@ func (:btcl_function_s) btcl_function
 
             if( args.[ 0 ].type() == x_btcl_functor_f3_s~ )
             {
-                functor_list.push_btcl( "", args.[ 0 ].o.cast( m x_btcl_functor_f3_s* ) );
+                functor_list.push_btcl_functor( "", args.[ 0 ].o.cast( m x_btcl_functor_f3_s* ) );
             }
             else if( args.[ 0 ].type() == x_btcl_functor_s~ )
             {
                 m$* functor = x_btcl_functor_f3_s!^;
                 functor.from_functor( args.[ 0 ].o.cast( m x_btcl_functor_s* ) );
-                functor_list.push_btcl( "", functor );
+                functor_list.push_btcl_functor( "", functor );
             }
             else if( args.[ 0 ].type() == x_btcl_function_s~ )
             {
-                m$* functor = x_btcl_functor_f3_s!^;
-                functor.setup( sp, args.[ 0 ].o.cast( m x_btcl_function_s* ), lexical_frame );
-                functor_list.push_btcl( "", functor );
+                functor_list.push_btcl_function( "", args.[ 0 ].o.cast( m x_btcl_function_s* ), sp, lexical_frame );
             }
             else if( args.[ 0 ].type() == x_btcl_list_s~ )
             {
@@ -341,26 +353,57 @@ func (:btcl_function_s) btcl_function
                 for( sz_t i = 0; i < list.size(); i++ )
                 {
                     m sr_s* sr = list.arr.[ i ];
-                    m$* functor = x_btcl_functor_f3_s!^;
-                    m$* label = st_s!^;
-                    if     ( sr.type() == x_btcl_functor_f3_s~  ) functor.copy( sr.o.cast( x_btcl_functor_f3_s* ) );
-                    else if( sr.type() == x_btcl_functor_s~     ) functor.from_functor( sr.o.cast( x_btcl_functor_s* ) );
-                    else if( sr.type() == x_btcl_function_s~    ) functor.setup( sp, sr.o.cast( m x_btcl_function_s* ), lexical_frame );
-                    else if( sr.type() == st_s~ ) label.copy( sr.o.cast( st_s* ) );
+                    if ( sr.type() == x_btcl_functor_f3_s~  )
+                    {
+                        functor_list.push_btcl_functor( "", sr.o.cast( x_btcl_functor_f3_s* ).clone()^ );
+                    }
+                    else if( sr.type() == x_btcl_functor_s~     )
+                    {
+                        m$* functor = x_btcl_functor_f3_s!^;
+                        functor.from_functor( sr.o.cast( m x_btcl_functor_s* ) );
+                        functor_list.push_btcl_functor( "", functor );
+                    }
+                    else if( sr.type() == x_btcl_function_s~ )
+                    {
+                        functor_list.push_btcl_function( "", sr.o.cast( m x_btcl_function_s* ), sp, lexical_frame );
+                    }
                     else if( sr.type() == x_btcl_list_s~ )
                     {
                         x_btcl_list_s* list2 = list.arr.[ i ].o.cast( x_btcl_list_s* );
+                        m$* label = st_s!^;
+
                         for( sz_t i = 0; i < list2.size(); i++ )
                         {
                             m sr_s* sr = list2.arr.[ i ];
+                            if( sr.type() == st_s~ )
+                            {
+                                label.copy( sr.o.cast( st_s* ) );
+                                break;
+                            }
+                        }
 
-                            if     ( sr.type() == x_btcl_functor_f3_s~  ) functor.copy( sr.o.cast( x_btcl_functor_f3_s* ) );
-                            else if( sr.type() == x_btcl_function_s~ ) functor.setup( sp, sr.o.cast( m x_btcl_function_s* ), lexical_frame );
-                            else if( sr.type() == st_s~ ) label.copy( sr.o.cast( st_s* ) );
+                        for( sz_t i = 0; i < list2.size(); i++ )
+                        {
+                            m sr_s* sr = list2.arr.[ i ];
+                            if ( sr.type() == x_btcl_functor_f3_s~  )
+                            {
+                                functor_list.push_btcl_functor( label.sc, sr.o.cast( x_btcl_functor_f3_s* ).clone()^ );
+                                break;
+                            }
+                            else if( sr.type() == x_btcl_functor_s~ )
+                            {
+                                m$* functor = x_btcl_functor_f3_s!^;
+                                functor.from_functor( sr.o.cast( m x_btcl_functor_s* ) );
+                                functor_list.push_btcl_functor( label.sc, functor );
+                                break;
+                            }
+                            else if( sr.type() == x_btcl_function_s~ )
+                            {
+                                functor_list.push_btcl_function( label.sc, sr.o.cast( m x_btcl_function_s* ), sp, lexical_frame );
+                                break;
+                            }
                         }
                     }
-
-                    if( functor.op_tree ) functor_list.push_btcl( label.sc, functor );
                 }
             }
             else

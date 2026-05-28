@@ -122,6 +122,27 @@ stamp :generic_s
         btcl_return.copy( o );
         = 0;
     }
+
+    func er_t add_to_me4( m@* o, @* src, @** btcl_return ) generic
+    {
+        o.value += src.value;
+        btcl_return.1 = o;
+        = 0;
+    }
+
+    func er_t add_to_me5( m@* o, @* src, m @** btcl_return ) generic
+    {
+        o.value += src.value;
+        btcl_return.1 = o;
+        = 0;
+    }
+
+    func er_t add_to_me6( m@* o, @* src, d @** btcl_return ) generic
+    {
+        o.value += src.value;
+        btcl_return.1 = o.clone();
+        = 0;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

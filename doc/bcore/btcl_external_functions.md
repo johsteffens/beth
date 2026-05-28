@@ -54,7 +54,13 @@ c = add_two_numbers( 3, 5 );
 // c is f3_t containing the value 8
 ```
 
-The redirected return argument only takes effect when the generic functions return is either `void` or `er_t`.
+The presence of a redirected return requires the normal return of the generic functions to be either `void` or `er_t`.
+
+Indirection can be 1 or 2. If indirection is 1, then the item must be declared `mutable`.
+
+### Test Implementation
+
+A test implementation exists under the name `x_btcl_test_generic_s` in `bcore_x_btcl_test.x`.
 
 ## Featured Functions
 
@@ -138,7 +144,9 @@ obj = <my_stamp_s/>( .additive = 10 );
 
 ## Parsing Functions
 
-The parsing function receives full parsing control of a source code section. it takes responsibility for parsing the designated code section and also recognizing the proper end of that section and thus returning control to the btcl parser at the correct place. In that way, the parsing function can impose an alternative syntax onto the btcl source code.
+The purpose of a parsing function is to extend the BTCL syntax with object specific custom syntax. Parsing functions should be used sparingly and carefully.
+
+The parsing function receives full parsing control of a source code section. It takes responsibility for parsing the designated code section and also recognizing the proper end of that section and thus returning control to the btcl parser at the correct place. In that way, the parsing function can impose an alternative syntax onto the btcl source code.
 
 ### Features
 
@@ -176,7 +184,7 @@ stamp my_parser_s
 
 ``` C
 obj = <my_parser_s/>;
-ASSERT( obj.parse( abcd ) == "ABCD" );
+ASSERT( obj.parse(ABCD) == "ABCD" );
 ASSERT( obj.parse_file( "MyFile.txt" ) == "ABCD" ); // assuming that MyFile.txt contains the text 'ABCD'
 
 ```

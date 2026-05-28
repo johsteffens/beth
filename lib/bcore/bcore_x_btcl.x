@@ -734,10 +734,13 @@ stamp :external_function_s
         for( sz_t i = 0; i < gf.size; i++ )
         {
             $* arg = gf.[ i ];
-            if( arg.indirection >= 2 ) source.parse_error_fa( "Generic function '#name': Argument '#name' is declared with indirection > 1, which is not yet supported in BTCL.", full_name, arg.name );
+            if( arg.name != TYPEOF_btcl_return && arg.indirection > 1 )
+            {
+                source.parse_error_fa( "Generic function '#name': Argument '#name' is declared with indirection > 1. In BTCL this is only allowed for argument 'btcl_return'", full_name, arg.name );
+            }
         }
 
-        if( gf.base.indirection >= 2 ) source.parse_error_fa( "Generic function '#name': Return value is declared with indirection > 1, which is not yet supported in BTCL.", full_name );
+        if( gf.base.indirection > 1 ) source.parse_error_fa( "Generic function '#name': Return value is declared with indirection > 1, which is not yet supported in BTCL.", full_name );
 
         o.name = full_name;
         o.is_mutable = is_mutable;
@@ -773,6 +776,10 @@ stamp :external_function_s
 
                 sr.from_f3( 0 );
 
+                bl_t use_btcl_return = false;
+                vd_t vd_btcl_return = NULL;
+                bcore_generic_function_item_s* btcl_return_arg = NULL;
+
                 sz_t k = 0;
                 for( sz_t i = 0; i < gf.size; i++ )
                 {
@@ -787,10 +794,26 @@ stamp :external_function_s
                     }
                     else if( gf.[ i ].name == TYPEOF_btcl_return )
                     {
-                        if( gf.[ i ].access_class != TYPEOF_mutable ) sp.parse_error_fa( "Generic function '#name': variable 'btcl_return' must be 'mutable'", o.name );
-                        if( gf.[ i ].indirection != 1 ) sp.parse_error_fa( "Generic function '#name': variable 'btcl_return' must have an indirection of 1", o.name );
-                        sr.tsm( gf.[ i ].type, x_inst_t_create( gf.[ i ].type ) );
-                        vd_args.[ i ] = sr.o;
+
+                        sz_t indirection = gf.[ i ].indirection;
+
+                        if( indirection == 1 )
+                        {
+                            if( gf_arg.access_class != TYPEOF_mutable ) sp.parse_error_fa( "Generic function '#name': variable 'btcl_return' must be 'mutable' if used with indirection 1.", o.name );
+                            sr.tsm( gf_arg.type, x_inst_t_create( gf.[ i ].type ) );
+                            vd_args.[ i ] = sr.o;
+                        }
+                        else if( indirection == 2 )
+                        {
+                            vd_args.[ i ] = &vd_btcl_return;
+                        }
+                        else
+                        {
+                            sp.parse_error_fa( "Generic function '#name': variable 'btcl_return' has indirection '#<sz_t>'. It must have an indirection of 1 or 2.", o.name, indirection );
+                        }
+
+                        btcl_return_arg.1 = gf.[ i ].1;
+                        use_btcl_return = true;
                     }
                     else
                     {
@@ -801,6 +824,11 @@ stamp :external_function_s
 
                     if( src_inst )
                     {
+                        if( src_type == x_btcl_functor_arg_uop_s~ )
+                        {
+                            sp.parse_error_fa( "Generic function '#name': A generic function cannot be converted into a functor.", o.name );
+                        }
+
                         m$* dst_sr = arr_sr.[ i ];
                         tp_t dst_type = gf_arg.type;
 
@@ -817,7 +845,7 @@ stamp :external_function_s
                                     case TYPEOF_const      : dst_sr.twc( dst_type, src_inst ); break;
                                     case TYPEOF_mutable    : dst_sr.tsm( dst_type, src_inst.t_clone( src_type ) ); break;
                                     case TYPEOF_discardable: dst_sr.tsm( dst_type, src_inst.t_clone( src_type ).fork() ); break;
-                                    default: GERR_fa( "Invalid access type." );
+                                    default: GERR_fa( "Invalid access class." );
                                 }
                             }
                             else
@@ -847,13 +875,33 @@ stamp :external_function_s
                 {
                     vd_ret = err.1;
                 }
-                else if( gf.base.indirection == 0 )
+                else
                 {
-                    sr.tsm( gf.base.type, x_inst_t_create( gf.base.type ) );
-                    vd_ret = sr.o;
+                    if( use_btcl_return )
+                    {
+                        sp.parse_error_fa( "Generic function '#name': The function defines 'btcl_return' argument but defined a return other that 'void' or er_t'", o.name );
+                    }
+
+                    if( gf.base.indirection == 0 )
+                    {
+                        sr.tsm( gf.base.type, x_inst_t_create( gf.base.type ) );
+                        vd_ret = sr.o;
+                    }
                 }
 
                 verbatim_C{ gf->fp( vd_ret, vd_args->data ) };
+
+                if( use_btcl_return && btcl_return_arg.indirection == 2 )
+                {
+                    if( !vd_btcl_return ) sp.parse_error_fa( "Generic function '#name' defines 'btcl_return' argument but does not set its value.", o.name );
+                    switch( btcl_return_arg.access_class )
+                    {
+                        case TYPEOF_const:       sr.tsc( btcl_return_arg.type, bcore_fork( vd_btcl_return ) ); break;
+                        case TYPEOF_mutable:     sr.tsm( btcl_return_arg.type, bcore_fork( vd_btcl_return ) );  break;
+                        case TYPEOF_discardable: sr.tsm( btcl_return_arg.type, vd_btcl_return );  break;
+                        default: GERR_fa( "Invalid access class (#name).", btcl_return_arg.access_class ); break;
+                    }
+                }
 
                 if( err )
                 {
@@ -871,7 +919,7 @@ stamp :external_function_s
                         case TYPEOF_const      : sr.tsc( gf.base.type, bcore_fork( reto ) ); break;
                         case TYPEOF_mutable    : sr.tsc( gf.base.type, bcore_fork( reto ) ); break;
                         case TYPEOF_discardable: sr.tsc( gf.base.type, reto ); break;
-                        default: GERR_fa( "Invalid access type." );
+                        default: GERR_fa( "Invalid access class." );
                     }
                 }
             }
