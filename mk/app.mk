@@ -99,6 +99,7 @@ ALL_H_FILES = $(foreach folder,$(ALL_SRC_FOLDERS),$(wildcard $(folder)/*.h))
 ALL_C_FILES = $(foreach folder,$(ALL_SRC_FOLDERS),$(wildcard $(folder)/*.c))
 ALL_X_FILES = $(foreach folder,$(ALL_SRC_FOLDERS),$(wildcard $(folder)/*.x))
 ALL_G_FILES = $(foreach folder,$(ALL_SRC_FOLDERS),$(wildcard $(folder)/*.cfg))
+ALL_G_FILES += $(XOICO_CFG)
 
 .PHONY: run clean cleanall pass2 rebuild rebuildall
 
