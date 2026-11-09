@@ -378,6 +378,7 @@ func (:s) er_t setup_functions( m @* o, c xoico_host* host )
         st.push_fa( " );" );
 
         m xoico_func_s* func = o.push_func_from_sc( host, st.sc );
+
         func.declare_in_expand_forward = false;
         if( o.default_body ) func.body =< o.default_body.fork();
 
