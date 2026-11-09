@@ -66,7 +66,7 @@ func f3_t b_from_yuv( f3_t y, f3_t u, f3_t v ) = y + 2.01563 * u;
 stamp :bgra_s x_array
 {
     sz_t rows; // height of image
-    sz_t cols; // width of image cols (always even)
+    sz_t cols; // width of image cols
     sz_t bytes_per_row; // cols * 4 on tightest packing. Can be lager when the data area is mapped to an external ABI.
     u0_t [];   // packed pixel data in BGRA format
 
@@ -149,7 +149,9 @@ stamp :bgra_s x_array
     func f3_t rdev_zro_bgr( @* o )       = f3_srt( o.sdev_zro_bgr( ) * o.inv_values_bgr() );
 
     ///------------------------------------------------------------------------------------------------------------------
-    /// Vector/Matrix I/O
+    /** Vector/Matrix I/O
+     *  Imports from matrices are clamped to the value range [0,255]
+     */
 
     /// converts all values to/from matrix (mat.cols == o.cols * 4 )
     func mat to_mf2( c @* o, m bmath_mf2_s* mat );
