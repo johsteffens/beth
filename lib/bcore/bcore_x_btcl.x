@@ -832,7 +832,11 @@ stamp :external_function_s
                         m$* dst_sr = arr_sr.[ i ];
                         tp_t dst_type = gf_arg.type;
 
-                        if( src_type == dst_type )
+                        if
+                        (
+                            src_type == dst_type ||
+                            ( !x_inst_is_creatable( dst_type ) && gf_arg.indirection == 1 ) // assuming dst_type is a group
+                        )
                         {
                             if( gf_arg.indirection == 0 )
                             {
@@ -842,9 +846,9 @@ stamp :external_function_s
                             {
                                 switch( gf_arg.access_class )
                                 {
-                                    case TYPEOF_const      : dst_sr.twc( dst_type, src_inst ); break;
-                                    case TYPEOF_mutable    : dst_sr.tsm( dst_type, src_inst.t_clone( src_type ) ); break;
-                                    case TYPEOF_discardable: dst_sr.tsm( dst_type, src_inst.t_clone( src_type ).fork() ); break;
+                                    case TYPEOF_const      : dst_sr.twc( src_type, src_inst ); break;
+                                    case TYPEOF_mutable    : dst_sr.tsm( src_type, src_inst.t_clone( src_type ) ); break;
+                                    case TYPEOF_discardable: dst_sr.tsm( src_type, src_inst.t_clone( src_type ).fork() ); break;
                                     default: GERR_fa( "Invalid access class." );
                                 }
                             }

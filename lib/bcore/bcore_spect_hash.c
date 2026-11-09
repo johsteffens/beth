@@ -42,25 +42,8 @@ tp_t bcore_hash_default_fold_tp( const bcore_hash_s* p, const bcore_hash* o, tp_
             case TYPEOF_u1_t: return bcore_tp_fold_u1( hash, *( u1_t* )o );
             case TYPEOF_u0_t: return bcore_tp_fold_u0( hash, *( u0_t* )o );
 
-            case TYPEOF_f3_t:
-            {
-                int exp = 0;
-                s3_t man_s3 = frexp( *( f3_t* )o, &exp ) * 0x7FFFFFFFFFFFFFFF;
-                s2_t exp_s2 = exp;
-                hash = bcore_tp_fold_u3( hash, man_s3 );
-                hash = bcore_tp_fold_u2( hash, exp_s2 );
-                return hash;
-            }
-
-            case TYPEOF_f2_t:
-            {
-                int exp = 0;
-                s3_t man_s3 = frexp( *( f2_t* )o, &exp ) * 0x7FFFFFFFFFFFFFFF;
-                s2_t exp_s2 = exp;
-                hash = bcore_tp_fold_u3( hash, man_s3 );
-                hash = bcore_tp_fold_u2( hash, exp_s2 );
-                return hash;
-            }
+            case TYPEOF_f3_t: return bcore_tp_fold_f3( hash, *( f3_t* )o );
+            case TYPEOF_f2_t: return bcore_tp_fold_f2( hash, *( f2_t* )o );
 
             case TYPEOF_sz_t: return bcore_tp_fold_vc( hash, o, sizeof( sz_t ) );
             case TYPEOF_uz_t: return bcore_tp_fold_vc( hash, o, sizeof( uz_t ) );

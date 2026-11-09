@@ -15,6 +15,8 @@ Specifically:
   * An expression represents an object.
   * Functions are first class objects.
 
+# Basics
+
 ## Cheat Sheet
 
 The language supports C-style comments inside the code.
@@ -116,18 +118,18 @@ obj = FROM_FILE_BCML( DIR + "/app_data/object.bcml", 0 /*fallback*/ ); // bcml f
 
 ```
 
-# Comments
+## Comments
 BTCL uses C/C++ style comments:
 
 *  ```//```: Comment until the end of line.
 
 *  ```/* ... */ ```: Comment block.
 
-# Whitespaces
+## Whitespaces
 
 Space, tab and newline characters are elementary whitespaces. A [comment](comments) is also a whitespace(-section). Between identifiers, operator-symbols or literals whitespaces can be placed freely without affecting the code.
 
-# One Expression
+## One Expression
 
 BTCL has no distinct statements. Any contiguous code represents just one expression. This can be a composite (or tree) of expressions joined via functions, operators or conditional branches. Non-composite expressions are called ***Literals***.
 

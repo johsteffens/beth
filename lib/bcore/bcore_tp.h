@@ -43,6 +43,27 @@ static inline tp_t bcore_tp_fold_s0( tp_t o, s0_t v ) { return bcore_tp_fold_u0(
 static inline tp_t bcore_tp_fold_s1( tp_t o, s1_t v ) { return bcore_tp_fold_u1( o, v ); }
 static inline tp_t bcore_tp_fold_s2( tp_t o, s2_t v ) { return bcore_tp_fold_u2( o, v ); }
 static inline tp_t bcore_tp_fold_s3( tp_t o, s3_t v ) { return bcore_tp_fold_u3( o, v ); }
+
+static inline tp_t bcore_tp_fold_f2( tp_t o, f2_t v )
+{
+    int exp = 0;
+    s3_t man_s3 = frexp( v, &exp ) * 0x7FFFFFFFFFFFFFFF;
+    s2_t exp_s2 = exp;
+    o = bcore_tp_fold_u3( o, man_s3 );
+    o = bcore_tp_fold_u2( o, exp_s2 );
+    return o;
+}
+
+static inline tp_t bcore_tp_fold_f3( tp_t o, f3_t v )
+{
+    int exp = 0;
+    s3_t man_s3 = frexp( v, &exp ) * 0x7FFFFFFFFFFFFFFF;
+    s2_t exp_s2 = exp;
+    o = bcore_tp_fold_u3( o, man_s3 );
+    o = bcore_tp_fold_u2( o, exp_s2 );
+    return o;
+}
+
 static inline tp_t bcore_tp_fold_tp( tp_t o, tp_t v ) { return bcore_tp_fold_u3( o, v ); }
 static inline tp_t bcore_tp_fold_bl( tp_t o, bl_t v ) { return bcore_tp_fold_u0( o, v ? 1 : 0 ); }
 

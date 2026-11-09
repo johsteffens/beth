@@ -52,6 +52,7 @@ static inline f3_t f3_inv  ( f3_t v ) { return f3_abs( v ) >= f3_lim_min ? 1.0 /
 static inline s2_t f3_rs2  ( f3_t v ) { return  lrint( v ); }
 static inline s3_t f3_rs3  ( f3_t v ) { return llrint( v ); }
 static inline void f3_t_swap( f3_t* v1, f3_t* v2 ) { f3_t t = *v1; *v1 = *v2; *v2 = t;  }
+static inline f3_t f3_clamped( f3_t v, f3_t min, f3_t max ) { return f3_max( min, f3_min( max, v ) ); }
 
 /// math constants
 static inline f3_t f3_pi(   void ) { return 3.1415926535897932384626434; } // PI
@@ -107,6 +108,7 @@ static inline f2_t f2_inv  ( f2_t v ) { return f3_abs( v ) >= f2_lim_min ? 1.0 /
 static inline s2_t f2_rs2  ( f2_t v ) { return  lrintf( v ); }
 static inline s3_t f2_rs3  ( f2_t v ) { return llrintf( v ); }
 static inline void f2_t_swap( f2_t* v1, f2_t* v2 ) { f2_t t = *v1; *v1 = *v2; *v2 = t;  }
+static inline f3_t f2_clamped( f2_t v, f2_t min, f2_t max ) { return f2_max( min, f2_min( max, v ) ); }
 
 /// math constants
 static inline f2_t f2_pi(   void ) { return 3.1415926535897932384626434; } // PI
