@@ -402,13 +402,21 @@ func (:btcl_function_s) btcl_function
                                 functor_list.push_btcl_function( label.sc, sr.o.cast( m x_btcl_function_s* ), sp, lexical_frame );
                                 break;
                             }
+                            else if( sr.type() != st_s~ )
+                            {
+                                = EM_ERR_fa( "Cannot plot '#name'.", sr.type() );
+                            }
                         }
+                    }
+                    else
+                    {
+                        = EM_ERR_fa( "Cannot plot '#name'.", sr.type() );
                     }
                 }
             }
             else
             {
-                = EM_ERR_fa( "Cannot plot '#<sc_t>'.", bnameof( args.[ 0 ].type() ) );
+                = EM_ERR_fa( "Cannot plot '#name'.", args.[ 0 ].type() );
             }
 
             if( functor_list.size > 0 )
