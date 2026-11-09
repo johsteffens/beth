@@ -163,7 +163,7 @@ static inline bl_t BCATU(bmath_xsmfx_s,is_zro)( const bmath_xsmfx_s* o ) { retur
 
 /** fdev = ||f(o) - x||
  *  '|| ... ||' = Frobenius norm
- *  f is either idenity (o-->o) or a specifed function
+ *  f is either identity (o-->o) or a specifed function
  *  Matrix x is a specified (or implied) state.
  *  Note: By this definition fdev_zro is the Frobenius norm of o.
  */

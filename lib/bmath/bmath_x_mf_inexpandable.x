@@ -211,7 +211,7 @@ group bmath_mf =
 
     /** fdev = ||o - x||
      *  '|| ... ||' = Frobenius norm  ( sqrt(sum over squares) )
-     *  f is either idenity (o-->o) or a specifed function
+     *  f is either identity (o-->o) or a specifed function
      *  Matrix x is a specified (or implied) state.
      *  Note: By this definition fdev_zro is the Frobenius norm of o.
      */
@@ -224,7 +224,7 @@ group bmath_mf =
     /** Energy independent deviaion:
      *  dev = ||o - x|| / max( ||o||, ||x|| )
      *  '|| ... ||' = Frobenius norm  ( sqrt(sum over squares) )
-     *  f is either idenity (o-->o) or a specified function
+     *  f is either identity (o-->o) or a specified function
      *  Matrix x is a specified (or implied) state.
      */
     signature f3_t dev_equ( @* o, @* op );
